@@ -1,0 +1,22 @@
+.venv/
+.cache/
+node_modules/
+dist/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+*.log
+.env
+.local/
+.uv-cache/
+.npm-cache/
+.atl/
+
+# Local environment files, backups and compiler metadata
+.env.*
+!.env.example
+*.dpapi
+*.bak
+*.tsbuildinfo
+/frontend/dist-*/

@@ -1,0 +1,2343 @@
+{
+  "review_scope": "P1.1. Inspección estática de 001–009. No ejecución de SQL, conexión, pruebas, proveedores o imports de la aplicación. No acredita migraciones aplicadas.",
+  "inspected_on": "2026-10-24",
+  "common_findings": [
+    {
+      "severity": "high",
+      "file": "backend/app/config.py",
+      "line": 47,
+      "detail": "El modo local_sql_copy restringe host a loopback/host.docker.internal, exige certificado localhost y destino local; sql_workspace verifica DBSIIE/SQLEXPRESS/máquina/contrato. Son contratos de copia local, no configuración institucional Linux genérica.",
+      "recommendation": "P1.2 debe diseñar destino institucional explícito y validación TLS/identidad equivalente; no retirar guardas para habilitar una conexión.",
+      "observed_at": "P1.1; original observation retained below; runtime superseded by P1.2",
+      "p1_2_note": "Ver P1_2_CONTRACT.md: contrato compartido SQL 2019/TLS, workspace institucional bloqueado; SQL/runners históricos intactos."
+    },
+    {
+      "severity": "high",
+      "file": "backend/migrations/001_local_crm.sql",
+      "line": 4,
+      "detail": "Las nueve migraciones comprueban nombre de base e instancia SQLEXPRESS, pero esos dos nombres por sí solos no acreditan la copia autorizada o máquina esperada.",
+      "recommendation": "Antes de futura ejecución usar preflight de identidad completa y entorno autorizado. La aplicación Linux/Docker no obliga a que SQL también esté en Linux; si SQL es instancia predeterminada el guard actual no la admite."
+    },
+    {
+      "severity": "medium",
+      "file": "backend/migrations/001_local_crm.sql",
+      "line": 3,
+      "detail": "Los scripts rechazan una transacción ya abierta y crean su propia transacción. No se deben concatenar dentro de una transacción ODBC previa que haya sido iniciada por un preflight.",
+      "recommendation": "Diseñar runner explícito con límites transaccionales comprobados; no aplicar desde esta unidad."
+    },
+    {
+      "severity": "medium",
+      "file": "docs/reports/crm-local-migration.md",
+      "line": 17,
+      "detail": "La evidencia histórica registra que un trigger DDL SIIE escribe auditoría en dbo.SIAuditoriaCambios al crear objetos CRM; el encabezado posterior documenta autorización local de esos INSERT automáticos. No es escritura de negocio explícita en estas migraciones ni prueba del estado de hoy.",
+      "recommendation": "Inventariar trigger/efectos y alcance del entorno institucional durante preflight no productivo; mantener auditoría, no borrar ni deshabilitarla. No extrapolar esa autorización local a producción."
+    },
+    {
+      "severity": "info",
+      "file": "docs/decisions/ADR-006-local-crm-persistence.md",
+      "line": 40,
+      "detail": "No hay runner versionado para 001–009 en backend/tools; 001 documenta ejecución manual/harness histórico. No hay scripts DOWN para estas nueve fuentes.",
+      "recommendation": "Distinguir rollback transaccional de fallo, retorno de aplicación y reversión posterior al commit; planificar respaldo/restauración y no inventar un rollback destructivo."
+    }
+  ],
+  "migrations": [
+    {
+      "file": "backend/migrations/001_local_crm.sql",
+      "id": "001",
+      "purpose": "Persistencia CRM: contacto, conversación, mensajes y diario idempotente",
+      "schemas": [
+        "crm"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm.Contact",
+            "line": 22
+          },
+          {
+            "name": "crm.Conversation",
+            "line": 36
+          },
+          {
+            "name": "crm.Message",
+            "line": 48
+          },
+          {
+            "name": "crm.Operation",
+            "line": 59
+          }
+        ],
+        "indexes": [
+          {
+            "name": "IX_Message_Conversation_Sequence",
+            "table": "crm.Message",
+            "line": 58
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm.contract",
+          "value": "ADR-006-v1",
+          "line": 117
+        },
+        {
+          "name": "crm.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 119
+        }
+      ],
+      "prerequisites": [],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/002_local_admissions.sql",
+      "id": "002",
+      "purpose": "Casos de admisión y seguimiento CRM sin modificar aspirantes oficiales",
+      "schemas": [
+        "crm_admissions"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_admissions.AdmissionCase",
+            "line": 22
+          },
+          {
+            "name": "crm_admissions.Followup",
+            "line": 27
+          },
+          {
+            "name": "crm_admissions.Operation",
+            "line": 39
+          }
+        ],
+        "indexes": [
+          {
+            "name": "IX_Followup_Case",
+            "table": "crm_admissions.Followup",
+            "line": 38
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_admissions.contract",
+          "value": "admissions-v1",
+          "line": 93
+        },
+        {
+          "name": "crm_admissions.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 95
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "runtime_only",
+          "tables": [
+            "dbo.ACAspirante",
+            "dbo.GEPeriodo",
+            "dbo.ACProgramaOfrecido",
+            "dbo.ACProgramas",
+            "dbo.ACJornada"
+          ],
+          "basis": "Referencias académicas por enteros sin FK core en la migración; servicio de Admisiones consulta fuente SIIE. Runtime compartido también requiere crm."
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/admissions/application/service.py:95",
+        "backend/app/modules/admissions/application/service.py:77"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/003_local_inbox.sql",
+      "id": "003",
+      "purpose": "Membresía, agentes, asignación dual, tareas y SLA",
+      "schemas": [
+        "crm_inbox"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_inbox.Member",
+            "line": 39
+          },
+          {
+            "name": "crm_inbox.Agent",
+            "line": 45
+          },
+          {
+            "name": "crm_inbox.Assignment",
+            "line": 53
+          },
+          {
+            "name": "crm_inbox.Task",
+            "line": 61
+          },
+          {
+            "name": "crm_inbox.SlaPolicy",
+            "line": 75
+          },
+          {
+            "name": "crm_inbox.Operation",
+            "line": 82
+          }
+        ],
+        "indexes": [
+          {
+            "name": "IX_InboxTask_Conversation",
+            "table": "crm_inbox.Task",
+            "line": 74
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_inbox.contract",
+          "value": "inbox-v1",
+          "line": 135
+        },
+        {
+          "name": "crm_inbox.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 137
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Esquema crm y FKs a crm.Conversation"
+        },
+        {
+          "kind": "academic_source",
+          "table": "dbo.GEEmpleado",
+          "basis": "columnas CnsctvoEmpldo int no nulo, NmbrePrsna varchar20, AplldosPrsna varchar30, Actvo bit no nulo, PK unicolumna; inspección explícita líneas18–34"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/inbox/application/operations.py:153"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/004_conversation_events.sql",
+      "id": "004",
+      "purpose": "Eventos durables y preparación incremental recuperable",
+      "schemas": [
+        "crm_events"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_events.Event",
+            "line": 146
+          },
+          {
+            "name": "crm_events.Preparation",
+            "line": 169
+          },
+          {
+            "name": "crm_events.RetryOperation",
+            "line": 177
+          }
+        ],
+        "indexes": [
+          {
+            "name": "IX_Event_Work",
+            "table": "crm_events.Event",
+            "line": 167
+          },
+          {
+            "name": "IX_Event_Conversation",
+            "table": "crm_events.Event",
+            "line": 168
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_events.contract",
+          "value": "events-v1",
+          "line": 227
+        },
+        {
+          "name": "crm_events.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 229
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador/huella crm verificados"
+        },
+        {
+          "kind": "migration",
+          "id": "003",
+          "basis": "Marcador/huella crm_inbox verificados"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "No INSERT persistente inicial en estas fuentes; INSERT @sourceShape es verificación transitoria"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/conversation_events/api/router.py"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/005_conversation_analysis.sql",
+      "id": "005",
+      "purpose": "Política de análisis, contexto, recibos, intentos y feedback",
+      "schemas": [
+        "crm_analysis"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_analysis.Policy",
+            "line": 204
+          },
+          {
+            "name": "crm_analysis.ConversationState",
+            "line": 215
+          },
+          {
+            "name": "crm_analysis.Receipt",
+            "line": 231
+          },
+          {
+            "name": "crm_analysis.Attempt",
+            "line": 238
+          },
+          {
+            "name": "crm_analysis.Feedback",
+            "line": 248
+          },
+          {
+            "name": "crm_analysis.Operation",
+            "line": 255
+          }
+        ],
+        "indexes": [
+          {
+            "name": "IX_AnalysisAttempt_Day",
+            "table": "crm_analysis.Attempt",
+            "line": 247
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_analysis.contract",
+          "value": "analysis-v1",
+          "line": 305
+        },
+        {
+          "name": "crm_analysis.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 307
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador/huella crm verificados"
+        },
+        {
+          "kind": "migration",
+          "id": "003",
+          "basis": "Marcador/huella crm_inbox verificados"
+        },
+        {
+          "kind": "migration",
+          "id": "004",
+          "basis": "Marcador/huella crm_events y FK EventId"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "No INSERT persistente inicial en estas fuentes; INSERT @sourceShape es verificación transitoria"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/conversation_analysis/application/runtime.py"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/006_crm_configuration.sql",
+      "id": "006",
+      "purpose": "Configuración compartida de etapas, etiquetas y campos derivada del CRM existente",
+      "schemas": [
+        "crm_config"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_config.Configuration",
+            "line": 21
+          },
+          {
+            "name": "crm_config.Operation",
+            "line": 28
+          }
+        ],
+        "indexes": []
+      },
+      "contracts": [
+        {
+          "name": "crm_config.contract",
+          "value": "CRM-config-v1",
+          "line": 87
+        },
+        {
+          "name": "crm_config.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 89
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador crm.contract y lectura de crm.Contact"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": true,
+        "detail": "Singleton crm_config.Configuration derivado de crm.Contact, no datos demo"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW",
+          "OPENJSON",
+          "STRING_SPLIT",
+          "STRING_AGG",
+          "STRING_ESCAPE",
+          "HASHBYTES MD5 identificador legado"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/crm_configuration/application/service.py:105"
+      ],
+      "issues": [
+        {
+          "severity": "info",
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 42,
+          "detail": "Sí crea una fila inicial persistente ConfigurationId=1, derivada de Stage/Tags/CustomValues de contactos existentes. No inserta contactos demo ni semillas académicas.",
+          "recommendation": "Preservar configuración derivada y comprobar consistencia del catálogo en restauración; no clasificar esta migración como cero DML ni volver a generar filas de datos en una repetición."
+        },
+        {
+          "severity": "info",
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 35,
+          "detail": "Usa HASHBYTES MD5 para identificador determinista de etapas. Está disponible pero obsoleto en SQL Server 2019; no es un hash de autenticación.",
+          "recommendation": "Registrar compatibilidad/obsolescencia y conservar claves existentes; cambiar algoritmo requeriría migración explícita de identificadores y consumidores."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/007_institutional_identity.sql",
+      "id": "007",
+      "purpose": "Perfil institucional declarado por contacto",
+      "schemas": [
+        "crm_identity"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_identity.Profile",
+            "line": 21
+          }
+        ],
+        "indexes": []
+      },
+      "contracts": [
+        {
+          "name": "crm_identity.contract",
+          "value": "identity-v1",
+          "line": 74
+        },
+        {
+          "name": "crm_identity.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 76
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador crm.contract y FK a crm.Contact"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/contacts/domain/models.py"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/008_contact_merge.sql",
+      "id": "008",
+      "purpose": "Unificación lógica reversible y diario de operaciones",
+      "schemas": [
+        "crm_merge"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_merge.MergeCase",
+            "line": 21
+          },
+          {
+            "name": "crm_merge.Operation",
+            "line": 41
+          }
+        ],
+        "indexes": [
+          {
+            "name": "UX_MergeCase_ActiveSource",
+            "table": "crm_merge.MergeCase",
+            "line": 40
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_merge.contract",
+          "value": "merge-v1",
+          "line": 99
+        },
+        {
+          "name": "crm_merge.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 101
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador crm.contract y FKs a crm.Contact"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/contacts/application/merge.py:112"
+      ],
+      "issues": []
+    },
+    {
+      "file": "backend/migrations/009_conversation_strategy.sql",
+      "id": "009",
+      "purpose": "Planes con evidencia, feedback y autonomía interna acotada",
+      "schemas": [
+        "crm_strategy"
+      ],
+      "objects": {
+        "tables": [
+          {
+            "name": "crm_strategy.Policy",
+            "line": 21
+          },
+          {
+            "name": "crm_strategy.EvaluationPlan",
+            "line": 28
+          },
+          {
+            "name": "crm_strategy.Operation",
+            "line": 40
+          }
+        ],
+        "indexes": [
+          {
+            "name": "UX_StrategyTaskPlan",
+            "table": "crm_strategy.Operation",
+            "line": 54
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "name": "crm_strategy.contract",
+          "value": "strategy-v1",
+          "line": 99
+        },
+        {
+          "name": "crm_strategy.shape",
+          "value": "SHA2_256 del manifiesto de metadatos del esquema",
+          "line": 101
+        }
+      ],
+      "prerequisites": [
+        {
+          "kind": "migration",
+          "id": "001",
+          "basis": "Marcador crm.contract y FK a crm.Conversation"
+        },
+        {
+          "kind": "migration",
+          "id": "003",
+          "basis": "FK crm_strategy.Operation.TaskId a crm_inbox.Task; dependencia efectiva sin marcador propio de inbox"
+        }
+      ],
+      "runners": [],
+      "runner_note": "Sin runner 001–009 versionado en backend/tools; ejecución explícita/manual histórica. No ejecutar desde este inventario.",
+      "guards": [
+        {
+          "check": "@@TRANCOUNT=0",
+          "line": 3
+        },
+        {
+          "check": "DB_NAME exacto DBSIIE e InstanceName SQLEXPRESS; ISNULL explícito",
+          "line": 4
+        },
+        {
+          "check": "compatibility_level>=130",
+          "line": 7
+        },
+        {
+          "check": "XACT_ABORT, TRY/CATCH y sp_getapplock exclusivo crm.local.commit",
+          "line": 12
+        }
+      ],
+      "idempotency": "Crea sólo cuando falta el esquema; cuando existe exige contract y shape almacenada, recompone metadatos y rechaza drift. No repara un esquema desconocido ni altera objetos existentes. COMMIT sólo tras validación; CATCH revierte transacción abierta.",
+      "seed_writes": {
+        "persistent_initial_rows": false,
+        "detail": "Sin INSERT inicial persistente"
+      },
+      "core_effects": "No DML/DDL explícito sobre tablas académicas core. Puede disparar auditoría DDL externa; preservar registro y verificar alcance antes de ejecución futura.",
+      "compatibility_2019": {
+        "status": "compatible_por_inspeccion_condicionada",
+        "minimum_database_compatibility": 130,
+        "features": [
+          "uniqueidentifier",
+          "nvarchar(max)",
+          "datetime2(7)",
+          "ISJSON/FOR JSON (cuando usado)",
+          "HASHBYTES SHA2_256",
+          "sys.extended_properties",
+          "sp_getapplock",
+          "TRY/CATCH/THROW"
+        ],
+        "not_verified": [
+          "compilación/ejecución en servidor2019",
+          "edición y compatibilidad reales",
+          "permisos DDL/metadatos y auditoría",
+          "aplicación histórica o drift de la BD"
+        ]
+      },
+      "consumers": [
+        "backend/app/modules/conversation_strategy/application/runtime.py"
+      ],
+      "issues": [
+        {
+          "severity": "medium",
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 48,
+          "detail": "Requiere crm_inbox.Task por FK aunque sólo comprueba explícitamente crm.contract; la falta de 003 se detectaría al crear la FK.",
+          "recommendation": "Ordenar 003 antes de 009 y añadir preflight de dependencias en el runner futuro, sin editar la migración histórica aplicada."
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_early_migration_001",
+        "label": "001 Persistencia CRM: contacto, conversación, mensajes y diario idempotente",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm",
+        "label": "crm",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_Contact",
+        "label": "crm.Contact",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L22"
+      },
+      {
+        "id": "sql_early_table_crm_Conversation",
+        "label": "crm.Conversation",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L36"
+      },
+      {
+        "id": "sql_early_table_crm_Message",
+        "label": "crm.Message",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L48"
+      },
+      {
+        "id": "sql_early_table_crm_Operation",
+        "label": "crm.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L59"
+      },
+      {
+        "id": "sql_early_migration_002",
+        "label": "002 Casos de admisión y seguimiento CRM sin modificar aspirantes oficiales",
+        "file_type": "code",
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_admissions",
+        "label": "crm_admissions",
+        "file_type": "code",
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_admissions_AdmissionCase",
+        "label": "crm_admissions.AdmissionCase",
+        "file_type": "code",
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L22"
+      },
+      {
+        "id": "sql_early_table_crm_admissions_Followup",
+        "label": "crm_admissions.Followup",
+        "file_type": "code",
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L27"
+      },
+      {
+        "id": "sql_early_table_crm_admissions_Operation",
+        "label": "crm_admissions.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L39"
+      },
+      {
+        "id": "sql_early_migration_003",
+        "label": "003 Membresía, agentes, asignación dual, tareas y SLA",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_inbox",
+        "label": "crm_inbox",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L37"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_Member",
+        "label": "crm_inbox.Member",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L39"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_Agent",
+        "label": "crm_inbox.Agent",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L45"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_Assignment",
+        "label": "crm_inbox.Assignment",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L53"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_Task",
+        "label": "crm_inbox.Task",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L61"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_SlaPolicy",
+        "label": "crm_inbox.SlaPolicy",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L75"
+      },
+      {
+        "id": "sql_early_table_crm_inbox_Operation",
+        "label": "crm_inbox.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L82"
+      },
+      {
+        "id": "sql_early_migration_004",
+        "label": "004 Eventos durables y preparación incremental recuperable",
+        "file_type": "code",
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_events",
+        "label": "crm_events",
+        "file_type": "code",
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L144"
+      },
+      {
+        "id": "sql_early_table_crm_events_Event",
+        "label": "crm_events.Event",
+        "file_type": "code",
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L146"
+      },
+      {
+        "id": "sql_early_table_crm_events_Preparation",
+        "label": "crm_events.Preparation",
+        "file_type": "code",
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L169"
+      },
+      {
+        "id": "sql_early_table_crm_events_RetryOperation",
+        "label": "crm_events.RetryOperation",
+        "file_type": "code",
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L177"
+      },
+      {
+        "id": "sql_early_migration_005",
+        "label": "005 Política de análisis, contexto, recibos, intentos y feedback",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_analysis",
+        "label": "crm_analysis",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L202"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_Policy",
+        "label": "crm_analysis.Policy",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L204"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_ConversationState",
+        "label": "crm_analysis.ConversationState",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L215"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_Receipt",
+        "label": "crm_analysis.Receipt",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L231"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_Attempt",
+        "label": "crm_analysis.Attempt",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L238"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_Feedback",
+        "label": "crm_analysis.Feedback",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L248"
+      },
+      {
+        "id": "sql_early_table_crm_analysis_Operation",
+        "label": "crm_analysis.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L255"
+      },
+      {
+        "id": "sql_early_migration_006",
+        "label": "006 Configuración compartida de etapas, etiquetas y campos derivada del CRM existente",
+        "file_type": "code",
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_config",
+        "label": "crm_config",
+        "file_type": "code",
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_config_Configuration",
+        "label": "crm_config.Configuration",
+        "file_type": "code",
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L21"
+      },
+      {
+        "id": "sql_early_table_crm_config_Operation",
+        "label": "crm_config.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L28"
+      },
+      {
+        "id": "sql_early_migration_007",
+        "label": "007 Perfil institucional declarado por contacto",
+        "file_type": "code",
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_identity",
+        "label": "crm_identity",
+        "file_type": "code",
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_identity_Profile",
+        "label": "crm_identity.Profile",
+        "file_type": "code",
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L21"
+      },
+      {
+        "id": "sql_early_migration_008",
+        "label": "008 Unificación lógica reversible y diario de operaciones",
+        "file_type": "code",
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_merge",
+        "label": "crm_merge",
+        "file_type": "code",
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_merge_MergeCase",
+        "label": "crm_merge.MergeCase",
+        "file_type": "code",
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L21"
+      },
+      {
+        "id": "sql_early_table_crm_merge_Operation",
+        "label": "crm_merge.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L41"
+      },
+      {
+        "id": "sql_early_migration_009",
+        "label": "009 Planes con evidencia, feedback y autonomía interna acotada",
+        "file_type": "code",
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_early_schema_crm_strategy",
+        "label": "crm_strategy",
+        "file_type": "code",
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_early_table_crm_strategy_Policy",
+        "label": "crm_strategy.Policy",
+        "file_type": "code",
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L21"
+      },
+      {
+        "id": "sql_early_table_crm_strategy_EvaluationPlan",
+        "label": "crm_strategy.EvaluationPlan",
+        "file_type": "code",
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L28"
+      },
+      {
+        "id": "sql_early_table_crm_strategy_Operation",
+        "label": "crm_strategy.Operation",
+        "file_type": "code",
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L40"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_schema_crm",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_early_table_crm_Contact",
+        "target": "sql_early_schema_crm",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L36"
+      },
+      {
+        "source": "sql_early_table_crm_Conversation",
+        "target": "sql_early_schema_crm",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L36"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Message",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_early_table_crm_Message",
+        "target": "sql_early_schema_crm",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L59"
+      },
+      {
+        "source": "sql_early_table_crm_Operation",
+        "target": "sql_early_schema_crm",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L59"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L43"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L54"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L66"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L67"
+      },
+      {
+        "source": "sql_early_migration_001",
+        "target": "sql_early_table_crm_Message",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/001_local_crm.sql",
+        "source_location": "L68"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_schema_crm_admissions",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_table_crm_admissions_AdmissionCase",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_early_table_crm_admissions_AdmissionCase",
+        "target": "sql_early_schema_crm_admissions",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_table_crm_admissions_Followup",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L27"
+      },
+      {
+        "source": "sql_early_table_crm_admissions_Followup",
+        "target": "sql_early_schema_crm_admissions",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L27"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_table_crm_admissions_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L39"
+      },
+      {
+        "source": "sql_early_table_crm_admissions_Operation",
+        "target": "sql_early_schema_crm_admissions",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L39"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_table_crm_admissions_AdmissionCase",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_early_migration_002",
+        "target": "sql_early_table_crm_admissions_Followup",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/002_local_admissions.sql",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L37"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Member",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L39"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_Member",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L39"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Agent",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_Agent",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Assignment",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L53"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_Assignment",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L53"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Task",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L61"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_Task",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L61"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_SlaPolicy",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L75"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_SlaPolicy",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L75"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L82"
+      },
+      {
+        "source": "sql_early_table_crm_inbox_Operation",
+        "target": "sql_early_schema_crm_inbox",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L82"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L57"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Member",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L58"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Agent",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L59"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L68"
+      },
+      {
+        "source": "sql_early_migration_003",
+        "target": "sql_early_table_crm_inbox_Member",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/003_local_inbox.sql",
+        "source_location": "L69"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_schema_crm_events",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L144"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_events_Event",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L146"
+      },
+      {
+        "source": "sql_early_table_crm_events_Event",
+        "target": "sql_early_schema_crm_events",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L146"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_events_Preparation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L169"
+      },
+      {
+        "source": "sql_early_table_crm_events_Preparation",
+        "target": "sql_early_schema_crm_events",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L169"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_events_RetryOperation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L177"
+      },
+      {
+        "source": "sql_early_table_crm_events_RetryOperation",
+        "target": "sql_early_schema_crm_events",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L177"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_migration_003",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L160"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L174"
+      },
+      {
+        "source": "sql_early_migration_004",
+        "target": "sql_early_table_crm_events_Event",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/004_conversation_events.sql",
+        "source_location": "L175"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L202"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_Policy",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L204"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_Policy",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L204"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_ConversationState",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L215"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_ConversationState",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L215"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_Receipt",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L231"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_Receipt",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L231"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_Attempt",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L238"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_Attempt",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L238"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_Feedback",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L248"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_Feedback",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L248"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_analysis_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L255"
+      },
+      {
+        "source": "sql_early_table_crm_analysis_Operation",
+        "target": "sql_early_schema_crm_analysis",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L255"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_migration_003",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_migration_004",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L224"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L235"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_events_Event",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L236"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L243"
+      },
+      {
+        "source": "sql_early_migration_005",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/005_conversation_analysis.sql",
+        "source_location": "L253"
+      },
+      {
+        "source": "sql_early_migration_006",
+        "target": "sql_early_schema_crm_config",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_006",
+        "target": "sql_early_table_crm_config_Configuration",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_table_crm_config_Configuration",
+        "target": "sql_early_schema_crm_config",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_migration_006",
+        "target": "sql_early_table_crm_config_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_early_table_crm_config_Operation",
+        "target": "sql_early_schema_crm_config",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_early_migration_006",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/006_crm_configuration.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_early_migration_007",
+        "target": "sql_early_schema_crm_identity",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_007",
+        "target": "sql_early_table_crm_identity_Profile",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_table_crm_identity_Profile",
+        "target": "sql_early_schema_crm_identity",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_migration_007",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_early_migration_007",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L27"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_schema_crm_merge",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_merge_MergeCase",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_table_crm_merge_MergeCase",
+        "target": "sql_early_schema_crm_merge",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_merge_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L41"
+      },
+      {
+        "source": "sql_early_table_crm_merge_Operation",
+        "target": "sql_early_schema_crm_merge",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L41"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L30"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_merge_MergeCase",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L49"
+      },
+      {
+        "source": "sql_early_migration_008",
+        "target": "sql_early_table_crm_Contact",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/008_contact_merge.sql",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_schema_crm_strategy",
+        "relation": "creates_schema",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_strategy_Policy",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_table_crm_strategy_Policy",
+        "target": "sql_early_schema_crm_strategy",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_strategy_EvaluationPlan",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_early_table_crm_strategy_EvaluationPlan",
+        "target": "sql_early_schema_crm_strategy",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_strategy_Operation",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L40"
+      },
+      {
+        "source": "sql_early_table_crm_strategy_Operation",
+        "target": "sql_early_schema_crm_strategy",
+        "relation": "belongs_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L40"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_migration_001",
+        "relation": "depends_on",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_migration_003",
+        "relation": "depends_on",
+        "confidence": "INFERRED",
+        "confidence_score": 0.8,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L24"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L35"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_Conversation",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L46"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_strategy_EvaluationPlan",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L47"
+      },
+      {
+        "source": "sql_early_migration_009",
+        "target": "sql_early_table_crm_inbox_Task",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/009_conversation_strategy.sql",
+        "source_location": "L48"
+      }
+    ]
+  }
+}

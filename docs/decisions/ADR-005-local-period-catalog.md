@@ -1,0 +1,15 @@
+# ADR-005 — Primer catálogo local de períodos protegido
+
+**Fecha:** 2026-10-14, America/Bogota. **Estado:** alcance local autorizado, implementado y verificado con catálogo real; decisiones técnicas registradas para revisión. No acepta fase 1 completa, IAM empresarial o escrituras de negocio.
+
+El propietario aprobó con «Adelante» implementar/probar la primera API de períodos y conectarla a React sin modificar DBSIIE. Se mantienen FastAPI, React y SQL Server aceptados, y se añade pyodbc 5.3.0 fijado para una única consulta explícita. [Versión publicada](https://pypi.org/project/pyodbc/5.3.0/) y [conexión/timeout del driver](https://github.com/mkleehammer/pyodbc/wiki/Connection). SQLAlchemy sigue propuesto: añadir ORM/modelos para una lectura no aporta aceptación ahora; revisarlo cuando una necesidad concreta lo justifique.
+
+Modo predeterminado `local_demo`; opt-in `local_readonly_catalog` con token temporal de operador, origen/host loopback, TLS validado y destino SQL fijo. No JWT, usuarios o roles empresariales. Windows integrado o cuenta SQL restringida suministrada privadamente; nunca provisión de identidad en la aplicación.
+
+Guard de metadata exige permisos mínimos antes de filas, rechazando controles amplios o SELECT/EXECUTE ajenos. El propietario autorizó después: **«Sí, crea crm_catalog_reader con lectura solo de dbo.GEPeriodo, bloquea los permisos heredados adicionales y continúa con la prueba real, sin modificar tablas ni datos.»** Se creó exclusivamente ese lector sin roles amplios, SELECT de GEPeriodo y nueve DENY de PUBLIC exclusivos al nuevo usuario; PUBLIC, tablas y datos intactos. Secreto protegido con DPAPI CurrentUser y ACL privada, sin texto plano persistido. [Resultado y reversión disponible](../reports/periods-local-api.md).
+
+La prueba real encontró un falso positivo: SELECT heredado sobre la PK de GEPeriodo se clasificaba OTHER. Se ajustó únicamente CASE para tipo PK y parent de GEPeriodo, sin hardcodear nombre, ampliar OTHER o conceder permisos adicionales. Cinco casos ejecutados en SQL Server y cuatro regresiones de límites comprobaron el cambio. La cuenta administrativa permanece rechazada.
+
+Una lectura simultánea por proceso sin pool/retries reduce presión y complejidad; ocupado devuelve 503. Guard conservador puede rechazar metadata adicional legítima, que exige revisión. Timeouts por operación/cancelación UI no prueban plazo SQL total o cancelación en servidor. [Pruebas por capa](../reports/periods-local-api.md): 61 backend, 68 frontend/checks, TLS/permisos reales, 32 períodos y doce HTTP, navegador escritorio/móvil 25+7 sin overflow. La prueba de fases empresariales permanece independiente.
+
+Reversión de aplicación: regresar a `local_demo` y retirar componente/adaptador/entrada de períodos, conservando salud/demos/documentos. Si se autoriza revertir la seguridad del lector, cerrar sus sesiones y retirar únicamente usuario/login creados y comprobados como propios según el informe. No hay cambios de datos o migraciones de negocio que revertir.

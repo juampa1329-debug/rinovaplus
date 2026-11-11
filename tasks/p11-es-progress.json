@@ -1,0 +1,62 @@
+{
+  "unit": "P11-ES",
+  "status": "local_sprint_complete_external_gates_pending",
+  "date": "2026-10-28",
+  "primary_url": "http://127.0.0.1:4178/#/settings/operations",
+  "image_tag": "crm-cbn-workspace:p11es-r3",
+  "database": "CBN_P11ES_TRIAL_20261028_e0a14ef5",
+  "profile": ".local/p11-es/final-runtime",
+  "compose": "compose.operations.yaml",
+  "overall_technical_percent": "93.62%",
+  "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
+  "phase_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "82.29%",
+    "P5": "100.00%",
+    "P6": "100.00%",
+    "P7": "82.29%",
+    "P8": "95.00%",
+    "P9": "93.75%",
+    "P10": "95.00%",
+    "P11": "72.50%"
+  },
+  "local_sprint_percent": "100.00%",
+  "P11_original_percent": "72.50%",
+  "accepted_P11_criteria": [
+    "P11.1",
+    "P11.2"
+  ],
+  "pending_milestones": [
+    "P11.3.m2",
+    "P11.3.m4",
+    "P11.3.m5",
+    "P11.close.m1",
+    "P11.close.m4"
+  ],
+  "milestones_done": 261,
+  "canonical_milestone_denominator": 279,
+  "criteria_accepted": 45,
+  "canonical_criterion_denominator": 56,
+  "P12_auxiliary_percent": "0.00%",
+  "external_provider_calls": 0,
+  "academic_writes": false,
+  "next": "P12 requires server/HTTPS/provider apps, full mappings and institutional authority; do not rerun populated preparers or reopen old phase copies.",
+  "memory_files": [
+    "AGENTS.md",
+    "README.md",
+    "ai-memory/CURRENT_STATE.md",
+    "ai-memory/FILE_MAP.md",
+    "ai-memory/CRITICAL_WARNINGS.md",
+    "tasks/TASK_STATE.md",
+    "docs/ADAPTATION_STATUS.md",
+    "docs/roadmap.md",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+    "docs/adaptation/RESUME.md",
+    "docs/adaptation/WORK_PROGRESS.md",
+    "docs/adaptation/GRAPH_GUIDE.md",
+    "docs/adaptation/PREVIEW_STATUS.md"
+  ]
+}

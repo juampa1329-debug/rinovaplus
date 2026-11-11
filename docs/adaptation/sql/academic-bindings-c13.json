@@ -1,0 +1,635 @@
+{
+  "version": "academic-bindings-c13-preparation-v1",
+  "status": "prepared_not_active",
+  "source_database": "HORARIOSSIIE",
+  "observed_schema_sha256": "47044581b045e6643f2b528ff3ad77cec1ec0b80219fee022c26db5f6679f74f",
+  "observed_tables": 50,
+  "academic_DML_allowed": false,
+  "automatic_alias_activation": false,
+  "required_acceptance": [
+    "identity_TLS_readonly_permissions",
+    "columns_types_nullability_stable_key",
+    "relationships_cardinality_domain_semantics",
+    "bounded_parameterized_read",
+    "new_consumer_contract_and_tests"
+  ],
+  "bindings": [
+    {
+      "logical_table": "dbo.ACAsignatura",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACAsignatura",
+      "candidate_columns": [
+        "Id_Asignatura",
+        "NombreAsignatura"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACAsignaturaPlan",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACAsignaturaPlan",
+      "candidate_columns": [
+        "Id_AsignaturaPlan",
+        "Id_Asignatura",
+        "Id_PlanEducativo",
+        "Creditos",
+        "Intensidad",
+        "Nivel",
+        "Id_PlanEvaluativo",
+        "ValorAprobacion",
+        "Inactiva",
+        "Id_TipoAlternancia"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACAspirante",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 109
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 211
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 382
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 966
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACDetalleJornada",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 250
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACEscuela",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 25
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACEstadoSeguimiento",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 295
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 263
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 137
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 339
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACJornada",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACJornada",
+      "candidate_columns": [
+        "Id_Jornada",
+        "DetalleJornada",
+        "HoraInicio",
+        "HoraFin"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 250
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACModalidad",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 30
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACPlanEducativo",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACPlanEducativo",
+      "candidate_columns": [
+        "Id_PlanEducativo",
+        "NombrePLan",
+        "Id_Programa",
+        "Id_Periodo",
+        "Vigente"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACProgramaOfrecido",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACProgramaOfrecido",
+      "candidate_columns": [
+        "Id_PrgOfrecido",
+        "Id_Programa",
+        "Id_Periodo",
+        "Id_Plan"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 382
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 966
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 44
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACProgramas",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.ACProgramas",
+      "candidate_columns": [
+        "Id_Programa",
+        "CodigoPrograma",
+        "NombrePrograma",
+        "Id_Escuela",
+        "Id_Modalidad",
+        "fecha",
+        "Semestres",
+        "Id_Jornada"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 35
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 101
+        },
+        {
+          "file": "backend/app/modules/contacts/application/merge.py",
+          "line": 477
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 366
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.ACSeguimiento",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 263
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.AFDetallePlanPago",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 94
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.AFPlanes",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 86
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.AFTarifas",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 86
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GEEmpleado",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/conversation_strategy/api/router.py",
+          "line": 236
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 26
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 167
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 327
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 309
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 236
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 256
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 365
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 418
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 549
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GEEstudiante",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.GEEstudiante",
+      "candidate_columns": [
+        "Id_Estudiante",
+        "Id_DocEstudiante",
+        "TipoId",
+        "Expedida",
+        "Nombres",
+        "PrimerApellido",
+        "SegundoApellido",
+        "Id_Genero",
+        "EstadoCivil",
+        "Direccion",
+        "Id_Poblacion",
+        "Telefono",
+        "Celular",
+        "Mail",
+        "FechaNacimento",
+        "CiudadNacimiento",
+        "EstadoMtla",
+        "GrupoSanguineo",
+        "FactorRh",
+        "Id_Acudiente",
+        "Id_PrgOfrecido",
+        "Estrato",
+        "Articulacion"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GEImgenProg",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GEPeriodo",
+      "presence": "present_columns_not_fully_accepted",
+      "candidate_table": "dbo.GEPeriodo",
+      "candidate_columns": [
+        "Id_Periodo",
+        "Periodo",
+        "FechaInicio",
+        "FechaFinal",
+        "EstadoPeriodo"
+      ],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 120
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 146
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 167
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 31
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 20
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 100
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GEPoblacion",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GETipoIdentidad",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 211
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 99
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 208
+        }
+      ]
+    },
+    {
+      "logical_table": "dbo.GETipoImagen",
+      "presence": "absent_observed",
+      "candidate_table": null,
+      "candidate_columns": [],
+      "accepted": false,
+      "owner_confirmed": false,
+      "consumers": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 105
+        }
+      ]
+    }
+  ]
+}

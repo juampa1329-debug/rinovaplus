@@ -1,0 +1,166 @@
+{
+  "domain": "SQL-C3: fundamento ensayado sin aplicar a la fuente",
+  "findings": [],
+  "review_scope": "Independent static semantic extraction/review of public documents and package; no SQL or private reads",
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c3_restored_release_v2",
+        "label": "SQL-C3 v2 aceptado exclusivamente en restauraciones independientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "id": "sql_c3_seven_restored_tables",
+        "label": "B000+B001+B006: siete tablas restauradas, incluidos diario y configuración",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L17"
+      },
+      {
+        "id": "sql_c3_frozen_prefix_shapes",
+        "label": "Formas por prefijo validadas en referencia y congeladas antes del ensayo",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L33"
+      },
+      {
+        "id": "sql_c3_atomic_journal_reconciliation",
+        "label": "DDL y éxito atómicos; UNKNOWN bloquea hasta reconciliación sin DDL",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L23"
+      },
+      {
+        "id": "sql_c3_source_preserved",
+        "label": "HORARIOSSIIE original preservada: 50 tablas, 437 columnas, 41 FK y sin CRM",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L21"
+      },
+      {
+        "id": "sql_c3_restricted_principal_limits",
+        "label": "Principal acotado y SQL inmutable; ownership chaining impide prometer sandbox",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L15"
+      },
+      {
+        "id": "sql_c3_v1_retired_preserved",
+        "label": "Release v1 retirado y conservado sin reescribir historia; GUID corregido en v2",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L35"
+      },
+      {
+        "id": "sql_c3_business_institutional_acceptance_pending",
+        "label": "Activación de negocio y aceptación institucional SQL2019 pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L60"
+      }
+    ],
+    "edges": [
+      {
+        "source": "foundation_sql_dialect",
+        "target": "sql_c3_restored_release_v2",
+        "relation": "has_foundation_package_rehearsed_in_restored_copies_only",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c2_first_packet_proposal",
+        "relation": "implements_first_packet_proposal_within_restored_rehearsal_scope",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_seven_restored_tables",
+        "relation": "creates_six_crm_tables_and_journal_in_restored_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_frozen_prefix_shapes",
+        "relation": "accepted_against_previously_frozen_independent_reference_shapes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L33"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_atomic_journal_reconciliation",
+        "relation": "uses_atomic_unit_success_and_explicit_uncertain_commit_reconciliation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_source_preserved",
+        "relation": "leaves_original_source_without_crm_ddl_or_dml",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_restricted_principal_limits",
+        "relation": "requires_reviewed_immutable_sql_and_preservation_proof_beyond_direct_permissions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L15"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_v1_retired_preserved",
+        "relation": "supersedes_failed_v1_using_new_restorations_without_history_rewrite",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L35"
+      },
+      {
+        "source": "sql_c3_restored_release_v2",
+        "target": "sql_c3_business_institutional_acceptance_pending",
+        "relation": "does_not_certify_business_runtime_or_institutional_sql2019",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L60"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "sql_c3_business_institutional_acceptance_pending",
+        "relation": "business_repositories_remain_unactivated_under_new_schema_markers",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L58"
+      },
+      {
+        "source": "sql_c3_source_preserved",
+        "target": "sql_c2_fragment_comparison",
+        "relation": "preserves_original_fragment_crm_absence_distinct_from_restored_tables",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C3_REVIEW.md",
+        "source_location": "L21"
+      }
+    ]
+  }
+}

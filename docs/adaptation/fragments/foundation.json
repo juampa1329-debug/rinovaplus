@@ -1,0 +1,1537 @@
+{
+  "domain": "Fundación institucional, datos y operación",
+  "inspected_on": "2026-10-24",
+  "evidence_scope": "Inspección estática; decisiones de producto confirmadas por el propietario. No se consultó SQL ni se ejecutó el producto.",
+  "findings": [
+    {
+      "id": "foundation_users",
+      "capability": "Usuarios institucionales, sesiones y autorización por roles",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/shared/security.py",
+          "line": 222
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 139
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/features/Settings.tsx",
+          "line": 83
+        },
+        {
+          "file": "backend/app/contracts.py",
+          "line": 49
+        }
+      ],
+      "status": "ausente_en_composicion_activa",
+      "gap": "Usuarios, Perfil y Seguridad muestran identidad pendiente; los contratos de auth son propuestas/stubs, no sesiones institucionales. Conservar la separación entre sesión, empleado SIIE y agente IA.",
+      "acceptance": "Inicio/cierre y revocación de sesión; usuarios/roles y permisos reales en servidor; pruebas negativas de acceso; sin panel comercial multiempresa ni datos de empleados copiados como autoridad.",
+      "phase": "P2"
+    },
+    {
+      "id": "foundation_settings",
+      "capability": "Ajustes coherentes de módulos, IA/modelos, canales, webhooks y usuarios",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 182
+        },
+        {
+          "file": "../saas-version/backend/app_saas/config.py",
+          "line": 30
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/features/Settings.tsx",
+          "line": 9
+        },
+        {
+          "file": "frontend/src/features/ChannelSettings.tsx",
+          "line": 60
+        },
+        {
+          "file": "frontend/src/modules/ai/components/AiSettingsPanel.tsx",
+          "line": 195
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "Reutilizar ajustes IA y canales existentes; completar configuración institucional y módulos sin trasladar selección de plan. Inventariar capacidades reales por proveedor, sin convertir un catálogo en soporte operativo.",
+      "acceptance": "Cada ajuste tiene propietario, validación, persistencia, permisos, efecto documentado y feedback; claves de sólo escritura; activar módulo no activa proveedor ni gasta presupuesto por sí solo; estilo Glass conservado.",
+      "phase": "P2"
+    },
+    {
+      "id": "foundation_sql_dialect",
+      "capability": "Persistencia SQL Server 2019 y migraciones sobre la base existente",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/db.py",
+          "line": 35
+        },
+        {
+          "file": "../saas-version/backend/requirements.txt",
+          "line": 4
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/sql_target.py",
+          "line": 241
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 161
+        },
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 3
+        },
+        {
+          "file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+          "line": 3
+        },
+        {
+          "file": "docs/adaptation/sql/migration-plan.json",
+          "line": 1
+        }
+      ],
+      "status": "riesgo_verificado_en_fuente",
+      "gap": "P1.1 inventarió 19 SQL/68 declaraciones y P1.2 implementó contrato de destino/TLS offline. P1.3 definió secuencia de 18 unidades nuevas propuestas, diario atómico/adopción/reconciliación, drift por modelo final y recuperación acotada a CRM. No hay SQL institucional, runner ni snapshots finales implementados ni conexión/DDL; los históricos permanecen intactos y la aceptación SQL sigue pendiente. El intento SQL-R1 no pudo autenticar porSSL/TLS; la captura histórica no acredita el estado actual.",
+      "acceptance": "Inventario tabla/columna/FK/índice; T-SQL 2019; JSON NVARCHAR con ISJSON; destino y contrato verificados sin suponer instancia Windows; migración nueva explícita, repetición y drift ensayados en copia restaurable; cero DDL al arranque.",
+      "phase": "P1"
+    },
+    {
+      "id": "foundation_runtime",
+      "capability": "Despliegue institucional Linux con Docker y SQL externo o en red privada",
+      "source": [
+        {
+          "file": "../saas-version/docker-compose.saas.yml",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "compose.yaml",
+          "line": 1
+        },
+        {
+          "file": "backend/app/config.py",
+          "line": 41
+        },
+        {
+          "file": "backend/app/sql_target.py",
+          "line": 200
+        },
+        {
+          "file": "docs/decisions/ADR-012-sql-target-contract.md",
+          "line": 9
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+          "line": 3
+        }
+      ],
+      "status": "riesgo_verificado_en_fuente",
+      "gap": "P1.2 prepara perfil SQL/identidad/TLS y bloquea workspace institucional. P1.3 define migrador separado, locks, mantenimiento y respaldo/restauración, sin implementar transporte ni activar producto. Compose sigue siendo desarrollo local. P1.4 debe definir imagen, CA, secretos/estado y operación; implementación y aceptación conectada permanecen pendientes. SQL-R1 autorizó inspección local de metadatos, pero tres conexiones TLS fallaron08001 antes de autenticación/SELECT; destino Windows actual frente aDocker anterior pendiente. No hay aceptación conectada ni esquema observado nuevo.",
+      "acceptance": "Imagen reproducible; API/worker/media/secretos persistentes; SQL por DNS/TCP y TLS válido; readiness por capacidad; reinicio/recuperación y restauración probados; acceso compartido sólo con auth. No publicar puertos de DB innecesarios.",
+      "phase": "P1"
+    },
+    {
+      "id": "foundation_delivery",
+      "capability": "Aceptación por capas, trazabilidad y operación continua",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/main.py",
+          "line": 99
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/runner.py",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/main.py",
+          "line": 42
+        },
+        {
+          "file": "README.md",
+          "line": 31
+        },
+        {
+          "file": "docs/roadmap.md",
+          "line": 5
+        }
+      ],
+      "status": "pendiente_de_revalidacion",
+      "gap": "Documentación histórica mezcla cortes demo, SQL local y activación real. Registrar por requisito qué se verificó en fuente, pruebas, SQL, navegador o proveedor; el grafo no prueba operación ni equivale a memoria conversacional completa.",
+      "acceptance": "Cada etapa cierra con evidencia saneada, riesgos, reversión, archivos/hashes y siguiente paso. SQL, proveedor, IA y UI se aceptan por separado; no declarar éxito global si falta una capa requerida.",
+      "phase": "P11"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p1_2_target_contract",
+        "label": "Contrato SQL independiente del modo operativo",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-012-sql-target-contract.md",
+        "source_location": "L11",
+        "confidence": "EXTRACTED"
+      },
+      {
+        "id": "p1_2_identity_validation",
+        "label": "Identidad SQL 2019 comprobada antes de negocio",
+        "file_type": "code",
+        "source_file": "backend/app/sql_target.py",
+        "source_location": "L241",
+        "confidence": "EXTRACTED"
+      },
+      {
+        "id": "p1_2_tls_boundary",
+        "label": "ODBC con TLS obligatorio y destino validado",
+        "file_type": "code",
+        "source_file": "backend/app/sql_target.py",
+        "source_location": "L200",
+        "confidence": "EXTRACTED"
+      },
+      {
+        "id": "p1_2_connected_acceptance",
+        "label": "Aceptación conectada institucional pendiente",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L73",
+        "confidence": "EXTRACTED"
+      },
+      {
+        "id": "p1_3_migration_definition",
+        "label": "P1.3: contrato definido offline, sin aplicación",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L3",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_planned_sequence",
+        "label": "18 unidades institucionales propuestas; legado conservado",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L11",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_atomic_journal",
+        "label": "Diario propuesto: éxito y DDL atómicos por unidad",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L13",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_legacy_adoption",
+        "label": "Adopción propuesta de legacy reconocido sin reejecución",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L57",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_uncertain_commit",
+        "label": "Commit incierto: detener y reconciliar",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L96",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_final_shape",
+        "label": "Drift propuesto contra modelo final, historia y artefactos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L117",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_scoped_recovery",
+        "label": "Recuperación CRM propuesta preservando SIIE",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L139",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_execution_blocked",
+        "label": "Manifiesto no ejecutable; conexión no autorizada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L5",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_unit_CBN-B000",
+        "label": "CBN-B000 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L568",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B001",
+        "label": "CBN-B001 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L583",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B002",
+        "label": "CBN-B002 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L602",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B003",
+        "label": "CBN-B003 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L622",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B004",
+        "label": "CBN-B004 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B005",
+        "label": "CBN-B005 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B006",
+        "label": "CBN-B006 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L685",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B007",
+        "label": "CBN-B007 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L705",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B008",
+        "label": "CBN-B008 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L725",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B009",
+        "label": "CBN-B009 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B011",
+        "label": "CBN-B011 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L766",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B013",
+        "label": "CBN-B013 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L787",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B015",
+        "label": "CBN-B015 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B016",
+        "label": "CBN-B016 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B017",
+        "label": "CBN-B017 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B018",
+        "label": "CBN-B018 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B019",
+        "label": "CBN-B019 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "p1_3_unit_CBN-B020",
+        "label": "CBN-B020 · propuesta, sin SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919",
+        "status": "design_only",
+        "execution_authorized": false
+      },
+      {
+        "id": "sql_r1_tls_blocked",
+        "label": "Histórico SQL-R1: SQL-R1 bloqueado en TLS; cero consultas SQL",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_r1_validation.json",
+        "source_location": "L4",
+        "status": "historical_attempt"
+      },
+      {
+        "id": "sql_r1_target_pending",
+        "label": "Histórico SQL-R1: Destino pendiente: Windows SQLEXPRESS o Docker anterior",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L25",
+        "status": "historical_attempt"
+      },
+      {
+        "id": "sql_r1_strict_tls_preserved",
+        "label": "Histórico SQL-R1: TLS e identidad conservados; sin otro destino",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L9",
+        "status": "historical_attempt"
+      },
+      {
+        "id": "sql_r1_historical_schema_only",
+        "label": "Histórico SQL-R1: Captura histórica conservada; no acredita esquema actual",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L29",
+        "status": "historical_attempt"
+      },
+      {
+        "id": "sql_c1_metadata_selector",
+        "label": "SQL-C1: selector local implementado para inspección de metadatos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C1_REVIEW.md",
+        "source_location": "L13"
+      },
+      {
+        "id": "sql_c1_strict_local_access",
+        "label": "Selector protegido por acceso local, TLS estricto y entradas validadas",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L15"
+      },
+      {
+        "id": "sql_c1_private_profile",
+        "label": "Perfil AES-GCM privado con reutilización de contraseña ligada al destino",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L17"
+      },
+      {
+        "id": "sql_c1_observed_fragment",
+        "label": "HORARIOSSIIE observado: 50 tablas, 437 columnas y 41 FK; fragmento local",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L23"
+      },
+      {
+        "id": "sql_c1_crm_pending",
+        "label": "Faltan tablas académicas y CRM base; activación y migraciones pendientes",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L25"
+      },
+      {
+        "id": "sql_c1_observed_graph",
+        "label": "Grafo separado de metadatos observados, sin certificar drift final",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C1_REVIEW.md",
+        "source_location": "L50"
+      },
+      {
+        "id": "sql_c1_institutional_acceptance_pending",
+        "label": "Motor local observado no acredita aceptación institucional SQL Server 2019",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L13"
+      }
+    ],
+    "edges": [
+      {
+        "source": "foundation_sql_dialect",
+        "target": "p1_2_target_contract",
+        "relation": "contract_implemented_offline",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L18"
+      },
+      {
+        "source": "p1_2_target_contract",
+        "target": "p1_2_identity_validation",
+        "relation": "requires_identity_validation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L61"
+      },
+      {
+        "source": "p1_2_target_contract",
+        "target": "p1_2_tls_boundary",
+        "relation": "requires_validated_tls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L59"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "p1_2_connected_acceptance",
+        "relation": "still_requires_connected_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L73"
+      },
+      {
+        "source": "p1_2_tls_boundary",
+        "target": "foundation_runtime",
+        "relation": "partially_prepares_institutional_transport",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+        "source_location": "L59"
+      },
+      {
+        "source": "foundation_sql_dialect",
+        "target": "p1_3_migration_definition",
+        "relation": "partially_addressed_by_offline_migration_definition",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "P1",
+        "relation": "definition_within_phase_connected_acceptance_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L147"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_planned_sequence",
+        "relation": "defines_proposed_units_without_generating_sql",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_atomic_journal",
+        "relation": "requires_proposed_atomic_success_and_ddl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_legacy_adoption",
+        "relation": "distinguishes_adoption_from_historical_execution",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L57"
+      },
+      {
+        "source": "p1_3_atomic_journal",
+        "target": "p1_3_uncertain_commit",
+        "relation": "requires_reconciliation_on_uncertain_commit",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L96"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_final_shape",
+        "relation": "requires_final_model_instead_of_create_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L117"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_scoped_recovery",
+        "relation": "prohibits_automatic_whole_database_restore",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L139"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_execution_blocked",
+        "relation": "remains_definition_only_not_executable",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L5"
+      },
+      {
+        "source": "p1_3_uncertain_commit",
+        "target": "p1_3_execution_blocked",
+        "relation": "requires_stop_without_automatic_retry",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L946"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "p1_3_execution_blocked",
+        "relation": "still_requires_separate_migration_runtime_and_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L147"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L568"
+      },
+      {
+        "source": "p1_3_unit_CBN-B000",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L568"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L583"
+      },
+      {
+        "source": "p1_3_unit_CBN-B001",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L583"
+      },
+      {
+        "source": "p1_3_unit_CBN-B001",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L583"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B002",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L602"
+      },
+      {
+        "source": "p1_3_unit_CBN-B002",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L602"
+      },
+      {
+        "source": "p1_3_unit_CBN-B002",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L602"
+      },
+      {
+        "source": "p1_3_unit_CBN-B002",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L602"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L622"
+      },
+      {
+        "source": "p1_3_unit_CBN-B003",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L622"
+      },
+      {
+        "source": "p1_3_unit_CBN-B003",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L622"
+      },
+      {
+        "source": "p1_3_unit_CBN-B003",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L622"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B004",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642"
+      },
+      {
+        "source": "p1_3_unit_CBN-B004",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642"
+      },
+      {
+        "source": "p1_3_unit_CBN-B004",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642"
+      },
+      {
+        "source": "p1_3_unit_CBN-B004",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642"
+      },
+      {
+        "source": "p1_3_unit_CBN-B004",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L642"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B005",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_unit_CBN-B005",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_unit_CBN-B005",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_unit_CBN-B005",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_unit_CBN-B005",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_unit_CBN-B005",
+        "target": "p1_3_unit_CBN-B004",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L663"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B006",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L685"
+      },
+      {
+        "source": "p1_3_unit_CBN-B006",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L685"
+      },
+      {
+        "source": "p1_3_unit_CBN-B006",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L685"
+      },
+      {
+        "source": "p1_3_unit_CBN-B006",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L685"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B007",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L705"
+      },
+      {
+        "source": "p1_3_unit_CBN-B007",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L705"
+      },
+      {
+        "source": "p1_3_unit_CBN-B007",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L705"
+      },
+      {
+        "source": "p1_3_unit_CBN-B007",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L705"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B008",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L725"
+      },
+      {
+        "source": "p1_3_unit_CBN-B008",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L725"
+      },
+      {
+        "source": "p1_3_unit_CBN-B008",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L725"
+      },
+      {
+        "source": "p1_3_unit_CBN-B008",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L725"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B009",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745"
+      },
+      {
+        "source": "p1_3_unit_CBN-B009",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745"
+      },
+      {
+        "source": "p1_3_unit_CBN-B009",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745"
+      },
+      {
+        "source": "p1_3_unit_CBN-B009",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745"
+      },
+      {
+        "source": "p1_3_unit_CBN-B009",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L745"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B011",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L766"
+      },
+      {
+        "source": "p1_3_unit_CBN-B011",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L766"
+      },
+      {
+        "source": "p1_3_unit_CBN-B011",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L766"
+      },
+      {
+        "source": "p1_3_unit_CBN-B011",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L766"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B013",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L787"
+      },
+      {
+        "source": "p1_3_unit_CBN-B013",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L787"
+      },
+      {
+        "source": "p1_3_unit_CBN-B013",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L787"
+      },
+      {
+        "source": "p1_3_unit_CBN-B013",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L787"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B015",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808"
+      },
+      {
+        "source": "p1_3_unit_CBN-B015",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808"
+      },
+      {
+        "source": "p1_3_unit_CBN-B015",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808"
+      },
+      {
+        "source": "p1_3_unit_CBN-B015",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808"
+      },
+      {
+        "source": "p1_3_unit_CBN-B015",
+        "target": "p1_3_unit_CBN-B011",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L808"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B016",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_unit_CBN-B016",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_unit_CBN-B016",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_unit_CBN-B016",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_unit_CBN-B016",
+        "target": "p1_3_unit_CBN-B011",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_unit_CBN-B016",
+        "target": "p1_3_unit_CBN-B015",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L829"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B017",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B011",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B013",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_unit_CBN-B017",
+        "target": "p1_3_unit_CBN-B015",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L851"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B018",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_unit_CBN-B018",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_unit_CBN-B018",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_unit_CBN-B018",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_unit_CBN-B018",
+        "target": "p1_3_unit_CBN-B011",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_unit_CBN-B018",
+        "target": "p1_3_unit_CBN-B015",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L875"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B019",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_unit_CBN-B019",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_unit_CBN-B019",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_unit_CBN-B019",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_unit_CBN-B019",
+        "target": "p1_3_unit_CBN-B003",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_unit_CBN-B019",
+        "target": "p1_3_unit_CBN-B017",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L897"
+      },
+      {
+        "source": "p1_3_planned_sequence",
+        "target": "p1_3_unit_CBN-B020",
+        "relation": "defines_proposed_group",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919"
+      },
+      {
+        "source": "p1_3_unit_CBN-B020",
+        "target": "P1",
+        "relation": "planned_for",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919"
+      },
+      {
+        "source": "p1_3_unit_CBN-B020",
+        "target": "p1_3_unit_CBN-B000",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919"
+      },
+      {
+        "source": "p1_3_unit_CBN-B020",
+        "target": "p1_3_unit_CBN-B001",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919"
+      },
+      {
+        "source": "p1_3_unit_CBN-B020",
+        "target": "p1_3_unit_CBN-B019",
+        "relation": "planned_migration_dependency",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L919"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "sql_r1_tls_blocked",
+        "relation": "historical_r1_inspection_was_blocked_before_authentication",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_r1_tls_blocked",
+        "target": "sql_r1_target_pending",
+        "relation": "continuation_requires_confirmed_target_and_valid_tls_trust",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_r1_tls_blocked",
+        "target": "sql_r1_strict_tls_preserved",
+        "relation": "did_not_weaken_tls_or_substitute_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "foundation_sql_dialect",
+        "target": "sql_r1_historical_schema_only",
+        "relation": "historical_r1_had_no_new_schema_capture",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_R1_REVIEW.md",
+        "source_location": "L29"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "sql_c1_metadata_selector",
+        "relation": "has_implemented_local_metadata_inspection_tool",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C1_REVIEW.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "foundation_sql_dialect",
+        "target": "sql_c1_observed_fragment",
+        "relation": "has_observed_local_fragment_metadata",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_c1_metadata_selector",
+        "target": "sql_c1_strict_local_access",
+        "relation": "requires_local_guard_and_validated_tls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L15"
+      },
+      {
+        "source": "sql_c1_metadata_selector",
+        "target": "sql_c1_private_profile",
+        "relation": "persists_encrypted_inspection_profile_without_returning_password",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c1_metadata_selector",
+        "target": "sql_c1_crm_pending",
+        "relation": "does_not_activate_crm_or_apply_migrations",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_c1_observed_fragment",
+        "target": "sql_c1_crm_pending",
+        "relation": "lacks_required_academic_and_base_crm_tables",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c1_observed_fragment",
+        "target": "sql_c1_observed_graph",
+        "relation": "represented_by_separate_observed_metadata_graph",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C1_REVIEW.md",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_c1_metadata_selector",
+        "target": "sql_c1_institutional_acceptance_pending",
+        "relation": "does_not_certify_sql2019_runtime_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-014-database-selection.md",
+        "source_location": "L13"
+      }
+    ]
+  }
+}

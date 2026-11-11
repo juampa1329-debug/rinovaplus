@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-24",
+  "timezone": "America/Bogota",
+  "unit": "P1.3",
+  "scope": "Definition reviewed and checked offline; not an implemented migration engine or applied schema",
+  "database_connected": false,
+  "sql_queries_executed": false,
+  "database_modified": false,
+  "application_imported": false,
+  "migration_runners_executed": false,
+  "crm_suite_run": false,
+  "providers_called": false,
+  "workers_started": false,
+  "containers_started": false,
+  "dependencies_installed": false,
+  "deployment": false,
+  "definition_checks": {
+    "historical_sources": 19,
+    "missing_historical_ordinal": 10,
+    "declared_tables_covered": 68,
+    "proposed_institutional_units": 18,
+    "logical_groups_include_history": true,
+    "unknown_or_partial_schema": "blocked_requires_explicit_transition",
+    "execution_authorized": false,
+    "sql_files_and_final_shape_hashes": "null; implementation blockers preserved",
+    "positive_validation": "passed",
+    "negative_checks_passed": 12,
+    "negative_checks_scope": "Document/manifest consistency only; not SQL execution, real drift or the future state machine",
+    "command": "python backend/tools/check_migration_plan.py --self-test"
+  },
+  "lint": {
+    "command": "python -m ruff check backend/tools/check_migration_plan.py --output-format concise",
+    "result": "passed"
+  },
+  "syntax_ast": "passed for the 2 changed/new offline Python tools without importing app",
+  "independent_review": {
+    "result": "no remaining material contradictions in reviewed definition",
+    "method": "read-only source/documents and semantic extraction; no app/test/database/network execution",
+    "corrected_finding": "005 does not create ChurnAssessment. 018 creates that table and ALTER RunId/FK in the same file; false predecessor removed.",
+    "artifact": "docs/adaptation/sql/p1_3_review.json",
+    "semantic_concepts": 8,
+    "proposed_unit_nodes": 18
+  },
+  "preservation": {
+    "protected_files_unchanged": 279,
+    "baseline": "docs/adaptation/sql/p1_3_input_baseline.json",
+    "historical_sql_unchanged": 19,
+    "historical_runners_unchanged": 9,
+    "runtime_and_existing_tests": "unchanged from P1.2 checkpoint",
+    "scentra_reference": "unchanged; only ancestor continuity pointers updated",
+    "new_institutional_sql_created": false
+  },
+  "connection_context": {
+    "owner_selected_target": "existing configured local copy",
+    "private_env_present": true,
+    "mode_observed": "local_sql_copy",
+    "sql_transport_and_credential_fields_present": true,
+    "credential_values_saved_or_printed": false,
+    "private_env_inspected": "presence only after explicit user steering; parsed without interpolation, no environment/app bootstrap",
+    "connection_attempted": false,
+    "historical_capture_date": "2026-10-14",
+    "historical_snapshot_and_query_manifest_hashes_match_report": true,
+    "mapping_sources": [
+      "docs/reports/dbsiie-schema-inventory.md",
+      "backend/app/modules/catalog/infrastructure/sql_reader.py",
+      "backend/app/modules/admissions/application/service.py",
+      "backend/app/modules/contacts/api/router.py"
+    ],
+    "fresh_database_state_verified": false
+  },
+  "limitations": [
+    "Institutional DDL, migration transport/runner and ledger not implemented",
+    "Final/prefix shape models and data assertions not implemented",
+    "No live identity/TLS/permissions, transaction, adoption, rollback or restore acceptance",
+    "P1.2 two unrelated existing test failures carried forward without a rerun",
+    "Graph HTML regenerated using prior renderer; no claim of new browser/UI validation"
+  ],
+  "next_unit": "P1.4 definition selectable; later migration implementation and connected read-only context inspection require explicit scope",
+  "graph_validation": {
+    "code": {
+      "nodes": 2303,
+      "edges": 6015,
+      "communities": 101
+    },
+    "adaptation": {
+      "nodes": 231,
+      "edges": 394,
+      "communities": 27
+    },
+    "sql_inventory": {
+      "nodes": 933,
+      "edges": 1199,
+      "communities": 66
+    },
+    "dangling_edges": 0,
+    "local_markdown_targets_checked": 859,
+    "phase_dependencies_acyclic": 12,
+    "findings_validated": 36,
+    "source_manifest_includes_new_tool_adr_and_artifacts": true,
+    "check": "passed: adaptation_graphs.py --check verified source fingerprints, inventory reproducibility and migration definition",
+    "proposed_unit_dependency_graph": "18 units ordered without cycles; separate from implemented runtime"
+  }
+}

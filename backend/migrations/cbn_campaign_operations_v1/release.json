@@ -1,0 +1,12 @@
+{
+  "version": "cbn-campaign-operations-p8-v1",
+  "parent_release_sha256": "5b9e8e2240cfa82e67a4815c56f3ac30fad0647bbf4c2c3dc1983842b543acd6",
+  "parent_tables": 160,
+  "result_tables": 167,
+  "files": {
+    "P8ES-000.sql": "808fe867149b806877435f991c971acd961ed579521e8108b2dd2e4ac778fa16",
+    "P8ES-001.sql": "72172e7bcf1c858c678d0a77bdeaa0874c6e9d739089aa16a09ce982cbfe6c6f",
+    "expected-model.json": "0bcf4ef104a92dcee07637b4767801a32169cb04d6a7ed3836fbd71f7ebe666e"
+  },
+  "scope": "versioned_CRM_templates_segments_campaigns_triggers_flows_runs_steps_events_on_P7_C10; no_academic_changes"
+}

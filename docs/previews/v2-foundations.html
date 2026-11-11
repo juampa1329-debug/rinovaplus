@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es" data-theme="light" data-density="comfortable">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fundamentos visuales V2 · CRM CBN</title>
+  <style>
+    :root {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-synthesis: none; text-rendering: optimizeLegibility;
+      --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem; --space-7: 3rem;
+      --text-caption: .8125rem; --text-body: .9375rem; --text-label: .875rem; --text-section: 1.25rem; --text-title: 2rem; --text-value: 2.25rem;
+      --radius: 1rem; --radius-control: .625rem; --radius-small: .375rem; --radius-pill: 999px;
+      --control-height: 2.75rem; --row-space: 1rem; --sidebar-width: 13rem;
+      --motion-fast: 140ms; --ease-out: cubic-bezier(.23, 1, .32, 1);
+    }
+    [data-theme="light"] {
+      color-scheme: light;
+      --canvas: #f5f6f9; --surface: #ffffff; --field: #fafbfc; --navigation: #eef1f5;
+      --ink: #202735; --muted: #596273; --border: #dce1e9; --control-border: #7a8494;
+      --primary: #146747; --primary-hover: #0d5238; --on-primary: #ffffff; --brand-soft: #e8f3ed;
+      --accent: #6150c8; --accent-hover: #4f40ae; --accent-soft: #eeebff; --on-accent: #ffffff;
+      --focus: #6150c8; --selected-ink: #4f40ae; --hover: #eef0f5;
+      --success: #146747; --success-soft: #e8f3ed; --warning: #805200; --warning-soft: #fff4da;
+      --error: #a52b3a; --error-soft: #fff0f2; --info: #245b8a; --info-soft: #eaf3fb;
+      --disabled-ink: #626b79; --disabled-surface: #e9ecf1; --chart-1: #6150c8; --chart-2: #146747; --chart-3: #245b8a; --chart-4: #805200;
+      --shadow-panel: 0 8px 28px #2027350a; --shadow-control: 0 2px 5px #2027350d;
+    }
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --canvas: #12171f; --surface: #1c2430; --field: #151c26; --navigation: #171e28;
+      --ink: #f1f3f8; --muted: #b0bacb; --border: #354151; --control-border: #7f8b9e;
+      --primary: #80d6ae; --primary-hover: #a0e7c3; --on-primary: #10281d; --brand-soft: #213b31;
+      --accent: #baaaff; --accent-hover: #cfc4ff; --accent-soft: #322d50; --on-accent: #231943;
+      --focus: #baaaff; --selected-ink: #d7ceff; --hover: #293344;
+      --success: #80d6ae; --success-soft: #213b31; --warning: #f2cd80; --warning-soft: #40341f;
+      --error: #ffb2be; --error-soft: #452932; --info: #a5d2fb; --info-soft: #233a4e;
+      --disabled-ink: #b0bacb; --disabled-surface: #303b4b; --chart-1: #baaaff; --chart-2: #80d6ae; --chart-3: #a5d2fb; --chart-4: #f2cd80;
+      --shadow-panel: 0 8px 28px #00000026; --shadow-control: 0 2px 5px #00000026;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: var(--space-5); }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-size: var(--text-body); line-height: 1.55; }
+    ::selection { background: var(--accent-soft); color: var(--selected-ink); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    a { color: var(--selected-ink); text-underline-offset: .2em; }
+    button, input, select { font: inherit; }
+    button, .button { min-height: var(--control-height); border: 1px solid var(--control-border); border-radius: var(--radius-control); padding: var(--space-2) var(--space-4); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 600; line-height: 1.3; text-align: center; }
+    button { transition: transform var(--motion-fast) var(--ease-out); }
+    button:disabled { background: var(--disabled-surface); color: var(--disabled-ink); border-color: var(--control-border); cursor: not-allowed; }
+    .primary { background: var(--primary); color: var(--on-primary); border-color: transparent; }
+    .accent { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+    @media (hover: hover) and (pointer: fine) {
+      button:not(:disabled):hover { background: var(--hover); }
+      .primary:not(:disabled):hover { background: var(--primary-hover); }
+      .accent:not(:disabled):hover { background: var(--accent-hover); }
+      button:not(:disabled):active:not(:focus-visible) { transform: translateY(1px); }
+      .side-nav a:hover { background: var(--hover); }
+    }
+    [hidden] { display: none !important; }
+    .skip { position: absolute; left: var(--space-4); top: -5rem; z-index: 2; padding: var(--space-3); background: var(--surface); }
+    .skip:focus { top: var(--space-4); }
+    .shell { display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); max-width: 100rem; margin: 0 auto; min-height: 100vh; }
+    aside { background: var(--navigation); padding: var(--space-6) var(--space-4); border-right: 1px solid var(--border); }
+    .brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin: 0 0 var(--space-7); padding: 0 var(--space-3); letter-spacing: -.02em; }
+    .side-nav { display: grid; gap: var(--space-2); }
+    .side-nav a { display: flex; align-items: center; min-height: var(--control-height); padding: var(--space-3); border-radius: var(--radius-control); text-decoration: none; color: var(--muted); font-weight: 600; }
+    .side-nav a[aria-current="location"] { background: var(--accent-soft); color: var(--selected-ink); }
+    .side-note { margin: var(--space-7) var(--space-3) 0; color: var(--muted); font-size: var(--text-caption); }
+    main { min-width: 0; padding: var(--space-6); }
+    .topline, .section-head, .actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+    .topline { margin-bottom: var(--space-6); }
+    .topline p { margin: 0; color: var(--muted); font-size: var(--text-label); }
+    .segmented { display: inline-flex; flex-wrap: wrap; gap: var(--space-1); padding: var(--space-1); border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); }
+    .segmented button { border-color: transparent; background: transparent; padding: var(--space-2) var(--space-3); }
+    .segmented button[aria-pressed="true"], .segmented button[aria-selected="true"] { background: var(--accent-soft); color: var(--selected-ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: var(--text-title); line-height: 1.2; letter-spacing: -.03em; margin-bottom: var(--space-3); }
+    h2 { font-size: var(--text-section); line-height: 1.35; letter-spacing: -.02em; margin-bottom: var(--space-2); }
+    h3 { font-size: 1rem; margin-bottom: var(--space-3); }
+    p { max-width: 70ch; }
+    .intro { color: var(--muted); margin-bottom: var(--space-6); }
+    .panel { border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-panel); padding: var(--space-5); margin-bottom: var(--space-5); }
+    .section-head { align-items: flex-start; margin-bottom: var(--space-5); }
+    .section-head p, .help { font-size: var(--text-label); color: var(--muted); margin-bottom: 0; }
+    .palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+    .swatch { min-height: 4rem; border-radius: var(--radius-control); margin-bottom: var(--space-3); background: var(--swatch); }
+    .palette strong, .palette code { display: block; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: var(--text-caption); color: var(--muted); overflow-wrap: anywhere; }
+    .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-6); }
+    .field { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+    label { font-size: var(--text-label); font-weight: 600; }
+    input, select { min-width: 0; width: 100%; min-height: var(--control-height); padding: var(--space-2) var(--space-3); border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--field); color: var(--ink); caret-color: var(--accent); }
+    input::placeholder { color: var(--muted); opacity: 1; }
+    input[aria-invalid="true"] { border: 2px solid var(--error); }
+    .error-text { color: var(--error); font-size: var(--text-label); margin: 0; }
+    .field small { color: var(--muted); }
+    .actions { justify-content: flex-start; }
+    .feedback { margin: var(--space-3) 0 0; min-height: 1.6em; color: var(--success); }
+    .sample { padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
+    .sample:first-child { padding-top: 0; }
+    .sample:last-child { border-bottom: 0; padding-bottom: 0; }
+    .sample p { margin-bottom: var(--space-3); }
+    .focus-example { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .badge { display: inline-flex; align-items: center; gap: var(--space-2); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); font-size: var(--text-caption); font-weight: 600; color: var(--status-ink, var(--selected-ink)); background: var(--status-bg, var(--accent-soft)); }
+    .success { --status-ink: var(--success); --status-bg: var(--success-soft); }
+    .warning { --status-ink: var(--warning); --status-bg: var(--warning-soft); }
+    .error { --status-ink: var(--error); --status-bg: var(--error-soft); }
+    .info { --status-ink: var(--info); --status-bg: var(--info-soft); }
+    .notice { border-radius: var(--radius-control); padding: var(--space-4); color: var(--status-ink); background: var(--status-bg); }
+    .notice p { margin-bottom: 0; font-size: var(--text-label); color: inherit; }
+    .notice strong { display: block; margin-bottom: var(--space-1); }
+    .notice + .notice { margin-top: var(--space-3); }
+    .loading-lines { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); }
+    .loading-lines span { height: .65rem; width: 70%; background: var(--border); border-radius: var(--radius-small); }
+    .loading-lines span:last-child { width: 45%; }
+    .list { margin: 0; padding: 0; list-style: none; }
+    .list li { display: flex; gap: var(--space-4); justify-content: space-between; align-items: center; padding: var(--row-space) var(--space-3); border-bottom: 1px solid var(--border); }
+    .list li:last-child { border-bottom: 0; }
+    .list li.selected { background: var(--accent-soft); border-radius: var(--radius-control); }
+    .list li.selected strong, .list li.selected small { color: var(--selected-ink); }
+    .list strong { display: block; font-size: var(--text-label); }
+    .list small { color: var(--muted); }
+    .numeric { font-variant-numeric: tabular-nums; }
+    .metric { display: flex; align-items: baseline; gap: var(--space-3); margin: var(--space-4) 0; }
+    .metric strong { font-size: var(--text-value); font-weight: 650; line-height: 1.1; letter-spacing: -.03em; }
+    .chart { margin: var(--space-5) 0; }
+    .bar-row { display: grid; grid-template-columns: 6rem minmax(0, 1fr) 2rem; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); font-size: var(--text-label); }
+    .bar-track { border-bottom: 1px solid var(--border); height: 1.25rem; }
+    .bar { display: block; width: var(--value); height: 100%; border-radius: var(--radius-small); background: var(--series); }
+    .bar-row b { text-align: right; font-weight: 600; }
+    .type-sample { font-size: var(--text-title); line-height: 1.25; letter-spacing: -.03em; margin-bottom: var(--space-4); }
+    .spec-list { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: var(--space-3); margin: 0; font-size: var(--text-label); }
+    .spec-list dt { color: var(--muted); }
+    .spec-list dd { margin: 0; }
+    footer { padding: var(--space-3) 0 var(--space-5); color: var(--muted); font-size: var(--text-caption); }
+    [data-density="compact"] { --row-space: .625rem; }
+    @media (min-width: 64rem) { [data-density="compact"] { --control-height: 2.5rem; } }
+    @media (max-width: 63.99rem) {
+      .shell { grid-template-columns: 1fr; }
+      aside { padding: var(--space-4) var(--space-5); border-right: 0; border-bottom: 1px solid var(--border); }
+      .brand { margin: 0 0 var(--space-3); padding: 0; }
+      .side-nav { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+      .side-nav a { padding: var(--space-2) var(--space-3); }
+      .side-note { display: none; }
+      main { padding: var(--space-5); }
+      .grid { gap: var(--space-5); }
+    }
+    @media (max-width: 43.99rem) {
+      main { padding: var(--space-4); }
+      .panel { padding: var(--space-4); }
+      .palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.75rem; }
+      .list li { flex-wrap: wrap; }
+      .section-head { gap: var(--space-3); }
+      .topline { align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { button { transition: none; } button:not(:disabled):active:not(:focus-visible) { transform: none; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al catálogo</a>
+  <div class="shell">
+    <aside aria-label="Navegación del catálogo">
+      <p class="brand">CRM CBN</p>
+      <nav class="side-nav" aria-label="Fundamentos">
+        <a href="#palette" aria-current="location">Color y temas</a>
+        <a href="#components">Controles y estados</a>
+        <a href="#data">Filas y datos</a>
+        <a href="#type">Tipografía y ritmo</a>
+      </nav>
+      <p class="side-note">Una base compartida para leer, decidir y continuar con claridad.</p>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="topline">
+        <p>Propuesta independiente · V2 · 14 octubre 2026</p>
+        <div class="segmented" role="group" aria-label="Tema del catálogo">
+          <button type="button" data-theme-choice="light" aria-pressed="true">Claro</button>
+          <button type="button" data-theme-choice="dark" aria-pressed="false">Oscuro</button>
+        </div>
+      </div>
+      <h1>Fundamentos visuales</h1>
+      <p class="intro">Más espacio para lo importante. Superficies serenas, acciones reconocibles y datos fáciles de leer. Este catálogo permite revisar la propuesta sin modificar la aplicación.</p>
+      <section class="panel" id="palette" aria-labelledby="palette-title">
+        <div class="section-head"><div><h2 id="palette-title">Identidad presente, acento preciso</h2><p>Verde para la acción principal. Violeta para selección y lectura analítica.</p></div><span class="badge">Ambos temas</span></div>
+        <div class="palette">
+          <div><div class="swatch" style="--swatch: var(--primary)"></div><strong>Acción institucional</strong><code data-token="primary"></code></div>
+          <div><div class="swatch" style="--swatch: var(--accent)"></div><strong>Acento analítico</strong><code data-token="accent"></code></div>
+          <div><div class="swatch" style="--swatch: var(--ink)"></div><strong>Lectura principal</strong><code data-token="ink"></code></div>
+          <div><div class="swatch" style="--swatch: var(--navigation)"></div><strong>Superficie de apoyo</strong><code data-token="navigation"></code></div>
+        </div>
+      </section>
+      <section class="panel" id="components" aria-labelledby="components-title">
+        <div class="section-head"><div><h2 id="components-title">Controles que explican su estado</h2><p>Pruebe el formulario de muestra y recorra los controles con Tab.</p></div>
+          <div class="segmented" role="tablist" aria-label="Muestras de componentes">
+            <button id="tab-controls" role="tab" aria-selected="true" aria-controls="panel-controls" tabindex="0">Controles</button>
+            <button id="tab-states" role="tab" aria-selected="false" aria-controls="panel-states" tabindex="-1">Estados</button>
+          </div>
+        </div>
+        <div id="panel-controls" role="tabpanel" aria-labelledby="tab-controls" class="grid">
+          <form id="sample-form" novalidate>
+            <div class="field"><label for="sample-name">Nombre de la muestra</label><input id="sample-name" name="sampleName" placeholder="Ej. Seguimiento de prueba" required maxlength="100" aria-describedby="name-help"><small id="name-help">Solo se usa en esta página. No ingrese datos personales.</small><p id="name-error" class="error-text" hidden>Escriba un nombre para revisar la muestra.</p></div>
+            <div class="field"><label for="sample-stage">Etapa de ejemplo</label><select id="sample-stage"><option>Nuevo</option><option>Contactado</option><option>Interés</option><option>Solicitud</option></select></div>
+            <div class="actions"><button class="primary" type="submit">Revisar muestra</button><button type="reset">Restablecer</button></div>
+            <p id="form-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </form>
+          <div>
+            <div class="sample"><p class="help">Acción secundaria de análisis</p><button type="button" id="show-data" class="accent">Ver ejemplo de datos</button></div>
+            <div class="sample"><p class="help">Acción deshabilitada · sin conexión</p><button type="button" disabled>Conectar canal</button></div>
+            <div class="sample"><p class="help">Muestra visual del foco · contorno de 3 px</p><span class="button focus-example" style="display: inline-block">Control enfocado</span></div>
+          </div>
+        </div>
+        <div id="panel-states" role="tabpanel" aria-labelledby="tab-states" hidden>
+          <div class="grid">
+            <div><div class="notice success"><strong>Revisión completada</strong><p>La muestra está lista para continuar. Ejemplo de confirmación local.</p></div><div class="notice warning"><strong>Requiere atención</strong><p>Revise los campos pendientes antes de continuar.</p></div><div class="notice error"><strong>No se pudo guardar</strong><p>Sus valores permanecen en el formulario. Revise la conexión antes de reintentar.</p></div></div>
+            <div><div class="sample"><h3>Carga de contenido · ejemplo estático</h3><div class="loading-lines" aria-hidden="true"><span></span><span></span></div><p class="help">Cargando datos… Reserve el espacio; mantenga las acciones disponibles.</p></div><div class="sample"><h3>Sin resultados</h3><p class="help">No hay coincidencias con estos filtros. Quite un filtro para ampliar la búsqueda.</p></div><div class="sample"><h3>Histórico no disponible</h3><p class="help">Todavía no hay una fuente temporal. No equivale a cero.</p></div></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel" id="data" aria-labelledby="data-title">
+        <div class="section-head"><div><h2 id="data-title" tabindex="-1">Filas, indicadores y gráficas</h2><p>Datos sintéticos independientes. No representan el estado del CRM.</p></div><div class="segmented" role="group" aria-label="Densidad de la muestra"><button data-density-choice="comfortable" aria-pressed="true">Cómoda</button><button data-density-choice="compact" aria-pressed="false">Compacta</button></div></div>
+        <div class="grid">
+          <div><h3>Lista de atención · muestra</h3><ul class="list"><li class="selected"><div><strong>Contacto de ejemplo A · seleccionado</strong><small>Revisión de información</small></div><span class="badge info">Abierta</span></li><li><div><strong>Contacto de ejemplo con nombre extenso B</strong><small>Seguimiento de una solicitud de demostración</small></div><span class="badge warning">En espera</span></li><li><div><strong>Contacto de ejemplo C</strong><small>Atención finalizada</small></div><span class="badge success">Cerrada</span></li></ul><p class="help" style="margin-top: var(--space-4)">La selección usa texto y fondo. Cada estado conserva su nombre en ambos temas.</p></div>
+          <figure style="margin: 0"><figcaption><h3>Distribución ilustrativa por etapa</h3><p class="help">Conteos sintéticos · escala de 0 a 8 · muestra estática</p></figcaption><div class="metric numeric"><strong>20</strong><span class="help">registros de ejemplo</span></div><div class="chart numeric" aria-label="Nuevo 8, Contactado 6, Interés 4, Solicitud 2. Total 20."><div class="bar-row"><span>Nuevo</span><div class="bar-track" aria-hidden="true"><i class="bar" style="--value: 100%; --series: var(--chart-1)"></i></div><b>8</b></div><div class="bar-row"><span>Contactado</span><div class="bar-track" aria-hidden="true"><i class="bar" style="--value: 75%; --series: var(--chart-2)"></i></div><b>6</b></div><div class="bar-row"><span>Interés</span><div class="bar-track" aria-hidden="true"><i class="bar" style="--value: 50%; --series: var(--chart-3)"></i></div><b>4</b></div><div class="bar-row"><span>Solicitud</span><div class="bar-track" aria-hidden="true"><i class="bar" style="--value: 25%; --series: var(--chart-4)"></i></div><b>2</b></div></div><p class="help">V2 define color, texto y contenedor. Entrada, actualización y salida se prototipan en V4.</p></figure>
+        </div>
+      </section>
+      <section class="panel" id="type" aria-labelledby="type-title">
+        <div class="section-head"><div><h2 id="type-title">Jerarquía sin esfuerzo</h2><p>Una familia del sistema, una escala compartida.</p></div></div>
+        <div class="grid"><div><p class="type-sample">La información primero.</p><p>Los títulos orientan. El texto conserva espacio para respirar. Las acciones dicen qué ocurrirá y los números mantienen su posición al cambiar.</p><p class="help numeric">0 · 8 · 20 · 1.280 — cifras tabulares</p></div><dl class="spec-list"><dt>Tipografía</dt><dd>Segoe UI y fuentes del sistema</dd><dt>Escala</dt><dd>13 / 14 / 15 / 20 / 32 / 36 px</dd><dt>Espacios</dt><dd>4 / 8 / 12 / 16 / 24 / 32 / 48 px</dd><dt>Superficies</dt><dd>Radio 16 px · elevación suave</dd><dt>Controles</dt><dd>Radio 10 px · alto 44 px; 40 px en escritorio compacto</dd><dt>Movimiento</dt><dd>Feedback de pulsación 140 ms; inmediato con movimiento reducido</dd></dl></div>
+      </section>
+      <footer>Propuesta V2 pendiente de aceptación visual. Esta página no guarda ajustes, consulta servicios ni cambia datos de la aplicación. Composición del piloto: V3.</footer>
+    </main>
+  </div>
+  <script>
+    const root = document.documentElement;
+    const refreshTokenLabels = () => {
+      const style = getComputedStyle(root);
+      document.querySelectorAll('[data-token]').forEach((label) => {
+        label.textContent = `--${label.dataset.token} · ${style.getPropertyValue(`--${label.dataset.token}`).trim()}`;
+      });
+    };
+    document.querySelectorAll('[data-theme-choice]').forEach((button) => button.addEventListener('click', () => {
+      root.dataset.theme = button.dataset.themeChoice;
+      document.querySelectorAll('[data-theme-choice]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      refreshTokenLabels();
+    }));
+    document.querySelectorAll('[data-density-choice]').forEach((button) => button.addEventListener('click', () => {
+      root.dataset.density = button.dataset.densityChoice;
+      document.querySelectorAll('[data-density-choice]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+    }));
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const selectTab = (tab) => tabs.forEach((item) => {
+      const selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+    });
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        let target;
+        if (event.key === 'ArrowRight') target = tabs[(index + 1) % tabs.length];
+        if (event.key === 'ArrowLeft') target = tabs[(index + tabs.length - 1) % tabs.length];
+        if (event.key === 'Home') target = tabs[0];
+        if (event.key === 'End') target = tabs[tabs.length - 1];
+        if (!target) return;
+        event.preventDefault(); selectTab(target); target.focus();
+      });
+    });
+    const form = document.getElementById('sample-form');
+    const nameInput = document.getElementById('sample-name');
+    const nameError = document.getElementById('name-error');
+    const feedback = document.getElementById('form-feedback');
+    const clearValidation = () => {
+      nameInput.removeAttribute('aria-invalid'); nameInput.setAttribute('aria-describedby', 'name-help');
+      nameError.hidden = true; feedback.textContent = '';
+    };
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); clearValidation();
+      if (!nameInput.value.trim()) {
+        nameInput.setAttribute('aria-invalid', 'true'); nameInput.setAttribute('aria-describedby', 'name-help name-error');
+        nameError.hidden = false; nameInput.focus(); return;
+      }
+      feedback.textContent = 'Muestra revisada. No se guardó ni se envió información.';
+    });
+    form.addEventListener('reset', clearValidation);
+    nameInput.addEventListener('input', clearValidation);
+    document.getElementById('sample-stage').addEventListener('change', () => { feedback.textContent = ''; });
+    document.getElementById('show-data').addEventListener('click', () => {
+      document.getElementById('data-title').focus(); document.getElementById('data').scrollIntoView({block: 'start'});
+    });
+    document.querySelectorAll('.side-nav a').forEach((link) => link.addEventListener('click', () => {
+      document.querySelectorAll('.side-nav a').forEach((item) => item.removeAttribute('aria-current'));
+      link.setAttribute('aria-current', 'location');
+    }));
+    refreshTokenLabels();
+  </script>
+</body>
+</html>

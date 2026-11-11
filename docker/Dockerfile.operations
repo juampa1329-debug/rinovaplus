@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS frontend
+WORKDIR /build/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/tsconfig.json frontend/vite.workspace.config.ts frontend/workspace.html ./
+COPY frontend/src ./src
+RUN ./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/vite build --config vite.workspace.config.ts
+FROM crm-cbn-workspace:p10es-r2@sha256:d053356e8ea6b5aa23d09ae9422a9e6d1464955748dfc0ca9ce9bcee567e08c1
+COPY backend/app ./app
+COPY backend/tools ./tools
+COPY backend/migrations ./migrations
+COPY backend/operations ./operations
+COPY --from=frontend /build/frontend/dist-workspace /app/institution-frontend
+COPY docker/nginx.operations.conf /etc/nginx/general.conf
+HEALTHCHECK --interval=45s --timeout=30s --start-period=90s --retries=3 CMD ["python", "-B", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:4178/health/ready',timeout=25).read()"]
+EXPOSE 4178

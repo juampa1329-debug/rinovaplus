@@ -1,0 +1,52 @@
+# Preview privado en Docker y preparación para Coolify
+
+El paquete ejecuta el CRM integrado en **un contenedor Linux privado**, con React compilado, Nginx y un proceso Uvicorn. SQL Server permanece externo. No es una entrega productiva ni habilita un dominio público: autenticación/RBAC y aceptación de fase 1 siguen pendientes.
+
+## Probar en este equipo
+
+Desde la raíz del repositorio, con Docker disponible:
+
+```powershell
+docker compose -p crm-cbn-preview build
+docker compose -p crm-cbn-preview up -d --wait
+```
+
+Abrir `http://127.0.0.1:4173`. La publicación está fijada a loopback; no sustituirla por `4173:4173`. El backend escucha únicamente `127.0.0.1:8002` dentro del contenedor. Nginx valida el Host recibido y conserva Origin y la cabecera local de IA. No se agregan credenciales al JavaScript.
+
+`/health/live` devuelve 200 si el proceso responde. `/health/ready` conserva 503 porque las integraciones de negocio no están aceptadas; este segundo endpoint no se usa como healthcheck Docker. La configuración inicial es `local_demo`, sin SQL ni salida a proveedores.
+
+## Preparación en Coolify / Oracle
+
+1. **Integración publicada y verificada el 2026-10-15:** `codex/integracion-coolify`, commit [b92660a999b79f59c0d56e472463f02b80a33443](https://github.com/Jhon-Steven-dev/CRM_CBN/commit/b92660a999b79f59c0d56e472463f02b80a33443). El [registro Git](../github-workflow.md) conserva la comprobación remota. El trabajo continúa exclusivamente desde esa rama; la publicación no autoriza desplegar en Coolify/Oracle.
+2. Seleccionar Docker Compose y el archivo `compose.yaml`. Mantener la red propia y el puerto loopback; **no asignar dominio, etiquetas de proxy público ni conectar esta preview a la red compartida del proxy**. Verificar esta condición en la configuración efectiva antes de cualquier arranque remoto.
+3. Cuando se autorice el arranque remoto privado, abrir un túnel: `ssh -L 127.0.0.1:4173:127.0.0.1:4173 usuario@servidor`. Navegar a la misma URL local. El acceso SSH debe estar autorizado y restringido.
+4. El dominio compartido queda pendiente de fase 1, autenticación/RBAC, gestión de sesiones, seguridad operativa y aceptación conectada. Este paquete no sustituye esas puertas.
+
+Se comprobó AMD64 localmente; los manifiestos base incluyen ARM64, pero no se acredita ejecución ARM64 ni Oracle. La instalación ODBC usa el repositorio oficial Microsoft para Debian 12.
+
+## Configuración y persistencia
+
+| Configuración | Comportamiento |
+|---|---|
+| `CRM_AI_OUTBOUND_ENABLED` | `false` por defecto. Cambiar solo para pruebas sintéticas autorizadas. |
+| Claves de proveedores | Variables de runtime de Coolify o del proceso, nunca build arguments, archivos fuente, logs o variables `VITE_`. Los nombres existentes aparecen en Ajustes → APIs y `.env.example`. |
+| Edición de claves en Linux | Deshabilitada; las claves se administran en el entorno. Reiniciar tras cambiarlas. Windows conserva DPAPI. |
+| `CRM_AI_STATE_DIR` | Ruta absoluta; Compose fija `/var/lib/crm-ai` y monta el volumen `ai-state`. Conserva ajustes y reservas/cuotas de voz. |
+| Piper | Reconoce el runtime Linux `piper/.venv/bin/python` y las voces bajo el directorio de estado. La imagen no instala el motor ni descarga modelos; permanece no disponible mientras falten. |
+| Clientes y borradores | Continúan siendo estado temporal del navegador; el volumen IA no los convierte en datos persistidos de negocio. |
+
+Una sola réplica y un solo worker son obligatorios: las cuotas y el bloqueo de concurrencia no coordinan varios procesos. El audio temporal y los catálogos de proveedor están en memoria; un reinicio los invalida. **No usar `docker compose down -v`** para actualizar: borraría ajustes y cuotas.
+
+## SQL Server existente
+
+No se crea un contenedor de base de datos ni se copia SIIE. Las credenciales en Coolify serán necesarias, pero también una ruta privada Oracle → servidor SQL, TCP habilitado, puerto explícito y certificado válido para el nombre usado. No abrir SQL a Internet ni desactivar TLS para resolver conectividad.
+
+El transporte preparado usa `CRM_SQL_HOST` (DNS o IPv4), `CRM_SQL_PORT` (1433 por defecto), `CRM_SQL_USER` y `CRM_SQL_PASSWORD`. La base sigue fijada a `DBSIIE`. Sin host TCP, se conserva el destino local histórico `localhost\SQLEXPRESS`. `Encrypt=Yes;TrustServerCertificate=No` no admite anulación. No se ejecutan migraciones, creación de tablas ni configuración de SQL Server.
+
+Las variables no habilitan lecturas por sí solas: hace falta `CRM_APP_MODE=local_readonly_catalog`, un `CRM_CATALOG_TOKEN` privado de al menos 32 caracteres alfanuméricos y autorización específica del servidor/datos. Los cuatro catálogos conservan sus verificaciones de mínimo privilegio. La clave temporal se introduce en la interfaz; no se compila dentro del frontend.
+
+## Detener y volver atrás
+
+`docker compose -p crm-cbn-preview down` detiene solamente esa preview y conserva el volumen. Para revertir una imagen, reconstruir una revisión previamente comprobada manteniendo el volumen. No reutilizar ni borrar los archivos DPAPI del equipo Windows. La [integración de fuentes](../reports/branch-integration.md) conserva su evidencia previa; el [informe Docker](../reports/docker-private-preview.md) separa las nuevas pruebas.
+
+Fuentes oficiales consultadas: [Coolify y Docker Compose](https://coolify.io/docs/applications/builds/docker-compose), [Docker: publicación de puertos](https://docs.docker.com/engine/network/port-publishing/), [Docker: varios procesos](https://docs.docker.com/engine/containers/multi-service_container/), [Microsoft ODBC en Linux](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server).

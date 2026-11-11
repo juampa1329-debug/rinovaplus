@@ -1,0 +1,16 @@
+{
+  "frozen_sources": {
+    "backend/migrations/cbn_channels_parity_v1/CBN-CHP001.sql": "5263d2d6418f368e2fce0a16d5fd35a9de69b975dc4e42f3b1f732236605b47c",
+    "backend/migrations/cbn_channels_parity_v1/CBN-CHP002.sql": "3f6291e00cc2996c10fd1b92d7fcf55277377676db0cf515c95dc4ecc0a608c2",
+    "backend/migrations/cbn_channels_parity_v1/CBN-CHP003.sql": "098673dae67bb98a645e37f7db640cf8b7d616db736d4776ee7c580699655af7",
+    "backend/migrations/cbn_channels_parity_v1/CBN-CHP004.sql": "fcbc04ea5c26740757b0121a5848255d5e0f95e30cce1f07e846dfa51beb4dca",
+    "backend/migrations/cbn_channels_parity_v1/CBN-CHP005.sql": "a503dea27675372b769e48be4a44a216dfcaa4a8962ea41f01b47b39dbcbf866",
+    "backend/migrations/cbn_institutional/P2_001_access.sql": "505d7a7abcb339e96b472e043605da29f17bb6df35b5650a602c6c34e148eb87"
+  },
+  "identifier_changes_only": false,
+  "explicit_column_changes": {
+    "AccessUser.DisplayName": "nvarchar(120) to nvarchar(180) for Scentra profile/name compatibility"
+  },
+  "old_guards_replaced_with_new_target_actor_guards": true,
+  "new_context_seed_owned_by_new_runner": true
+}

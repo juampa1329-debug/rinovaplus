@@ -1,0 +1,34 @@
+# Standalone C9 restored-copy preview. Never merge into the shared C5 project.
+name: crm-cbn-sql-c9
+services:
+  channels-ui:
+    image: crm-cbn-preview:development
+    pull_policy: never
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    entrypoint: [/bin/bash, /app/channels-ui-start.sh]
+    environment:
+      CRM_APP_MODE: local_channels_ui
+      CRM_CHANNELS_UI_PROFILE_DIR: /run/crm-channels-ui
+      CRM_AI_OUTBOUND_ENABLED: "false"
+      SSL_CERT_FILE: /run/crm-sql/ca-bundle.pem
+      PYTHONPATH: /app/backend
+      PYTHONDONTWRITEBYTECODE: "1"
+    ports: ["127.0.0.1:4175:4175"]
+    tmpfs: ["/tmp:rw,nosuid,nodev,size=128m,uid=10001,gid=10001,mode=0700"]
+    volumes:
+      - ./backend/app:/app/backend/app:ro
+      - ./backend/tools:/app/backend/tools:ro
+      - ./backend/migrations:/app/backend/migrations:ro
+      - ./docker/channels-ui-start.sh:/app/channels-ui-start.sh:ro
+      - ./docker/nginx.channels-ui.conf:/etc/nginx/channels-ui.conf:ro
+      - ./.local/sql-c9/runtime:/run/crm-channels-ui:ro
+      - ./.local/sql-c9/ca-bundle.pem:/run/crm-sql/ca-bundle.pem:ro
+      - ./.local/sql-c9/dist:/app/channels-ui-dist:ro
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health/live',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3

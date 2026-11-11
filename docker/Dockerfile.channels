@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS frontend
+WORKDIR /build/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/tsconfig.json frontend/vite.workspace.config.ts frontend/workspace.html ./
+COPY frontend/src ./src
+RUN ./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/vite build --config vite.workspace.config.ts
+FROM crm-cbn-institution:p2es-r9@sha256:908a55398cf94dad0b64381fe658e54c3c90ccf86ba0f27dc3704d140befa315
+COPY backend/app ./app
+COPY backend/tools ./tools
+COPY backend/migrations ./migrations
+COPY --from=frontend /build/frontend/dist-workspace /app/institution-frontend
+COPY docker/nginx.channels.conf /etc/nginx/general.conf
+EXPOSE 4178

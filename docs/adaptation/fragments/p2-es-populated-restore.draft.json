@@ -1,0 +1,237 @@
+{
+  "domain": "P2-ES · restauración poblada y perfil independiente",
+  "status": "draft_source_verified_SQL_results_reported_consumer_and_P2_acceptance_pending",
+  "review_scope": "Graphify semántico sólo sobre fuentes públicas y reporte directo del ejecutor. No SQL/Docker/app/privados o código modificado. Los tres riesgos se corrigen por fuente; resultados SQL se identifican como reportados, sin inventar ejecución independiente. No sustituye aceptación de consumidor/UI/P2 o producción.",
+  "findings": [
+    {
+      "id": "p2_es_populated_restore_contract",
+      "phase": "P2",
+      "capability": "Restauración de cuentas/auditoría pobladas con claves preservadas, MFA activo e invalidación de credenciales restauradas",
+      "status": "revisado_por_fuente_SQL_reportado_consumidor_y_aceptacion_P2_pendientes",
+      "gap": "Los riesgos de reloj, clave de otro perfil y acceso heredado durante RESTORE quedaron corregidos. Faltan prueba de imagen consumidora previa, evidencia UI y cierre P2 integral; requiere fuente disponible y preserva sólo el checkpoint.",
+      "acceptance": "Revisión ve identidad+keyhash previos, RESTRICTED_USER desde RESTORE, autenticación de ciphertexts y floor SQL transaccional. El ejecutor informa 9 cuentas y matriz antirreplay aprobadas. No se concede aceptación global de P2.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p2-es/populated-restore-source-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/p2_profile_restore.py",
+          "line": 27
+        },
+        {
+          "file": "backend/tools/p2_es_recovery.py",
+          "line": 132
+        },
+        {
+          "file": "backend/tools/qualify_p2_recovery.py",
+          "line": 31
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_restore_source_binding",
+        "label": "Respaldo/perfil/clave de origen vinculados antes de efectos",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L27",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_restricted",
+        "label": "RESTORE inicia RESTRICTED_USER; MULTI_USER sólo tras preparación",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_recovery.py",
+        "source_location": "L132",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_cipher_auth",
+        "label": "Todos los ciphertexts autentican propietario/versión y KeyId",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L66",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_SQL_clock",
+        "label": "Límite antirreplay usa SQL UTC dentro de la transacción",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L74",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_credential_retirement",
+        "label": "Sesiones/desafíos/recovery retirados; MFA permanece habilitado",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L78",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_new_profile",
+        "label": "Login/perfil propios, HMAC de sesión nuevo y AES conservada",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L44",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_old_login",
+        "label": "DENY CONNECT afecta sólo al usuario heredado de la copia",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L53",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_checkpoint_scope",
+        "label": "Preserva el checkpoint; no promete cambios posteriores ni recuperación sin fuente",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_qualification",
+        "label": "Ejecutor informa 9 cuentas preservadas y negativos SQL aprobados",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      },
+      {
+        "id": "p2_es_restore_consumer_pending",
+        "label": "Consumidor de imagen anterior y cierre P2 siguen pendientes",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1",
+        "status": "source_reviewed_executor_SQL_reported_P2_acceptance_pending"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_restore_source_binding",
+        "target": "p2_es_restore_restricted",
+        "relation": "validates_authority_before_creating_isolated_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L27"
+      },
+      {
+        "source": "p2_es_restore_restricted",
+        "target": "p2_es_restore_old_login",
+        "relation": "blocks_inherited_runtime_before_applying_target_denial",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L36"
+      },
+      {
+        "source": "p2_es_restore_new_profile",
+        "target": "p2_es_restore_cipher_auth",
+        "relation": "retains_AES_key_only_after_authenticating_restored_material",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L66"
+      },
+      {
+        "source": "p2_es_restore_SQL_clock",
+        "target": "p2_es_restore_credential_retirement",
+        "relation": "raises_monotonic_factor_barrier_on_SQL_clock",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L74"
+      },
+      {
+        "source": "p2_es_restore_credential_retirement",
+        "target": "p2_es_restore_new_profile",
+        "relation": "publishes_fresh_session_key_without_disabling_MFA",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L44"
+      },
+      {
+        "source": "p2_es_restore_restricted",
+        "target": "p2_es_restore_new_profile",
+        "relation": "publishes_multiuser_after_profile_preparation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L94"
+      },
+      {
+        "source": "p2_es_restore_qualification",
+        "target": "p2_es_restore_source_binding",
+        "relation": "reports_mismatched_profile_rejected_before_effects",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_qualification",
+        "target": "p2_es_restore_SQL_clock",
+        "relation": "reports_process_clock_skew_does_not_change_SQL_barrier",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_qualification",
+        "target": "p2_es_restore_credential_retirement",
+        "relation": "reports_old_codes_rejected_and_fresh_TOTP_accepted",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_qualification",
+        "target": "p2_es_restore_checkpoint_scope",
+        "relation": "limits_preservation_to_selected_checkpoint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_new_profile",
+        "target": "p2_es_migration_profile",
+        "relation": "extends_scoped_physical_profile_without_changing_release",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_consumer_pending",
+        "target": "P2",
+        "relation": "awards_no_phase_closure_before_consumer_and_UI_evidence",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_restore_checkpoint_scope",
+        "target": "P11",
+        "relation": "keeps_offline_disaster_and_lost_authenticator_operations_separate",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/populated-restore-source-review.json",
+        "source_location": "L1"
+      }
+    ]
+  }
+}

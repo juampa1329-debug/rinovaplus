@@ -1,0 +1,327 @@
+{
+  "stage": "SQL-C7",
+  "status": "accepted_restored_channels_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "cd7f8ecd78481a4ed16d0888dd0835b110edb72ce8a2ad95970106757687ba57",
+  "previous_checkpoint_sha256": "660f968a1ccb162d411deb694ec267e33522a3849acdf3fee57ab1be445a3f5b",
+  "design_checkpoint_sha256": "0473f6ada7cfae1583d9bac8e210a575c5e410f5c51fdb814f32b297ad54ca0d",
+  "inherited_postimages": {
+    "Dockerfile": "28f006ffa4fdd4882db916e36d411e6eddf490946c32614ff86154856d7dcdb8",
+    "artifacts/sql-c5/browser-checks.json": "b17c32b01c34a4459f94810266ac6a8008141ac995470b2c2bdb659a5d1d8005",
+    "artifacts/sql-c5/inbox-desktop.png": "f9d89ecf057cf42be9129c7bc62ef02f120da70521fdb2cc19fb8a2a472a0fb6",
+    "artifacts/sql-c5/inbox-mobile.png": "98d93eca54a22e13f15e8fecf2b221e232df2ac6d9e200f163f75a68fa597e96"
+  },
+  "release_id": "CBN-channels-local-v2",
+  "release_sha256": "49f72eb835ce46b83ec9c6267da2f73c9d7799990de6fab8ed28762565985998",
+  "shape_version": "cbn-extension-shape-v3",
+  "database": "CBN_C7_TRIAL_20261025_634a9b9e",
+  "runtime_checkpoint": "SQL-C5",
+  "retired_release": {
+    "unit": "SQL-C7",
+    "release_id": "CBN-channels-local-v1",
+    "status": "retired_not_accepted",
+    "release_sha256": "e4f76c63592b4a99f35380496d25a34afb205645a0c4f5e885cf9ece8f901ca1",
+    "reason": "Canonical sorting occurred before removing volatile identity_last_value; Audit rollback changed only column row order",
+    "reference_metadata_sha256": "d9e43d4426d61aa4e6c295276f2ea2c76c2abe1bf552b5a14f2ec5738930ee41",
+    "trial_metadata_sha256": "e4a916b1094e8c50f76a9ecdbd460d28168ebed5f9137fe01061523a60945493",
+    "changed_key": "columns",
+    "rows": 608,
+    "same_metadata_rows_after_sort": true,
+    "academic_and_crm_data_unchanged": true,
+    "original_C5_unchanged": true,
+    "core_files_unchanged": true,
+    "new_release_required": true,
+    "no_identity_reset_or_database_drop": true
+  },
+  "offline_tests": {
+    "passed": 119,
+    "failed": 0,
+    "historical_v1_contract": 113,
+    "new_v3_regressions": 6,
+    "evidence": "artifacts/sql-c7/v2/unit-results.xml"
+  },
+  "connected": {
+    "academic_rows": 44180,
+    "academic_tables": 50,
+    "connected_checks": 51,
+    "extension_rows": 0,
+    "extension_tables": 8,
+    "institutional_sql2019_accepted": false,
+    "original_journal_rows_unchanged": 5,
+    "phase": "final",
+    "populated_crm_rows": 199,
+    "provider_calls": 0,
+    "restored_databases": 11,
+    "source_and_C5_unchanged": true,
+    "stage": "SQL-C7",
+    "trial_journal_rows": 7,
+    "workers": 0
+  },
+  "connected_groups": {
+    "boundaries_and_commit_recovery": 17,
+    "acknowledgements": 8,
+    "drift_privileges_precision": 13,
+    "sql_constraints_and_identity_gap": 11,
+    "independent_locks": 2
+  },
+  "schema": {
+    "academic_tables": 50,
+    "foundation_tables": 7,
+    "extension_tables": 8,
+    "extension_columns": 57,
+    "extension_foreign_keys": 10,
+    "extension_explicit_indexes": 3,
+    "extension_rows": 0
+  },
+  "preparation": {
+    "ddl_actor_without_login": true,
+    "direct_grants": 10,
+    "dbo_denies": 7,
+    "effective_permissions_verified": true,
+    "runtime_acl_unchanged": true,
+    "tls_encrypt": true,
+    "tls_trust_server_certificate": false
+  },
+  "history": {
+    "original_rows_preserved": 5,
+    "trial_total_rows": 7,
+    "uncertain_results_block_until_reconciliation": true,
+    "c6_reproduced": {
+      "inputs": 402,
+      "negative_checks": 20
+    },
+    "frozen_assets_verified": 16,
+    "offline_invalid_transition_checks": 26
+  },
+  "source_preservation": {
+    "input_files": 409,
+    "unchanged_input_files": 407,
+    "existing_files_changed": [
+      "backend/tools/historical_checkpoint.py",
+      "docs/adaptation/sql/inventory.active.json"
+    ],
+    "public_preimages": {
+      "path": ".local/sql-c7/input-preimages.zip",
+      "sha256": "10d4885284babec514bff77f6347bff0b6a29f793f7f0ee369a511932e028dcc",
+      "files": 409,
+      "crc_verified": true
+    }
+  },
+  "runtime_changed": false,
+  "source_academic_or_C5_database_changed": false,
+  "workers_enabled": false,
+  "provider_calls": 0,
+  "institutional_sql2019_accepted": false,
+  "ruff_changed_sources": "passed",
+  "independent_semantic_review": {
+    "fragment": "docs/adaptation/fragments/sql-c7.json",
+    "new_blockers": 0,
+    "sql_not_executed_by_reviewer": true
+  },
+  "next_unit": "SQL-C8",
+  "limits": [
+    "Local SQL2022Express compat160 does not accept institutional SQL2019",
+    "Schema rehearsal only; C5 runtime and previous UI evidence unchanged",
+    "C7 administrative CONTROL/data signatures are unsuitable for mutable runtime guard",
+    "ACK loss injected around real COMMIT; no server power-loss test",
+    "General suite and functional channel providers not recertified"
+  ],
+  "changed_files": [
+    {
+      "path": "artifacts/sql-c7/v2/acknowledgements-result.json",
+      "before_sha256": null,
+      "after_sha256": "1bf364ece0eb3e2f7a4ea6f256b8b610cb820b294c28c25ace68131f3aa2025f"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/backup_restores-result.json",
+      "before_sha256": null,
+      "after_sha256": "13a20bfae2f29e3f7b75607ed6716e103d1d8f73ba73e884538b8daca7cab1f1"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/boundary_failures-result.json",
+      "before_sha256": null,
+      "after_sha256": "5f81a92fb58f0370f0d0ccd59e007f9a688169c13971a7a86edb1df8349e4310"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/connected-checks.json",
+      "before_sha256": null,
+      "after_sha256": "53d3409844ea3cf3a04b474eec93bd15727332a116a1e554b51a55618c7e6373"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/constraints-result.json",
+      "before_sha256": null,
+      "after_sha256": "7593fc1565d434ad7c22ea4a02c94fc4e9a20f24149011bea72eacaa253e41a5"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/drift_privileges-result.json",
+      "before_sha256": null,
+      "after_sha256": "32c6c060cfe5400c76d1e0442f3baaa1686b40bd7b61c39d81f44eaae35bae6f"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/final-result.json",
+      "before_sha256": null,
+      "after_sha256": "4af51d78977ff1c32524188f1bab4961b493dfad9460c546e0ce286ebad2ef21"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/freeze_prepared-result.json",
+      "before_sha256": null,
+      "after_sha256": "9e4cfd3d9d572d673808d3d0d826089a9b5ddab9968a8dc6811d577206cfaf78"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/locks-result.json",
+      "before_sha256": null,
+      "after_sha256": "354f3ef2b371a9975c0763afdd6a4d6cd2cea834e85057b348271aa33065092e"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/reference-result.json",
+      "before_sha256": null,
+      "after_sha256": "f36edaeac305d42dbefde658f4a664b5b2c0118239b324fde845a7693cedf5e7"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/release_frozen-result.json",
+      "before_sha256": null,
+      "after_sha256": "e7bfb754d74dede97bff2ed186698fd965fe63b64a5fb17411f31db3b2462f23"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/trial-result.json",
+      "before_sha256": null,
+      "after_sha256": "d534400db1482e027558441172e1fcbddf888c665902ba668205cff2510aa67a"
+    },
+    {
+      "path": "artifacts/sql-c7/v2/unit-results.xml",
+      "before_sha256": null,
+      "after_sha256": "68fbdbfb1649eba6db6fe1e3a89892fc5ae8bf51fb723eff04ea97a62daef46d"
+    },
+    {
+      "path": "backend/migrations/cbn_channels/B011_channels.sql",
+      "before_sha256": null,
+      "after_sha256": "6425999dff8313c3b88fe950a2bc8a472681056116ec598cae8b626fcbda2b45"
+    },
+    {
+      "path": "backend/migrations/cbn_channels/expected-shapes.json",
+      "before_sha256": null,
+      "after_sha256": "5caa084f3f4b592e54c7250c0f95675ebbf993ff682bc3b81b035217fbf1ab0d"
+    },
+    {
+      "path": "backend/migrations/cbn_channels/partition.json",
+      "before_sha256": null,
+      "after_sha256": "fe05481dedfe7724b11c54e4aeb0f78e7234e05bf37c8c84604bc08f9fb312aa"
+    },
+    {
+      "path": "backend/migrations/cbn_channels/release.json",
+      "before_sha256": null,
+      "after_sha256": "e4f76c63592b4a99f35380496d25a34afb205645a0c4f5e885cf9ece8f901ca1"
+    },
+    {
+      "path": "backend/migrations/cbn_channels/shape-spec.json",
+      "before_sha256": null,
+      "after_sha256": "db6259afdd934d11ebd08701de51f1c8cfe2f341a18f136219be334ade6e6a9a"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_v2/B011_channels.sql",
+      "before_sha256": null,
+      "after_sha256": "6425999dff8313c3b88fe950a2bc8a472681056116ec598cae8b626fcbda2b45"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_v2/expected-shapes.json",
+      "before_sha256": null,
+      "after_sha256": "a76d19be8bb286fe6161874c1a88c101d989129dac6a92e48ee90ba40959ac28"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_v2/partition.json",
+      "before_sha256": null,
+      "after_sha256": "0497c01f9ecc85812b6c1fd82fcfd2878027f067ed92db78665fd3007540b9d3"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_v2/release.json",
+      "before_sha256": null,
+      "after_sha256": "49f72eb835ce46b83ec9c6267da2f73c9d7799990de6fab8ed28762565985998"
+    },
+    {
+      "path": "backend/tests/test_crm_extension.py",
+      "before_sha256": null,
+      "after_sha256": "91ffd7e0edb01cadd577de9a9ca8ccc636003b2b939e0f837ea898214b45a804"
+    },
+    {
+      "path": "backend/tests/test_crm_extension_v2.py",
+      "before_sha256": null,
+      "after_sha256": "b9c6fd2248ad65554c8bb5b9859aed8add7f7b8d6b7fc1a5ef101a389db07686"
+    },
+    {
+      "path": "backend/tools/crm_extension.py",
+      "before_sha256": null,
+      "after_sha256": "dcd2a4205d4b926400346a953ba60093c654dae48499a65ecc321610fc661b7b"
+    },
+    {
+      "path": "backend/tools/crm_extension_checks.py",
+      "before_sha256": null,
+      "after_sha256": "57fcab20bb5a9793e28c0c6d5f5195690ff0201fd892019b10127103a184eb0b"
+    },
+    {
+      "path": "backend/tools/crm_extension_checks_v2.py",
+      "before_sha256": null,
+      "after_sha256": "19591dd688420e2624f4ea50607d54a11b5da1798b1de80a7a024bdb1c097c40"
+    },
+    {
+      "path": "backend/tools/crm_extension_contract.py",
+      "before_sha256": null,
+      "after_sha256": "ebdd7a6884968aa266efacb0c0e8b9fbed34fdcae3bff684fc41e10eef40872b"
+    },
+    {
+      "path": "backend/tools/crm_extension_snapshot.py",
+      "before_sha256": null,
+      "after_sha256": "89814587c59bd2eca6c886be1d966f23fce26321bfe8e0233306ab9f33b30131"
+    },
+    {
+      "path": "backend/tools/crm_extension_snapshot_v2.py",
+      "before_sha256": null,
+      "after_sha256": "7fb14e38fcc214c5837812f2725f43c073c4dfc4677538f63c994a5324399e4f"
+    },
+    {
+      "path": "backend/tools/crm_extension_v2.py",
+      "before_sha256": null,
+      "after_sha256": "a047a7d2fb22a78d1bc8d59e33f25971ade34d43476697e868abe9ed6768cbed"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "f5a71e842c00b71f7a454777e53b6b9b4b1f296f6b0a9664fbd3cf8d918a5f5d",
+      "after_sha256": "c661ab19c8a85cd0bdcdc84371c3bceb50ccfc4dc0ef217483b62c377fbd0275"
+    },
+    {
+      "path": "backend/tools/rehearse_crm_extension.py",
+      "before_sha256": null,
+      "after_sha256": "87e85a2d9bf6374adf41759409578345b26b3d08ae1f91c4b88c7424e055d6d4"
+    },
+    {
+      "path": "backend/tools/rehearse_crm_extension_v2.py",
+      "before_sha256": null,
+      "after_sha256": "fac5e4a22b3365feb1a4a214c5f27e89961cd1eeedbf955aec09478dd488782f"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c7.json",
+      "before_sha256": null,
+      "after_sha256": "f4387b8013254aa13ebc2b30b807c49ddfae829c15179ce0f63525594de04619"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "f1bf30494f1a28bda9f711e9705b539a1b2a6ecb772ea31c7af6f5dbcb73358c"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "a5ea01b914b4cd1d4a0c0a4dc715adfa701657abdbae871cfd9426a8de719ff1",
+      "after_sha256": "64afc9bc0d807d05cc1a16d25176648d29d358e8f27cd63c89a9489b0ee5b8df"
+    },
+    {
+      "path": "docs/adaptation/sql/sql_c7_v1_retirement.json",
+      "before_sha256": null,
+      "after_sha256": "82575e97e538e99543abfb771385ccd70835e7041fe9ac3de406aeecf6c1769e"
+    },
+    {
+      "path": "docs/decisions/ADR-019-channels-restored-extension.md",
+      "before_sha256": null,
+      "after_sha256": "3ca081fdc1d58ac811da0a80e3e40176f48ea1f5854dd79f97c4354b9c09860d"
+    }
+  ]
+}

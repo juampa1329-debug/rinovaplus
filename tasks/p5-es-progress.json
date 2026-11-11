@@ -1,0 +1,51 @@
+{
+  "unit": "P5-ES",
+  "status": "accepted_local_canonical_scope",
+  "date": "2026-10-27",
+  "primary_url": "http://127.0.0.1:4178/",
+  "image_tag": "crm-cbn-workspace:p5es-r5",
+  "database": "CBN_P5ES_TRIAL_20261027_13990dac",
+  "compose": "compose.agents.yaml",
+  "phase_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "82.29%",
+    "P5": "100.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "accepted_P5_criteria": [
+    "P5.1",
+    "P5.2",
+    "P5.3",
+    "P5.close"
+  ],
+  "milestones_done": 170,
+  "canonical_milestone_denominator": 279,
+  "criteria_accepted": 26,
+  "canonical_criterion_denominator": 56,
+  "external_provider_calls": 0,
+  "academic_writes": false,
+  "next": "P6; P4 external acceptance remains pending. Never rerun populated preparers.",
+  "memory_files": [
+    "AGENTS.md",
+    "README.md",
+    "ai-memory/CURRENT_STATE.md",
+    "ai-memory/FILE_MAP.md",
+    "ai-memory/CRITICAL_WARNINGS.md",
+    "tasks/TASK_STATE.md",
+    "docs/ADAPTATION_STATUS.md",
+    "docs/roadmap.md",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+    "docs/adaptation/RESUME.md",
+    "docs/adaptation/WORK_PROGRESS.md",
+    "docs/adaptation/GRAPH_GUIDE.md",
+    "docs/adaptation/PREVIEW_STATUS.md"
+  ]
+}

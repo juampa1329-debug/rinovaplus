@@ -1,0 +1,1583 @@
+{
+  "domain": "Contrato de paridad Canales y persistencia SQL Server2019 · SQL-C10",
+  "review_scope": "Revisión semántica independiente offline del contrato OAuth/Meta, secretos, cardinalidad y matriz de campos/acciones. Se integran las tres extracciones públicas firmadas source-oauth/source-tiktok/source-webhooks-secrets, con sus nodos/aristas de dominio y atribución; no se duplican imports AST. Este revisor comprobó exactamente los35 campos y54 acciones Meta y ejecutó sólo definition+self_test públicos del checker mediante AST, sin baselines/main, app/ODBC, SQL, Docker, proveedores o privados. Las revisiones TikTok y Webhooks corresponden a sus revisores. Es definición verificada, no implementación ni aceptación de SQL2019/proveedores/UI. La extensión humana multicuenta WhatsApp se distingue del singleton comprobado en Scentra. C6/C7/C8/C9 y runtime previos permanecen intactos; no se declaran completas P1/P4/P7.",
+  "findings": [
+    {
+      "id": "channels_sql2019_parity_contract",
+      "capability": "Contrato versionado para conservar campos/acciones Scentra en Canales, con identidad multicuenta explícita y persistencia SQL2019",
+      "status": "definido_verificado_offline",
+      "gap": "C9 sigue aceptada sólo para configuración/lectura local. La matriz completa, las24 tablas propuestas y sus78 FK/cinco unidades no están implementadas ni compiladas en SQL2019. OAuth real, secreto/rotación, registro de números, UI completa, ingreso firmado, B015/transporte y proveedores conservan sus puertas de aceptación. Varias cuentas WhatsApp es una ampliación humana CBN, sin afirmar que el backend fuente ya la soporta.",
+      "acceptance": "Modelo y matriz pinneados:115 contextos de campos/salidas y83 instancias de acciones con etiquetas/tipos/opciones/visibilidad/DTO/destino. PIN6 y current_password efímeros; tokens/secretos tipados AES-GCM con presencia/pistas. OAuth claim único, grant expirable y activos/tokens por sesión/operación/actor; identidad y rutas por IntegrationId. Correcciones revisadas y52 diseños negativos rechazados offline. Partición propuesta50+7+8+24, sin ALTER de tablas protegidas/FK académicas. Compilación/release/mapping/ensayo futuros requieren copia nueva, historia/drift, preservación y reversión; P2 y proveedores se aceptan aparte.",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9634
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9726
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9793
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9987
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10145
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10350
+        },
+        {
+          "file": "../saas-version/backend/app_saas/integrations/schemas.py",
+          "line": 25
+        },
+        {
+          "file": "../saas-version/migrations/001_saas_core.sql",
+          "line": 53
+        },
+        {
+          "file": "../saas-version/backend/app_saas/integrations/router.py",
+          "line": 1006
+        }
+      ],
+      "target": [
+        {
+          "file": "docs/adaptation/sql/channels-parity-contract.json",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C10_FIELD_MATRIX.md",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+          "line": 1
+        },
+        {
+          "file": "docs/decisions/ADR-022-channels-parity-contract.md",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/source-oauth.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/source-tiktok.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/source-webhooks-secrets.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/review-oauth.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/review-tiktok.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c10/review-webhooks.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "c10_meta_unique_integration",
+        "label": "Integración única por institución/proveedor/canal; no multicuenta Meta WA probada",
+        "file_type": "code",
+        "source_file": "../saas-version/migrations/001_saas_core.sql",
+        "source_location": "L53",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_discovered_resources",
+        "label": "Varios recursos WABA/Pages no equivalen a varias integraciones activas",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1393",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_secret_lifecycle",
+        "label": "Secretos: cifrado/máscara/hints y reautenticación para actualización",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L993",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_oauth_session",
+        "label": "Sesiones OAuth por actor con hash, redirect, resultado cifrado y estados",
+        "file_type": "code",
+        "source_file": "../saas-version/migrations/022_instagram_business_integration.sql",
+        "source_location": "L4",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_state_replay_gate",
+        "label": "TTL guardado sin verificación/consumo en los handlers inspeccionados",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L314",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_login_provider_modes",
+        "label": "Instagram Login y Facebook Login comparten callback, separan scopes y activos",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L656",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_selected_asset_binding",
+        "label": "Conexión exige activo descubierto del mismo tenant y usuario",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L849",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_endpoint_subscription",
+        "label": "Endpoint por provider, verify token de una vez y suscripción auditada",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L591",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_readiness_evidence",
+        "label": "Connected no acredita App Review/suscripción/evento real",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L492",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_whatsapp_pin_selection",
+        "label": "Phone ID seleccionado, pertenencia y PIN6 con resultado explícito",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1418",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_cbn_channel_keys",
+        "label": "CBN Account por Channel y Credential/Identity scoped por canal",
+        "file_type": "code",
+        "source_file": "backend/migrations/cbn_channels_v2/B011_channels.sql",
+        "source_location": "L13",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_cbn_readonly_ui_boundary",
+        "label": "C9 sin clave ni acciones OAuth/proveedor: contratos nuevos antes de habilitar",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L29",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_source_get_effects",
+        "label": "GET fuente puede reparar secretos, actualizar cache y suscribir proveedor",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1329",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1
+      },
+      {
+        "id": "c10_meta_source_field_matrix",
+        "label": "Matriz de35controles Meta y54acciones de fuente; no limitarse a diez campos CBN",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9634",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "field_groups": {
+          "whatsapp": 10,
+          "whatsapp_number": 2,
+          "instagram": 11,
+          "facebook": 9,
+          "shared_secret_rotation": 3
+        }
+      },
+      {
+        "id": "c10_tt_ui",
+        "label": "Formulario TikTok completo de Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10145"
+      },
+      {
+        "id": "c10_tt_config",
+        "label": "Configuración de integración TikTok",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L4970"
+      },
+      {
+        "id": "c10_tt_oauth_start",
+        "label": "Inicio OAuth autenticado",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L941"
+      },
+      {
+        "id": "c10_tt_oauth_state",
+        "label": "Estado OAuth persistido y frontera de consumo",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L324"
+      },
+      {
+        "id": "c10_tt_callback",
+        "label": "Callback OAuth actualiza tokens e integración",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1005"
+      },
+      {
+        "id": "c10_tt_refresh",
+        "label": "Renovación de access y refresh token",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1147"
+      },
+      {
+        "id": "c10_tt_readiness",
+        "label": "Readiness declarada y diagnóstico informativo",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L663"
+      },
+      {
+        "id": "c10_tt_assets",
+        "label": "Assets configurados, descubiertos e inferidos",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L864"
+      },
+      {
+        "id": "c10_tt_policy",
+        "label": "Política de modo, flags, rollout y cuotas",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_runtime.py",
+        "source_location": "L104"
+      },
+      {
+        "id": "c10_tt_decision",
+        "label": "Decisión operativa por capacidad y producto",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_runtime.py",
+        "source_location": "L295"
+      },
+      {
+        "id": "c10_tt_usage",
+        "label": "Contadores y reserva de cuota pendiente",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_runtime.py",
+        "source_location": "L181"
+      },
+      {
+        "id": "c10_tt_endpoint",
+        "label": "Endpoint TikTok y token de verificación",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L510"
+      },
+      {
+        "id": "c10_tt_cbn_gap",
+        "label": "DTO y secretos CBN insuficientes para paridad TikTok",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L16"
+      },
+      {
+        "id": "c10_tt_secret_scope",
+        "label": "Cifrado CBN con AAD por canal y tipo",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/storage.py",
+        "source_location": "L112"
+      },
+      {
+        "id": "c10_tt_destination",
+        "label": "Destino configurable del token requiere validación",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/social/service.py",
+        "source_location": "L1037"
+      },
+      {
+        "id": "c10_wh_endpoint_owner",
+        "label": "Endpoint por institución/proveedor y aplicación/bindings explícitos",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L386"
+      },
+      {
+        "id": "c10_wh_rotation_once",
+        "label": "Rotación y exposición única de tokens/firma",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L700"
+      },
+      {
+        "id": "c10_wh_soft_delete",
+        "label": "Desactivar endpoint conserva evidencia",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L854"
+      },
+      {
+        "id": "c10_wh_raw_auth",
+        "label": "Autenticar raw body con secreto inequívoco",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L144"
+      },
+      {
+        "id": "c10_wh_source_auth_gaps",
+        "label": "Tolerancias unsigned/fallback/replay que no se portan",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L1231"
+      },
+      {
+        "id": "c10_wh_asset_binding",
+        "label": "Rutear cada asset/subevento por IntegrationId",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L470"
+      },
+      {
+        "id": "c10_wh_receipt_dedupe",
+        "label": "Recibo durable y dedupe de envelope/subeventos",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L28"
+      },
+      {
+        "id": "c10_wh_redaction",
+        "label": "Excluir tokens y firmas de metadata persistida",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L134"
+      },
+      {
+        "id": "c10_wh_aad_secret_scope",
+        "label": "AES-GCM existente y nuevo AAD por propietario/version",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/storage.py",
+        "source_location": "L112"
+      },
+      {
+        "id": "c10_wh_lease_fence",
+        "label": "LeaseId y transición atómica de ingreso",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L532"
+      },
+      {
+        "id": "c10_wh_uncertain",
+        "label": "Envío incierto requiere reconciliación",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L612"
+      },
+      {
+        "id": "c10_wh_b015_route",
+        "label": "B015 MessageRoute vincula identidad/cola/control",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L23"
+      },
+      {
+        "id": "c10_wh_delivery_evidence",
+        "label": "Estado de entrega monótono por cuenta/mensaje",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L383"
+      },
+      {
+        "id": "c10_wh_c9_isolation",
+        "label": "C9 no habilita credenciales ni transporte",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L17"
+      },
+      {
+        "id": "sql_c10_defined_parity_contract",
+        "label": "SQL-C10: contrato de paridad definido y verificado offline; no implementado",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.status",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Definición separada de compilación SQL, UI operativa y aceptación de proveedores."
+      },
+      {
+        "id": "sql_c10_exact_field_action_matrix",
+        "label": "Matriz vinculante:115 contextos de campos/salidas y83 instancias de acciones",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+        "source_location": "$.counts",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Descriptores, opciones, tipos, condiciones y handlers de Scentra; DTO/destino explícitos. Los conteos no son funciones únicas."
+      },
+      {
+        "id": "sql_c10_sql2019_new_partition",
+        "label": "Propuesta SQL2019:24 tablas nuevas,78 FK y cinco unidades;65 tablas protegidas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.preservation",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Partición propuesta50 académicas+7 foundation+8 B011+24 nuevas=89. Sin ALTER del legado ni FK académicas; no es un conteo SQL observado."
+      },
+      {
+        "id": "sql_c10_multi_whatsapp_correction",
+        "label": "Varias cuentas WhatsApp es ampliación humana CBN; la fuente impone singleton",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.reference.cardinality_correction",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "No convertir múltiples números WABA/Pages o tarjetas de UI en evidencia de multicuenta backend Scentra; no reescribir C9."
+      },
+      {
+        "id": "sql_c10_explicit_application_integration_identity",
+        "label": "Aplicación, integración, namespace externo y bindings seleccionados explícitamente",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.routing_contract",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "ApplicationId/IntegrationId, perfiles revisados y BIN2; ninguna selección first/latest ni reasignación silenciosa con historia."
+      },
+      {
+        "id": "sql_c10_oauth_state_grant_asset_contract",
+        "label": "OAuth:state/code de un uso; grant expirable y snapshots por sesión/actor/operación",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.oauth_contract",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Creación y cuenta vinculada son ámbitos distintos; un grant autorizado puede seleccionar varios activos. Se pinnea app/secret/issuer/browser y se revalida cada connect."
+      },
+      {
+        "id": "sql_c10_typed_secret_version_contract",
+        "label": "Secretos AES-GCM por owner/kind/versión, con tokens provisionales por Page",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.secret_contract",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Cinco owners con versiones únicas y activo único. AppSecret exacto sin fallback, rotación cancela sesiones y UNKNOWN exige reconciliar; sin clave no se regenera."
+      },
+      {
+        "id": "sql_c10_pin_and_password_transient",
+        "label": "PIN6 y contraseña de confirmación se conservan como entradas efímeras separadas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.remote_operations.pin_and_OTP",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "PIN no se convierte en credencial persistida; selección de número/registro e idempotencia conservan sus flujos y errores."
+      },
+      {
+        "id": "sql_c10_tiktok_policy_quota_contract",
+        "label": "TikTok conserva campos/modos/flags/cuotas; declaración no acredita evidencia",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.tiktok_contract",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Defaults disabled/rollout0/flagsfalse. Reserva concurrente idempotente y retención ante incertidumbre; sin destinos/env arbitrarios."
+      },
+      {
+        "id": "sql_c10_authenticated_webhook_receipt_routes",
+        "label": "Webhook:autenticar raw bytes, persistir envelope, COMMIT/ACK y enrutar subeventos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.webhook_contract",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Endpoint/aplicación/key version pinneados; dedupe de recibos/eventos y cuarentena de rutas ambiguas. Verify token no autentica POST Meta."
+      },
+      {
+        "id": "sql_c10_b015_transport_dependency",
+        "label": "B015/ConversationControl/MessageRoute preceden al transporte por cuenta y epoch",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.B015",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Equivalentes versionados nuevos; el015 histórico sigue congelado. No bots/cola/envío antes de ownership, control humano, cuotas y aceptación."
+      },
+      {
+        "id": "sql_c10_external_effect_unknown_contract",
+        "label": "Intención durable antes del HTTP, fencing y reconciliación de efectos desconocidos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.remote_operations",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "No mantener transacción SQL durante HTTP ni reintentar ciegamente PIN/code/refresh/effect desconocido."
+      },
+      {
+        "id": "sql_c10_c9_and_legacy_preservation",
+        "label": "C9/SIIE/C5 y contratos previos preservados; no runtime ni proveedores en C10",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.activation",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Las autorizaciones de diseño no conectan SQL, alteran65 tablas, solicitan credenciales ni habilitan workers/recepción pública."
+      },
+      {
+        "id": "sql_c10_migration_rehearsal_reversal_plan",
+        "label": "Cinco unidades nuevas con historial/drift/mapping y ensayo futuro en otra restauración",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Backup verificado y CHECKDB; diario original preservado; recifrado AAD explícito, reversión de composición/copia y no DROP académico ni reversión ficticia de éxito remoto."
+      },
+      {
+        "id": "sql_c10_offline_definition_validation",
+        "label": "Comprobación pública offline:24 tablas/78 FK/5unidades/115contextos/83acciones y52negativos",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c10/review-oauth.json",
+        "source_location": "$.offline_validation",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "El revisor ejecutó sólo definition+self_test desde AST público; excluyó baselines/main y no importó app/ODBC ni leyó privados."
+      },
+      {
+        "id": "sql_c10_ui_provider_institutional_gates",
+        "label": "SQL2019 compilado, UI completa, P2 y proveedores siguen pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.activation",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "La matriz definida no implementa formularios ni acredita OAuth, números registrados, firmas o entrega. SQL2022 local no acepta2019 institucional."
+      },
+      {
+        "id": "sql_c10_independent_oauth_review",
+        "label": "Revisión independiente OAuth/campos:nueve observaciones resueltas",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c10/review-oauth.json",
+        "source_location": "$.remaining_issue_ids",
+        "scope": "SQL-C10_offline_design_only",
+        "verification": "definido_verificado_offline_no_implementado",
+        "rationale": "Pins finales del modelo/UI y cobertura Meta35/35campos+54/54acciones; aceptación de diseño únicamente."
+      }
+    ],
+    "edges": [
+      {
+        "source": "c10_meta_unique_integration",
+        "target": "c10_meta_discovered_resources",
+        "relation": "distinguishes_unique_integration_from_multiple_discovered_assets",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/migrations/001_saas_core.sql",
+        "source_location": "L53"
+      },
+      {
+        "source": "c10_meta_unique_integration",
+        "target": "c10_cbn_channel_keys",
+        "relation": "requires_explicit_provider_and_institution_scope_without_inventing_multi_meta_whatsapp",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "backend/migrations/cbn_channels_v2/B011_channels.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "c10_meta_oauth_session",
+        "target": "c10_meta_login_provider_modes",
+        "relation": "stores_provider_scopes_actor_and_encrypted_credentials_for_authorization",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L679"
+      },
+      {
+        "source": "c10_meta_login_provider_modes",
+        "target": "c10_meta_selected_asset_binding",
+        "relation": "connects_only_the_selected_resource_from_the_actor_oauth_result",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L859"
+      },
+      {
+        "source": "c10_meta_oauth_session",
+        "target": "c10_meta_state_replay_gate",
+        "relation": "needs_explicit_ttl_and_one_use_contract_beyond_expiry_storage",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L314"
+      },
+      {
+        "source": "c10_meta_selected_asset_binding",
+        "target": "c10_meta_unique_integration",
+        "relation": "upserts_the_existing_tenant_provider_channel_slot",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L915"
+      },
+      {
+        "source": "c10_meta_selected_asset_binding",
+        "target": "c10_meta_endpoint_subscription",
+        "relation": "ensures_provider_endpoint_and_attempts_required_subscription",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L879"
+      },
+      {
+        "source": "c10_meta_endpoint_subscription",
+        "target": "c10_meta_readiness_evidence",
+        "relation": "keeps_subscription_and_real_payload_evidence_separate_from_connected",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L513"
+      },
+      {
+        "source": "c10_meta_secret_lifecycle",
+        "target": "c10_meta_oauth_session",
+        "relation": "protects_secrets_in_oauth_results_and_integration_config",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L805"
+      },
+      {
+        "source": "c10_meta_discovered_resources",
+        "target": "c10_meta_whatsapp_pin_selection",
+        "relation": "supplies_phone_ids_for_registration_and_active_number_selection",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1443"
+      },
+      {
+        "source": "c10_meta_whatsapp_pin_selection",
+        "target": "c10_meta_unique_integration",
+        "relation": "updates_the_selected_number_in_the_single_meta_whatsapp_integration",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1488"
+      },
+      {
+        "source": "c10_meta_source_get_effects",
+        "target": "c10_meta_endpoint_subscription",
+        "relation": "can_auto_subscribe_during_phone_discovery_get",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L1342"
+      },
+      {
+        "source": "c10_meta_source_get_effects",
+        "target": "c10_meta_secret_lifecycle",
+        "relation": "also_has_get_list_normalization_writes",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/integrations/router.py",
+        "source_location": "L953"
+      },
+      {
+        "source": "c10_cbn_readonly_ui_boundary",
+        "target": "c10_meta_login_provider_modes",
+        "relation": "requires_new_scoped_profile_and_callback_contract_before_oauth_activation",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L29"
+      },
+      {
+        "source": "c10_cbn_readonly_ui_boundary",
+        "target": "c10_meta_secret_lifecycle",
+        "relation": "does_not_gain_secret_write_or_key_access_from_source_parity",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L36"
+      },
+      {
+        "source": "c10_meta_readiness_evidence",
+        "target": "c10_cbn_readonly_ui_boundary",
+        "relation": "does_not_allow_source_controls_to_imply_current_cbn_provider_acceptance",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/backend/app_saas/integrations/instagram_router.py",
+        "source_location": "L522"
+      },
+      {
+        "source": "c10_meta_source_field_matrix",
+        "target": "c10_meta_login_provider_modes",
+        "relation": "distinguishes_oauth_dto_from_manual_configuration_fields",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L5330"
+      },
+      {
+        "source": "c10_meta_source_field_matrix",
+        "target": "c10_meta_whatsapp_pin_selection",
+        "relation": "preserves_separate_synced_number_selector_and_six_digit_pin",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9726"
+      },
+      {
+        "source": "c10_meta_source_field_matrix",
+        "target": "c10_meta_secret_lifecycle",
+        "relation": "includes_replacement_secret_modal_and_transient_current_password",
+        "confidence": "EXTRACTED",
+        "confidenceScore": 1,
+        "confidence_score": 1,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10906"
+      },
+      {
+        "source": "c10_meta_source_field_matrix",
+        "target": "c10_cbn_readonly_ui_boundary",
+        "relation": "does_not_reduce_source_fields_to_the_existing_cbn_subset",
+        "confidence": "INFERRED",
+        "confidenceScore": 0.99,
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9634"
+      },
+      {
+        "source": "c10_tt_ui",
+        "target": "c10_tt_config",
+        "relation": "implements",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10145",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_ui",
+        "target": "c10_tt_oauth_start",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L5040",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_ui",
+        "target": "c10_tt_refresh",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L5061",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_oauth_start",
+        "target": "c10_tt_oauth_state",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L941",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_callback",
+        "target": "c10_tt_oauth_state",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1005",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_callback",
+        "target": "c10_tt_config",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1071",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_callback",
+        "target": "c10_tt_endpoint",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1068",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_refresh",
+        "target": "c10_tt_config",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L1147",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_config",
+        "target": "c10_tt_policy",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L4992",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_readiness",
+        "target": "c10_tt_config",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L663",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_assets",
+        "target": "c10_tt_config",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L864",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_readiness",
+        "target": "c10_tt_endpoint",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L663",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_decision",
+        "target": "c10_tt_policy",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_runtime.py",
+        "source_location": "L308",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_decision",
+        "target": "c10_tt_usage",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_runtime.py",
+        "source_location": "L368",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_ui",
+        "target": "c10_tt_assets",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L5099",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_ui",
+        "target": "c10_tt_endpoint",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L5076",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_cbn_gap",
+        "target": "c10_tt_config",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L16",
+        "weight": 0.9
+      },
+      {
+        "source": "c10_tt_cbn_gap",
+        "target": "c10_tt_secret_scope",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L46",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_secret_scope",
+        "target": "c10_tt_callback",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "backend/app/modules/channels/storage.py",
+        "source_location": "L112",
+        "weight": 0.85
+      },
+      {
+        "source": "c10_tt_destination",
+        "target": "c10_tt_policy",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/social/service.py",
+        "source_location": "L1037",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_tt_destination",
+        "target": "c10_tt_secret_scope",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.8,
+        "source_file": "../saas-version/backend/app_saas/social/service.py",
+        "source_location": "L1048",
+        "weight": 0.8
+      },
+      {
+        "source": "c10_tt_readiness",
+        "target": "c10_tt_decision",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "../saas-version/backend/app_saas/integrations/tiktok_router.py",
+        "source_location": "L729",
+        "weight": 0.9
+      },
+      {
+        "source": "c10_wh_endpoint_owner",
+        "target": "c10_wh_rotation_once",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L740",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_endpoint_owner",
+        "target": "c10_wh_soft_delete",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L854",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_endpoint_owner",
+        "target": "c10_wh_raw_auth",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L241",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_endpoint_owner",
+        "target": "c10_wh_asset_binding",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L470",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_source_auth_gaps",
+        "target": "c10_wh_raw_auth",
+        "relation": "conceptually_related_to",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L1231",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_raw_auth",
+        "target": "c10_wh_receipt_dedupe",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L28",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_asset_binding",
+        "target": "c10_wh_receipt_dedupe",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L65",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_receipt_dedupe",
+        "target": "c10_wh_redaction",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L65",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_rotation_once",
+        "target": "c10_wh_aad_secret_scope",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/modules/channels/storage.py",
+        "source_location": "L112",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_asset_binding",
+        "target": "c10_wh_aad_secret_scope",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/modules/channels/storage.py",
+        "source_location": "L117",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_receipt_dedupe",
+        "target": "c10_wh_lease_fence",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L532",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_lease_fence",
+        "target": "c10_wh_b015_route",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L260",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_b015_route",
+        "target": "c10_wh_uncertain",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L302",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_uncertain",
+        "target": "c10_wh_delivery_evidence",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L766",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_c9_isolation",
+        "target": "c10_wh_aad_secret_scope",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L37",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_c9_isolation",
+        "target": "c10_wh_uncertain",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L17",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_soft_delete",
+        "target": "c10_wh_receipt_dedupe",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "../saas-version/migrations/005_saas_webhook_events.sql",
+        "source_location": "L10",
+        "weight": 1.0
+      },
+      {
+        "source": "c10_wh_rotation_once",
+        "target": "c10_wh_raw_auth",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/webhooks/router.py",
+        "source_location": "L241",
+        "weight": 1.0
+      },
+      {
+        "source": "channels_parity_c10_contract_work",
+        "target": "sql_c10_defined_parity_contract",
+        "relation": "continued_by_offline_definition_without_runtime_implementation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.status"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_exact_field_action_matrix",
+        "relation": "requires_all_source_fields_actions_and_visibility_conditions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.reference"
+      },
+      {
+        "source": "sql_c10_exact_field_action_matrix",
+        "target": "c10_meta_source_field_matrix",
+        "relation": "binds_exact_meta_fields_and_actions_from_signed_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+        "source_location": "$.sources"
+      },
+      {
+        "source": "sql_c10_exact_field_action_matrix",
+        "target": "c10_tt_ui",
+        "relation": "binds_tiktok_controls_outputs_and_actions_from_signed_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+        "source_location": "$.sources"
+      },
+      {
+        "source": "sql_c10_exact_field_action_matrix",
+        "target": "c10_wh_endpoint_owner",
+        "relation": "binds_webhook_controls_outputs_and_actions_from_signed_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+        "source_location": "$.sources"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_sql2019_new_partition",
+        "relation": "defines_new_schema_without_altering_protected_tables",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.preservation"
+      },
+      {
+        "source": "sql_c10_sql2019_new_partition",
+        "target": "sql_c10_c9_and_legacy_preservation",
+        "relation": "preserves_academic_foundation_and_b011_objects",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.preservation"
+      },
+      {
+        "source": "sql_c10_c9_and_legacy_preservation",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "keeps_accepted_c9_runtime_and_ui_unchanged",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.activation"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_multi_whatsapp_correction",
+        "relation": "distinguishes_source_behavior_from_human_extension",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.reference.cardinality_correction"
+      },
+      {
+        "source": "sql_c10_multi_whatsapp_correction",
+        "target": "c10_meta_unique_integration",
+        "relation": "corrects_ui_inference_using_source_sql_and_upsert",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.reference.cardinality_correction"
+      },
+      {
+        "source": "sql_c10_multi_whatsapp_correction",
+        "target": "sql_c10_explicit_application_integration_identity",
+        "relation": "requires_one_selected_phone_per_integration_and_explicit_ids",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.routing_contract"
+      },
+      {
+        "source": "sql_c10_explicit_application_integration_identity",
+        "target": "sql_c10_oauth_state_grant_asset_contract",
+        "relation": "binds_oauth_to_reviewed_application_actor_and_target_scope",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.oauth_contract"
+      },
+      {
+        "source": "sql_c10_oauth_state_grant_asset_contract",
+        "target": "c10_meta_state_replay_gate",
+        "relation": "addresses_observed_missing_expiry_and_consumption_gate",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.oauth_contract"
+      },
+      {
+        "source": "sql_c10_oauth_state_grant_asset_contract",
+        "target": "c10_tt_oauth_state",
+        "relation": "requires_expiry_single_use_and_browser_binding",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.oauth_contract"
+      },
+      {
+        "source": "sql_c10_oauth_state_grant_asset_contract",
+        "target": "sql_c10_typed_secret_version_contract",
+        "relation": "pins_client_secret_and_asset_owned_provisional_credentials",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.oauth_contract"
+      },
+      {
+        "source": "sql_c10_typed_secret_version_contract",
+        "target": "c10_wh_aad_secret_scope",
+        "relation": "requires_verified_legacy_decryption_and_new_owner_aad_recipher",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.secret_contract.legacy_transition"
+      },
+      {
+        "source": "sql_c10_typed_secret_version_contract",
+        "target": "sql_c10_pin_and_password_transient",
+        "relation": "excludes_pin_password_and_code_from_persistent_secret_store",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.remote_operations.pin_and_OTP"
+      },
+      {
+        "source": "sql_c10_pin_and_password_transient",
+        "target": "c10_meta_whatsapp_pin_selection",
+        "relation": "preserves_selector_pin_and_registration_flow",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-ui-parity-contract.json",
+        "source_location": "$.fields"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_tiktok_policy_quota_contract",
+        "relation": "defines_preserved_operational_controls_and_acceptance_gates",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.tiktok_contract"
+      },
+      {
+        "source": "sql_c10_tiktok_policy_quota_contract",
+        "target": "c10_tt_policy",
+        "relation": "retains_source_modes_flags_and_policy_fields",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.tiktok_contract"
+      },
+      {
+        "source": "sql_c10_tiktok_policy_quota_contract",
+        "target": "c10_tt_usage",
+        "relation": "replaces_unreserved_admission_with_idempotent_quota_reservations",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.tiktok_contract"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_authenticated_webhook_receipt_routes",
+        "relation": "defines_signed_ingress_durable_receipts_and_exact_routes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.webhook_contract"
+      },
+      {
+        "source": "sql_c10_authenticated_webhook_receipt_routes",
+        "target": "c10_wh_raw_auth",
+        "relation": "requires_provider_profile_signature_over_original_bytes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.webhook_contract"
+      },
+      {
+        "source": "sql_c10_authenticated_webhook_receipt_routes",
+        "target": "c10_wh_receipt_dedupe",
+        "relation": "defines_endpoint_receipt_digest_and_per_account_event_dedupe",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.routing_contract"
+      },
+      {
+        "source": "sql_c10_authenticated_webhook_receipt_routes",
+        "target": "sql_c10_explicit_application_integration_identity",
+        "relation": "requires_application_and_integration_binding_before_effects",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.routing_contract"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_b015_transport_dependency",
+        "relation": "defines_scoped_b015_equivalents_before_transport",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.B015"
+      },
+      {
+        "source": "sql_c10_b015_transport_dependency",
+        "target": "c10_wh_b015_route",
+        "relation": "preserves_history_by_new_release_instead_of_running_legacy_sql",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.B015"
+      },
+      {
+        "source": "sql_c10_b015_transport_dependency",
+        "target": "sql_c10_external_effect_unknown_contract",
+        "relation": "requires_epoch_ownership_quota_and_effect_fencing_before_send",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.B015"
+      },
+      {
+        "source": "sql_c10_external_effect_unknown_contract",
+        "target": "c10_wh_uncertain",
+        "relation": "requires_reconciliation_instead_of_blind_external_retry",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.remote_operations"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_external_effect_unknown_contract",
+        "relation": "separates_durable_intent_http_and_durable_outcome",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.remote_operations"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_migration_rehearsal_reversal_plan",
+        "relation": "defines_new_unit_sequence_journal_drift_and_recovery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration"
+      },
+      {
+        "source": "sql_c10_migration_rehearsal_reversal_plan",
+        "target": "sql_c10_c9_and_legacy_preservation",
+        "relation": "uses_new_restoration_profiles_and_preserves_legacy_history",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.rollback"
+      },
+      {
+        "source": "sql_c10_migration_rehearsal_reversal_plan",
+        "target": "sql_c10_offline_definition_validation",
+        "relation": "is_checked_as_design_not_as_sql_execution",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c10/review-oauth.json",
+        "source_location": "$.offline_validation"
+      },
+      {
+        "source": "sql_c10_offline_definition_validation",
+        "target": "sql_c10_independent_oauth_review",
+        "relation": "supports_offline_review_with_resolved_findings_and_pins",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c10/review-oauth.json",
+        "source_location": "$.remaining_issue_ids"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "sql_c10_ui_provider_institutional_gates",
+        "relation": "keeps_runtime_provider_and_institutional_acceptance_separate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.activation"
+      },
+      {
+        "source": "sql_c10_ui_provider_institutional_gates",
+        "target": "P2",
+        "relation": "requires_authentication_authorization_and_source_reauthentication",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.api.identity"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "docs_adaptation_fragments_foundation_sql_dialect",
+        "relation": "extends_sql2019_storage_contract_without_acceptance_claim",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.sql"
+      },
+      {
+        "source": "sql_c10_defined_parity_contract",
+        "target": "P1",
+        "relation": "provides_offline_storage_design_for_future_sql_rehearsal",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.status"
+      },
+      {
+        "source": "sql_c10_ui_provider_institutional_gates",
+        "target": "P4",
+        "relation": "leaves_complete_channels_and_webhooks_acceptance_pending",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.activation"
+      },
+      {
+        "source": "sql_c10_b015_transport_dependency",
+        "target": "P7",
+        "relation": "gates_future_messaging_transport_on_scoped_route_control",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "docs/adaptation/sql/channels-parity-contract.json",
+        "source_location": "$.migration.B015"
+      }
+    ]
+  }
+}

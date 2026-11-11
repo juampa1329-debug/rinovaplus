@@ -1,0 +1,245 @@
+"""Comment effects share C10 intent history; no implicit retry of external mutations."""
+
+import json
+import re
+
+from fastapi import HTTPException, Request
+from pydantic import Field
+
+from app.institutional.auth import authorize
+from app.institutional.channel_operations import account, capabilities, configuration
+from app.institutional.channel_provider import provider_account
+from app.institutional.db import bound_hash, institution, one, uid
+from app.institutional.models import Strict
+from app.institutional.store import transaction
+from app.modules.channels import providers
+
+
+class Effect(Strict):
+    operation_id: str
+    row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
+
+
+def call_provider(adapter, action, comment):
+    target = comment["ExternalId"]
+    if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,200}", target):
+        raise providers.ProviderFailure("comment_target_invalid")
+    if action in {"like", "unlike"}:
+        value = providers.request(
+            adapter, "POST" if action == "like" else "DELETE", target + "/likes", {}
+        )
+        if value.get("success") is not True:
+            raise providers.ProviderFailure(
+                "comment_reaction_not_confirmed", uncertain=True
+            )
+        return {"liked": action == "like"}
+    raw = json.loads(comment["Payload"]).get("provider", {})
+    post = str(raw.get("post_id") or (raw.get("media") or {}).get("id") or "")
+    if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,200}", post):
+        raise providers.ProviderFailure("comment_post_reference_missing")
+    fields = (
+        "id,caption,permalink,media_type"
+        if adapter["channel"] == "instagram"
+        else "id,message,permalink_url,created_time"
+    )
+    value = providers.request(adapter, "GET", post, params={"fields": fields})
+    if str(value.get("id")) != post:
+        raise providers.ProviderFailure("comment_post_mismatch")
+    return {
+        "preview": {
+            "id": post,
+            "caption": str(value.get("caption") or value.get("message") or "")[:4000],
+            "permalink": str(
+                value.get("permalink") or value.get("permalink_url") or ""
+            )[:2048],
+        }
+    }
+
+
+class Effects:
+    def __init__(self, settings, transport=None):
+        self.settings = settings
+        self.transport = transport or call_provider
+
+    def perform(self, authority, identity, action, body):
+        if action not in {"like", "unlike", "preview"}:
+            raise HTTPException(404, "comment_effect_not_found")
+        operation = uid(body.operation_id)
+        digest = bound_hash(
+            self.settings,
+            {
+                "comment": uid(identity),
+                "action": action,
+                "row_version": body.row_version,
+            },
+            "comment-effect",
+        )
+        with transaction(self.settings, True, anonymous=True) as c:
+            actor = authorize(c, self.settings, authority, "inbox.write")
+            if not configuration(c, self.settings)["ModuleEnabled"]:
+                raise HTTPException(403, "module_disabled")
+            comment = one(
+                c,
+                (
+                    "SELECT * FROM crm_channels2.SocialComment WHER"
+                    "E InstitutionId=? AND CommentId=?"
+                ),
+                institution(self.settings),
+                uid(identity),
+            )
+            if not comment:
+                raise HTTPException(404, "comment_not_found")
+            item = account(c, self.settings, str(comment["IntegrationId"]))
+            existing = one(
+                c,
+                (
+                    "SELECT * FROM crm_channels2.ProviderOperation "
+                    "WHERE InstitutionId=? AND OperationId=?"
+                ),
+                institution(self.settings),
+                operation,
+            )
+            if existing:
+                if (
+                    bytes(existing["RequestDigest"]) != digest
+                    or existing["ActorRef"] != actor["UserId"]
+                    or existing["Action"] != "comment_" + action
+                ):
+                    raise HTTPException(409, "operation_conflict")
+                return {
+                    "status": existing["Status"],
+                    "code": existing["ResultCode"],
+                    "result": json.loads(existing["ResultMetadata"]),
+                }
+            if bytes(comment["RowVersion"]).hex() != body.row_version:
+                raise HTTPException(409, "revision_conflict")
+            if json.loads(comment["Payload"]).get("_crm", {}).get("state") == "deleted":
+                raise HTTPException(409, "comment_deleted")
+            if (
+                item["Channel"] == "tiktok"
+                or action in {"like", "unlike"}
+                and not capabilities(item)["comment_like"]
+            ):
+                raise HTTPException(409, "comment_effect_unsupported_by_provider")
+            if action != "preview" and (
+                not configuration(c, self.settings)["OutboundEnabled"]
+                or item["RequestedStatus"] != "connected"
+                or item["VerifiedStatus"] != "verified"
+            ):
+                raise HTTPException(409, "verified_outbound_account_required")
+            adapter, secret = provider_account(c, self.settings, item)
+            c.execute(
+                (
+                    "INSERT crm_channels2.ProviderOperation(Institu"
+                    "tionId,OperationId,ApplicationId,IntegrationId"
+                    ",ActorRef,Action,RequestDigest,Status,ResultMe"
+                    "tadata,EffectKey,CreatedAt,Attempts,LeaseUntil"
+                    ") VALUES(?,?,?,?,?,?,?,'running','{}',?,SYSUTC"
+                    "DATETIME(),1,DATEADD(second,60,SYSUTCDATETIME("
+                    ")))"
+                ),
+                institution(self.settings),
+                operation,
+                item["ApplicationId"],
+                item["IntegrationId"],
+                actor["UserId"],
+                "comment_" + action,
+                digest,
+                digest,
+            )
+        try:
+            result = self.transport(adapter, action, comment)
+            safe = (
+                {"liked": bool(result["liked"])}
+                if action in {"like", "unlike"} and type(result.get("liked")) is bool
+                else {"preview": result["preview"]}
+                if action == "preview" and isinstance(result.get("preview"), dict)
+                else None
+            )
+            if safe is None:
+                raise providers.ProviderFailure(
+                    "comment_effect_not_confirmed", uncertain=action != "preview"
+                )
+            status, code = "confirmed", None
+        except providers.ProviderFailure as error:
+            status, code, safe = (
+                "uncertain" if error.uncertain else "failed",
+                error.code,
+                {},
+            )
+        except Exception:
+            status, code, safe = (
+                "uncertain" if action != "preview" else "failed",
+                "comment_result_unknown",
+                {},
+            )
+        with transaction(self.settings, True, anonymous=True) as c:
+            current = one(
+                c,
+                (
+                    "SELECT * FROM crm_channels2.SocialComment WHER"
+                    "E InstitutionId=? AND CommentId=?"
+                ),
+                institution(self.settings),
+                uid(identity),
+            )
+            current_item = account(c, self.settings, str(item["IntegrationId"]))
+            active_intent = c.execute(
+                (
+                    "SELECT 1 FROM crm_channels2.ProviderOperation "
+                    "WHERE InstitutionId=? AND OperationId=? AND St"
+                    "atus='running' AND LeaseUntil>SYSUTCDATETIME()"
+                ),
+                institution(self.settings),
+                operation,
+            ).fetchone()
+            try:
+                authorize(c, self.settings, authority, "inbox.write")
+                allowed = True
+            except HTTPException:
+                allowed = False
+            if (
+                not current
+                or bytes(current["RowVersion"]) != bytes(comment["RowVersion"])
+                or bytes(current_item["RowVersion"]) != bytes(item["RowVersion"])
+                or not allowed
+                or not active_intent
+            ):
+                status, code = "uncertain", "comment_or_authority_changed"
+            if status == "confirmed":
+                payload = json.loads(current["Payload"])
+                payload.setdefault("_crm", {}).update(safe)
+                c.execute(
+                    (
+                        "UPDATE crm_channels2.SocialComment SET Payload"
+                        "=? WHERE InstitutionId=? AND CommentId=? AND R"
+                        "owVersion=?"
+                    ),
+                    json.dumps(payload, ensure_ascii=False),
+                    institution(self.settings),
+                    uid(identity),
+                    comment["RowVersion"],
+                )
+            c.execute(
+                (
+                    "UPDATE crm_channels2.ProviderOperation SET Sta"
+                    "tus=?,ResultCode=?,ResultMetadata=?,CompletedA"
+                    "t=SYSUTCDATETIME(),LeaseUntil=NULL WHERE Insti"
+                    "tutionId=? AND OperationId=? AND Status='runni"
+                    "ng'"
+                ),
+                status,
+                code,
+                json.dumps(safe),
+                institution(self.settings),
+                operation,
+            )
+        return {"status": status, "code": code, "result": safe}
+
+
+def install(app, settings):
+    service = Effects(settings)
+
+    @app.post("/api/institution/comments/{identity}/effects/{action}")
+    def effect(request: Request, identity: str, action: str, body: Effect):
+        return service.perform(request.state.authority, identity, action, body)

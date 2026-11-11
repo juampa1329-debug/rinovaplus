@@ -1,0 +1,58 @@
+[
+  {
+    "id": "demo-1",
+    "name": "Persona Demo A",
+    "phone": "DEMO-001",
+    "city": "Ciudad ficticia",
+    "program": "Auxiliar administrativo · Demo",
+    "schedule": "Nocturna · Demo",
+    "stage": "Interés",
+    "tags": "Solicita asesoría",
+    "notes": "Consultar el programa y la jornada. Caso ficticio.",
+    "type": "Prospecto",
+    "interests": "Programa y jornada",
+    "customValues": {}
+  },
+  {
+    "id": "demo-2",
+    "name": "Persona Demo B",
+    "phone": "DEMO-002",
+    "city": "Ciudad ficticia",
+    "program": "Atención a la primera infancia · Demo",
+    "schedule": "Diurna · Demo",
+    "stage": "Solicitud preparada",
+    "tags": "Formulario",
+    "notes": "Revisar los campos antes de continuar. Caso ficticio.",
+    "type": "Prospecto",
+    "interests": "Inscripción",
+    "customValues": {}
+  },
+  {
+    "id": "demo-3",
+    "name": "Persona Demo C",
+    "phone": "DEMO-003",
+    "city": "Ciudad ficticia",
+    "program": "Asistencia contable · Demo",
+    "schedule": "Sabatina · Demo",
+    "stage": "Nuevo",
+    "tags": "Contacto nuevo",
+    "notes": "",
+    "type": "Contacto",
+    "interests": "Jornada",
+    "customValues": {}
+  },
+  {
+    "id": "demo-4",
+    "name": "Persona Demo D",
+    "phone": "DEMO-004",
+    "city": "Ciudad ficticia",
+    "program": "Auxiliar administrativo · Demo",
+    "schedule": "Diurna · Demo",
+    "stage": "Contactado",
+    "tags": "Seguimiento",
+    "notes": "Sin acción externa programada.",
+    "type": "Contacto",
+    "interests": "",
+    "customValues": {}
+  }
+]

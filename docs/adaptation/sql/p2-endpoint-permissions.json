@@ -1,0 +1,602 @@
+{
+  "version": "cbn-p2-method-route-action-v1",
+  "SQL_connections": 0,
+  "known_actions": [
+    "crm.read",
+    "crm.write",
+    "inbox.read",
+    "inbox.write",
+    "settings.crm.read",
+    "settings.crm.write",
+    "settings.institution.read",
+    "settings.institution.write",
+    "settings.ai.read",
+    "settings.ai.write",
+    "settings.providers.read",
+    "settings.providers.write",
+    "settings.channels.read",
+    "settings.channels.write",
+    "settings.webhooks.read",
+    "settings.webhooks.write",
+    "settings.modules.read",
+    "settings.modules.write",
+    "settings.budgets.read",
+    "settings.budgets.write",
+    "users.read",
+    "users.manage",
+    "roles.read",
+    "roles.manage",
+    "sessions.manage",
+    "audit.read",
+    "agents.manage",
+    "sources.manage",
+    "campaigns.manage",
+    "ads.manage"
+  ],
+  "rows": [
+    {
+      "method": "GET",
+      "path": "/api/institution/audit",
+      "action": "audit.read",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/bootstrap",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/confirm",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [
+        "verifies current password and enabled MFA; confirmation does not grant a new role"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/login",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/logout",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/auth/me",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/redeem",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/auth/status",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/auth/verify",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/channels",
+      "action": "settings.channels.read",
+      "recent_authentication": false,
+      "conditions": [
+        "immutable application/account namespace",
+        "rowversion + configuration revision",
+        "provider operations disabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/channels",
+      "action": "settings.channels.write",
+      "recent_authentication": true,
+      "conditions": [
+        "immutable application/account namespace",
+        "rowversion + configuration revision",
+        "provider operations disabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/channels/catalog",
+      "action": "settings.channels.read",
+      "recent_authentication": false,
+      "conditions": [
+        "immutable application/account namespace",
+        "rowversion + configuration revision",
+        "provider operations disabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/channels/{identity}",
+      "action": "settings.channels.write",
+      "recent_authentication": true,
+      "conditions": [
+        "immutable application/account namespace",
+        "rowversion + configuration revision",
+        "provider operations disabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/contracts",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [
+        "authenticated metadata only; no credentials or SQL configuration"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/credentials",
+      "action": "settings.{scope(provider|channel|webhook)}.write",
+      "recent_authentication": true,
+      "conditions": [
+        "typed scope/kind and real institution-bound application/integration/endpoint owner"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/credentials/revoke",
+      "action": "settings.{scope(provider|channel|webhook)}.write",
+      "recent_authentication": true,
+      "conditions": [
+        "typed scope/kind and real institution-bound application/integration/endpoint owner"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/credentials/{scope}",
+      "action": "settings.{scope(provider|channel|webhook)}.read",
+      "recent_authentication": false,
+      "conditions": [
+        "typed scope/kind and real institution-bound application/integration/endpoint owner"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/profile",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [
+        "own user only; current password + recent auth and session revocation on email change"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/roles",
+      "action": "roles.read",
+      "recent_authentication": false,
+      "conditions": [
+        "protected owner/admin immutable",
+        "no permission grant beyond actor authority"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/roles/{role}",
+      "action": "roles.manage",
+      "recent_authentication": true,
+      "conditions": [
+        "protected owner/admin immutable",
+        "no permission grant beyond actor authority"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/runtime",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [
+        "authenticated metadata only; no credentials or SQL configuration"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/security/password",
+      "action": "self",
+      "recent_authentication": true,
+      "conditions": [
+        "current password and enabled MFA verified by server; one-use setup/recovery/challenges"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/security/totp/disable",
+      "action": "self",
+      "recent_authentication": true,
+      "conditions": [
+        "current password and enabled MFA verified by server; one-use setup/recovery/challenges"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/security/totp/setup",
+      "action": "self",
+      "recent_authentication": true,
+      "conditions": [
+        "current password and enabled MFA verified by server; one-use setup/recovery/challenges"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/security/totp/verify",
+      "action": "self",
+      "recent_authentication": true,
+      "conditions": [
+        "current password and enabled MFA verified by server; one-use setup/recovery/challenges"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/sessions",
+      "action": "self",
+      "recent_authentication": false,
+      "conditions": [
+        "self sessions only; sessions.manage required to list/revoke another user session; owner target requires owner actor"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/sessions/{session_id}/revoke",
+      "action": "self",
+      "recent_authentication": "only revoking another user session",
+      "conditions": [
+        "self sessions only; sessions.manage required to list/revoke another user session; owner target requires owner actor"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/settings/{section}",
+      "action": "settings.{scope(section)}.read",
+      "recent_authentication": false,
+      "conditions": [
+        "section: institution,ai,models→providers,webhooks,modules,budgets only"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/settings/{section}",
+      "action": "settings.{scope(section)}.write",
+      "recent_authentication": "only models/budgets/webhooks on PUT",
+      "conditions": [
+        "section: institution,ai,models→providers,webhooks,modules,budgets only"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/settings/{section}/history",
+      "action": "settings.{scope(section)}.read",
+      "recent_authentication": false,
+      "conditions": [
+        "section: institution,ai,models→providers,webhooks,modules,budgets only"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/settings/{section}/restore/{revision}",
+      "action": "settings.{scope(section)}.write",
+      "recent_authentication": true,
+      "conditions": [
+        "section: institution,ai,models→providers,webhooks,modules,budgets only"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/users",
+      "action": "users.read",
+      "recent_authentication": false,
+      "conditions": [
+        "owner assignment requires owner",
+        "last useful owner/administrator must remain",
+        "revisions and AuthVersion revoke stale sessions"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/users",
+      "action": "users.manage",
+      "recent_authentication": true,
+      "conditions": [
+        "owner assignment requires owner",
+        "last useful owner/administrator must remain",
+        "revisions and AuthVersion revoke stale sessions"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/institution/users/{user_id}",
+      "action": "users.manage",
+      "recent_authentication": true,
+      "conditions": [
+        "owner assignment requires owner",
+        "last useful owner/administrator must remain",
+        "revisions and AuthVersion revoke stale sessions"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/users/{user_id}/reset",
+      "action": "users.manage",
+      "recent_authentication": true,
+      "conditions": [
+        "owner assignment requires owner",
+        "last useful owner/administrator must remain",
+        "revisions and AuthVersion revoke stale sessions"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/institution/webhooks",
+      "action": "settings.webhooks.read",
+      "recent_authentication": false,
+      "conditions": [
+        "real integration/application IDs",
+        "one endpoint UUID for config/links/secrets",
+        "one-time generated secrets never stored in operation receipt",
+        "no public ingress"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/webhooks",
+      "action": "settings.webhooks.write",
+      "recent_authentication": true,
+      "conditions": [
+        "real integration/application IDs",
+        "one endpoint UUID for config/links/secrets",
+        "one-time generated secrets never stored in operation receipt",
+        "no public ingress"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/institution/webhooks/{identity}/rotate",
+      "action": "settings.webhooks.write",
+      "recent_authentication": true,
+      "conditions": [
+        "real integration/application IDs",
+        "one endpoint UUID for config/links/secrets",
+        "one-time generated secrets never stored in operation receipt",
+        "no public ingress"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm",
+      "action": "crm.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module clients must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/clients",
+      "action": "crm.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module clients must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/local/crm/clients",
+      "action": "crm.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module clients must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/clients/{client_id}",
+      "action": "crm.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module clients must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/local/crm/clients/{client_id}",
+      "action": "crm.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module clients must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/configuration",
+      "action": "settings.crm.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module settings must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/local/crm/configuration",
+      "action": "settings.crm.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module settings must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/local/crm/conversations/{conversation_id}",
+      "action": "inbox.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/local/crm/conversations/{conversation_id}/messages",
+      "action": "inbox.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/inbox",
+      "action": "inbox.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/inbox/contacts/{contact_id}",
+      "action": "inbox.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/local/crm/inbox/contacts/{contact_id}",
+      "action": "crm.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/local/crm/inbox/conversations/{conversation_id}",
+      "action": "inbox.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/inbox/conversations/{conversation_id}/messages",
+      "action": "inbox.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "POST",
+      "path": "/api/local/crm/inbox/conversations/{conversation_id}/messages",
+      "action": "inbox.write",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/api/local/crm/inbox/options",
+      "action": "inbox.read",
+      "recent_authentication": false,
+      "conditions": [
+        "institutional module inbox must be enabled"
+      ],
+      "audit": "accepted business mutations append safe metadata in the same SQL transaction; denied/failed requests independently append status/resource pattern, never body/query/secret"
+    },
+    {
+      "method": "GET",
+      "path": "/health/live",
+      "action": "anonymous_local_boundary",
+      "recent_authentication": false,
+      "conditions": [],
+      "audit": "liveness only"
+    }
+  ],
+  "count": 55,
+  "default": "unknown method/path denied404; no owner-preview fallback",
+  "live_roles": "re-read and authorize in same serializable business transaction; middleware also checks core permission before DTO",
+  "audit_SQL_permissions": "SELECT/INSERT only; UPDATE/DELETE/ALTER denied",
+  "provider_and_academic_writes": false
+}

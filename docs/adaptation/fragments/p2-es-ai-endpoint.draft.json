@@ -1,0 +1,211 @@
+{
+  "domain": "P2-ES · IA30, autoridad de modelos y endpoint compartido",
+  "inspected_on": "2026-10-26",
+  "artifact_status": "draft_additional_semantic_contract_no_new_acceptance",
+  "evidence_scope": "Sólo lectura de fuentes; recomendaciones adicionales para el candidato español. No código, SQL, pruebas o proveedor; los reportes anteriores permanecen intactos.",
+  "findings": [
+    {
+      "id": "p2_es_ai30_contract",
+      "capability": "Mapa exacto de treinta campos IA y límites solicitados/efectivos",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 6672
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/schemas.py",
+          "line": 8
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 567
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 97
+        }
+      ],
+      "status": "contract_review_candidate_source_partial_no_new_acceptance",
+      "gap": "Se preservan los30 campos sin equiparar failover de modelo con proveedor de respaldo ni estilo humano con brevedad. Fuente admite cooldown de 3600 s, demoras de 240000 ms y tamaño de fragmento cero; límites/proyección heredados CBN deben reconciliarse, sin clamps silenciosos o un splitter que no avance.",
+      "acceptance": "Roundtrip de30 campos, aliases google→gemini y brave_search→brave, seis proveedores de visión, booleanos independientes y extremos/cero; verificar configurado y efectivo sin llamada externa.",
+      "phase": "P2"
+    },
+    {
+      "id": "p2_es_models_authority_contract",
+      "capability": "Una autoridad de modelos activos y voz compartida por Ajustes IA/APIs",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 579
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 130
+        },
+        {
+          "file": "backend/app/modules/ai/domain/models.py",
+          "line": 163
+        }
+      ],
+      "status": "recommended_contract_not_accepted",
+      "gap": "Models.selections debe ser autoridad de modelo/voz por proveedor/categoría; AI.model/provider_models y campos de media son proyecciones de compatibilidad, mientras AI mantiene proveedor/slots/políticas. Dos documentos escritos por dos peticiones independientes permiten perder selecciones.",
+      "acceptance": "Un camino de escritura normaliza ambos editores; las ediciones relacionadas son atómicas con revisiones, proyecciones conflictivas se rechazan, adopción legada real explícita y ausencia de modelo permanece sin configurar.",
+      "phase": "P2"
+    },
+    {
+      "id": "p2_es_endpoint_authority_contract",
+      "capability": "Un recurso Webhooks con identidad estable reutilizado por Canales",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 349
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 308
+        }
+      ],
+      "status": "semantic_direction_confirmed_implementation_acceptance_pending",
+      "gap": "La propuesta key estable→UUID determinista es coherente si incluye institución/namespace revisado y política de case/rename. Canales no conserva firma/proveedor en JSON paralelo; usa el mismo endpoint/version/secret owner y exige selección explícita ante cero o varios endpoints.",
+      "acceptance": "Probar Canales↔Webhooks misma fila/version, enlaces a aplicación exacta, CAS con 409/borrador, owner UUID/AAD y rotación una sola vez. Guardar requested_active no activa recepción/proveedor P4.",
+      "phase": "P2"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_ai_endpoint_contract_review",
+        "label": "Contrato semántico adicional IA30/modelos/endpoint P2-ES",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1",
+        "status": "recommendations_only_no_new_acceptance"
+      },
+      {
+        "id": "p2_es_ai30_contract",
+        "label": "Mapa exacto de treinta campos IA y límites solicitados/efectivos",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/models.py",
+        "source_location": "L97",
+        "status": "contract_review_candidate_source_partial_no_new_acceptance"
+      },
+      {
+        "id": "p2_es_models_authority_contract",
+        "label": "Una autoridad de modelos activos y voz compartida por Ajustes IA/APIs",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/models.py",
+        "source_location": "L130",
+        "status": "recommended_contract_not_accepted"
+      },
+      {
+        "id": "p2_es_endpoint_authority_contract",
+        "label": "Un recurso Webhooks con identidad estable reutilizado por Canales",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/channels.py",
+        "source_location": "L349",
+        "status": "semantic_direction_confirmed_implementation_acceptance_pending"
+      },
+      {
+        "id": "p2_es_source_model_selection",
+        "label": "La referencia resuelve modelo activo desde selected_model de credenciales",
+        "file_type": "document",
+        "source_file": "../saas-version/backend/app_saas/ai_agent/service.py",
+        "source_location": "L579",
+        "status": "source_extracted"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_ai_endpoint_contract_review",
+        "target": "p2_es_ai30_contract",
+        "relation": "recommends_single_source_semantics",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ai30_contract",
+        "target": "P2",
+        "relation": "requires_SQL_UI_roundtrip_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ai_endpoint_contract_review",
+        "target": "p2_es_models_authority_contract",
+        "relation": "recommends_single_source_semantics",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_models_authority_contract",
+        "target": "P2",
+        "relation": "requires_SQL_UI_roundtrip_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ai_endpoint_contract_review",
+        "target": "p2_es_endpoint_authority_contract",
+        "relation": "recommends_single_source_semantics",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_endpoint_authority_contract",
+        "target": "P2",
+        "relation": "requires_SQL_UI_roundtrip_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/ai-endpoint-contract-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_source_model_selection",
+        "target": "p2_es_models_authority_contract",
+        "relation": "supports_active_selection_authority",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/ai_agent/service.py",
+        "source_location": "L579"
+      }
+    ]
+  },
+  "source_hashes": {
+    "../saas-version/frontend/src/App.jsx": "9ecfe4cb88331b545b7ad754f3615deed30450baebf62448fe8711961126f801",
+    "../saas-version/backend/app_saas/ai_agent/schemas.py": "40a89e8658debb60fb54dbd3e7b6749dd80824df3a50587b60841acf8199c2b4",
+    "../saas-version/backend/app_saas/ai_agent/service.py": "d5c11c5f89bfc3ae0da2d413d5097e19c23678e28275b7363ceddcb1582142ce",
+    "../saas-version/backend/app_saas/ai_gateway/service.py": "e9697711f6ead3bdc11475ab3c18ffd5b9940d31caeac5ab468a2a980ef76ccd",
+    "../saas-version/backend/app_saas/api_credentials/router.py": "4b20a803bde10fb3da2c07427cbe4cba6c69b7c3068a28bac3a579a213282a34",
+    "backend/app/institutional/models.py": "4032d17fe40a89227f9b1cea734492c6eea5a09bcbfa8e05c66607069f5b5852",
+    "backend/app/modules/ai/domain/models.py": "2f48b05af9e878804292d400fe32de7aed6af8c9b9b03922af12f7e55112a88c",
+    "backend/app/institutional/settings.py": "8762e2ff1a87ac094ef3ecc1561732f77c6efa54e99df080654654b097de2dea",
+    "backend/app/institutional/channels.py": "f86d7f8a8e2ce077c871ed4adb70350c08d9133e8540161c44c0ba51cc49c1cd",
+    "backend/app/institutional/spanish_bindings.py": "054e3c3cc15c0e2220f836e1528ba4e4bdb131aa5f253893ec4f1569e63e8c61",
+    "backend/app/institutional/store.py": "5837042cb724eec7e4fe7f4c675d779049493dd40dcdfa411f7cbd41405c11fc",
+    "docs/adaptation/fragments/p2-settings-source.draft.json": "1f217adb95539ea0816de7637bc4dd0b6a8f5ec3ead25aa38bc9ee2295beedaa",
+    "docs/adaptation/sql/p2-channel-fields.json": "7a0f1e35939ec154246459e87d4809c4012d8847e8f41949869b865def84567d",
+    "artifacts/p2-es/settings-semantic-review.json": "1a61419e8eb620b84dd2aa2ddb28ab25136b53dbfc5e38ecb2a5f7236d25b4d0",
+    "artifacts/p2-es/ai-endpoint-contract-review.json": "5ba322101a3c5a69e81e5e26eac1479c5d4e8f98778cae224a8558156c40384b"
+  },
+  "new_acceptance": false
+}

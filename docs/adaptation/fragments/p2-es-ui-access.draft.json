@@ -1,0 +1,859 @@
+{
+  "domain": "P2-ES · integración de interfaz institucional y acceso",
+  "inspected_on": "2026-10-26",
+  "snapshot_utc": "2026-10-26T21:12:28.111180+00:00",
+  "artifact_status": "draft_additional_semantic_UI_review_no_new_acceptance",
+  "evidence_scope": "Extracción de enlaces y guardas desde fuentes públicas. Las correcciones integradas por coordinación durante la revisión se describen como fuente observada, con pruebas UI/SQL pendientes de revisión. No modifica R2, DB, ledger ni reportes anteriores.",
+  "findings": [
+    {
+      "id": "p2_es_ui_draft_guard_integration",
+      "capability": "draft guard integration",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 379
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 93
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 587
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 80
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 235
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 480
+        }
+      ],
+      "status": "resolved_in_source_pending_UI_test",
+      "gap": "Los borradores podían perderse al navegar por hash, cambiar cuenta/proveedor y abandonar el formulario de un webhook nuevo. Estado actual: La navegación solicita confirmación y restaura el hash si se cancela; hay guardas para ajustes, cuentas existentes/nuevas, claves, usuarios, roles, perfil y seguridad. El selector de proveedor llama allowNavigation y el webhook nuevo registra account/url.",
+      "acceptance": "Escribir cambios y cancelar/aceptar navegación lateral, atrás, cambio de cuenta/proveedor, Webhooks desde Canales y cierre de pestaña. Un 409 conserva el borrador y sólo una carga explícita lo descarta.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_secret_intent_cleanup",
+      "capability": "secret intent cleanup",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/api.tsx",
+          "line": 262
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 540
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 187
+        }
+      ],
+      "status": "resolved_in_source_pending_UI_test",
+      "gap": "useIntent retenía JSON.stringify(body), incluyendo API key o contraseña inicial, tras éxito aunque los campos ya estuviesen vacíos. Estado actual: useIntent ofrece clear; Credentials y la creación de usuario lo ejecutan tras una respuesta confirmada. El intento permanece durante resultado incierto para permitir reintento con la misma operación.",
+      "acceptance": "Tras éxito desaparecen campos y referencia del intento; tras error incierto se conserva únicamente el estado necesario en memoria. No localStorage, URL, auditoría ni GET devuelve el secreto.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_totp_once_cleanup",
+      "capability": "totp once cleanup",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 223
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 651
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 33
+        }
+      ],
+      "status": "resolved_in_source_pending_UI_test",
+      "gap": "El botón de confirmación de copia TOTP recibía una función vacía; no ocultaba la semilla. Estado actual: El botón vacía secret/otpauth_uri y conserva setup_id para verificar. Los paneles de una sola entrega registran guarda de navegación mientras muestran valores.",
+      "acceptance": "Copiar/ocultar semilla y verificar después con el mismo setup_id. Códigos de recuperación, activación y claves de webhook se ocultan al confirmar, no reaparecen en listados y no se reutilizan.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.2",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_password_confirmation",
+      "capability": "password confirmation",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10643
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 573
+        }
+      ],
+      "status": "resolved_in_source_pending_UI_test",
+      "gap": "La UI inicial no pedía confirmar la nueva contraseña, control presente en Scentra. Estado actual: Hay campo de confirmación y no se habilita el cambio con valores distintos. La contraseña actual y el factor se envían al recurso de seguridad.",
+      "acceptance": "Una confirmación distinta no cambia la contraseña; un cambio válido cierra todas las sesiones y obliga a entrar de nuevo.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.2"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_availability_refresh",
+      "capability": "availability refresh",
+      "source": [
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 52
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 370
+        },
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 591
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 167
+        }
+      ],
+      "status": "resolved_in_source_pending_UI_test",
+      "gap": "Guardar módulos recargaba sólo el documento; Shell conservaba una fotografía antigua de runtime y mostraba disponibilidad anterior. Estado actual: SettingPage recibe onSaved para módulos y SettingEditor lo ejecuta al guardar y restaurar; Shell recarga runtime para sus consumidores.",
+      "acceptance": "Deshabilitar y habilitar CRM/Inbox sin F5 actualiza navegación/resumen/RuntimeContext. Acceso directo a recurso deshabilitado sigue denegado por servidor.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.3"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_profile_timezone",
+      "capability": "profile timezone",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10638
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 715
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 780
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 716
+        }
+      ],
+      "status": "resolved_for_P2_views_in_source_pending_UI_test",
+      "gap": "Sesiones y Auditoría nuevas formateaban fechas con la zona del navegador, aunque el perfil permite elegir otra zona. Estado actual: Ambas vistas P2 usan session.user.profile.timezone con America/Bogota de respaldo.",
+      "acceptance": "Guardar una zona distinta de la del navegador y comprobar las horas de sesiones/auditoría tras refrescar perfil. La revisión no recertifica el formateo heredado de Inbox/workflow de P3.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_auxiliary_read_permissions",
+      "capability": "auxiliary read permissions",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 133
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 154
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 474
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 500
+        }
+      ],
+      "status": "feedback_added_in_source_pending_least_privilege_UI_test",
+      "gap": "Usuarios consulta Roles y Webhooks consulta Canales. Sin permiso auxiliar, el 403 dejaba selectores vacíos sin explicar la dependencia. Estado actual: Se conservan las denegaciones del servidor y se muestran avisos que explican qué lectura falta. No se amplía autoridad implícitamente.",
+      "acceptance": "Probar roles personalizados con users.read sin roles.read y settings.webhooks.read sin settings.channels.read: la lectura principal funciona, la dependencia es visible y ninguna mutación evita las reglas de delegación/vínculo.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.4"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_totp_uri_parity",
+      "capability": "totp uri parity",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10643
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 530
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 651
+        }
+      ],
+      "status": "source_option_not_rendered_no_authentication_blocker",
+      "gap": "Scentra muestra URI Authenticator además de la semilla. El tipo de respuesta CBN recibe otpauth_uri, pero el panel sólo ofrece la semilla manual. Estado actual: El alta manual sigue teniendo semilla y código de seis dígitos; falta ofrecer la URI si se reclama igualdad exacta de ese control de referencia.",
+      "acceptance": "Decidir y documentar esta diferencia menor o mostrar/copiar la URI bajo el mismo ciclo de una sola entrega. No exige correo/SMS externo ni SSO comercial.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.2"
+      ],
+      "evidence_level": "source_review",
+      "new_acceptance": false
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_ui_access_integration_review",
+        "label": "Revisión semántica de UI/acceso institucional P2",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1",
+        "status": "source_review_no_new_acceptance"
+      },
+      {
+        "id": "p2_es_ui_scope_1",
+        "label": "P2.1 · ámbito canónico de aceptación",
+        "criterion_id": "P2.1",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L222",
+        "status": "criterion_acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_scope_2",
+        "label": "P2.2 · ámbito canónico de aceptación",
+        "criterion_id": "P2.2",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L223",
+        "status": "criterion_acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_scope_3",
+        "label": "P2.3 · ámbito canónico de aceptación",
+        "criterion_id": "P2.3",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L224",
+        "status": "criterion_acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_scope_4",
+        "label": "P2.4 · ámbito canónico de aceptación",
+        "criterion_id": "P2.4",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L225",
+        "status": "criterion_acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_scope_close",
+        "label": "P2.close · ámbito canónico de aceptación",
+        "criterion_id": "P2.close",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L227",
+        "status": "criterion_acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_draft_guard_integration",
+        "label": "draft guard integration",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379",
+        "status": "resolved_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_secret_intent_cleanup",
+        "label": "secret intent cleanup",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L262",
+        "status": "resolved_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_totp_once_cleanup",
+        "label": "totp once cleanup",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L651",
+        "status": "resolved_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_password_confirmation",
+        "label": "password confirmation",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L573",
+        "status": "resolved_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_availability_refresh",
+        "label": "availability refresh",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L370",
+        "status": "resolved_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_profile_timezone",
+        "label": "profile timezone",
+        "file_type": "document",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10638",
+        "status": "resolved_for_P2_views_in_source_pending_UI_test"
+      },
+      {
+        "id": "p2_es_ui_auxiliary_read_permissions",
+        "label": "auxiliary read permissions",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L133",
+        "status": "feedback_added_in_source_pending_least_privilege_UI_test"
+      },
+      {
+        "id": "p2_es_ui_totp_uri_parity",
+        "label": "totp uri parity",
+        "file_type": "document",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10643",
+        "status": "source_option_not_rendered_no_authentication_blocker"
+      },
+      {
+        "id": "p2_es_ui_chain_fixed_route_boundary",
+        "label": "Los patrones de rutas protegidas proceden de app.openapi, incluyen routers y se validan por método y fullmatch. No se infieren rutas de cadenas libres de usuario.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333",
+        "status": "source_observed_runtime_not_recertified"
+      },
+      {
+        "id": "p2_es_ui_chain_authorization_transaction_chain",
+        "label": "La autenticación comprueba cookie/sesión antes del manejador. CRM/Inbox llevan permiso y módulo a esa comprobación; las operaciones protegidas vuelven a autorizar en transacción. La consulta usa usuario/rol activos, AuthVersion y acciones actuales.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L113",
+        "status": "source_observed_runtime_not_recertified"
+      },
+      {
+        "id": "p2_es_ui_chain_bounded_body_csrf_recent_auth_audit",
+        "label": "El cuerpo queda limitado antes del DTO, mutaciones verifican CSRF y las acciones sensibles requieren confirmación reciente/factor. Auditoría de denegaciones usa el patrón fijo de ruta y no cuerpo/query.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L80",
+        "status": "source_observed_runtime_not_recertified"
+      },
+      {
+        "id": "p2_es_ui_chain_models_single_authority",
+        "label": "Models.selections conserva autoridad. Al cambiar proveedor en IA con proyecciones readonly sin cambios, el servidor recalcula desde Models dentro de la transacción. No se obliga al cliente a inventar IDs de modelo.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/settings.py",
+        "source_location": "L134",
+        "status": "source_observed_runtime_not_recertified"
+      },
+      {
+        "id": "p2_es_ui_chain_typed_channel_and_endpoint_views",
+        "label": "Canales usa catálogo curado, CAS de integración/aplicación/documento, distingue valores readonly/transitorios y dirige Webhooks al recurso canónico. Un PIN pendiente de operación no se persiste por el editor de ajustes.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Channels.tsx",
+        "source_location": "L299",
+        "status": "source_observed_runtime_not_recertified"
+      },
+      {
+        "id": "p2_es_ui_chain_truthful_availability",
+        "label": "Los controles distinguen configuración/disponibilidad de operación del proveedor. El aviso de límites preserva topes futuros sin afirmar que se ejecutan ahora; los módulos sin integración tienen estado pendiente.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Settings.tsx",
+        "source_location": "L124",
+        "status": "source_observed_runtime_not_recertified"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_scope_1",
+        "relation": "reviews_canonical_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_scope_2",
+        "relation": "reviews_canonical_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_scope_3",
+        "relation": "reviews_canonical_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_scope_4",
+        "relation": "reviews_canonical_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_scope_close",
+        "relation": "reviews_canonical_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_scope_1",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L222"
+      },
+      {
+        "source": "p2_es_ui_scope_2",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L223"
+      },
+      {
+        "source": "p2_es_ui_scope_3",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L224"
+      },
+      {
+        "source": "p2_es_ui_scope_4",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L225"
+      },
+      {
+        "source": "p2_es_ui_scope_close",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L227"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_draft_guard_integration",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_draft_guard_integration",
+        "target": "p2_es_ui_scope_1",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_draft_guard_integration",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_draft_guard_integration",
+        "target": "p2_es_ui_scope_close",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_secret_intent_cleanup",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_secret_intent_cleanup",
+        "target": "p2_es_ui_scope_1",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L262"
+      },
+      {
+        "source": "p2_es_ui_secret_intent_cleanup",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L262"
+      },
+      {
+        "source": "p2_es_ui_secret_intent_cleanup",
+        "target": "p2_es_ui_scope_close",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L262"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_totp_once_cleanup",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_totp_once_cleanup",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L651"
+      },
+      {
+        "source": "p2_es_ui_totp_once_cleanup",
+        "target": "p2_es_ui_scope_close",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L651"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_password_confirmation",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_password_confirmation",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L573"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_availability_refresh",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_availability_refresh",
+        "target": "p2_es_ui_scope_1",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L370"
+      },
+      {
+        "source": "p2_es_ui_availability_refresh",
+        "target": "p2_es_ui_scope_3",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L370"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_profile_timezone",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_profile_timezone",
+        "target": "p2_es_ui_scope_1",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10638"
+      },
+      {
+        "source": "p2_es_ui_profile_timezone",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10638"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_auxiliary_read_permissions",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_auxiliary_read_permissions",
+        "target": "p2_es_ui_scope_1",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L133"
+      },
+      {
+        "source": "p2_es_ui_auxiliary_read_permissions",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L133"
+      },
+      {
+        "source": "p2_es_ui_auxiliary_read_permissions",
+        "target": "p2_es_ui_scope_4",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L133"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_totp_uri_parity",
+        "relation": "records_review_finding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/ui-access-integration-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_totp_uri_parity",
+        "target": "p2_es_ui_scope_2",
+        "relation": "requires_UI_acceptance_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10643"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_fixed_route_boundary",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_authorization_transaction_chain",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L113"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_bounded_body_csrf_recent_auth_audit",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L80"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_models_single_authority",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/institutional/settings.py",
+        "source_location": "L134"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_typed_channel_and_endpoint_views",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/Channels.tsx",
+        "source_location": "L299"
+      },
+      {
+        "source": "p2_es_ui_access_integration_review",
+        "target": "p2_es_ui_chain_truthful_availability",
+        "relation": "extracts_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/Settings.tsx",
+        "source_location": "L124"
+      }
+    ]
+  },
+  "source_hashes": {
+    "../saas-version/frontend/src/App.jsx": "9ecfe4cb88331b545b7ad754f3615deed30450baebf62448fe8711961126f801",
+    "artifacts/p2-es/ai-endpoint-contract-review.json": "5ba322101a3c5a69e81e5e26eac1479c5d4e8f98778cae224a8558156c40384b",
+    "artifacts/p2-es/settings-semantic-review.json": "1a61419e8eb620b84dd2aa2ddb28ab25136b53dbfc5e38ecb2a5f7236d25b4d0",
+    "backend/app/institutional/api.py": "b4f474ce1be2eca7cf171b0f3c83c84b9777f29696d336061e038750b42d7457",
+    "backend/app/institutional/auth.py": "07eb52f327dfa55e87b372f3160d9ba0fe230d5ce41096f7bb8722272bdbdca5",
+    "backend/app/institutional/channels.py": "11a004691e80799d90895ceb4c24937a4f7493172abbbf9e8d3a2ac95bba6575",
+    "backend/app/institutional/crypto.py": "6774668741b3a734863ab354ddd136c261a2fc24bfb9194c1283dfba58bf5fdc",
+    "backend/app/institutional/db.py": "2b63c601ea91534797f56939e8a49ff2a95b33faea38bbd1e0fd4587368f8112",
+    "backend/app/institutional/management.py": "ba2b82fa53f86d8a9380a38090b900061fd81e75392ff3e33f18c7cc269e3879",
+    "backend/app/institutional/model_settings.py": "51b0d0cfbfe59edb73ade9633ea9b1d0a88dba335c5e253b6f0356d35a7d0c64",
+    "backend/app/institutional/models.py": "d899c384b3a586bbd2014451d28dbc984c344a61ced70157df16e8fd12fa4679",
+    "backend/app/institutional/policy.py": "6bf673b6d776a3a1a19766cb522f047d9dc1aa14fe6fa8e23670fc49aef6e1b4",
+    "backend/app/institutional/settings.py": "90ef3a2c390366b6f2ce73d387ba607c91dc4f3c436b229ccf2e0ba2a72c50c2",
+    "backend/app/institutional/spanish_bindings.py": "d9e921d07438124db5bd3f52b81288490ca88a5c814df4b1672f575e07341027",
+    "backend/app/institutional/store.py": "126418bc2d1549caf27a3f70f9abae9753b2d9a091516a6c955bd81d4cae1f03",
+    "backend/app/institutional/ui_contract.py": "5e4eaf5f941df23151eec77a2d2ae16a2c3b6a29a04472a2e91e68f7a2845c36",
+    "backend/app/institutional/webhooks.py": "c0395fb1d517b7e357520887c66b2e6ac316d935807b8005799d3367db1f3dab",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md": "8d4dce71d8be77b365cb4291ff99dfa214e13650befdd9853949aa946dd12e2c",
+    "docs/adaptation/fragments/p2-settings-source.draft.json": "1f217adb95539ea0816de7637bc4dd0b6a8f5ec3ead25aa38bc9ee2295beedaa",
+    "docs/adaptation/phase-work-progress.json": "3e39c7c083361e632ab40f4a5f8a0f9265f519cb1c334f67d2a72a9f1fb568e8",
+    "docs/adaptation/sql/P2_PLAN.md": "0e268ae115d1e592dab10c4dc6f7045ae45062be20a02471843beb114778f0e7",
+    "docs/adaptation/sql/p2-channel-fields.json": "7a0f1e35939ec154246459e87d4809c4012d8847e8f41949869b865def84567d",
+    "frontend/src/institution/Access.tsx": "c6563c2b3619cc65f06f13e5293bd9054ededca01f75deaf6c2af080fc050127",
+    "frontend/src/institution/Channels.tsx": "d5a7e323555d31ff5b95e35fcd22b8f4b57a8cb6e296a6f1527d49fb7fab71ae",
+    "frontend/src/institution/Fields.tsx": "ca05ae0987b0c3ff7ffa7c47a6fa96367abbe77e8624fd78f7877a2be04010f4",
+    "frontend/src/institution/InstitutionApp.tsx": "a59ffcb2e97c4edbcead818150b3c721435b73e9143d78dd0575223524bee360",
+    "frontend/src/institution/Settings.tsx": "14d1159b9bf42bde571bbf931bd88a83a61595df5db0b0e46c8e59cb34195dfa",
+    "frontend/src/institution/api.tsx": "553948a02ef8100a09701125247f90267241750cf6b60250d61ad59ea81c9046",
+    "frontend/src/institution/drafts.ts": "427cf66735b60f9e1fd5b82b3be7551149c0df922ab692a48fa0fec06dc8ef59",
+    "frontend/src/institution/institution.css": "cd156efb36595afda5ccff95cf6abf1367fe5f98325cacb80a8509e752715b45",
+    "frontend/src/institution/main.tsx": "01a90b8f7a7dcef3bb7859d489faa1f44bb2f336ea1c96995c33eb50b8ac4e7e",
+    "frontend/src/shared/institutionSession.ts": "353624ddfffd3d2c5690c2cf56a654347acdb3c15c2a4f1da828312e0cf4dead",
+    "graphify-out/adaptation/graph.json": "f1056619972933bcd1c3aed074b66fa2f9c3f591e4841d994b6fe5d654fc5d79",
+    "artifacts/p2-es/ui-access-integration-review.json": "69376e0f06a86190ad8257d9e2f7799ad25f3ea10beeaf7851142d22b94fb9de"
+  },
+  "new_acceptance": false
+}

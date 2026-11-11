@@ -1,0 +1,541 @@
+{
+  "nodes": [
+    {
+      "id": "p3_evidence_contract",
+      "label": "P3 conserva alcance local y frontera P10",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Riesgo compartido y alcance",
+      "rationale": "Contrato exige ficha/Inbox/CRM y riesgo compartidos. Separa manual, SLA, rúbrica y predicción entrenada; productores automáticos/proveedores/entrenamiento quedan fuera de esta aceptación local."
+    },
+    {
+      "id": "p3_evidence_release",
+      "label": "Release P3 congelado y verificado offline",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/release.json",
+      "source_location": "$.files",
+      "rationale": "SHA256 7d4c3f55654d8d683246c2cd2547d29da5274825170f304b2c6b069e914d379b; coinciden hashes de P3ES-000.sql, P3ES-001.sql y expected-model.json."
+    },
+    {
+      "id": "p3_evidence_parent_model",
+      "label": "138 tablas padre conservadas en el modelo",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.tables, $.columns, $.indexes, $.foreign_keys",
+      "rationale": "Comparación JSON offline de cada sección confirma exactamente el modelo P2 cuando se excluyen seis tablas nuevas. Composición P3 declarada:144 tablas/229FK, ocho FK nuevas, sin ALTER de tabla académica."
+    },
+    {
+      "id": "p3_evidence_actor_fk",
+      "label": "FK compuestas de usuario corregidas",
+      "file_type": "code",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L9-L15,L18-L32,L36-L45",
+      "rationale": "Assignment/Task usan InstitutionId+UserId y Note usa InstitutionId+AuthorId hacia PKcompuesta CRMAccesoUsuario(InstitutionId,UserId). Las observaciones bloqueantes de la candidata previa están resueltas antes de congelar."
+    },
+    {
+      "id": "p3_evidence_task_integrity",
+      "label": "Tarea deriva contacto desde conversación",
+      "file_type": "code",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L17-L34",
+      "rationale": "CRMTrabajoTarea sólo conserva ConversationId; elimina columna ContactId redundante que permitía parejas contradictorias. Su FK referencia la PK de CRMConversacion."
+    },
+    {
+      "id": "p3_evidence_journal",
+      "label": "Diario P3 separado conserva estado e identidad",
+      "file_type": "code",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-000.sql",
+      "source_location": "L1-L10",
+      "rationale": "CRMTrabajoMigracion conserva UnitId, release, destino, hash del diario padre, StartedAt/CommittedAt y estados coherentes STARTED/COMMITTED."
+    },
+    {
+      "id": "p3_evidence_migration",
+      "label": "Migrador explícito transaccional e idempotente",
+      "file_type": "code",
+      "source_file": "backend/tools/p3_workspace_migrations.py",
+      "source_location": "L11-L24,L36-L63,L75-L150",
+      "rationale": "Rechaza transacción del llamador, destino/versiónSQL/identidad/release/historia ajenos. Usa applock exclusivo, STARTED durable, segundo bloqueo/DDL/COMMITTED, verifica modelo exacto; repetir devuelve NOOP."
+    },
+    {
+      "id": "p3_evidence_backup",
+      "label": "Respaldo nativo acotado a144 tablas",
+      "file_type": "code",
+      "source_file": "backend/tools/p3_workspace_recovery.py",
+      "source_location": "L15-L76",
+      "rationale": "Backup liga identidadSQL2019 y lista cerrada; COPY_ONLY/CHECKSUM, HEADER y verify_backup, huellas antes/después. Restore delega con patrónP3/tabla permitida y restricted=True."
+    },
+    {
+      "id": "p3_evidence_profile_restore",
+      "label": "Restauración publica perfil propio después de protección",
+      "file_type": "code",
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L121-L173,L223-L254,L261-L386",
+      "rationale": "Comprueba perfil/origen antes de restore; principal nuevo, DENY CONNECT al login heredado sólo en nueva copia, DENY académico, autentica ciphertexts, retira sesiones/desafíos/recuperación copiados y eleva piso TOTP sin desactivar MFA. Publica MULTI_USER al final."
+    },
+    {
+      "id": "p3_evidence_history_restore",
+      "label": "Linaje y diario binario fijados en revisión2",
+      "file_type": "code",
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L331-L371",
+      "rationale": "Ticket revision2 fija workspace_history_sha256, origen del diario y linaje de restauración. No reejecuta migración sobre historia nativamente restaurada; conserva el diario original."
+    },
+    {
+      "id": "p3_evidence_http",
+      "label": "Informe de25 checks SQL/API locales",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/http-result.json",
+      "source_location": "$.checks, $.checks_count",
+      "rationale": "Reporte passed sobre motor15/compat150: ficha compartida, responsablesUUID, CAS/idempotencia, lectura observada, control humano, notas con autor, filtros/tareas, merge/undo y denegaciones viewer/CSRF. Son resultados atribuidos al informe, no SQL ejecutado por esta revisión."
+    },
+    {
+      "id": "p3_evidence_volume",
+      "label": "Clientes supera el snapshot histórico",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/http-result.json",
+      "source_location": "$.fixture_contacts, $.checks[SQL_pagination_exceeds_old_snapshot_without_full_workspace]",
+      "rationale": "La calificación usa602 contactos sintéticos, búsqueda del último antes de paginar y escape de comodines; no depende de snapshot500."
+    },
+    {
+      "id": "p3_evidence_risk",
+      "label": "Riesgo:16 checks únicos en17 instancias",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/risk-result.json",
+      "source_location": "$.checks, $.count, $.check_instances",
+      "rationale": "El reporte enumera16 etiquetas únicas, con17 ejecuciones. Comprueba proyección comúnCRM/Inbox/miniCRM, manual/SLA separados, evidenciaobsoleta/nuevaentrada, filtrosalto_riesgo, handoff, anclaje y cursores. Fuente explícita:synthetic_completed_rule_run_fixture."
+    },
+    {
+      "id": "p3_evidence_risk_limit",
+      "label": "No aceptación de proveedor real por fixture de riesgo",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/risk-result.json",
+      "source_location": "$.source_scope, $.live_provider_acceptance, $.provider_calls",
+      "rationale": "live_provider_acceptance=false y provider_calls=0. Las pruebas acreditan validación/proyección local, no autenticidad operacional de proveedor ni predicción entrenada."
+    },
+    {
+      "id": "p3_evidence_faults",
+      "label": "Tres puntos de fallo y concurrencia reconciliados",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.faults, $.concurrency",
+      "rationale": "Informe confirma after_started/before_commit conservanSTARTED y reintentanCOMMITTED; after_commit conservaCOMMITTED y reintentaNOOP. Concurrencia unCOMMITTED/unNOOP, transacciónajena preservada, release/destino/modelo erróneos rechazados."
+    },
+    {
+      "id": "p3_evidence_recovery_evidence",
+      "label": "Restauración poblada y controles de seguridad reportados",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.populated_native_restore, $.restored_accounts, $.journal_timestamp_digest_drift_detected",
+      "rationale": "Informe registraHEADER/VERIFYONLY/CHECKDB, catálogo y datos iguales, restore restringido sinREPLACE, dos cuentas restauradas, hashesCRM iguales, secretos autenticados, cookie vieja rechazada, cuatro denegacionesSQL y drift de fecha de diario detectado."
+    },
+    {
+      "id": "p3_evidence_filters",
+      "label": "Veinticuatro checks adicionales de colas y tareas",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/final-fixture-result.json",
+      "source_location": "$.checks, $.count",
+      "rationale": "Informe ampliado passed: filtros de programa/nombre, límite int SQL, nombres canónicos de tarea, páginas sin solapamiento y ancla obsoleta; doce colas all/unread/mine/unassigned/human/ai/open/waiting/closed/hot/churn/sla y estado explícito de handoff en curso. Añade tres checks de ancla obligatoria en Clientes/Inbox/tareas para páginas posteriores y dos checks del umbral manual 74/75 de la cola hot, además de temperature=hot. La ampliación está verificada por lectura del informe, sin nueva ejecución SQL por este revisor."
+    },
+    {
+      "id": "p3_evidence_preservation",
+      "label": "Seis fuentes Windows y77 copias SQL2019 conservadas",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/source-preservation-result.json",
+      "source_location": "$.before_sha256, $.after_sha256, $.Windows_sources, $.SQL2019_prior_copies",
+      "rationale": "Informe before/after iguales4d77f219d3617eb1254e5fba1ebf667f6addcea35f23582a45779f0e82204126; declara ningúnDDL/DMLacadémico ni perfilesanteriores redirigidos."
+    },
+    {
+      "id": "p3_evidence_clean",
+      "label": "Copia final propia sin fixtures",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/clean-result.json",
+      "source_location": "$.database, $.accounts, $.fixtures, $.empty_domain_tables",
+      "rationale": "CBN_P3ES_TRIAL_20261026_606a9bec contiene una cuenta, cero fixtures y cero filas de contactos/conversaciones/mensajes/secretos/asignaciones/tareas/notas/merge; TLSverificado, sin proveedores."
+    },
+    {
+      "id": "p3_evidence_workflow_ui",
+      "label": "Doce checks de navegador sobre SQL sintético",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/browser/workflow-result.json",
+      "source_location": "$.checks, $.count, $.scope",
+      "rationale": "Tres paneles1440/1200, fichaúnica, respuesta perdida trascommit, reintento conservaOperationId/revisión y unmensajeSQL, borradores trasdesmontarshell, evidenciariesgoexpandibleteclado, móvil y ceroerrores de página."
+    },
+    {
+      "id": "p3_evidence_final_ui",
+      "label": "Ocho checks de navegador sobre copia limpia",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/browser/final-result.json",
+      "source_location": "$.checks, $.count, $.preview",
+      "rationale": "Preview4178, loginperfilP3limpio, CRM/Inboxvacíos, sinetiquetasinternasdeensayo, ajustesaccesibles,móvil sin desbordamiento y ceroerroresdepágina."
+    },
+    {
+      "id": "p3_evidence_criteria",
+      "label": "Cinco criterios P3 enlazados con evidencia local",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "rationale": "La evidencia revisada corresponde aP3.1Inbox/filtros/control; P3.2fichanotas/tareas/merge; P3.3paginación; P3.4riesgocomún/sinevaluación; P3.closecoherencia/borradores/UI/reversión. Esta revisión no sustituye la aceptación del ledger."
+    }
+  ],
+  "edges": [
+    {
+      "source": "p3_evidence_release",
+      "target": "p3_evidence_parent_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/release.json",
+      "source_location": "$.files",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_actor_fk",
+      "target": "p3_evidence_parent_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L9-L15,L18-L32,L36-L45",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_task_integrity",
+      "target": "p3_evidence_parent_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L17-L34",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_migration",
+      "target": "p3_evidence_release",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/p3_workspace_migrations.py",
+      "source_location": "L11-L24,L36-L63,L75-L150",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_migration",
+      "target": "p3_evidence_journal",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/p3_workspace_migrations.py",
+      "source_location": "L11-L24,L36-L63,L75-L150",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_migration",
+      "target": "p3_evidence_parent_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/p3_workspace_migrations.py",
+      "source_location": "L11-L24,L36-L63,L75-L150",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_backup",
+      "target": "p3_evidence_parent_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/p3_workspace_recovery.py",
+      "source_location": "L15-L76",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_profile_restore",
+      "target": "p3_evidence_backup",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L121-L173,L223-L254,L261-L386",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_profile_restore",
+      "target": "p3_evidence_migration",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L121-L173,L223-L254,L261-L386",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_profile_restore",
+      "target": "p3_evidence_history_restore",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L121-L173,L223-L254,L261-L386",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_history_restore",
+      "target": "p3_evidence_journal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/prepare_p3_workspace.py",
+      "source_location": "L331-L371",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_faults",
+      "target": "p3_evidence_migration",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.faults, $.concurrency",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_recovery_evidence",
+      "target": "p3_evidence_backup",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.populated_native_restore, $.restored_accounts, $.journal_timestamp_digest_drift_detected",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_recovery_evidence",
+      "target": "p3_evidence_profile_restore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.populated_native_restore, $.restored_accounts, $.journal_timestamp_digest_drift_detected",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_recovery_evidence",
+      "target": "p3_evidence_history_restore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/migration-result.json",
+      "source_location": "$.populated_native_restore, $.restored_accounts, $.journal_timestamp_digest_drift_detected",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_http",
+      "target": "p3_evidence_volume",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/http-result.json",
+      "source_location": "$.checks, $.checks_count",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_risk",
+      "target": "p3_evidence_risk_limit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/risk-result.json",
+      "source_location": "$.checks, $.count, $.check_instances",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_filters",
+      "target": "p3_evidence_http",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/final-fixture-result.json",
+      "source_location": "$.checks, $.count",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_clean",
+      "target": "p3_evidence_profile_restore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/clean-result.json",
+      "source_location": "$.database, $.accounts, $.fixtures, $.empty_domain_tables",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_workflow_ui",
+      "target": "p3_evidence_http",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/browser/workflow-result.json",
+      "source_location": "$.checks, $.count, $.scope",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_final_ui",
+      "target": "p3_evidence_clean",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p3-es/browser/final-result.json",
+      "source_location": "$.checks, $.count, $.preview",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_contract",
+      "target": "p3_evidence_risk_limit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Riesgo compartido y alcance",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_contract",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_http",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_risk",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_filters",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_workflow_ui",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_recovery_evidence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_criteria",
+      "target": "p3_evidence_preservation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Consultas, edición y concurrencia; ## Riesgo compartido y alcance; ## Interfaz y verificaciones",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_actor_fk",
+      "target": "p3_evidence_profile_restore",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L9-L15,L18-L32,L36-L45",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_task_integrity",
+      "target": "p3_evidence_filters",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L17-L34",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_evidence_risk",
+      "target": "p3_evidence_workflow_ui",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "artifacts/p3-es/risk-result.json",
+      "source_location": "$.checks, $.count, $.check_instances",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "p3_evidence_local_acceptance",
+      "label": "Evidencia local P3 por capas",
+      "nodes": [
+        "p3_evidence_http",
+        "p3_evidence_risk",
+        "p3_evidence_workflow_ui",
+        "p3_evidence_recovery_evidence",
+        "p3_evidence_preservation"
+      ],
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": "## Interfaz y verificaciones"
+    }
+  ],
+  "source_review": "artifacts/p3-es/evidence-source-review.json",
+  "deep_mode": false,
+  "evidence_observation_updates": [
+    {
+      "source_file": "artifacts/p3-es/final-fixture-result.json",
+      "previous_count": 19,
+      "current_count": 24,
+      "added_unique_checks": [
+        "clients_requires_page_anchor",
+        "inbox_requires_page_anchor",
+        "tasks_requires_page_anchor",
+        "hot_manual_score_threshold_74",
+        "hot_manual_score_threshold_75"
+      ],
+      "previous_sha256": "34265f9992c3777230c6447e97e6977043022eaace7a7059c527e11c0609163d",
+      "current_sha256": "ee9db229abdea69fca57180d75a3b8c1dfea19503091b253fcfeef561ba2bed4",
+      "previous_evidence_archived_at": "artifacts/p3-es/history/final-fixture-before-required-anchor.json",
+      "verification": "public_report_read_and_JSON_unique_label_count_only_no_SQL_execution_by_reviewer",
+      "migration_inputs_unchanged": true
+    }
+  ]
+}

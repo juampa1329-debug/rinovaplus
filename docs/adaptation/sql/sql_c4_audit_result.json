@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "real_overgrant_blocks_runtime",
+    "real_managed_metadata_drift_blocks_runtime",
+    "pinned_journal_sha256_mismatch_blocks_runtime",
+    "pinned_identity_mismatch_blocks_runtime",
+    "final_runtime_contract_and_synthetic_counts",
+    "source_full_precision_signature_unchanged",
+    "academic_signature_and_preexisting_acl_unchanged",
+    "journal_unchanged"
+  ],
+  "checks_passed": 8,
+  "source_unchanged": true,
+  "academic_tables_unchanged": 50,
+  "journal_unchanged": true
+}

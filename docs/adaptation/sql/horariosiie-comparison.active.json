@@ -1,0 +1,2828 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "unit": "SQL-C2",
+  "status": "comparison_and_plan_only_not_executable",
+  "database": "HORARIOSSIIE",
+  "execution_allowed": false,
+  "scope": "Captured table/column/FK metadata; no business rows or DDL",
+  "summary": {
+    "observed_tables": 50,
+    "declared_crm_tables": 68,
+    "absent_crm_tables": 68,
+    "conditional_candidate_tables": 36,
+    "employee_blocked_tables": 32,
+    "declared_fk_including_alter": 93,
+    "academic_fk": 0,
+    "academic_referenced_tables": 22,
+    "academic_absent_tables": 14
+  },
+  "common_gates": {
+    "full_metadata_visibility": true,
+    "managed_namespace_empty": true,
+    "no_enabled_ddl_triggers_observed": true,
+    "reviewed_sql_package_and_runner": false,
+    "backup_restore_rehearsal": false,
+    "target_version_principal_contract_accepted": false,
+    "final_shape_and_academic_before_after_accepted": false
+  },
+  "units": [
+    {
+      "id": "CBN-B000",
+      "source_ids": [],
+      "depends_on": [],
+      "declared_tables": [],
+      "classification": "history_design_only",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B001",
+      "source_ids": [
+        "001"
+      ],
+      "depends_on": [
+        "CBN-B000"
+      ],
+      "declared_tables": [
+        "crm.Contact",
+        "crm.Conversation",
+        "crm.Message",
+        "crm.Operation"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B002",
+      "source_ids": [
+        "002"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_admissions.AdmissionCase",
+        "crm_admissions.Followup",
+        "crm_admissions.Operation"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B003",
+      "source_ids": [
+        "003"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_inbox.Member",
+        "crm_inbox.Agent",
+        "crm_inbox.Assignment",
+        "crm_inbox.Task",
+        "crm_inbox.SlaPolicy",
+        "crm_inbox.Operation"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B004",
+      "source_ids": [
+        "004"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003"
+      ],
+      "declared_tables": [
+        "crm_events.Event",
+        "crm_events.Preparation",
+        "crm_events.RetryOperation"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B005",
+      "source_ids": [
+        "005"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B004"
+      ],
+      "declared_tables": [
+        "crm_analysis.Policy",
+        "crm_analysis.ConversationState",
+        "crm_analysis.Receipt",
+        "crm_analysis.Attempt",
+        "crm_analysis.Feedback",
+        "crm_analysis.Operation"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B006",
+      "source_ids": [
+        "006"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_config.Configuration",
+        "crm_config.Operation"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B007",
+      "source_ids": [
+        "007"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_identity.Profile"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B008",
+      "source_ids": [
+        "008"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_merge.MergeCase",
+        "crm_merge.Operation"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B009",
+      "source_ids": [
+        "009"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003"
+      ],
+      "declared_tables": [
+        "crm_strategy.Policy",
+        "crm_strategy.EvaluationPlan",
+        "crm_strategy.Operation"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B011",
+      "source_ids": [
+        "011",
+        "012"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_channels.Account",
+        "crm_channels.Credential",
+        "crm_channels.webhook_events",
+        "crm_channels.ExternalIdentity",
+        "crm_channels.ExternalMessage",
+        "crm_channels.outbound_queue",
+        "crm_channels.social_comments",
+        "crm_channels.Audit"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B013",
+      "source_ids": [
+        "013",
+        "014"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "declared_tables": [
+        "crm_ai.Configuration",
+        "crm_ai.Connection",
+        "crm_ai.Credential"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B015",
+      "source_ids": [
+        "015"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011"
+      ],
+      "declared_tables": [
+        "crm_channels.ConversationProfile",
+        "crm_channels.ConversationControl",
+        "crm_channels.MessageRoute"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B016",
+      "source_ids": [
+        "016"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011",
+        "CBN-B015"
+      ],
+      "declared_tables": [
+        "crm_channels.MediaAsset"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B017",
+      "source_ids": [
+        "017"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B011",
+        "CBN-B013",
+        "CBN-B015"
+      ],
+      "declared_tables": [
+        "crm_ai.AdmissionsPolicy",
+        "crm_ai.KnowledgeDocument",
+        "crm_ai.KnowledgeChunk",
+        "crm_ai.KnowledgeTerm",
+        "crm_ai.ProspectMemory",
+        "crm_ai.ResponseJob"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B018",
+      "source_ids": [
+        "018"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011",
+        "CBN-B015"
+      ],
+      "declared_tables": [
+        "crm_marketing.ChurnAssessment",
+        "crm_marketing.MessageTemplate",
+        "crm_marketing.ContactConsent",
+        "crm_marketing.RemarketingRule",
+        "crm_marketing.AccountCadence",
+        "crm_marketing.Campaign",
+        "crm_marketing.CampaignRecipient",
+        "crm_marketing.EvaluationRun",
+        "crm_marketing.Policy"
+      ],
+      "classification": "conditional_structural_candidate",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B019",
+      "source_ids": [
+        "019"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B017"
+      ],
+      "declared_tables": [
+        "crm_agents.Stage",
+        "crm_agents.Profile",
+        "crm_agents.Context",
+        "crm_agents.SourceScope",
+        "crm_agents.Assignment",
+        "crm_agents.History",
+        "crm_agents.Usage"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    },
+    {
+      "id": "CBN-B020",
+      "source_ids": [
+        "020"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B019"
+      ],
+      "declared_tables": [
+        "crm_agents.Execution"
+      ],
+      "classification": "employee_contract_pending",
+      "execution_allowed": false
+    }
+  ],
+  "tables": [
+    {
+      "name": "crm.Contact",
+      "unit": "CBN-B001",
+      "source_id": "001",
+      "source_file": "backend/migrations/001_local_crm.sql",
+      "source_line": 22,
+      "create_column_count": 15,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm.Conversation",
+      "unit": "CBN-B001",
+      "source_id": "001",
+      "source_file": "backend/migrations/001_local_crm.sql",
+      "source_line": 36,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm.Message",
+      "unit": "CBN-B001",
+      "source_id": "001",
+      "source_file": "backend/migrations/001_local_crm.sql",
+      "source_line": 48,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm.Operation",
+      "unit": "CBN-B001",
+      "source_id": "001",
+      "source_file": "backend/migrations/001_local_crm.sql",
+      "source_line": 59,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_admissions.AdmissionCase",
+      "unit": "CBN-B002",
+      "source_id": "002",
+      "source_file": "backend/migrations/002_local_admissions.sql",
+      "source_line": 22,
+      "create_column_count": 3,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_admissions.Followup",
+      "unit": "CBN-B002",
+      "source_id": "002",
+      "source_file": "backend/migrations/002_local_admissions.sql",
+      "source_line": 27,
+      "create_column_count": 8,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_admissions.Operation",
+      "unit": "CBN-B002",
+      "source_id": "002",
+      "source_file": "backend/migrations/002_local_admissions.sql",
+      "source_line": 39,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.Member",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 39,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.Agent",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 45,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.Assignment",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 53,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.Task",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 61,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.SlaPolicy",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 75,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_inbox.Operation",
+      "unit": "CBN-B003",
+      "source_id": "003",
+      "source_file": "backend/migrations/003_local_inbox.sql",
+      "source_line": 82,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_events.Event",
+      "unit": "CBN-B004",
+      "source_id": "004",
+      "source_file": "backend/migrations/004_conversation_events.sql",
+      "source_line": 146,
+      "create_column_count": 16,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_events.Preparation",
+      "unit": "CBN-B004",
+      "source_id": "004",
+      "source_file": "backend/migrations/004_conversation_events.sql",
+      "source_line": 169,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_events.RetryOperation",
+      "unit": "CBN-B004",
+      "source_id": "004",
+      "source_file": "backend/migrations/004_conversation_events.sql",
+      "source_line": 177,
+      "create_column_count": 3,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.Policy",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 204,
+      "create_column_count": 11,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.ConversationState",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 215,
+      "create_column_count": 18,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.Receipt",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 231,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.Attempt",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 238,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.Feedback",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 248,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_analysis.Operation",
+      "unit": "CBN-B005",
+      "source_id": "005",
+      "source_file": "backend/migrations/005_conversation_analysis.sql",
+      "source_line": 255,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_config.Configuration",
+      "unit": "CBN-B006",
+      "source_id": "006",
+      "source_file": "backend/migrations/006_crm_configuration.sql",
+      "source_line": 21,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_config.Operation",
+      "unit": "CBN-B006",
+      "source_id": "006",
+      "source_file": "backend/migrations/006_crm_configuration.sql",
+      "source_line": 28,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_identity.Profile",
+      "unit": "CBN-B007",
+      "source_id": "007",
+      "source_file": "backend/migrations/007_institutional_identity.sql",
+      "source_line": 21,
+      "create_column_count": 10,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_merge.MergeCase",
+      "unit": "CBN-B008",
+      "source_id": "008",
+      "source_file": "backend/migrations/008_contact_merge.sql",
+      "source_line": 21,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_merge.Operation",
+      "unit": "CBN-B008",
+      "source_id": "008",
+      "source_file": "backend/migrations/008_contact_merge.sql",
+      "source_line": 41,
+      "create_column_count": 10,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_strategy.Policy",
+      "unit": "CBN-B009",
+      "source_id": "009",
+      "source_file": "backend/migrations/009_conversation_strategy.sql",
+      "source_line": 21,
+      "create_column_count": 3,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_strategy.EvaluationPlan",
+      "unit": "CBN-B009",
+      "source_id": "009",
+      "source_file": "backend/migrations/009_conversation_strategy.sql",
+      "source_line": 28,
+      "create_column_count": 13,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_strategy.Operation",
+      "unit": "CBN-B009",
+      "source_id": "009",
+      "source_file": "backend/migrations/009_conversation_strategy.sql",
+      "source_line": 40,
+      "create_column_count": 10,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.Account",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 12,
+      "create_column_count": 8,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.Credential",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 22,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.webhook_events",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 28,
+      "create_column_count": 10,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.ExternalIdentity",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 37,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.ExternalMessage",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 43,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.outbound_queue",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 48,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.social_comments",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 60,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.Audit",
+      "unit": "CBN-B011",
+      "source_id": "011",
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 66,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.Configuration",
+      "unit": "CBN-B013",
+      "source_id": "013",
+      "source_file": "backend/migrations/013_ai_providers.sql",
+      "source_line": 12,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.Connection",
+      "unit": "CBN-B013",
+      "source_id": "013",
+      "source_file": "backend/migrations/013_ai_providers.sql",
+      "source_line": 18,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.Credential",
+      "unit": "CBN-B013",
+      "source_id": "013",
+      "source_file": "backend/migrations/013_ai_providers.sql",
+      "source_line": 24,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.ConversationProfile",
+      "unit": "CBN-B015",
+      "source_id": "015",
+      "source_file": "backend/migrations/015_inbox_unified.sql",
+      "source_line": 11,
+      "create_column_count": 4,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.ConversationControl",
+      "unit": "CBN-B015",
+      "source_id": "015",
+      "source_file": "backend/migrations/015_inbox_unified.sql",
+      "source_line": 17,
+      "create_column_count": 3,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.MessageRoute",
+      "unit": "CBN-B015",
+      "source_id": "015",
+      "source_file": "backend/migrations/015_inbox_unified.sql",
+      "source_line": 22,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_channels.MediaAsset",
+      "unit": "CBN-B016",
+      "source_id": "016",
+      "source_file": "backend/migrations/016_inbox_media.sql",
+      "source_line": 9,
+      "create_column_count": 22,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.AdmissionsPolicy",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 12,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.KnowledgeDocument",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 19,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.KnowledgeChunk",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 26,
+      "create_column_count": 5,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.KnowledgeTerm",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 31,
+      "create_column_count": 3,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.ProspectMemory",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 37,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_ai.ResponseJob",
+      "unit": "CBN-B017",
+      "source_id": "017",
+      "source_file": "backend/migrations/017_ai_admissions.sql",
+      "source_line": 44,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.ChurnAssessment",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 16,
+      "create_column_count": 16,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.MessageTemplate",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 40,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.ContactConsent",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 57,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.RemarketingRule",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 77,
+      "create_column_count": 15,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.AccountCadence",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 96,
+      "create_column_count": 10,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.Campaign",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 107,
+      "create_column_count": 17,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.CampaignRecipient",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 129,
+      "create_column_count": 25,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.EvaluationRun",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 159,
+      "create_column_count": 15,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_marketing.Policy",
+      "unit": "CBN-B018",
+      "source_id": "018",
+      "source_file": "backend/migrations/018_campaigns.sql",
+      "source_line": 173,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "conditional_structural_candidate",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Stage",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 13,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Profile",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 20,
+      "create_column_count": 11,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Context",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 37,
+      "create_column_count": 12,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.SourceScope",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 47,
+      "create_column_count": 8,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Assignment",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 54,
+      "create_column_count": 6,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.History",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 61,
+      "create_column_count": 9,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Usage",
+      "unit": "CBN-B019",
+      "source_id": "019",
+      "source_file": "backend/migrations/019_admissions_agents.sql",
+      "source_line": 68,
+      "create_column_count": 7,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    },
+    {
+      "name": "crm_agents.Execution",
+      "unit": "CBN-B020",
+      "source_id": "020",
+      "source_file": "backend/migrations/020_agent_execution.sql",
+      "source_line": 12,
+      "create_column_count": 21,
+      "presence": "absent_observed",
+      "classification": "employee_contract_pending",
+      "shape_accepted": false
+    }
+  ],
+  "foreign_keys": [
+    {
+      "source_table": "crm.Conversation",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 43,
+      "definition": "CONSTRAINT FK_Conversation_Contact FOREIGN KEY (ContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/001_local_crm.sql"
+    },
+    {
+      "source_table": "crm.Message",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 54,
+      "definition": "CONSTRAINT FK_Message_Conversation FOREIGN KEY (ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/001_local_crm.sql"
+    },
+    {
+      "source_table": "crm.Operation",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 66,
+      "definition": "CONSTRAINT FK_Operation_Contact FOREIGN KEY (ContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/001_local_crm.sql"
+    },
+    {
+      "source_table": "crm.Operation",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 67,
+      "definition": "CONSTRAINT FK_Operation_Conversation FOREIGN KEY (ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/001_local_crm.sql"
+    },
+    {
+      "source_table": "crm.Operation",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 68,
+      "definition": "CONSTRAINT FK_Operation_Message FOREIGN KEY (MessageId) REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/001_local_crm.sql"
+    },
+    {
+      "source_table": "crm_admissions.Followup",
+      "source_columns": [
+        "CaseId"
+      ],
+      "target_table": "crm_admissions.AdmissionCase",
+      "target_columns": [
+        "CaseId"
+      ],
+      "line": 34,
+      "definition": "CONSTRAINT FK_Followup_Case FOREIGN KEY (CaseId) REFERENCES crm_admissions.AdmissionCase(CaseId)",
+      "file": "backend/migrations/002_local_admissions.sql"
+    },
+    {
+      "source_table": "crm_admissions.Operation",
+      "source_columns": [
+        "FollowupId"
+      ],
+      "target_table": "crm_admissions.Followup",
+      "target_columns": [
+        "FollowupId"
+      ],
+      "line": 45,
+      "definition": "CONSTRAINT FK_AdmissionOperation_Followup FOREIGN KEY(FollowupId) REFERENCES crm_admissions.Followup(FollowupId)",
+      "file": "backend/migrations/002_local_admissions.sql"
+    },
+    {
+      "source_table": "crm_inbox.Assignment",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 57,
+      "definition": "CONSTRAINT FK_InboxAssignment_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/003_local_inbox.sql"
+    },
+    {
+      "source_table": "crm_inbox.Assignment",
+      "source_columns": [
+        "HumanEmployeeId"
+      ],
+      "target_table": "crm_inbox.Member",
+      "target_columns": [
+        "EmployeeId"
+      ],
+      "line": 58,
+      "definition": "CONSTRAINT FK_InboxAssignment_Human FOREIGN KEY(HumanEmployeeId) REFERENCES crm_inbox.Member(EmployeeId)",
+      "file": "backend/migrations/003_local_inbox.sql"
+    },
+    {
+      "source_table": "crm_inbox.Assignment",
+      "source_columns": [
+        "AiAgentId"
+      ],
+      "target_table": "crm_inbox.Agent",
+      "target_columns": [
+        "AgentId"
+      ],
+      "line": 59,
+      "definition": "CONSTRAINT FK_InboxAssignment_Agent FOREIGN KEY(AiAgentId) REFERENCES crm_inbox.Agent(AgentId)",
+      "file": "backend/migrations/003_local_inbox.sql"
+    },
+    {
+      "source_table": "crm_inbox.Task",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 68,
+      "definition": "CONSTRAINT FK_InboxTask_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/003_local_inbox.sql"
+    },
+    {
+      "source_table": "crm_inbox.Task",
+      "source_columns": [
+        "HumanEmployeeId"
+      ],
+      "target_table": "crm_inbox.Member",
+      "target_columns": [
+        "EmployeeId"
+      ],
+      "line": 69,
+      "definition": "CONSTRAINT FK_InboxTask_Human FOREIGN KEY(HumanEmployeeId) REFERENCES crm_inbox.Member(EmployeeId)",
+      "file": "backend/migrations/003_local_inbox.sql"
+    },
+    {
+      "source_table": "crm_events.Event",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 160,
+      "definition": "CONSTRAINT FK_Event_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/004_conversation_events.sql"
+    },
+    {
+      "source_table": "crm_events.Preparation",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 174,
+      "definition": "CONSTRAINT FK_Preparation_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/004_conversation_events.sql"
+    },
+    {
+      "source_table": "crm_events.Preparation",
+      "source_columns": [
+        "LastEventId"
+      ],
+      "target_table": "crm_events.Event",
+      "target_columns": [
+        "EventId"
+      ],
+      "line": 175,
+      "definition": "CONSTRAINT FK_Preparation_Event FOREIGN KEY(LastEventId) REFERENCES crm_events.Event(EventId)",
+      "file": "backend/migrations/004_conversation_events.sql"
+    },
+    {
+      "source_table": "crm_analysis.ConversationState",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 224,
+      "definition": "CONSTRAINT FK_AnalysisState_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/005_conversation_analysis.sql"
+    },
+    {
+      "source_table": "crm_analysis.Receipt",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 235,
+      "definition": "CONSTRAINT FK_AnalysisReceipt_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/005_conversation_analysis.sql"
+    },
+    {
+      "source_table": "crm_analysis.Receipt",
+      "source_columns": [
+        "EventId"
+      ],
+      "target_table": "crm_events.Event",
+      "target_columns": [
+        "EventId"
+      ],
+      "line": 236,
+      "definition": "CONSTRAINT FK_AnalysisReceipt_Event FOREIGN KEY(EventId) REFERENCES crm_events.Event(EventId)",
+      "file": "backend/migrations/005_conversation_analysis.sql"
+    },
+    {
+      "source_table": "crm_analysis.Attempt",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 243,
+      "definition": "CONSTRAINT FK_AnalysisAttempt_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/005_conversation_analysis.sql"
+    },
+    {
+      "source_table": "crm_analysis.Feedback",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 253,
+      "definition": "CONSTRAINT FK_AnalysisFeedback_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/005_conversation_analysis.sql"
+    },
+    {
+      "source_table": "crm_identity.Profile",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 27,
+      "definition": "CONSTRAINT FK_IdentityProfile_Contact FOREIGN KEY(ContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/007_institutional_identity.sql"
+    },
+    {
+      "source_table": "crm_merge.MergeCase",
+      "source_columns": [
+        "SourceContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 29,
+      "definition": "CONSTRAINT FK_MergeCase_Source FOREIGN KEY(SourceContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/008_contact_merge.sql"
+    },
+    {
+      "source_table": "crm_merge.MergeCase",
+      "source_columns": [
+        "TargetContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 30,
+      "definition": "CONSTRAINT FK_MergeCase_Target FOREIGN KEY(TargetContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/008_contact_merge.sql"
+    },
+    {
+      "source_table": "crm_merge.Operation",
+      "source_columns": [
+        "MergeId"
+      ],
+      "target_table": "crm_merge.MergeCase",
+      "target_columns": [
+        "MergeId"
+      ],
+      "line": 48,
+      "definition": "CONSTRAINT FK_MergeOperation_Case FOREIGN KEY(MergeId) REFERENCES crm_merge.MergeCase(MergeId)",
+      "file": "backend/migrations/008_contact_merge.sql"
+    },
+    {
+      "source_table": "crm_merge.Operation",
+      "source_columns": [
+        "SourceContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 49,
+      "definition": "CONSTRAINT FK_MergeOperation_Source FOREIGN KEY(SourceContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/008_contact_merge.sql"
+    },
+    {
+      "source_table": "crm_merge.Operation",
+      "source_columns": [
+        "TargetContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 50,
+      "definition": "CONSTRAINT FK_MergeOperation_Target FOREIGN KEY(TargetContactId) REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/008_contact_merge.sql"
+    },
+    {
+      "source_table": "crm_strategy.Policy",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 24,
+      "definition": "CONSTRAINT FK_StrategyPolicy_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/009_conversation_strategy.sql"
+    },
+    {
+      "source_table": "crm_strategy.EvaluationPlan",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 35,
+      "definition": "CONSTRAINT FK_StrategyPlan_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/009_conversation_strategy.sql"
+    },
+    {
+      "source_table": "crm_strategy.Operation",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 46,
+      "definition": "CONSTRAINT FK_StrategyOperation_Conversation FOREIGN KEY(ConversationId) REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/009_conversation_strategy.sql"
+    },
+    {
+      "source_table": "crm_strategy.Operation",
+      "source_columns": [
+        "PlanId"
+      ],
+      "target_table": "crm_strategy.EvaluationPlan",
+      "target_columns": [
+        "PlanId"
+      ],
+      "line": 47,
+      "definition": "CONSTRAINT FK_StrategyOperation_Plan FOREIGN KEY(PlanId) REFERENCES crm_strategy.EvaluationPlan(PlanId)",
+      "file": "backend/migrations/009_conversation_strategy.sql"
+    },
+    {
+      "source_table": "crm_strategy.Operation",
+      "source_columns": [
+        "TaskId"
+      ],
+      "target_table": "crm_inbox.Task",
+      "target_columns": [
+        "TaskId"
+      ],
+      "line": 48,
+      "definition": "CONSTRAINT FK_StrategyOperation_Task FOREIGN KEY(TaskId) REFERENCES crm_inbox.Task(TaskId)",
+      "file": "backend/migrations/009_conversation_strategy.sql"
+    },
+    {
+      "source_table": "crm_channels.Credential",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 23,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 38,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 39,
+      "definition": "ContactId uniqueidentifier NOT NULL REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 40,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 44,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 45,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 49,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 50,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 51,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.social_comments",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 61,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ConversationProfile",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 12,
+      "definition": "ConversationId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/015_inbox_unified.sql"
+    },
+    {
+      "source_table": "crm_channels.ConversationControl",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 18,
+      "definition": "ConversationId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/015_inbox_unified.sql"
+    },
+    {
+      "source_table": "crm_channels.MessageRoute",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 23,
+      "definition": "MessageId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/015_inbox_unified.sql"
+    },
+    {
+      "source_table": "crm_channels.MessageRoute",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 24,
+      "definition": "IdentityId uniqueidentifier NOT NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/015_inbox_unified.sql"
+    },
+    {
+      "source_table": "crm_channels.MessageRoute",
+      "source_columns": [
+        "QueueId"
+      ],
+      "target_table": "crm_channels.outbound_queue",
+      "target_columns": [
+        "QueueId"
+      ],
+      "line": 25,
+      "definition": "QueueId uniqueidentifier NULL REFERENCES crm_channels.outbound_queue(QueueId)",
+      "file": "backend/migrations/015_inbox_unified.sql"
+    },
+    {
+      "source_table": "crm_channels.MediaAsset",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 11,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/016_inbox_media.sql"
+    },
+    {
+      "source_table": "crm_channels.MediaAsset",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 12,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/016_inbox_media.sql"
+    },
+    {
+      "source_table": "crm_channels.MediaAsset",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 13,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/016_inbox_media.sql"
+    },
+    {
+      "source_table": "crm_channels.MediaAsset",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 14,
+      "definition": "Channel varchar(12) NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/016_inbox_media.sql"
+    },
+    {
+      "source_table": "crm_ai.KnowledgeChunk",
+      "source_columns": [
+        "DocumentId"
+      ],
+      "target_table": "crm_ai.KnowledgeDocument",
+      "target_columns": [
+        "DocumentId"
+      ],
+      "line": 27,
+      "definition": "DocumentId uniqueidentifier NOT NULL REFERENCES crm_ai.KnowledgeDocument(DocumentId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.KnowledgeTerm",
+      "source_columns": [
+        "ChunkId"
+      ],
+      "target_table": "crm_ai.KnowledgeChunk",
+      "target_columns": [
+        "ChunkId"
+      ],
+      "line": 33,
+      "definition": "ChunkId uniqueidentifier NOT NULL REFERENCES crm_ai.KnowledgeChunk(ChunkId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ProspectMemory",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 38,
+      "definition": "ConversationId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ResponseJob",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 45,
+      "definition": "MessageId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ResponseJob",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 46,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ResponseJob",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 47,
+      "definition": "IdentityId uniqueidentifier NOT NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ResponseJob",
+      "source_columns": [
+        "ResponseMessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 51,
+      "definition": "ResponseMessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_ai.ResponseJob",
+      "source_columns": [
+        "TaskId"
+      ],
+      "target_table": "crm_inbox.Task",
+      "target_columns": [
+        "TaskId"
+      ],
+      "line": 52,
+      "definition": "TaskId uniqueidentifier NULL REFERENCES crm_inbox.Task(TaskId)",
+      "file": "backend/migrations/017_ai_admissions.sql"
+    },
+    {
+      "source_table": "crm_marketing.ChurnAssessment",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 18,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.ChurnAssessment",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 19,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.MessageTemplate",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 42,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.ContactConsent",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 59,
+      "definition": "IdentityId uniqueidentifier NOT NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.ContactConsent",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 60,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.ContactConsent",
+      "source_columns": [
+        "IdentityId",
+        "Channel",
+        "AccountScope",
+        "Purpose",
+        "RevokesVersion"
+      ],
+      "target_table": "crm_marketing.ContactConsent",
+      "target_columns": [
+        "IdentityId",
+        "Channel",
+        "AccountScope",
+        "Purpose",
+        "Version"
+      ],
+      "line": 69,
+      "definition": "FOREIGN KEY(IdentityId,Channel,AccountScope,Purpose,RevokesVersion) REFERENCES crm_marketing.ContactConsent(IdentityId,Channel,AccountScope,Purpose,Version)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.RemarketingRule",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 80,
+      "definition": "Channel varchar(12) NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.RemarketingRule",
+      "source_columns": [
+        "TemplateId",
+        "TemplateVersion",
+        "Channel",
+        "AccountScope"
+      ],
+      "target_table": "crm_marketing.MessageTemplate",
+      "target_columns": [
+        "TemplateId",
+        "Version",
+        "Channel",
+        "AccountScope"
+      ],
+      "line": 88,
+      "definition": "FOREIGN KEY(TemplateId,TemplateVersion,Channel,AccountScope) REFERENCES crm_marketing.MessageTemplate(TemplateId,Version,Channel,AccountScope)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.AccountCadence",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 97,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.Campaign",
+      "source_columns": [
+        "RuleId"
+      ],
+      "target_table": "crm_marketing.RemarketingRule",
+      "target_columns": [
+        "RuleId"
+      ],
+      "line": 113,
+      "definition": "RuleId uniqueidentifier NULL REFERENCES crm_marketing.RemarketingRule(RuleId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.Campaign",
+      "source_columns": [
+        "Channel",
+        "AccountScope"
+      ],
+      "target_table": "crm_marketing.AccountCadence",
+      "target_columns": [
+        "Channel",
+        "AccountScope"
+      ],
+      "line": 118,
+      "definition": "FOREIGN KEY(Channel,AccountScope) REFERENCES crm_marketing.AccountCadence(Channel,AccountScope)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.Campaign",
+      "source_columns": [
+        "TemplateId",
+        "TemplateVersion",
+        "Channel",
+        "AccountScope"
+      ],
+      "target_table": "crm_marketing.MessageTemplate",
+      "target_columns": [
+        "TemplateId",
+        "Version",
+        "Channel",
+        "AccountScope"
+      ],
+      "line": 119,
+      "definition": "FOREIGN KEY(TemplateId,TemplateVersion,Channel,AccountScope) REFERENCES crm_marketing.MessageTemplate(TemplateId,Version,Channel,AccountScope)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 132,
+      "definition": "IdentityId uniqueidentifier NOT NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 133,
+      "definition": "ContactId uniqueidentifier NOT NULL REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 134,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "QueueId"
+      ],
+      "target_table": "crm_channels.outbound_queue",
+      "target_columns": [
+        "QueueId"
+      ],
+      "line": 137,
+      "definition": "QueueId uniqueidentifier NULL REFERENCES crm_channels.outbound_queue(QueueId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "CampaignId"
+      ],
+      "target_table": "crm_marketing.Campaign",
+      "target_columns": [
+        "CampaignId"
+      ],
+      "line": 147,
+      "definition": "FOREIGN KEY(CampaignId) REFERENCES crm_marketing.Campaign(CampaignId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "CampaignId",
+        "Channel",
+        "AccountScope"
+      ],
+      "target_table": "crm_marketing.Campaign",
+      "target_columns": [
+        "CampaignId",
+        "Channel",
+        "AccountScope"
+      ],
+      "line": 148,
+      "definition": "FOREIGN KEY(CampaignId,Channel,AccountScope) REFERENCES crm_marketing.Campaign(CampaignId,Channel,AccountScope)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.CampaignRecipient",
+      "source_columns": [
+        "ConsentId",
+        "ConsentVersion"
+      ],
+      "target_table": "crm_marketing.ContactConsent",
+      "target_columns": [
+        "ConsentId",
+        "Version"
+      ],
+      "line": 149,
+      "definition": "FOREIGN KEY(ConsentId,ConsentVersion) REFERENCES crm_marketing.ContactConsent(ConsentId,Version)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.EvaluationRun",
+      "source_columns": [
+        "RuleId"
+      ],
+      "target_table": "crm_marketing.RemarketingRule",
+      "target_columns": [
+        "RuleId"
+      ],
+      "line": 163,
+      "definition": "RuleId uniqueidentifier NULL REFERENCES crm_marketing.RemarketingRule(RuleId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.EvaluationRun",
+      "source_columns": [
+        "CampaignId"
+      ],
+      "target_table": "crm_marketing.Campaign",
+      "target_columns": [
+        "CampaignId"
+      ],
+      "line": 164,
+      "definition": "CampaignId uniqueidentifier NULL REFERENCES crm_marketing.Campaign(CampaignId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_marketing.ChurnAssessment",
+      "source_columns": [
+        "RunId"
+      ],
+      "target_table": "crm_marketing.EvaluationRun",
+      "target_columns": [
+        "RunId"
+      ],
+      "line": 172,
+      "definition": "ALTER TABLE crm_marketing.ChurnAssessment ADD RunId uniqueidentifier NULL REFERENCES crm_marketing.EvaluationRun(RunId)",
+      "file": "backend/migrations/018_campaigns.sql"
+    },
+    {
+      "source_table": "crm_agents.Profile",
+      "source_columns": [
+        "AgentId"
+      ],
+      "target_table": "crm_inbox.Agent",
+      "target_columns": [
+        "AgentId"
+      ],
+      "line": 21,
+      "definition": "AgentId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm_inbox.Agent(AgentId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Profile",
+      "source_columns": [
+        "ParentId"
+      ],
+      "target_table": "crm_agents.Profile",
+      "target_columns": [
+        "AgentId"
+      ],
+      "line": 23,
+      "definition": "ParentId uniqueidentifier NULL REFERENCES crm_agents.Profile(AgentId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Profile",
+      "source_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "target_table": "crm_agents.Stage",
+      "target_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "line": 28,
+      "definition": "FOREIGN KEY(StageId,ProgramId) REFERENCES crm_agents.Stage(StageId,ProgramId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Context",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 39,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Context",
+      "source_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "target_table": "crm_agents.Stage",
+      "target_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "line": 44,
+      "definition": "FOREIGN KEY(StageId,ProgramId) REFERENCES crm_agents.Stage(StageId,ProgramId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.SourceScope",
+      "source_columns": [
+        "DocumentId"
+      ],
+      "target_table": "crm_ai.KnowledgeDocument",
+      "target_columns": [
+        "DocumentId"
+      ],
+      "line": 48,
+      "definition": "DocumentId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm_ai.KnowledgeDocument(DocumentId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.SourceScope",
+      "source_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "target_table": "crm_agents.Stage",
+      "target_columns": [
+        "StageId",
+        "ProgramId"
+      ],
+      "line": 51,
+      "definition": "FOREIGN KEY(StageId,ProgramId) REFERENCES crm_agents.Stage(StageId,ProgramId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Assignment",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 55,
+      "definition": "ConversationId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Assignment",
+      "source_columns": [
+        "ContextId",
+        "ConversationId"
+      ],
+      "target_table": "crm_agents.Context",
+      "target_columns": [
+        "ContextId",
+        "ConversationId"
+      ],
+      "line": 59,
+      "definition": "FOREIGN KEY(ContextId,ConversationId) REFERENCES crm_agents.Context(ContextId,ConversationId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Usage",
+      "source_columns": [
+        "AgentId"
+      ],
+      "target_table": "crm_agents.Profile",
+      "target_columns": [
+        "AgentId"
+      ],
+      "line": 69,
+      "definition": "AgentId uniqueidentifier NOT NULL REFERENCES crm_agents.Profile(AgentId)",
+      "file": "backend/migrations/019_admissions_agents.sql"
+    },
+    {
+      "source_table": "crm_agents.Execution",
+      "source_columns": [
+        "RequestId"
+      ],
+      "target_table": "crm_agents.Usage",
+      "target_columns": [
+        "RequestId"
+      ],
+      "line": 13,
+      "definition": "RequestId uniqueidentifier NOT NULL PRIMARY KEY REFERENCES crm_agents.Usage(RequestId)",
+      "file": "backend/migrations/020_agent_execution.sql"
+    },
+    {
+      "source_table": "crm_agents.Execution",
+      "source_columns": [
+        "AgentId"
+      ],
+      "target_table": "crm_agents.Profile",
+      "target_columns": [
+        "AgentId"
+      ],
+      "line": 14,
+      "definition": "AgentId uniqueidentifier NOT NULL REFERENCES crm_agents.Profile(AgentId)",
+      "file": "backend/migrations/020_agent_execution.sql"
+    },
+    {
+      "source_table": "crm_agents.Execution",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 16,
+      "definition": "ConversationId uniqueidentifier NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/020_agent_execution.sql"
+    }
+  ],
+  "academic_references": [
+    {
+      "name": "dbo.ACAsignatura",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACAsignaturaPlan",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACAspirante",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 109
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 211
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 382
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 966
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACDetalleJornada",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 250
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACEscuela",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 25
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACEstadoSeguimiento",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 295
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 263
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 137
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 339
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACJornada",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 250
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACModalidad",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 30
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACPlanEducativo",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACProgramaOfrecido",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 382
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 966
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 44
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACProgramas",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 151
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 551
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 35
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 101
+        },
+        {
+          "file": "backend/app/modules/contacts/application/merge.py",
+          "line": 477
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 406
+        }
+      ]
+    },
+    {
+      "name": "dbo.ACSeguimiento",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 263
+        }
+      ]
+    },
+    {
+      "name": "dbo.AFDetallePlanPago",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 94
+        }
+      ]
+    },
+    {
+      "name": "dbo.AFPlanes",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 86
+        }
+      ]
+    },
+    {
+      "name": "dbo.AFTarifas",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 86
+        }
+      ]
+    },
+    {
+      "name": "dbo.GEEmpleado",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/conversation_strategy/api/router.py",
+          "line": 236
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 26
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 167
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 327
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 309
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 236
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 256
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 365
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 418
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 549
+        }
+      ]
+    },
+    {
+      "name": "dbo.GEEstudiante",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "name": "dbo.GEImgenProg",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "name": "dbo.GEPeriodo",
+      "presence": "present_columns_not_fully_accepted",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 68
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 120
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 146
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 167
+        },
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 228
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 31
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 20
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 42
+        },
+        {
+          "file": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+          "line": 59
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 100
+        }
+      ]
+    },
+    {
+      "name": "dbo.GEPoblacion",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "name": "dbo.GETipoIdentidad",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/admissions/application/service.py",
+          "line": 211
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 99
+        },
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 208
+        }
+      ]
+    },
+    {
+      "name": "dbo.GETipoImagen",
+      "presence": "absent_observed",
+      "references": [
+        {
+          "file": "backend/app/modules/catalog/infrastructure/institutional_context.py",
+          "line": 105
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Conditional candidates are not ready to execute or activate",
+    "Employee contract is unaccepted even if a same-named table later appears",
+    "Literal references are not a complete SQL parser or all dynamic dependencies",
+    "CREATE columns omit ALTER final shape; use P1.3 final-shape contract",
+    "Captured metadata is sequential, not a concurrent-DDL snapshot"
+  ]
+}

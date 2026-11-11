@@ -1,0 +1,29 @@
+# Canales: referencias oficiales sin conexión
+
+**Cinco perfiles de integración LOCAL:** Facebook, Messenger, Instagram, WhatsApp y TikTok. La tupla histórica de Inbox conserva cuatro canales de demo; Facebook Pages/comentarios y Messenger DM se distinguen sin migrar fixtures. Ajustes permite exclusivamente etiquetas `DEMO-…`; guardar no concede scopes ni activa servicios. [Contrato LOCAL](local-contract-guide.md).
+
+Revisión de fuentes primarias: **2026-10-14**, aportada por investigación independiente. Documentación verificable no prueba una cuenta/app, acceso, API real o política aprobada del CRM. Estado visible permanente **No conectado / No verificado / Referencia LOCAL**. La UI no abre OAuth ni prueba/conecta/activa servicios. Referencias no son almacén seguro ni cifrado; recarga/reset elimina todo y no hay persistencia/fetch de negocio.
+
+## Evidencia y puerta por producto
+
+| Perfil | Evidencia primaria breve | Pendiente antes de activar |
+|---|---|---|
+| Facebook Pages | [Ayuda oficial](https://www.facebook.com/help/289207354498410/r.php/) diferencia contenido/comentarios de mensajes. [Pages API](https://developers.facebook.com/docs/pages-api/) y [posts](https://developers.facebook.com/docs/pages-api/posts/) devolvieron 429: no verificados en esta revisión. | App/Page/portfolio, scopes exactos de feed/comentarios, review, versión y firma. No declarar `pages_read_user_content`/`pages_manage_engagement` verificados. |
+| Messenger | [Colección propiedad de Meta](https://www.postman.com/meta/messenger-platform-api/documentation/iyp204x/messenger-platform-api) documenta Page token, Page/PSID y `pages_messaging`. [Conversaciones](https://www.postman.com/meta/messenger-platform-api/folder/22794852-255610cd-47f5-4f4d-b3fa-71aec360be9a) añade permisos según operación y Advanced Access fuera de roles app. | Elegibilidad/acceso/política por operación, review y evidencia por recurso; ventana estándar condicionada no convertida en default CRM. |
+| Instagram | [Instagram Login](https://www.postman.com/meta/instagram/folder/6raa77c/instagram-api-with-instagram-login): cuenta profesional, Page no obligatoria; permisos `instagram_business_*`. [Facebook Login](https://www.postman.com/meta/instagram/folder/u4g5a2a/instagram-api-with-facebook-login): profesional + Page vinculada y permisos de cuenta/Page por operación. | Producto de login sin seleccionar, App/cuenta/username, grants/review y versión. No mezclar audiencias/permisos; publicar es capacidad aparte no autorizada. |
+| WhatsApp | [Cloud API](https://www.postman.com/meta/whatsapp-business-platform/collection/wlk6lh4/whatsapp-cloud-api): portfolio/WABA/Phone ID, referencias de user/system-user token y permisos de gestión/mensajería. | Número/registro/verificación, suscripción/firma, reglas y plantillas aprobadas por operación; `business_management` solo portfolio aplicable. Sin PIN ni envío. |
+| TikTok | [Login Kit](https://developers.tiktok.com/docs/en/login-kit-web) no concede DM. [Display](https://developers.tiktok.com/docs/en/display-api-overview?enter_method=left_navigation) usa `user.info.basic`/`video.list`; [Content Posting](https://developers.tiktok.com/docs/en/content-posting-api-get-started) requiere acceso/review de publicación, no mensajería. | Producto sin seleccionar, client/app/Open ID/cuenta según producto, redirect registrado/state/grants/review/versión. Shop/Advertiser no son universales. |
+
+### WhatsApp: no condensar operaciones distintas
+
+[Mensajes](https://www.postman.com/meta/whatsapp-business-platform/folder/13382743-ba8d099d-007e-4b52-b9f2-3cf3c60e4fbc), [media](https://www.postman.com/meta/whatsapp-business-platform/folder/13382743-ecb27be5-4d27-4763-bbee-6a8002c04bf3) y [plantillas](https://www.postman.com/meta/whatsapp-business-platform/request/lwtlz1k/send-message-template-interactive) requieren contratos separados. [Statuses](https://www.postman.com/meta/whatsapp-business-platform/folder/fuaee8l/statuses-object) contiene material antiguo On-Prem/pricing: no copiar enum/ventana/precios como Cloud actual. Webhook no es prueba de entrega; firma/challenge exactos Meta pendientes por 429 de [getting started](https://developers.facebook.com/docs/graph-api/webhooks/getting-started/).
+
+### TikTok: acceso por producto
+
+[Business Messaging](https://business-api.tiktok.com/portal/docs/business-messaging-api-get-started/v1.3) exige acceso/auth/suscripción propios. [Accounts](https://business-api.tiktok.com/portal/docs/accounts-api-overview/v1.3) documenta acceso a comentarios de videos propios/insights, no scraping público. [Webhooks Developer](https://developers.tiktok.com/docs/en/webhooks-verification) describe firma/HMAC/timestamp/raw JSON/replay; no trasladar ese contrato a todos los productos Business ni fijar edad de replay CRM sin decisión. PKCE se verifica para producto/plataforma/flujo escogidos, no se importa obligatoriamente desde Android/Desktop.
+
+## Referencias, errores y evidencia local
+
+Campos son etiquetas de App/recurso, Page/portfolio/WABA/Phone/cuenta/username/Client Key/Open ID según perfil; token, app/client secret y verify token son referencias **distintas**, jamás valores. Scopes solicitados, scopes concedidos, evidencia y versión se guardan como etiquetas ficticias: no prueban grants. Callback y webhook también son etiquetas; HTTPS público autorizado/redirect/state/firma/replay y permisos deben probarse antes de conectar.
+
+Guardar valida etiquetas vacías o `DEMO-` más 1–60 letras/números/guion/guion bajo. Rechazo produce aviso constante, sin repetir entrada. Cambiar perfil/sección/ruta descarta lo pendiente y mantiene lo guardado aislado por perfil; cancelar reset conserva lo guardado, confirmarlo elimina todo. Los endpoints propios visibles se derivan del catálogo Python compilado: cuerpos válidos 501, declarados inválidos 422 saneados. No callbacks que redirijan, cookies o ACK exitosos. Contratos de seguridad/errores/evidencia reales continúan pendientes.

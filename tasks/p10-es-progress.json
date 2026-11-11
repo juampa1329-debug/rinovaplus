@@ -1,0 +1,58 @@
+{
+  "unit": "P10-ES",
+  "status": "partial_predecessor_external_gates_pending",
+  "date": "2026-10-28",
+  "primary_url": "http://127.0.0.1:4178/#/intelligence",
+  "image_tag": "crm-cbn-workspace:p10es-r2",
+  "database": "CBN_P10ES_TRIAL_20261028_014cc86f",
+  "profile": ".local/p10-es/final-v2-runtime",
+  "compose": "compose.learning.yaml",
+  "overall_technical_percent": "90.23%",
+  "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
+  "phase_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "82.29%",
+    "P5": "100.00%",
+    "P6": "100.00%",
+    "P7": "82.29%",
+    "P8": "95.00%",
+    "P9": "93.75%",
+    "P10": "95.00%",
+    "P11": "25.00%"
+  },
+  "accepted_P10_criteria": [
+    "P10.1",
+    "P10.2",
+    "P10.3",
+    "P10.4"
+  ],
+  "pending_milestones": [
+    "P10.close.m4"
+  ],
+  "milestones_done": 252,
+  "canonical_milestone_denominator": 279,
+  "criteria_accepted": 43,
+  "canonical_criterion_denominator": 56,
+  "external_provider_calls": 0,
+  "real_institution_effectiveness_claimed": false,
+  "academic_writes": false,
+  "next": "P10.close.m4 requires full P8/P9 dependency closure; P11 requires a new user request. Do not rerun populated preparers.",
+  "memory_files": [
+    "AGENTS.md",
+    "README.md",
+    "ai-memory/CURRENT_STATE.md",
+    "ai-memory/FILE_MAP.md",
+    "ai-memory/CRITICAL_WARNINGS.md",
+    "tasks/TASK_STATE.md",
+    "docs/ADAPTATION_STATUS.md",
+    "docs/roadmap.md",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+    "docs/adaptation/RESUME.md",
+    "docs/adaptation/WORK_PROGRESS.md",
+    "docs/adaptation/GRAPH_GUIDE.md",
+    "docs/adaptation/PREVIEW_STATUS.md"
+  ]
+}

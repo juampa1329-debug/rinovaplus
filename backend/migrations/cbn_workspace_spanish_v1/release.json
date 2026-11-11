@@ -1,0 +1,13 @@
+{
+  "version": "cbn-workspace-spanish-v1",
+  "unit": "P3ES-001",
+  "parent_release_sha256": "1a7ba0dc7435e1e5dd61b431cca7f2164d698d4b4b6df9dd53cd66e8b40b10b4",
+  "additive_tables": 6,
+  "parent_tables": 138,
+  "result_tables": 144,
+  "files": {
+    "P3ES-000.sql": "a5cc72730e46f1fdaed42d8639e3b1dcdaa24cd42756680d603205694bd4ec8e",
+    "P3ES-001.sql": "ca04446f68ac85abf18b1920ba31516f0e07faea35d8b085edf50760239b0132",
+    "expected-model.json": "346d8d00f7e53e55d17d70c8dac5a27577469ff3e858106206a68e99763b229e"
+  }
+}

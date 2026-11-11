@@ -1,0 +1,84 @@
+{
+  "version": "cbn-sql19-baseline-v1",
+  "actor": "cbn_sql19_migrator",
+  "major": 15,
+  "compatibility": 150,
+  "compiler_sha256": "3236b3bf29b91ffca72afba94993c82368024e3adcabbe30d99ff57c0a8e693b",
+  "scope": "new_SQL2019_P2_reference_restorations_only",
+  "units": [
+    {
+      "id": "SQL19-B000",
+      "file": "SQL19-B000.sql",
+      "sha256": "144f802eb39c438bc20f4e2202f894b1feef5d403a529afb7adb68dd147e91e3",
+      "source": "backend/migrations/cbn_foundation/B000_journal.sql",
+      "source_sha256": "36978b8aa24cc7f5a5db4833903c435fd59174f35de8251557a2dcd9275b9dee",
+      "body_sha256": "6675762992b275b4fdea3a33c90c2a9135a9ca11f5954f76dcb8d90b3a77753c"
+    },
+    {
+      "id": "SQL19-B001",
+      "file": "SQL19-B001.sql",
+      "sha256": "1eb74a7edc41cbd78cf26c1087a60f266d58aaf15b225c13244bcf5d1ae83f94",
+      "source": "backend/migrations/cbn_foundation/B001_core.sql",
+      "source_sha256": "277142a39571c1b06c7f1c8d4ee90d204409a507b9f9ed99d6c59aa954cd719a",
+      "body_sha256": "7f2c269e2b33ef7cfe547ae0baf62557788cfcd756b83d4c108e683347a7e2f7"
+    },
+    {
+      "id": "SQL19-B006",
+      "file": "SQL19-B006.sql",
+      "sha256": "5312039bd2f2e2b6fa7d0ad79f4e9f4b75138421bf201d17322fc9e3322a7262",
+      "source": "backend/migrations/cbn_foundation/B006_configuration.sql",
+      "source_sha256": "b259c24f91582c4fd378f4d170f46ba53f86a898319c0722ba521377b49501e5",
+      "body_sha256": "21990be9bae540bf9476aa7d6f41ae3be00bb8685ae691c4c9c08b883b71d4c4"
+    },
+    {
+      "id": "SQL19-B011",
+      "file": "SQL19-B011.sql",
+      "sha256": "a91f357791c3efa3cd498d9ae981085b0030ac8ab395c7bcb8ec50c78435972b",
+      "source": "backend/migrations/cbn_channels_v2/B011_channels.sql",
+      "source_sha256": "6425999dff8313c3b88fe950a2bc8a472681056116ec598cae8b626fcbda2b45",
+      "body_sha256": "75e0a1303e93d43d90f37b48c2dc4b939935273b7fc8c0484e2bcc83afdb02b2"
+    },
+    {
+      "id": "SQL19-CHP001",
+      "file": "SQL19-CHP001.sql",
+      "sha256": "a5172bab9671244fe208fad5117b40ddaee6f186389c514659095eb874a3e3ed",
+      "source": "backend/migrations/cbn_channels_parity_v1/CBN-CHP001.sql",
+      "source_sha256": "5263d2d6418f368e2fce0a16d5fd35a9de69b975dc4e42f3b1f732236605b47c",
+      "body_sha256": "c526542e8710d935983ec51aab2c65a15f662521f8a61084366c45eccc4fc2ca"
+    },
+    {
+      "id": "SQL19-CHP002",
+      "file": "SQL19-CHP002.sql",
+      "sha256": "17ae8917e85007b163b1c0f93fb5bbf81b086b13033f32469624dce5dec1c57f",
+      "source": "backend/migrations/cbn_channels_parity_v1/CBN-CHP002.sql",
+      "source_sha256": "3f6291e00cc2996c10fd1b92d7fcf55277377676db0cf515c95dc4ecc0a608c2",
+      "body_sha256": "4bd99e45e7d1633c3869ed462acdc8ddaf70bd5c40179149889b80a4c608c704"
+    },
+    {
+      "id": "SQL19-CHP003",
+      "file": "SQL19-CHP003.sql",
+      "sha256": "75b373fd358f5733b714ee216265253673962248a76348187924a23b49889a6d",
+      "source": "backend/migrations/cbn_channels_parity_v1/CBN-CHP003.sql",
+      "source_sha256": "098673dae67bb98a645e37f7db640cf8b7d616db736d4776ee7c580699655af7",
+      "body_sha256": "8eaccc22f081d208e7a7d28a3161cab06bc909e090f159ed7e819ee6655c5b14"
+    },
+    {
+      "id": "SQL19-CHP004",
+      "file": "SQL19-CHP004.sql",
+      "sha256": "d27b922c73772c2e3b59d89a47f64bea42a409dbda70eea80133eafd38229f10",
+      "source": "backend/migrations/cbn_channels_parity_v1/CBN-CHP004.sql",
+      "source_sha256": "fcbc04ea5c26740757b0121a5848255d5e0f95e30cce1f07e846dfa51beb4dca",
+      "body_sha256": "7cabbcefb90c3a40136c4b7ada59c3bccdf3cabacc27ca521f7e7a80f8a9f3e8"
+    },
+    {
+      "id": "SQL19-CHP005",
+      "file": "SQL19-CHP005.sql",
+      "sha256": "af4aa9f4ab032a33ebb623abc32f345925bb73db2ba3523ded99744d87b038e5",
+      "source": "backend/migrations/cbn_channels_parity_v1/CBN-CHP005.sql",
+      "source_sha256": "a503dea27675372b769e48be4a44a216dfcaa4a8962ea41f01b47b39dbcbf866",
+      "body_sha256": "a8990b181d0ff9504fb56a123ada3c1cc952665c631a137fe1898c1921617eb9"
+    }
+  ],
+  "legacy_bodies_modified": false,
+  "automatic_startup_DDL": false
+}

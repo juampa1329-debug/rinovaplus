@@ -1,0 +1,18 @@
+# Runtime code graph. Documentation is represented by the reviewed adaptation graph.
+docs/
+artifacts/
+.github/
+docker/
+backend/tests/
+backend/tools/
+backend/migrations/
+backend/app/crm/
+backend/app/client_fixtures.json
+frontend/src/test/
+frontend/src/assets/
+**/*.test.*
+**/*.json
+**/*.md
+graphify-out/
+ai-memory/
+tasks/

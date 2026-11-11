@@ -1,0 +1,141 @@
+{
+  "domain": "HORARIOSSIIE: comparación y plan CRM condicionado",
+  "findings": [],
+  "review_scope": "Static independent Graphify semantic extraction of public plan/source only; no execution or private reads",
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c2_fragment_comparison",
+        "label": "SQL-C2: faltan 68 tablas CRM declaradas; comparación sin aplicación",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L9"
+      },
+      {
+        "id": "sql_c2_conditional_groups",
+        "label": "36 tablas candidatas estructurales condicionadas, sin permiso de ejecución",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L11"
+      },
+      {
+        "id": "sql_c2_employee_contract_block",
+        "label": "GEEmpleado ausente: contrato académico y 32 tablas dependientes pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L19"
+      },
+      {
+        "id": "sql_c2_first_packet_proposal",
+        "label": "Primer paquete propuesto B000+B001+B006: seis tablas CRM más diario",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L45"
+      },
+      {
+        "id": "sql_c2_academic_preservation",
+        "label": "Preservar tablas académicas; prohibido fabricar fuentes para desbloquear CRM",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L17"
+      },
+      {
+        "id": "sql_c2_rehearsal_pending",
+        "label": "Backup y restauración independiente de ensayo pendientes antes de aplicar",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L50"
+      },
+      {
+        "id": "sql_c2_ddl_not_activation",
+        "label": "Crear DDL no activa funciones; selector continúa sólo con metadatos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L60"
+      }
+    ],
+    "edges": [
+      {
+        "source": "foundation_sql_dialect",
+        "target": "sql_c2_fragment_comparison",
+        "relation": "has_fragment_to_crm_declaration_comparison_without_application",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "sql_c2_ddl_not_activation",
+        "relation": "business_sql_repositories_remain_disabled",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L60"
+      },
+      {
+        "source": "sql_c2_fragment_comparison",
+        "target": "sql_c2_conditional_groups",
+        "relation": "classifies_36_tables_as_conditional_structural_candidates",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c2_fragment_comparison",
+        "target": "sql_c2_employee_contract_block",
+        "relation": "classifies_32_tables_as_employee_contract_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c2_conditional_groups",
+        "target": "sql_c2_first_packet_proposal",
+        "relation": "prioritizes_small_core_and_configuration_implementation_packet",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_c2_first_packet_proposal",
+        "target": "sql_c2_academic_preservation",
+        "relation": "requires_complete_academic_before_after_preservation_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L51"
+      },
+      {
+        "source": "sql_c2_first_packet_proposal",
+        "target": "sql_c2_rehearsal_pending",
+        "relation": "requires_backup_and_independent_restore_rehearsal_before_ddl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_c2_employee_contract_block",
+        "target": "sql_c2_academic_preservation",
+        "relation": "must_not_be_bypassed_by_creating_synthetic_academic_sources",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c2_first_packet_proposal",
+        "target": "sql_c2_ddl_not_activation",
+        "relation": "requires_separate_functional_acceptance_before_activation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/HORARIOSSIIE_CRM_PLAN.md",
+        "source_location": "L60"
+      }
+    ]
+  }
+}

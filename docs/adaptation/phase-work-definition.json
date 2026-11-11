@@ -1,0 +1,3194 @@
+{
+  "schema_version": "fixed-work-milestones-v1",
+  "canonical_definition_sha256": "73f41cc7883e5d9264e65615476d1bf8a48e0723ebea862e0607e16a750ebb6e",
+  "criterion_count": 56,
+  "milestone_count": 279,
+  "phases": [
+    {
+      "id": "P0",
+      "criteria": [
+        {
+          "id": "P0.1",
+          "canonical_text_sha256": "b7c5eed1cdb0af7e522a69cb3f7bb8ca171cf1fbbb14be685a4ee6c6a0554660",
+          "milestones": [
+            {
+              "id": "P0.1.m1",
+              "description": "Fijar origen/destino y decisiones educativas confirmadas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.1.m2",
+              "description": "Fijar exclusiones y preservar trabajo previo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.1.m3",
+              "description": "Aceptar alcance documental sin atribuir operación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P0.2",
+          "canonical_text_sha256": "77b30ebfbbb0ec60a65e381e77099432ad1b30530267f9346f64061746a953a7",
+          "milestones": [
+            {
+              "id": "P0.2.m1",
+              "description": "Extraer AST/referencia de código activo de ambos proyectos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.2.m2",
+              "description": "Relacionar capacidades/evidencia con 12 etapas/dependencias.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.2.m3",
+              "description": "Verificar integridad del grafo y aceptar alcance documental.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P0.3",
+          "canonical_text_sha256": "445c5460bee3556fddc935f0654eb89059a98e3e09f094fbecafbc9c1864368e",
+          "milestones": [
+            {
+              "id": "P0.3.m1",
+              "description": "Documentar matriz de equivalencias/brechas/riesgos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.3.m2",
+              "description": "Definir ruta de lectura/reanudación/comandos de reconstrucción/verificación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.3.m3",
+              "description": "Aceptar continuidad documental del corte.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P0.4",
+          "canonical_text_sha256": "845e3ebc8c351f9d10c6c7a707ff91602f73bea99b3f28d1978fc2498855fad6",
+          "milestones": [
+            {
+              "id": "P0.4.m1",
+              "description": "Verificar JSON/referencias/hashes/fases sin ciclos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.4.m2",
+              "description": "Verificar enlaces e integridad de grafos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.4.m3",
+              "description": "Abrir HTML y aceptar verificación con límites documentados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P0.close",
+          "canonical_text_sha256": "e759f899c1fb7650bd7a416d2b6f9f5a8df273e2e9d04e82e1290dc3e45a0e5d",
+          "milestones": [
+            {
+              "id": "P0.close.m1",
+              "description": "Lector independiente ubica siguiente paso sin conversación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.close.m2",
+              "description": "Conservar historia y distinguir planificación/implementación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P0.close.m3",
+              "description": "Aceptar cierre P0 y reversión sólo de artefactos nuevos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1",
+      "criteria": [
+        {
+          "id": "P1.1",
+          "canonical_text_sha256": "cc9f79554ee557451d5582d29ea9614f0bc2a46535500237fbe64b2aebc7b21d",
+          "milestones": [
+            {
+              "id": "P1.1.m1",
+              "description": "Inventariar19 fuentes/guards/runners/68 tablas sin DDL.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.1.m2",
+              "description": "Revisar compatibilidad/riesgos SQL Server 2019 diferenciando declaración/esquema real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.1.m3",
+              "description": "Verificar grafo/huellas e inventario; aceptar sólo revisión estática.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P1.2",
+          "canonical_text_sha256": "9f52ec904b4bedcf26cc9b498d9ee537b292799f93c9bb0c8739be18360a22d1",
+          "milestones": [
+            {
+              "id": "P1.2.m1",
+              "description": "Definir perfil/identidad/transporte separado de modo operativo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.2.m2",
+              "description": "Implementar TLS fijo/versiones/principales y bloqueo institucional seguro.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.2.m3",
+              "description": "Probar positivos/negativos aislados y aceptar contrato offline.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P1.3",
+          "canonical_text_sha256": "1a669b5473745017a5d4b3cd3ebc3e095ce6060029f7e1d168403c185f895e5d",
+          "milestones": [
+            {
+              "id": "P1.3.m1",
+              "description": "Definir19 fuentes/18 grupos/dependencias/forma final.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.3.m2",
+              "description": "Definir historial/adopción/reconciliación/reversión preservando SIIE.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.3.m3",
+              "description": "Probar checker/negativos y aceptar diseño sin atribuir aplicación institucional.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P1.4",
+          "canonical_text_sha256": "0c088d21ce89d986b111cd4bedbe707bb5a196833a027f12e50a90b624fbf706",
+          "milestones": [
+            {
+              "id": "P1.4.m1",
+              "description": "Construir imagen autónoma reproducible separada de desarrollo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.4.m2",
+              "description": "Integrar volúmenes/CA/perfiles/secretos/salud no-root sin DDL.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "contract",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P1.4.m3",
+              "description": "Probar reinicio/recuperación/SIGKILL local y aceptar sprint Docker.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 3
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P1.close",
+          "canonical_text_sha256": "7abf5e5005d3000e5950bcc0ef739115beade43e669787f1f53add62dc1b8cd6",
+          "milestones": [
+            {
+              "id": "P1.close.m1",
+              "description": "Conservar restauraciones/negativos/drift/historial locales SQL Server 2022.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P1.close.m2",
+              "description": "Preparar motor SQL Server 2019/TLS y fixture CRM de 39 tablas sin academia; no es base institucional completa.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P1.close.m3",
+              "description": "Calificar contratos/migraciones completos sobre copia restaurable SQL Server 2019.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P1.close.m4",
+              "description": "Probar guards/conflictos/reintento de esas unidades en SQL Server 2019.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P1.close.m5",
+              "description": "Aceptar backup/restauración nativa y reversión específica antes de aplicar.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P1.close.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "criteria": [
+        {
+          "id": "P2.1",
+          "canonical_text_sha256": "1fb2260bb483fc0edbc0d83ef78ea66d8d20f060c25b16848a9e4da101511fba",
+          "milestones": [
+            {
+              "id": "P2.1.m1",
+              "description": "Mapear ajustes y acciones de siete grupos, incluyendo115 contextos sin planes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.1.m2",
+              "description": "Implementar CRUD/validaciones/revisión/historial/secretos en fuentes institucionales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.1.m3",
+              "description": "Probar tipado/readOnly/scopes/rollout y separación de derivados con dobles.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P2.1.m4",
+              "description": "Aplicar perfil/migración y probar persistencia/conflictos reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.1.m5",
+              "description": "Integrar controles tipados Glass de todos los grupos en nueva UI P2.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P2.1.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P2.2",
+          "canonical_text_sha256": "24c9edba20a8bf9f1d19b521d056a88174b5df345aa6984de0d2e647e47b5c09",
+          "milestones": [
+            {
+              "id": "P2.2.m1",
+              "description": "Definir separación cuenta/empleado/agente, acciones/sesiones/MFA.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.2.m2",
+              "description": "Implementar cuentas/sesiones opacas/revocación y roles actuales por transacción.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.2.m3",
+              "description": "Probar KDF/TOTP/replay/recuperación/tokens y fronteras HTTP sin SQL.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P2.2.m4",
+              "description": "Demostrar logout/revocación/disable/rol y carreras con SQL real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.2.m5",
+              "description": "Integrar Usuarios/Perfil/Seguridad/sesiones en UI propia.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P2.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P2.3",
+          "canonical_text_sha256": "b7e4d0606ca18a3b484e808c21f5af0a71e916077c992d315cbea6f8d2211a9e",
+          "milestones": [
+            {
+              "id": "P2.3.m1",
+              "description": "Inventariar billing/trials/checkout preservando cuotas técnicas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.3.m2",
+              "description": "Implementar disponibilidad institucional explícita independiente del plan.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.3.m3",
+              "description": "Conservar budgets/hardstop/reservas de agente legado sin plan.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.3.m4",
+              "description": "Probar consumidores/módulos deshabilitados por API sin billing residual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P2.4",
+          "canonical_text_sha256": "f1b1312ae35ecd73b2a5fb080c092bb76a51247a391ed6c9316a3caa3c68cb30",
+          "milestones": [
+            {
+              "id": "P2.4.m1",
+              "description": "Definir acciones administrativas y asociación a rutas reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.4.m2",
+              "description": "Implementar permisos/auditoría saneada en límite transaccional nuevo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.4.m3",
+              "description": "Probar denegación/rutas desconocidas y respuesta sin secretos con dobles.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P2.4.m4",
+              "description": "Aceptar rol × endpoint×acción con SQL y auditoría durable.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.4.m5",
+              "description": "Integrar administración de permisos para agentes/fuentes/campañas/Ads/usuarios.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P2.4.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P2.close",
+          "canonical_text_sha256": "1f46df21ce53d233bf3d37ae8c67921981cfa76cd2260c1556c2408e6b9b5cd6",
+          "milestones": [
+            {
+              "id": "P2.close.m1",
+              "description": "Definir cierre/reversión/límites de P2 completo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P2.close.m2",
+              "description": "Probar fronteras HTTP puras sin abrir institución por bootstrap/origen/ruta.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P2.close.m3",
+              "description": "Probar SQL de revocación/logout y ajustes tras reinicio.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.close.m4",
+              "description": "Restaurar configuración/versión preservando cuentas/auditoría/permisos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P2.close.m5",
+              "description": "Aceptar UI completa sin plan/cobro/checkout.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P2.close.m6",
+              "description": "Cerrar cuatro unidades P2 y dependencia P1 con aceptación real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "criteria": [
+        {
+          "id": "P3.1",
+          "canonical_text_sha256": "dba1ee28c24e64ae9ed2dea0eba8a8df6781d6464a2eec81ee142c4f0d8f4ba5",
+          "milestones": [
+            {
+              "id": "P3.1.m1",
+              "description": "Conservar navegación/ficha/borradores y SQL del subconjunto Inbox C5.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.1.m2",
+              "description": "Definir brechas de filtros/control/handoff/organización frente a Scentra.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.1.m3",
+              "description": "Completar equivalencias de filtros/no leídos/asignación/lectura/conflictos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.1.m4",
+              "description": "Integrar filtros antes de paginar y probar roles/concurrencia/borradores.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.1.m5",
+              "description": "Validar Inbox completo móvil/teclado/fallos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.1.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P3.2",
+          "canonical_text_sha256": "534793d878acb738597e9ac5475d225466216e49ff398c1fc22f996d4b5db76d",
+          "milestones": [
+            {
+              "id": "P3.2.m1",
+              "description": "Usar ficha editable básica única CRM/Inbox/miniCRM C5.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.2.m2",
+              "description": "Persistir definiciones/etapas/campos con revisiones en SQL local C5.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.2.m3",
+              "description": "Definir conservación de identidad educativa y origen sin copiar autoridad SIIE.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.2.m4",
+              "description": "Completar etiquetas/notas/tareas/actividad y acciones avanzadas de ficha.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.2.m5",
+              "description": "Integrar identidad/permisos actuales y probar conflictos/merge reversible.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P3.3",
+          "canonical_text_sha256": "37ae4e4f9f09e2884ed7e22497b94a4aa37dc97a0d2793ff4a4127484f38df89",
+          "milestones": [
+            {
+              "id": "P3.3.m1",
+              "description": "Definir cursor/consultas/filtros server-side de Clientes y tareas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.3.m2",
+              "description": "Sustituir snapshot completo por consultas SQL filtradas/paginadas propias.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.3.m3",
+              "description": "Integrar UI preservando borradores y sin filtrar después de paginar.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.3.m4",
+              "description": "Probar bordes/cambio página/filtros/concurrencia/volúmenes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P3.4",
+          "canonical_text_sha256": "123f67acc4357e4be7c604531e0ec024674d06b66cc6dc289837922dc8bf53ea",
+          "milestones": [
+            {
+              "id": "P3.4.m1",
+              "description": "Separar manual/rúbrica/LLM/predicción entrenada en contrato de ficha.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.4.m2",
+              "description": "Conservar ChurnAssessment con razones/fecha/desconocido.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.4.m3",
+              "description": "Conservar riesgo cualitativo/miniCRM trazable sin llamarlo probabilidad.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.4.m4",
+              "description": "Unificar lectura por contacto/conversación con origen/frescura.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P3.4.m5",
+              "description": "Integrar resumen riesgo/razones/fecha/acción y Sin evaluación en tres superficies.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.4.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P3.close",
+          "canonical_text_sha256": "af07cfa392ef95bb3bf834f5a2fad52661cff1231f4867c88967cec407d62dfa",
+          "milestones": [
+            {
+              "id": "P3.close.m1",
+              "description": "Demostrar coherencia de edición básica compartida y SQL C5.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.close.m2",
+              "description": "Demostrar ficha básica sin duplicación desktop/móvil C5.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.close.m3",
+              "description": "Aceptar origen/frescura/churn/detalle colapsado completos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P3.close.m4",
+              "description": "Aceptar filtros/borradores/handoff bajo conflictos y roles actuales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P3.close.m5",
+              "description": "Cerrar P3 y P1/P2 con reversión aditiva.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "criteria": [
+        {
+          "id": "P4.1",
+          "canonical_text_sha256": "1c2c145a8277fefaeea3256f5f082d21a1b409c8de708b8d752e86f6e4cb0f8f",
+          "milestones": [
+            {
+              "id": "P4.1.m1",
+              "description": "Conservar API/tabla de comentarios legados sin convertir lectura en envío.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P4.1.m2",
+              "description": "Aceptar proyecciones locales de actividad/configuración/comentarios disponibles C9/C12.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.1.m3",
+              "description": "Conectar página Comentarios completa con filtros/estados/acciones reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P4.1.m4",
+              "description": "Probar conversiónCRM/permisos/idempotencia/cuenta exacta.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.1.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P4.2",
+          "canonical_text_sha256": "5c43f21fae1c741aa38a1b5e4ff679d820e6d66ff630cb2c1f302fa51d8da4a7",
+          "milestones": [
+            {
+              "id": "P4.2.m1",
+              "description": "Reutilizar una outbox/dispatcher con incertidumbre explícita.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P4.2.m2",
+              "description": "Completar matriz canal×respuesta pública/privada/reacción/asistenciaIA real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P4.2.m3",
+              "description": "Integrar acciones soportadas a firmas/recibos/dispatcher único.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P4.2.m4",
+              "description": "Probar capacidades no soportadas/denegaciones/efectos autorizados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.2.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P4.3",
+          "canonical_text_sha256": "5ee7d7f65a66c9caf610ea9d9ed05714f0078ae8df5541a029607445dc3dffcc",
+          "milestones": [
+            {
+              "id": "P4.3.m1",
+              "description": "Definir contrato C10 de campos/acciones/secretos/efímeros y cuentas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P4.3.m2",
+              "description": "Aceptar esquema C11 y controles locales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.3.m3",
+              "description": "Integrar mapping/recifrado/multicuenta/API/revisiones C12.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.3.m4",
+              "description": "Conservar UI parcial segura C9/C13 con límites visibles.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P4.3.m5",
+              "description": "Integrar permisos P2 y edición de 115 contextos/secretos en UI institucional.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P4.3.m6",
+              "description": "Aceptar OAuth/números/token/adjuntos/callback/identidad/entrega por canal.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.3.m7",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P4.4",
+          "canonical_text_sha256": "db076301b259f89479194c0afad7377337bf5231e77c3c33f80afaebbb808bf0",
+          "milestones": [
+            {
+              "id": "P4.4.m1",
+              "description": "Probar fallos/drift/recuperación de configuración/routing local C11/C12.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.4.m2",
+              "description": "Probar firma inválida/deduplicación de mensajes/eventos con recibos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.4.m3",
+              "description": "Probar comentario eliminado/cuenta desactivada/repetidos con acciones en cola.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.4.m4",
+              "description": "Probar recuperación/reintento/incertidumbre externa acotada por canal.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.4.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P4.close",
+          "canonical_text_sha256": "bcc483f7a1d5901031ee7de46139bd798b2055ef890972ce9e77e17f63bdcc58",
+          "milestones": [
+            {
+              "id": "P4.close.m1",
+              "description": "Conectar UI local segura a datos SQL C9/C12 preservando fuentes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.close.m2",
+              "description": "Mostrar límites/pendientes sin atribuir operación a un menú o campo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P4.close.m3",
+              "description": "Aceptar idempotencia y diferencia aceptado/enviado/entregado completa.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.close.m4",
+              "description": "Aceptar pausa/recuperación conservando eventos/colas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P4.close.m5",
+              "description": "Cerrar P4/unidades/dependencias sin aceptar por esquema.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "criteria": [
+        {
+          "id": "P5.1",
+          "canonical_text_sha256": "09e796037c31ded2349f3921252a3a3153d9df780787f9435f7f2044b8b581a0",
+          "milestones": [
+            {
+              "id": "P5.1.m1",
+              "description": "Comparar parcialmente campos base del constructor educativo real con Scentra.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.1.m2",
+              "description": "Conservar constructor tipado/modelos/fallback/budgets sin reemplazar jerarquía educativa.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.1.m3",
+              "description": "Demostrar crear/guardar/recargar/usar perfiles concretos en UI histórica y registrar ejecución.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P5.1.m4",
+              "description": "Completar equivalencia campo/acción de herramientas/personalidad/objetivos/canales/reglas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.1.m5",
+              "description": "Probar validaciones/permisos de paridad completa en SQL institucional actual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.1.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P5.2",
+          "canonical_text_sha256": "5b0673b5421374718b900c8b9b829c63a274f2bd629ee2c7b56c3030678747a4",
+          "milestones": [
+            {
+              "id": "P5.2.m1",
+              "description": "Conservar jerarquía orientador/programa/etapa y disponibilidad al guardar sin aprobación humana adicional.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.2.m2",
+              "description": "Demostrar transiciones/archivo/restauración/versiones concretas en transacción SQL histórica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.2.m3",
+              "description": "Conservar asignación desde conversación y revisión de fuentes por ámbito/vigencia.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.2.m4",
+              "description": "Completar contraste de acciones/estados Scentra conservando excepción humana de disponibilidad.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.2.m5",
+              "description": "Probar roles/versiones/pausa/archivo/asignación/rollback en composición actual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P5.3",
+          "canonical_text_sha256": "505d2ee8b4f15f349caa5a5838c5edc5701ee8a0102fa216534c8217dbacfe1a",
+          "milestones": [
+            {
+              "id": "P5.3.m1",
+              "description": "Demostrar Asistente/simulador con perfil elegido y respuestas reales históricas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P5.3.m2",
+              "description": "Implementar reservas/coste/contexto y resolución del perfil seleccionado.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.3.m3",
+              "description": "Probar único dueño de respuesta/handoff concurrente frente a inferencia/dispatch.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.3.m4",
+              "description": "Probar límites/contexto/budgets y simulaciones negativas completas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P5.close",
+          "canonical_text_sha256": "cf0810f03786cfd50bed9b1c05794410f5d0a4c3a0ba155cf18e2358a0d16887",
+          "milestones": [
+            {
+              "id": "P5.close.m1",
+              "description": "Conservar preflight/ámbito/fuentes y bloqueos sensibles del runtime educativo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P5.close.m2",
+              "description": "Demostrar guardado disponible y ejecución manual sin activar Inbox automático, en alcance histórico.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P5.close.m3",
+              "description": "Probar inactivo/rol sin permiso/fuente ajena/ausencia de respuestas dobles en entorno actual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.close.m4",
+              "description": "Probar reversión de versión manteniendo memorias/historial/asignaciones sin activar productores.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P5.close.m5",
+              "description": "Cerrar paridad P5 con P2/P3; éxito legado individual no acepta toda la fase.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "criteria": [
+        {
+          "id": "P6.1",
+          "canonical_text_sha256": "3290fdbf6539e4016a5ba60c80ef66594693fbccec5da8a28961433ad3060b4f",
+          "milestones": [
+            {
+              "id": "P6.1.m1",
+              "description": "Conservar implementación educativa de documentos/fragmentos/términos/carga/extracción.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.1.m2",
+              "description": "Conservar búsqueda léxica SQL de publicados con página/revisión/cita.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.1.m3",
+              "description": "Conservar filtros de publicación/vigencia/programa/etapa en contexto de agentes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.1.m4",
+              "description": "Completar contraste Scentra de carga/extracción/publicación/búsqueda/citas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.1.m5",
+              "description": "Evaluar relevancia con preguntas/fuentes educativas antes de elegir nueva técnica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P6.1.m6",
+              "description": "Aceptar UI/carga/publicación/corrección/recuperación SQL con roles actuales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.1.m7",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P6.2",
+          "canonical_text_sha256": "7e77d3d2ef05a87155e6fa96d17bc528470bcd17c7f9a860bb08afeda63bb024",
+          "milestones": [
+            {
+              "id": "P6.2.m1",
+              "description": "Conservar contexto collective de políticas/fuentes públicas excluyendo memoria de otros aspirantes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.2.m2",
+              "description": "Definir recuerdos colectivos tipados con ámbito/vigencia/confianza/visibilidad/auditoría.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.2.m3",
+              "description": "Implementar persistencia/API de corrección/revisión/archivo de memoria colectiva.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.2.m4",
+              "description": "Integrar editor y contexto efectivo versionado de agentes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P6.2.m5",
+              "description": "Probar privacidad/caducidad/corrección/restauración SQL.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P6.3",
+          "canonical_text_sha256": "24c011a232bb2c3dc7a2d92fbe2389075c05f7f2f1c61d51ecf6c396378e241f",
+          "milestones": [
+            {
+              "id": "P6.3.m1",
+              "description": "Conservar prompt global/reglas por agente/políticas académicas diferenciadas del catálogo SIIE.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.3.m2",
+              "description": "Definir ADN versionado y composición determinista con agentes/autoridad académica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.3.m3",
+              "description": "Implementar perfil ADN/fuentes/revisión/auditoría/versión efectiva.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.3.m4",
+              "description": "Integrar UI y probar promoción/rollback sin sobrescribir SIIE.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P6.4",
+          "canonical_text_sha256": "20b6790d81902e1408d0879fe779d1bd74842a6d006089c4e62b4fda8364af2e",
+          "milestones": [
+            {
+              "id": "P6.4.m1",
+              "description": "Implementar memoria de aspirante/conversación con evidencia/revisión en esquema legado.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.4.m2",
+              "description": "Conservar contexto por conversación y excluir perfil/incidentes privados sin conversación seleccionada.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.4.m3",
+              "description": "Constatar memoria de aspirante persistida en SQL histórico; la prueba integral de privacidad actual sigue pendiente.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.4.m4",
+              "description": "Completar separación institución/programa/compartida y origen/corrección en todo consumidor.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.4.m5",
+              "description": "Probar reinicio/cambio programa/corrección/caducidad/no divulgación en SQL actual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.4.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P6.close",
+          "canonical_text_sha256": "00cae1e1239288fdbbdad893c4b157869a95a60868e98fee0ccf45f817058a9d",
+          "milestones": [
+            {
+              "id": "P6.close.m1",
+              "description": "Filtrar publicados/ámbito/revisión vigente en recuperación legada.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P6.close.m2",
+              "description": "Demostrar respuesta histórica de agente con fuentes/uso trazados sin alterar SIIE.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P6.close.m3",
+              "description": "Aceptar corrección/archivo de colectiva/ADN cambiando versión efectiva.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.close.m4",
+              "description": "Aceptar fuente vigente/no publicados/ajenos excluidos en sistema completo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P6.close.m5",
+              "description": "Probar rollback memoria/ADN/índices y cerrar P6 con dependencias.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "criteria": [
+        {
+          "id": "P7.1",
+          "canonical_text_sha256": "ed406df163125ca168d4a35d93d0c0f760503f709c1ce375db47108692720575",
+          "milestones": [
+            {
+              "id": "P7.1.m1",
+              "description": "Implementar catálogo/cache/versiones y sync explícito de plantillas por cuenta Meta.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.1.m2",
+              "description": "Implementar selección/preview con filtros/exclusiones educativas reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.1.m3",
+              "description": "Demostrar audiencia/exclusiones y fallo seguro token expirado sin catálogo ficticio en UI histórica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P7.1.m4",
+              "description": "Completar variables/importación/acciones donde Scentra realmente las soporte.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.1.m5",
+              "description": "Aceptar catálogo Meta positivo con credencial/plantilla aprobada sin fabricar datos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.1.m6",
+              "description": "Probar conteos/preview con destinatarios elegibles y negativos autorizados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.1.m7",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 7
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P7.2",
+          "canonical_text_sha256": "aceafe4b7686355bdffc349d94875a786e88493d2ccd3d0e8c2e5f4bc5881d4f",
+          "milestones": [
+            {
+              "id": "P7.2.m1",
+              "description": "Implementar consentimiento/segmento/cadencia y programación de campañas legadas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.2.m2",
+              "description": "Implementar preparación de destinatarios y elegibilidad local sin enviar.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.2.m3",
+              "description": "Demostrar pausa/persistencia de borrador/evaluación vacía real tras recarga histórica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P7.2.m4",
+              "description": "Reemplazar fronteras bloqueadas conjuntamente por validación transaccional, sin escape.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.2.m5",
+              "description": "Probar baja/consentimiento/cadencia/exclusiones antes del envío y tras preparación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P7.3",
+          "canonical_text_sha256": "fbda34ce794d7cf503b4b3cbf9ccb51106e55f5c5cea5eb4f8a24a3ccbe94a51",
+          "milestones": [
+            {
+              "id": "P7.3.m1",
+              "description": "Conservar outbox única/dispatcher con leases y sending→uncertain implementados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.3.m2",
+              "description": "Integrar broadcasting con esa outbox e idempotencia/reconciliación persistidas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.3.m3",
+              "description": "Probar reinicio/leases/reintento/cancelación/resultado incierto sin duplicación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.3.m4",
+              "description": "Probar revalidación justo antes de POST de identidad/consentimiento/estado/revisión.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P7.4",
+          "canonical_text_sha256": "29a1c9c1b3d852e75648f2fd8027862af226837409c59e6a46a0505a76133f5d",
+          "milestones": [
+            {
+              "id": "P7.4.m1",
+              "description": "Implementar agregación de estados actuales/detalle/preview de destinatarios.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.4.m2",
+              "description": "Demostrar métricas vacías reales y envíos bloqueados en UI/SQL históricos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P7.4.m3",
+              "description": "Completar reporte/exportación/reintento selectivo sin reutilizar trabajos aceptados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.4.m4",
+              "description": "Aceptar estados pendiente/aceptado/enviado/entregado/leído/fallido con recibos reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.4.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P7.close",
+          "canonical_text_sha256": "4509b12726cb671cc2eb5a9315531cb29c03f9c75967225a7434020fcf57c35d",
+          "milestones": [
+            {
+              "id": "P7.close.m1",
+              "description": "Mantener transporte explícitamente desactivado mientras falta aceptación transaccional.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P7.close.m2",
+              "description": "Demostrar preparación/pausa/recarga local sin inventar destinatarios/envíos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P7.close.m3",
+              "description": "Probar selección/idempotencia y revocación tras preparación impidiendo POST.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.close.m4",
+              "description": "Probar reversión pausando y conservando outbox/recibos e incertidumbre.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P7.close.m5",
+              "description": "Cerrar P7 y P2/P3/P4 con recorrido no productivo completo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P8",
+      "criteria": [
+        {
+          "id": "P8.1",
+          "canonical_text_sha256": "2d6fa398322268a6b1b243af7c793117929dfe89d61bde18d84206af25d8c88a",
+          "milestones": [
+            {
+              "id": "P8.1.m1",
+              "description": "Implementar modelos/persistencia/revisiones de campañas/plantillas CRM/segmentos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.1.m2",
+              "description": "Demostrar CRUD regla/campaña y persistencia tras recarga con audiencia vacía explicada.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P8.1.m3",
+              "description": "Demostrar SQL histórico campaña/regla/evaluaciones con preservación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.1.m4",
+              "description": "Completar segmentos guardados/semántica Scentra distinguiendo plantilla CRM/Meta.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.1.m5",
+              "description": "Aceptar comportamiento completo por rol/versión en SQL/UI actual.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.1.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P8.2",
+          "canonical_text_sha256": "1d18d5fb17951f97c1661b1eb4a7f994f339b429188109dc3ed6754106a5fb55",
+          "milestones": [
+            {
+              "id": "P8.2.m1",
+              "description": "Implementar reglas por programa/etapa/condiciones/plantilla con revisiones.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.2.m2",
+              "description": "Implementar evaluación/preparación durable y registrar cuatro resultados históricos reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.2.m3",
+              "description": "Implementar flujo multietapa con esperas/horarios/transiciones versionadas persistidos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.2.m4",
+              "description": "Integrar editor y salida/pausa por respuesta/etapa/programa/handoff.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P8.2.m5",
+              "description": "Probar reinicio/opt-out/cambios concurrentes por paso con dispatcher aceptado.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.2.m6",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 6
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P8.3",
+          "canonical_text_sha256": "b74ad51945f495c20aa4d105b65769f5e66607de099c164926cfff08bee6ee1b",
+          "milestones": [
+            {
+              "id": "P8.3.m1",
+              "description": "Conservar preview/preflight de audiencia y operaciones locales con estado real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.3.m2",
+              "description": "Definir equivalencia real de versiones/A-B/medición de campañas en Scentra.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.3.m3",
+              "description": "Implementar simulación/versiones/variantes de campaña, distinto de A-B de agentes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.3.m4",
+              "description": "Conectar dispatcher P7 aceptado y comprobar atribución/medición de variantes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P8.close",
+          "canonical_text_sha256": "a1f552013e345bc84cdae5203500d17cca707ee68da0dc055b078c3540ea8a74",
+          "milestones": [
+            {
+              "id": "P8.close.m1",
+              "description": "Conservar ejecuciones/revisiones durables de evaluación/preparación sin envío ni flujo ficticio.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P8.close.m2",
+              "description": "Probar avance/esperas multietapa que sobreviven reinicio real.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.close.m3",
+              "description": "Probar cancelación por etapa/respuesta/handoff/baja con workers concurrentes.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.close.m4",
+              "description": "Probar reversión a flujo anterior sin borrar pendientes ni duplicar envíos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P8.close.m5",
+              "description": "Cerrar P8 y P5/P6/P7: evaluación local no equivale a remarketing completo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P9",
+      "criteria": [
+        {
+          "id": "P9.1",
+          "canonical_text_sha256": "5fb932d437d23b94a330085018e9f6f2a4dd8370c4a72cdcf9bb0088f1c75641",
+          "milestones": [
+            {
+              "id": "P9.1.m1",
+              "description": "Identificar Ads fuente/cuentas/campañas/leads y ausencia activa equivalente CBN.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.1.m2",
+              "description": "Completar matriz de campos/acciones/indicadores y vínculo cuenta → lead → conversación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.1.m3",
+              "description": "Revisar exclusión AdsCreative/ContentStudio/add-ons por capacidad sin marketplace.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.1.m4",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P9.2",
+          "canonical_text_sha256": "abc0114e27a09ec14770e0088b12ee4a60a038dbd624cef67350a31e6e4ae578",
+          "milestones": [
+            {
+              "id": "P9.2.m1",
+              "description": "Definir SQL/identidad/permisos de cuentasAds y enlace educativo sin mezclar origen.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.2.m2",
+              "description": "Implementar repositorios/credenciales/leads/cuentas con claves externas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.2.m3",
+              "description": "Integrar pantallaGlass/vínculoCRM/programa con estados reales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P9.2.m4",
+              "description": "Probar aislamiento/idempotencia de captación/sincronización SQL.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P9.2.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P9.3",
+          "canonical_text_sha256": "0180537ec3925487c1baa9bdfeedce85289bac06939d7d4d18145e1215636dd1",
+          "milestones": [
+            {
+              "id": "P9.3.m1",
+              "description": "Definir indicadores/acciones reales y frontera explícita de gasto.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.3.m2",
+              "description": "Implementar sync/reintento/fecha/fuente/trazabilidad admitidos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P9.3.m3",
+              "description": "Integrar lectura y confirmación del operador para gasto.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P9.3.m4",
+              "description": "Probar permisos/gasto y cuenta de aceptación autorizada.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P9.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P9.close",
+          "canonical_text_sha256": "44ab0888bbe77824dde7212a0b2b29eeda44d9f63668c607fba2cb5c521867b6",
+          "milestones": [
+            {
+              "id": "P9.close.m1",
+              "description": "Probar lead repetido sin duplicar persona/conversación preservando cuenta/período/origen.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P9.close.m2",
+              "description": "Probar reportes fecha/fuente y lectura sin mutar campañas/gasto.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P9.close.m3",
+              "description": "Probar pausa/reversión conservando IDs sin alterar anuncios para deshacerUI.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P9.close.m4",
+              "description": "Cerrar P9/dependencias con alcance de cuentas/acciones aceptado.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P10",
+      "criteria": [
+        {
+          "id": "P10.1",
+          "canonical_text_sha256": "8b35f961d2a935d7bb0e95f36a53156f00e47cff384a417824072db08f2cb88f",
+          "milestones": [
+            {
+              "id": "P10.1.m1",
+              "description": "Implementar correcciones/revisiones humanas y procedencia de estrategia legada.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.1.m2",
+              "description": "Completar eventos/resultados/features de conversaciones/campañas/admisiones con consentimiento por finalidad.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.1.m3",
+              "description": "Implementar captura/versiones/minimización para aprendizaje aplicable.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.1.m4",
+              "description": "Probar origen/corrección/no fuga temporal o etiquetas y uso autorizado de muestras.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P10.1.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P10.2",
+          "canonical_text_sha256": "1ec275fe21eada2e912880e7247761d1a5ba15094610c7d2d04d0cda5e436149",
+          "milestones": [
+            {
+              "id": "P10.2.m1",
+              "description": "Definir métricas/baseline/validación por programa/etapa sin fuga temporal/etiquetas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.2.m2",
+              "description": "Portar packs/datasets versionados/casos/candidatos aplicables.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.2.m3",
+              "description": "Integrar evaluaciones reproducibles y revisión de datos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P10.2.m4",
+              "description": "Probar aislamiento/repetición/segmentos contra baseline.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P10.2.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P10.3",
+          "canonical_text_sha256": "758b4e8ee5a6d4b1fef429afccc7d15756d8854f00829d4eb355020da0e0d4bf",
+          "milestones": [
+            {
+              "id": "P10.3.m1",
+              "description": "Especificar pipeline entrenable/fuentes/artefactos sin atribuir ML a rúbrica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.3.m2",
+              "description": "Portar pipeline offline y registro de artefactos versionados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.3.m3",
+              "description": "Integrar inferencia sombra/candidatos con datos autorizados/control humano.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P10.3.m4",
+              "description": "Reproducir entrenamiento/evaluación sin promover por sólo recoger eventos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P10.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P10.4",
+          "canonical_text_sha256": "48671776b37ecacdee06c554fe307f59b84921fea1a1c069a45ccfbc3e0142ed",
+          "milestones": [
+            {
+              "id": "P10.4.m1",
+              "description": "Distinguir reglas/memoria/LLM/A-B de configuración y modelo entrenado en comparación.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.4.m2",
+              "description": "Implementar inferencia de artefacto versionado/comparación medible.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.4.m3",
+              "description": "Implementar deriva/promoción/reversión con versión identificable.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P10.4.m4",
+              "description": "Probar rollback/baseline/segmentos y especificación separada si se añade red neuronal.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P10.4.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P10.close",
+          "canonical_text_sha256": "dcc9891413655b3d8127aa12fe53993058d4213a702479cd278d70b2ad6f85a3",
+          "milestones": [
+            {
+              "id": "P10.close.m1",
+              "description": "Reproducir dataset/modelo y medir mejora/errores por segmento contra baseline.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "pure_test"
+            },
+            {
+              "id": "P10.close.m2",
+              "description": "Demostrar promoción/reversión de versión aprobada e aislamiento.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P10.close.m3",
+              "description": "Conservar muestras/evaluación y detener entrenamiento sin pérdida al revertir.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P10.close.m4",
+              "description": "Cerrar P10/P5/P6/P8/P9 con aprendizaje demostrado, no sólo eventos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P11",
+      "criteria": [
+        {
+          "id": "P11.1",
+          "canonical_text_sha256": "cb8bb64cef2ed9a9b8c86867aedfc7564f7294228adfdb1d9587b4a1c75f1d91",
+          "milestones": [
+            {
+              "id": "P11.1.m1",
+              "description": "Estructurar aceptación por los 56 criterios, capas y límites de evidencia; la matriz funcional exhaustiva sigue pendiente.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P11.1.m2",
+              "description": "Probar respaldo/restauración/drift/recuperación de componentes locales aceptados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P11.1.m3",
+              "description": "Cerrar rol × endpoint y permisosSQL de todos los módulos actuales.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P11.1.m4",
+              "description": "Probar workers concurrentes/cuotas/fallos/continuidad del recorrido completo.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P11.1.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P11.2",
+          "canonical_text_sha256": "753692eb0f6d6b8d325eb4c776520ac32890c8178ef87091a23dfa6fea998cad",
+          "milestones": [
+            {
+              "id": "P11.2.m1",
+              "description": "Conservar contrato de jerarquía/edición/carga/error y Glass sin rediseño general.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "contract",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P11.2.m2",
+              "description": "Aceptar subconjuntos históricos C5/C9 desktop/móvil/borradores con límites.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P11.2.m3",
+              "description": "Completar todo el recorrido claro/oscuro/escritorio/móvil/teclado.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P11.2.m4",
+              "description": "Aceptar vacíos/carga/error/densidad/accesibilidad en capacidades integradas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "UI"
+            },
+            {
+              "id": "P11.2.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P11.3",
+          "canonical_text_sha256": "da38f8d715bb34c770d3a8a7aab37ea19d17976d2355c2559f0da23229da1614",
+          "milestones": [
+            {
+              "id": "P11.3.m1",
+              "description": "Aceptar imagen/volúmenes/configuración/salud/recuperación del sprint Docker P1.4.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "integration",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P11.3.m2",
+              "description": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P11.3.m3",
+              "description": "Completar monitorización/respaldo/retención/runbooks/secretos/auth institucional.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "implementation",
+              "evidence_level": "source_review"
+            },
+            {
+              "id": "P11.3.m4",
+              "description": "Entregar/aceptar puesta en servicio externa con datos/entorno/alcance.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P11.3.m5",
+              "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 5
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        },
+        {
+          "id": "P11.close",
+          "canonical_text_sha256": "ec423d777a1acc2462924fda7f7421fa03170685b1a54bf3de8999c6fdc68d83",
+          "milestones": [
+            {
+              "id": "P11.close.m1",
+              "description": "Aceptar recorridos institucionales y todos los cierres/dependencias P1–P10.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P11.close.m2",
+              "description": "Entregar riesgos/runbooks/autoridad operativa verificable.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            },
+            {
+              "id": "P11.close.m3",
+              "description": "Ensayar reversión imagen/versión/pausa/restauración sin perder recibos/colas.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "test",
+              "evidence_level": "SQL"
+            },
+            {
+              "id": "P11.close.m4",
+              "description": "Cerrar puesta en servicio con aprobación y alcance explícitos.",
+              "criterion_share": {
+                "numerator": 1,
+                "denominator": 4
+              },
+              "work_kind": "acceptance",
+              "evidence_level": "accepted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

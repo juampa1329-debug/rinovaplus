@@ -1,0 +1,16 @@
+{
+  "unit": "SQL-C10-reference-supplement",
+  "reason": "additional source files identified by independent semantic extraction; no replacement of original 625 preimages",
+  "initial_baseline_sha256": "11abae86cd301fe5e349088b9016dc14f60bf90de792ee5ead0d19c645489dac",
+  "archive_sha256": "bb6f9d74218b1448b684c58a82c47c08508e93b02aba563e9473f0cfea3f644d",
+  "files": [
+    {
+      "path": "../saas-version/migrations/021_whatsapp_subscription_checks.sql",
+      "sha256": "2af20a0445361c61680cb887e800625c76e045fdf7a6072bbdc087622f58448e"
+    },
+    {
+      "path": "../saas-version/migrations/022_instagram_business_integration.sql",
+      "sha256": "7827c1479960faedde2811e6eda072b168d670c2f133b8da1c713c6fe59c4036"
+    }
+  ]
+}

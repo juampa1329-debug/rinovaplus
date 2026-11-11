@@ -1,0 +1,565 @@
+{
+  "domain": "P2-ES · Ajustes completos, identidad y permisos sobre namespace español",
+  "inspected_on": "2026-10-26",
+  "artifact_status": "draft_semantic_source_review_no_new_acceptance",
+  "evidence_scope": "Revisión estática Graphify: código/contratos públicos; no pruebas, SQL, UI, Docker, credenciales ni cambios al ledger. Los nueve findings no acreditan cierre ni añaden crédito P2.",
+  "findings": [
+    {
+      "id": "p2_es_namespace",
+      "capability": "P2ES-NAMESPACE · integration_blocker",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/store.py",
+          "line": 33
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 133
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 87
+        },
+        {
+          "file": "backend/migrations/cbn_spanish_schema_v2/table_map.json",
+          "line": 3
+        },
+        {
+          "file": "backend/app/institutional/policy.py",
+          "line": 6
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "Las fuentes institucionales todavía consultan crm_access/crm_channels2 y derechos CORE/CHANNEL en inglés; la baseline española usa dbo.CRMContacto/CRMConversacion y otros nombres fijos. Añadir tablas traducidas no adapta por sí solo consultas, columnas, row-shapes, guards, ACL o replay.",
+      "acceptance": "Nuevo contrato/mapas fijos revisados de tablas/columnas/resultados y todas las rutas/repositorios/guards; ningún alias/synonym/view de compatibilidad, DDL automático ni permisos core para evitar errores. Probar falta/mala correspondencia como denegación anterior al DML.",
+      "phase": "P2",
+      "review_severity": "high",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_vision_parity",
+      "capability": "P2ES-VISION · source_parity_gap",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 191
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 102
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "Scentra ofrece visión google/openai/anthropic/hermes/openrouter/kimi; AI.vision_analysis_provider sólo admite gemini/openai/anthropic. La configuración perdería tres selecciones de referencia aunque la operación del proveedor siga desactivada.",
+      "acceptance": "Preservar las seis elecciones con alias explícito google→gemini o registrar una exclusión humana; roundtrip/recarga de cada elección y estado operativo no disponible donde corresponda.",
+      "phase": "P2",
+      "review_severity": "medium",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_tiktok_default",
+      "capability": "P2ES-TIKTOK-DEFAULT · roundtrip_configuration_defect",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 278
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 58
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 195
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "Channels.create asigna DispatchMode=business_api a nuevas cuentas TikTok; el control fuente y el catálogo115 aceptan tiktok_oauth o stub. La lectura inicial no tiene una opción equivalente y validate_field rechaza reenviar ese mismo valor.",
+      "acceptance": "Usar un valor inicial o mapa de presentación/guardado explícitamente aceptado por el contrato, sin añadir una opción inventada; probar crear→leer→editar sin cambiar modo→guardar→recargar de TikTok y conservar estado unverified.",
+      "phase": "P2",
+      "review_severity": "medium",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_endpoint_owner",
+      "capability": "P2ES-ENDPOINT-OWNER · configuration_authority_gap",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 348
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 295
+        },
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 158
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 308
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 87
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "Los controles Webhooks del catálogo pertenecen a endpoint, pero Channels.save escribe todo destino ChannelSetting JSON por IntegrationId. Settings.webhooks mantiene otra lista de endpoints por key y los secretos usan endpoint:key, sin la misma identidad física C10 EndpointId. Dos controles con firma/proveedor similares pueden terminar en documentos diferentes.",
+      "acceptance": "Definir una autoridad/ID estable por endpoint, vínculo explícito con cuentas/aplicación y su traducción española; enlazar editor/lectura/secretos a ese mismo recurso, probar que editar no cambia sólo un JSON paralelo.",
+      "phase": "P2",
+      "review_severity": "high",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_ai_mapping",
+      "capability": "P2ES-AI-MAPPING · semantic_mapping_gap",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 6672
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 97
+        },
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 112
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 87
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "Treinta valores IA de la referencia se convierten a rutas tipadas distintas de CBN. model_failover_enabled y human_reply_style_enabled no tienen equivalencia semántica automática con fallback_enabled/brief_responses. Selección de modelos por API y ajustes IA también deben mantener una prioridad efectiva coherente.",
+      "acceptance": "Mapa de30 campos y transformaciones con roundtrip persistido/UI; conservar valores y modelos previos, probar failover/style sin renombrar semánticas por similitud. Guardar no requiere diagnóstico ni activa respuestas/proveedor.",
+      "phase": "P2",
+      "review_severity": "medium",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_credential_lifecycle",
+      "capability": "P2ES-CREDENTIAL-LIFECYCLE · source_action_gap",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 277
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 257
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 219
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 195
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "La referencia expone generación/copia/rotación y outputs de una sola vez. La API actual recibe secretos y devuelve metadata staged; por sí sola no implementa todo el flujo de creación/rotación del endpoint o los labels/kinds por issuer del catálogo115.",
+      "acceptance": "Controles password write-only y reautenticación; omitido/vacío conserva, revocar explícito; resolver application/integration/endpoint y especie según issuer. Demostrar generación/copia/rotación una vez con versión y sin GET de plaintext; PIN sólo efímero con operación P4 bloqueada.",
+      "phase": "P2",
+      "review_severity": "medium",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_provider_boundary",
+      "capability": "P2ES-PROVIDER-BOUNDARY · acceptance_scope_boundary",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10641
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/schemas.py",
+          "line": 95
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 198
+        },
+        {
+          "file": "backend/app/institutional/models.py",
+          "line": 150
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "OAuth, sync/live model-health, catálogo remoto, registro de teléfono, replay/recepción pública, email OTP/SMTP y envío de invitaciones consumen proveedor. P2 puede completar configuración durable y permisos sin fingir éxito operativo. daily_tokens/messages/USD son límites configurados; el runtime nuevo mantiene providers=false y no demuestra su consumo real.",
+      "acceptance": "UI conserva opciones/acciones con estado no disponible y motivo claro cuando requieren P4; TOTP/recuperación locales sí se prueban. No zeros/verde/entregado ficticios ni activación por toggles. Probar rate-limit/capacidad donde existen consumidores locales y distinguir política solicitada de enforcement operativo futuro.",
+      "phase": "P2",
+      "review_severity": "medium",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_acceptance",
+      "capability": "P2ES-ACCEPTANCE · acceptance_blocker",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 46
+        },
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 32
+        },
+        {
+          "file": "frontend/src/features/Settings.tsx",
+          "line": 87
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "P2 conserva hitos de SQL/UI/roles/reinicio/reversión pendientes. Diseño +24 tablas de Canales +15 tablas de Acceso no prueban roles, sesiones, configuración completa ni UI. Los61 tests puros de P1 tampoco son aceptación conectada P2.",
+      "acceptance": "Migración/perfil propios con mínimos privilegios, matriz método/ruta/acción/rol, conflicts/replay/revoke concurrentes, reinicio, recuperación y UI completa; sólo después evidenciar P2.1–P2.4 y cierre sin alterar la definición de hitos.",
+      "phase": "P2",
+      "review_severity": "high",
+      "acceptance_granted": false
+    },
+    {
+      "id": "p2_es_plan_consistency",
+      "capability": "P2ES-PLAN-STALE · documentation_consistency",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "docs/adaptation/sql/P2_PLAN.md",
+          "line": 9
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_P1_ES_REVIEW.md",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/P2_PLAN.md",
+          "line": 1
+        }
+      ],
+      "status": "source_review_pending_P2_ES_integration_and_acceptance",
+      "gap": "P2_PLAN aún describe restauración de C13 y P1.close pendiente, mientras P1-ES ya cerró sobre98 tablas españolas más diario. No es evidencia de un defecto SQL nuevo, pero la aceptación P2 debe fijar claramente su nueva base/restauración y mapas.",
+      "acceptance": "Actualizar plan/evidencia al nuevo destino y conservar el checkpoint previo como historia; no reutilizar ticket/perfil ni presentar UI vieja como nueva.",
+      "phase": "P2",
+      "review_severity": "low",
+      "acceptance_granted": false
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_integration_review",
+        "label": "P2 en esquema español: configuración completa y aceptación pendiente",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1",
+        "status": "source_review_no_new_acceptance"
+      },
+      {
+        "id": "p2_es_namespace",
+        "label": "Las fuentes institucionales todavía consultan crm_access/crm_channels2 y derechos CORE/CHANNEL en inglés; la baseline española usa dbo.CRMContacto/CRMConversacion y otros nombres fijos. Añadir tablas traducidas no adapta por sí solo consultas, columnas, row-shapes, guards, ACL o replay.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/store.py",
+        "source_location": "L33",
+        "status": "observed_current_source_unadapted"
+      },
+      {
+        "id": "p2_es_vision_parity",
+        "label": "Scentra ofrece visión google/openai/anthropic/hermes/openrouter/kimi; AI.vision_analysis_provider sólo admite gemini/openai/anthropic. La configuración perdería tres selecciones de referencia aunque la operación del proveedor siga desactivada.",
+        "file_type": "document",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L191",
+        "status": "observed_source_gap"
+      },
+      {
+        "id": "p2_es_tiktok_default",
+        "label": "Channels.create asigna DispatchMode=business_api a nuevas cuentas TikTok; el control fuente y el catálogo115 aceptan tiktok_oauth o stub. La lectura inicial no tiene una opción equivalente y validate_field rechaza reenviar ese mismo valor.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/channels.py",
+        "source_location": "L278",
+        "status": "observed_source_gap"
+      },
+      {
+        "id": "p2_es_endpoint_owner",
+        "label": "Los controles Webhooks del catálogo pertenecen a endpoint, pero Channels.save escribe todo destino ChannelSetting JSON por IntegrationId. Settings.webhooks mantiene otra lista de endpoints por key y los secretos usan endpoint:key, sin la misma identidad física C10 EndpointId. Dos controles con firma/proveedor similares pueden terminar en documentos diferentes.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/channels.py",
+        "source_location": "L348",
+        "status": "observed_source_gap"
+      },
+      {
+        "id": "p2_es_ai_mapping",
+        "label": "Treinta valores IA de la referencia se convierten a rutas tipadas distintas de CBN. model_failover_enabled y human_reply_style_enabled no tienen equivalencia semántica automática con fallback_enabled/brief_responses. Selección de modelos por API y ajustes IA también deben mantener una prioridad efectiva coherente.",
+        "file_type": "document",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L6672",
+        "status": "requires_explicit_mapping"
+      },
+      {
+        "id": "p2_es_credential_lifecycle",
+        "label": "La referencia expone generación/copia/rotación y outputs de una sola vez. La API actual recibe secretos y devuelve metadata staged; por sí sola no implementa todo el flujo de creación/rotación del endpoint o los labels/kinds por issuer del catálogo115.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/models.py",
+        "source_location": "L277",
+        "status": "requires_ui_and_connected_acceptance"
+      },
+      {
+        "id": "p2_es_provider_boundary",
+        "label": "OAuth, sync/live model-health, catálogo remoto, registro de teléfono, replay/recepción pública, email OTP/SMTP y envío de invitaciones consumen proveedor. P2 puede completar configuración durable y permisos sin fingir éxito operativo. daily_tokens/messages/USD son límites configurados; el runtime nuevo mantiene providers=false y no demuestra su consumo real.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/settings.py",
+        "source_location": "L198",
+        "status": "must_remain_explicit"
+      },
+      {
+        "id": "p2_es_acceptance",
+        "label": "P2 conserva hitos de SQL/UI/roles/reinicio/reversión pendientes. Diseño +24 tablas de Canales +15 tablas de Acceso no prueban roles, sesiones, configuración completa ni UI. Los61 tests puros de P1 tampoco son aceptación conectada P2.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L46",
+        "status": "not_tested_in_this_review"
+      },
+      {
+        "id": "p2_es_plan_consistency",
+        "label": "P2_PLAN aún describe restauración de C13 y P1.close pendiente, mientras P1-ES ya cerró sobre98 tablas españolas más diario. No es evidencia de un defecto SQL nuevo, pero la aceptación P2 debe fijar claramente su nueva base/restauración y mapas.",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P2_PLAN.md",
+        "source_location": "L9",
+        "status": "observed_stale_document"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_namespace",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/store.py",
+        "source_location": "L33"
+      },
+      {
+        "source": "p2_es_namespace",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_vision_parity",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L191"
+      },
+      {
+        "source": "p2_es_vision_parity",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_tiktok_default",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/channels.py",
+        "source_location": "L278"
+      },
+      {
+        "source": "p2_es_tiktok_default",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_endpoint_owner",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/channels.py",
+        "source_location": "L348"
+      },
+      {
+        "source": "p2_es_endpoint_owner",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_ai_mapping",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L6672"
+      },
+      {
+        "source": "p2_es_ai_mapping",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_credential_lifecycle",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/models.py",
+        "source_location": "L277"
+      },
+      {
+        "source": "p2_es_credential_lifecycle",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_provider_boundary",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/settings.py",
+        "source_location": "L198"
+      },
+      {
+        "source": "p2_es_provider_boundary",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_acceptance",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L46"
+      },
+      {
+        "source": "p2_es_acceptance",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_integration_review",
+        "target": "p2_es_plan_consistency",
+        "relation": "observes_source_gap_or_pending_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P2_PLAN.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "p2_es_plan_consistency",
+        "target": "P2",
+        "relation": "requires_resolution_before_full_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p2-es/settings-semantic-review.json",
+        "source_location": "L1"
+      }
+    ]
+  },
+  "public_source_hashes": {
+    "../saas-version/backend/app_saas/api_credentials/router.py": "4b20a803bde10fb3da2c07427cbe4cba6c69b7c3068a28bac3a579a213282a34",
+    "../saas-version/backend/app_saas/auth/schemas.py": "9813b4a243cbb49041d6946bb6a5cb88a79c918fe8ba626ed304fb5ee65addce",
+    "../saas-version/backend/app_saas/tenants/schemas.py": "c6295445ac6b03fdf21b3095e7ac5f6f4c9f96171e5a9fe541f78e4d1ea6fc0e",
+    "../saas-version/frontend/src/App.jsx": "9ecfe4cb88331b545b7ad754f3615deed30450baebf62448fe8711961126f801",
+    "AGENTS.md": "0649e85db33aa99ede88687d2ae7a4f86ea4ca3d3337839876d1409bc704d930",
+    "backend/app/institutional/api.py": "fc2d2128ae78dd3c182dc0e26b84cd8d820df0a9c9b622f85df681849dff1ff4",
+    "backend/app/institutional/auth.py": "0897200ecaa5bd638bea92dbd41810bfae2a86c1955bca456ef2eaf92d83154a",
+    "backend/app/institutional/channels.py": "758e17400398c006d0708e5046283d32b4e2e541fc2cae44f8dcbc8d069d320e",
+    "backend/app/institutional/models.py": "ebf7e627e66e8313d6bec0ec7b1dfd6fd84d6680421e58b9204891416c89cb57",
+    "backend/app/institutional/policy.py": "6bf673b6d776a3a1a19766cb522f047d9dc1aa14fe6fa8e23670fc49aef6e1b4",
+    "backend/app/institutional/settings.py": "8762e2ff1a87ac094ef3ecc1561732f77c6efa54e99df080654654b097de2dea",
+    "backend/app/institutional/store.py": "b06f1605df099d6e8b988e5db27df5ea13550d7456a395b1aeb1d2bec4d27a17",
+    "backend/migrations/cbn_institutional/P2_001_access.sql": "505d7a7abcb339e96b472e043605da29f17bb6df35b5650a602c6c34e148eb87",
+    "backend/migrations/cbn_spanish_schema_v2/table_map.json": "4496ddee371590222f2a856abe5abca57b64ceeb97d014683a2d5de404a7b647",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md": "8d4dce71d8be77b365cb4291ff99dfa214e13650befdd9853949aa946dd12e2c",
+    "docs/adaptation/fragments/p2-settings-source.draft.json": "1f217adb95539ea0816de7637bc4dd0b6a8f5ec3ead25aa38bc9ee2295beedaa",
+    "docs/adaptation/phase-work-progress.json": "3e39c7c083361e632ab40f4a5f8a0f9265f519cb1c334f67d2a72a9f1fb568e8",
+    "docs/adaptation/sql/P2_PLAN.md": "0e268ae115d1e592dab10c4dc6f7045ae45062be20a02471843beb114778f0e7",
+    "docs/adaptation/sql/SQL_P1_ES_REVIEW.md": "3cd21a3f83afbf99eb4e3b1d57e20f2211d27a6e7d29ebd90fab012c14be2b81",
+    "docs/adaptation/sql/channels-parity-contract.json": "376f5f1234347cd403fe9a71fb0c4421fa14f2eee552afc790e91ae95a1cd7ba",
+    "docs/adaptation/sql/p2-channel-fields.json": "7a0f1e35939ec154246459e87d4809c4012d8847e8f41949869b865def84567d",
+    "frontend/src/features/Settings.tsx": "2b731ccc974061cbc623e5b683acc287123fa44b25ea2470c62bbdde8eba7c8c",
+    "artifacts/p2-es/settings-semantic-review.json": "1a61419e8eb620b84dd2aa2ddb28ab25136b53dbfc5e38ecb2a5f7236d25b4d0"
+  },
+  "acceptance_checklist_reference": "artifacts/p2-es/settings-semantic-review.json",
+  "known_P1_state": "P1 técnica aceptada en SQL2019 español según estado canónico vigente; P2_PLAN antiguo debe reconciliarse."
+}

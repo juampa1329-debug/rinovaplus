@@ -1,0 +1,163 @@
+{
+  "unit": "SQL-C7",
+  "status": "complete",
+  "runtime_checkpoint": "SQL-C5",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Contrato y pruebas offline",
+      "status": "complete",
+      "tests_passed": 119,
+      "ruff": "passed"
+    },
+    {
+      "phase": 2,
+      "name": "Respaldo y restauraciones independientes",
+      "status": "complete",
+      "restored_databases": 3,
+      "backup_checksum_verified": true,
+      "checkdb_passed": true,
+      "academic_rows": 44180,
+      "crm_business_rows": 199,
+      "original_journal_rows": 5,
+      "release": "v2",
+      "final_v2_restored_databases": 11
+    },
+    {
+      "phase": 3,
+      "name": "Referencia y release congelado",
+      "status": "complete",
+      "reference_verified": true,
+      "release_id": "CBN-channels-local-v2",
+      "release_sha256": "49f72eb835ce46b83ec9c6267da2f73c9d7799990de6fab8ed28762565985998"
+    },
+    {
+      "phase": 4,
+      "name": "Ensayo B011 y preservación",
+      "status": "complete",
+      "applied": true,
+      "noop": true,
+      "extension_tables": 8,
+      "extension_rows": 0,
+      "journal_rows": 7,
+      "original_journal_rows_preserved": 5,
+      "academic_rows": 44180,
+      "database": "CBN_C7_TRIAL_20261025_634a9b9e"
+    },
+    {
+      "phase": 5,
+      "name": "Fallos, concurrencia y recuperación",
+      "status": "complete",
+      "v1_checks_passed": 48,
+      "connected_checks": 51,
+      "v2_checks_passed": 51,
+      "all_groups_complete": true
+    },
+    {
+      "phase": 6,
+      "name": "Grafos, memoria y cierre",
+      "status": "complete",
+      "findings": 38,
+      "acyclic_phases": 12,
+      "source_fingerprints": "verified",
+      "local_links_checked": 105,
+      "broken_local_links": 0,
+      "invalid_history_transitions_rejected": 26,
+      "code_graph": {
+        "nodes": 2403,
+        "edges": 6297,
+        "communities": 106
+      },
+      "adaptation_graph": {
+        "nodes": 320,
+        "edges": 527,
+        "communities": 30
+      },
+      "missing_or_dangling_endpoints": 0
+    }
+  ],
+  "sql_migrations_applied": true,
+  "sql_connected": true,
+  "applied_only_in_isolated_trial": true,
+  "retired_release": {
+    "unit": "SQL-C7",
+    "release_id": "CBN-channels-local-v1",
+    "status": "retired_not_accepted",
+    "release_sha256": "e4f76c63592b4a99f35380496d25a34afb205645a0c4f5e885cf9ece8f901ca1",
+    "reason": "Canonical sorting occurred before removing volatile identity_last_value; Audit rollback changed only column row order",
+    "reference_metadata_sha256": "d9e43d4426d61aa4e6c295276f2ea2c76c2abe1bf552b5a14f2ec5738930ee41",
+    "trial_metadata_sha256": "e4a916b1094e8c50f76a9ecdbd460d28168ebed5f9137fe01061523a60945493",
+    "changed_key": "columns",
+    "rows": 608,
+    "same_metadata_rows_after_sort": true,
+    "academic_and_crm_data_unchanged": true,
+    "original_C5_unchanged": true,
+    "core_files_unchanged": true,
+    "new_release_required": true,
+    "no_identity_reset_or_database_drop": true
+  },
+  "project_phases": [
+    {
+      "id": "P0",
+      "status": "complete",
+      "progress": "Completada: inventario, grafos y protocolo de continuidad."
+    },
+    {
+      "id": "P1",
+      "status": "in_progress",
+      "progress": "En curso: C1–C7 locales cerradas; C8 e institucional SQL2019 pendientes."
+    },
+    {
+      "id": "P2",
+      "status": "pending",
+      "progress": "Paridad pendiente; Ajustes CRM foundation comprobados en C5."
+    },
+    {
+      "id": "P3",
+      "status": "pending",
+      "progress": "Paridad pendiente; Inbox básico/ficha única comprobados en C5; churn pendiente."
+    },
+    {
+      "id": "P4",
+      "status": "pending",
+      "progress": "Esquema Canales aceptado en C7; consumidores y operación pendientes."
+    },
+    {
+      "id": "P5",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de agentes educativos."
+    },
+    {
+      "id": "P6",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de memoria/ADN."
+    },
+    {
+      "id": "P7",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de mensajería masiva."
+    },
+    {
+      "id": "P8",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de campañas/remarketing."
+    },
+    {
+      "id": "P9",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de Meta Ads."
+    },
+    {
+      "id": "P10",
+      "status": "pending",
+      "progress": "Pendiente de paridad y aceptación de inteligencia/entrenamiento."
+    },
+    {
+      "id": "P11",
+      "status": "pending",
+      "progress": "Pendiente de aceptación integral y operación institucional."
+    }
+  ],
+  "next_unit": "SQL-C8",
+  "completion_scope": "accepted_restored_channels_only"
+}

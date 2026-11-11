@@ -1,0 +1,326 @@
+{
+  "domain": "P1-ES R3 · protocolo y perfil SQL2019 revisados por fuente",
+  "status": "draft_source_reviewed_connected_acceptance_pending",
+  "review_scope": "Revisión semántica delegada Graphify sólo de fuentes públicas. No SQL, Docker, imports de app, secretos/perfiles/.local ni ejecución del driver. Preserva R1/R2, fragmento de paquete e historia C3–C13/C11/P2. EXTRACTED cita comportamiento explícito; INFERRED declara relaciones o límites. No se reimporta AST ni se otorga aceptación por contar tablas/pruebas.",
+  "findings": [
+    {
+      "id": "p1_es_schema_protocol_source_review",
+      "phase": "P1",
+      "capability": "Contrato aditivo de migración SQL2019, recuperación por intento, catálogo íntegro y perfil español particionado",
+      "status": "revisado_por_fuente_sin_bloqueos_estaticos_nuevos_aceptacion_conectada_pendiente",
+      "gap": "Los pendientes R2 se corrigieron por fuente. Faltan evidencia pública final de SQL15/TLS, frontera ACK de STARTED sintetizado, preservación posterior, recuperación y perfil; no equivale a UI/P2 ni despliegue institucional.",
+      "acceptance": "Revisión R3 confirma SHA5457c8da y nueve inputs, no ejecuta SQL ni concede P1.close. Sólo aceptar con resultados conectados del release exacto, backup/restore/UNKNOWN y partición preservada.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p1-es/implementation-review-r3.json",
+          "line": 1
+        },
+        {
+          "file": "backend/migrations/cbn_spanish_schema_v2/release.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/es_schema_migrate_v2.py",
+          "line": 632
+        },
+        {
+          "file": "backend/tools/es_schema_migrate_v2.py",
+          "line": 755
+        },
+        {
+          "file": "backend/tools/es_schema_recovery_v2.py",
+          "line": 135
+        },
+        {
+          "file": "backend/app/es_schema_profile.py",
+          "line": 42
+        },
+        {
+          "file": "backend/tools/qualify_spanish_schema.py",
+          "line": 47
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p1_es_r3_candidate",
+        "label": "V2 5457c8da: dos unidades/99 tablas; revisión por fuente, no aceptación SQL",
+        "file_type": "document",
+        "source_file": "backend/migrations/cbn_spanish_schema_v2/release.json",
+        "source_location": "L1",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_checkpoint",
+        "label": "Bootstrap exige catálogo inicial de checkpoint nativo aprobado",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L632",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_actor",
+        "label": "Actor loginless sin CONTROL/db_owner; conexión sin TX ajena",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L564",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_fullshape",
+        "label": "Forma combina catálogo/ACL completo y modelo con dos opciones de índices",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L194",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_wal",
+        "label": "WAL durable: UUID, unidad, destino, manifiesto y secuencia",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L282",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_history",
+        "label": "Historial SQL por intento y éxito único de unidad",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L468",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_start_gap",
+        "label": "Recupera STARTED ausente mediante bootstrap verificado",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L800",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_recovery_ack",
+        "label": "Hook de ACK perdido tras STARTED recuperado; ensayo conectado pendiente",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L814",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_recovery",
+        "label": "Backup GUID/VERIFYONLY y nueva restauración comparada sin REPLACE",
+        "file_type": "code",
+        "source_file": "backend/tools/es_schema_recovery_v2.py",
+        "source_location": "L135",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_fixed_partition",
+        "label": "Perfil propio valida seis mapas, 68 CRM, 30 académicas y 99 tablas",
+        "file_type": "code",
+        "source_file": "backend/app/es_schema_profile.py",
+        "source_location": "L42",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_tls",
+        "label": "ODBC18 con TLS/certificado verificado; destino y principal propios",
+        "file_type": "code",
+        "source_file": "backend/app/es_schema_profile.py",
+        "source_location": "L95",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_qualification_driver",
+        "label": "Coordinador usa hash de checkpoint restaurado y modo explícito",
+        "file_type": "code",
+        "source_file": "backend/tools/qualify_spanish_schema.py",
+        "source_location": "L47",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_source_preservation",
+        "label": "Preservación de seis fuentes: captura previa; comparación posterior pendiente",
+        "file_type": "code",
+        "source_file": "backend/tools/qualify_spanish_schema.py",
+        "source_location": "L117",
+        "status": "source_reviewed_connected_acceptance_pending"
+      },
+      {
+        "id": "p1_es_r3_acceptance_pending",
+        "label": "Sin nuevos bloqueos estáticos; faltan evidencia conectada/P1 e institucional",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/implementation-review-r3.json",
+        "source_location": "L1",
+        "status": "source_reviewed_connected_acceptance_pending"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p1_es_r3_candidate",
+        "target": "p1_es_r3_actor",
+        "relation": "executes_only_named_loginless_actor",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L583"
+      },
+      {
+        "source": "p1_es_r3_candidate",
+        "target": "p1_es_r3_checkpoint",
+        "relation": "requires_initial_catalog_approval_before_bootstrap",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L676"
+      },
+      {
+        "source": "p1_es_r3_checkpoint",
+        "target": "p1_es_r3_fullshape",
+        "relation": "compares_exact_shape_before_first_write",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L679"
+      },
+      {
+        "source": "p1_es_r3_qualification_driver",
+        "target": "p1_es_r3_checkpoint",
+        "relation": "supplies_verified_native_checkpoint_shape",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/qualify_spanish_schema.py",
+        "source_location": "L47"
+      },
+      {
+        "source": "p1_es_r3_actor",
+        "target": "p1_es_r3_wal",
+        "relation": "locks_schema_and_writer_before_durable_protocol",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L592"
+      },
+      {
+        "source": "p1_es_r3_wal",
+        "target": "p1_es_r3_history",
+        "relation": "cross_checks_attempt_binding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L382"
+      },
+      {
+        "source": "p1_es_r3_history",
+        "target": "p1_es_r3_start_gap",
+        "relation": "permits_missing_STARTED_repair_from_verified_bootstrap",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L800"
+      },
+      {
+        "source": "p1_es_r3_start_gap",
+        "target": "p1_es_r3_recovery_ack",
+        "relation": "exposes_fault_after_durable_recovered_STARTED",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_migrate_v2.py",
+        "source_location": "L814"
+      },
+      {
+        "source": "p1_es_r3_recovery_ack",
+        "target": "p1_es_r3_acceptance_pending",
+        "relation": "requires_real_fresh_connection_frontier_evidence",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p1-es/implementation-review-r3.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_r3_recovery",
+        "target": "p1_es_r3_fullshape",
+        "relation": "compares_restored_catalog_to_checkpoint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/es_schema_recovery_v2.py",
+        "source_location": "L178"
+      },
+      {
+        "source": "p1_es_r3_fixed_partition",
+        "target": "p1_es_r3_fullshape",
+        "relation": "pins_qualified_shape_and_full_catalog",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/es_schema_profile.py",
+        "source_location": "L162"
+      },
+      {
+        "source": "p1_es_r3_fixed_partition",
+        "target": "p1_es_r3_tls",
+        "relation": "connects_only_separate_TLS_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/es_schema_profile.py",
+        "source_location": "L95"
+      },
+      {
+        "source": "p1_es_r3_qualification_driver",
+        "target": "p1_es_r3_source_preservation",
+        "relation": "captures_legacy_sources_before_prepare",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/qualify_spanish_schema.py",
+        "source_location": "L151"
+      },
+      {
+        "source": "p1_es_r3_source_preservation",
+        "target": "p1_es_r3_acceptance_pending",
+        "relation": "requires_postrun_comparison_before_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p1-es/implementation-review-r3.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_r3_candidate",
+        "target": "p1_es_package",
+        "relation": "qualifies_imported_structure_in_additive_release",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/migrations/cbn_spanish_schema_v2/release.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_r3_acceptance_pending",
+        "target": "P1",
+        "relation": "does_not_award_phase_closure",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/implementation-review-r3.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_r3_fixed_partition",
+        "target": "sql_c13_per_transaction_guard",
+        "relation": "uses_separate_profile_without_redirecting_C13",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/es_schema_profile.py",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_r3_acceptance_pending",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "retains_pending_SQL_acceptance_until_final_evidence",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "artifacts/p1-es/implementation-review-r3.json",
+        "source_location": "L1"
+      }
+    ]
+  }
+}

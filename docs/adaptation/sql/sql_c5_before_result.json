@@ -1,0 +1,21 @@
+{
+  "stage": "SQL-C5",
+  "action": "before",
+  "database": "CBN_C3_TRIAL_20261024_ac8505b8",
+  "read_only_evidence": true,
+  "source_unchanged": true,
+  "academic_tables": 50,
+  "academic_rows": 44180,
+  "academic_metadata_and_data_preserved": true,
+  "journal_unchanged": true,
+  "frozen_managed_shape_preserved": true,
+  "crm_counts": {
+    "crm.Contact": 26,
+    "crm.Conversation": 26,
+    "crm.Message": 52,
+    "crm.Operation": 81,
+    "crm_config.Configuration": 1,
+    "crm_config.Operation": 1,
+    "crm_meta.MigrationJournal": 5
+  }
+}

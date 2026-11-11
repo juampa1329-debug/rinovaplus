@@ -1,0 +1,466 @@
+{
+  "domain": "Paridad funcional de Canales Scentra → CBN · precisión durante SQL-C9",
+  "review_scope": "Comparación semántica independiente de la fuente pública actual de Scentra, su referencia funcional de Ajustes y los contratos/UI CBN. La fuente Scentra se leyó; no se ejecutaron sus handlers ni se alteraron sus archivos. Las citas de App.jsx prueban controles y flujos presentes en fuente, no aceptación operativa de proveedores. C9 conserva aceptación local de configuración/lectura y adopta seis grupos de referencia; sus acciones pendientes deshabilitadas no son implementación funcional. No SQL, Docker, secretos, cuentas, proveedores ni cambios a releases/fragmentos históricos C6/C7/C8. Este fragmento añade una brecha de paridad P4, sin cerrar C9/P4 como copia completa.",
+  "findings": [
+    {
+      "id": "channels_scentra_parity",
+      "capability": "Funciones y organización de Canales iguales a Scentra, con persistencia SQL Server y estilo CBN",
+      "status": "parcial_sin_paridad_completa",
+      "gap": "C9 ya organiza Meta WhatsApp Cloud, verificación de número, Instagram Business, Facebook Messenger, TikTok y Webhooks en grupos verticales; Facebook/comentarios conserva su subconfiguración SQL. Sigue ofreciendo sólo configuración/lectura. Faltan gestión y rotación de secretos con pistas protegidas, sincronización/selección de números y PIN6, OAuth IG/FB con descubrimiento/selección de activos y diagnóstico, controles completos de TikTok (review, productos/scopes, eventos, rollout, cuotas y flags), gestión de endpoints/HMAC/verify token y procesamiento de eventos. C8 ya tiene cifrado AES-GCM ensayado; la brecha es su integración segura y funcional. El modelo Account por Channel, diez campos del DTO y cuatro tipos genéricos de secretos no acreditan equivalencia con las integraciones y controles de Scentra.",
+      "acceptance": "Conservar las mismas funciones, agrupación, campos, estados, validaciones y flujos observables de Scentra; mantener estilo CBN y sustituir PostgreSQL por SQL Server. Portar contratos/datos/permisos y probarlos en otra restauración, con secretos cifrados, pistas sin valor completo, errores/reintentos/concurrencia y aceptación en navegador. Revisar identidad/cardinalidad de integraciones, tipos de secretos y DTO TikTok; no añadir inputs que el backend descarta. Stripe/billing y comercio excluidos por alcance educativo no se copian; las cuotas operativas TikTok sí se conservan. La operación real de proveedores y SQL2019 institucional requieren sus puertas de aceptación; esta matriz no activa proveedores, webhooks, workers o transporte ni amplía tickets.",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9610
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9619
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9687
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9715
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9788
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 9982
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10174
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10200
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10350
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10368
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 10424
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/features/ChannelsUiPanel.tsx",
+          "line": 37
+        },
+        {
+          "file": "frontend/src/features/ChannelsUiPanel.tsx",
+          "line": 70
+        },
+        {
+          "file": "backend/app/channels_ui_app.py",
+          "line": 16
+        },
+        {
+          "file": "backend/app/channels_ui_app.py",
+          "line": 29
+        },
+        {
+          "file": "backend/app/modules/channels/router.py",
+          "line": 16
+        },
+        {
+          "file": "backend/app/modules/channels/storage.py",
+          "line": 15
+        },
+        {
+          "file": "backend/app/modules/channels/storage.py",
+          "line": 112
+        },
+        {
+          "file": "backend/migrations/cbn_channels_v2/B011_channels.sql",
+          "line": 14
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+          "line": 3
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+          "line": 24
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+          "line": 26
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "channels_parity_scentra_criterion",
+        "label": "Criterio: mismas funciones/estructura Scentra; SQL Server y estilo CBN",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L3",
+        "functional_parity_accepted": false
+      },
+      {
+        "id": "scentra_channels_six_reference_groups",
+        "label": "Scentra organiza Canales en seis acordeones de referencia",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9610",
+        "groups": [
+          "Meta WhatsApp Cloud",
+          "Verificar número WhatsApp",
+          "Instagram Business",
+          "Facebook Messenger",
+          "TikTok",
+          "Webhooks"
+        ],
+        "rationale": "Orden contrastado también en App.jsx9715/9749/9943/10350 y la referencia funcional de Ajustes."
+      },
+      {
+        "id": "cbn_channels_six_groups_pending_actions",
+        "label": "C9 alinea seis grupos y mantiene Facebook como subconfiguración, con acciones pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L9",
+        "rationale": "Las cinco cuentas SQL heredadas se conservan. PendingConnection muestra details/summary y botones disabled sin handlers; no pide secretos ni PIN para simular un flujo inexistente."
+      },
+      {
+        "id": "scentra_whatsapp_credentials_and_hints",
+        "label": "WhatsApp: integración, credenciales cifradas, pistas y edición/rotación/eliminación",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9619",
+        "rationale": "La UI fuente ofrece secreto/token password y colección porintegration.id con pistas protegidas; no se afirma aquí una prueba del backend o proveedor."
+      },
+      {
+        "id": "scentra_whatsapp_number_and_pin_flow",
+        "label": "WhatsApp: sincronizar WABA, seleccionar número y registrar/verificar con PIN6",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9715",
+        "rationale": "Fuente incluye selector de números sincronizados, PIN de seis dígitos y resultado del registro; no equivale a guardar Phone Number ID."
+      },
+      {
+        "id": "scentra_instagram_oauth_assets_diagnostics",
+        "label": "Instagram: OAuth, cuenta profesional, activos, diagnóstico y secretos con pistas",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9788",
+        "rationale": "Instagram Login solicita autorización; Cargar cuenta, permisos instagram_business_*, App Review, webhook y eventos forman parte del flujo fuente."
+      },
+      {
+        "id": "scentra_facebook_oauth_page_selection",
+        "label": "Facebook Messenger: OAuth, páginas autorizadas, diagnóstico y Page token protegido",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L9982",
+        "rationale": "Cargar páginas y seleccionar activo se muestran por separado de los campos manuales; no equivalen a escribir sólo Page ID."
+      },
+      {
+        "id": "scentra_tiktok_review_scopes_runtime_controls",
+        "label": "TikTok: review/productos/scopes/eventos, rollout/cuotas y flags operativos",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10174",
+        "rationale": "Además de OAuth/activos/secrets, fuente incluye modos disabled/shadow/manual/live/stub, porcentaje, cuotas de envíos/IA y flags de mensajería/comentarios/IA/agentes/activadores/remarketing."
+      },
+      {
+        "id": "scentra_webhook_endpoint_hmac_events",
+        "label": "Webhooks: endpoint, HMAC, secretos de una vez, verificación/rotación y eventos",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10368",
+        "rationale": "App10375–10398 incluye Callback URL, verify token, firma, comprobación y rotación;10424 procesa eventos pendientes."
+      },
+      {
+        "id": "channels_parity_partial_c9_scope",
+        "label": "C9 probado localmente sigue parcial: no acepta Canales completo ni P4",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L30",
+        "verification": "parcial_sin_paridad_completa"
+      },
+      {
+        "id": "cbn_existing_aes_not_complete_secret_ui",
+        "label": "AES-GCM existe en C8; faltan gestión/rotación/hints y conexiones en UI",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L24",
+        "rationale": "C9 no lee contenido cifrado ni monta clave de proveedores. La ausencia de inputs de secretos en su contrato es deliberada y no prueba ausencia del cifrado base."
+      },
+      {
+        "id": "channels_parity_models_and_cardinality_gate",
+        "label": "Revisar identidad/cardinalidad, DTO TikTok y tipos de secretos antes de habilitar formularios",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L26",
+        "rationale": "Fuente UI Scentra administra integraciones porid y una colección WhatsApp; B011 usa Channel como PK. Diez campos y cuatro kinds no son el modelo completo de TikTok; no inferir equivalencia renombrando etiquetas."
+      },
+      {
+        "id": "channels_parity_educational_billing_exclusion",
+        "label": "Stripe/billing y comercio excluidos; cuotas operativas TikTok conservadas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L22",
+        "stripe_billing_excluded": true,
+        "rationale": "Las cuotas controlan operación, rollout y seguridad; no se eliminan por excluir planes/cobro del software."
+      },
+      {
+        "id": "channels_parity_functional_acceptance_gate",
+        "label": "Aceptar cada función por flujo/validaciones/estado, SQL probado y navegador",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L34",
+        "rationale": "Persistencia SQL Server y protección de secretos se prueban en otra copia. Proveedores reales e institucional SQL2019 se aceptan aparte; los marcadores disabled no cuentan como función completa."
+      },
+      {
+        "id": "channels_parity_c10_contract_work",
+        "label": "SQL-C10 pendiente: DTO/datos/secretos/OAuth/activos y secuencia B015/transporte",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L32",
+        "implementation": "not_implemented",
+        "rationale": "La referencia no se reduce al subconjunto ya admitido por CBN. No se amplían tickets ni se activan proveedores al registrar esta comparación."
+      }
+    ],
+    "edges": [
+      {
+        "source": "channels_parity_scentra_criterion",
+        "target": "channels_scentra_parity",
+        "relation": "requires_same_functions_and_organization_with_only_persistence_and_cbn_style_adaptation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "channels_parity_scentra_criterion",
+        "target": "scentra_channels_six_reference_groups",
+        "relation": "uses_the_current_scentra_source_as_functional_reference",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "scentra_channels_six_reference_groups",
+        "target": "cbn_channels_six_groups_pending_actions",
+        "relation": "has_its_order_adopted_in_c9_without_claiming_complete_functional_parity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "cbn_channels_six_groups_pending_actions",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "refines_the_existing_local_configuration_ui_without_enabling_pending_actions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "cbn_channels_six_groups_pending_actions",
+        "target": "channels_parity_partial_c9_scope",
+        "relation": "does_not_treat_disabled_actions_as_implemented_flows",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L24"
+      },
+      {
+        "source": "scentra_whatsapp_credentials_and_hints",
+        "target": "cbn_existing_aes_not_complete_secret_ui",
+        "relation": "retains_ui_secret_management_rotation_and_hints_as_a_gap_despite_existing_aes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L24"
+      },
+      {
+        "source": "scentra_whatsapp_number_and_pin_flow",
+        "target": "channels_parity_partial_c9_scope",
+        "relation": "still_requires_number_sync_selection_pin_and_registration_contracts",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L16"
+      },
+      {
+        "source": "scentra_instagram_oauth_assets_diagnostics",
+        "target": "channels_parity_c10_contract_work",
+        "relation": "requires_oauth_assets_secrets_diagnostics_and_webhook_contracts",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "scentra_facebook_oauth_page_selection",
+        "target": "channels_parity_c10_contract_work",
+        "relation": "requires_authorized_page_selection_and_complete_manual_connection_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L18"
+      },
+      {
+        "source": "scentra_tiktok_review_scopes_runtime_controls",
+        "target": "channels_parity_models_and_cardinality_gate",
+        "relation": "requires_complete_dto_validation_and_operational_controls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "scentra_webhook_endpoint_hmac_events",
+        "target": "channels_parity_c10_contract_work",
+        "relation": "requires_endpoint_hmac_token_lifecycle_and_idempotent_event_processing",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L20"
+      },
+      {
+        "source": "scentra_whatsapp_credentials_and_hints",
+        "target": "channels_parity_models_and_cardinality_gate",
+        "relation": "raises_integration_identity_and_cardinality_compatibility_before_model_port",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L26"
+      },
+      {
+        "source": "channels_parity_models_and_cardinality_gate",
+        "target": "channels_parity_c10_contract_work",
+        "relation": "must_define_keys_secret_types_and_data_compatibility_before_form_activation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L26"
+      },
+      {
+        "source": "channels_parity_partial_c9_scope",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "keeps_local_ui_evidence_separate_from_complete_scentra_functional_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "cbn_existing_aes_not_complete_secret_ui",
+        "target": "sql_c8_eight_table_repository_checks",
+        "relation": "recognizes_the_previously_tested_encryption_repository_without_claiming_ui_parity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L24"
+      },
+      {
+        "source": "channels_parity_c10_contract_work",
+        "target": "sql_c8_queue_b015_gate",
+        "relation": "retains_message_route_and_transport_dependencies_for_their_own_sequence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L32"
+      },
+      {
+        "source": "channels_parity_c10_contract_work",
+        "target": "channels_parity_functional_acceptance_gate",
+        "relation": "requires_new_contracts_profiles_and_reviewed_acceptance_instead_of_widening_old_tickets",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L32"
+      },
+      {
+        "source": "channels_parity_functional_acceptance_gate",
+        "target": "channels_parity_partial_c9_scope",
+        "relation": "does_not_close_c9_or_p4_as_a_complete_channel_copy",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "scentra_tiktok_review_scopes_runtime_controls",
+        "target": "channels_parity_educational_billing_exclusion",
+        "relation": "keeps_operational_quotas_while_excluding_billing",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L22"
+      },
+      {
+        "source": "scentra_webhook_endpoint_hmac_events",
+        "target": "channels_parity_educational_billing_exclusion",
+        "relation": "does_not_copy_the_stripe_billing_selector_into_the_educational_scope",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L22"
+      },
+      {
+        "source": "channels_parity_functional_acceptance_gate",
+        "target": "sql_c9_no_provider_key_or_decryption",
+        "relation": "requires_a_separate_secret_contract_before_removing_the_current_ui_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L24"
+      },
+      {
+        "source": "channels_parity_functional_acceptance_gate",
+        "target": "sql_c9_transport_institutional_scope_pending",
+        "relation": "keeps_real_provider_and_institutional_sql2019_acceptance_separate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L34"
+      },
+      {
+        "source": "channels_scentra_parity",
+        "target": "P4",
+        "relation": "records_incomplete_channel_functional_parity_in_the_channel_phase",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "scentra_tiktok_review_scopes_runtime_controls",
+        "target": "P7",
+        "relation": "retains_later_messaging_and_remarketing_operational_dependencies",
+        "confidence": "INFERRED",
+        "confidence_score": 0.97,
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L10225"
+      },
+      {
+        "source": "channels_parity_c10_contract_work",
+        "target": "foundation_sql_dialect",
+        "relation": "requires_sql_server_contracts_and_restoration_tests_for_the_full_source_feature_set",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+        "source_location": "L34"
+      }
+    ]
+  }
+}

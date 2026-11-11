@@ -1,0 +1,40 @@
+{
+  "version": "cbn-p2-es-release-v1",
+  "units": [
+    {
+      "id": "P2ES-001",
+      "file": "P2ES_001_channels.sql",
+      "sha256": "4bb116966591270b1628c9bfe74133eb5d2d90ac19edc8e31a3ec55a596f58f9"
+    },
+    {
+      "id": "P2ES-002",
+      "file": "P2ES_002_access.sql",
+      "sha256": "6b8af61ffaa0b9e55b381a8bc688bc5fc70bf1e4306cf857e3b832d01f32ef6d"
+    }
+  ],
+  "inputs": {
+    "backend/app/institutional/model_settings.py": "51b0d0cfbfe59edb73ade9633ea9b1d0a88dba335c5e253b6f0356d35a7d0c64",
+    "backend/app/institutional/models.py": "d899c384b3a586bbd2014451d28dbc984c344a61ced70157df16e8fd12fa4679",
+    "backend/app/institutional/policy.py": "6bf673b6d776a3a1a19766cb522f047d9dc1aa14fe6fa8e23670fc49aef6e1b4",
+    "backend/app/institutional/spanish_bindings.py": "d9e921d07438124db5bd3f52b81288490ca88a5c814df4b1672f575e07341027",
+    "backend/migrations/cbn_institutional_spanish_v1/P2ES_001_channels.sql": "4bb116966591270b1628c9bfe74133eb5d2d90ac19edc8e31a3ec55a596f58f9",
+    "backend/migrations/cbn_institutional_spanish_v1/P2ES_002_access.sql": "6b8af61ffaa0b9e55b381a8bc688bc5fc70bf1e4306cf857e3b832d01f32ef6d",
+    "backend/migrations/cbn_institutional_spanish_v1/derivation.json": "da4881f2d8ccd1f238fccc42557ce976795ccb28d6671a910b4da7b19471f602",
+    "backend/migrations/cbn_institutional_spanish_v1/expected-stages.json": "5341f73cb6df9163c88b9bb55808a105c02611592b2fa0e6c1f64a421fc49a52",
+    "backend/migrations/cbn_institutional_spanish_v1/table_map.json": "580c5590c6a025f78647d9ea66eee0feaaa20305def286f41d8e20ea352071d2",
+    "backend/migrations/cbn_spanish_schema_v2/table_map.json": "4496ddee371590222f2a856abe5abca57b64ceeb97d014683a2d5de404a7b647",
+    "backend/tools/es_schema_catalog_v2.py": "a08485f69caac47989941cee145e1ca0c4fe387815a65c4db1d5522030d1f5c1",
+    "backend/tools/es_schema_migrate_v2.py": "341278b4dba230a1b8714e37bbd0e3dfffd6eb0740389f8334d2c65ed5c30173",
+    "backend/tools/p2_es_migrations.py": "ca4e60e889306188b514c083738d383d5f18f3fd65af71bee41c7cc979c74704",
+    "docs/adaptation/sql/p2-channel-fields.json": "7a0f1e35939ec154246459e87d4809c4012d8847e8f41949869b865def84567d"
+  },
+  "parent_release": "5457c8da43a9c303c5b7032cff625a3d7ae112c876187c61fdb31e7a8948e2d3",
+  "parent_journal_sha256": "1630c374af8771fe136f1a1eca30eda8782e631785c480dd37caf697e25a1a0b",
+  "parent_journal_rows": 3,
+  "table_counts": [
+    99,
+    123,
+    138
+  ],
+  "scope": "new_SQL2019_P2ES_restorations_only"
+}

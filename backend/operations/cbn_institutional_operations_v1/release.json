@@ -1,0 +1,7 @@
+{
+  "unit": "P11ES-OPERATIONS-001",
+  "parent_release_sha256": "831c4a3f667aa67a94d2b2ae9465be0bbc000388b8b8d40cbd21ec6b4747c67c",
+  "files": {
+    "contract.json": "1a518c1912db0555e81acb1dc542c2f2c2cf94ca90e240499a010dd63babef90"
+  }
+}

@@ -1,0 +1,894 @@
+{
+  "domain": "Inbox, comentarios sociales, mini CRM y CRM",
+  "evidence_scope": "Inspección estática del código y documentación. No verifica runtime, DB, proveedor, UI viva ni producción.",
+  "inspected_on": "2026-10-24",
+  "source_graph_warning": "La consulta Graphify al grafo Scentra advierte esquema antiguo de node IDs; las relaciones listadas se comprobaron en fuente.",
+  "findings": [
+    {
+      "id": "inbox_01",
+      "capability": "Inbox operativo con filtros, mensajes paginados, ficha y control humano",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2688
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2857
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3802
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/inbox/application/service.py",
+          "line": 388
+        },
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 376
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 229
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "Existe base activa y SQL Server para conservar. La equivalencia debe probar cada filtro, lectura, borrador y transición; el nombre Inbox ni la aceptación histórica demuestran paridad con Scentra. El montaje destino usa /api/local/crm/inbox, no el router SaaS importado.",
+      "acceptance": "Matriz de filtros acumulables y paginación comprobada; seleccionar/navegar no cambia de contacto ni pierde borrador; actualización obsoleta produce conflicto; tomar control humano invalida trabajo IA pendiente; conservar Glass en escritorio y móvil.",
+      "phase": "paridad_inbox_crm"
+    },
+    {
+      "id": "inbox_02",
+      "capability": "Comentarios sociales dentro del Inbox",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 49
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 78
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 87
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 95
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 1108
+        },
+        {
+          "file": "backend/app/modules/channels/router.py",
+          "line": 295
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 348
+        },
+        {
+          "file": "backend/migrations/011_channels.sql",
+          "line": 60
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "La pestaña presenta Comentarios no conectados aunque ya existen GET /api/v1/social-comments, POST /{id}/reply, persistencia e ingesta. Scentra añade reacciones, generación IA y ajustes de comentarios. Conectar/reutilizar lo existente antes de duplicar tablas/colas; determinar por canal qué acciones reales corresponden.",
+      "acceptance": "UI Glass carga/pagina/filtra comentarios reales, distingue vacío/error/no configurado, responde pública/privadamente sólo donde el adaptador lo permite y refleja cola/resultado; idempotencia y comentario retirado comprobados; reacción/IA se habilitan sólo con implementación y autorización verificadas.",
+      "phase": "comentarios_sociales"
+    },
+    {
+      "id": "inbox_03",
+      "capability": "Ficha CRM, etapas, etiquetas y campos personalizados compartidos",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 1081
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 1255
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2446
+        },
+        {
+          "file": "../saas-version/frontend/src/CrmPanel.jsx",
+          "line": 648
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/crm_configuration/application/service.py",
+          "line": 28
+        },
+        {
+          "file": "backend/app/modules/crm_configuration/application/service.py",
+          "line": 76
+        },
+        {
+          "file": "backend/app/modules/crm_configuration/application/service.py",
+          "line": 171
+        },
+        {
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 21
+        },
+        {
+          "file": "frontend/src/modules/clients/pages/Clients.tsx",
+          "line": 622
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "Ya hay catálogo SQL compartido con etapas/probabilidad opcional/activos, etiquetas activas e inactivas y campos tipados. Scentra usa pipeline y etiquetas relacionales con contratos propios. No reemplazar etapas oficiales SIIE ni convertir etiquetas textuales existentes a identificadores sin mapeo/migración explícitos.",
+      "acceptance": "Inventario campo a campo; crear/desactivar/editar definiciones conserva valores históricos; Clientes y mini CRM muestran el mismo catálogo y validación; cambios incompatibles tienen migración forward y ensayo de reversión sin alterar SIIE.",
+      "phase": "paridad_inbox_crm"
+    },
+    {
+      "id": "inbox_04",
+      "capability": "Listado CRM escalable y filtros en servidor",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 998
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/clients/api/router.py",
+          "line": 44
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 317
+        },
+        {
+          "file": "frontend/src/modules/clients/pages/Clients.tsx",
+          "line": 257
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "El endpoint activo de Clientes llama a store.read(), carga el snapshot completo y filtra en Python; no ofrece paginación SQL como el Inbox. Una base institucional amplia no debe depender de transferir todo el workspace por búsqueda.",
+      "acceptance": "Contrato de listado SQL acotado con filtros antes de paginar; preservar alias de unificación, detalle, grupos y selección compartida con Inbox; mediciones con volumen no productivo y descarte de respuestas obsoletas; mantener compatibilidad del snapshot donde siga siendo necesario.",
+      "phase": "paridad_inbox_crm"
+    },
+    {
+      "id": "inbox_05",
+      "capability": "Tareas y responsables humanos/IA",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2934
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2990
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3044
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3827
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 639
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 682
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 690
+        },
+        {
+          "file": "backend/app/modules/inbox/application/operations.py",
+          "line": 703
+        },
+        {
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 39
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "Hay tareas SQL por conversación, asignaciones independientes humano/IA, directorio de empleados y SLA configurable. No se encontró en el transporte activo una lista global equivalente a GET /crm/tasks. La pertenencia al equipo no sustituye autenticación/RBAC; el runtime debe conservar un solo dueño de respuesta.",
+      "acceptance": "CRUD/idempotencia/conflictos y reasignación a empleados/agentes elegibles; SLA no configurado distinto de vencido; listado transversal y filtros sólo si son parte de la equivalencia aceptada; pruebas de doble ejecución y toma humana concurrente con salida IA.",
+      "phase": "paridad_inbox_crm"
+    },
+    {
+      "id": "inbox_06",
+      "capability": "Mensajes externos, multimedia y estados de entrega",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3432
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3769
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 333
+        },
+        {
+          "file": "backend/app/modules/inbox/application/service.py",
+          "line": 473
+        },
+        {
+          "file": "backend/app/modules/inbox/application/media.py",
+          "line": 139
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 612
+        },
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 22
+        },
+        {
+          "file": "backend/migrations/016_inbox_media.sql",
+          "line": 9
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "El compositor distingue guardar local y enviar externo por identidad, y existe dispatcher durable/outbox y multimedia; no describirlo como totalmente inexistente por documentación histórica. Falta aceptación actual por canal de flujo íntegro, recibos firmados, incertidumbre, reintentos y handoff. No crear otra cola para replicar Scentra.",
+      "acceptance": "Enviar sólo a identidad seleccionada; adjuntos/audio/imagen/documento según capacidades; guardar local no envía; replay no duplica; caída entre POST y recibo produce estado incierto reconciliable; recibido/entregado/leído corresponden a evidencia del proveedor; rollback de código conserva outbox y mensajes.",
+      "phase": "canales_mensajeria"
+    },
+    {
+      "id": "inbox_07",
+      "capability": "Mini CRM conversacional y predicciones con evidencia",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 731
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3214
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3319
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/features/MiniCrm.tsx",
+          "line": 5
+        },
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 79
+        },
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 11
+        }
+      ],
+      "status": "parcial_en_fuente",
+      "gap": "MiniCrm ya compone análisis conversacional, estrategia y actividad; hay puntuación/temperatura manuales separadas. Debe mapearse el comportamiento útil de Scentra conservando procedencia y nulabilidad; las reglas heurísticas y el análisis configurado/desactivado no son por sí mismos aprendizaje neuronal ni probabilidad calibrada.",
+      "acceptance": "Mostrar fuente/fecha/estado de análisis y conservar corrección humana; ausencia de predicción no se vuelve cero; score manual no se sobrescribe con derivado; resumen/intención/objeciones/siguiente acción enlazan evidencia del hilo y respetan privacidad entre aspirantes.",
+      "phase": "inteligencia_aprendizaje"
+    },
+    {
+      "id": "inbox_08",
+      "capability": "Identidad educativa, actividad y unificación reversible existentes",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2036
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2122
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/contacts/api/router.py",
+          "line": 283
+        },
+        {
+          "file": "backend/app/modules/contacts/application/activity.py",
+          "line": 274
+        },
+        {
+          "file": "backend/app/modules/contacts/application/merge.py",
+          "line": 519
+        },
+        {
+          "file": "backend/app/modules/contacts/application/merge.py",
+          "line": 523
+        },
+        {
+          "file": "backend/migrations/007_institutional_identity.sql",
+          "line": 21
+        },
+        {
+          "file": "backend/migrations/008_contact_merge.sql",
+          "line": 21
+        }
+      ],
+      "status": "existente_por_preservar",
+      "gap": "CRM CBN tiene identidad declarada/candidatos SIIE y unificación lógica reversible que no deben perderse al copiar el merge de Scentra. Los contactos, hilos y memorias originales mantienen autoridad; coincidencia documental no autoriza matrícula ni fusión de identidades académicas.",
+      "acceptance": "Ensayar comparar/unir/deshacer con cambios posteriores y conflictos; conservar trazabilidad, histórico, origen y redacción IA; métricas no dependen de filtros del historial; ninguna migración mueve/borrar core SIIE ni reasigna mensajes originales.",
+      "phase": "paridad_inbox_crm"
+    },
+    {
+      "id": "inbox_09",
+      "capability": "Contrato de destino SQL Server 2019 en Linux",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/db.py",
+          "line": 15
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/sql_workspace.py",
+          "line": 161
+        },
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 3
+        }
+      ],
+      "status": "riesgo_verificado_en_fuente",
+      "gap": "verify_target y migración 015 fijan el destino local a instancia SQLEXPRESS. El nuevo objetivo Linux/Docker requiere contrato de entorno explícito y verificado; quitar el guard de seguridad sin sustituto no es una adaptación válida. No se consultó la base para comprobar versión, edición ni compatibilidad.",
+      "acceptance": "Documentar servidor/base y huella autorizados, SQL Server 2019/compatibilidad; guard rechaza sistema/producción equivocada y acepta sólo el destino configurado; comprobar cada migración en restauración no productiva con respaldo/replay/rechazo de drift; nada de DDL al arrancar.",
+      "phase": "fundacion_sql2019"
+    },
+    {
+      "id": "inbox_information_design",
+      "capability": "Ficha CRM única y editable con diagnóstico compacto en Inbox y CRM",
+      "source": [
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 8695
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 8730
+        },
+        {
+          "file": "../saas-version/frontend/src/CrmPanel.jsx",
+          "line": 534
+        },
+        {
+          "file": "../saas-version/frontend/src/CrmPanel.jsx",
+          "line": 546
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 992
+        },
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 1036
+        },
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 1066
+        },
+        {
+          "file": "frontend/src/modules/inbox/components/InboxContactEditor.tsx",
+          "line": 92
+        },
+        {
+          "file": "frontend/src/modules/inbox/components/InboxAssessment.tsx",
+          "line": 56
+        },
+        {
+          "file": "frontend/src/features/MiniCrm.tsx",
+          "line": 14
+        },
+        {
+          "file": "frontend/src/modules/clients/pages/Clients.tsx",
+          "line": 527
+        },
+        {
+          "file": "frontend/src/modules/clients/pages/Clients.tsx",
+          "line": 622
+        }
+      ],
+      "status": "brecha_ux_verificada_en_fuente",
+      "gap": "La ficha Inbox muestra teléfono, programa, jornada, etiquetas, tipo, intereses, campos y notas en un bloque de lectura arriba y repite su edición abajo en Ficha compartida y campos del contacto, abierto por defecto. Entre ambos se intercalan análisis, estrategia, evaluación manual, unificación y estado operativo. MiniCrm apila secciones completas; Clientes añade el mismo mini CRM a un formulario ya extenso. Esto explica la duplicación y exceso de texto señalado por el usuario. Tomar Scentra como referencia de jerarquía y acciones conservando Glass, sin copiar literalmente sus propias repeticiones ni sus valores predictivos de reserva.",
+      "acceptance": "P3 entrega una sola ficha del contacto con edición en el mismo lugar para campos CRM autorizados, sin duplicado de todos los valores en bloque lectura más formulario inferior; datos oficiales SIIE permanecen identificados y de lectura. Un único borrador/guardar/descartar preserva validación, conflictos, selección de ficha principal y conversación de origen. Orden: identidad/etapa y acciones frecuentes, campos operativos, diagnóstico breve no repetido, actividad/detalles. Explicaciones largas, procedencia técnica, metodología, auditoría y unificación pasan a ayuda contextual o secciones plegables sin ocultar errores ni estado pendiente. Reutilizar estructura entre Inbox y Clientes, conservar Glass y probar teclado/foco, scroll, móvil y ausencia de pérdida de borradores. El diseño P3 reserva la superficie del diagnóstico; la inferencia y contrato final dependen de P10.",
+      "phase": "P3"
+    },
+    {
+      "id": "inbox_churn_surface",
+      "capability": "Riesgo de abandono conectado al mini CRM y CRM con procedencia diferenciada",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 731
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 3078
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 8717
+        },
+        {
+          "file": "../saas-version/frontend/src/App.jsx",
+          "line": 8813
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 81
+        },
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 82
+        },
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 16
+        },
+        {
+          "file": "frontend/src/modules/campaigns/CampaignsPanel.tsx",
+          "line": 122
+        },
+        {
+          "file": "frontend/src/modules/conversation-strategy/pages/ConversationStrategy.tsx",
+          "line": 184
+        },
+        {
+          "file": "frontend/src/modules/inbox/components/InboxAssessment.tsx",
+          "line": 15
+        },
+        {
+          "file": "backend/app/modules/inbox/application/service.py",
+          "line": 301
+        },
+        {
+          "file": "frontend/src/features/MiniCrm.tsx",
+          "line": 20
+        },
+        {
+          "file": "frontend/src/modules/clients/pages/Clients.tsx",
+          "line": 622
+        }
+      ],
+      "status": "parcial_backend_y_superficie_desconectada",
+      "gap": "No falta todo el churn: campañas ya consulta crm_marketing.ChurnAssessment y expone GET /api/v1/crm/predictions; Campañas muestra riesgo por rúbrica versionada con motivos/fecha y valor desconocido sin evidencia. El mini CRM compartido muestra además una estimación cualitativa de abandono de ConversationStrategy, mientras InboxAssessment edita puntaje/temperatura manuales. La ficha no consume una evaluación unificada por contacto/conversación del servicio de campañas y el usuario percibe que el abandono no está integrado. Son productos distintos: evaluación manual, rúbrica determinista de campañas, interpretación cualitativa y futura predicción aprendida; no sumarlos ni rotularlos como una misma probabilidad. La fuente Scentra también usa valores 0 y porcentajes de reserva que no deben trasladarse.",
+      "acceptance": "P10 define DTO de diagnóstico por conversación/contacto que reutiliza la última evaluación disponible, con estado evaluable/desconocido/no aplicable/obsoleto, tipo de cálculo (manual, regla, interpretación IA o modelo validado), valor nullable, motivos, evidencia, fecha, cobertura y versión. Mini CRM y CRM consumen el mismo diagnóstico compacto diseñado en P3, sin segunda copia del resumen ni necesidad de abrir Campañas; distinguen riesgo de abandono y temperatura/interés. Nunca mostrar 0 ni porcentaje/probabilidad por ausencia de dato; rúbrica 0–100 se identifica como indicador y no sobrescribe el valor manual. Para fichas unificadas, indicar hilo evaluado y no mezclar scores de otros orígenes sin regla explícita. Cambios de conversación no conservan resultados de otra ficha, contexto antiguo se marca y errores no producen scores. Recálculo actualiza diagnóstico y Campañas coherentemente con evidencia; activación de inferencia/modelo conserva su aceptación propia y no habilita envíos. Dependencia de diseño P3 y datos/contratos de P10.",
+      "phase": "P3",
+      "training_dependency": "P10 sólo para modelo entrenado/evaluado; no diferir la superficie de lectura existente"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "inbox_source_main",
+        "label": "Composición Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/main.py",
+        "source_location": "L402"
+      },
+      {
+        "id": "inbox_source_crm",
+        "label": "CRM e Inbox Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/crm/router.py",
+        "source_location": "L2688"
+      },
+      {
+        "id": "inbox_source_social",
+        "label": "Comentarios Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/social/router.py",
+        "source_location": "L49"
+      },
+      {
+        "id": "inbox_target_main",
+        "label": "Composición CRM CBN",
+        "file_type": "code",
+        "source_file": "backend/app/main.py",
+        "source_location": "L39"
+      },
+      {
+        "id": "inbox_target_inbox",
+        "label": "Inbox SQL activo",
+        "file_type": "code",
+        "source_file": "backend/app/modules/inbox/application/service.py",
+        "source_location": "L388"
+      },
+      {
+        "id": "inbox_target_inbox_ui",
+        "label": "Inbox Glass",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1108"
+      },
+      {
+        "id": "inbox_target_channels",
+        "label": "Comentarios API existente",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L295"
+      },
+      {
+        "id": "inbox_target_worker",
+        "label": "Dispatcher e ingesta SQL",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L612"
+      },
+      {
+        "id": "inbox_target_social_table",
+        "label": "Persistencia de comentarios",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L60"
+      },
+      {
+        "id": "inbox_target_clients",
+        "label": "Directorio CRM por snapshot",
+        "file_type": "code",
+        "source_file": "backend/app/modules/clients/api/router.py",
+        "source_location": "L44"
+      },
+      {
+        "id": "inbox_target_workspace",
+        "label": "Workspace y transacciones CRM",
+        "file_type": "code",
+        "source_file": "backend/app/sql_workspace.py",
+        "source_location": "L195"
+      },
+      {
+        "id": "inbox_target_config",
+        "label": "Catálogo CRM compartido",
+        "file_type": "code",
+        "source_file": "backend/app/modules/crm_configuration/application/service.py",
+        "source_location": "L76"
+      },
+      {
+        "id": "inbox_target_ops",
+        "label": "Asignación, tareas y SLA",
+        "file_type": "code",
+        "source_file": "backend/app/modules/inbox/application/operations.py",
+        "source_location": "L639"
+      },
+      {
+        "id": "inbox_target_minicrm",
+        "label": "Mini CRM con análisis y actividad",
+        "file_type": "code",
+        "source_file": "frontend/src/features/MiniCrm.tsx",
+        "source_location": "L5"
+      },
+      {
+        "id": "inbox_target_merge",
+        "label": "Unificación lógica reversible",
+        "file_type": "code",
+        "source_file": "backend/app/modules/contacts/application/merge.py",
+        "source_location": "L523"
+      },
+      {
+        "id": "inbox_target_activity",
+        "label": "Actividad deduplicada",
+        "file_type": "code",
+        "source_file": "backend/app/modules/contacts/application/activity.py",
+        "source_location": "L274"
+      },
+      {
+        "id": "inbox_target_guard",
+        "label": "Guard SQLEXPRESS",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L3"
+      },
+      {
+        "id": "inbox_target_contact_editor",
+        "label": "Editor compartido de ficha CRM",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/inbox/components/InboxContactEditor.tsx",
+        "source_location": "L11"
+      },
+      {
+        "id": "inbox_target_assessment",
+        "label": "Puntaje y temperatura manuales",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/inbox/components/InboxAssessment.tsx",
+        "source_location": "L6"
+      },
+      {
+        "id": "inbox_target_clients_ui",
+        "label": "Ficha Clientes Glass",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/clients/pages/Clients.tsx",
+        "source_location": "L527"
+      },
+      {
+        "id": "inbox_target_strategy",
+        "label": "Interpretación cualitativa de abandono",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/conversation-strategy/pages/ConversationStrategy.tsx",
+        "source_location": "L184"
+      },
+      {
+        "id": "inbox_target_analysis_ui",
+        "label": "Contexto conversacional con evidencia",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/conversation-analysis/pages/ConversationAnalysis.tsx",
+        "source_location": "L338"
+      },
+      {
+        "id": "inbox_target_campaigns_service",
+        "label": "Evaluación de abandono por rúbrica",
+        "file_type": "code",
+        "source_file": "backend/app/modules/campaigns/service.py",
+        "source_location": "L81"
+      },
+      {
+        "id": "inbox_target_campaigns_routes",
+        "label": "API de predicciones CRM",
+        "file_type": "code",
+        "source_file": "backend/app/modules/campaigns/router.py",
+        "source_location": "L82"
+      },
+      {
+        "id": "inbox_target_churn_table",
+        "label": "Evaluación de abandono persistida",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L16"
+      },
+      {
+        "id": "inbox_target_campaigns_ui",
+        "label": "Riesgo de abandono en Campañas",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/campaigns/CampaignsPanel.tsx",
+        "source_location": "L122"
+      },
+      {
+        "id": "inbox_source_inbox_ui",
+        "label": "Ficha contextual de Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/App.jsx",
+        "source_location": "L8695"
+      },
+      {
+        "id": "inbox_source_clients_ui",
+        "label": "Ficha CRM editable de Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/frontend/src/CrmPanel.jsx",
+        "source_location": "L534"
+      }
+    ],
+    "edges": [
+      {
+        "source": "inbox_source_main",
+        "target": "inbox_source_crm",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/main.py",
+        "source_location": "L402"
+      },
+      {
+        "source": "inbox_source_main",
+        "target": "inbox_source_social",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "../saas-version/backend/app_saas/main.py",
+        "source_location": "L429"
+      },
+      {
+        "source": "inbox_target_main",
+        "target": "inbox_target_inbox",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/main.py",
+        "source_location": "L97"
+      },
+      {
+        "source": "inbox_target_main",
+        "target": "inbox_target_ops",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/main.py",
+        "source_location": "L98"
+      },
+      {
+        "source": "inbox_target_main",
+        "target": "inbox_target_channels",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/main.py",
+        "source_location": "L103"
+      },
+      {
+        "source": "inbox_target_main",
+        "target": "inbox_target_clients",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/main.py",
+        "source_location": "L94"
+      },
+      {
+        "source": "inbox_target_inbox",
+        "target": "inbox_target_workspace",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/modules/inbox/application/service.py",
+        "source_location": "L458"
+      },
+      {
+        "source": "inbox_target_clients",
+        "target": "inbox_target_workspace",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/modules/clients/api/router.py",
+        "source_location": "L30"
+      },
+      {
+        "source": "inbox_target_workspace",
+        "target": "inbox_target_config",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/sql_workspace.py",
+        "source_location": "L379"
+      },
+      {
+        "source": "inbox_target_workspace",
+        "target": "inbox_target_merge",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/sql_workspace.py",
+        "source_location": "L360"
+      },
+      {
+        "source": "inbox_target_minicrm",
+        "target": "inbox_target_activity",
+        "relation": "conceptually_related_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.8,
+        "source_file": "frontend/src/features/MiniCrm.tsx",
+        "source_location": "L23"
+      },
+      {
+        "source": "inbox_target_worker",
+        "target": "inbox_target_social_table",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L373"
+      },
+      {
+        "source": "inbox_target_channels",
+        "target": "inbox_target_social_table",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L303"
+      },
+      {
+        "source": "inbox_source_social",
+        "target": "inbox_target_channels",
+        "relation": "semantically_similar_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L295"
+      },
+      {
+        "source": "inbox_source_crm",
+        "target": "inbox_target_inbox",
+        "relation": "semantically_similar_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "backend/app/modules/inbox/application/service.py",
+        "source_location": "L388"
+      },
+      {
+        "source": "inbox_target_inbox_ui",
+        "target": "inbox_target_contact_editor",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1067"
+      },
+      {
+        "source": "inbox_target_inbox_ui",
+        "target": "inbox_target_assessment",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1038"
+      },
+      {
+        "source": "inbox_target_inbox_ui",
+        "target": "inbox_target_minicrm",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1036"
+      },
+      {
+        "source": "inbox_target_clients_ui",
+        "target": "inbox_target_minicrm",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/modules/clients/pages/Clients.tsx",
+        "source_location": "L622"
+      },
+      {
+        "source": "inbox_target_minicrm",
+        "target": "inbox_target_strategy",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/features/MiniCrm.tsx",
+        "source_location": "L20"
+      },
+      {
+        "source": "inbox_target_minicrm",
+        "target": "inbox_target_analysis_ui",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/features/MiniCrm.tsx",
+        "source_location": "L16"
+      },
+      {
+        "source": "inbox_target_campaigns_routes",
+        "target": "inbox_target_campaigns_service",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/campaigns/router.py",
+        "source_location": "L82"
+      },
+      {
+        "source": "inbox_target_campaigns_service",
+        "target": "inbox_target_churn_table",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/campaigns/service.py",
+        "source_location": "L86"
+      }
+    ]
+  }
+}

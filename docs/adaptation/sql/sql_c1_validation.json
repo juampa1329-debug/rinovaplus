@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-24",
+  "unit": "SQL-C1",
+  "result": "implemented_and_verified_for_local_metadata_only",
+  "report": "SQL_C1_REVIEW.md",
+  "decision": "../../decisions/ADR-014-database-selection.md",
+  "automated": {
+    "backend": {
+      "passed": 89,
+      "new_selector_tests": 17,
+      "existing_sql_target_tests": 72,
+      "runtime": "Docker Python3.12"
+    },
+    "frontend": {
+      "passed": 3,
+      "runtime": "Docker Node24"
+    },
+    "typecheck": "passed",
+    "eslint_changed_files": "passed",
+    "ruff_new_files": "passed",
+    "production_docker_build": "passed",
+    "full_backend_suite": "not_accepted_existing_failures_attempt_stopped"
+  },
+  "connected": {
+    "database": "HORARIOSSIIE",
+    "user_confirmed_fragment": true,
+    "engine_major": 16,
+    "edition": "Express Edition (64-bit)",
+    "compatibility_level": 160,
+    "table_count": 50,
+    "column_count": 437,
+    "foreign_key_count": 41,
+    "tls": "EncryptYes_TrustServerCertificateNo_hostname_validated",
+    "dbsiie_visible": false,
+    "business_rows_read": false,
+    "ddl_dml_or_migrations": false,
+    "schema_drift_acceptance": "not_evaluated"
+  },
+  "runtime": {
+    "mode": "local_demo",
+    "ai_outbound": false,
+    "live_http": 200,
+    "ready_http": 503,
+    "ready_reason": "business_SQL_workspace_inactive",
+    "profile_revision_after_recreate": 2,
+    "stored_credential_reuse_after_recreate": true,
+    "database_discovery_after_recreate": true
+  },
+  "browser": {
+    "actual_ui_verified": true,
+    "flow": [
+      "settings_database",
+      "saved_profile",
+      "test_connection",
+      "view_schema",
+      "select_dbo_ACProgramas"
+    ],
+    "style": "existing_Glass"
+  },
+  "graph_observed": {
+    "nodes": 529,
+    "edges": 651,
+    "communities": 23,
+    "source": "observed-schema.json",
+    "tool": "../../../backend/tools/observed_sql_graph.py",
+    "live_refresh_on_graph_build": false
+  },
+  "baseline_P1_3": {
+    "files": 279,
+    "unchanged": 274,
+    "expected_changed": [
+      "backend/app/main.py",
+      "backend/app/modules/ai/api/router.py",
+      "frontend/src/App.tsx",
+      "frontend/src/features/Settings.tsx",
+      "frontend/src/shared/workspaceSession.tsx"
+    ],
+    "all_19_sql_and_9_runners_unchanged": true,
+    "scentra_references_unchanged": true
+  },
+  "limitations": [
+    "Selector applies to inspection only, not CRM repositories",
+    "Local2022 is not institutional2019 acceptance",
+    "Metadata sequential reads, not transaction-wide schema snapshot",
+    "Indices/defaults/checks/triggers/permissions/seeds not accepted",
+    "Profile CAS requires one backend process",
+    "Local guard is not institutional authentication",
+    "Full SIIE copy and migration rehearsal remain pending"
+  ],
+  "semantic_review": {
+    "method": "Graphify skill subagent review of public source/docs, no execution or secrets",
+    "result": "no_new_material_findings_with_single_backend_process",
+    "historical_sql_r1_preserved": true
+  },
+  "graphs": {
+    "runtime": {
+      "nodes": 2349,
+      "edges": 6124,
+      "communities": 112
+    },
+    "adaptation": {
+      "nodes": 243,
+      "edges": 407,
+      "communities": 28
+    },
+    "sql_declarations": {
+      "nodes": 933,
+      "edges": 1199,
+      "communities": 66
+    },
+    "observed": {
+      "nodes": 529,
+      "edges": 651,
+      "communities": 23
+    },
+    "scoped_code_files": 217,
+    "independent_findings": 36,
+    "acyclic_phases": 12
+  },
+  "continuity_checks": {
+    "local_links_checked": 1123,
+    "broken_links": 0,
+    "graphs_no_dangling_edges": 4,
+    "inventory_hashes": "passed",
+    "migration_definition": "passed_12_negative_cases",
+    "observed_metadata_hashes": "passed",
+    "graph_source_checkpoint": "passed",
+    "ruff_product_tests_and_graph_helpers": "passed"
+  }
+}

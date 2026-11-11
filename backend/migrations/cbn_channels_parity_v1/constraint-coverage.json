@@ -1,0 +1,482 @@
+{
+  "unit": "SQL-C11",
+  "contract_sha256": "376f5f1234347cd403fe9a71fb0c4421fa14f2eee552afc790e91ae95a1cd7ba",
+  "scope": "physical_schema_only",
+  "tables": [
+    {
+      "table": "crm_channels2.Context",
+      "C10_rules": [
+        "ContextId=1",
+        "exactly_one_context_row_at_guard"
+      ],
+      "SQL_checks": [
+        "ContextId=1"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "ContextId=1",
+        "exactly_one_context_row_at_guard"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.Application",
+      "C10_rules": [
+        "Provider IN(meta,tiktok)",
+        "State IN(draft,enabled,paused,retired)",
+        "RedirectUri exactly matches reviewed HTTPS profile; no query-selected return URL",
+        "identity/issuer changes with history require a new reviewed profile and explicit mapping; never rewrite historical ownership"
+      ],
+      "SQL_checks": [
+        "Provider IN('meta','tiktok')",
+        "State IN('draft','enabled','paused','retired')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Provider IN(meta,tiktok)",
+        "State IN(draft,enabled,paused,retired)",
+        "RedirectUri exactly matches reviewed HTTPS profile; no query-selected return URL",
+        "identity/issuer changes with history require a new reviewed profile and explicit mapping; never rewrite historical ownership"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.Integration",
+      "C10_rules": [
+        "Channel IN(whatsapp,instagram,facebook,messenger,tiktok)",
+        "Provider/channel/dispatch combinations use versioned allowlist",
+        "RequestedStatus IN(connected,paused,disconnected)",
+        "VerifiedStatus is server-owned; requested connected alone is not evidence",
+        "identity/application changes with history require explicit rebind; no silent retarget"
+      ],
+      "SQL_checks": [
+        "(Provider='meta' AND Channel IN('whatsapp','instagram','facebook','messenger')) OR (Provider='tiktok' AND Channel='tiktok')",
+        "RequestedStatus IN('connected','paused','disconnected')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Channel IN(whatsapp,instagram,facebook,messenger,tiktok)",
+        "Provider/channel/dispatch combinations use versioned allowlist",
+        "RequestedStatus IN(connected,paused,disconnected)",
+        "VerifiedStatus is server-owned; requested connected alone is not evidence",
+        "identity/application changes with history require explicit rebind; no silent retarget"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.Audit",
+      "C10_rules": [
+        "append_only",
+        "metadata_allowlist_no_tokens_headers_password_PIN_or_full_request"
+      ],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "append_only",
+        "metadata_allowlist_no_tokens_headers_password_PIN_or_full_request"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.OAuthSession",
+      "C10_rules": [
+        "one_use_atomic_claim",
+        "ExpiresAt > CreatedAt; maximum 30 minutes, default 10 minutes",
+        "state/client/issuer/redirect/actor/browser binding checked before exchange",
+        "no raw state, authorization code or verifier columns",
+        "GrantScope=create_connections requires IntegrationId NULL and institution create role; bound_connection requires IntegrationId NOT NULL; no client-controlled scope broadening"
+      ],
+      "SQL_checks": [
+        "ExpiresAt>CreatedAt AND ExpiresAt<=DATEADD(minute,30,CreatedAt)",
+        "(GrantScope='create_connections' AND IntegrationId IS NULL) OR (GrantScope='bound_connection' AND IntegrationId IS NOT NULL)",
+        "Status IN('pending','exchanging','assets_ready','completed','failed','expired','cancelled','uncertain','reconciled','abandoned')",
+        "ClaimVersion>=0",
+        "ClientSecretVersionNo>=1",
+        "PkceMethod IS NULL OR PkceMethod='S256'",
+        "(ClaimId IS NULL AND ClaimUntil IS NULL) OR (ClaimId IS NOT NULL AND ClaimUntil IS NOT NULL)"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "one_use_atomic_claim",
+        "ExpiresAt > CreatedAt; maximum 30 minutes, default 10 minutes",
+        "state/client/issuer/redirect/actor/browser binding checked before exchange",
+        "no raw state, authorization code or verifier columns",
+        "GrantScope=create_connections requires IntegrationId NULL and institution create role; bound_connection requires IntegrationId NOT NULL; no client-controlled scope broadening"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.WebhookEndpoint",
+      "C10_rules": [
+        "SignatureRequired=1 for all public production endpoints",
+        "ChannelSelector excludes Stripe and commerce",
+        "challenge uses verify-token hash equality; challenge is not POST authentication"
+      ],
+      "SQL_checks": [
+        "SignatureRequired=1",
+        "Provider IN('meta','tiktok')",
+        "ChannelSelector IN('meta','whatsapp','instagram','facebook','tiktok')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "SignatureRequired=1 for all public production endpoints",
+        "ChannelSelector excludes Stripe and commerce",
+        "challenge uses verify-token hash equality; challenge is not POST authentication"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "C10_rules": [
+        "exactly_one_owner among ApplicationId/IntegrationId/EndpointId/OAuthSessionId/AssetId",
+        "scope_kind_allowlist",
+        "VersionNo>=1",
+        "State IN(staged,active,grace,retired,revoked)",
+        "16 < DATALENGTH(Ciphertext) <= 32784",
+        "grace only for explicitly enabled webhook signature overlap; never refresh-token reuse"
+      ],
+      "SQL_checks": [
+        "VersionNo>=1",
+        "State IN('staged','active','grace','retired','revoked')",
+        "DATALENGTH(Ciphertext)>16 AND DATALENGTH(Ciphertext)<=32784",
+        "CASE WHEN ApplicationId IS NULL THEN 0 ELSE 1 END+CASE WHEN IntegrationId IS NULL THEN 0 ELSE 1 END+CASE WHEN EndpointId IS NULL THEN 0 ELSE 1 END+CASE WHEN OAuthSessionId IS NULL THEN 0 ELSE 1 END+CASE WHEN AssetId IS NULL THEN 0 ELSE 1 END=1",
+        "State<>'grace' OR (EndpointId IS NOT NULL AND Kind IN('tiktok_webhook_secret','endpoint_hmac') AND GraceUntil IS NOT NULL)"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "exactly_one_owner among ApplicationId/IntegrationId/EndpointId/OAuthSessionId/AssetId",
+        "scope_kind_allowlist",
+        "VersionNo>=1",
+        "State IN(staged,active,grace,retired,revoked)",
+        "16 < DATALENGTH(Ciphertext) <= 32784",
+        "grace only for explicitly enabled webhook signature overlap; never refresh-token reuse"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "C10_rules": [
+        "provider-origin assets; never client-asserted ownership",
+        "immutable per-operation/session snapshot; connect requires same actor/session/application/integration and unexpired ownership proof",
+        "per-page provisional access token stored in SecretVersion with AssetId owner; never Metadata JSON"
+      ],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "provider-origin assets; never client-asserted ownership",
+        "immutable per-operation/session snapshot; connect requires same actor/session/application/integration and unexpired ownership proof",
+        "per-page provisional access token stored in SecretVersion with AssetId owner; never Metadata JSON"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ProviderOperation",
+      "C10_rules": [
+        "operation UUID bound to target+actor+action+canonical HMAC request digest",
+        "no raw PIN/code/password/token or unredacted response persisted",
+        "no automatic replay of uncertain remote outcome",
+        "EffectKey is server-derived from account/asset/message/auth-session and semantic secret generation; a new UUID or expired lease cannot bypass uncertain outcome"
+      ],
+      "SQL_checks": [
+        "Status IN('pending','running','confirmed','failed','uncertain','reconciled','abandoned')",
+        "LeaseVersion>=0 AND Attempts>=0"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "operation UUID bound to target+actor+action+canonical HMAC request digest",
+        "no raw PIN/code/password/token or unredacted response persisted",
+        "no automatic replay of uncertain remote outcome",
+        "EffectKey is server-derived from account/asset/message/auth-session and semantic secret generation; a new UUID or expired lease cannot bypass uncertain outcome"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.TikTokPolicy",
+      "C10_rules": [
+        "Integration provider/channel must be tiktok",
+        "0<=RolloutPercent<=100",
+        "0<=DailyOutboundQuota<=1000000; 0<=DailyAiQuota<=1000000",
+        "source quota 0 means unlimited, never enables disabled mode",
+        "ReviewStatus IN(untracked,pending,changes_requested,approved)",
+        "OutboundMode IN(disabled,shadow,manual,live,stub)",
+        "API URL/path/env alias require reviewed immutable server profiles; no arbitrary host/env reads"
+      ],
+      "SQL_checks": [
+        "RolloutPercent BETWEEN 0 AND 100",
+        "DailyOutboundQuota BETWEEN 0 AND 1000000 AND DailyAiQuota BETWEEN 0 AND 1000000",
+        "ReviewStatus IN('untracked','pending','changes_requested','approved')",
+        "OutboundMode IN('disabled','shadow','manual','live','stub')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Integration provider/channel must be tiktok",
+        "0<=RolloutPercent<=100",
+        "0<=DailyOutboundQuota<=1000000; 0<=DailyAiQuota<=1000000",
+        "source quota 0 means unlimited, never enables disabled mode",
+        "ReviewStatus IN(untracked,pending,changes_requested,approved)",
+        "OutboundMode IN(disabled,shadow,manual,live,stub)",
+        "API URL/path/env alias require reviewed immutable server profiles; no arbitrary host/env reads"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "C10_rules": [
+        "immutable evidence; local/stub/manual attestation cannot satisfy real-provider predicates",
+        "bind current application/integration/policy/secret versions in server-validated summary; expiry invalidates",
+        "signed-event evidence requires EventId/ReceiptId and equality of Event.ReceiptId, integration, endpoint and application; no independent-row substitution",
+        "provider-operation evidence binds exact account/application/action/result generation; attested review and signed ingress are distinct evidence kinds",
+        "EventId NOT NULL requires ReceiptId and EndpointId NOT NULL; all provenance columns match the linked event; non-event evidence requires its authorized evidence kind/source"
+      ],
+      "SQL_checks": [
+        "EventId IS NULL OR (ReceiptId IS NOT NULL AND EndpointId IS NOT NULL)"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "immutable evidence; local/stub/manual attestation cannot satisfy real-provider predicates",
+        "bind current application/integration/policy/secret versions in server-validated summary; expiry invalidates",
+        "signed-event evidence requires EventId/ReceiptId and equality of Event.ReceiptId, integration, endpoint and application; no independent-row substitution",
+        "provider-operation evidence binds exact account/application/action/result generation; attested review and signed ingress are distinct evidence kinds",
+        "EventId NOT NULL requires ReceiptId and EndpointId NOT NULL; all provenance columns match the linked event; non-event evidence requires its authorized evidence kind/source"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.QuotaBucket",
+      "C10_rules": [
+        "Reserved>=0; Committed>=0",
+        "both counters participate in admission"
+      ],
+      "SQL_checks": [
+        "Reserved>=0 AND Committed>=0",
+        "Action IN('outbound','ai')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Reserved>=0; Committed>=0",
+        "both counters participate in admission"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.QuotaReservation",
+      "C10_rules": [
+        "Units>0",
+        "Status IN(reserved,committed,released,uncertain)",
+        "uncertain holds reservation until reconciliation",
+        "Action IN(outbound,ai); chats and comment replies both reserve outbound; AI additionally reserves ai",
+        "real SendJob requires non-NULL reservation; uncertain holds; commit/release counters atomically exactly once"
+      ],
+      "SQL_checks": [
+        "Units>0",
+        "Status IN('reserved','committed','released','uncertain')",
+        "Action IN('outbound','ai')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Units>0",
+        "Status IN(reserved,committed,released,uncertain)",
+        "uncertain holds reservation until reconciliation",
+        "Action IN(outbound,ai); chats and comment replies both reserve outbound; AI additionally reserves ai",
+        "real SendJob requires non-NULL reservation; uncertain holds; commit/release counters atomically exactly once"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.EndpointIntegration",
+      "C10_rules": [
+        "application ownership of endpoint and integration must match",
+        "exact route; missing/ambiguous route quarantines"
+      ],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "application ownership of endpoint and integration must match",
+        "exact route; missing/ambiguous route quarantines"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.WebhookReceipt",
+      "C10_rules": [
+        "raw body maximum 1000000 bytes before parsing",
+        "ACK only after durable COMMIT",
+        "no signature/auth/cookie/token header storage",
+        "BodyPurgedAt IS NULL implies all encrypted body fields NOT NULL; BodyPurgedAt NOT NULL implies all body fields NULL",
+        "purge only terminal nonleased receipts after retention; keep dedupe tombstone and authenticated metadata",
+        "verified Authentication requires SignatureSecretId and SignatureVerifiedAt; legacy imported receipts are quarantined/unverified with SignatureVerifiedAt NULL"
+      ],
+      "SQL_checks": [
+        "Authentication IN('verified','legacy_unverified')",
+        "(Authentication='verified' AND SignatureSecretId IS NOT NULL AND SignatureVerifiedAt IS NOT NULL) OR (Authentication='legacy_unverified' AND SignatureVerifiedAt IS NULL)",
+        "(BodyPurgedAt IS NULL AND BodyKeyVersion IS NOT NULL AND BodyNonce IS NOT NULL AND BodyCiphertext IS NOT NULL) OR (BodyPurgedAt IS NOT NULL AND BodyKeyVersion IS NULL AND BodyNonce IS NULL AND BodyCiphertext IS NULL)",
+        "BodyCiphertext IS NULL OR DATALENGTH(BodyCiphertext)<=1000016",
+        "BodyPurgedAt IS NULL OR (Status IN('processed','quarantined','failed') AND LeaseId IS NULL AND LeaseUntil IS NULL)",
+        "Authentication<>'legacy_unverified' OR Status='quarantined'",
+        "LeaseVersion>=0 AND Attempts>=0"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "raw body maximum 1000000 bytes before parsing",
+        "ACK only after durable COMMIT",
+        "no signature/auth/cookie/token header storage",
+        "BodyPurgedAt IS NULL implies all encrypted body fields NOT NULL; BodyPurgedAt NOT NULL implies all body fields NULL",
+        "purge only terminal nonleased receipts after retention; keep dedupe tombstone and authenticated metadata",
+        "verified Authentication requires SignatureSecretId and SignatureVerifiedAt; legacy imported receipts are quarantined/unverified with SignatureVerifiedAt NULL"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.WebhookEvent",
+      "C10_rules": [
+        "one normalized row per subevent, not first entry only",
+        "NULL IntegrationId implies quarantine",
+        "weak/unknown identity must not produce irreversible effects"
+      ],
+      "SQL_checks": [
+        "IntegrationId IS NOT NULL OR Status='quarantined'",
+        "LeaseVersion>=0 AND Attempts>=0"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "one normalized row per subevent, not first entry only",
+        "NULL IntegrationId implies quarantine",
+        "weak/unknown identity must not produce irreversible effects"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ConversationProfile",
+      "C10_rules": [
+        "LeadScore IS NULL OR 0<=LeadScore<=100",
+        "Temperature IN(cold,warm,hot) or NULL; no inferred assessment accepted by creating this table"
+      ],
+      "SQL_checks": [
+        "LeadScore IS NULL OR LeadScore BETWEEN 0 AND 100",
+        "Temperature IS NULL OR Temperature IN('cold','warm','hot')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "LeadScore IS NULL OR 0<=LeadScore<=100",
+        "Temperature IN(cold,warm,hot) or NULL; no inferred assessment accepted by creating this table"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ConversationControl",
+      "C10_rules": [
+        "Epoch>=0; ReadSequence>=0",
+        "handoff increments Epoch atomically; read sequence monotonic"
+      ],
+      "SQL_checks": [
+        "Epoch>=0 AND ReadSequence>=0"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "Epoch>=0; ReadSequence>=0",
+        "handoff increments Epoch atomically; read sequence monotonic"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ExternalIdentity",
+      "C10_rules": [
+        "canonical crm Conversation.ContactId must match ContactId under transaction locks; no SIIE FK or core DML"
+      ],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "canonical crm Conversation.ContactId must match ContactId under transaction locks; no SIIE FK or core DML"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.ExternalMessage",
+      "C10_rules": [
+        "per-integration message deduplication; no provider/channel-only key"
+      ],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "per-integration message deduplication; no provider/channel-only key"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.SocialComment",
+      "C10_rules": [],
+      "SQL_checks": [],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "C10_rules": [
+        "chat requires IdentityId and MessageId; comment reply requires CommentId",
+        "state transitions monotonic; uncertain is not failed",
+        "no plaintext credentials in payload"
+      ],
+      "SQL_checks": [
+        "(Kind='chat' AND IdentityId IS NOT NULL AND MessageId IS NOT NULL AND CommentId IS NULL) OR (Kind='comment_reply' AND CommentId IS NOT NULL AND IdentityId IS NULL AND MessageId IS NULL)",
+        "LeaseVersion>=0 AND Attempts>=0"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "chat requires IdentityId and MessageId; comment reply requires CommentId",
+        "state transitions monotonic; uncertain is not failed",
+        "no plaintext credentials in payload"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "C10_rules": [
+        "ActorKind IN(human,external,bot)",
+        "bot requires ControlEpoch; human/external require NULL",
+        "external requires QueueId NULL; outbound human/bot requires QueueId",
+        "identity/conversation/message ownership validated under common transaction; bot dispatch rechecks current Epoch",
+        "Message.ConversationId=Identity.ConversationId and Conversation.ContactId=Identity.ContactId; current control row for that conversation required; no auto-create/fallback Epoch0"
+      ],
+      "SQL_checks": [
+        "(ActorKind='bot' AND ControlEpoch IS NOT NULL AND ControlEpoch>=0) OR (ActorKind IN('human','external') AND ControlEpoch IS NULL)",
+        "(ActorKind='external' AND QueueId IS NULL) OR (ActorKind IN('human','bot') AND QueueId IS NOT NULL)"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "ActorKind IN(human,external,bot)",
+        "bot requires ControlEpoch; human/external require NULL",
+        "external requires QueueId NULL; outbound human/bot requires QueueId",
+        "identity/conversation/message ownership validated under common transaction; bot dispatch rechecks current Epoch",
+        "Message.ConversationId=Identity.ConversationId and Conversation.ContactId=Identity.ContactId; current control row for that conversation required; no auto-create/fallback Epoch0"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    },
+    {
+      "table": "crm_channels2.LegacyBinding",
+      "C10_rules": [
+        "explicit 8-table allowlist only",
+        "hash collision requires exact canonical key equality; never routing authority"
+      ],
+      "SQL_checks": [
+        "LegacyTable IN('crm_channels.Account','crm_channels.Credential','crm_channels.webhook_events','crm_channels.Audit','crm_channels.ExternalIdentity','crm_channels.ExternalMessage','crm_channels.outbound_queue','crm_channels.social_comments')"
+      ],
+      "additional_SQL": "JSON validity for annotated columns; exact PK/UQ/FK/defaults/filtered indexes and trailing-space rejection for BIN2 identifiers",
+      "remaining_server_acceptance": [
+        "explicit 8-table allowlist only",
+        "hash collision requires exact canonical key equality; never routing authority"
+      ],
+      "meaning": "SQL rules above are enforced physically. C10 prose is retained as server acceptance obligations, not deemed implemented by the SQL count."
+    }
+  ],
+  "runtime_gates": [
+    "P2 auth/roles and step-up",
+    "AEAD/keyring/nonce generation and AAD",
+    "atomic OAuth state/claim and ownership",
+    "quota admission/concurrent reservations and fencing",
+    "HMAC/raw body authentication and durable ACK",
+    "canonical CRM ownership/control epoch recheck",
+    "legacy data mapping and re-encryption; missing identity/key blocks",
+    "full Scentra UI, adapters and provider fixtures"
+  ]
+}

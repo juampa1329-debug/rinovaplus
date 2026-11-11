@@ -1,0 +1,53 @@
+# Mapa de módulos y comportamientos de diseño
+
+**Estado:** propuesta de D-01 para aprobación; 12 composiciones principales con PNG locales disponibles en la [galería](README.md). UI en español neutral propuesto, datos ficticios. Fases son de desarrollo futuro, no acciones autorizadas por este documento. Imágenes raster, no UI editable/implementada; estados y adaptaciones siguientes siguen siendo especificaciones.
+
+## Inventario y composición principal
+
+El [índice de Ajustes](settings.md) contiene siete subsecciones locales confirmadas, sin Industria/Plan; no aumenta los 12 módulos globales. IA pertenece a M-07, conocimiento a M-08, credenciales/APIs a M-10. Las siete cuentan con [referencia textual adaptada](settings-specification.md); roles/validación/flujo están pendientes de aceptación, no de toda evidencia. Capturas adicionales pueden mejorar fidelidad visual sin bloquear inventario.
+
+| ID | Título / usuario / finalidad | Composición principal y acción propuesta | Fase / procedencia |
+|---|---|---|---|
+| M-01 | Acceso — asesor/administrador; entrar con permisos. | Composición reducida con texto CRM CBN, identificación, acceso, ayuda y aviso de seguridad. Acción: **Ingresar**. | 2; esencial UX/seguridad, no módulo comercial nuevo. |
+| M-02 | Resumen de admisiones y operación — coordinador; priorizar atención. | Shell compartido, indicadores demostrativos mínimos, pendientes humanos, solicitudes por revisar y alertas. Acción: **Abrir pendiente**. | 3/6; dashboard y alertas documentados. |
+| M-03 | Prospectos — asesor; seguir captación. | Lista o pipeline de estados propuestos con filtros mínimos y ficha lateral: programa/jornada, conversación y formulario. Acción: **Abrir ficha**. | 3–4; CRM_Prospectos conceptual. |
+| M-04 | Conversaciones y control humano — asesor; atender WhatsApp/handoff. | Bandeja, chat y resumen de 3 líneas + datos mínimos SIIE; indicador visible IA/Humano y estado de envío. Acción: **Tomar control** / **Devolver a IA**. Audio indica capacidad futura. | 3; audio 7A; requisitos de WhatsApp/handoff. |
+| M-05 | Formulario de aspirante — aspirante; enviar solicitud. | Composición pública móvil, programa/jornada, campos mínimos demostrativos, privacidad y confirmación diferenciada. Acción: **Enviar solicitud**. | 4; flujo por token. |
+| M-06 | Revisión e integración académica — admisiones; revisar antes de aceptación. | Solicitud, validaciones/observaciones, referencias SIIE, estado y confirmación separada. Acción: **Revisar solicitud**; registro core condicionado. | 5; contrato core/revisión humana de la arquitectura. |
+| M-07 | Asistente y automatizaciones — administrador; configurar sin alterar invariantes. | Dueño de SET-01 IA: habilitación, referencia modelo desde APIs, estilo subordinado a reglas servidor, límites soportados/ritmo. [Capturas IA](settings-assistant.md) documentadas; antiguas pestañas/mockup son propuesta a reconciliar, no menú aprobado. Acción: **Revisar configuración**. | Parámetros 3; voz/STT 7A, recordatorios 7B; visión/búsqueda discovery. Fallback no automático por activar IA. |
+| M-08 | Conocimiento y catálogo SIIE — asesor/admin; consultar fuentes. | Catálogo/ficha SIIE; bloque knowledge de SET-01 usa propiedad M-08: metadatos, aliases, índices/evaluación/publicación separados según [inventario](settings-assistant.md). Acción: **Consultar fuente**. | Lectura SIIE 3; fuentes/RAG/aliases/evaluación 7C; no PDF reemplaza catálogo/precios SIIE. |
+| M-09 | Memoria de ventas autorizadas — responsable IA; revisar casos autorizados. | Casos ficticios, argumentos y finalidad/retención; advertencia de expansión condicionada. Acción: **Revisar caso**. | 7C; memoria/perfilamiento avanzado diferido. |
+| M-10 | Ajustes, integraciones y proveedores — administrador técnico; gestionar metadatos/credenciales y diagnosticar capacidades/fallos. | Catálogo por capacidad y detalle de proveedor/ambiente; **Guardar borrador**, **Probar conexión sintética** y **Activar** separados. Meta/SQL Server son referencias conceptuales, secretos write-only mediante backend/store y costes/estados ficticios. [Ampliación visual](settings-ai.md), sin sustituir imágenes existentes. | Diseño D-01; contratos/roles/store fases 0–2; UN proveedor texto 3, rotación/piloto 6, voz/fallback autorizado 7A. Búsqueda/otros canales solo discovery. |
+| M-11 | Retención estudiantil — seguimiento; continuidad de relación. | Lista mínima de contactos/seguimiento demostrativo y detalle con aviso **Alcance pendiente de definición**. Acción: **Revisar seguimiento conceptual**. | 7D; solo intención general, futuro no especificado. |
+| M-12 | Relacionamiento corporativo — responsable institucional; vínculo con organizaciones. | Directorio/contactos e interacción mínima ficticia con aviso **Alcance pendiente de definición**. Acción: **Abrir relación conceptual**. | 7E; solo intención general, futuro no especificado. |
+
+## Estados requeridos por escrito y adaptación
+
+Los estados siguientes forman parte de la especificación para revisión; **no se afirma que todos aparezcan en la única imagen principal** ni que funcionen. Los permisos son roles propuestos por asignar, no autenticación implementada.
+
+| ID | Estados y límites de permiso/datos | Escritorio / móvil propuestos |
+|---|---|---|
+| M-01 | Ingreso, validación pendiente, error genérico, sesión expirada y sin permiso; no revelar si existe una cuenta. Proveedor de identidad/MFA por definir. No usuario/clave reales. | Tarjeta legible y reducida; móvil una columna, controles accesibles sin cortar mensajes. |
+| M-02 | Carga, vacío, error de fuente y pendiente activo; cero no equivale a dato faltante. Resumen según rol, sin PII innecesaria. Métricas etiquetadas ficticias, no resultados reales. | Panel y lista en escritorio; móvil prioriza lista/alertas, luego indicadores apilados. |
+| M-03 | Carga, sin resultados, error, datos incompletos y ficha seleccionada. Estados del pipeline propuestos, no workflow definitivo. Asesor solo recursos autorizados; precios/matrícula no se editan aquí. | Lista/pipeline + ficha; móvil tarjetas, detalle a pantalla completa y retorno conservando filtros. |
+| M-04 | Carga/vacío/error, IA activa, humano solicitado, control tomado y envío pendiente/fallido/incierto. Carrera: **otro asesor tomó control**, respuesta IA pendiente cancelada, versión cambió al devolver control. No habilitar edición sin propiedad/permisos; IA transparente. | Tres columnas; móvil secuencia bandeja → conversación → resumen, estado y control humano siempre visibles. |
+| M-05 | Token válido, vencido, usado o inválido; errores por campo, envío pendiente, confirmación e incertidumbre sin doble envío. Datos mínimos/campos definitivos sujetos a privacidad/contrato. Sin shell interno, sin ID/token real en imagen. Solicitud ≠ matrícula. | Imagen principal móvil 390×844; escritorio formulario centrado con longitud de línea acotada, no adaptación ya renderizada. |
+| M-06 | Carga, pendiente revisión, dato incompleto, rechazo/observación, conflicto de versión y confirmación. Permiso de revisor distinto al de escritura core; **registro SIIE no autorizado** debe bloquear acción. No afirmar contrato/esquema existente. | Panel solicitud/comprobación; móvil secciones apiladas, confirmación separada y resumen persistente. |
+| M-07 | Carga/error, cambios pendientes, validación, confirmación y acceso denegado. Avisos de políticas/plantillas no verificadas; recordatorios inactivos hasta autorización. Reglas transparentes IA/no horarios exactos/no SQL libre no son sliders editables. | Pestañas + preview; móvil navegación compacta y controles apilados; acciones guardadas solo como concepto, no escritura real. |
+| M-08 | Carga/vacío/error, fuente sin confirmar, índice no disponible/desactualizado. Lectura limitada por rol; catálogo de demostración no prueba SIIE. RAG no reemplaza autoridad transaccional; sin horarios exactos ni motor vectorial elegido. | Tabla y ficha; móvil tarjetas y búsqueda, fuente permanece visible. |
+| M-09 | Sin casos autorizados, alcance no aprobado, carga/error y retención vencida. Solo responsables permitidos; no transcripciones completas ni perfiles sensibles por defecto. No asumir consentimiento de menores o perfilar por conveniencia. | Casos/argumentos lado a lado; móvil lista/detalle separados y aviso de finalidad siempre visible. |
+| M-10 | Borrador/sin probar, autenticación/catálogo verificados cuando el adapter lo permite, modelo seleccionado/prueba final pendiente, probando/prueba válida no activo, prueba desactualizada y errores/rotación/permisos. No presentar “conectado” como evidencia real. Roles por acción/ambiente, keys write-only; auth/discovery no sustituye test sintético final ligado a modelo/versionado/presupuesto. API sin listado usa catálogo validado del adapter antes del test. Costes/proveedores pendientes. | Tres alternativas disponibles para selección: 1 lista+inspector, 2 catálogo+drawer, 3 alta guiada; móvil flujo secuencial especificado, no verificado. Catálogo/diagnóstico no habilita rutas/fallback ni escritura SIIE. |
+| M-11 | Alcance por definir, sin seguimientos, carga/error y contacto seleccionado; datos ficticios y rol por acordar. No scoring, campañas, cobros o consulta real de estudiantes derivados del mockup. | Lista/detalle mínimo; móvil tarjetas y detalle. Aviso de futuro no especificado permanente. |
+| M-12 | Alcance por definir, sin relaciones, carga/error y relación seleccionada; contactos ficticios y rol por acordar. No contratos/convenios, vacantes ni facturación inferidos. | Directorio/detalle; móvil tarjetas y panel separado. Aviso de futuro no especificado permanente. |
+
+## Recorrido entre módulos
+
+1. Asesor entra por **M-01**; en **M-02** identifica una atención pendiente.
+2. Abre prospecto **M-03** y conversación **M-04**; consulta una jornada/fuente en **M-08**. El resumen IA no sustituye datos SIIE.
+3. Desde la conversación se propone el enlace seguro; aspirante completa **M-05**. Asesor revisa en **M-06**; no existe aceptación automática al enviar el formulario.
+4. Configuración **M-07** y diagnóstico **M-10** son superficies administrativas separadas de atención. Memoria **M-09** se incorpora solo al aprobar expansión/datos.
+5. **M-11/M-12** son rutas de futuro para descubrimiento, no continuación obligatoria ni funcionalidad aprobada del corte de admisiones.
+
+## Reglas comunes
+
+Datos de demostración, identidad IA visible, permisos server-side futuros, ausencia de conexión real y diseño consistente según [tokens propuestos](../design-system.md). Un mockup principal no verifica responsive, accesibilidad, API, firma Meta, concurrencia o DB. [Aprobación](approval.md) registra decisiones del propietario sin autorizar implementación.

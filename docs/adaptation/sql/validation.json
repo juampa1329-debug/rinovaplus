@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-24",
+  "unit": "P1.1",
+  "scope": "offline source inventory and compatibility only",
+  "inventory_summary": {
+    "migration_files": 19,
+    "maximum_ordinal": 20,
+    "missing_ordinals": [
+      10
+    ],
+    "schemas": 13,
+    "declared_tables": 68,
+    "declared_columns": 596,
+    "table_constraints": 132,
+    "foreign_keys": 92,
+    "explicit_create_indexes": 31,
+    "alter_table_occurrences": 12,
+    "alter_added_columns": 1,
+    "alter_modified_columns": 5,
+    "alter_foreign_keys": 1,
+    "versioned_runners": 9
+  },
+  "mapped_target_tables": 68,
+  "mapping_groups": 31,
+  "table_evidence_locations_checked": 165,
+  "create_table_and_column_locations_checked": 664,
+  "markdown_links_checked": 502,
+  "static_tool_imports": "no application, ODBC or SQLAlchemy imports",
+  "graph_diagnostics": {
+    "node_count": 933,
+    "unverified_node_count": 0,
+    "raw_edge_count": 1199,
+    "non_object_edges": 0,
+    "missing_endpoint_edges": 0,
+    "dangling_endpoint_edges": 0,
+    "external_reference_edges": 0,
+    "self_loop_edges": 0,
+    "valid_candidate_edges": 1199,
+    "exact_duplicate_edges": 0,
+    "directed_unique_endpoint_pairs": 1199,
+    "directed_same_endpoint_collapsed_edges": 0,
+    "undirected_unique_endpoint_pairs": 1197,
+    "undirected_same_endpoint_collapsed_edges": 2,
+    "same_endpoint_group_count": 0,
+    "relation_variant_groups": 0,
+    "source_file_variant_groups": 0,
+    "source_location_variant_groups": 0,
+    "context_variant_groups": 0,
+    "post_build_graph_type": "DiGraph",
+    "post_build_node_count": 933,
+    "post_build_edge_count": 1199,
+    "post_build_error": "",
+    "input_path": "graphify-out\\sql-inventory\\graph.json",
+    "effective_directed": true
+  },
+  "unchanged_runtime_migration_files": 232,
+  "woocommerce": {
+    "active_connector_found": false,
+    "removed_candidate": "docs/design/settings-reference/scentra-settings-specification-2026-10-13.md",
+    "historical_exclusions": "retained",
+    "source_scentra": "unchanged"
+  },
+  "independent_review": "No material findings; source locations and distinction from live schema checked",
+  "not_performed": [
+    "DB connection/query",
+    "DDL/DML or migrations",
+    "migrate runner/preflight",
+    "CRM tests/builds",
+    "providers/sends/ads",
+    "deployment or commits"
+  ],
+  "sql_graph_browser": {
+    "url_scope": "temporary localhost artifacts only",
+    "rendered": true,
+    "nodes": 933,
+    "edges": 1199,
+    "communities": 66,
+    "console_errors_observed": 0,
+    "crm_application_test": false
+  },
+  "final_status": "P1.1_complete_static_only"
+}

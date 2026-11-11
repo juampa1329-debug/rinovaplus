@@ -1,0 +1,148 @@
+{
+  "unit": "SQL-C9",
+  "status": "complete",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "scope": "isolated_channels_capability_UI_only",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Contrato de capacidades y baseline",
+      "status": "complete",
+      "input_files": 573
+    },
+    {
+      "phase": 2,
+      "name": "Copia, perfil y permisos de UI propios",
+      "status": "complete",
+      "grants": 15,
+      "dbo_denies": 7,
+      "credential_cipher_access": false
+    },
+    {
+      "phase": 3,
+      "name": "Interfaz de Canales por capacidades",
+      "status": "complete",
+      "source_groups_aligned": 6
+    },
+    {
+      "phase": 4,
+      "name": "Pruebas backend y frontend",
+      "status": "complete",
+      "backend_passed": 244,
+      "frontend_passed": 42,
+      "backend_new": 55,
+      "frontend_new": 30
+    },
+    {
+      "phase": 5,
+      "name": "Navegador, fallos y preservación",
+      "status": "complete",
+      "connected_checks": 35,
+      "academic_tables": 50,
+      "academic_rows": 44180,
+      "crm_rows": 203,
+      "journal_rows": 7,
+      "source_C5_C7_C8_SIIE_unchanged": true,
+      "browser_observations": 22
+    },
+    {
+      "phase": 6,
+      "name": "Grafos, memoria y cierre",
+      "status": "complete",
+      "findings": 41,
+      "acyclic_phases": 12,
+      "source_fingerprints": "verified",
+      "source_anchor_updates": 9,
+      "local_links_checked": 75,
+      "broken_links": 0,
+      "historical_invalid_transitions_rejected": 43,
+      "code_graph": {
+        "nodes": 2496,
+        "edges": 6586,
+        "communities": 112
+      },
+      "adaptation_graph": {
+        "nodes": 399,
+        "edges": 657,
+        "communities": 33
+      },
+      "missing_or_dangling_endpoints": 0,
+      "code_self_loops": 9,
+      "adaptation_self_loops": 0,
+      "self_loop_note": "Static imported transaction alias resolution in ChannelStore/ChannelUiStore; graph edges alone do not prove runtime recursion. Delegation and guards tested."
+    }
+  ],
+  "academic_source_modified": false,
+  "shared_C5_modified": false,
+  "workers_enabled": false,
+  "provider_calls": 0,
+  "institutional_sql2019_accepted": false,
+  "trial_database": "CBN_C9_TRIAL_20261025_23ac78d3",
+  "completion_scope": "accepted_restored_channels_ui_only",
+  "next_unit": "SQL-C10",
+  "preview": "http://127.0.0.1:4175/#/settings",
+  "project_phases": [
+    {
+      "id": "P0",
+      "status": "complete",
+      "progress": "Completa: inventario, grafos y continuidad."
+    },
+    {
+      "id": "P1",
+      "status": "in_progress",
+      "progress": "En curso: base y repositorios locales C3–C9; aceptación institucional SQL2019 e integral pendientes."
+    },
+    {
+      "id": "P2",
+      "status": "pending",
+      "progress": "Paridad pendiente; Ajustes CRM foundation aceptados en C5."
+    },
+    {
+      "id": "P3",
+      "status": "pending",
+      "progress": "Paridad pendiente; ficha única/Inbox básico C5; churn y funciones avanzadas pendientes."
+    },
+    {
+      "id": "P4",
+      "status": "in_progress",
+      "progress": "En curso: esquema C7, repositorios C8 y UI local C9; paridad completa con Scentra, OAuth/secretos, cardinalidad y transporte pendientes."
+    },
+    {
+      "id": "P5",
+      "status": "pending",
+      "progress": "Pendiente: agentes educativos y paridad funcional."
+    },
+    {
+      "id": "P6",
+      "status": "pending",
+      "progress": "Pendiente: memoria colectiva y ADN."
+    },
+    {
+      "id": "P7",
+      "status": "pending",
+      "progress": "Pendiente: mensajería masiva y transporte real."
+    },
+    {
+      "id": "P8",
+      "status": "pending",
+      "progress": "Pendiente: campañas y remarketing."
+    },
+    {
+      "id": "P9",
+      "status": "pending",
+      "progress": "Pendiente: Meta Ads."
+    },
+    {
+      "id": "P10",
+      "status": "pending",
+      "progress": "Pendiente: inteligencia y entrenamiento."
+    },
+    {
+      "id": "P11",
+      "status": "pending",
+      "progress": "Pendiente: aceptación integral y operación institucional."
+    }
+  ],
+  "scentra_parity": "partial",
+  "parity_contract": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md"
+}

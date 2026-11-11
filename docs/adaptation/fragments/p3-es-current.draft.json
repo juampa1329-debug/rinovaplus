@@ -1,0 +1,700 @@
+{
+  "nodes": [
+    {
+      "id": "p3current_closed_sql_partition",
+      "label": "closed sql partition",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[0]",
+      "rationale": "El contrato exige restauración independiente, SQL2019/TLS y nombres españoles. workspace_policy conserva el mapa P2 y añade seis bindings cerrados; limita Journal a SELECT y no concede autoridad académica. Las firmas de manifest/modelo se verifican; no hay DDL en el módulo de workspace.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_server_side_lists",
+      "label": "server side lists",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[1]",
+      "rationale": "listing compone predicados y parámetros antes de COUNT y OFFSET/FETCH; clientes agrupa alias antes de paginar y usa filtros de etapa/etiqueta/ciudad/tipo/programa. Inbox incluye no leídos/míos/sin asignar/control/estado/SLA/churn/canal. tasks filtra estado/búsqueda/usuario/contacto antes de OFFSET/FETCH. Límite de25 y orden con clave estable. Clientes, Inbox y tareas exigen anchor cuando offset>0 y rechazan una revisión obsoleta; hot acepta temperatura hot o score manual>=75.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_human_assignment",
+      "label": "human assignment",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[2]",
+      "rationale": "active_user valida AccessUser/Role institucional activos y permiso inbox.write. La escritura guarda Assignment con InstitutionId/UserId; el selector humano consulta directorio paginado. No usa el ID de un empleado SIIE como usuario de sesión.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_transactional_commands",
+      "label": "transactional commands",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[3]",
+      "rationale": "write vuelve a autorizar en transaction(write=True) con permiso de acción, exige confirmación reciente para merge/undo, consulta replay por actor/acción/recurso/payload antes del CAS y registra operación/auditoría en la misma transacción. Las revisiones unen State y Configuration.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_human_handoff_read",
+      "label": "human handoff read",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[4]",
+      "rationale": "ConversationWrite requiere readThrough al marcar leído. apply llama change_control y mark_read; el detalle identifica envíos iniciados/inciertos. Mensajes sólo locales, con conversación abierta en control humano y sin identidad externa. La UI calcula readThrough con la secuencia del mensaje cargado.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_single_ficha",
+      "label": "single ficha",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[5]",
+      "rationale": "Person monta un único ContactEditor sobre detail.client tanto en CRM como en mini CRM. El editor reutiliza ClientFields, etapas/tags/campos configurados, borrador por contacto y crm.write. Notas, tareas, valoración manual y actividad se organizan en componentes, con detalles colapsados. No vuelve a montar el bloque completo de lectura de la ficha anterior.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_academic_identity",
+      "label": "academic identity",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[6]",
+      "rationale": "La edición conserva programId/program e institutionalProfile guardados y rechaza una alteración sin mapeo académico. El detalle declara SIIE como autoridad y vínculo no confirmado. No crea alumnos ni matrículas.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_reversible_groups",
+      "label": "reversible groups",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[7]",
+      "rationale": "La unificación exige confirmedSamePerson literal verdadero, comprobación transaccional de alias/ciclos/tamaño y revisiones actuales. Inserta un vínculo entre contactos y conserva sus datos y conversaciones. undo desactiva el vínculo, sin reparentar o borrar originales. El contacto primario alimenta etapa y proyección de riesgo de grupo.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_session_drafts",
+      "label": "session drafts",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[8]",
+      "rationale": "WorkspaceSession tiene cache, contacts y messages en Map por sesión. useCachedDraft conserva entradas sucias al desmontar/reabrir; useCommand conserva OperationId y el body original en respuesta incierta, y libera la tentativa cuando recibe revision_conflict definitivo. La UI no llama al snapshot /api/local/crm para los listados P3.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_shared_risk_freshness",
+      "label": "shared risk freshness",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[9]",
+      "rationale": "risk_projection valida fórmula, score entero/no booleano, nivel, misma secuencia/etapa, fecha no futura y máximo24h. risk comprueba Run completed, identidad/conversación y mensajes con rutas compatibles. Listing y detail consumen risk; el primario del grupo fija etapa compartida. Sin datos válidos devuelve unknown/scoreNone/probabilityNone; conversación cerrada da not_applicable.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_risk_presentation",
+      "label": "risk presentation",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[10]",
+      "rationale": "RiskSummary muestra Bajo/Medio/Alto sólo con status known y fresh; muestra Sin evaluación o No aplica en los demás casos. Presenta fecha, siguiente acción y origen/razones colapsados; declara explícitamente que la rúbrica no es una probabilidad. La valoración manual está separada.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_declared_tests",
+      "label": "declared tests",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/current-source-review.json",
+      "source_location": "$.findings[11]",
+      "rationale": "Las pruebas declaradas cubren partición/permisos/read watermark, inválidos de riesgo/frescura/fórmula, confirmación humana/zona horaria, UTF16 y UI de filtros, conflictos/borradores/reintento, etapa configurada, lector y ficha única. El helper SQL declara negativos sin anchor para clientes/inbox/tareas, anchor obsoleta, límites del programa y umbrales manuales74/75; esas aserciones no se ejecutaron en esta revisión.",
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_0",
+      "label": "P3_ES_CONTRACT.md",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/P3_ES_CONTRACT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_1",
+      "label": "workspace.py",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_2",
+      "label": "workspace_policy.py",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_3",
+      "label": "Workspace.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_4",
+      "label": "workspaceSession.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/shared/workspaceSession.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_5",
+      "label": "test_institutional_workspace.py",
+      "file_type": "code",
+      "source_file": "backend/tests/test_institutional_workspace.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_6",
+      "label": "institutionWorkspace.test.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/test/institutionWorkspace.test.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_7",
+      "label": "reference-source-review.json",
+      "file_type": "document",
+      "source_file": "artifacts/p3-es/reference-source-review.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "p3current_source_8",
+      "label": "p3_workspace_final_checks.py",
+      "file_type": "code",
+      "source_file": "backend/tools/p3_workspace_final_checks.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-10-26",
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "p3current_closed_sql_partition",
+      "target": "p3current_source_2",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_closed_sql_partition",
+      "target": "p3current_source_2",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_closed_sql_partition",
+      "target": "p3current_source_2",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_server_side_lists",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L541",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_server_side_lists",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L900",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_server_side_lists",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L859",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_server_side_lists",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_assignment",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_assignment",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L501",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_assignment",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L1136",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_transactional_commands",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1054",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_transactional_commands",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_handoff_read",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_handoff_read",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1205",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_human_handoff_read",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L920",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_single_ficha",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L839",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_single_ficha",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L681",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_single_ficha",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L1376",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_academic_identity",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1137",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_academic_identity",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L855",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_academic_identity",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L912",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_reversible_groups",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_reversible_groups",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1339",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_reversible_groups",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1382",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_reversible_groups",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L1642",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_session_drafts",
+      "target": "p3current_source_4",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/shared/workspaceSession.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_session_drafts",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_session_drafts",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_session_drafts",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L681",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_shared_risk_freshness",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_shared_risk_freshness",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L326",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_shared_risk_freshness",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L760",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_shared_risk_freshness",
+      "target": "p3current_source_1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L841",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_risk_presentation",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L292",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_risk_presentation",
+      "target": "p3current_source_3",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L1298",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_declared_tests",
+      "target": "p3current_source_5",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tests/test_institutional_workspace.py",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_declared_tests",
+      "target": "p3current_source_5",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tests/test_institutional_workspace.py",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_declared_tests",
+      "target": "p3current_source_6",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/test/institutionWorkspace.test.tsx",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_declared_tests",
+      "target": "p3current_source_6",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/test/institutionWorkspace.test.tsx",
+      "source_location": "L441",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_declared_tests",
+      "target": "p3current_source_8",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/tools/p3_workspace_final_checks.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_server_side_lists",
+      "target": "p3current_shared_risk_freshness",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L760",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_single_ficha",
+      "target": "p3current_risk_presentation",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L885",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_transactional_commands",
+      "target": "p3current_human_handoff_read",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1209",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_session_drafts",
+      "target": "p3current_transactional_commands",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "frontend/src/institution/Workspace.tsx",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "p3current_reversible_groups",
+      "target": "p3current_academic_identity",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L1137",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

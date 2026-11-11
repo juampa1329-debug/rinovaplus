@@ -1,0 +1,348 @@
+{
+  "unit": "SQL-C12",
+  "status": "complete_restored_mapping_repositories_only",
+  "scope": "local_restored_mappings_repositories_only",
+  "trial_database": "CBN_C12_TRIAL_20261025_7a309d11",
+  "shared_runtime": "SQL-C5",
+  "channels_UI": "SQL-C9",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Línea base y restauración independiente",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "baseline_inputs": 684
+    },
+    {
+      "phase": 2,
+      "name": "Correspondencias B011 y recifrado verificado",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "bindings": 23,
+      "staged_secrets": 2
+    },
+    {
+      "phase": 3,
+      "name": "Perfil, catálogo y permisos propios",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "runtime_GRANT": 68,
+      "runtime_DENY": 7
+    },
+    {
+      "phase": 4,
+      "name": "Repositorios y API local",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "SQL_API_checks": 47
+    },
+    {
+      "phase": 5,
+      "name": "Pruebas, fallos y recuperación",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "offline_tests": 242,
+      "faults": 15,
+      "atomic_import_rollbacks": 2
+    },
+    {
+      "phase": 6,
+      "name": "Grafos, memoria y medición por fase",
+      "status": "complete",
+      "accepted": 1,
+      "total": 1,
+      "percent": "100%",
+      "verification": "all_seven_graphs_and_source_fingerprints_passed",
+      "code_nodes": 2551,
+      "code_edges": 6723,
+      "adaptation_nodes": 700,
+      "adaptation_edges": 1173
+    }
+  ],
+  "completion": {
+    "accepted": 6,
+    "total": 6,
+    "percent_display": "100.00%",
+    "meaning": "Entregables de esta unidad local, distinto de las12fases del roadmap."
+  },
+  "project_phase_progress_contract": "docs/adaptation/phase-progress-contract.json",
+  "next_unit": "SQL-C13",
+  "institutional_sql2019_accepted": false,
+  "providers_enabled": false,
+  "project_phases": [
+    {
+      "id": "P0",
+      "name": "Inventario y continuidad",
+      "accepted": 5,
+      "total": 5,
+      "partial": 0,
+      "pending": 0,
+      "fraction": {
+        "numerator": 5,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 1,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 100,
+        "denominator": 1
+      },
+      "percent_display": "100.00%",
+      "phase_accepted": true
+    },
+    {
+      "id": "P1",
+      "name": "Base SQL Server 2019 y Docker",
+      "accepted": 3,
+      "total": 5,
+      "partial": 2,
+      "pending": 0,
+      "fraction": {
+        "numerator": 3,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 3,
+        "denominator": 5
+      },
+      "percent_exact": {
+        "numerator": 60,
+        "denominator": 1
+      },
+      "percent_display": "60.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P2",
+      "name": "Ajustes, usuarios y permisos institucionales",
+      "accepted": 0,
+      "total": 5,
+      "partial": 1,
+      "pending": 4,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P3",
+      "name": "Inbox, mini CRM y CRM",
+      "accepted": 0,
+      "total": 5,
+      "partial": 3,
+      "pending": 2,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P4",
+      "name": "Comentarios, canales y webhooks",
+      "accepted": 0,
+      "total": 5,
+      "partial": 3,
+      "pending": 2,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P5",
+      "name": "Agentes educativos",
+      "accepted": 0,
+      "total": 4,
+      "partial": 0,
+      "pending": 4,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 4
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P6",
+      "name": "Conocimiento, memoria colectiva y ADN institucional",
+      "accepted": 0,
+      "total": 5,
+      "partial": 0,
+      "pending": 5,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P7",
+      "name": "Mensajería masiva",
+      "accepted": 0,
+      "total": 5,
+      "partial": 0,
+      "pending": 5,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P8",
+      "name": "Campañas CRM y remarketing",
+      "accepted": 0,
+      "total": 4,
+      "partial": 0,
+      "pending": 4,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 4
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P9",
+      "name": "Meta Ads y captación",
+      "accepted": 0,
+      "total": 4,
+      "partial": 0,
+      "pending": 4,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 4
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P10",
+      "name": "Inteligencia y entrenamiento evaluado",
+      "accepted": 0,
+      "total": 5,
+      "partial": 0,
+      "pending": 5,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 5
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    },
+    {
+      "id": "P11",
+      "name": "Aceptación y operación",
+      "accepted": 0,
+      "total": 4,
+      "partial": 0,
+      "pending": 4,
+      "fraction": {
+        "numerator": 0,
+        "denominator": 4
+      },
+      "reduced_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_exact": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "percent_display": "0.00%",
+      "phase_accepted": false
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+.agents-workspace {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.agents-workspace h2,
+.agents-workspace h3,
+.agents-workspace h4,
+.agents-workspace h5 {
+  margin-top: 0;
+}
+.agents-operating-console,
+.agents-guide {
+  min-width: 0;
+}
+.agents-memory-permissions,
+.agents-audit-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  min-width: 0;
+}
+.agents-memory-options {
+  display: grid;
+  gap: 14px;
+}
+.agents-memory-options label {
+  padding-block: 10px;
+}
+.agents-memory-options small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+}
+.agents-response-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.agents-guide {
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.agents-guide h4 {
+  margin-block: 28px 12px;
+}
+.agents-guide p,
+.agents-guide li {
+  max-width: 85ch;
+}
+.agents-guide-table {
+  overflow: auto;
+}
+.agents-guide-table table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.agents-guide-table th,
+.agents-guide-table td {
+  padding: 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.agents-guide dd {
+  margin: 6px 0 16px;
+}
+.agents-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin: 0;
+  padding-block: 12px;
+}
+.agents-summary dt {
+  font-size: 0.85em;
+}
+.agents-summary dd {
+  font-weight: 600;
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.agents-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.agents-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.36fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.agents-tree {
+  min-width: 0;
+  max-height: 75vh;
+  overflow: auto;
+  padding-right: 12px;
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+}
+.agents-tree .button {
+  white-space: normal;
+  text-align: left;
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+.agents-list-heading h3 {
+  margin-bottom: 6px;
+}
+.agents-list-heading small,
+.agents-agent-card small,
+.agents-card-description {
+  color: var(--muted);
+}
+.agents-list {
+  display: grid;
+  gap: 12px;
+}
+.agents-tree .agents-agent-card {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  overflow-wrap: anywhere;
+  text-align: left;
+  font-weight: 400;
+}
+.agents-agent-card[aria-pressed="true"] {
+  background: var(--active);
+  border-color: var(--primary);
+}
+.agents-agent-card strong {
+  font-size: 1rem;
+  color: var(--ink);
+}
+.agents-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.agents-card-channels,
+.agents-context-links,
+.agents-editor-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.agents-card-channels .badge {
+  font-size: 0.75rem;
+}
+.agents-editor-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.agents-editor-heading h3 {
+  margin-bottom: 8px;
+}
+.agents-editor-heading p {
+  margin: 0;
+}
+.agents-editor-section {
+  display: grid;
+  gap: 16px;
+  padding-block: 22px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.agents-editor-section h4 {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.agents-editor-section p {
+  margin: 0;
+  max-width: 75ch;
+}
+.agents-editor-section .agents-checks {
+  margin-block: 0;
+}
+.agents-editor-section .agents-checks label {
+  padding: 12px;
+  background: var(--field);
+  border-radius: var(--radius-control);
+}
+.agents-template-actions {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.agents-template-actions .field {
+  flex: 1 1 240px;
+}
+.agents-template-actions .button {
+  margin-bottom: 20px;
+  white-space: normal;
+}
+.agents-variable-help,
+.agents-variable-help code {
+  overflow-wrap: anywhere;
+}
+.agents-content .form-actions,
+.agents-editor-links {
+  padding-top: 16px;
+}
+.agents-content fieldset:disabled input,
+.agents-content fieldset:disabled textarea,
+.agents-content fieldset:disabled select {
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  opacity: 1;
+}
+.agents-tree-branch {
+  margin-left: 14px;
+  display: grid;
+  gap: 8px;
+}
+.agents-content,
+.agents-content .panel {
+  min-width: 0;
+}
+.agents-content .panel {
+  display: grid;
+  gap: 16px;
+}
+.agents-content fieldset,
+.agents-conversation fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+.agents-content details {
+  padding-block: 12px;
+}
+.agents-workspace summary,
+.agents-conversation summary {
+  cursor: pointer;
+  padding-block: 8px;
+}
+.agents-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.agents-scope-help,
+.agents-program-selector {
+  grid-column: 1 / -1;
+}
+.agents-content pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 380px;
+  overflow: auto;
+  font-size: 0.85em;
+}
+.agents-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+.agents-content label:has(input[type="checkbox"]),
+.agents-conversation label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+.agents-source-option {
+  margin-block: 12px;
+}
+.agents-approval {
+  display: grid;
+  gap: 12px;
+}
+.agents-event {
+  padding-block: 14px;
+  border-bottom: 1px solid var(--border, currentColor);
+}
+.agents-event p {
+  margin-block: 8px;
+}
+.agents-conversation {
+  display: grid;
+  gap: 14px;
+  margin-block: 24px;
+  min-width: 0;
+}
+.agents-conversation .button {
+  white-space: normal;
+}
+.agents-workspace :focus-visible,
+.agents-conversation :focus-visible {
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .agents-layout {
+    grid-template-columns: 1fr;
+  }
+  .agents-tree {
+    max-height: 320px;
+    padding-right: 0;
+    position: static;
+  }
+  .agents-memory-permissions,
+  .agents-audit-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .agents-form-grid,
+  .agents-checks {
+    grid-template-columns: 1fr;
+  }
+  .agents-tabs .button {
+    flex: 1 0 auto;
+  }
+  .agents-editor-links .button,
+  .agents-template-actions .button {
+    width: 100%;
+  }
+}

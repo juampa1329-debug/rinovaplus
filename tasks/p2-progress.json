@@ -1,0 +1,55 @@
+{
+  "unit": "P2",
+  "status": "implementation_in_progress",
+  "date": "2026-10-26",
+  "scope": "complete_all_P2_criteria_with_new_isolated_SQL_profile_and_UI",
+  "input_baseline": "docs/adaptation/sql/p2_input_baseline.json",
+  "baseline_inputs": 756,
+  "parent_C13_sha256": "c55373d5c9a517f1691e9c3cb528336c8615b933253585902f0650cc8b1cfb75",
+  "completed": [
+    "offline_C13_continuity_verified",
+    "source_settings_and_auth_semantics_reviewed",
+    "public_preimages_archived",
+    "SQL2019_TLS_probe_verified",
+    "SQL2019_CRM_only_reference_prepared_with_business_binary_comparison",
+    "38_pure_tests_and_Ruff_F_E9_passed"
+  ],
+  "remaining": [
+    "independent_COMMIT_reconciliation_and_release_acceptance",
+    "native_backup_restore_and_negative_guard_tests",
+    "access_schema_SQL_tests_and_own_profile",
+    "permission_revocation_MFA_conflicts_and_restart_tests",
+    "institutional_UI_and_browser_validation",
+    "rollback_configuration_and_accounts_audit_preservation",
+    "canonical_graph_history_memory_and_phase_acceptance"
+  ],
+  "academic_DML_allowed": false,
+  "providers_enabled": false,
+  "prior_sources_and_previews_to_preserve": [
+    "SIIE",
+    "SQL-C5",
+    "SQL-C9",
+    "SQL-C11",
+    "SQL-C12",
+    "SQL-C13"
+  ],
+  "phase_percentages_unchanged_until_acceptance": true,
+  "offline_evidence": "docs/adaptation/sql/p2_offline_validation.json",
+  "checkpoint": "docs/adaptation/sql/P2_CHECKPOINT.md",
+  "access_migration_applied": false,
+  "P2_listener_available": false,
+  "academic_transfer_completed": false,
+  "presentation_requirement": {
+    "final_UI_without_internal_rehearsal_labels": true,
+    "old_previews_preserved": true,
+    "P2_UI_not_yet_implemented": true
+  },
+  "working_graph": {
+    "path": "graphify-out/p2-in-progress",
+    "nodes": 286,
+    "edges": 788,
+    "communities": 15,
+    "canonical_checkpoint": false,
+    "phase_credit": 0
+  }
+}

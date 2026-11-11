@@ -1,0 +1,496 @@
+{
+  "domain": "Interfaz local de Canales por capacidades y permisos por columna · SQL-C9",
+  "review_scope": "Extracción y revisión semántica independiente de fuentes públicas y resultados offline/conectados publicados. El revisor escribió sólo las pruebas backend C9 autorizadas y este fragmento; AST/Ruff locales aprobados, 55 casos C9 ejecutados por el proceso aislado del ejecutor dentro del total244. No hubo SQL, Docker, proveedores ni lectura de perfiles privados por el revisor. source está vacío porque esta UI/contrato es una adaptación nativa SQL, sin afirmar paridad Scentra. El alcance es la composición UI de ensayo C9: no promoción institucional, CRM/Inbox completos ni transporte. Los resultados de componentes y API/SQL se identifican por separado y no sustituyen la evidencia de navegador del ejecutor. No se declaran completas las fases P1/P4/P7. La UI se reorganizó en seis secciones de referencia Scentra, conservando Facebook como subconfiguración. La comparación funcional separada mantiene explícita la paridad parcial; las acciones deshabilitadas no cuentan como funciones portadas.",
+  "findings": [
+    {
+      "id": "channels_capability_ui",
+      "capability": "UI Glass de Canales por capacidades con perfil propio y lectura de credenciales limitada a columnas",
+      "status": "implementado_verificado_en_ui_aislada",
+      "gap": "La composición C9 permite editar configuración y consultar etapas, comentarios y actividad local. Las acciones de proveedores, credenciales, recepción pública, respuesta y reintentos siguen bloqueadas; CRM/Inbox requieren otro alcance y permisos. B015/MessageRoute, transporte, SQL2019 institucional y paridad general permanecen pendientes. La agrupación visual ahora sigue las seis secciones Scentra; el fragmento sql-c9-scentra-parity.json registra que OAuth, secretos, números, TikTok completo y webhooks siguen sin paridad funcional completa.",
+      "acceptance": "Copia C9 independiente con perfil/login/ticket propios, sin clave de Canales ni DML CRM. Manifiesto v2 estricto antes del montaje; shell separada evita hooks CRM/Inbox. Sólo Account SELECT/INSERT/UPDATE, Audit INSERT y lecturas acotadas; Credential permite SELECT únicamente de Channel/Kind. Borradores y revisión se conservan ante error y usan readback ante resultado incierto. Evidencia pública actual: 244 backend (55 C9), 42 frontend (30 C9) y 35 checks SQL/API, con preservación de academia/C8/C5 y diario. Compose aislado loopback4175; C5 4173 conserva su contrato y origen. La aceptación general o de proveedores no se deriva de estas pruebas.",
+      "source": [],
+      "target": [
+        {
+          "file": "backend/app/channels_ui_contract.py",
+          "line": 90
+        },
+        {
+          "file": "backend/app/channels_ui_profile.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/channels_ui_app.py",
+          "line": 29
+        },
+        {
+          "file": "backend/app/channels_catalog.py",
+          "line": 10
+        },
+        {
+          "file": "frontend/src/shared/runtimeCapabilities.tsx",
+          "line": 75
+        },
+        {
+          "file": "frontend/src/App.tsx",
+          "line": 713
+        },
+        {
+          "file": "frontend/src/features/ChannelsWorkspace.tsx",
+          "line": 16
+        },
+        {
+          "file": "frontend/src/features/ChannelsUiPanel.tsx",
+          "line": 186
+        },
+        {
+          "file": "frontend/src/test/channelsUi.test.tsx",
+          "line": 166
+        },
+        {
+          "file": "backend/tests/test_channels_ui_runtime.py",
+          "line": 22
+        },
+        {
+          "file": "backend/tools/rehearse_channels_ui.py",
+          "line": 67
+        },
+        {
+          "file": "backend/tools/check_channels_ui.py",
+          "line": 30
+        },
+        {
+          "file": "compose.channels-ui.yaml",
+          "line": 1
+        },
+        {
+          "file": "docker/channels-ui-start.sh",
+          "line": 1
+        },
+        {
+          "file": "docker/nginx.channels-ui.conf",
+          "line": 16
+        },
+        {
+          "file": "artifacts/sql-c9/backend-results.xml",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c9/frontend-results.xml",
+          "line": 2
+        },
+        {
+          "file": "artifacts/sql-c9/connected-checks.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c9/preservation-result.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c9_capability_ui_implementation",
+        "label": "SQL-C9: interfaz de Canales en composición de ensayo separada",
+        "file_type": "code",
+        "source_file": "frontend/src/features/ChannelsWorkspace.tsx",
+        "source_location": "L16",
+        "scope": "isolated_channels_capability_UI_only",
+        "verification": "implemented_with_component_and_api_sql_evidence"
+      },
+      {
+        "id": "sql_c9_independent_ui_copy_profile",
+        "label": "Copia23ac78d3 con perfil/login/ticket UI independientes; sin migraciones",
+        "file_type": "document",
+        "source_file": "tasks/sql-c9-progress.json",
+        "source_location": "$.trial_database",
+        "database": "CBN_C9_TRIAL_20261025_23ac78d3",
+        "rationale": "Procede de otra restauración C8; no redirige perfiles C4/C5/C8. local_channels_ui sólo acepta channels_ui_rehearsal y su principal derivado."
+      },
+      {
+        "id": "sql_c9_mutable_guard_frozen_reader",
+        "label": "Guard C9 reutiliza lector C8 congelado y valida catálogo/ACL/diario bajo locks",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L202",
+        "rationale": "VIEW DEFINITION y SELECT de dependencias permiten equivalencia administrativa/runtime sin CONTROL. Datos de negocio mutables; siete filas heredadas conservan identidad histórica. TLS/destino/SID/ticket propios."
+      },
+      {
+        "id": "sql_c9_column_only_credential_metadata",
+        "label": "Credential sólo Channel/Kind: 15 GRANT y siete DENY sin DML CRM",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L35",
+        "direct_grants": 15,
+        "dbo_denies": 7,
+        "rationale": "ACL exacta con minor_id y permisos efectivos de las cinco columnas: KeyId/Nonce/Ciphertext no legibles. Account S/I/U, Audit I y lecturas necesarias; cola sin INSERT ni UPDATE."
+      },
+      {
+        "id": "sql_c9_no_provider_key_or_decryption",
+        "label": "Store UI rechaza key, secrets y write_secret antes de tocar ficheros o SQL",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L29",
+        "credential_content_access": false,
+        "rationale": "El perfil cifrado protege únicamente credenciales SQL. No se carga/genera la clave AES de Canales; DTO elimina presencia de credenciales, capacidades externas, errores y validaciones heredadas."
+      },
+      {
+        "id": "sql_c9_strict_v2_capabilities",
+        "label": "Manifiesto v2 channels: sólo settings y capacidades peligrosas falsas",
+        "file_type": "code",
+        "source_file": "frontend/src/shared/runtimeCapabilities.tsx",
+        "source_location": "L75",
+        "rationale": "Se valida forma exacta, perfil/modo/scope y flags antes de montar. Los perfiles v1 foundation/legacy conservan su contrato; la API verifica SQL antes de devolver el manifiesto."
+      },
+      {
+        "id": "sql_c9_early_glass_shell",
+        "label": "App elige ChannelsWorkspace antes de CoreApp y sus hooks CRM/Inbox",
+        "file_type": "code",
+        "source_file": "frontend/src/App.tsx",
+        "source_location": "L713",
+        "rationale": "Shell Glass pequeña con navegación y tema reutilizados; no monta los propietarios de datos CRM/Inbox. Rutas ajenas muestran sección no habilitada."
+      },
+      {
+        "id": "sql_c9_drafts_revision_readback",
+        "label": "Configuración controlada: borrador conservado, revisión optimista y readback tras error",
+        "file_type": "code",
+        "source_file": "frontend/src/features/ChannelsUiPanel.tsx",
+        "source_location": "L603",
+        "rationale": "Payload sólo revision/configuration; respuesta de cuenta validada. Un resultado incierto se consulta antes de permitir otro guardado; errores no reemplazan el borrador y el descarte es explícito."
+      },
+      {
+        "id": "sql_c9_readonly_stages_comments_activity",
+        "label": "Etapas activas, comentarios paginados y actividad local de sólo lectura",
+        "file_type": "code",
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L110",
+        "rationale": "Etapas B006 sin consulta SIIE, validación de etapa activa al guardar. Actividad cuenta registros locales; no muestra delivered sintético como entrega real. Sin reply, retry o suscripción."
+      },
+      {
+        "id": "sql_c9_standalone_loopback_preview",
+        "label": "Compose propio crm-cbn-sql-c9 publicado sólo en127.0.0.1:4175",
+        "file_type": "document",
+        "source_file": "compose.channels-ui.yaml",
+        "source_location": "L19",
+        "verification": "standalone_preview_configuration",
+        "rationale": "Perfil/CA/dist montados read-only, usuario no root, sin capacidades; Nginx limita Host y proxya a API loopback. No fusionar con proyecto compartido C5."
+      },
+      {
+        "id": "sql_c9_backend_test_evidence",
+        "label": "244 pruebas backend verdes:55 C9 y189 regresiones",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c9/backend-results.xml",
+        "source_location": "L1",
+        "backend_tests": 244,
+        "c9_backend_tests": 55,
+        "rationale": "Perfiles/TLS, ausencia de clave, ACL columna, denegaciones efectivas, locks/cleanup, DTOs, Host/Origin4175 y composición sin workers."
+      },
+      {
+        "id": "sql_c9_frontend_test_evidence",
+        "label": "42 pruebas frontend verdes:30 C9 y12 de regresión",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c9/frontend-results.xml",
+        "source_location": "L2",
+        "frontend_tests": 42,
+        "c9_frontend_tests": 30,
+        "rationale": "Manifiestos estrictos, shell sin hooks CRM, formulario/readback/conflicto/error, comentarios, secciones no disponibles y foco del enlace de salto."
+      },
+      {
+        "id": "sql_c9_connected_api_sql_evidence",
+        "label": "35 comprobaciones SQL/API: columnas secretas, conflictos, rollback y drift",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c9/connected-checks.json",
+        "source_location": "L1",
+        "connected_checks": 35,
+        "rationale": "Incluye denegación de operaciones externas/CRM, firmas de acceso local, guard que bloquea drift de ACL de columna y recuperación de ACL exacta."
+      },
+      {
+        "id": "sql_c9_academic_and_source_preservation",
+        "label": "SIIE/C5/C8 conservados;50 tablas/44.180 filas académicas,203 CRM y diario7",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c9/preservation-result.json",
+        "source_location": "L1",
+        "academic_tables": 50,
+        "academic_rows": 44180,
+        "trial_business_rows": 203,
+        "journal_rows": 7,
+        "no_migrations": true,
+        "rationale": "Las tablas de Canales ajenas a configuración conservan sus datos; el corte sólo habilita escritura de Account/Audit en otra copia."
+      },
+      {
+        "id": "sql_c9_transport_institutional_scope_pending",
+        "label": "Transporte/B015, CRM/Inbox completos y SQL2019 no se habilitan por esta UI",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L11",
+        "institutional_sql2019_accepted": false,
+        "rationale": "Sin credenciales, validación remota, activación, recepción pública, workers o proveedores. El esquema B011 y la UI no sustituyen MessageRoute/B015 ni la aceptación institucional."
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c8_c9_ui_scope_pending",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "continued_by_ui_only_implementation_without_promoting_other_modules",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_independent_ui_copy_profile",
+        "relation": "uses_another_c8_restoration_and_independent_ui_identity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L5"
+      },
+      {
+        "source": "sql_c9_independent_ui_copy_profile",
+        "target": "sql_c8_repository_api_acceptance",
+        "relation": "preserves_the_previously_accepted_repository_copy",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L5"
+      },
+      {
+        "source": "sql_c9_independent_ui_copy_profile",
+        "target": "sql_c9_mutable_guard_frozen_reader",
+        "relation": "requires_new_ticket_and_acl_while_reusing_the_frozen_catalog_reader",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L202"
+      },
+      {
+        "source": "sql_c9_mutable_guard_frozen_reader",
+        "target": "sql_c8_complete_mutable_catalog_guard",
+        "relation": "reuses_complete_metadata_queries_without_data_hashes_or_control",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c9_mutable_guard_frozen_reader",
+        "target": "sql_c9_column_only_credential_metadata",
+        "relation": "checks_exact_direct_acl_and_effective_secret_column_denials",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L90"
+      },
+      {
+        "source": "sql_c9_column_only_credential_metadata",
+        "target": "sql_c9_no_provider_key_or_decryption",
+        "relation": "limits_credential_access_to_metadata_and_disallows_secret_helpers",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/channels_ui_app.py",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_c9_no_provider_key_or_decryption",
+        "target": "sql_c8_independent_copy_profile",
+        "relation": "does_not_reuse_the_c8_provider_key_or_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L5"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_strict_v2_capabilities",
+        "relation": "requires_validated_ui_capabilities_before_mounting",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c9_strict_v2_capabilities",
+        "target": "sql_c9_early_glass_shell",
+        "relation": "selects_the_separate_channels_shell_without_mounting_core_data_owners",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/App.tsx",
+        "source_location": "L713"
+      },
+      {
+        "source": "sql_c9_early_glass_shell",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "preserves_the_existing_core_composition_for_other_validated_profiles",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/App.tsx",
+        "source_location": "L713"
+      },
+      {
+        "source": "sql_c9_strict_v2_capabilities",
+        "target": "sql_c9_transport_institutional_scope_pending",
+        "relation": "rejects_manifests_that_enable_provider_or_transport_flags",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/shared/runtimeCapabilities.tsx",
+        "source_location": "L96"
+      },
+      {
+        "source": "sql_c9_early_glass_shell",
+        "target": "sql_c9_drafts_revision_readback",
+        "relation": "mounts_the_configuration_panel_instead_of_legacy_channel_actions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/features/ChannelsWorkspace.tsx",
+        "source_location": "L93"
+      },
+      {
+        "source": "sql_c9_drafts_revision_readback",
+        "target": "sql_c9_frontend_test_evidence",
+        "relation": "has_conflict_and_unknown_response_readback_component_tests",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/test/channelsUi.test.tsx",
+        "source_location": "L284"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_readonly_stages_comments_activity",
+        "relation": "exposes_only_configuration_and_local_read_surfaces",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c9_readonly_stages_comments_activity",
+        "target": "sql_c9_column_only_credential_metadata",
+        "relation": "needs_no_crm_dml_queue_insert_or_audit_read",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_standalone_loopback_preview",
+        "relation": "has_a_separate_loopback_compose_project_without_merging_c5",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "compose.channels-ui.yaml",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_standalone_loopback_preview",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "retains_the_shared_c5_origin_and_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_backend_test_evidence",
+        "relation": "has_offline_backend_security_and_regression_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/backend-results.xml",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_frontend_test_evidence",
+        "relation": "has_component_ui_and_regression_evidence_without_claiming_general_parity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/frontend-results.xml",
+        "source_location": "L2"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_connected_api_sql_evidence",
+        "relation": "has_real_repository_api_permission_concurrency_and_drift_checks",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/connected-checks.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_connected_api_sql_evidence",
+        "target": "sql_c9_mutable_guard_frozen_reader",
+        "relation": "tests_blocking_of_column_acl_drift_and_exact_recovery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/connected-checks.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "sql_c9_academic_and_source_preservation",
+        "relation": "preserves_sources_academic_rows_business_rows_and_journal_without_migrations",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/preservation-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_academic_and_source_preservation",
+        "target": "sql_c8_academic_prior_rows_preservation",
+        "relation": "keeps_the_203_business_rows_inherited_from_the_c8_copy",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c9/preservation-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "sql_c9_column_only_credential_metadata",
+        "target": "sql_c8_queue_b015_gate",
+        "relation": "retains_the_b015_message_route_dependency_and_queue_write_denial",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/channels_ui_contract.py",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c9_capability_ui_implementation",
+        "target": "channels_capability_ui",
+        "relation": "provides_native_ui_contract_evidence_without_scentra_parity_claim",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c9_transport_institutional_scope_pending",
+        "target": "foundation_sql_dialect",
+        "relation": "retains_separate_institutional_sql2019_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c9_transport_institutional_scope_pending",
+        "target": "P4",
+        "relation": "keeps_public_channel_webhooks_and_provider_operations_outside_this_ui",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c9_transport_institutional_scope_pending",
+        "target": "P7",
+        "relation": "does_not_enable_mass_messaging_or_template_transport",
+        "confidence": "INFERRED",
+        "confidence_score": 0.96,
+        "source_file": "docs/decisions/ADR-021-channels-capability-ui.md",
+        "source_location": "L9"
+      }
+    ]
+  }
+}

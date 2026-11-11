@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-24",
+  "unit": "SQL-C2",
+  "result": "comparison_and_plan_only",
+  "plan": "HORARIOSSIIE_CRM_PLAN.md",
+  "comparison": "horariosiie-comparison.json",
+  "read_only_refresh": "sql_c2_preflight.json",
+  "destination_metadata": "sql_c2_destination_metadata.json",
+  "summary": {
+    "declared_crm_tables": 68,
+    "absent_crm_tables": 68,
+    "conditional_candidate_tables": 36,
+    "employee_blocked_tables": 32,
+    "foreign_keys_including_alter": 93,
+    "academic_foreign_keys": 0,
+    "academic_runtime_references": 22,
+    "academic_absent_tables": 14
+  },
+  "connected": {
+    "tables": 50,
+    "columns": 437,
+    "foreign_keys": 41,
+    "sql_c1_capture_equal": true,
+    "managed_schemas": 0,
+    "managed_objects": 0,
+    "database_ddl_triggers": 0,
+    "server_ddl_triggers": 0,
+    "engine_major": 16,
+    "compatibility_level": 160,
+    "collation": "Modern_Spanish_CI_AS",
+    "tls": "EncryptYes_TrustNo_existing_public_bundle",
+    "isolated_client_first_attempt": "failed_before_SQL_missing_process_bundle_then_resolved_using_existing_bundle",
+    "business_rows_read": false,
+    "ddl_dml": false,
+    "backup_or_restore_executed": false
+  },
+  "offline": {
+    "coverage": "68/68",
+    "self_checks": [
+      "restricted_visibility_not_absence",
+      "new_academic_fk_requires_review"
+    ],
+    "ruff": "passed",
+    "protected_inputs": 278,
+    "protected_inputs_unchanged": true,
+    "runtime_tests_SQL_runners_Scentra_modified": false,
+    "product_tests": "not_rerun_no_product_change"
+  },
+  "comparison_graph": {
+    "nodes": 202,
+    "edges": 342,
+    "communities": 10,
+    "html": true,
+    "obsidian_canvas": true
+  },
+  "pending": [
+    "Executable scoped package/runner and final-shape snapshots",
+    "Migration principal and local target contract",
+    "Backup and restore rehearsal",
+    "Complete academic structure/data before-after protection",
+    "GEEmpleado contract for32tables",
+    "Functional acceptance and institutionalSQL2019"
+  ],
+  "independent_semantic_review": {
+    "result": "no_material_findings",
+    "method": "Graphify skill delegated static review of public SQL/plan/helper; did not execute tests or SQL",
+    "limits": [
+      "Comparison helper specific to this empty captured CRM namespace",
+      "Nominal literal academic references are not full contracts",
+      "No live migration rehearsal certified"
+    ],
+    "fragment": "../fragments/sql_c2.json"
+  },
+  "graph_queries_verified": [
+    "employee_contract_CBN-B003",
+    "ChurnAssessment_RunId_from_018"
+  ],
+  "continuity": {
+    "local_links_checked": 1240,
+    "broken_links": 0,
+    "no_dangling_graphs": 5,
+    "protected_files_verified": 278,
+    "semantic_evidence_locations_valid": true,
+    "graph_checkpoint": "passed_after_final_rebuild"
+  },
+  "graph_checkpoint": {
+    "runtime": [
+      2349,
+      6124,
+      112
+    ],
+    "adaptation": [
+      250,
+      416,
+      27
+    ],
+    "sql_declarations": [
+      933,
+      1199,
+      66
+    ],
+    "sql_observed": [
+      529,
+      651,
+      23
+    ],
+    "sql_comparison": [
+      202,
+      342,
+      10
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+# syntax=docker/dockerfile:1
+FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS frontend
+WORKDIR /app/frontend-source
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+# Keep the existing Python/ODBC runtime and private state outside the image.
+FROM crm-cbn-runtime-base:sql-l1-20261024
+USER root
+ARG FFMPEG_VERSION=7:5.1.9-0+deb12u1
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg=${FFMPEG_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
+COPY backend/requirements.lock /app/backend/requirements.lock
+RUN python -m pip install --no-cache-dir -r /app/backend/requirements.lock
+COPY --from=frontend /usr/local/bin/node /usr/local/bin/node
+COPY --from=frontend --chown=10001:10001 /app/frontend-source/ /app/frontend-source/
+COPY docker/start.sh /app/start.sh
+COPY docker/nginx.development.conf /etc/nginx/nginx.development.conf
+RUN chmod 0555 /app/start.sh
+USER 10001:10001

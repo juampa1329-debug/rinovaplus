@@ -1,0 +1,20 @@
+{
+  "checked_at_utc": "2026-10-24T20:08:14.938531+00:00",
+  "database": "HORARIOSSIIE",
+  "instance": "SQLEXPRESS",
+  "engine_major": 16,
+  "edition": "Express Edition (64-bit)",
+  "compatibility_level": 160,
+  "table_count": 50,
+  "column_count": 437,
+  "relation_count": 41,
+  "metadata_visibility": "database",
+  "crm_activation": "not_activated",
+  "schema_acceptance": "not_evaluated",
+  "unit": "SQL-C2",
+  "comparison_to_sql_c1": "tables_columns_fk_equal",
+  "business_rows_read": false,
+  "database_modified": false,
+  "queries": "Fixed SELECT metadata through existing guarded API",
+  "snapshot_sha256": "47044581b045e6643f2b528ff3ad77cec1ec0b80219fee022c26db5f6679f74f"
+}

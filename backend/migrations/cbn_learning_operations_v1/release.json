@@ -1,0 +1,13 @@
+{
+  "version": "cbn-learning-operations-p10-v1",
+  "parent_release_sha256": "4d89d7ac0738317d977023096318bc110da3dee9bae04851005f79f2fc87b384",
+  "engine": 15,
+  "compatibility": 150,
+  "result_tables": 185,
+  "files": {
+    "P10ES-000.sql": "1c09d8c018fea413ef8b7054f42ff48524d95d38c0a957e2d2e1c0459dda965d",
+    "P10ES-001.sql": "09d26a6abde82079f1054ca792157dd7882ba06cef433de9a5e63a1ce197be97",
+    "expected-model.json": "a7093c9a88aa52ec9f5357d50965ff51062b19cd1fda74116d51b7c97f0d9028"
+  },
+  "scope": "institutional_only_reviewed_numeric_snapshots_and_JSON_models_no_academic_DDL_DML"
+}

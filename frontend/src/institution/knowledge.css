@@ -1,0 +1,66 @@
+.knowledge-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  margin: 1rem 0;
+  align-items: start;
+}
+.knowledge-records,
+.knowledge-citations,
+.knowledge-history {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.knowledge-record {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.knowledge-record[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+}
+.knowledge-editor {
+  min-width: 0;
+}
+.knowledge-editor fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+.knowledge-editor pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+}
+.knowledge-confirm {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0.8rem 0;
+}
+.knowledge-citations li,
+.knowledge-history li {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.p3-ficha .knowledge-layout {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 760px) {
+  .knowledge-layout {
+    grid-template-columns: 1fr;
+  }
+}

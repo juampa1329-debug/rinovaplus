@@ -1,0 +1,1456 @@
+{
+  "scope": "Mapeo estático por responsabilidad; no es DDL, conexión, migración aplicada o certificación de paridad. Cada tabla CBN declarada aparece exactamente en un grupo; estructuras faltantes se diseñarán por etapas, sin copiar una tabla SQL Server por cada tabla SaaS.",
+  "inspected_on": "2026-10-24",
+  "target_table_count": 68,
+  "target_schema_count": 13,
+  "target_table_basis": "CREATE TABLE literal de los 19 archivos backend/migrations/001…020; no existe 010.",
+  "source_table_basis": "Referencias literales FROM/JOIN/INSERT INTO/UPDATE/CREATE TABLE en módulos seleccionados de Scentra; las citas incluyen tabla y línea comprobadas.",
+  "groups": [
+    {
+      "id": "crm_core",
+      "capability": "Contacto, conversación, mensaje y diario de operaciones",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm.Contact",
+        "crm.Conversation",
+        "crm.Message",
+        "crm.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm.Contact",
+          "file": "backend/migrations/001_local_crm.sql",
+          "line": 22
+        },
+        {
+          "table": "crm.Conversation",
+          "file": "backend/migrations/001_local_crm.sql",
+          "line": 36
+        },
+        {
+          "table": "crm.Message",
+          "file": "backend/migrations/001_local_crm.sql",
+          "line": 48
+        },
+        {
+          "table": "crm.Operation",
+          "file": "backend/migrations/001_local_crm.sql",
+          "line": 59
+        }
+      ],
+      "source_tables": [
+        "saas_conversations",
+        "saas_messages",
+        "saas_crm_timeline_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 962,
+          "table": "saas_conversations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 1529,
+          "table": "saas_messages"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 496,
+          "table": "saas_crm_timeline_events"
+        }
+      ],
+      "notes": "Reutilizar UUID, revisiones y diario CBN. Las entidades Scentra no se copian una a una: un contacto CBN conserva su relación educativa y la conversación de cada identidad. El mapeo no acredita paridad de campos ni migraciones aplicadas.",
+      "phase": "P3"
+    },
+    {
+      "id": "admissions_native",
+      "capability": "Casos y seguimiento de admisiones sobre SIIE",
+      "classification": "preservar_nativo_educativo",
+      "target_tables": [
+        "crm_admissions.AdmissionCase",
+        "crm_admissions.Followup",
+        "crm_admissions.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_admissions.AdmissionCase",
+          "file": "backend/migrations/002_local_admissions.sql",
+          "line": 22
+        },
+        {
+          "table": "crm_admissions.Followup",
+          "file": "backend/migrations/002_local_admissions.sql",
+          "line": 27
+        },
+        {
+          "table": "crm_admissions.Operation",
+          "file": "backend/migrations/002_local_admissions.sql",
+          "line": 39
+        }
+      ],
+      "source_tables": [],
+      "source_evidence": [],
+      "notes": "Capacidad educativa propia. Conservar referencias por ID a aspirante/estado/período oficiales; no crear otra población académica o matrículas a partir de tablas SaaS.",
+      "phase": "P3"
+    },
+    {
+      "id": "inbox_operations",
+      "capability": "Equipo, registro base IA, asignación dual, tareas y SLA",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_inbox.Member",
+        "crm_inbox.Agent",
+        "crm_inbox.Assignment",
+        "crm_inbox.Task",
+        "crm_inbox.SlaPolicy",
+        "crm_inbox.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_inbox.Member",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 39
+        },
+        {
+          "table": "crm_inbox.Agent",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 45
+        },
+        {
+          "table": "crm_inbox.Assignment",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 53
+        },
+        {
+          "table": "crm_inbox.Task",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 61
+        },
+        {
+          "table": "crm_inbox.SlaPolicy",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 75
+        },
+        {
+          "table": "crm_inbox.Operation",
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 82
+        }
+      ],
+      "source_tables": [
+        "saas_crm_tasks",
+        "saas_users",
+        "saas_ai_agents"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 1515,
+          "table": "saas_crm_tasks"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 963,
+          "table": "saas_users"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 964,
+          "table": "saas_ai_agents"
+        }
+      ],
+      "notes": "Member identifica empleados SIIE y no es usuario autenticado. Agent es el registro único que amplía crm_agents.Profile. Conservar tareas/asignación humana e IA separadas; usuarios/roles son un faltante distinto.",
+      "phase": "P3"
+    },
+    {
+      "id": "event_pipeline",
+      "capability": "Eventos durables y preparación incremental",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_events.Event",
+        "crm_events.Preparation",
+        "crm_events.RetryOperation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_events.Event",
+          "file": "backend/migrations/004_conversation_events.sql",
+          "line": 146
+        },
+        {
+          "table": "crm_events.Preparation",
+          "file": "backend/migrations/004_conversation_events.sql",
+          "line": 169
+        },
+        {
+          "table": "crm_events.RetryOperation",
+          "file": "backend/migrations/004_conversation_events.sql",
+          "line": 177
+        }
+      ],
+      "source_tables": [
+        "saas_intelligence_events",
+        "saas_ai_agent_orchestration_jobs"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 503,
+          "table": "saas_intelligence_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/operating_system.py",
+          "line": 771,
+          "table": "saas_ai_agent_orchestration_jobs"
+        }
+      ],
+      "notes": "Preservar evento, preparación y reintento de CBN. Correspondencia por responsabilidad de procesamiento; no equivalencia exacta de columnas ni permiso para crear otra cola.",
+      "phase": "P4"
+    },
+    {
+      "id": "conversation_analysis",
+      "capability": "Análisis incremental, recibos, reservas y correcciones",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_analysis.Policy",
+        "crm_analysis.ConversationState",
+        "crm_analysis.Receipt",
+        "crm_analysis.Attempt",
+        "crm_analysis.Feedback",
+        "crm_analysis.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_analysis.Policy",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 204
+        },
+        {
+          "table": "crm_analysis.ConversationState",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 215
+        },
+        {
+          "table": "crm_analysis.Receipt",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 231
+        },
+        {
+          "table": "crm_analysis.Attempt",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 238
+        },
+        {
+          "table": "crm_analysis.Feedback",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 248
+        },
+        {
+          "table": "crm_analysis.Operation",
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 255
+        }
+      ],
+      "source_tables": [
+        "saas_conversation_memory",
+        "saas_ai_agent_evals",
+        "saas_intelligence_prediction_feedback"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 442,
+          "table": "saas_conversation_memory"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1329,
+          "table": "saas_ai_agent_evals"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 694,
+          "table": "saas_intelligence_prediction_feedback"
+        }
+      ],
+      "notes": "Reutilizar contexto/feedback e idempotencia ya declarados; las políticas R4 y reservas no equivalen a datasets/modelos entrenados. Su integración visual y correcciones preceden el aprendizaje evaluado.",
+      "phase": "P10"
+    },
+    {
+      "id": "crm_configuration",
+      "capability": "Etapas, etiquetas y campos configurables compartidos",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_config.Configuration",
+        "crm_config.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_config.Configuration",
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 21
+        },
+        {
+          "table": "crm_config.Operation",
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 28
+        }
+      ],
+      "source_tables": [
+        "saas_crm_custom_fields",
+        "saas_crm_pipelines",
+        "saas_crm_pipeline_stages",
+        "saas_labels",
+        "saas_conversation_labels"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 473,
+          "table": "saas_crm_custom_fields"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 537,
+          "table": "saas_crm_pipelines"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 567,
+          "table": "saas_crm_pipeline_stages"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 857,
+          "table": "saas_labels"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 957,
+          "table": "saas_conversation_labels"
+        }
+      ],
+      "notes": "Conservar configuración singleton derivada de contactos en 006 y editor común. Normalizar organización/contratos sin crear catálogos CRM duplicados ni sobrescribir valores guardados.",
+      "phase": "P3"
+    },
+    {
+      "id": "institutional_identity",
+      "capability": "Ficha institucional declarada y comparación SIIE",
+      "classification": "preservar_nativo_educativo",
+      "target_tables": [
+        "crm_identity.Profile"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_identity.Profile",
+          "file": "backend/migrations/007_institutional_identity.sql",
+          "line": 21
+        }
+      ],
+      "source_tables": [
+        "saas_conversations"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 962,
+          "table": "saas_conversations"
+        }
+      ],
+      "notes": "El perfil estructurado educativo amplía al contacto CBN. No copiar datos oficiales ni permitir edición de SIIE como si fueran atributos locales; la referencia Scentra de conversación sólo cubre identidad CRM general.",
+      "phase": "P3"
+    },
+    {
+      "id": "logical_merge",
+      "capability": "Unificación lógica y reversión con evidencia",
+      "classification": "preservar_nativo_educativo",
+      "target_tables": [
+        "crm_merge.MergeCase",
+        "crm_merge.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_merge.MergeCase",
+          "file": "backend/migrations/008_contact_merge.sql",
+          "line": 21
+        },
+        {
+          "table": "crm_merge.Operation",
+          "file": "backend/migrations/008_contact_merge.sql",
+          "line": 41
+        }
+      ],
+      "source_tables": [
+        "saas_crm_merge_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 2180,
+          "table": "saas_crm_merge_events"
+        }
+      ],
+      "notes": "Existe referente Scentra de auditoría de merge, pero CBN conserva la semántica lógica reversible sin borrar ni reparentar los contactos ni el core académico. No sustituirla por una fusión destructiva de origen.",
+      "phase": "P3"
+    },
+    {
+      "id": "conversation_strategy",
+      "capability": "Planes, feedback y autonomía interna limitada",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_strategy.Policy",
+        "crm_strategy.EvaluationPlan",
+        "crm_strategy.Operation"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_strategy.Policy",
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 21
+        },
+        {
+          "table": "crm_strategy.EvaluationPlan",
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 28
+        },
+        {
+          "table": "crm_strategy.Operation",
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 40
+        }
+      ],
+      "source_tables": [
+        "saas_intelligence_recommendations",
+        "saas_advisor_actions"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 578,
+          "table": "saas_intelligence_recommendations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 2278,
+          "table": "saas_advisor_actions"
+        }
+      ],
+      "notes": "Preservar planes con evidencia y tarea interna idempotente. No confundir interpretación cualitativa o corrección de plan con probabilidad de churn o autorización de envíos.",
+      "phase": "P3"
+    },
+    {
+      "id": "channel_configuration",
+      "capability": "Cuentas, credenciales y auditoría de canales",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_channels.Account",
+        "crm_channels.Credential",
+        "crm_channels.Audit"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_channels.Account",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 12
+        },
+        {
+          "table": "crm_channels.Credential",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 22
+        },
+        {
+          "table": "crm_channels.Audit",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 66
+        }
+      ],
+      "source_tables": [
+        "saas_integrations",
+        "saas_api_credentials",
+        "saas_audit_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/integrations/router.py",
+          "line": 267,
+          "table": "saas_integrations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/api_credentials/router.py",
+          "line": 225,
+          "table": "saas_api_credentials"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/integrations/router.py",
+          "line": 1143,
+          "table": "saas_audit_events"
+        }
+      ],
+      "notes": "Reutilizar cifrado y configuración de canales CBN. El catálogo queda limitado a canales educativos; WooCommerce y sincronización de productos están excluidos. No copiar credenciales de Scentra.",
+      "phase": "P4"
+    },
+    {
+      "id": "webhook_intake",
+      "capability": "Recepción y procesamiento durable de webhooks",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_channels.webhook_events"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_channels.webhook_events",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 28
+        }
+      ],
+      "source_tables": [
+        "saas_webhook_events",
+        "saas_webhook_endpoints"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/webhooks/router.py",
+          "line": 935,
+          "table": "saas_webhook_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/webhooks/router.py",
+          "line": 400,
+          "table": "saas_webhook_endpoints"
+        }
+      ],
+      "notes": "Conservar firma, deduplicación y recepción SQL. Endpoint/configuración puede reutilizar Account y rutas existentes; no exigir una tabla por cada objeto PostgreSQL.",
+      "phase": "P4"
+    },
+    {
+      "id": "message_transport",
+      "capability": "Identidades, mensajes externos, control, multimedia y outbox",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_channels.ExternalIdentity",
+        "crm_channels.ExternalMessage",
+        "crm_channels.outbound_queue",
+        "crm_channels.ConversationControl",
+        "crm_channels.MessageRoute",
+        "crm_channels.MediaAsset"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_channels.ExternalIdentity",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 37
+        },
+        {
+          "table": "crm_channels.ExternalMessage",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 43
+        },
+        {
+          "table": "crm_channels.outbound_queue",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 48
+        },
+        {
+          "table": "crm_channels.ConversationControl",
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 17
+        },
+        {
+          "table": "crm_channels.MessageRoute",
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 22
+        },
+        {
+          "table": "crm_channels.MediaAsset",
+          "file": "backend/migrations/016_inbox_media.sql",
+          "line": 9
+        }
+      ],
+      "source_tables": [
+        "saas_conversations",
+        "saas_messages",
+        "saas_outbound_messages",
+        "saas_message_status_events",
+        "saas_media_assets"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 962,
+          "table": "saas_conversations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 1529,
+          "table": "saas_messages"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3595,
+          "table": "saas_outbound_messages"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3300,
+          "table": "saas_message_status_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 3492,
+          "table": "saas_media_assets"
+        }
+      ],
+      "notes": "Una única cola CBN con revalidación, reconciliación y recepción durable. Conservar separación entre aceptación POST y entrega confirmada; no montar el dispatcher SaaS en paralelo.",
+      "phase": "P4"
+    },
+    {
+      "id": "social_comments",
+      "capability": "Comentarios sociales y respuesta enlazada al Inbox",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_channels.social_comments"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_channels.social_comments",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 60
+        }
+      ],
+      "source_tables": [
+        "social_comments",
+        "social_posts"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/social/service.py",
+          "line": 293,
+          "table": "social_comments"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/service.py",
+          "line": 267,
+          "table": "social_posts"
+        }
+      ],
+      "notes": "Hay backend CBN para comentarios; completar UI y acciones aplicables. Scentra usa tablas sociales sin prefijo en esta ruta; no confundirlas con saas_social_comments consultada por Ads ni duplicar persistencia por el nombre.",
+      "phase": "P4"
+    },
+    {
+      "id": "crm_diagnostics",
+      "capability": "Score y temperatura manuales del perfil conversacional",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_channels.ConversationProfile"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_channels.ConversationProfile",
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 11
+        }
+      ],
+      "source_tables": [
+        "saas_conversations",
+        "saas_intelligence_predictions"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 962,
+          "table": "saas_conversations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/crm/router.py",
+          "line": 967,
+          "table": "saas_intelligence_predictions"
+        }
+      ],
+      "notes": "Unificar lectura de ficha y mini CRM, conservando el score manual. La tabla de perfil no es un modelo de abandono ni debe sobrescribirse con una estimación IA sin origen/fecha/versión.",
+      "phase": "P3"
+    },
+    {
+      "id": "ai_provider_configuration",
+      "capability": "Configuración, conexiones y secretos de proveedores IA",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_ai.Configuration",
+        "crm_ai.Connection",
+        "crm_ai.Credential"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_ai.Configuration",
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 12
+        },
+        {
+          "table": "crm_ai.Connection",
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 18
+        },
+        {
+          "table": "crm_ai.Credential",
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 24
+        }
+      ],
+      "source_tables": [
+        "saas_ai_settings",
+        "saas_api_credentials"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 424,
+          "table": "saas_ai_settings"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/api_credentials/router.py",
+          "line": 225,
+          "table": "saas_api_credentials"
+        }
+      ],
+      "notes": "Reutilizar configuración y credenciales de sólo escritura del destino. Completar ajustes institucionales sin dependencias de plan ni copiar claves de origen.",
+      "phase": "P2"
+    },
+    {
+      "id": "knowledge",
+      "capability": "Documentos publicados, fragmentos e índice léxico",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_ai.KnowledgeDocument",
+        "crm_ai.KnowledgeChunk",
+        "crm_ai.KnowledgeTerm"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_ai.KnowledgeDocument",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 19
+        },
+        {
+          "table": "crm_ai.KnowledgeChunk",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 26
+        },
+        {
+          "table": "crm_ai.KnowledgeTerm",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 31
+        }
+      ],
+      "source_tables": [
+        "saas_knowledge_sources",
+        "saas_knowledge_chunks",
+        "saas_knowledge_retrieval_logs",
+        "saas_knowledge_evaluations"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 683,
+          "table": "saas_knowledge_sources"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 1624,
+          "table": "saas_knowledge_chunks"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 1670,
+          "table": "saas_knowledge_retrieval_logs"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 1694,
+          "table": "saas_knowledge_evaluations"
+        }
+      ],
+      "notes": "Conservar extracción/recuperación léxica con separación de programa/etapa. Logs, evaluación y publicación se adaptan cuando se defina el contrato; ni SQL vectorial nativo ni pgvector son requisitos asumidos.",
+      "phase": "P6"
+    },
+    {
+      "id": "applicant_memory",
+      "capability": "Memoria del aspirante y contexto con evidencia",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_ai.ProspectMemory"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_ai.ProspectMemory",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 37
+        }
+      ],
+      "source_tables": [
+        "saas_conversation_memory",
+        "saas_ai_agent_memory_archives"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 442,
+          "table": "saas_conversation_memory"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1302,
+          "table": "saas_ai_agent_memory_archives"
+        }
+      ],
+      "notes": "Conservar hechos por aspirante/conversación y revisiones. No reutilizar memoria privada como memoria colectiva ni introducir información de otro programa por similitud.",
+      "phase": "P6"
+    },
+    {
+      "id": "admissions_ai_execution",
+      "capability": "Política institucional de respuesta y trabajos IA",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_ai.AdmissionsPolicy",
+        "crm_ai.ResponseJob"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_ai.AdmissionsPolicy",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 12
+        },
+        {
+          "table": "crm_ai.ResponseJob",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 44
+        }
+      ],
+      "source_tables": [
+        "saas_ai_settings",
+        "saas_ai_pending_replies"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 424,
+          "table": "saas_ai_settings"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ai_agent/service.py",
+          "line": 488,
+          "table": "saas_ai_pending_replies"
+        }
+      ],
+      "notes": "Conservar política, presupuesto y trabajos CBN. La disponibilidad de un perfil al guardarlo no activa automáticamente respuesta de Inbox o envío externo.",
+      "phase": "P5"
+    },
+    {
+      "id": "churn_assessment",
+      "capability": "Evaluación de riesgo y ejecuciones de cálculo",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_marketing.ChurnAssessment",
+        "crm_marketing.EvaluationRun",
+        "crm_marketing.Policy"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_marketing.ChurnAssessment",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 16
+        },
+        {
+          "table": "crm_marketing.EvaluationRun",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 159
+        },
+        {
+          "table": "crm_marketing.Policy",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 173
+        }
+      ],
+      "source_tables": [
+        "saas_intelligence_predictions",
+        "saas_intelligence_recommendations",
+        "saas_intelligence_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 552,
+          "table": "saas_intelligence_predictions"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 578,
+          "table": "saas_intelligence_recommendations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 503,
+          "table": "saas_intelligence_events"
+        }
+      ],
+      "notes": "Hay evaluación persistida y worker CBN. Integrar la superficie disponible en P3; P10 añade modelo evaluado. Distinguir regla/rúbrica, interpretación IA, score manual y predicción; sin evidencia mostrar sin evaluación.",
+      "phase": "P3",
+      "trained_model_phase": "P10"
+    },
+    {
+      "id": "broadcast_controls",
+      "capability": "Plantillas Meta, consentimiento y cadencia",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_marketing.MessageTemplate",
+        "crm_marketing.ContactConsent",
+        "crm_marketing.AccountCadence"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_marketing.MessageTemplate",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 40
+        },
+        {
+          "table": "crm_marketing.ContactConsent",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 57
+        },
+        {
+          "table": "crm_marketing.AccountCadence",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 96
+        }
+      ],
+      "source_tables": [
+        "saas_meta_message_templates",
+        "saas_integrations",
+        "saas_conversations"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 287,
+          "table": "saas_meta_message_templates"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 74,
+          "table": "saas_integrations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 497,
+          "table": "saas_conversations"
+        }
+      ],
+      "notes": "Conservar consentimiento versionado por identidad y cadencia compartida CBN. Los referentes aportan plantilla/cuenta/audiencia; no presumir un consentimiento por tener conversación. No confundir plantilla Meta aprobada con plantilla CRM.",
+      "phase": "P7"
+    },
+    {
+      "id": "broadcasts",
+      "capability": "Campañas de envío y destinatarios",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_marketing.Campaign",
+        "crm_marketing.CampaignRecipient"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_marketing.Campaign",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 107
+        },
+        {
+          "table": "crm_marketing.CampaignRecipient",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 129
+        }
+      ],
+      "source_tables": [
+        "saas_broadcasts",
+        "saas_broadcast_recipients"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 619,
+          "table": "saas_broadcasts"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 693,
+          "table": "saas_broadcast_recipients"
+        }
+      ],
+      "notes": "Reutilizar Campaign kind bulk/remarketing y destinatarios con referencia a outbox. Transporte está bloqueado en varias capas; requiere flujo validado completo, no retirar un solo 423.",
+      "phase": "P7"
+    },
+    {
+      "id": "remarketing_rules",
+      "capability": "Reglas de inactividad y recuperación por etapa",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_marketing.RemarketingRule"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_marketing.RemarketingRule",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 77
+        }
+      ],
+      "source_tables": [
+        "saas_crm_triggers",
+        "saas_remarketing_flows"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 501,
+          "table": "saas_crm_triggers"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 638,
+          "table": "saas_remarketing_flows"
+        }
+      ],
+      "notes": "La regla CBN es una base parcial por etapa/inactividad y no representa aún todos los activadores ni flujos de varios pasos de Scentra. Preservarla al diseñar el modelo faltante.",
+      "phase": "P8"
+    },
+    {
+      "id": "educational_agents",
+      "capability": "Jerarquía, perfiles, contexto, ámbitos, historial, uso y ejecución",
+      "classification": "reutilizar_con_adaptacion_funcional",
+      "target_tables": [
+        "crm_agents.Stage",
+        "crm_agents.Profile",
+        "crm_agents.Context",
+        "crm_agents.SourceScope",
+        "crm_agents.Assignment",
+        "crm_agents.History",
+        "crm_agents.Usage",
+        "crm_agents.Execution"
+      ],
+      "target_evidence": [
+        {
+          "table": "crm_agents.Stage",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 13
+        },
+        {
+          "table": "crm_agents.Profile",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 20
+        },
+        {
+          "table": "crm_agents.Context",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 37
+        },
+        {
+          "table": "crm_agents.SourceScope",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 47
+        },
+        {
+          "table": "crm_agents.Assignment",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 54
+        },
+        {
+          "table": "crm_agents.History",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 61
+        },
+        {
+          "table": "crm_agents.Usage",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 68
+        },
+        {
+          "table": "crm_agents.Execution",
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 12
+        }
+      ],
+      "source_tables": [
+        "saas_ai_agents",
+        "saas_ai_agent_events",
+        "saas_ai_agent_prompt_versions",
+        "saas_ai_agent_evals",
+        "saas_ai_agent_tool_approvals",
+        "saas_ai_runs"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1170,
+          "table": "saas_ai_agents"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1264,
+          "table": "saas_ai_agent_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1399,
+          "table": "saas_ai_agent_prompt_versions"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1329,
+          "table": "saas_ai_agent_evals"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1428,
+          "table": "saas_ai_agent_tool_approvals"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 2256,
+          "table": "saas_ai_runs"
+        }
+      ],
+      "notes": "Conservar registro único crm_inbox.Agent y orientador→programa→etapa. Un perfil válido queda disponible al guardar según decisión vigente CBN; diagnóstico opcional y pausa explícita. No reinstalar aprobación obligatoria del perfil por copiar preflight Scentra; acciones/fuentes sensibles conservan controles propios. Usage no es billing del software.",
+      "phase": "P5"
+    },
+    {
+      "id": "institutional_auth",
+      "capability": "Usuarios, roles y sesiones institucionales",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_users",
+        "saas_memberships",
+        "saas_password_reset_tokens"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 184,
+          "table": "saas_users"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 139,
+          "table": "saas_memberships"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 908,
+          "table": "saas_password_reset_tokens"
+        }
+      ],
+      "notes": "No se encontró DDL de usuarios/sesiones institucionales entre las 68 tablas. Member de Inbox no sustituye autenticación. Diseñar cuentas, revocación y permisos en P2 sin copiar alta multiempresa, planes o cobros del SaaS.",
+      "phase": "P2"
+    },
+    {
+      "id": "meta_ads",
+      "capability": "Cuentas publicitarias, campañas y leads de captación",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_ad_accounts",
+        "saas_ad_campaigns",
+        "saas_ad_leads"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 373,
+          "table": "saas_ad_accounts"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 374,
+          "table": "saas_ad_campaigns"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 375,
+          "table": "saas_ad_leads"
+        }
+      ],
+      "notes": "No se encontró DDL Meta Ads equivalente en las migraciones CBN. Diseñar sólo las funciones Ads incluidas, enlazadas a identidad/CRM y programa; ninguna lectura o sincronización autoriza gasto publicitario.",
+      "phase": "P9"
+    },
+    {
+      "id": "crm_campaigns_segments",
+      "capability": "Campañas CRM, segmentos guardados y plantillas CRM",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_campaigns",
+        "saas_segments",
+        "saas_message_templates",
+        "saas_campaign_preflight_runs",
+        "saas_campaign_ab_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 636,
+          "table": "saas_campaigns"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 123,
+          "table": "saas_segments"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 177,
+          "table": "saas_message_templates"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 465,
+          "table": "saas_campaign_preflight_runs"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 735,
+          "table": "saas_campaign_ab_events"
+        }
+      ],
+      "notes": "Campaign de crm_marketing es envío bulk/remarketing; no acredita todo el modelo de campañas CRM. Falta definir segmentos/plantillas CRM y gobierno aplicable. Evaluar ampliación de estructuras existentes antes de crear tablas nuevas.",
+      "phase": "P8"
+    },
+    {
+      "id": "multi_step_flows",
+      "capability": "Activadores versionados, esperas y flujos de varios pasos",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_crm_trigger_versions",
+        "saas_trigger_executions",
+        "saas_trigger_scheduled_messages",
+        "saas_remarketing_flows",
+        "saas_campaign_quiet_hours"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 432,
+          "table": "saas_crm_trigger_versions"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1227,
+          "table": "saas_trigger_executions"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1239,
+          "table": "saas_trigger_scheduled_messages"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 638,
+          "table": "saas_remarketing_flows"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 265,
+          "table": "saas_campaign_quiet_hours"
+        }
+      ],
+      "notes": "No hay tablas equivalentes de versión/ejecución/pasos/espera entre las migraciones CBN. RemarketingRule no reemplaza este modelo. Diseñar cancelación por respuesta/baja/control humano, reutilizando outbox y cuentas.",
+      "phase": "P8"
+    },
+    {
+      "id": "collective_memory",
+      "capability": "Gestión y gobernanza de memoria colectiva institucional",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_ai_agent_collective_memory",
+        "saas_ai_agent_memory_archives"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1360,
+          "table": "saas_ai_agent_collective_memory"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1302,
+          "table": "saas_ai_agent_memory_archives"
+        }
+      ],
+      "notes": "La opción collective en agentes CBN aporta políticas/fuentes, no un CRUD persistente equivalente. Diseñar vigencia, ámbito, archivo y auditoría sin compartir memorias privadas de aspirantes.",
+      "phase": "P6"
+    },
+    {
+      "id": "institutional_dna",
+      "capability": "ADN, perfil y evidencia institucional compartida",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_brand_profiles",
+        "saas_brand_evidence",
+        "saas_brand_governance_events"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 212,
+          "table": "saas_brand_profiles"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 281,
+          "table": "saas_brand_evidence"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 415,
+          "table": "saas_brand_governance_events"
+        }
+      ],
+      "notes": "Adaptar únicamente identidad/reglas institucionales y evidencia aplicable. No trasladar estudios de contenido, briefs publicitarios o QA de marca fuera del alcance. El ADN no sustituye catálogo, requisitos ni precios SIIE.",
+      "phase": "P6"
+    },
+    {
+      "id": "training_governance",
+      "capability": "Packs, datasets de evaluación, mejoras y promociones",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_training_packs",
+        "saas_training_pack_events",
+        "saas_training_feedback_events",
+        "saas_training_improvement_candidates",
+        "saas_training_eval_cases",
+        "saas_training_eval_runs",
+        "saas_training_promotion_requests"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/training/service.py",
+          "line": 55,
+          "table": "saas_training_packs"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/service.py",
+          "line": 84,
+          "table": "saas_training_pack_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/feedback_service.py",
+          "line": 138,
+          "table": "saas_training_feedback_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/feedback_service.py",
+          "line": 177,
+          "table": "saas_training_improvement_candidates"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 123,
+          "table": "saas_training_eval_cases"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 160,
+          "table": "saas_training_eval_runs"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 199,
+          "table": "saas_training_promotion_requests"
+        }
+      ],
+      "notes": "Feedback y notas CBN existentes no constituyen este circuito de entrenamiento/evaluación. Diseñar fuentes/revisión, criterios y reversión sin importar datasets privados de clientes Scentra.",
+      "phase": "P10"
+    },
+    {
+      "id": "trained_ml",
+      "capability": "Features, datasets, trabajos, artefactos y registro de modelos",
+      "classification": "faltante_por_diseniar",
+      "target_tables": [],
+      "target_evidence": [],
+      "source_tables": [
+        "saas_intelligence_feature_values",
+        "saas_intelligence_model_registry",
+        "saas_intelligence_model_metrics",
+        "saas_intelligence_model_rollout_events",
+        "saas_ml_training_jobs",
+        "saas_ml_model_artifacts",
+        "saas_ml_training_datasets",
+        "saas_ml_model_evaluations",
+        "saas_ml_drift_snapshots"
+      ],
+      "source_evidence": [
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 527,
+          "table": "saas_intelligence_feature_values"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 621,
+          "table": "saas_intelligence_model_registry"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 717,
+          "table": "saas_intelligence_model_metrics"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 657,
+          "table": "saas_intelligence_model_rollout_events"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 3626,
+          "table": "saas_ml_training_jobs"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 3644,
+          "table": "saas_ml_model_artifacts"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 891,
+          "table": "saas_ml_training_datasets"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 921,
+          "table": "saas_ml_model_evaluations"
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 3683,
+          "table": "saas_ml_drift_snapshots"
+        }
+      ],
+      "notes": "No hay DDL de pipeline ML entrenado equivalente entre las 68 tablas. Reutilizar eventos/riesgo como entradas revisadas, no como prueba de entrenamiento. Modelos institucionales aislados y modo sombra/promoción; federación global y memoria entre instituciones excluidas.",
+      "phase": "P10"
+    }
+  ],
+  "excluded_source_capabilities": [
+    "billing comercial, planes, suscripciones, checkout, facturación y cobro del software",
+    "WooCommerce y sincronización de productos/pedidos de comercio electrónico",
+    "Dine, Stay, ecommerce y verticales ajenos a la institución educativa",
+    "global/federated learning, benchmarks entre clientes y memoria compartida entre instituciones",
+    "alta comercial multiempresa SaaS; tenant como cuenta de terceros",
+    "secrets, conversaciones, datasets o artefactos privados de clientes Scentra"
+  ]
+}

@@ -1,0 +1,22 @@
+# Explicit restored-copy UI. Uses only the prepared restricted profile and public CA.
+services:
+  preview:
+    environment:
+      CRM_APP_MODE: local_foundation
+      CRM_FOUNDATION_PROFILE_DIR: /run/crm-foundation
+      CRM_AI_OUTBOUND_ENABLED: "false"
+      CRM_SQL_USER: ""
+      CRM_SQL_PASSWORD: ""
+      GEMINI_API_KEY: ""
+      XAI_API_KEY: ""
+      OPENROUTER_API_KEY: ""
+      ELEVENLABS_API_KEY: ""
+      GOOGLE_TTS_API_KEY: ""
+      TAVILY_API_KEY: ""
+      BRAVE_SEARCH_API_KEY: ""
+      SERPAPI_API_KEY: ""
+    volumes:
+      - type: bind
+        source: ./.local/sql-c5/runtime
+        target: /run/crm-foundation
+        read_only: true

@@ -1,0 +1,96 @@
+.ads-workspace {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.ads-workspace header p,
+.ads-workspace small {
+  color: var(--muted);
+}
+.ads-filters,
+.ads-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.ads-filters {
+  grid-template-columns: 2fr 1fr 1fr auto;
+  align-items: end;
+}
+.ads-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.ads-summary strong {
+  display: block;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.ads-summary > small {
+  grid-column: 1/-1;
+}
+.ads-layout {
+  display: grid;
+  grid-template-columns: minmax(15rem, 1fr) minmax(0, 2.4fr);
+  gap: 1rem;
+}
+.ads-list,
+.ads-editor form {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  min-width: 0;
+}
+.ads-record {
+  display: grid;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  gap: 0.3rem;
+}
+.ads-editor {
+  min-width: 0;
+}
+.ads-workspace fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  margin: 0;
+}
+.ads-workspace details {
+  padding: 0.6rem 0;
+}
+.ads-workspace summary {
+  cursor: pointer;
+}
+.ads-workspace dd {
+  margin: 0 0 0.8rem;
+  overflow-wrap: anywhere;
+}
+.ads-workspace .field {
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .ads-layout {
+    grid-template-columns: 1fr;
+  }
+  .ads-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .ads-fields,
+  .ads-filters {
+    grid-template-columns: 1fr;
+  }
+  .ads-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ads-workspace input,
+  .ads-workspace select,
+  .ads-workspace textarea {
+    max-width: 100%;
+    min-width: 0;
+  }
+}

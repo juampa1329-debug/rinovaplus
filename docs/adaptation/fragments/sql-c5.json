@@ -1,0 +1,274 @@
+{
+  "domain": "Interfaz por capacidades en restauración · SQL-C5",
+  "findings": [],
+  "review_scope": "Extracción semántica independiente de documentación, código y artefactos públicos finales C5, incluidas capturas. Las pruebas conectadas se atribuyen al expediente público; esta revisión no ejecuta SQL, app, contenedores o proveedores ni lee archivos privados. No declara completadas P1/P2/P3, aceptación institucional SQL2019 o la suite general.",
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c5_restored_ui_acceptance",
+        "label": "SQL-C5: preview Glass aceptado con CRM, Inbox y ficha sobre la restauración",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L3",
+        "verification": "accepted_restored_ui_only",
+        "scope": "CBN_C3_TRIAL_20261024_ac8505b8; B000+B001+B006"
+      },
+      {
+        "id": "sql_c5_runtime_manifest_gate",
+        "label": "Manifiesto estricto: App no se monta hasta validar perfil y capacidades",
+        "file_type": "code",
+        "source_file": "frontend/src/shared/runtimeCapabilities.tsx",
+        "source_location": "L123",
+        "rationale": "La carga fallida o el perfil contradictorio retienen la aplicación y ofrecen reintento; no se adopta demo como recuperación."
+      },
+      {
+        "id": "sql_c5_shared_contact_editor",
+        "label": "Ficha compartida CRM/Inbox: ClientFields, borrador y transacción comunes; sin lectura duplicada",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L11",
+        "rationale": "Una ficha editable conserva los propietarios de datos existentes; estado y prioridad quedan en un despliegue separado debajo."
+      },
+      {
+        "id": "sql_c5_shared_crm_configuration",
+        "label": "Ajustes CRM comparte el documento B006 de etapas, etiquetas y campos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L11",
+        "scope": "Configuración CRM foundation; no aceptación de usuarios/RBAC institucionales"
+      },
+      {
+        "id": "sql_c5_unavailable_capabilities",
+        "label": "Dependencias ausentes: módulos deshabilitados y componentes sin montar",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L13",
+        "scope": "Sin catálogo/perfil académico, churn/análisis, evaluación, asignación/SLA, actividad/unificación avanzada, comentarios, medios, agentes, campañas o proveedores"
+      },
+      {
+        "id": "sql_c5_encrypted_runtime_profile",
+        "label": "Perfil cifrado C4 dedicado, ticket y login existentes; montaje privado de sólo lectura",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L17",
+        "rationale": "El runtime no toma credenciales del selector ni de SA; conserva TLS y guardas. La reparación de la ACE del propietario no cambió bytes de claves o credenciales."
+      },
+      {
+        "id": "sql_c5_academic_and_journal_preservation",
+        "label": "50 tablas y 44.180 filas académicas conservadas; diario y forma C3 intactos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_c5_validation.json",
+        "source_location": "L49",
+        "verification": "reported_readonly_before_after_evidence",
+        "scope": "Escrituras sintéticas sólo CRM; sin DDL, migraciones o permisos SQL nuevos"
+      },
+      {
+        "id": "sql_c5_browser_acceptance",
+        "label": "25 comprobaciones de navegador y pruebas focalizadas: 280 backend, 43 frontend",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L41",
+        "verification": "public_test_report_and_browser_artifacts_reviewed",
+        "scope": "Escritorio 1440×900 y móvil 390×844; una prueba backend omitida; siete archivos frontend; no suite general verde"
+      },
+      {
+        "id": "sql_c5_immutable_history_chain",
+        "label": "Cadena C4→C5: prueba C4 y baseline inmutables, transiciones explícitas",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L25",
+        "rationale": "La aceptación nueva no vuelve a firmar C4 ni sustituye SQL, snapshots o herramientas C3; inventarios históricos y consumidores actuales permanecen separados."
+      },
+      {
+        "id": "sql_c5_institutional_scope_pending",
+        "label": "Pendientes: SQL2019 institucional, SIIE completo, RBAC y siguiente release CRM",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L29",
+        "scope": "Motor local SQL2022 Express/compat160; health/ready general503; no plataforma educativa completa"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "continued_by_ui_acceptance_on_the_same_restored_foundation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c4_minimal_crm_capabilities",
+        "relation": "exposes_existing_b000_b001_b006_capabilities_in_local_preview",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_runtime_manifest_gate",
+        "relation": "requires_verified_manifest_before_mounting_data_owners",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/shared/runtimeCapabilities.tsx",
+        "source_location": "L123"
+      },
+      {
+        "source": "sql_c5_runtime_manifest_gate",
+        "target": "sql_c5_unavailable_capabilities",
+        "relation": "restricts_foundation_to_four_modules_and_disabled_advanced_features",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/runtime_capabilities.py",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_shared_contact_editor",
+        "relation": "omits_the_duplicate_readonly_contact_header_and_card_in_foundation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1046"
+      },
+      {
+        "source": "sql_c5_shared_contact_editor",
+        "target": "sql_c5_shared_crm_configuration",
+        "relation": "uses_the_same_b001_transaction_and_b006_definitions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c5_shared_contact_editor",
+        "target": "P3",
+        "relation": "delivers_only_the_foundation_shared_contact_editor_slice",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c5_shared_crm_configuration",
+        "target": "P2",
+        "relation": "contributes_crm_configuration_without_completing_institutional_settings",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_unavailable_capabilities",
+        "relation": "keeps_missing_integrations_unmounted_and_explicitly_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_encrypted_runtime_profile",
+        "relation": "loads_the_prepared_profile_and_rejects_another_database_or_login",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation_profile.py",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_c5_encrypted_runtime_profile",
+        "target": "sql_c4_exact_acl_overlay",
+        "relation": "reuses_c4_login_permissions_ticket_and_tls_without_new_sql_grants",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L15"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_academic_and_journal_preservation",
+        "relation": "records_preserved_academic_data_journal_and_managed_shape",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/sql_c5_validation.json",
+        "source_location": "L49"
+      },
+      {
+        "source": "sql_c5_academic_and_journal_preservation",
+        "target": "sql_c3_seven_restored_tables",
+        "relation": "retains_the_seven_table_shape_and_five_journal_rows",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C5_REVIEW.md",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_browser_acceptance",
+        "relation": "has_25_public_browser_checks_with_desktop_and_mobile_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/sql_c5_validation.json",
+        "source_location": "L24"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_immutable_history_chain",
+        "relation": "continues_history_without_resigning_c4_or_replacing_c3_artifacts",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c5_immutable_history_chain",
+        "target": "sql_c4_restored_repository_scope",
+        "relation": "requires_the_previous_c4_proof_hash_fixed_in_the_c5_baseline",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/historical_checkpoint.py",
+        "source_location": "L128"
+      },
+      {
+        "source": "sql_c5_immutable_history_chain",
+        "target": "sql_c3_frozen_prefix_shapes",
+        "relation": "keeps_c3_sql_snapshots_and_tools_immutable",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c5_institutional_scope_pending",
+        "relation": "does_not_certify_complete_siie_rbac_or_institutional_sql2019",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_c5_institutional_scope_pending",
+        "target": "P1",
+        "relation": "retains_pending_connected_institutional_sql2019_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_c5_institutional_scope_pending",
+        "target": "P2",
+        "relation": "retains_pending_institutional_authorization_and_rbac",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/decisions/ADR-017-foundation-ui-capabilities.md",
+        "source_location": "L29"
+      }
+    ]
+  }
+}

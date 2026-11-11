@@ -1,0 +1,260 @@
+{
+  "stage": "SQL-C4",
+  "status": "accepted_restored_repositories_only",
+  "date": "2026-10-24",
+  "database": "CBN_C3_TRIAL_20261024_ac8505b8",
+  "release_sha256": "b8de5466cd6c0e8b373490cc0987bacbf90deff95ffe45e8d84f54f6dc08827a",
+  "input_baseline_sha256": "422996c9b7e0e342c5e7d5704cb1889273c89725126a1f527e21e4768104fe13",
+  "core_unit_tests": {
+    "passed": 269,
+    "new_runtime_tests": 51,
+    "files": [
+      "test_foundation_runtime.py",
+      "test_sql_target.py",
+      "test_foundation.py",
+      "test_crm_configuration.py",
+      "test_sql_workspace.py",
+      "test_inbox.py",
+      "test_health.py",
+      "test_container_config.py",
+      "test_local_clients.py",
+      "test_ai_credentials.py"
+    ],
+    "skipped": 1,
+    "six_core_files_passed": 204
+  },
+  "connected_acceptance": {
+    "crud_and_boundaries": 76,
+    "repeatable_drift_and_preservation": 8,
+    "total": 84,
+    "evidence": [
+      "sql_c4_verify_result.json",
+      "sql_c4_audit_result.json"
+    ]
+  },
+  "preservation": {
+    "original_source": "HORARIOSSIIE",
+    "academic_tables": 50,
+    "academic_rows": 44180,
+    "metadata_and_full_precision_data_equal": true,
+    "preexisting_acl_equal_after_exact_runtime_actor_projection": true,
+    "journal_unchanged": true,
+    "new_tables": 0,
+    "synthetic_contacts": 26,
+    "synthetic_messages": 52,
+    "final_original_source_metadata": {
+      "tables": 50,
+      "columns": 437,
+      "foreign_keys": 41,
+      "crm_schemas": 0
+    }
+  },
+  "security": {
+    "runtime_mode": "local_foundation",
+    "sql_environment": "foundation_rehearsal",
+    "separate_sql_login": true,
+    "credentials_encrypted_and_private": true,
+    "tls_encrypt": true,
+    "trust_server_certificate": false,
+    "no_academic_data_permissions": true,
+    "no_delete_ddl_or_journal_write_permissions": true,
+    "explicit_runtime_acl_overlay": true,
+    "global_effective_server_and_database_permissions_exact": true
+  },
+  "extended_regressions": {
+    "completed_run": {
+      "tests": 1134,
+      "errors": 0,
+      "failures": 23,
+      "skipped": 1,
+      "passed": 1110
+    },
+    "provider_run_interrupted": {
+      "passed": 313,
+      "failed": 18,
+      "skipped": 1,
+      "reason": "singleflight fixture stalls after unchanged before_attempt keyword; no complete provider-suite verdict"
+    },
+    "pre_C4_app_files_byte_identical": 122,
+    "all_observed_failed_cases_reproduced_before_C4": 41,
+    "failed_cases": [
+      "tests/test_ai.py::test_enabled_save_requires_catalog_and_supported_params",
+      "tests/test_ai.py::test_invalid_catalog_sanitized[None]",
+      "tests/test_ai.py::test_nontransient_failure_never_falls_back[404]",
+      "tests/test_ai.py::test_timeout_is_transient_and_busy_is_released",
+      "tests/test_ai.py::test_transient_fallback_four_attempts_and_no_hidden_retries",
+      "tests/test_ai_chat.py::test_chat_discards_generation_if_saved_prompt_changes",
+      "tests/test_ai_chat.py::test_chat_fallback_reuses_bounded_transient_order",
+      "tests/test_ai_media.py::test_attachment_context_not_lost_when_history_disabled",
+      "tests/test_ai_media.py::test_elevenlabs_saved_voice_pagination_models_and_one_synthesis",
+      "tests/test_ai_media.py::test_failed_synthesis_reserves_budget_and_rejects_retry",
+      "tests/test_ai_media.py::test_invalid_decision_never_spends_voice",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[False-True-False-False-False-3-True-False]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-False-False-False-False-3-False-False]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-False-False-False-False-3-True-True]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-False-False-True-False-3-False-False]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-False-True-True-False-3-False-True]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-True-False-False-True-0-True-False]",
+      "tests/test_ai_media.py::test_voice_rule_precedence_and_server_quota[True-True-False-False-True-1-False-True]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_channel_activation]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_channel_connection_tests]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_channel_discovery]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_channel_oauth]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_channel_pause]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_whatsapp_number_registration]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_channels_whatsapp_number_verification]",
+      "tests/test_local_schemas.py::test_each_body_declared_local_bounds_reject_invalid_values[post_webhooks_channel]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_channel_activation]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_channel_connection_tests]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_channel_discovery]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_channel_oauth]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_channel_pause]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_whatsapp_number_registration]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_channels_whatsapp_number_verification]",
+      "tests/test_local_schemas.py::test_each_new_body_rejects_empty_unknown_and_missing_fields[post_webhooks_channel]",
+      "tests/test_local_schemas.py::test_each_operation_rejects_unknown_query_without_reflection[get_channels_channel_oauth_callback]",
+      "tests/test_local_schemas.py::test_each_operation_rejects_unknown_query_without_reflection[post_channels_channel_oauth]",
+      "tests/test_local_schemas.py::test_every_new_valid_input_is_only_constant_501[get_channels_channel_oauth_callback]",
+      "tests/test_local_schemas.py::test_every_new_valid_input_is_only_constant_501[post_channels_channel_oauth]",
+      "tests/test_local_schemas.py::test_semantic_query_path_negative_and_no_get_delete_body",
+      "tests/test_local_schemas.py::test_thirteen_legacy_empty_bodies_remain_501[put_channels_channel_draft]",
+      "tests/test_local_schemas.py::test_webhooks_normalize_only_synthetic_event_shapes"
+    ],
+    "pre_C4_reproduced": 41
+  },
+  "limits": [
+    "No shared preview or business workers activated",
+    "No academic links/catalog/assignment/assessment/channels/media/providers/agents/campaigns enabled",
+    "Existing UI requires capability-aware adaptation before activation against this isolated API profile",
+    "Local engine SQL2022 Express/compat160 only; institutional SQL2019 acceptance pending",
+    "Whole repository test suite is not green; 41 expanded-scope failures reproduced on pre-C4 source"
+  ],
+  "changed_files": [
+    {
+      "path": "Dockerfile",
+      "before_sha256": "11ba42c429a8a8944e10ba53e4e7847bda302eec809003f6ebafb98828f13480",
+      "after_sha256": "28f006ffa4fdd4882db916e36d411e6eddf490946c32614ff86154856d7dcdb8"
+    },
+    {
+      "path": "backend/app/config.py",
+      "before_sha256": "749314b73918fcf8c604f38d802e8f3ae97431da21da325d98477bbb8d60e003",
+      "after_sha256": "f36f5ab2505d62dcbc36da9ff2772c30d0982328975fedef042061d5306e4dc5"
+    },
+    {
+      "path": "backend/app/foundation.py",
+      "before_sha256": null,
+      "after_sha256": "30e6ae9886581005dd4923f46a1fe3340154b698bf0eb538c5c5b8b127d694ec"
+    },
+    {
+      "path": "backend/app/foundation_app.py",
+      "before_sha256": null,
+      "after_sha256": "aefa935fccb5d184f8b8c34bae6b3395291f9b6864600a8854e35c92b89d8c95"
+    },
+    {
+      "path": "backend/app/foundation_inbox.py",
+      "before_sha256": null,
+      "after_sha256": "dfca299c926d41cacfbea706d365175478f94d1db1602fb4ddeff07aafc71c88"
+    },
+    {
+      "path": "backend/app/main.py",
+      "before_sha256": "1c3ce3d040289ff743db9c8f8e4d418b18fb28bb88d41fbf234a98c9468d68c5",
+      "after_sha256": "1479c1c71def39233e52d864ae5eeb9c08af0dbbdb9bcf4e292ce832f653eca5"
+    },
+    {
+      "path": "backend/app/modules/ai/api/router.py",
+      "before_sha256": "25eb2e2d097d881abfa884752f5fdfef4b8aca2e26efa033a6c1d72e6dd06ef5",
+      "after_sha256": "7bda7a9bdfcfa68ff873516bfa08bf409e3869f5201bfc753d257bdb13cd6cfe"
+    },
+    {
+      "path": "backend/app/modules/clients/api/router.py",
+      "before_sha256": "90f30780cad7e779aaa3c67a9b213bd61f50aa07de1a31a3a283409969cf1d80",
+      "after_sha256": "1f8f11508ac7be355786bf4df9981eb7e47d2c6d2bb412369466b47e14fe3ec3"
+    },
+    {
+      "path": "backend/app/modules/crm_configuration/application/service.py",
+      "before_sha256": "8a238f570405a71f4cc7324b5c0d75edcb8057aa495db27ec5fa020f9520958a",
+      "after_sha256": "7b1473741aafd5080c003966fa5e4c4202e70f13f683dc15b54ba984f31ab7b8"
+    },
+    {
+      "path": "backend/app/modules/inbox/application/service.py",
+      "before_sha256": "771563f66ab2cf45971b392d28a2a12dcea346b3772df2ac03b983a2bf3f6b63",
+      "after_sha256": "1f20e015590b6a8b500e226ce0f5192c005f982bd347268fb8092c7fc092d170"
+    },
+    {
+      "path": "backend/app/sql_target.py",
+      "before_sha256": "e611853562505138e7fcddf1ab71c50ac3ba3e159785bc6876381f5538f970cc",
+      "after_sha256": "0c49f701aaf14303726365a98ea94040bf049f30edb8d7c4671052f831322749"
+    },
+    {
+      "path": "backend/app/sql_workspace.py",
+      "before_sha256": "4aabbb8df0b1a9110bbe8799d84871b5d92998d01c938194b8c968ee11730119",
+      "after_sha256": "0e64adc9bf974cd43197f6a911d2023aeeab504e6716188c87f1cd718e5b1172"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "before_sha256": "37f0d02078601f802b7b484a254b61e9e98c03c0464f4f9ac4015dcf950b4f88",
+      "after_sha256": "b57b4214cc2e25915ad044388111f2b48b447a7a4e62c0d19f81cc7ab2a04c0d"
+    },
+    {
+      "path": "backend/tests/test_container_config.py",
+      "before_sha256": "11293bf21263a359c839f4e329890d225626145e272c9907e8135822c82026c1",
+      "after_sha256": "eda81116017be30fb4b6652354b59b94b2459c8340fa97a52c7bb2e4076f5801"
+    },
+    {
+      "path": "backend/tests/test_foundation_runtime.py",
+      "before_sha256": null,
+      "after_sha256": "8342856454a2b77c32add79cf332cad8f6bbaaba05c4a1af7eedf07d20b6b9c8"
+    },
+    {
+      "path": "backend/tests/test_inbox.py",
+      "before_sha256": "d36f66d727649eeb3f7194e8c02aa1ebacdf782752d5341b8a601cec8f059523",
+      "after_sha256": "457450a59a5fe7e2816b6e5bf1f48b37ab6d485f5b74c39dfcb564793ffba734"
+    },
+    {
+      "path": "backend/tests/test_sql_workspace.py",
+      "before_sha256": "099f38a98bbf3dcee18ef11232662a37381f456aa2783eba6ccba02d7387ec43",
+      "after_sha256": "2a58feabdcdf93b86f9ddcd5391621c559ef7703c30783aa966a6c70093a39e5"
+    },
+    {
+      "path": "backend/tools/adaptation_graphs.py",
+      "before_sha256": "bb41408ce92eb026796cc8c2db8c399aaf7bb481bd8d59585dc5b83fa804a4eb",
+      "after_sha256": "51cf434e12ec8a9a2818baa281248d402b3697e7d68de291c7585171f46f6abc"
+    },
+    {
+      "path": "backend/tools/compare_horariosiie.py",
+      "before_sha256": "1bea2a2da456f834fd1f148485d8cc3c03d67c877f80f09afec830504a5b2522",
+      "after_sha256": "6ced930a1a7371f4fd7200056bbbe5edb1bf5e98262202903150a4b079766209"
+    },
+    {
+      "path": "backend/tools/foundation_graph.py",
+      "before_sha256": "559920d8037c365140680bc37e055a1ea8082c965426ebdaeda1303ae6773b43",
+      "after_sha256": "3ed4e24dafeecc847adfd1d7d75cb446c6f0bbd5fed6a77d7fd0e8f13a78a7cc"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": null,
+      "after_sha256": "7262b15caa758570ad8ef42a57064b64c209fd694d855a45c8cc9cf06c0a10cb"
+    },
+    {
+      "path": "backend/tools/inventory_migrations.py",
+      "before_sha256": "88e7db82a7cdeb6c34243e433913e82e85cffccb64dbeb1c28c221aede293f63",
+      "after_sha256": "6bb3a12cb97ac53a179a3e8bf75392b375c0e97c961a2f8b32f595a938e1289a"
+    },
+    {
+      "path": "backend/tools/rehearse_repositories.py",
+      "before_sha256": null,
+      "after_sha256": "28251e1310ceb4bab90e950ab7a50088ce9e54c8fdc67ef913f2393e5e62b129"
+    }
+  ],
+  "documentation_links": {
+    "checked": 1402,
+    "missing": 0
+  },
+  "source_preservation": {
+    "baseline_files": 358,
+    "modified_existing_files": 17,
+    "unchanged_existing_files": 341,
+    "added_source_files": 6,
+    "removed_source_files": 0
+  }
+}

@@ -1,0 +1,474 @@
+{
+  "stage": "SQL-C9",
+  "status": "accepted_restored_channels_ui_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "475284b197c3ca22c73ec7e0f4c49552ad71446804a855de08f9d8ebf1f0b283",
+  "previous_checkpoint_sha256": "ae2cc30af2adfb39d1948fb0f3648d785db205374305e80b5425f2d299997e19",
+  "database": "CBN_C9_TRIAL_20261025_23ac78d3",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "preview": "http://127.0.0.1:4175/#/settings",
+  "inherited_postimages": {},
+  "offline_tests": {
+    "backend_passed": 244,
+    "backend_new": 55,
+    "backend_regression": 189,
+    "frontend_passed": 42,
+    "frontend_new": 30,
+    "frontend_regression": 12,
+    "general_suite_recertified": false
+  },
+  "connected_checks": 35,
+  "connected_evidence": "artifacts/sql-c9/connected-checks.json",
+  "preservation": {
+    "journal_rows": 7,
+    "no_migrations": true,
+    "nonconfiguration_channels_unchanged": true,
+    "source_C5_full_catalog_and_binary_rows_unchanged": true,
+    "source_C7_full_catalog_and_binary_rows_unchanged": true,
+    "source_C8_unchanged": true,
+    "source_SIIE_and_C5_unchanged": true,
+    "stage": "SQL-C9",
+    "trial_academic_rows": 44180,
+    "trial_academic_tables": 50,
+    "trial_business_rows": 203
+  },
+  "preparation": {
+    "stage": "SQL-C9",
+    "database": "CBN_C9_TRIAL_20261025_23ac78d3",
+    "copy_only_backup": true,
+    "backup_checksum": true,
+    "verifyonly": true,
+    "checkdb": true,
+    "grants": 15,
+    "dbo_denies": 7,
+    "metadata_admin_runtime_identical": true,
+    "credential_select_columns": [
+      "Channel",
+      "Kind"
+    ],
+    "provider_key_created": false,
+    "runtime_profile_files": 3,
+    "profile_owner_only_ACL": true,
+    "new_migrations": false
+  },
+  "browser": {
+    "stage": "SQL-C9",
+    "method": "CUA browser automation with observed AX states, DOM layout measurements and screenshots; distinct from unit tests",
+    "url": "http://127.0.0.1:4175/#/settings",
+    "passed": true,
+    "observations": 22,
+    "checks": [
+      "Five local channel cards loaded in the separate C9 shell",
+      "Configuration forms have no credential inputs or provider action controls",
+      "Configuration saved in real SQL and persisted after reload",
+      "390px mobile layout has no horizontal overflow",
+      "Mobile navigation opens and closes through the local Canales link",
+      "Competing C9 write causes conflict while edited browser draft is retained",
+      "Stale revision disables save until explicit resolution",
+      "Explicit discard loads the latest stored configuration",
+      "Stopping only the C9 container preserves the edited browser draft",
+      "Unconfirmed write/readback blocks further saves with a Spanish explanation",
+      "Restarting C9 and refreshing restores access without replacing the draft",
+      "Recovered final draft saved and persisted after reload",
+      "Light theme applied successfully in mobile view",
+      "Dark theme restored successfully for the final desktop view",
+      "Keyboard skip link focuses channels-main without changing #/settings",
+      "Social comments remain read-only with paginated controls",
+      "Local receipt/queue counts are labelled as local activity with transport pending",
+      "Direct #/inbox route shows Sección no habilitada",
+      "Volver a Canales restores the capability-scoped screen",
+      "Final desktop width1063 height892 has five cards, zero password fields and no horizontal overflow",
+      "Scentra six-group order observed: WhatsApp, number verification, Instagram, Facebook Messenger, TikTok, Webhooks",
+      "Final source-aligned UI retains SQL persistence and mobile no-overflow; number/webhook actions explicitly disabled"
+    ],
+    "desktop": {
+      "height": 892,
+      "horizontal_overflow": false,
+      "width": 1063
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "horizontal_overflow": false
+    },
+    "screenshots": [
+      "desktop-final.png",
+      "mobile-light.png",
+      "mobile-conflict.png",
+      "mobile-unavailable.png",
+      "mobile-scentra-groups.png"
+    ],
+    "faults": {
+      "stale_revision": "real competing C9 HTTP write",
+      "service_unavailable": "only independent C9 container stopped and restarted",
+      "english_network_error": "found and fixed; final Spanish result observed"
+    },
+    "real_credentials_used": false,
+    "provider_calls": 0,
+    "C5_container_restarted": false,
+    "temporary_viewport_reset": true,
+    "final_state": "C9 healthy, source-aligned groups, #/settings, dark theme, synthetic configuration saved; full Scentra parity pending",
+    "scentra_parity": "partial"
+  },
+  "http_smoke": {
+    "stage": "SQL-C9",
+    "checks": 7,
+    "passed": true,
+    "C5": {
+      "version": "cbn-ui-capabilities-v1",
+      "profile": "foundation",
+      "port": 4173
+    },
+    "C9": {
+      "version": "cbn-ui-capabilities-v2",
+      "profile": "channels",
+      "port": 4175
+    },
+    "missing_header_remote_origin_and_host_denied": true,
+    "institutional_readiness": false,
+    "CRM_route_blocked": true
+  },
+  "static_checks": {
+    "typecheck": "passed",
+    "eslint_affected": "passed",
+    "ruff_new_E_F_I": "passed",
+    "build": "passed",
+    "build_warning": "existing bundle >500kB",
+    "history_invalid_transitions_rejected": 43
+  },
+  "history": {
+    "baseline_inputs": 573,
+    "unchanged_inputs": 547,
+    "preimages_sha256": "fa3399e8fcb6f4944b3d13de81eeefbd761639837006b616f9ad7d84e644b547",
+    "crc_and_all_preimage_hashes_verified": true,
+    "frozen_C8_proof_sha256": "ae2cc30af2adfb39d1948fb0f3648d785db205374305e80b5425f2d299997e19",
+    "native_C6_C7_C8_untouched": true,
+    "living_fragment_anchor_updates": 9
+  },
+  "semantic_review": {
+    "fragment": "docs/adaptation/fragments/sql-c9.json",
+    "nodes": 15,
+    "edges": 29,
+    "blockers": 0
+  },
+  "semantic_parity_review": {
+    "fragment": "docs/adaptation/fragments/sql-c9-scentra-parity.json",
+    "nodes": 15,
+    "edges": 25,
+    "status": "partial"
+  },
+  "scentra_parity": "partial",
+  "parity_contract": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+  "academic_DML": false,
+  "new_migrations": false,
+  "source_or_shared_database_writes": false,
+  "provider_calls": 0,
+  "workers_enabled": false,
+  "institutional_sql2019_accepted": false,
+  "limits": [
+    "SQL2022Express/160 local; SQL2019 institutional acceptance pending",
+    "Configuration/read UI only; CRM and Inbox consumers not mounted",
+    "No provider credentials, remote actions, response, retry, public webhook or workers",
+    "B015/MessageRoute contract and transport remain pending",
+    "General suite and full product parity not recertified"
+  ],
+  "next_unit": "SQL-C10",
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "d582225138d1c8da5e1c9c51e804cee2ca703d02b09f74cff3d4767998283293",
+      "after_sha256": "e2e71040c78111fdac693996c4b930b43807878731af4c25e914da3b33a28a45"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "2c4d3e354d0df8dbf9d264c0c79e45c108e896fec7caad7d929799e732bc5306",
+      "after_sha256": "a7c2c8e894a52ac1b9466bd1a6f46e129db0e7c134e3b6c918f509a44220c521"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "7dbc05f98fda176a32636c82f6d1362a0043dab9ed3c1f4926ecd34672967b0c",
+      "after_sha256": "48bb2c825a2e9a758f1455007f3acc9ec7cb9ca5903e2e2705c989875173da68"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "dc9be25a0782aebaee6dd6608e7205eee22fe8b69e011ed5ee6dbe7c93749c5e",
+      "after_sha256": "900b3053ccd132b8a17682e4d7ae9f27eb0178fa2f7a6f21a80841d886f97ead"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "611c796d2044b846524b2bddec151f0174779446e25ed6baff876fd88a5322ee",
+      "after_sha256": "96d4d2849c42b8adac1610aa8b3c77a71c987fcb25d3f7b3eb6cce86c2ec366f"
+    },
+    {
+      "path": "artifacts/sql-c9/backend-results.xml",
+      "before_sha256": null,
+      "after_sha256": "09a8b9b5e772bb35462c149e7c4be3457533da0fb0557c1b467617adae5caea5"
+    },
+    {
+      "path": "artifacts/sql-c9/browser-validation.json",
+      "before_sha256": null,
+      "after_sha256": "bcb56b7dc9b249c6e192a1cdfce3cb284e663396d1863c8aecba2ddf08046596"
+    },
+    {
+      "path": "artifacts/sql-c9/connected-checks.json",
+      "before_sha256": null,
+      "after_sha256": "f2185cb906ee8741c774cdff099a538b377509ec3afbd00d6710896ff558f2d5"
+    },
+    {
+      "path": "artifacts/sql-c9/desktop-final.png",
+      "before_sha256": null,
+      "after_sha256": "40a2849067a8d345c7395d21d9ad7450cf4313f0183d4d7774f5ffeb37a09198"
+    },
+    {
+      "path": "artifacts/sql-c9/frontend-results.xml",
+      "before_sha256": null,
+      "after_sha256": "01f4f4c4cbf68d30f17e2804fd9d8f644afbbc4431fef151d99dbbf395dd375c"
+    },
+    {
+      "path": "artifacts/sql-c9/graph-diagnostics.json",
+      "before_sha256": null,
+      "after_sha256": "bf504548ebec9da3340cc4281c92c880f537f87309aa47be370e33c4a9ca07ab"
+    },
+    {
+      "path": "artifacts/sql-c9/http-smoke.json",
+      "before_sha256": null,
+      "after_sha256": "3b2868bf30e8918327a9094b8a476fd6c3053632df0ce8bcd3416ded36ccbe37"
+    },
+    {
+      "path": "artifacts/sql-c9/mobile-conflict.png",
+      "before_sha256": null,
+      "after_sha256": "f86082dd0ff2f53beac7dff24ca1ee890abc39670ee3897b82f548938feeb60c"
+    },
+    {
+      "path": "artifacts/sql-c9/mobile-light.png",
+      "before_sha256": null,
+      "after_sha256": "9f1bb385a2ce0073bc2b40c11569bfab8fc03703e97807fe723ac4de38cef78f"
+    },
+    {
+      "path": "artifacts/sql-c9/mobile-scentra-groups.png",
+      "before_sha256": null,
+      "after_sha256": "0084b9319c47571fcdebe3b07a032cd75dbf8f5054a666de5456b0bb3cf4a941"
+    },
+    {
+      "path": "artifacts/sql-c9/mobile-unavailable.png",
+      "before_sha256": null,
+      "after_sha256": "ec3ee0ffceeb886cbd9dcb533d533980649bee5c259cc975184332795413d6a7"
+    },
+    {
+      "path": "artifacts/sql-c9/preparation.json",
+      "before_sha256": null,
+      "after_sha256": "ed7574cac7e641a3c8d173267f6e7d3d29c7a1e24b57fbfedcfc7ae4df49aeb9"
+    },
+    {
+      "path": "artifacts/sql-c9/preservation-result.json",
+      "before_sha256": null,
+      "after_sha256": "919693ea6d8353d375a99cb41d4afdc6e5727fe671f3f9cf0f3d5da30df4bd2f"
+    },
+    {
+      "path": "backend/app/channels_ui_app.py",
+      "before_sha256": null,
+      "after_sha256": "2f0100a1caffb0ad85b5d368299e25887b378579ddca2cdc6f80235e9d19d2bc"
+    },
+    {
+      "path": "backend/app/channels_ui_contract.py",
+      "before_sha256": null,
+      "after_sha256": "80ed32ee43584fed4176126c817a5980c71cd21b542e0b9c5b061ca7a6868311"
+    },
+    {
+      "path": "backend/app/channels_ui_profile.py",
+      "before_sha256": null,
+      "after_sha256": "8a6f6580c35bf6207ae4b28e0f0901abd3b8a60ec6170887e3bdd49a438223a4"
+    },
+    {
+      "path": "backend/app/config.py",
+      "before_sha256": "3b60ed05a36fc8e70419035dae10665d1488aa5908c10a469eebb8bef6a2677f",
+      "after_sha256": "b82bf2d5aa93fcad0bd63517d9dff33dbf804f940b3d5b625fed1154c3999863"
+    },
+    {
+      "path": "backend/app/main.py",
+      "before_sha256": "0444678b9a958854cc4660b9e5aa2d1b54b98a8139558448a9a37dccdf535854",
+      "after_sha256": "9a7d8533d1f7b0f3575115648408c8a5ab921469d6afa2a549402d0ae752cf12"
+    },
+    {
+      "path": "backend/app/modules/ai/api/router.py",
+      "before_sha256": "81225ba3718db0d2b477073b91afea922999cca08d7839296e6d63d8a61423dc",
+      "after_sha256": "2421e03eca664c3a69da2e6f20d9d175d39da67da2ef919493d487b96aced98c"
+    },
+    {
+      "path": "backend/app/sql_target.py",
+      "before_sha256": "e31ef2292ff9b3da6c5e7828180211aeb637655f75a1e9535e6d094062e09459",
+      "after_sha256": "b153729a320b055f8580820beef233107c6032eb2db369dc8e6c12c622ed6bca"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "before_sha256": "9605c01539464b95605bb64e1c2e116ac8f51420c44ece395d048ecfb6b91d8e",
+      "after_sha256": "421d46f20d7dda2a9ac89c460ceec80334a0dcc3b0f9e2be8717f0e523eadf41"
+    },
+    {
+      "path": "backend/tests/test_channels_ui_runtime.py",
+      "before_sha256": null,
+      "after_sha256": "cc4b610890f2cd49ce91d87e5c3d71e658785c0c77fde018785f79e507467d1b"
+    },
+    {
+      "path": "backend/tools/check_channels_ui.py",
+      "before_sha256": null,
+      "after_sha256": "16910ed9398e9ce3802ddd4f0d78cbf94903d46769cce3b9bae7791118842991"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "7024cb757096799edaf67e22696d6d08b740f7e6f3c55bf67718944b9b69a07d",
+      "after_sha256": "f6c8a2dda97c85632be361c6c6d47b39aecd03d92e5dde48adadfab6cf48b23c"
+    },
+    {
+      "path": "backend/tools/rehearse_channels_ui.py",
+      "before_sha256": null,
+      "after_sha256": "53d873112cc2e2eda1031f3ee72695f55a4ee86bcb87b3976cc00342ca26e595"
+    },
+    {
+      "path": "compose.channels-ui.yaml",
+      "before_sha256": null,
+      "after_sha256": "50b8b29f50e5fe02a9dd80e4453a7084dd1925e30acf306d2b32528c29350642"
+    },
+    {
+      "path": "docker/channels-ui-start.sh",
+      "before_sha256": null,
+      "after_sha256": "7c1f5e507ac7514ce261b1dea1e2d67cddf720adeec6636591af34a3db8473f7"
+    },
+    {
+      "path": "docker/nginx.channels-ui.conf",
+      "before_sha256": null,
+      "after_sha256": "bdac433e1dde6f101aeeaba79d9d84f693e8d2f583fe78ca633165ac3f01db15"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "d8c036ed9125985abffd380511929cb7780a83fcba7a80d742c31285fc901120",
+      "after_sha256": "908aadc16339d3d28702446e950b27b21bf4c3cb7083b5f9604596249cb83cda"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "bc2f3335c95f4e88913e93bedc7ada2497c0a8f35873ab3ced0f096d115add91",
+      "after_sha256": "2861290fcfa11bd56b5e682b029709f4589337625c68c99597f8ef55f8608636"
+    },
+    {
+      "path": "docs/adaptation/PARITY_MATRIX.md",
+      "before_sha256": "90b3e62f1f775c5d15c2139dce4241340bb97360ec4152d5e326c909508951c3",
+      "after_sha256": "652d65ad8f4e5f35dbb21243f276aa74434dad2c20d690925611186c5a4c56d7"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "9a2f805e8d61af1a6cbc790a79fb8222c4ed34879a8055ec1e60f7a688fa3193",
+      "after_sha256": "e0ae992e4502a8419c6d8ddb4ba63e1135e17b8e7e5af7190a75b71cbf7569dc"
+    },
+    {
+      "path": "docs/adaptation/fragments/foundation.json",
+      "before_sha256": "e86f441719faec5399ccd97da9606111a22b4ad071b6b27168be175c3ee42432",
+      "after_sha256": "3058beb2728f37c3e75dd6ca01b6d7ed7a27cb2cecaf955b6020f22112eb7c0a"
+    },
+    {
+      "path": "docs/adaptation/fragments/inbox-crm.json",
+      "before_sha256": "ea75c43661c4b65371c4cde1a46a4773acb0505a2c7e89257ad9f574bfebac90",
+      "after_sha256": "d4e0d0a7e8a0b5e073e45a0d19f5f6f716e7951845b6073f755429e832e7ebd5"
+    },
+    {
+      "path": "docs/adaptation/fragments/marketing.json",
+      "before_sha256": "fbaf20f94cfed5c86e748389406e0416e37c7da42ef892cb9036808e7f312a3b",
+      "after_sha256": "18b1f706ed584dfd3c037ce578ab1f6a3ee567ca28024defd7591a338e8cab8b"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c9-scentra-parity.json",
+      "before_sha256": null,
+      "after_sha256": "6826465347951da75fd2d44fd2e6f03eed9f0854c026ce1b504fd0f67e6d63d3"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c9.json",
+      "before_sha256": null,
+      "after_sha256": "5334b1257b58b0b38fd499c2a9e3b90d840452b2fd063ddbf8c3a32ebea94af9"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "3afd138851423f3e4d499eb352973c7fc32b0ece38ace536a1e9520018c7f294",
+      "after_sha256": "da7bf3a2c9ede110247fe947bcaa8edf2e33305cc30335e728fd61fc86d7031c"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C9_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "0d3c9366c1c7e67f057bef62a7ccbbb07ff8e7d9f2024cad51fb5404f59109dc"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C9_SCENTRA_PARITY.md",
+      "before_sha256": null,
+      "after_sha256": "a5101c2bc285ea265122057dfead8d688adc616cb266ded2bd664b158b670b40"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "90e9d21cc6c9062ec6dff975a33e2bde16a8edec8845c333bcf86fc8b2772c7f",
+      "after_sha256": "1d611af1e9a0092746597710c73f1fd9fa08fa6de02c0efb61dfe1e4885fb12a"
+    },
+    {
+      "path": "docs/adaptation/sql/sql_c9_anchor_changes.json",
+      "before_sha256": null,
+      "after_sha256": "ea28e38669ea56aa04fc58233186a15355454cbc66b83d7ffeb8852045d439ed"
+    },
+    {
+      "path": "docs/decisions/ADR-021-channels-capability-ui.md",
+      "before_sha256": null,
+      "after_sha256": "fd8cb48e7b157a2cebd49b600453ea7aa96cdf387c6c22e5c898b6a7706f3bbe"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "c1bed96d7e76e9ef09d4ccab3db39ab67ba9cdca87f7624031125f763dc1440f",
+      "after_sha256": "3baf98d92ac78e8c5eeb0f44545a9d0a1633bc0ef1a57b9cf95e7ca1cd66716f"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "bd6307155020c9bc3de16f085e377b6a27e135702c6552d28669e3daf791ca4a",
+      "after_sha256": "45096f7c1667facee5a70e81fd93119e3e0cee323f72f0fb208c27fbdd9538be"
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "before_sha256": "782d0bb9698a7cc80cc800009310933288fa01311733f83be8df80e074d95baf",
+      "after_sha256": "528e973d65564c0354c62ea502013e5b4d98f5f69e77439497d1adb15295ae99"
+    },
+    {
+      "path": "frontend/src/features/ChannelsUiPanel.tsx",
+      "before_sha256": null,
+      "after_sha256": "71e40da8883c9352bf99e794435c31fa87e6d86ecec33f8a753725d37fce851f"
+    },
+    {
+      "path": "frontend/src/features/ChannelsWorkspace.tsx",
+      "before_sha256": null,
+      "after_sha256": "215d4cb6b189d471a303418a81cab7bfdff1a4cae506794757f76f7f5bf0c573"
+    },
+    {
+      "path": "frontend/src/features/channels-ui.css",
+      "before_sha256": null,
+      "after_sha256": "0ddd3dbcd0a212d9945e9d599a00c8db45b5cd8840750a3d1615f380b35696ac"
+    },
+    {
+      "path": "frontend/src/shared/channels.ts",
+      "before_sha256": "e9cce9cd013c01ebe52e08fb0bef545b170b61461b502021666d260f036e2e78",
+      "after_sha256": "d23f21d011b6a4af62d758df84d35dc4c326b4f45cfcd3d554afec6959945bad"
+    },
+    {
+      "path": "frontend/src/shared/runtimeCapabilities.tsx",
+      "before_sha256": "5b34f45fa47ae5af26f965ac59898a552567baa564a2f130a3a9ef04755cbd6c",
+      "after_sha256": "09c0ecb9411233244a29218f75527486da9e1ff8c4c07fa1ee799e7b48e47a24"
+    },
+    {
+      "path": "frontend/src/test/channelsUi.test.tsx",
+      "before_sha256": null,
+      "after_sha256": "b536d63b4a07a4e4b40c56fb67abefc46e3e6c63cd0e117ff5b4504d354bbe47"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "fef678fb13401e937c5e17cfa6fc603ef09092374970d87b77053b6d65307665",
+      "after_sha256": "3550393772c254e7a4b9825f76ae9f3d5c87c78282cd264b988b3177021134f1"
+    },
+    {
+      "path": "tasks/sql-c9-progress.json",
+      "before_sha256": null,
+      "after_sha256": "533936e5d5f3fbbd1f826b2442adac7de25a75dcaa5b3edfa94155f26ea42c7e"
+    }
+  ]
+}

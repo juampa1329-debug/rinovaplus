@@ -1,0 +1,560 @@
+{
+  "stage": "SQL-C13",
+  "status": "accepted_general_preview_and_P1_4_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "a20f16653846a5781a3c6a434a6d15c0577971ac3737f97fd30df167f51b1b4e",
+  "previous_checkpoint_sha256": "e31996022ae84c19d5f5f1f81f95b7f337d43d29cc384163f0055d04b719f477",
+  "release_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32",
+  "inherited_postimages": {},
+  "trial_database": "CBN_C13_TRIAL_20261025_1f10a824",
+  "scope": "independent_general_preview_and_nearest_P1_4_Docker_sprint",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "channels_UI_checkpoint": "SQL-C9",
+  "baseline_inputs": 713,
+  "unchanged_inputs": 696,
+  "preimages_sha256": "4117065e059e80ca9e530114f0e053523f05bfb6bf466f297284204554078429",
+  "CRC_and_all_preimage_hashes_verified": true,
+  "offline_checks": {
+    "unit": "SQL-C13",
+    "scope": "offline_source_validation",
+    "status": "passed",
+    "baseline_inputs": 713,
+    "all_preimages_SHA_CRC_verified": true,
+    "prior_runtime_frontend_migrations_tests_reference_inputs_preserved": 452,
+    "historical_checker_prefix_preserved": true,
+    "offline_tests": {
+      "new_C13": 23,
+      "focused_regressions": 242,
+      "total_passed": 265,
+      "selection": [
+        "test_general_preview.py",
+        "test_parity_channels.py",
+        "test_channels_parity_migrations.py",
+        "test_channels_runtime.py",
+        "test_channels_ui_runtime.py",
+        "test_foundation_runtime.py",
+        "test_foundation_ui.py"
+      ],
+      "general_suite_recertified": false
+    },
+    "frontend_tests": {
+      "new_C13": 11,
+      "focused_regressions": 41,
+      "total_passed": 52,
+      "selection": [
+        "src/general/general.test.tsx",
+        "src/test/foundationUi.test.tsx",
+        "src/test/channelsUi.test.tsx"
+      ]
+    },
+    "history_invalid_transitions_rejected": 93,
+    "history_stdout": [
+      "C7 additive release checks passed; 3 unsafe transitions rejected",
+      "Offline chain checks passed; 23 invalid transitions rejected",
+      "C8 history checks passed; 7 unsafe transitions rejected",
+      "C8 graph checks passed; 2 invalid pins rejected",
+      "C9 history checks passed; 8 unsafe transitions rejected",
+      "C10 contract-only history checks passed; 10 unsafe transitions rejected",
+      "C11 additive schema checks passed; 11 unsafe transitions rejected",
+      "C12 additive repository checks passed; 14 unsafe transitions rejected",
+      "C13 additive composition checks passed; 15 unsafe transitions rejected"
+    ],
+    "progress_validation": {
+      "phases": 12,
+      "criteria": 56,
+      "accepted": 9,
+      "percentages": {
+        "P0": "100.00%",
+        "P1": "80.00%",
+        "P2": "0.00%",
+        "P3": "0.00%",
+        "P4": "0.00%",
+        "P5": "0.00%",
+        "P6": "0.00%",
+        "P7": "0.00%",
+        "P8": "0.00%",
+        "P9": "0.00%",
+        "P10": "0.00%",
+        "P11": "0.00%"
+      },
+      "invalid_progress_definitions_rejected": 14
+    },
+    "ruff_E_F_I": "All checks passed!",
+    "AST_parse": "passed",
+    "frontend_static": [
+      "TypeScript noEmit",
+      "ESLint src/general",
+      "Vite production build"
+    ],
+    "history_checker_sha256": "cead6e35974034c5a5dc9f54434141d86a006f844dc3e739c01fb78b40307e0c",
+    "source_files": {
+      "backend/app/general_preview/api.py": "39c52a279b0309ca75bd476bc000b9be7483f875305bbb1fbe3effd136b32665",
+      "backend/app/general_preview/health.py": "46f7d690c4dc0305bea8ba8ef323e3f26ed39f126111c6f5e4c814de80c544d5",
+      "backend/app/general_preview/store.py": "42085c573fe64f5b0eaf853d0c771395ed7a7e977a6ef5f418510c1cb97237bd",
+      "backend/app/general_preview/worker.py": "9df279dc44b33337355c312722d7b98e9abbff96ea8cafde65307f50897622df",
+      "backend/app/general_preview/__init__.py": "dc2e99eafbd4766c9f55036e5d43621f0444009e76fe8494c3e410a6256d3f49",
+      "backend/tools/prepare_general_preview.py": "8fb4a16a3b77ec27df28c60ee1ee703a7c4941411b5c6e707b42ea82f4dfd860",
+      "backend/tools/check_general_http.py": "d39098b1833efc62f9900ebf987267534d7151416525e3684b11f029a7f6edb4",
+      "backend/tools/audit_general_preview.py": "7b3ae1f9bef96cc80455fd73fa243d9c63693c401d7b735ee169a452aeafa74f",
+      "backend/tools/check_general_progress.py": "991e3d3091459ca88d065864803da3a75ab4d0585de75137064d50a7f84b0855",
+      "backend/tools/historical_checkpoint.py": "cead6e35974034c5a5dc9f54434141d86a006f844dc3e739c01fb78b40307e0c",
+      "backend/tests/test_general_preview.py": "af3bfac5108a51e9e7e8ae5555a4b294db5dbb9de33f1a15aecc415a40f31593"
+    },
+    "limitations": [
+      "SQL2022 Express/160 local; real SQL2019 acceptance deferred",
+      "P1.4 technical sprint only; institutional P2 authentication and provider workers deferred",
+      "Focused suites only; connected/runtime/browser proofs separately captured"
+    ],
+    "frontend_source_files": {
+      "frontend/src/general/general.css": "564fb7a9e3a945969827fe4c50063c116ea5b61237561187be0f4d104f14f2eb",
+      "frontend/src/general/general.test.tsx": "9db2285a208c7e98a3e87df419b5dd20c3b043fe3561af44dff70a8086451593",
+      "frontend/src/general/GeneralPreview.tsx": "457329ce42a51406139fccd2e68fd83bb2925a22458b20353ae0aa98da6068d6",
+      "frontend/src/general/main.tsx": "452c026a459a89fd675b38b37067bf8fa9e38d32e8fe28888a738d4cde15bc92",
+      "frontend/general.html": "064e6bd0ee08ede556ef916958e9e901c1c0e656885c168f78aea64701605608",
+      "frontend/vite.general.config.ts": "5e567bf12398bf50965957dfce5dc120768bae20778a9f3e5ff0970df939c45a"
+    }
+  },
+  "connected_SQL": {
+    "academic_DML": false,
+    "academic_rows": 44180,
+    "academic_tables": 50,
+    "checks": [
+      "academic_read_denied",
+      "legacy_credential_denied",
+      "new_ciphertext_denied",
+      "receipt_body_denied",
+      "core_delete_denied",
+      "provider_queue_insert_denied",
+      "cipher_column_drift",
+      "role_drift",
+      "view_definition_required",
+      "C12_full_catalog_and_binary_rows_preserved",
+      "C13_50_academic_tables_and_rows_preserved",
+      "C13_B011_rows_preserved",
+      "journal17_unchanged",
+      "catalog_after_runtime_and_faults_exact",
+      "SIIE_C5_C9_C11_full_catalog_and_rows_preserved"
+    ],
+    "database": "CBN_C13_TRIAL_20261025_1f10a824",
+    "institutional_SQL2019_accepted": false,
+    "journal_rows": 17,
+    "scope": "own_restored_copy_permissions_drift_and_preservation",
+    "source_databases_preserved": 5,
+    "status": "passed",
+    "unit": "SQL-C13"
+  },
+  "HTTP": {
+    "unit": "SQL-C13",
+    "status": "passed",
+    "scope": "own_general_preview_localhost",
+    "checks": [
+      "session_required",
+      "cross_origin_bootstrap_rejected",
+      "private_session_bootstrap",
+      "original_host_rejected",
+      "own_manifest",
+      "all_sections_with_explicit_pending_states",
+      "read_crm",
+      "read_configuration",
+      "read_inbox",
+      "read_progress",
+      "read_integrations",
+      "safe_integrations",
+      "read_secrets",
+      "safe_secrets",
+      "AI_not_activated",
+      "public_webhook_not_activated",
+      "channel_read_only_contract",
+      "forwarded_headers_do_not_change_loopback_peer",
+      "CRM_create_on_own_copy",
+      "CRM_operation_exact_replay",
+      "CRM_stale_revision_rejected",
+      "external_delivery_blocked",
+      "local_message_persisted",
+      "local_message_replay_without_duplicate",
+      "CRM_readback_and_draft_conflict_preservation"
+    ],
+    "check_count": 25,
+    "academic_DML": false,
+    "external_effects": 0
+  },
+  "Docker_local_worker": {
+    "unit": "SQL-C13",
+    "status": "passed",
+    "scope": "isolated_local_only_worker_and_Docker_recovery",
+    "checks": [
+      "dedicated_AI_media_volumes_written_nonroot",
+      "general_restart_liveness",
+      "AI_media_survive_restart_and_recreation",
+      "encrypted_profile_key_ticket_unchanged_after_recreation",
+      "claim_seed_idempotent",
+      "claim_durable_claim_boundary",
+      "claim_SIGKILL",
+      "claim_expired_lease_reconciled_once",
+      "claim_restart_keeps_terminal_result",
+      "effect_seed_idempotent",
+      "effect_durable_claim_boundary",
+      "effect_SIGKILL",
+      "effect_expired_lease_reconciled_once",
+      "effect_not_repeated_after_crash",
+      "effect_restart_keeps_terminal_result",
+      "mismatched_evidence_stays_uncertain_without_retry"
+    ],
+    "probe_operations": 3,
+    "provider_effects": 0,
+    "effect_kind": "fsynced local marker, never external delivery",
+    "volumes_recreated_without_loss": true,
+    "profile_material_unchanged": true,
+    "workers_stopped_after_drill": true,
+    "fault_containers_preserved": true
+  },
+  "delivery": {
+    "unit": "SQL-C13",
+    "status": "passed",
+    "final_image": "sha256:ccf28b3bbc5df62c3e106ac65774e585aa6156e6d2f2d25001c9c1f0b0910f14",
+    "delivery_build_log_sha256": "4c7bca1feb335a4a9b47256aa6de425fd8b8f50fb72a9aff37f80ab6036b4e3e",
+    "ledger_sha256": "fa7661df8ff91d16b51584d61aa509bc669eaf3db0ed5874c649bea3ecadd22c",
+    "live_progress": {
+      "accepted": 9,
+      "total": 56,
+      "P1": "80.00%",
+      "P0": "100.00%"
+    },
+    "live_manifest_version": "cbn-general-preview-c13-v1",
+    "live_sections": 14,
+    "readiness": "passed",
+    "worker_terminal_replay_once": "passed",
+    "worker_background_enabled": false,
+    "browser_progress80": "visibly_verified_via_cua_repl",
+    "screenshot_sha256": "14f13920b12912e3b640680c4dde5ed921b5d1d818293e34b9b96cf7c30ef971",
+    "secret_values_in_report": false
+  },
+  "semantic_review": {
+    "path": "artifacts/sql-c13/review.json",
+    "sha256": "18cb207514b2f1280b6f1a7b831c139acbca19abb06ac1bc2fad93e44e556318"
+  },
+  "progress_contract": {
+    "path": "docs/adaptation/phase-progress-contract.json",
+    "sha256": "fa7661df8ff91d16b51584d61aa509bc669eaf3db0ed5874c649bea3ecadd22c"
+  },
+  "graph_fragment": {
+    "path": "docs/adaptation/fragments/sql-c13.json",
+    "sha256": "0f2070057584ab14a5206e19277117b9dd6e98fb8a6bc280742e96e81203713e"
+  },
+  "database_connected": true,
+  "migration_DDL_applied": false,
+  "academic_DML": false,
+  "source_SIIE_C5_C9_C11_C12_modified": false,
+  "new_runtime_source_added": true,
+  "existing_runtime_UI_files_modified": false,
+  "new_listener_started": true,
+  "preview": "http://127.0.0.1:4176/",
+  "provider_calls": 0,
+  "workers_enabled": false,
+  "local_worker_drill_completed_and_stopped": true,
+  "P1_4_accepted": true,
+  "P1_percent": "80.00%",
+  "institutional_sql2019_accepted": false,
+  "limits": [
+    "Local SQL2022 Express/160 only; actual SQL2019 P1.close pending",
+    "Human explicitly permits nearest sprint complete and next P2 subset",
+    "C13 local-owner capability is not institutional P2 authentication",
+    "14 visible sections do not imply full Scentra parity; channels safe reads only",
+    "Worker recovery only fsynced local marker, no external delivery guarantees",
+    "Focused suites; general repository suite not recertified"
+  ],
+  "next_unit": "P2.1",
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "b34f7d919d30b67b34b48738899d9061014e014a9ac19604841245514dda3d3d",
+      "after_sha256": "2a16e7b9bf1f667469c6cc73ffe8cd9a6b78bc62b52320b8b01e1e8d276673b4"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "dd70f3528b40ad425ef59d59962a83dc6520bb1236b0c840af60291ebb217379",
+      "after_sha256": "738f3f5e0e654230c405b6b54ae98d9837a5d2e1f728a8dab9d78525968faaed"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "d073fe28e9420b55db3cbc4c11962ad828dd5bd8e01d09e00541ff9d6b53cd69",
+      "after_sha256": "24ac39eaaaf00ac77d283154f898c04a26e93891bfbe4703de4736a2d74a052f"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "b2575d877205fd358f93548b16d68dacb53296d73fb77fc13b356e4a9f8e701b",
+      "after_sha256": "109c110c4ae72aa21e74810a74165d265474081f854cdab7d7dc42cf1af1bdff"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "9ba81e5be99291ece734b399d4c4814b33696089d1c674b73adecf665da9a19a",
+      "after_sha256": "9bc38e060a2842cd0c6797810836e20b5303254c8dd5f7322132c02d9192ccfc"
+    },
+    {
+      "path": "artifacts/sql-c13/browser-checks.json",
+      "before_sha256": null,
+      "after_sha256": "e8658f27fd4486f34f01405357a1b6ad2efab057461589016c362d078536f266"
+    },
+    {
+      "path": "artifacts/sql-c13/build-materials.json",
+      "before_sha256": null,
+      "after_sha256": "f4e5b0874648b1659ce9225db977ffb6a3047a346173f789f21d76e9aac53767"
+    },
+    {
+      "path": "artifacts/sql-c13/delivery.json",
+      "before_sha256": null,
+      "after_sha256": "45f1606cde137cb17c7ece2b18abbcfde53a6a810945f42f271f7afba5c04319"
+    },
+    {
+      "path": "artifacts/sql-c13/general-preview.png",
+      "before_sha256": null,
+      "after_sha256": "14f13920b12912e3b640680c4dde5ed921b5d1d818293e34b9b96cf7c30ef971"
+    },
+    {
+      "path": "artifacts/sql-c13/graph-checks.json",
+      "before_sha256": null,
+      "after_sha256": "3640ad3e3badfa52e89feefa02f3e9e0abc055b5bd705ed94bb9cb576bfcd30f"
+    },
+    {
+      "path": "artifacts/sql-c13/http-checks.json",
+      "before_sha256": null,
+      "after_sha256": "8c0c40b0ebbfb9228159bc01a1adaf53c5962628afc44e9b1498976c699912f7"
+    },
+    {
+      "path": "artifacts/sql-c13/link-checks.json",
+      "before_sha256": null,
+      "after_sha256": "4f9feb0599f647e589d8e8c7b438bf7cd08ce22e52ad4c734a101a32281473ba"
+    },
+    {
+      "path": "artifacts/sql-c13/offline-checks.json",
+      "before_sha256": null,
+      "after_sha256": "bd1c00aeed4180b16e191c0464cb488c32a99c8567250fa298e1cb8858075850"
+    },
+    {
+      "path": "artifacts/sql-c13/pending-section.png",
+      "before_sha256": null,
+      "after_sha256": "4993bc5d480fb69b06893c7eb48428abea6756c8d263d6a247241b548af637f5"
+    },
+    {
+      "path": "artifacts/sql-c13/previews.json",
+      "before_sha256": null,
+      "after_sha256": "bea9a90d0cbd37b57d399805a96c8211b91fbccdbb803e28b63135ddda34a300"
+    },
+    {
+      "path": "artifacts/sql-c13/progress-review.json",
+      "before_sha256": null,
+      "after_sha256": "d2b0f9d43cc74a13b12457d1ffe0f6df4ecae8a54714551a3809b77906ec5051"
+    },
+    {
+      "path": "artifacts/sql-c13/review.json",
+      "before_sha256": null,
+      "after_sha256": "18cb207514b2f1280b6f1a7b831c139acbca19abb06ac1bc2fad93e44e556318"
+    },
+    {
+      "path": "artifacts/sql-c13/runtime-drill.json",
+      "before_sha256": null,
+      "after_sha256": "335dd9516c0c2bd440b3d0fe25a59fa8018643b483e67fb8da9f92c241a32547"
+    },
+    {
+      "path": "artifacts/sql-c13/sql-audit.json",
+      "before_sha256": null,
+      "after_sha256": "9b7f8a5b93cdbd5200f723a28a4ce445e96c620cae049e11eb7ac24ff1274b05"
+    },
+    {
+      "path": "backend/app/general_preview/__init__.py",
+      "before_sha256": null,
+      "after_sha256": "dc2e99eafbd4766c9f55036e5d43621f0444009e76fe8494c3e410a6256d3f49"
+    },
+    {
+      "path": "backend/app/general_preview/api.py",
+      "before_sha256": null,
+      "after_sha256": "39c52a279b0309ca75bd476bc000b9be7483f875305bbb1fbe3effd136b32665"
+    },
+    {
+      "path": "backend/app/general_preview/health.py",
+      "before_sha256": null,
+      "after_sha256": "46f7d690c4dc0305bea8ba8ef323e3f26ed39f126111c6f5e4c814de80c544d5"
+    },
+    {
+      "path": "backend/app/general_preview/store.py",
+      "before_sha256": null,
+      "after_sha256": "42085c573fe64f5b0eaf853d0c771395ed7a7e977a6ef5f418510c1cb97237bd"
+    },
+    {
+      "path": "backend/app/general_preview/worker.py",
+      "before_sha256": null,
+      "after_sha256": "9df279dc44b33337355c312722d7b98e9abbff96ea8cafde65307f50897622df"
+    },
+    {
+      "path": "backend/tests/test_general_preview.py",
+      "before_sha256": null,
+      "after_sha256": "af3bfac5108a51e9e7e8ae5555a4b294db5dbb9de33f1a15aecc415a40f31593"
+    },
+    {
+      "path": "backend/tools/audit_general_preview.py",
+      "before_sha256": null,
+      "after_sha256": "7b3ae1f9bef96cc80455fd73fa243d9c63693c401d7b735ee169a452aeafa74f"
+    },
+    {
+      "path": "backend/tools/check_general_http.py",
+      "before_sha256": null,
+      "after_sha256": "d39098b1833efc62f9900ebf987267534d7151416525e3684b11f029a7f6edb4"
+    },
+    {
+      "path": "backend/tools/check_general_progress.py",
+      "before_sha256": null,
+      "after_sha256": "991e3d3091459ca88d065864803da3a75ab4d0585de75137064d50a7f84b0855"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "84b7d2e38121e89db3dda7fe7a6106c2dcdaf10871c9c2c36e9a6c681ba3d2b3",
+      "after_sha256": "cead6e35974034c5a5dc9f54434141d86a006f844dc3e739c01fb78b40307e0c"
+    },
+    {
+      "path": "backend/tools/prepare_general_preview.py",
+      "before_sha256": null,
+      "after_sha256": "8fb4a16a3b77ec27df28c60ee1ee703a7c4941411b5c6e707b42ea82f4dfd860"
+    },
+    {
+      "path": "compose.general.yaml",
+      "before_sha256": null,
+      "after_sha256": "5afe5955e1e476afb917a943acfce49db28070ac32eaf9fcc9f6f12331c48a98"
+    },
+    {
+      "path": "docker/Dockerfile.general",
+      "before_sha256": null,
+      "after_sha256": "d860b20b4d18c82e3cd9b41acc7e82cea04c8f648b968c0e2dee0838ba697a05"
+    },
+    {
+      "path": "docker/Dockerfile.general.dockerignore",
+      "before_sha256": null,
+      "after_sha256": "f50340bfdfa3edf6b45244ecf05c7589828af379aa6487172f4332e1f18eeae5"
+    },
+    {
+      "path": "docker/general-start.sh",
+      "before_sha256": null,
+      "after_sha256": "2918f0cd1b6e062221c47f31c9e2e21eaad396ecef18d1115ff071c0c2452527"
+    },
+    {
+      "path": "docker/nginx.general.conf",
+      "before_sha256": null,
+      "after_sha256": "d085add01c0ad2aad811d74659b378b492137169fa88cc5f62dbf50d656f6d2f"
+    },
+    {
+      "path": "docs/ADAPTATION_STATUS.md",
+      "before_sha256": "790220aeaa9cd0b919475106da9f8f4d96869ff67e6bb6c0bb4bf04690c237d5",
+      "after_sha256": "dc96a172d1f877bbd15c9fa1110458cc831df3c965a9527490782e789c8c9611"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "ee505fec24ea9233eef4f65af10aeee0afcbf21ecd73c7c6ddcffb30305beae5",
+      "after_sha256": "1745593f24fc3d34b51a940967056c4a0fefde724876b1104c4f270e2e4a31a6"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "4e30b8a8a99d4b5cf6c8a920a51d364a453c380c657efdd7d701fa4e897270ff",
+      "after_sha256": "2150e17a5a045a332a68fd32e43b3efbef93eacbc1744f0eaecb8b7bc7f17be0"
+    },
+    {
+      "path": "docs/adaptation/PARITY_MATRIX.md",
+      "before_sha256": "adefac1809a303d21781df42f2c7325be3ddecb45dcb3c78c760813510b29129",
+      "after_sha256": "70885429990a5dd3074e6d39dd61f33d90dbbb4a6a10fd4be0575414acf96792"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "8052001830fe17f12a97815f50555de2037ebe0b6355b3b8eaa0a84e04384029",
+      "after_sha256": "3780f42c837f9ebcb86200038b809cb8fac8fe02a7a460b1275a0dd3e00b9fb6"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c13.json",
+      "before_sha256": null,
+      "after_sha256": "0f2070057584ab14a5206e19277117b9dd6e98fb8a6bc280742e96e81203713e"
+    },
+    {
+      "path": "docs/adaptation/phase-progress-contract.json",
+      "before_sha256": "d105633a869012cfabf6d86f63dd1d6a7d94f7bb78001e0febbd37c85b232b76",
+      "after_sha256": "fa7661df8ff91d16b51584d61aa509bc669eaf3db0ed5874c649bea3ecadd22c"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "bdfb494a0b1a6370e7983dfb0e0560a8b8377704c445c18f35e3cbcb7f55ce29",
+      "after_sha256": "32f4d1da3ef3ed433bdcec31013d86dfa6b7a753a169d37f428ff43172815e67"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+      "before_sha256": null,
+      "after_sha256": "cbbbb9b32c4045745ecc5a41d085220fc688f5b70819524003d06a870bd2858c"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "d708e14703fd983077e136cab5d2792cbbff5005854e22344fdb7625e0c4dc44"
+    },
+    {
+      "path": "docs/adaptation/sql/academic-bindings-c13.json",
+      "before_sha256": null,
+      "after_sha256": "c5d42a9ca3e88e9cd2722ac4e099d9e78109e7f1c6246272b945fb695dc6bc03"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "c660e728d6d8ffa8b4d246c72fb1de3708947c8346ed2f638826d0a4642f20bd",
+      "after_sha256": "ae7f43d9201a52d62f0e8758a2b4454a9f7491e813d1b3a1368222b0a535a97f"
+    },
+    {
+      "path": "docs/decisions/ADR-025-general-preview-and-docker-sprint.md",
+      "before_sha256": null,
+      "after_sha256": "563f5cf5eddeeb5e8416eeb7c0058306a94d6c55fa0449972dbc20c4a4c92539"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "44e6d89eed7646cb8d202670e3e9abd32105d512ce561844891ecaa39b91e008",
+      "after_sha256": "d40fdb332c0182a1eeece636e43e254e84664765793dea2fed5d0e4785d958fc"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "d0f62d58ac2e8bb584ce7d1def57ed564941a46029bfab8852b5a5311e175546",
+      "after_sha256": "cc1b24aed648f866a6ed141592bd0dc8e30583847cea7cb09bc049cad871eb06"
+    },
+    {
+      "path": "frontend/general.html",
+      "before_sha256": null,
+      "after_sha256": "064e6bd0ee08ede556ef916958e9e901c1c0e656885c168f78aea64701605608"
+    },
+    {
+      "path": "frontend/src/general/GeneralPreview.tsx",
+      "before_sha256": null,
+      "after_sha256": "457329ce42a51406139fccd2e68fd83bb2925a22458b20353ae0aa98da6068d6"
+    },
+    {
+      "path": "frontend/src/general/general.css",
+      "before_sha256": null,
+      "after_sha256": "564fb7a9e3a945969827fe4c50063c116ea5b61237561187be0f4d104f14f2eb"
+    },
+    {
+      "path": "frontend/src/general/general.test.tsx",
+      "before_sha256": null,
+      "after_sha256": "9db2285a208c7e98a3e87df419b5dd20c3b043fe3561af44dff70a8086451593"
+    },
+    {
+      "path": "frontend/src/general/main.tsx",
+      "before_sha256": null,
+      "after_sha256": "452c026a459a89fd675b38b37067bf8fa9e38d32e8fe28888a738d4cde15bc92"
+    },
+    {
+      "path": "frontend/vite.general.config.ts",
+      "before_sha256": null,
+      "after_sha256": "5e567bf12398bf50965957dfce5dc120768bae20778a9f3e5ff0970df939c45a"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "70521870cbc07d722060f83994235f3a8bbb7e62bddf9513ce475a12d8655218",
+      "after_sha256": "9aace8ca068cb02ba57955d91b2ae1d90ee43cef7911bfdb4b70016f48aaf819"
+    },
+    {
+      "path": "tasks/sql-c13-progress.json",
+      "before_sha256": null,
+      "after_sha256": "d852fcc103f5a363c1a5dbc4202a9586df6cccfa9681c00e3d8732006f3cd686"
+    }
+  ]
+}

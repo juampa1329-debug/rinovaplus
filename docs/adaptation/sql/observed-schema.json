@@ -1,0 +1,4930 @@
+{
+  "date": "2026-10-24",
+  "unit": "SQL-C1",
+  "verification": "live_readonly_metadata_observed_not_full_drift_acceptance",
+  "database": "HORARIOSSIIE",
+  "scope": "User-confirmed fragment; table/column/FK metadata only, no business rows or DDL",
+  "consistency": "Sequential catalog SELECTs, not a transaction-wide schema snapshot",
+  "review": {
+    "checked_at_utc": "2026-10-24T18:03:36.748079+00:00",
+    "database": "HORARIOSSIIE",
+    "instance": "SQLEXPRESS",
+    "engine_major": 16,
+    "edition": "Express Edition (64-bit)",
+    "compatibility_level": 160,
+    "table_count": 50,
+    "column_count": 437,
+    "relation_count": 41,
+    "missing_academic_tables": [
+      "dbo.ACAspirante",
+      "dbo.ACEscuela",
+      "dbo.ACModalidad",
+      "dbo.GEEmpleado"
+    ],
+    "missing_crm_tables": [
+      "crm.Contact",
+      "crm.Conversation",
+      "crm.Message",
+      "crm.Operation"
+    ],
+    "sql2019_engine": false,
+    "crm_activation": "not_activated",
+    "metadata_visibility": "database",
+    "schema_acceptance": "not_evaluated"
+  },
+  "tables": [
+    {
+      "schema": "dbo",
+      "name": "ACAsignatura",
+      "columns": [
+        {
+          "name": "Id_Asignatura",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "NombreAsignatura",
+          "type": "varchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACAsignaturaPlan",
+      "columns": [
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Asignatura",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_PlanEducativo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Creditos",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Intensidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Nivel",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "Id_PlanEvaluativo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "ValorAprobacion",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "Inactiva",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "Id_TipoAlternancia",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACIntensidad",
+      "columns": [
+        {
+          "name": "Id_Intensidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "No_Bloque_Semana",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Total_Horas_Semestre",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Duracion_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Bloques_Semestre",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Es_Modular",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "Numero_Etapa",
+          "type": "tinyint",
+          "max_length_bytes": 1,
+          "precision": 3,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACIntensidadAsignatura",
+      "columns": [
+        {
+          "name": "Id_InteAsignatura",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Intensidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Jornada",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACJornada",
+      "columns": [
+        {
+          "name": "Id_Jornada",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "DetalleJornada",
+          "type": "varchar",
+          "max_length_bytes": 15,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "HoraInicio",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "HoraFin",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACPlanEducativo",
+      "columns": [
+        {
+          "name": "Id_PlanEducativo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "NombrePLan",
+          "type": "varchar",
+          "max_length_bytes": 80,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Programa",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Vigente",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACProgramaOfrecido",
+      "columns": [
+        {
+          "name": "Id_PrgOfrecido",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Programa",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Plan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "ACProgramas",
+      "columns": [
+        {
+          "name": "Id_Programa",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "CodigoPrograma",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "NombrePrograma",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Escuela",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Id_Modalidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "fecha",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "Semestres",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Id_Jornada",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEAlertasSeguridad",
+      "columns": [
+        {
+          "name": "id_alerta",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "tipo_alerta",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "severidad",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "email_afectado",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "detalles",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "enviada",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "fecha_envio",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 10
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEAuditoriaUsuarios",
+      "columns": [
+        {
+          "name": "id_auditoria",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "accion",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "modulo",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "tabla_afectada",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "registro_id",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "datos_anteriores",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "datos_nuevos",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "resultado",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "mensaje_error",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "user_agent",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "fecha_accion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "duracion_ms",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GECodigosBackup2FA",
+      "columns": [
+        {
+          "name": "id_codigo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "codigo",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "usado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "fecha_uso",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "creado_en",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GECodigosRespaldo2FA",
+      "columns": [
+        {
+          "name": "id_codigo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "codigo",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "usado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "fecha_uso",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEConfiguracion",
+      "columns": [
+        {
+          "name": "id_config",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "clave",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "valor",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "descripcion",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "tipo",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "fecha_actualizacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEConfiguracionSeguridad",
+      "columns": [
+        {
+          "name": "id_config",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "clave",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "valor",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "tipo_dato",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "actualizado_por",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "fecha_actualizacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEDocente",
+      "columns": [
+        {
+          "name": "Id_Docente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_DocDocente",
+          "type": "varchar",
+          "max_length_bytes": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Nombres",
+          "type": "varchar",
+          "max_length_bytes": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "PrimerApellido",
+          "type": "varchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "SegundoApellido",
+          "type": "varchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Id_TipoID",
+          "type": "tinyint",
+          "max_length_bytes": 1,
+          "precision": 3,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "Expedicion",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Id_Genero",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "LibretaMilitar",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "TipoLibreta",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "Distrito_LibretaMilitar",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "Fecha_Nacimiento",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 12
+        },
+        {
+          "name": "Id_Poblado",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 13
+        },
+        {
+          "name": "Direccion",
+          "type": "varchar",
+          "max_length_bytes": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        },
+        {
+          "name": "Telefono",
+          "type": "varchar",
+          "max_length_bytes": 23,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 15
+        },
+        {
+          "name": "Mail",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 16
+        },
+        {
+          "name": "GrupoSanguineo",
+          "type": "varchar",
+          "max_length_bytes": 1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 17
+        },
+        {
+          "name": "FactorRh",
+          "type": "varchar",
+          "max_length_bytes": 1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 18
+        },
+        {
+          "name": "EstadoCivil",
+          "type": "varchar",
+          "max_length_bytes": 12,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 19
+        },
+        {
+          "name": "Celular",
+          "type": "varchar",
+          "max_length_bytes": 23,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 20
+        },
+        {
+          "name": "EstadoContrato",
+          "type": "varchar",
+          "max_length_bytes": 1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 21
+        },
+        {
+          "name": "cocina",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 22
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEDocenteporAsignatura",
+      "columns": [
+        {
+          "name": "Id_DocenteporAsignatura",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Docente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_PrgOfrecido",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEEstudiante",
+      "columns": [
+        {
+          "name": "Id_Estudiante",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_DocEstudiante",
+          "type": "varchar",
+          "max_length_bytes": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "TipoId",
+          "type": "tinyint",
+          "max_length_bytes": 1,
+          "precision": 3,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Expedida",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Nombres",
+          "type": "varchar",
+          "max_length_bytes": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "PrimerApellido",
+          "type": "varchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "SegundoApellido",
+          "type": "varchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Id_Genero",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "EstadoCivil",
+          "type": "varchar",
+          "max_length_bytes": 14,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 9
+        },
+        {
+          "name": "Direccion",
+          "type": "varchar",
+          "max_length_bytes": 80,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 10
+        },
+        {
+          "name": "Id_Poblacion",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "Telefono",
+          "type": "varchar",
+          "max_length_bytes": 23,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 12
+        },
+        {
+          "name": "Celular",
+          "type": "varchar",
+          "max_length_bytes": 23,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 13
+        },
+        {
+          "name": "Mail",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 14
+        },
+        {
+          "name": "FechaNacimento",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 15
+        },
+        {
+          "name": "CiudadNacimiento",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 16
+        },
+        {
+          "name": "EstadoMtla",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 17
+        },
+        {
+          "name": "GrupoSanguineo",
+          "type": "varchar",
+          "max_length_bytes": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 18
+        },
+        {
+          "name": "FactorRh",
+          "type": "varchar",
+          "max_length_bytes": 1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 19
+        },
+        {
+          "name": "Id_Acudiente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 20
+        },
+        {
+          "name": "Id_PrgOfrecido",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 21
+        },
+        {
+          "name": "Estrato",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 22
+        },
+        {
+          "name": "Articulacion",
+          "type": "varchar",
+          "max_length_bytes": 80,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 23
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEHistorialPasswords",
+      "columns": [
+        {
+          "name": "id_historial",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "password_hash",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "fecha_cambio",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "cambiado_por",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEIntentosLogin",
+      "columns": [
+        {
+          "name": "id_intento",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "exitoso",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "user_agent",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "fecha_intento",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "detalles",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEMatricula",
+      "columns": [
+        {
+          "name": "Id_Matricula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Estudiante",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Jornada",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_LoginEstudiante",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "Nivel",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "FechadeMatricula",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEPeriodo",
+      "columns": [
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Periodo",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "FechaInicio",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "FechaFinal",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "EstadoPeriodo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEPermisos",
+      "columns": [
+        {
+          "name": "id_permiso",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "codigo",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "nombre",
+          "type": "varchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "descripcion",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "modulo",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "orden",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "icono",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GERoles",
+      "columns": [
+        {
+          "name": "id_rol",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "nombre_rol",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "codigo",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "nivel_acceso",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "es_sistema",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "creado_por",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 9
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GERolPermiso",
+      "columns": [
+        {
+          "name": "id_rol_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_permiso_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "fecha_asignacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "asignado_por",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GESede",
+      "columns": [
+        {
+          "name": "Id_Sede",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "NombreSede",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GESesionesActivas",
+      "columns": [
+        {
+          "name": "id_sesion",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "token_sesion",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "refresh_token",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "user_agent",
+          "type": "varchar",
+          "max_length_bytes": 500,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "dispositivo",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "ubicacion",
+          "type": "varchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "fecha_inicio",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "fecha_ultimo_acceso",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "fecha_expiracion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "ordinal": 11
+        },
+        {
+          "name": "activa",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "terminada_por",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "fecha_cierre",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 14
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GETokensRecuperacion",
+      "columns": [
+        {
+          "name": "id_token",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "id_usuario_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "token",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "tipo",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "usado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "fecha_expiracion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "fecha_uso",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "ip_solicitud",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "ip_uso",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "GEUsuarios",
+      "columns": [
+        {
+          "name": "id_usuario",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "nombre",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "apellido",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "email",
+          "type": "nvarchar",
+          "max_length_bytes": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "password_hash",
+          "type": "nvarchar",
+          "max_length_bytes": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "id_rol_fk",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "estado",
+          "type": "nvarchar",
+          "max_length_bytes": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "ultimo_acceso",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "intentos_fallidos",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "bloqueado_hasta",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "requiere_cambio_password",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "password_actualizacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "telefono_adicional",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        },
+        {
+          "name": "departamento",
+          "type": "varchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 15
+        },
+        {
+          "name": "foto_perfil",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 16
+        },
+        {
+          "name": "preferencias_json",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 17
+        },
+        {
+          "name": "token_2fa",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 18
+        },
+        {
+          "name": "tiene_2fa_activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 19
+        },
+        {
+          "name": "sesion_actual",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 20
+        },
+        {
+          "name": "ip_ultimo_acceso",
+          "type": "varchar",
+          "max_length_bytes": 45,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 21
+        },
+        {
+          "name": "navegador_ultimo_acceso",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 22
+        },
+        {
+          "name": "creado_por",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 23
+        },
+        {
+          "name": "actualizado_por",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 24
+        },
+        {
+          "name": "fecha_actualizacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 25
+        },
+        {
+          "name": "activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 26
+        },
+        {
+          "name": "eliminado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 27
+        },
+        {
+          "name": "fecha_eliminacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 28
+        },
+        {
+          "name": "cargo",
+          "type": "varchar",
+          "max_length_bytes": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 29
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOAulaAuditoria",
+      "columns": [
+        {
+          "name": "Id_Auditoria",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "TipoOperacion",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "CampoModificado",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "ValorAnterior",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "ValorNuevo",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Usuario",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "FechaOperacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "DireccionIP",
+          "type": "nvarchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "Observaciones",
+          "type": "nvarchar",
+          "max_length_bytes": 400,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOAulaDetalle",
+      "columns": [
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_EstadoAula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 2
+        },
+        {
+          "name": "TieneProyector",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "TieneAireAcondicionado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "TienePizarraDigital",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "ObservacionesGenerales",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "UltimaActualizacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "ActualizadoPor",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOAulaRequerida",
+      "columns": [
+        {
+          "name": "Id_AulaRequerida",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOAulas",
+      "columns": [
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Aula",
+          "type": "varchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Capacidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Sede",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Id_TipoAula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "EstadoAula",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOBloqueRequerido",
+      "columns": [
+        {
+          "name": "Id_BloqueRequerido",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Estado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOBloques",
+      "columns": [
+        {
+          "name": "Id_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "HoraInicio",
+          "type": "varchar",
+          "max_length_bytes": 6,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "HoraFinal",
+          "type": "varchar",
+          "max_length_bytes": 6,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Jornada",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Estado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Minutos",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOCatalogoSoftware",
+      "columns": [
+        {
+          "name": "Id_Software",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "NombreSoftware",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Categoria",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "Version",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Fabricante",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "RequiereAdmin",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "SistemaOperativo",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "Activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HODisponibilidadD",
+      "columns": [
+        {
+          "name": "Id_Disponibilidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "DiaSemana",
+          "type": "varchar",
+          "max_length_bytes": 12,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "NumDia",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Id_Docente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HODocenteDisponibilidad",
+      "columns": [
+        {
+          "name": "Id_Disponibilidad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Docente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "DiaSemana",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Estado",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOEstadoAula",
+      "columns": [
+        {
+          "name": "Id_EstadoAula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "NombreEstado",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 400,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "ColorHex",
+          "type": "varchar",
+          "max_length_bytes": 7,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOGeneracionJob",
+      "columns": [
+        {
+          "name": "JobId",
+          "type": "uniqueidentifier",
+          "max_length_bytes": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "JobType",
+          "type": "nvarchar",
+          "max_length_bytes": 64,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "PeriodoId",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "OwnerUserId",
+          "type": "nvarchar",
+          "max_length_bytes": 128,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "IdempotencyKey",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "RequestHash",
+          "type": "char",
+          "max_length_bytes": 64,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "RequestPayload",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "Status",
+          "type": "nvarchar",
+          "max_length_bytes": 64,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "Phase",
+          "type": "nvarchar",
+          "max_length_bytes": 64,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 9
+        },
+        {
+          "name": "Progress",
+          "type": "decimal",
+          "max_length_bytes": 5,
+          "precision": 5,
+          "scale": 2,
+          "nullable": false,
+          "ordinal": 10
+        },
+        {
+          "name": "Sequence",
+          "type": "bigint",
+          "max_length_bytes": 8,
+          "precision": 19,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 11
+        },
+        {
+          "name": "Message",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 12
+        },
+        {
+          "name": "Metrics",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 13
+        },
+        {
+          "name": "DraftId",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        },
+        {
+          "name": "BaseScheduleVersion",
+          "type": "nvarchar",
+          "max_length_bytes": 128,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 15
+        },
+        {
+          "name": "ErrorCode",
+          "type": "nvarchar",
+          "max_length_bytes": 128,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 16
+        },
+        {
+          "name": "ErrorMessage",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 17
+        },
+        {
+          "name": "WorkerId",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 18
+        },
+        {
+          "name": "CreatedAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "ordinal": 19
+        },
+        {
+          "name": "StartedAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 20
+        },
+        {
+          "name": "UpdatedAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "ordinal": 21
+        },
+        {
+          "name": "HeartbeatAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 22
+        },
+        {
+          "name": "FinishedAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 23
+        },
+        {
+          "name": "CancelRequestedAt",
+          "type": "datetime2",
+          "max_length_bytes": 7,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 24
+        },
+        {
+          "name": "RowVersion",
+          "type": "timestamp",
+          "max_length_bytes": 8,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 25
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOHorario",
+      "columns": [
+        {
+          "name": "Id_Horario",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_PrgOfrecido",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Nivel",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Id_AsignaturaPlan",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "Id_Bloque",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "Id_Docente",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "DiaSemana",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "Id_Periodo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 9
+        },
+        {
+          "name": "Grupo",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "FechaInicio",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "FechaTerminacion",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOInventarioPC",
+      "columns": [
+        {
+          "name": "Id_PC",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "CodigoPC",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Marca",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "Modelo",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "Procesador",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "RAM_GB",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Almacenamiento_GB",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "TipoAlmacenamiento",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "SistemaOperativo",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "EstadoPC",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "FechaAdquisicion",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "NumeroSerie",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "DireccionIP",
+          "type": "nvarchar",
+          "max_length_bytes": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        },
+        {
+          "name": "DireccionMAC",
+          "type": "nvarchar",
+          "max_length_bytes": 34,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 15
+        },
+        {
+          "name": "Observaciones",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 16
+        },
+        {
+          "name": "FechaRegistro",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 17
+        },
+        {
+          "name": "Activo",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 18
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOLaboratorioInfo",
+      "columns": [
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "TipoLaboratorio",
+          "type": "nvarchar",
+          "max_length_bytes": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 2
+        },
+        {
+          "name": "NivelBioseguridad",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "TieneDuchaEmergencia",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "TieneExtractorGases",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "TieneLavaojos",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "CantidadMesasTrabajo",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "CantidadBancos",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "CantidadEstanterias",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "EquipamientoEspecializado",
+          "type": "nvarchar",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "NormasCumplidas",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "UltimaInspeccion",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "ProximaInspeccion",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "ResponsableLab",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOMantenimientoAula",
+      "columns": [
+        {
+          "name": "Id_Mantenimiento",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "TipoMantenimiento",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "FechaProgramada",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "HoraInicio",
+          "type": "time",
+          "max_length_bytes": 5,
+          "precision": 16,
+          "scale": 7,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "HoraFin",
+          "type": "time",
+          "max_length_bytes": 5,
+          "precision": 16,
+          "scale": 7,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "Prioridad",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        },
+        {
+          "name": "EstadoMantenimiento",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "RealizadoPor",
+          "type": "nvarchar",
+          "max_length_bytes": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "ObservacionesFinales",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "CreadoPor",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 12
+        },
+        {
+          "name": "FechaCreacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "FechaCompletado",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 14
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HONotificacion",
+      "columns": [
+        {
+          "name": "Id_Notificacion",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Usuario",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Reserva",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "TipoNotificacion",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "Mensaje",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "FechaEnvio",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "Leida",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        },
+        {
+          "name": "AccionRequerida",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 8
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOReservaAula",
+      "columns": [
+        {
+          "name": "Id_Reserva",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Aula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "TipoReserva",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 3
+        },
+        {
+          "name": "FechaReserva",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "HoraInicio",
+          "type": "time",
+          "max_length_bytes": 5,
+          "precision": 16,
+          "scale": 7,
+          "nullable": false,
+          "ordinal": 5
+        },
+        {
+          "name": "HoraFin",
+          "type": "time",
+          "max_length_bytes": 5,
+          "precision": 16,
+          "scale": 7,
+          "nullable": false,
+          "ordinal": 6
+        },
+        {
+          "name": "Proposito",
+          "type": "nvarchar",
+          "max_length_bytes": 400,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 7
+        },
+        {
+          "name": "Solicitante",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 8
+        },
+        {
+          "name": "EstadoReserva",
+          "type": "varchar",
+          "max_length_bytes": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 9
+        },
+        {
+          "name": "AprobadaPor",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 10
+        },
+        {
+          "name": "FechaAprobacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 11
+        },
+        {
+          "name": "Observaciones",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 12
+        },
+        {
+          "name": "FechaSolicitud",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 13
+        },
+        {
+          "name": "RecurrenteSemanal",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 14
+        },
+        {
+          "name": "FechaFinRecurrencia",
+          "type": "date",
+          "max_length_bytes": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 15
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOReservaConflicto",
+      "columns": [
+        {
+          "name": "Id_Conflicto",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_Reserva",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "TipoConflicto",
+          "type": "varchar",
+          "max_length_bytes": 50,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "Descripcion",
+          "type": "nvarchar",
+          "max_length_bytes": 1000,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 4
+        },
+        {
+          "name": "FechaDeteccion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "Resuelto",
+          "type": "bit",
+          "max_length_bytes": 1,
+          "precision": 1,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        },
+        {
+          "name": "Id_AulaAlternativa",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOSemana",
+      "columns": [
+        {
+          "name": "Id_Dia",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Dia",
+          "type": "varchar",
+          "max_length_bytes": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOSoftwarePC",
+      "columns": [
+        {
+          "name": "Id_SoftwarePC",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "Id_PC",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "Id_Software",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "FechaInstalacion",
+          "type": "datetime",
+          "max_length_bytes": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "InstaladorPor",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        },
+        {
+          "name": "Observaciones",
+          "type": "nvarchar",
+          "max_length_bytes": 400,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 6
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "HOTipoAula",
+      "columns": [
+        {
+          "name": "Id_TipoAula",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "TipoAula",
+          "type": "varchar",
+          "max_length_bytes": 80,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        }
+      ]
+    },
+    {
+      "schema": "dbo",
+      "name": "sysdiagrams",
+      "columns": [
+        {
+          "name": "name",
+          "type": "sysname",
+          "max_length_bytes": 256,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 1
+        },
+        {
+          "name": "principal_id",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 2
+        },
+        {
+          "name": "diagram_id",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "ordinal": 3
+        },
+        {
+          "name": "version",
+          "type": "int",
+          "max_length_bytes": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 4
+        },
+        {
+          "name": "definition",
+          "type": "varbinary",
+          "max_length_bytes": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "ordinal": 5
+        }
+      ]
+    }
+  ],
+  "foreign_keys": [
+    {
+      "name": "FK__GEAlertas__id_us__178D7CA5",
+      "source_schema": "dbo",
+      "source_table": "GEAlertasSeguridad",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GEAuditor__id_us__2DB1C7EE",
+      "source_schema": "dbo",
+      "source_table": "GEAuditoriaUsuarios",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GECodigos__id_us__0FEC5ADD",
+      "source_schema": "dbo",
+      "source_table": "GECodigosBackup2FA",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GECodigos__id_us__42ACE4D4",
+      "source_schema": "dbo",
+      "source_table": "GECodigosRespaldo2FA",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GEHistori__id_us__373B3228",
+      "source_schema": "dbo",
+      "source_table": "GEHistorialPasswords",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GERolPerm__asign__28ED12D1",
+      "source_schema": "dbo",
+      "source_table": "GERolPermiso",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "asignado_por",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GERolPerm__id_pe__27F8EE98",
+      "source_schema": "dbo",
+      "source_table": "GERolPermiso",
+      "target_schema": "dbo",
+      "target_table": "GEPermisos",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_permiso_fk",
+          "target": "id_permiso",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GERolPerm__id_ro__2704CA5F",
+      "source_schema": "dbo",
+      "source_table": "GERolPermiso",
+      "target_schema": "dbo",
+      "target_table": "GERoles",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_rol_fk",
+          "target": "id_rol",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GESesione__id_us__32767D0B",
+      "source_schema": "dbo",
+      "source_table": "GESesionesActivas",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__GETokensR__id_us__3DE82FB7",
+      "source_schema": "dbo",
+      "source_table": "GETokensRecuperacion",
+      "target_schema": "dbo",
+      "target_table": "GEUsuarios",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_usuario_fk",
+          "target": "id_usuario",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOAulaAud__Id_Au__72910220",
+      "source_schema": "dbo",
+      "source_table": "HOAulaAuditoria",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOAulaDet__Id_Au__43D61337",
+      "source_schema": "dbo",
+      "source_table": "HOAulaDetalle",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOAulaDet__Id_Es__44CA3770",
+      "source_schema": "dbo",
+      "source_table": "HOAulaDetalle",
+      "target_schema": "dbo",
+      "target_table": "HOEstadoAula",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_EstadoAula",
+          "target": "Id_EstadoAula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOInventa__Id_Au__5224328E",
+      "source_schema": "dbo",
+      "source_table": "HOInventarioPC",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOLaborat__Id_Au__65370702",
+      "source_schema": "dbo",
+      "source_table": "HOLaboratorioInfo",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOManteni__Id_Au__02C769E9",
+      "source_schema": "dbo",
+      "source_table": "HOMantenimientoAula",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HONotific__Id_Re__0880433F",
+      "source_schema": "dbo",
+      "source_table": "HONotificacion",
+      "target_schema": "dbo",
+      "target_table": "HOReservaAula",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Reserva",
+          "target": "Id_Reserva",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOReserva__Id_Au__6BE40491",
+      "source_schema": "dbo",
+      "source_table": "HOReservaAula",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOReserva__Id_Au__7B264821",
+      "source_schema": "dbo",
+      "source_table": "HOReservaConflicto",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_AulaAlternativa",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOReserva__Id_Re__7A3223E8",
+      "source_schema": "dbo",
+      "source_table": "HOReservaConflicto",
+      "target_schema": "dbo",
+      "target_table": "HOReservaAula",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Reserva",
+          "target": "Id_Reserva",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOSoftwar__Id_PC__5CA1C101",
+      "source_schema": "dbo",
+      "source_table": "HOSoftwarePC",
+      "target_schema": "dbo",
+      "target_table": "HOInventarioPC",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_PC",
+          "target": "Id_PC",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK__HOSoftwar__Id_So__5D95E53A",
+      "source_schema": "dbo",
+      "source_table": "HOSoftwarePC",
+      "target_schema": "dbo",
+      "target_table": "HOCatalogoSoftware",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Software",
+          "target": "Id_Software",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACAsignaturaPlan_ACAsignatura",
+      "source_schema": "dbo",
+      "source_table": "ACAsignaturaPlan",
+      "target_schema": "dbo",
+      "target_table": "ACAsignatura",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Asignatura",
+          "target": "Id_Asignatura",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACIntensidadAsignatura_ACAsignaturaPlan",
+      "source_schema": "dbo",
+      "source_table": "ACIntensidadAsignatura",
+      "target_schema": "dbo",
+      "target_table": "ACAsignaturaPlan",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_AsignaturaPlan",
+          "target": "Id_AsignaturaPlan",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACIntensidadAsignatura_ACIntensidad",
+      "source_schema": "dbo",
+      "source_table": "ACIntensidadAsignatura",
+      "target_schema": "dbo",
+      "target_table": "ACIntensidad",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Intensidad",
+          "target": "Id_Intensidad",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACIntensidadAsignatura_ACJornada",
+      "source_schema": "dbo",
+      "source_table": "ACIntensidadAsignatura",
+      "target_schema": "dbo",
+      "target_table": "ACJornada",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Jornada",
+          "target": "Id_Jornada",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACProgramaOfrecido_ACProgramas",
+      "source_schema": "dbo",
+      "source_table": "ACProgramaOfrecido",
+      "target_schema": "dbo",
+      "target_table": "ACProgramas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Programa",
+          "target": "Id_Programa",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_ACProgramaOfrecido_GEPeriodo",
+      "source_schema": "dbo",
+      "source_table": "ACProgramaOfrecido",
+      "target_schema": "dbo",
+      "target_table": "GEPeriodo",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Periodo",
+          "target": "Id_Periodo",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_GEMatricula_GEEstudiante",
+      "source_schema": "dbo",
+      "source_table": "GEMatricula",
+      "target_schema": "dbo",
+      "target_table": "GEEstudiante",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Estudiante",
+          "target": "Id_Estudiante",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOAulaRequerida_ACAsignaturaPlan",
+      "source_schema": "dbo",
+      "source_table": "HOAulaRequerida",
+      "target_schema": "dbo",
+      "target_table": "ACAsignaturaPlan",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_AsignaturaPlan",
+          "target": "Id_AsignaturaPlan",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOAulas_HOTipoAula",
+      "source_schema": "dbo",
+      "source_table": "HOAulas",
+      "target_schema": "dbo",
+      "target_table": "HOTipoAula",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_TipoAula",
+          "target": "Id_TipoAula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOBloques_ACJornada",
+      "source_schema": "dbo",
+      "source_table": "HOBloques",
+      "target_schema": "dbo",
+      "target_table": "ACJornada",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Jornada",
+          "target": "Id_Jornada",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HODisponibilidadD_GEDocente",
+      "source_schema": "dbo",
+      "source_table": "HODisponibilidadD",
+      "target_schema": "dbo",
+      "target_table": "GEDocente",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Docente",
+          "target": "Id_Docente",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HODocenteDisponibilidad_Bloque",
+      "source_schema": "dbo",
+      "source_table": "HODocenteDisponibilidad",
+      "target_schema": "dbo",
+      "target_table": "HOBloques",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Bloque",
+          "target": "Id_Bloque",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HODocenteDisponibilidad_Docente",
+      "source_schema": "dbo",
+      "source_table": "HODocenteDisponibilidad",
+      "target_schema": "dbo",
+      "target_table": "GEDocente",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Docente",
+          "target": "Id_Docente",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOHorario_ACAsignaturaPlan",
+      "source_schema": "dbo",
+      "source_table": "HOHorario",
+      "target_schema": "dbo",
+      "target_table": "ACAsignaturaPlan",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_AsignaturaPlan",
+          "target": "Id_AsignaturaPlan",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOHorario_ACProgramaOfrecido",
+      "source_schema": "dbo",
+      "source_table": "HOHorario",
+      "target_schema": "dbo",
+      "target_table": "ACProgramaOfrecido",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_PrgOfrecido",
+          "target": "Id_PrgOfrecido",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOHorario_GEDocente",
+      "source_schema": "dbo",
+      "source_table": "HOHorario",
+      "target_schema": "dbo",
+      "target_table": "GEDocente",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Docente",
+          "target": "Id_Docente",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOHorario_HOAulas",
+      "source_schema": "dbo",
+      "source_table": "HOHorario",
+      "target_schema": "dbo",
+      "target_table": "HOAulas",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Aula",
+          "target": "Id_Aula",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "FK_HOHorario_HOBloques",
+      "source_schema": "dbo",
+      "source_table": "HOHorario",
+      "target_schema": "dbo",
+      "target_table": "HOBloques",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "Id_Bloque",
+          "target": "Id_Bloque",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "name": "fk_rol",
+      "source_schema": "dbo",
+      "source_table": "GEUsuarios",
+      "target_schema": "dbo",
+      "target_table": "GERoles",
+      "disabled": false,
+      "not_trusted": false,
+      "columns": [
+        {
+          "source": "id_rol_fk",
+          "target": "id_rol",
+          "ordinal": 1
+        }
+      ]
+    }
+  ],
+  "query_source": "backend/app/database_connections.py",
+  "query_source_sha256": "20d6db959cf47aef31f455aac3f489e582721057de458e3ce914075d1487abca"
+}

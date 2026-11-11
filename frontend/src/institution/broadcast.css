@@ -1,0 +1,70 @@
+.broadcast-workspace {
+  display: grid;
+  gap: 1rem;
+}
+.broadcast-columns {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(0, 3fr);
+  gap: 1rem;
+  align-items: start;
+}
+.broadcast-columns > .panel {
+  min-width: 0;
+}
+.broadcast-columns > .panel:first-child > .button {
+  display: block;
+  margin-block: 0.5rem;
+  text-align: left;
+}
+.broadcast-binding {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.broadcast-message {
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-block: 1rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.broadcast-check {
+  display: flex;
+  align-items: start;
+  gap: 0.6rem;
+  margin-block: 1rem;
+}
+.broadcast-check input {
+  width: auto;
+  margin-top: 0.25rem;
+}
+.broadcast-table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.broadcast-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.broadcast-table th,
+.broadcast-table td {
+  padding: 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border, #cbd5e1);
+}
+.broadcast-table small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.broadcast-workspace fieldset {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+@media (max-width: 850px) {
+  .broadcast-columns,
+  .broadcast-binding {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

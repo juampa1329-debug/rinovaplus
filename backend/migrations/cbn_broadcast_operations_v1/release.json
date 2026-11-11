@@ -1,0 +1,12 @@
+{
+  "version": "cbn-broadcast-operations-p7-v1",
+  "parent_release_sha256": "cf32dcab88a1e0467c5ae58fa2863e16df13ce906d246a3df43ceb8eb311f5ff",
+  "parent_tables": 153,
+  "result_tables": 160,
+  "files": {
+    "P7ES-000.sql": "82e5bbec34217347b5bec8abab82382d3b955cd39d7073d9bc103cf3ee144c5a",
+    "P7ES-001.sql": "f27a9b1b6b2566fc064f8f84348b2c7632c60f8a5e926f026530445c0fc155b8",
+    "expected-model.json": "27f39398143917eb4ea85db87e601ec6f0e2d3856102acbbb1ccc542f4cee57f"
+  },
+  "scope": "account_bound_templates_campaigns_recipients_consent_cadence_attempts_on_single_C10_outbox; no_academic_changes"
+}

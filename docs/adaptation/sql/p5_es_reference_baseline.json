@@ -1,0 +1,37 @@
+{
+  "unit": "P5-ES-reference-supplement",
+  "scope": "Read-only Scentra constructor dependencies discovered from AiAgentsPanel imports; no source edits",
+  "archive_sha256": "ccc154fea655c22c876295b6967953068cad3d98415c3e6641799ec84029b656",
+  "files": [
+    {
+      "path": "../saas-version/backend/app_saas/agents/AGENTS.md",
+      "archive_name": "external/saas-version/backend/app_saas/agents/AGENTS.md",
+      "sha256": "7a4eac1d55fb8b118c78e720dbe962f19789b6c545a7dc670ead4695175d99b6"
+    },
+    {
+      "path": "../saas-version/backend/app_saas/agents/schemas.py",
+      "archive_name": "external/saas-version/backend/app_saas/agents/schemas.py",
+      "sha256": "056ff6deae6005a38a0c4e42c2b48231043ae462f4a842b32a8c0d8a6d98e64c"
+    },
+    {
+      "path": "../saas-version/backend/app_saas/agents/router.py",
+      "archive_name": "external/saas-version/backend/app_saas/agents/router.py",
+      "sha256": "821feeaa7cce6d32ddf7d31a0038fecb4b15f27d978e222b84d4ad1a89d957d3"
+    },
+    {
+      "path": "../saas-version/backend/app_saas/agents/service.py",
+      "archive_name": "external/saas-version/backend/app_saas/agents/service.py",
+      "sha256": "9066a639624f577e13cc6d2520da06f6003b01b05ad47de4c85a54a4e88b8675"
+    },
+    {
+      "path": "../saas-version/backend/app_saas/agents/orchestrator.py",
+      "archive_name": "external/saas-version/backend/app_saas/agents/orchestrator.py",
+      "sha256": "2769a7d5786b2737868ae76c42504bfeec14e94410f474ffd2876dd24fcf36fe"
+    },
+    {
+      "path": "../saas-version/backend/app_saas/agents/operating_system.py",
+      "archive_name": "external/saas-version/backend/app_saas/agents/operating_system.py",
+      "sha256": "3674491d15eccb83b21e2e71c2b087c589dc5cc07e9df033d032409bcf7ccd19"
+    }
+  ]
+}

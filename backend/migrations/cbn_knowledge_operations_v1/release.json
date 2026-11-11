@@ -1,0 +1,12 @@
+{
+  "version": "cbn-knowledge-operations-p6-v1",
+  "parent_release_sha256": "9046a8c33a3bbbb9d874ba0fc5451e3db5815c9afcc9b6552aabb6b0d2a2793a",
+  "parent_tables": 150,
+  "result_tables": 153,
+  "files": {
+    "P6ES-000.sql": "fedbb173114b0fa6308856813e4584a3df14f31f80de3616095ca19b886ee225",
+    "P6ES-001.sql": "0da4cdf47a316b1e30eb55af8b98152cf90887f246676446d10e060ee70b4e71",
+    "expected-model.json": "461e1b2ee3e77843a645a980769c1ba8446e06ab75e87c1c5265e1e9e1d72ee8"
+  },
+  "scope": "governed_sources_collective_DNA_private_memory; no_academic_changes"
+}

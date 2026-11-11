@@ -1,0 +1,31 @@
+{
+  "version": "cbn-access-p2-v1",
+  "unit": "CBN-P2-001",
+  "tables": [
+    "AccessUser",
+    "Audit",
+    "BudgetUsage",
+    "Challenge",
+    "ChannelSetting",
+    "Factor",
+    "Institution",
+    "Operation",
+    "RateBucket",
+    "RecoveryCode",
+    "Role",
+    "Secret",
+    "Session",
+    "Setting",
+    "SettingHistory"
+  ],
+  "inputs": {
+    "backend/migrations/cbn_institutional/P2_001_access.sql": "505d7a7abcb339e96b472e043605da29f17bb6df35b5650a602c6c34e148eb87",
+    "backend/tools/institutional_migrations.py": "0a296804a1bf97cb1e92c4988c567674bf84809e1629938f1f168e23505b720d",
+    "backend/app/institutional/models.py": "ebf7e627e66e8313d6bec0ec7b1dfd6fd84d6680421e58b9204891416c89cb57",
+    "backend/app/institutional/policy.py": "6bf673b6d776a3a1a19766cb522f047d9dc1aa14fe6fa8e23670fc49aef6e1b4"
+  },
+  "target_scope": "new_P2_restored_copies_only",
+  "parent_C13_proof_sha256": "c55373d5c9a517f1691e9c3cb528336c8615b933253585902f0650cc8b1cfb75",
+  "automatic_startup_DDL": false,
+  "academic_DML": false
+}

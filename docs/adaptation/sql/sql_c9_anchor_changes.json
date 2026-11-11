@@ -1,0 +1,62 @@
+{
+  "unit": "SQL-C9",
+  "count": 9,
+  "anchor_changes": [
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "path": "backend/app/sql_target.py",
+      "before": 205,
+      "after": 241
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "path": "backend/app/sql_target.py",
+      "before": 169,
+      "after": 200
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "path": "backend/app/sql_target.py",
+      "before": 205,
+      "after": 241
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "path": "backend/app/sql_target.py",
+      "before": 169,
+      "after": 200
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "path": "backend/app/main.py",
+      "before": 93,
+      "after": 97
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "path": "backend/app/main.py",
+      "before": 94,
+      "after": 98
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "path": "backend/app/main.py",
+      "before": 99,
+      "after": 103
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "path": "backend/app/main.py",
+      "before": 90,
+      "after": 94
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "path": "backend/app/main.py",
+      "before": 109,
+      "after": 113
+    }
+  ],
+  "finding_ids_statuses_edges_unchanged": true,
+  "closed_C6_C7_C8_untouched": true
+}

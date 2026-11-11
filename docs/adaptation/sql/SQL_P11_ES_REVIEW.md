@@ -1,0 +1,34 @@
+# Revisión P11: operación local
+
+Fecha: 2026-10-28. Aplicación acumulada: `http://127.0.0.1:4178/#/settings/operations`. Imagen `crm-cbn-workspace:p11es-r3`, digest `sha256:61d11e928e0c64d6fc52535892e418809afa94086a2721eca0e772eb9e17531d`. Perfil privado `.local/p11-es/final-runtime`, base `CBN_P11ES_TRIAL_20261028_e0a14ef5`, volumen `crm-cbn-p11-media`. Credenciales humanas conservadas; no se publican. P10 original está detenido y preservado.
+
+## Resultado y alcance
+
+El sprint local de P11 completa su alcance verificable. La fase original P11 alcanza 72,50%, con P11.1/P11.2 aceptados y puertas institucionales pendientes. El general alcanza 93,62%, sumando trabajo parcial con pesos originales: 261/279 hitos y 45/56 criterios aceptados. No es un promedio de porcentajes ni un cociente de tests. P12 reúne ejecución online pendiente con peso auxiliar cero y sin doble crédito.
+
+La copia conserva 185 tablas, 330 FK y 155 bindings CRM, incluidas 30 tablas académicas protegidas. No hay nueva tabla o migración de dominio ni DDL de arranque. El perfil tiene principal propio y conserva TLS, CA/nombre, identidad, contextos, modelo, diarios y permisos íntegros. P11 recorre una vez la cadena completa P5–P10 por transacción, además de los controles P3/P4. Se midieron 273→121 consultas de validación (160→46 de historia); los tiempos aislados 921,4/847,8 ms no son una garantía de rendimiento. La corrupción transaccional de los seis diarios se rechazó y revirtió sin cambiar las 185 tablas.
+
+## Operación y pruebas
+
+- 440 pruebas backend y 354 frontend; tipos y lint pasan. P11 añade 21 pruebas puras y tres de interfaz. No sumar recibos heterogéneos como tests únicos.
+- Autoridad SQL: 150 celdas rol/acción, 188 combinaciones método/ruta rechazando anonimato y 510 comprobaciones CSRF (102 escrituras × cinco roles). Se probaron además 55 lecturas de servicios con sus roles y cinco comprobaciones extra, incluidos payloads válidos denegados y reconfirmación real. Es aceptación de autoridad, no ejecución de cada mutación de negocio sobre cada recurso.
+- Los 30 objetos académicos deniegan SELECT al runtime; diario y DDL rechazan escrituras. Un drift real posterior a una validación correcta se bloquea. Liveness no oculta la falta de disponibilidad SQL. El ensayo que aísla readiness utiliza un Pulse controlado declarado, separado de consumidores reales.
+- Veintidós fronteras de workers se completaron en dos segmentos explícitos de 18+4: revocación, pausa, cadencia, entrega incierta, recibos, takeover, concurrencia y cuota compartida. El segundo segmento usa un nuevo login real tras expirar la confirmación de cinco minutos. Sólo proveedores controlados en proceso.
+- El panel administrativo muestra los ocho consumidores, freshness de 180 segundos, SQL fresco y conteos globales. Se comprobó un grupo de 37 eventos ficticios en cuarentena en una copia de fixtures, sin truncar a 25 ni añadirlos al preview principal. No existe API de respaldo/restauración/migración.
+- Interfaz: 28 rutas con datos/controles cargados o aviso de capacidad pendiente; 112 celdas de temas/tamaños en segmentos de 84+28. Admisiones muestra su integración pendiente y no recibe aceptación académica. Se seleccionaron conversación demo y ficha CRM, se usó teclado y se comprobaron siete estados de carga/error/borrador/respuesta tardía/credenciales/Comments. Los errores UI se inyectan en el navegador, no en datos SQL. El segmento de 84 usa R2; R3 conserva esas superficies y añade los cambios de guard/proxy y aviso Shell, comprobados con estados de error, móvil claro y smoke finales. No se afirma auditoría formal de accesibilidad.
+
+## Recuperación, continuidad y preservación
+
+Se restauraron tanto la copia de fixtures como la base principal final a identidades nuevas P11: backup nativo COPY_ONLY/CHECKSUM/VERIFYONLY, comparación inicial de 185 tablas, CHECKDB, autenticación de todas las versiones de secretos Access/C10/Ads y validación de cuatro archivos privados con sus lectores SQL. Después de las revocaciones y pausas intencionales, 171 tablas estables, incluidas las académicas, conservan sus huellas. La aplicación muestra el recibo HMAC de su propia restauración; otro perfil/base no puede reutilizarlo. El backup SQL por sí solo no contiene los archivos.
+
+El cambio de versión se ensayó realmente en 4178 usando la imagen congelada P10 sobre otra recuperación P10 nueva, con perfil y volumen propios. La base P10 original nunca fue el destino del rollback y conserva las 185 tablas. Se volvió a P11 con readiness correcto y 182 tablas de negocio/académicas intactas; Session/Audit/RateBucket son volátiles y se excluyen explícitamente. El reinicio Docker final conserva esas 182 tablas, la misma sesión, modelos, catálogos y cuatro blobs descargados por HTTP y contrastados por hash. Quince checks de reinicio/smoke se registran aparte. Seis lecturas de mensajes con concurrencia dos terminaron en 4.660–6.909 ms; no constituyen una prueba de carga institucional.
+
+Se mantienen 11 contactos, 11 conversaciones, 26 mensajes, tres agentes, cinco packs de aprendizaje, 256 muestras y cuatro artefactos sintéticos. Los modelos restaurados permanecen pausados hasta revisión. Cero consentimiento comercial concedido, intentos masivos, inscripciones automáticas, cuentas Ads conectadas o efectos externos nuevos. El riesgo de abandono sin evidencia vigente se muestra sin evaluación; no se inventan resultados para rellenar la demo.
+
+El replay offline reconstruye 1.769 preimágenes exactas y ejecuta la cadena congelada P10→P9→P8→P7→P6→P5→P4→preview→P3→P2→P1. Siete archivos grandes inmutables se enlazan sólo tras verificar SHA; ningún código mutable se comparte por hardlink. No se conectan bases en ese replay. Releases, lectores y grafos anteriores permanecen intactos.
+
+## Fallos conservados y límites
+
+`artifacts/p11-es/failures.json` conserva preparaciones rechazadas, correcciones del arnés y ensayos incompletos. Un intento de respaldo concurrente fue rechazado porque cambió su fuente; no se aceptó. Una primera matriz HTTP se detuvo con `audit_unavailable`; la comprobación inmediata del perfil pasó y la matriz completa posterior también. No se reprodujo la causa exacta del transitorio. El timeout real de mensajes motivó el ajuste del proxy y la eliminación de verificaciones redundantes de P11, manteniendo los controles. No se ocultan los intentos fallidos ni se contabilizan como aprobados.
+
+HORARIOSSIIE sigue siendo un fragmento. No hay aceptación de mapeos completos DBSIIE, servidor/HTTPS público, proveedores reales, periodicidad/retención fuera del equipo, custodios o RPO/RTO institucionales. La retención local conserva todas las copias y no crea automatizaciones ni borrados. P4/P7/P8/P9/P10 conservan sus pendientes originales. P11 no acredita puesta online; véanse el plan P12 y el runbook del operador.

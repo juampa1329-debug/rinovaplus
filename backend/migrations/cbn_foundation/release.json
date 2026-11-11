@@ -1,0 +1,68 @@
+{
+  "release_id": "CBN-foundation-local-v2",
+  "scope": "restored_rehearsal_only",
+  "shape_version": "cbn-foundation-shape-v1",
+  "engine_major": 16,
+  "institutional_sql2019_accepted": false,
+  "construction": "Validated reference restoration; frozen before separate trial restoration",
+  "expected_shapes_sha256": "d4ee8c8fc4f898f0e891a54bf4ed082ee7909536f85637d93ae2f9769c8e1f0e",
+  "tool_files": [
+    {
+      "path": "backend/tools/cbn_foundation.py",
+      "sha256": "aa8bf9031b83b49f53516b1f00726a1832c5f73a7e33d5d7884ffdfacd8f2025"
+    },
+    {
+      "path": "backend/tools/foundation_snapshot.py",
+      "sha256": "f37d9988506e367bc24bff4ad1c01e7b2d799377681d268360324ccd6d16004a"
+    },
+    {
+      "path": "backend/tools/foundation_contract.py",
+      "sha256": "4d9002324cd8279aa83b2028c1c3bd5582f2d436ea90e689d10ae59246e93860"
+    }
+  ],
+  "legacy_sources": [
+    {
+      "path": "backend/migrations/001_local_crm.sql",
+      "sha256": "a83b9f51627efd306318d3b9c50fcb9f0409b162c431b225a98b9a0ff823ee30"
+    },
+    {
+      "path": "backend/migrations/006_crm_configuration.sql",
+      "sha256": "a67344ed0ac872b62a61daf95a45c88a55986aebc8a0ca1b3ef6420308e0ff69"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.json",
+      "sha256": "23fb2a8864dcbc4cd828a00d5183301541a4089fd5abada9b2e5054640d38afd"
+    }
+  ],
+  "units": [
+    {
+      "id": "CBN-B000",
+      "file": "B000_journal.sql",
+      "sha256": "36978b8aa24cc7f5a5db4833903c435fd59174f35de8251557a2dcd9275b9dee",
+      "depends_on": [],
+      "before_sha256": "5435234adc92deb7ce22ef2b99ca16eecf880da40bc13fd2cc672aef62145213",
+      "after_sha256": "055d11e56d0d3bc0f3d2af69d3a530e3ae4d52bd1aaf5b82faef58b74d4619f2"
+    },
+    {
+      "id": "CBN-B001",
+      "file": "B001_core.sql",
+      "sha256": "277142a39571c1b06c7f1c8d4ee90d204409a507b9f9ed99d6c59aa954cd719a",
+      "depends_on": [
+        "CBN-B000"
+      ],
+      "before_sha256": "055d11e56d0d3bc0f3d2af69d3a530e3ae4d52bd1aaf5b82faef58b74d4619f2",
+      "after_sha256": "81ab36cfd52fb109c926930a3beb871ae366febb1abb877c48553501bcc79146"
+    },
+    {
+      "id": "CBN-B006",
+      "file": "B006_configuration.sql",
+      "sha256": "b259c24f91582c4fd378f4d170f46ba53f86a898319c0722ba521377b49501e5",
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "before_sha256": "81ab36cfd52fb109c926930a3beb871ae366febb1abb877c48553501bcc79146",
+      "after_sha256": "eb2cfcbd6d60b7a5aa8f3616df460bc77a270efb079bf8fd78e36ea17c484d01"
+    }
+  ]
+}

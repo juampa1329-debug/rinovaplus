@@ -1,0 +1,12 @@
+{
+  "version": "cbn-ads-operations-p9-v1",
+  "parent_release_sha256": "bac684854d0fd42fbd89c7e523e694231bd1ce0a40818ad0091c4c69e96ee328",
+  "parent_tables": 167,
+  "result_tables": 175,
+  "files": {
+    "P9ES-000.sql": "19bc96819fad7f7681803f2d12abe1cf042665942483e39dd5ca5a7059906152",
+    "P9ES-001.sql": "5a98bfed0247dffaaf987f143572e6722c32bd9f43b88127e883e5359a3a981d",
+    "expected-model.json": "0d9a8e423ae576aa736ccfdf761a34b96b5435a55a1d5b90963767c4ce8a200d"
+  },
+  "scope": "account_scoped_Ads_local_records_signed_receipt_processing_CRM_link_and_private_secrets; no_advertising_provider_writes_or_academic_changes"
+}

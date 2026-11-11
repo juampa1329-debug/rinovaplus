@@ -1,0 +1,30 @@
+services:
+  preview:
+    image: crm-cbn-workspace:p10es-r2
+    container_name: crm-cbn-current-preview
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=128m,uid=10001,gid=10001
+    ports: ["127.0.0.1:4178:4178"]
+    environment:
+      CRM_INSTITUTIONAL_PROFILE_DIR: /run/cbn-institution
+      SSL_CERT_FILE: /run/cbn-sql/ca-bundle.pem
+      CRM_AI_OUTBOUND_ENABLED: "false"
+      CRM_AI_STATE_DIR: /var/lib/crm-ai
+    volumes:
+      - ./.local/p10-es/final-v2-runtime:/run/cbn-institution:ro
+      - ./.local/p2/ca-bundle.pem:/run/cbn-sql/ca-bundle.pem:ro
+      - media:/var/lib/crm-ai
+    networks: [sql19]
+    restart: unless-stopped
+volumes:
+  media:
+    name: crm-cbn-p10-media
+    external: true
+networks:
+  sql19:
+    name: crm-cbn-p2-sql19
+    external: true

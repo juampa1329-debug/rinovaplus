@@ -1,0 +1,130 @@
+{
+  "unit": "SQL-C10",
+  "status": "complete_definition_only",
+  "scope": "SQL_Server_2019_contract_definition_only",
+  "runtime_checkpoint": "SQL-C5",
+  "channels_ui_checkpoint": "SQL-C9",
+  "database_connected": false,
+  "migrations_applied": false,
+  "runtime_files_modified": false,
+  "provider_calls": 0,
+  "live_preservation_reverified": false,
+  "institutional_sql2019_accepted": false,
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Línea base y evidencia de campos/acciones Scentra",
+      "status": "complete",
+      "input_files": 625,
+      "source_supplement_files": 2,
+      "field_output_contexts": 115,
+      "action_instances": 83
+    },
+    {
+      "phase": 2,
+      "name": "Modelo y compatibilidad SQL Server 2019",
+      "status": "complete",
+      "tables_proposed": 24,
+      "foreign_keys_proposed": 78,
+      "ddl_compiled": false
+    },
+    {
+      "phase": 3,
+      "name": "Contratos de OAuth, secretos, TikTok y webhooks",
+      "status": "complete"
+    },
+    {
+      "phase": 4,
+      "name": "Migración, permisos, recuperación y aceptación",
+      "status": "complete",
+      "migration_units_proposed": 5,
+      "applied": false
+    },
+    {
+      "phase": 5,
+      "name": "Comprobador offline y revisión independiente",
+      "status": "complete",
+      "negative_designs_rejected": 52,
+      "negative_history_transitions_rejected": 53,
+      "independent_reviews": 3,
+      "material_contract_blockers": 0
+    },
+    {
+      "phase": 6,
+      "name": "Grafos, memoria y progreso general",
+      "status": "complete",
+      "code_nodes": 2496,
+      "code_edges": 6586,
+      "adaptation_nodes": 474,
+      "adaptation_edges": 773,
+      "findings": 42,
+      "acyclic_phases": 12,
+      "local_links": 82
+    }
+  ],
+  "next_unit": "SQL-C11",
+  "completion_scope": "contract_definition_only",
+  "baseline_inputs": 627,
+  "project_phases": [
+    {
+      "id": "P0",
+      "status": "complete",
+      "progress": "Completa: inventario, grafos y continuidad."
+    },
+    {
+      "id": "P1",
+      "status": "in_progress",
+      "progress": "En curso: base/repositorios C3–C9; contrato C10 definido offline; release nuevo y aceptación institucional SQL2019 pendientes."
+    },
+    {
+      "id": "P2",
+      "status": "pending",
+      "progress": "Paridad pendiente; Ajustes CRM foundation aceptados en C5."
+    },
+    {
+      "id": "P3",
+      "status": "pending",
+      "progress": "Paridad pendiente; ficha única/Inbox básico C5; churn y funciones avanzadas pendientes."
+    },
+    {
+      "id": "P4",
+      "status": "in_progress",
+      "progress": "En curso: esquema C7, repositorios C8 y UI local C9; contrato de paridad C10 definido. UI completa, OAuth, transporte y proveedores pendientes."
+    },
+    {
+      "id": "P5",
+      "status": "pending",
+      "progress": "Pendiente: agentes educativos y paridad funcional."
+    },
+    {
+      "id": "P6",
+      "status": "pending",
+      "progress": "Pendiente: memoria colectiva y ADN."
+    },
+    {
+      "id": "P7",
+      "status": "pending",
+      "progress": "Pendiente: mensajería masiva y transporte real."
+    },
+    {
+      "id": "P8",
+      "status": "pending",
+      "progress": "Pendiente: campañas y remarketing."
+    },
+    {
+      "id": "P9",
+      "status": "pending",
+      "progress": "Pendiente: Meta Ads."
+    },
+    {
+      "id": "P10",
+      "status": "pending",
+      "progress": "Pendiente: inteligencia y entrenamiento."
+    },
+    {
+      "id": "P11",
+      "status": "pending",
+      "progress": "Pendiente: aceptación integral y operación institucional."
+    }
+  ]
+}

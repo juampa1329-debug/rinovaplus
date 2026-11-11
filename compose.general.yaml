@@ -1,0 +1,57 @@
+name: crm-cbn-sql-c13
+services:
+  general:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.general
+    image: crm-cbn-general:c13
+    pull_policy: never
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 20s
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    ports: ["127.0.0.1:4176:4176"]
+    environment:
+      CRM_AI_OUTBOUND_ENABLED: "false"
+      CRM_AI_STATE_DIR: /var/lib/crm-ai
+      CRM_GENERAL_PROFILE_DIR: /run/cbn-general
+      SSL_CERT_FILE: /run/cbn-sql/ca-bundle.pem
+    tmpfs: ["/tmp:rw,nosuid,nodev,size=128m,uid=10001,gid=10001,mode=0700"]
+    volumes:
+      - ./.local/sql-c13/runtime:/run/cbn-general:ro
+      - ./.local/sql-c13/ca-bundle.pem:/run/cbn-sql/ca-bundle.pem:ro
+      - ai-state:/var/lib/crm-ai
+      - media-state:/var/lib/crm-ai/inbox-media
+  local-worker:
+    image: crm-cbn-general:c13
+    pull_policy: never
+    profiles: [worker-drill]
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 20s
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    entrypoint: [python, -m, app.general_preview.worker]
+    environment:
+      CRM_AI_OUTBOUND_ENABLED: "false"
+      CRM_AI_STATE_DIR: /var/lib/crm-ai
+      CRM_GENERAL_PROFILE_DIR: /run/cbn-general
+      SSL_CERT_FILE: /run/cbn-sql/ca-bundle.pem
+    tmpfs: ["/tmp:rw,nosuid,nodev,size=64m,uid=10001,gid=10001,mode=0700"]
+    volumes:
+      - ./.local/sql-c13/runtime:/run/cbn-general:ro
+      - ./.local/sql-c13/ca-bundle.pem:/run/cbn-sql/ca-bundle.pem:ro
+      - ai-state:/var/lib/crm-ai
+    healthcheck:
+      test: [CMD, python, -m, app.general_preview.health]
+      interval: 30s
+      timeout: 25s
+      retries: 3
+volumes:
+  ai-state:
+  media-state:

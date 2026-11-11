@@ -1,0 +1,533 @@
+{
+  "domain": "Repositorios de Canales y API local sobre copia independiente · SQL-C8",
+  "review_scope": "Revisión semántica independiente de código y evidencia pública; sin ejecutar SQL, Docker o app ni leer perfiles/firmas privados. Se contrastaron JUnit (44 pruebas C8 y 145 de regresión), los 38 labels conectados distintos y las fronteras de composición, permisos e historia. source está vacío porque es un contrato nativo de adaptación SQL, sin afirmar paridad Scentra. La aceptación C8 cubre repositorios y TestClient con SQL en otra restauración; no acredita UI, recepción pública, despacho ni SQL2019. El preview compartido conserva C5. No se declaran completas las fases P1/P4/P7.",
+  "findings": [
+    {
+      "id": "channels_repository_contract",
+      "capability": "Repositorios de Canales con perfil propio, guard mutable y API local acotada",
+      "status": "ensayado_en_repositorios_y_api_local",
+      "gap": "B011 ya tiene repositorios ensayados en una copia C8 independiente. La UI de Canales y su integración con CRM/Inbox requieren otro corte y permisos explícitos; enqueue_message sigue dependiendo de MessageRoute/B015. La aceptación local con SQL2022Express no acredita SQL2019 institucional ni proveedores.",
+      "acceptance": "C8: ocho tablas de Canales ejercitadas, 189 pruebas offline y 38 comprobaciones conectadas; perfil/login/AES/ticket independientes; catálogo completo equivalente entre administración/runtime; 33 GRANT y siete DENY sin CONTROL ni INSERT en cola. Diario heredado de siete filas y 199 registros CRM originales conservados; crecimiento sintético a 203 registros sin invalidar el guard. API sólo configuración sin secretos y lecturas locales, sin workers/proveedores. C9 debe aceptar UI/capacidades y revisar ACL en otra composición si amplía el alcance; C4/C5/C7 e historia permanecen intactos.",
+      "source": [],
+      "target": [
+        {
+          "file": "backend/app/channels_catalog.py",
+          "line": 10
+        },
+        {
+          "file": "backend/app/channels_contract.py",
+          "line": 179
+        },
+        {
+          "file": "backend/app/channels_profile.py",
+          "line": 11
+        },
+        {
+          "file": "backend/app/channels_app.py",
+          "line": 25
+        },
+        {
+          "file": "backend/app/modules/channels/storage.py",
+          "line": 194
+        },
+        {
+          "file": "backend/app/modules/channels/router.py",
+          "line": 180
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 170
+        },
+        {
+          "file": "backend/app/modules/channels/receipts.py",
+          "line": 26
+        },
+        {
+          "file": "backend/app/modules/ai/api/router.py",
+          "line": 44
+        },
+        {
+          "file": "backend/tools/rehearse_channels.py",
+          "line": 213
+        },
+        {
+          "file": "backend/tools/check_channels.py",
+          "line": 587
+        },
+        {
+          "file": "backend/tests/test_channels_runtime.py",
+          "line": 22
+        },
+        {
+          "file": "backend/tools/historical_checkpoint.py",
+          "line": 694
+        },
+        {
+          "file": "artifacts/sql-c8/final-result.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c8_repository_api_acceptance",
+        "label": "SQL-C8: repositorios y API local aceptados en copia; preview C5 conservado",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L3",
+        "verification": "accepted_restored_channels_repositories_only",
+        "acceptance_surface": "repositories_and_testclient_with_sql_not_ui"
+      },
+      {
+        "id": "sql_c8_independent_copy_profile",
+        "label": "Otra restauración de C7 con perfil cifrado, login, ticket y clave AES propios",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L7",
+        "database": "CBN_C8_TRIAL_20261025_ca9bec36",
+        "rationale": "No reutiliza selector ni perfil C4/C5. La clave de credenciales se prepara fuera de las transacciones SQL y no se regenera si falta o cambia."
+      },
+      {
+        "id": "sql_c8_strict_tls_target",
+        "label": "local_channels/channels_rehearsal: destino derivado, TLS y verificación de identidad estrictos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L26",
+        "rationale": "ODBC18, Encrypt=Yes, TrustServerCertificate=No y hostname localhost; perfil mezclado, destino anterior o fallback demo se rechazan."
+      },
+      {
+        "id": "sql_c8_complete_mutable_catalog_guard",
+        "label": "Guard mutable: catálogo completo con VIEW DEFINITION y SELECT de dependencias",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L34",
+        "rationale": "Equivalencia administrativa/runtime comprobada; normalización anterior al orden. No usa CONTROL ni firmas/conteos de datos CRM. Cada operación verifica bajo locks identidad, ACL, catálogo y diario."
+      },
+      {
+        "id": "sql_c8_scoped_runtime_acl",
+        "label": "ACL por operación: 33 GRANT, siete DENY dbo, sin DDL ni INSERT en cola",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L38",
+        "direct_grants": 33,
+        "dbo_denies": 7,
+        "rationale": "Credenciales permiten sustitución cifrada; diario sólo SELECT. Sin roles, ownership, impersonación, DML académico ni derechos REFERENCES."
+      },
+      {
+        "id": "sql_c8_inherited_journal_identity",
+        "label": "Diario heredado de siete filas inmutable; identidad nueva de C8 separada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L30",
+        "journal_rows_preserved": 7,
+        "rationale": "Se conserva el hash binario y las identidades históricas C3/C7. No se reidentifican eventos antiguos como propios de la restauración C8."
+      },
+      {
+        "id": "sql_c8_local_api_boundary",
+        "label": "API local: lista/lectura, draft sin secretos, estado y comentarios; toda /api/ protegida",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L56",
+        "rationale": "No instala routers de proveedores o módulos pendientes. El manifiesto también exige la barrera local; errores no devuelven credenciales ni detalles de conexión."
+      },
+      {
+        "id": "sql_c8_foundation_safe_synthetic_ingestion",
+        "label": "Ingestión sintética reutiliza B006 y foundation sin consultas SIIE ni B015/media/IA",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L58",
+        "rationale": "append_message(foundation=True) valida ambas lecturas de configuración; idempotencia y BIN2 comprobados. Recibos y claves se usan internamente, sin montar recepción pública."
+      },
+      {
+        "id": "sql_c8_eight_table_repository_checks",
+        "label": "189 pytest y 38 checks conectados sobre las ocho tablas de Canales",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L9",
+        "offline_tests": 189,
+        "new_offline_tests": 44,
+        "repository_checks": 16,
+        "denial_drift_checks": 17,
+        "concurrency_ack_checks": 5,
+        "rationale": "Cifrado/redacción, firmas, revisión, identidad con historia, rollback y crecimiento mutable comprobados; no se ejecutaron proveedores ni workers."
+      },
+      {
+        "id": "sql_c8_queue_b015_gate",
+        "label": "enqueue_message requiere B015; cola sin INSERT runtime y fixture delivered sólo sintético",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L60",
+        "rationale": "Una fila administrativa permite probar record_delivery. Su estado no acredita despacho o entrega externa. Reply, retry, activación y webhooks públicos permanecen ausentes."
+      },
+      {
+        "id": "sql_c8_concurrency_ack_readback",
+        "label": "Revisión concurrente y ACK incierto: consultar estado y reintentar sin duplicar",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L66",
+        "rationale": "Dos escritores producen 200/409. Locks de migrador/escritor excluyen operaciones. ACK inyectado después de COMMIT o rollback reales; no hubo cortes eléctricos."
+      },
+      {
+        "id": "sql_c8_academic_prior_rows_preservation",
+        "label": "SIIE/C5/C7 intactos; 50 tablas/44.180 filas académicas y 199 registros CRM originales",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L68",
+        "academic_tables": 50,
+        "academic_rows": 44180,
+        "original_crm_rows_preserved": 199,
+        "trial_crm_rows": 203,
+        "journal_rows_preserved": 7,
+        "rationale": "La copia C8 agrega un contacto, una conversación y dos mensajes sintéticos. Los originales se comparan byte a byte; perfiles/ACL/destinos anteriores no se redirigen."
+      },
+      {
+        "id": "sql_c8_incomplete_preparation_retired",
+        "label": "Primera copia sin aceptar: login deshabilitado y otra restauración por permiso de dependencias",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L74",
+        "verification": "retired_not_accepted",
+        "rationale": "La nueva preparación añade SELECT de metadatos; conserva la copia incompleta y no concede CONTROL ni altera releases congelados."
+      },
+      {
+        "id": "sql_c8_immutable_checkpoint_chain",
+        "label": "Cadena C4→C5→C7→C8: baseline469 y evidencia C7 fijados, sin nuevas migraciones",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L80",
+        "input_baseline_files": 469,
+        "rationale": "C6 se reproduce con sus preimágenes. C7 documentos/fragmento/ADR y releases conservan hashes; sólo la transición explícita reconoce cambios actuales."
+      },
+      {
+        "id": "sql_c8_c9_ui_scope_pending",
+        "label": "C9 pendiente: UI por capacidades y revisión de permisos CRM/Inbox en composición propia",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L84",
+        "verification": "not_implemented",
+        "rationale": "No redirigir C4/C5 ni ampliar ACL/ticket C8 para sortear drift. B015, workers, proveedores y recepción pública siguen fuera del alcance."
+      },
+      {
+        "id": "sql_c8_institutional_acceptance_pending",
+        "label": "Motor local2022Express/160; SQL2019, suite completa y paridad general pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L28",
+        "institutional_sql2019_accepted": false,
+        "local_engine_major": 16,
+        "local_compatibility": 160,
+        "rationale": "La API se aceptó con TestClient/SQL, sin servidor nuevo, aceptación visual o cambios al preview 4173."
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c7_c8_mutable_runtime_gate",
+        "target": "sql_c8_repository_api_acceptance",
+        "relation": "continued_by_separate_repository_and_local_api_acceptance_without_ui_promotion",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-020-channels-repository-rehearsal.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_independent_copy_profile",
+        "relation": "uses_another_restoration_with_independent_encrypted_credentials_and_ticket",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c8_independent_copy_profile",
+        "target": "sql_c7_restored_schema_acceptance",
+        "relation": "restores_the_accepted_c7_trial_without_reapplying_migrations",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c8_independent_copy_profile",
+        "target": "sql_c8_strict_tls_target",
+        "relation": "requires_explicit_local_channels_environment_and_derived_database_login",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L26"
+      },
+      {
+        "source": "sql_c8_independent_copy_profile",
+        "target": "sql_c8_inherited_journal_identity",
+        "relation": "binds_new_target_identity_while_preserving_all_old_journal_event_identities",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_complete_mutable_catalog_guard",
+        "relation": "validates_structure_and_security_without_freezing_business_data",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_c8_complete_mutable_catalog_guard",
+        "target": "sql_c7_v3_normalize_then_sort",
+        "relation": "reuses_frozen_canonical_queries_and_normalizes_before_ordering",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_c8_complete_mutable_catalog_guard",
+        "target": "sql_c8_scoped_runtime_acl",
+        "relation": "checks_direct_effective_global_and_impersonation_rights_under_transaction_locks",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L36"
+      },
+      {
+        "source": "sql_c8_complete_mutable_catalog_guard",
+        "target": "sql_c8_inherited_journal_identity",
+        "relation": "requires_unchanged_binary_journal_hash_before_each_business_operation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L36"
+      },
+      {
+        "source": "sql_c8_scoped_runtime_acl",
+        "target": "sql_c8_queue_b015_gate",
+        "relation": "denies_queue_inserts_as_an_independent_transport_boundary",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L43"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_local_api_boundary",
+        "relation": "mounts_only_local_configuration_and_read_routes_with_private_errors",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L56"
+      },
+      {
+        "source": "sql_c8_local_api_boundary",
+        "target": "sql_c8_strict_tls_target",
+        "relation": "uses_only_the_independent_profile_through_guarded_transactions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L26"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_eight_table_repository_checks",
+        "relation": "has_189_offline_tests_and_38_distinct_connected_checks",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c8_eight_table_repository_checks",
+        "target": "sql_c8_foundation_safe_synthetic_ingestion",
+        "relation": "exercises_receipts_ingestion_comments_and_delivery_with_internal_synthetic_inputs",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L58"
+      },
+      {
+        "source": "sql_c8_foundation_safe_synthetic_ingestion",
+        "target": "sql_c8_scoped_runtime_acl",
+        "relation": "uses_only_required_foundation_dml_and_configuration_reads_without_academic_access",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L58"
+      },
+      {
+        "source": "sql_c8_eight_table_repository_checks",
+        "target": "sql_c8_queue_b015_gate",
+        "relation": "tests_delivery_repository_using_an_administrative_fixture_without_dispatch",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L60"
+      },
+      {
+        "source": "sql_c8_eight_table_repository_checks",
+        "target": "sql_c8_concurrency_ack_readback",
+        "relation": "covers_concurrent_revision_locks_and_both_real_commit_outcomes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L66"
+      },
+      {
+        "source": "sql_c8_concurrency_ack_readback",
+        "target": "sql_c8_local_api_boundary",
+        "relation": "returns_uncertain_result_then_uses_revision_readback_to_prevent_duplicate_success",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L66"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_academic_prior_rows_preservation",
+        "relation": "preserves_original_rows_while_allowing_four_synthetic_crm_additions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L68"
+      },
+      {
+        "source": "sql_c8_academic_prior_rows_preservation",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "preserves_shared_preview_profiles_login_ticket_acl_and_destination",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c8_academic_prior_rows_preservation",
+        "target": "sql_c7_restored_schema_acceptance",
+        "relation": "rechecks_the_original_accepted_c7_trial_without_changes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_incomplete_preparation_retired",
+        "relation": "does_not_accept_the_first_copy_with_incomplete_dependency_visibility",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "sql_c8_incomplete_preparation_retired",
+        "target": "sql_c8_complete_mutable_catalog_guard",
+        "relation": "replaced_by_another_copy_with_explicit_metadata_select_without_control",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_immutable_checkpoint_chain",
+        "relation": "records_new_transitions_without_modifying_accepted_historical_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L80"
+      },
+      {
+        "source": "sql_c8_immutable_checkpoint_chain",
+        "target": "sql_c7_immutable_design_history",
+        "relation": "pins_c7_proof_documents_fragment_adr_and_frozen_releases",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L80"
+      },
+      {
+        "source": "sql_c8_immutable_checkpoint_chain",
+        "target": "sql_c6_reviewed_design_only",
+        "relation": "retains_reproduction_from_authenticated_historical_preimages",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L80"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_c9_ui_scope_pending",
+        "relation": "defers_ui_and_any_broader_crm_inbox_acl_to_another_acceptance_unit",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L84"
+      },
+      {
+        "source": "sql_c8_c9_ui_scope_pending",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "keeps_the_shared_c5_preview_and_old_tickets_unchanged",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L84"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "channels_repository_contract",
+        "relation": "provides_native_repository_contract_evidence_without_scentra_parity_claim",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c8_c9_ui_scope_pending",
+        "target": "foundation_runtime",
+        "relation": "requires_a_separate_composition_and_new_profile_if_runtime_scope_expands",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L84"
+      },
+      {
+        "source": "sql_c8_institutional_acceptance_pending",
+        "target": "foundation_sql_dialect",
+        "relation": "keeps_institutional_sql2019_acceptance_separate_from_local_engine16",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_c8_repository_api_acceptance",
+        "target": "sql_c8_institutional_acceptance_pending",
+        "relation": "does_not_certify_institutional_sql2019_or_general_business_parity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L84"
+      },
+      {
+        "source": "sql_c8_local_api_boundary",
+        "target": "P4",
+        "relation": "adds_local_channel_storage_access_without_public_webhooks_or_provider_activation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L60"
+      },
+      {
+        "source": "sql_c8_queue_b015_gate",
+        "target": "P7",
+        "relation": "retains_outbound_messaging_and_required_b015_dependencies_for_later_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.97,
+        "source_file": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+        "source_location": "L60"
+      }
+    ]
+  }
+}

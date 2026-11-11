@@ -1,0 +1,124 @@
+{
+  "unit": "PREVIEW-DEMO-1",
+  "status": "current_integrated_preview_with_SQL_persisted_demo",
+  "primary_port": 4178,
+  "provider_calls": 0,
+  "academic_DDL_or_DML": false,
+  "memory_transitions": {
+    "AGENTS.md": {
+      "before": "e9b920f4032a6e4899b59cde116870b24800f28f018da498762d78fe7fe2186e",
+      "after": "bb8cf9b50293b2ce2237fb87a5cbb3d3c7be3dce7f430f4d10a13c67c959822e"
+    },
+    "README.md": {
+      "before": "d46e010936602a552d5163b754c96b25ec318ccdb4d36c799539f3d5ddcc0bd1",
+      "after": "4be0547fa10e2fab326e6cce8f9976782825caf4da14ca01fdff9064b0c49a2a"
+    },
+    "ai-memory/CRITICAL_WARNINGS.md": {
+      "before": "dd3370e036b6149483e9931c030ff4659671404f16a93c1ba41066c24e341bec",
+      "after": "96182224ed5ed91e51c34e9143b94a30f7a470efe117d5bff3f8c0864a5d82c9"
+    },
+    "ai-memory/CURRENT_STATE.md": {
+      "before": "e56a834da400f2cbe4c99ebfefbd9015af6238e92180bbbc840102f0c9e12f9e",
+      "after": "d1982b38ead430f4c508d8f566a8daa182697c3d3f093fd7ce6f3017f111872a"
+    },
+    "ai-memory/FILE_MAP.md": {
+      "before": "4b694540b459519e14098122cae7e600ced3436151acd008afaaafed5b827505",
+      "after": "5c870e8ca11724c6b56cb92ad3a48b6dabc8699914ae51f85fd1b813bfe7c9ee"
+    },
+    "docs/ADAPTATION_STATUS.md": {
+      "before": "d37bf22dd3f4129035ba4dcda5fc0b82cef553d14d13cf4add7cf1cdea06466f",
+      "after": "eca8752681158d521b5c0fcbb54aa393a36c7b59f76eedc29f25990071f7a010"
+    },
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md": {
+      "before": "0bf3f00f8374edd1d4bd9aef893a9a583c534208d3bfdfe688c6cc5e6d25bff8",
+      "after": "b6ff3b44058c1866090151fad892ee98441a62625b774dc23bb72beb711a24b4"
+    },
+    "docs/adaptation/GRAPH_GUIDE.md": {
+      "before": "29b54a594472e02e79e1c9478ed83745189ac6d66742cf8cacf03516cb60aca4",
+      "after": "b6a53b09818f7ea0ed0671dae62ed37f0883f7fca736eb3ae27604d5b832b806"
+    },
+    "docs/adaptation/RESUME.md": {
+      "before": "ec3cfd8bd7ba709770ea4e59eda3ac00a5a1753f816a4696ac98a95951c35a1e",
+      "after": "d6dfc251b722bd20fe0c4dc30627a1a1fb0f3790cb21d975f373d0fce9d953a9"
+    },
+    "docs/adaptation/WORK_PROGRESS.md": {
+      "before": "85099fb89c0aa1a6441e5975fbbac673b9b35b95e9de0f8ba5afad2debb5ab2e",
+      "after": "7447fc67f1df1f94420e4b22864215b856efdd2ced39bc2cbc0dbe0af7f081d4"
+    },
+    "docs/roadmap.md": {
+      "before": "e738a4eaa093c36ccdbe0a34caa42449c899cc7f62fcbc4bba788a6f141ae0aa",
+      "after": "13c0f5809b01404e87f31689fbe14ef0142c0a49f63564b2b52363b7ca8b26dd"
+    },
+    "tasks/TASK_STATE.md": {
+      "before": "2401e9411492e8cac49c44e6816364a5d4c92c63430bd485f519cd1727bc82fb",
+      "after": "842945743dab7e26854d4ff2508020313fe428dcf25eb1bf8421eeee4c1a862c"
+    }
+  },
+  "source_pins": {
+    "AGENTS.md": "bb8cf9b50293b2ce2237fb87a5cbb3d3c7be3dce7f430f4d10a13c67c959822e",
+    "README.md": "4be0547fa10e2fab326e6cce8f9976782825caf4da14ca01fdff9064b0c49a2a",
+    "ai-memory/CRITICAL_WARNINGS.md": "96182224ed5ed91e51c34e9143b94a30f7a470efe117d5bff3f8c0864a5d82c9",
+    "ai-memory/CURRENT_STATE.md": "d1982b38ead430f4c508d8f566a8daa182697c3d3f093fd7ce6f3017f111872a",
+    "ai-memory/FILE_MAP.md": "5c870e8ca11724c6b56cb92ad3a48b6dabc8699914ae51f85fd1b813bfe7c9ee",
+    "artifacts/current-preview/browser-result.json": "cbe8cd8bfacf2cce2d0f703ade7fbbbd297edfe3cfd0d661064181efe5767cc9",
+    "artifacts/current-preview/browser-source.cjs": "5b802dc8a68ac4129258d8e2f501504f8ae477096e09dcdd954ae67dde6d8e40",
+    "artifacts/current-preview/deployment-result.json": "2f1349e5cdd3e8a005860caa25d342f57e5e0e8848a3135a59efd1c907c4a058",
+    "artifacts/current-preview/guard-tests.txt": "a9eccc166d6ea127632d3e14a7950c2df7e2d9372a2017a243352f8532df2cf4",
+    "artifacts/current-preview/history/p3-memory-preimages.zip": "d309cd7409f9e04610bfcda86ab9555e5fc86c897eecac5259d34913fda93c3a",
+    "artifacts/current-preview/inbox-desktop.png": "280541b839c23f0f8c93ce5f7bc58bf35b4b5f7d598464763bf53a240e0c9e38",
+    "artifacts/current-preview/inbox-mobile.png": "2860cc8133bfd76d607b6d86b8de4866170f742c203562e8c4c6aaf1d11af1c3",
+    "artifacts/current-preview/input-baseline.json": "851b2b78ee8d1cc767bfff901892bfa26568aa6ee909805b53a7236d462c36b1",
+    "artifacts/current-preview/p3-replay-result.json": "82d3ef02658ca28a07560523a0e381d02926c3da40a376babd6271ca8ef4c101",
+    "artifacts/current-preview/qualification-source.py": "d346a17b04ae4374c970f67934606fbe4411bea1db4a776132d70a71f46ef459",
+    "artifacts/current-preview/restart-result.json": "2da985dce6942317ce9ec71fd3e974348066bd1c17d3dabe1a8117fa2c13df7b",
+    "artifacts/current-preview/seed-result.json": "9b95a4323521ffa5fc3d99a3f2d0ab925c2133edb14fd389abb2f41658b8bad5",
+    "artifacts/current-preview/semantic-review.json": "6cc68e59c877ceef051f23a0bddb33e093188af035b7f3a5771282a0f447743e",
+    "artifacts/current-preview/sql-result.json": "b1f6d9f0851c52a9f3aa7ee13dd1594d04ae33845b97bb9176b082e97504bcb0",
+    "backend/tests/test_demo_preview.py": "c61adc8f1a40df0e5f430f29ec22841731978123e84f8ba8a88e4464d963efc3",
+    "backend/tools/check_current_preview.py": "b8d0ac5b9f37089ddefcd50d102fe916f9e7e719e496f5925e990777224918a8",
+    "backend/tools/current_preview_graph.py": "75f98b30919fab605da055aa87ca5083b8f78f4b62f9c0f7aa76c7c030e7214b",
+    "backend/tools/prepare_demo_preview.py": "041f4a8a0baf1cb7e75c31f6cae859cb3b3175eac2f8d98b34a938408f1b861b",
+    "compose.preview.yaml": "ee6c7a09eaebbe795a0b78fb4cdb615f4136e5d617f9af358f665aba4666bf97",
+    "docs/ADAPTATION_STATUS.md": "eca8752681158d521b5c0fcbb54aa393a36c7b59f76eedc29f25990071f7a010",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md": "b6ff3b44058c1866090151fad892ee98441a62625b774dc23bb72beb711a24b4",
+    "docs/adaptation/GRAPH_GUIDE.md": "b6a53b09818f7ea0ed0671dae62ed37f0883f7fca736eb3ae27604d5b832b806",
+    "docs/adaptation/PREVIEW_STATUS.md": "644de9c20dd88b4daee0bb882163a8e4a992af53af0e0b0cc06a440e4aec3a29",
+    "docs/adaptation/RESUME.md": "d6dfc251b722bd20fe0c4dc30627a1a1fb0f3790cb21d975f373d0fce9d953a9",
+    "docs/adaptation/WORK_PROGRESS.md": "7447fc67f1df1f94420e4b22864215b856efdd2ced39bc2cbc0dbe0af7f081d4",
+    "docs/adaptation/fragments/current-preview.draft.json": "534eb42b70705840d0967fa80999b9643934942a2f6719d301b99d2b95ac6d16",
+    "docs/roadmap.md": "13c0f5809b01404e87f31689fbe14ef0142c0a49f63564b2b52363b7ca8b26dd",
+    "graphify-out/current-preview/.graphify_labels.json": "a5d696c6cf69e0e2fa4ac2f04c5762deaba9da2e76d96c869d7c6e00552eb596",
+    "graphify-out/current-preview/GRAPH_REPORT.md": "1750f4d0086ca76a528d03d11310378c37b73aecb16d877a85eabcc58cabae95",
+    "graphify-out/current-preview/analysis.json": "69a060bdd5c1ee7ef7ca75d952bebf662bae51ef34ad4b925cadf4c1d0e07024",
+    "graphify-out/current-preview/detection.json": "48809f415e18e4f516b4ffa285150890f91733161b5d7865269350e6fbe64467",
+    "graphify-out/current-preview/graph.html": "198cf7393e4a691a5207c96228129132e7da06bcb16db8e31499dcd7dae3514f",
+    "graphify-out/current-preview/graph.json": "56a585105d592d4f633e451808d917fd2e9807734c225cda0d5373949a7745b3",
+    "graphify-out/current-preview/source-manifest.json": "883980b41e84d30f0f693b92ed62113f91f94ac7c2f6f54a1f750e8e51d9920f",
+    "tasks/TASK_STATE.md": "842945743dab7e26854d4ff2508020313fe428dcf25eb1bf8421eeee4c1a862c",
+    "tasks/current-preview.json": "4acbdf9e48fd9356f8cd8a00109cc9b93ff2cce6864cc56a34895dc41eebb57f"
+  },
+  "phase_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "38.29%",
+    "P5": "45.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "counts": {
+    "contacts": 8,
+    "conversations": 8,
+    "messages": 26,
+    "notes": 8,
+    "tasks": 8
+  },
+  "roadmap_credit_added": false,
+  "image_digest": "sha256:db2f4a3ca2eaf85a5ac32acf64237fe390c9cec9dc386b578dbd00fcdac766f6",
+  "frozen_checkers_modified": false
+}

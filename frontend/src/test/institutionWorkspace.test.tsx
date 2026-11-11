@@ -1,0 +1,482 @@
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { beforeEach, expect, it, vi } from "vitest";
+import { WorkspaceSessionProvider } from "../shared/workspaceSession";
+import { WorkspaceP3, RiskSummary } from "../institution/Workspace";
+import type { Risk } from "../institution/Workspace";
+import { SessionBoundary } from "../institution/api";
+import type { Session } from "../institution/api";
+import { RuntimeContext, featureNames } from "../shared/runtimeCapabilities";
+import { crmConfigurationApi } from "../modules/crm-configuration/api/crmConfigurationApi";
+import type { UiCapabilities } from "../shared/runtimeCapabilities";
+
+const ids = [
+    "00000000-0000-4000-8000-000000000001",
+    "00000000-0000-4000-8000-000000000002",
+  ],
+  conv = [
+    "00000000-0000-4000-8000-000000000003",
+    "00000000-0000-4000-8000-000000000004",
+  ];
+const risk: Risk = {
+  status: "unknown",
+  level: "unknown",
+  score: null,
+  source: "not_evaluated",
+  asOf: null,
+  fresh: false,
+  reasons: ["Sin evidencia suficiente."],
+  nextAction: "Revisar la conversación.",
+  trainedPrediction: false,
+};
+const config = {
+  stages: [{ key: "new", label: "Nueva", probability: null, active: true }],
+  tags: ["Interés"],
+  fields: [],
+};
+const session: Session = {
+  session_id: "p3-session",
+  csrf_token: "csrf-p3",
+  actions: [
+    "crm.read",
+    "crm.write",
+    "inbox.read",
+    "inbox.write",
+    "settings.crm.read",
+    "settings.crm.write",
+  ],
+  user: {
+    id: ids[0],
+    email: "qa@cbn.local",
+    full_name: "Cuenta QA",
+    role: "owner",
+    active: true,
+    revision: 1,
+    profile: {},
+    mfa_state: "disabled",
+  },
+};
+const caps: UiCapabilities = {
+  version: "cbn-ui-capabilities-v1",
+  profile: "foundation",
+  mode: "local_foundation",
+  modules: ["clients", "inbox", "settings"],
+  scope: "isolated_test",
+  features: Object.fromEntries(
+    featureNames.map((name) => [name, false]),
+  ) as UiCapabilities["features"],
+};
+let failWrite = 0;
+let agentOperations = false;
+let serverRevision = "1";
+const calls: {
+  path: string;
+  method: string;
+  body: Record<string, unknown> | null;
+}[] = [];
+function client(index: number) {
+  return {
+    id: ids[index],
+    name: "Persona " + index,
+    phone: "",
+    city: "",
+    programId: null,
+    program: "",
+    schedule: "",
+    stage: "Nueva",
+    tags: "",
+    notes: "",
+    type: "",
+    interests: "",
+    customValues: {},
+  };
+}
+function response(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+beforeEach(() => {
+  failWrite = 0;
+  agentOperations = false;
+  serverRevision = "1";
+  calls.length = 0;
+  vi.mocked(crmConfigurationApi.read).mockResolvedValue({
+    config,
+    revision: "1",
+  });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input),
+        method = init?.method ?? "GET",
+        body = init?.body
+          ? (JSON.parse(String(init.body)) as Record<string, unknown>)
+          : null;
+      calls.push({ path, method, body });
+      if (path === "/api/v1/agents/selection")
+        return response({
+          installed: true,
+          agents: [],
+          stages: [],
+          sources: [],
+          programs: {
+            items: [],
+            has_more: false,
+            period: { id: 0, label: "Declarado" },
+          },
+          legacy_agents: [],
+        });
+      if (path.startsWith("/api/v1/agents/conversations/"))
+        return response({
+          mode: "human",
+          revision: 0,
+          contexts: [],
+          context_id: null,
+          selection: null,
+          blocked: "agents_human_control",
+        });
+      if (method !== "GET")
+        return failWrite
+          ? response(
+              {
+                detail:
+                  failWrite === 409
+                    ? "revision_conflict"
+                    : "general_storage_unavailable",
+              },
+              failWrite,
+            )
+          : response({
+              revision: "2",
+              contactId: ids[0],
+              conversationId: conv[0],
+            });
+      if (path === "/api/local/crm/configuration")
+        return response({ config, revision: "1" });
+      if (path.includes("/directory"))
+        return response({
+          items: [{ id: ids[0], name: "Cuenta QA" }],
+          hasMore: false,
+        });
+      if (path.includes("/messages"))
+        return response({
+          items: [
+            {
+              id: ids[1],
+              body: "Mensaje registrado",
+              direction: "incoming",
+              createdAt: "2026-10-26T12:00:00Z",
+              sequence: "1",
+            },
+          ],
+          hasMore: false,
+          before: null,
+        });
+      if (path.includes("/tasks?"))
+        return response({
+          items: [],
+          total: 0,
+          hasMore: false,
+          revision: serverRevision,
+        });
+      if (
+        path.endsWith("/groups") ||
+        path.includes("/activity?") ||
+        path.includes("/notes?")
+      )
+        return response({ items: [], hasMore: false });
+      if (path.includes("/conversations/") || path.includes("/detail")) {
+        const index = path.includes(conv[1]) ? 1 : 0;
+        return response({
+          agentOperations,
+          client: client(index),
+          thread: {
+            ConversationId: conv[index],
+            ContactId: ids[index],
+            State: "open",
+            Priority: "normal",
+            ControlMode: "human",
+            Unread: true,
+            UserId: null,
+          },
+          risk,
+          manual: null,
+          members: [client(index)],
+          notes: [],
+          revision: serverRevision,
+        });
+      }
+      if (
+        path.includes("/workspace/clients?") ||
+        path.includes("/workspace/inbox?")
+      )
+        return response({
+          items: ids.map((id, index) => ({
+            id,
+            conversationId: conv[index],
+            name: "Persona " + index,
+            phone: "",
+            stage: "Nueva",
+            state: "open",
+            mode: "human",
+            unread: true,
+            assignee: null,
+            risk,
+          })),
+          total: 2,
+          offset: 0,
+          limit: 25,
+          hasMore: false,
+          revision: serverRevision,
+        });
+      return response({ detail: "unexpected_test_request" }, 404);
+    }),
+  );
+});
+function open(page = "clients", actions = session.actions) {
+  const tree = (shownPage: string | null) => (
+    <SessionBoundary initial={{ ...session, actions }} expire={() => {}}>
+      <RuntimeContext.Provider
+        value={{
+          status: "ready",
+          capabilities: caps,
+          reload: () => {},
+          actions,
+        }}
+      >
+        <WorkspaceSessionProvider>
+          {shownPage && <WorkspaceP3 page={shownPage} />}
+        </WorkspaceSessionProvider>
+      </RuntimeContext.Provider>
+    </SessionBoundary>
+  );
+  const view = render(tree(page));
+  return {
+    ...view,
+    showWorkspace: (shownPage: string | null) => view.rerender(tree(shownPage)),
+  };
+}
+async function select(index = 0) {
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: new RegExp(`^Persona ${index}`),
+    }),
+  );
+  await screen.findByLabelText("Nombre visible");
+}
+
+it("mounts the P5 agent selector in the actual institutional Inbox", async () => {
+  agentOperations = true;
+  open("inbox");
+  await select();
+  await screen.findByRole("heading", {
+    name: "Agentes de admisiones",
+  });
+  expect(calls.some((c) => c.path === "/api/v1/agents/selection")).toBe(true);
+  expect(screen.getAllByLabelText("Nombre visible")).toHaveLength(1);
+});
+
+it("shows unknown safely and identifies a current rule without probability", () => {
+  const view = render(<RiskSummary risk={risk} />);
+  expect(screen.getByText("Sin evaluación")).toBeInTheDocument();
+  expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+  view.rerender(
+    <RiskSummary
+      risk={{
+        ...risk,
+        status: "known",
+        fresh: true,
+        level: "high",
+        score: 80,
+        source: "rule",
+        asOf: "2026-10-26T12:00:00Z",
+      }}
+    />,
+  );
+  expect(screen.getByText("Alto")).toBeInTheDocument();
+  expect(
+    screen.getByText(/Rúbrica de seguimiento · no es una probabilidad/),
+  ).toBeInTheDocument();
+});
+it("sends filters to the paginated API and never loads the old workspace snapshot", async () => {
+  open();
+  await select();
+  fireEvent.change(screen.getByLabelText("Buscar", { exact: true }), {
+    target: { value: "Última persona" },
+  });
+  await waitFor(() =>
+    expect(
+      calls.some((call) => call.path.includes("q=%C3%9Altima+persona")),
+    ).toBe(true),
+  );
+  expect(calls.some((call) => call.path === "/api/local/crm")).toBe(false);
+});
+it("preserves the contact draft on a conflict and when selecting another contact", async () => {
+  open();
+  await select();
+  const input = screen.getByLabelText("Nombre visible");
+  fireEvent.change(input, { target: { value: "Borrador conservado" } });
+  failWrite = 409;
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await screen.findByText(/Hay una versión más reciente/);
+  expect(input).toHaveValue("Borrador conservado");
+  await select(1);
+  await select(0);
+  expect(screen.getByLabelText("Nombre visible")).toHaveValue(
+    "Borrador conservado",
+  );
+});
+it("retains message and control drafts and the same command after an uncertain response", async () => {
+  const view = open("inbox");
+  await select();
+  fireEvent.change(screen.getByLabelText("Mensaje local"), {
+    target: { value: "Mensaje pendiente" },
+  });
+  fireEvent.change(screen.getByLabelText("Prioridad", { exact: true }), {
+    target: { value: "high" },
+  });
+  failWrite = 503;
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar mensaje local" }),
+  );
+  await screen.findByText(/No se pudo validar el acceso/);
+  const first = calls.find(
+    (call) => call.method === "POST" && call.path.endsWith("/messages"),
+  )!;
+  serverRevision = "2";
+  view.showWorkspace(null);
+  view.showWorkspace("inbox");
+  await select(0);
+  expect(screen.getByLabelText("Mensaje local")).toHaveValue(
+    "Mensaje pendiente",
+  );
+  expect(screen.getByLabelText("Prioridad", { exact: true })).toHaveValue(
+    "high",
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar mensaje local" }),
+  );
+  await waitFor(() =>
+    expect(
+      calls.filter(
+        (call) => call.method === "POST" && call.path.endsWith("/messages"),
+      ),
+    ).toHaveLength(2),
+  );
+  const last = calls
+    .filter((call) => call.method === "POST" && call.path.endsWith("/messages"))
+    .at(-1)!;
+  expect(last.body?.operationId).toBe(first.body?.operationId);
+  expect(first.body?.revision).toBe("1");
+  expect(last.body?.revision).toBe("1");
+});
+it("keeps a ficha draft across unmount and explicitly rebases a rejected conflict", async () => {
+  const view = open();
+  await select();
+  fireEvent.change(screen.getByLabelText("Nombre visible"), {
+    target: { value: "Edición conservada" },
+  });
+  failWrite = 409;
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await screen.findByText(/Hay una versión más reciente/);
+  const first = calls.find(
+    (call) => call.method === "PUT" && call.path.includes("/clients/"),
+  )!;
+  serverRevision = "2";
+  view.showWorkspace(null);
+  view.showWorkspace("clients");
+  await select();
+  expect(screen.getByLabelText("Nombre visible")).toHaveValue(
+    "Edición conservada",
+  );
+  failWrite = 0;
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await waitFor(() =>
+    expect(
+      calls.filter(
+        (call) => call.method === "PUT" && call.path.includes("/clients/"),
+      ),
+    ).toHaveLength(2),
+  );
+  const last = calls
+    .filter((call) => call.method === "PUT" && call.path.includes("/clients/"))
+    .at(-1)!;
+  expect(last.body?.operationId).not.toBe(first.body?.operationId);
+  expect(last.body?.revision).toBe("2");
+});
+it("creates only with the institution's configured stage and a valid visible name", async () => {
+  open();
+  await screen.findByRole("button", { name: /^Persona 0/ });
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Nuevo contacto" }),
+  );
+  const save = await screen.findByRole("button", {
+    name: "Guardar ficha",
+  });
+  fireEvent.click(save);
+  expect(calls.some((call) => call.method !== "GET")).toBe(false);
+  fireEvent.change(screen.getByLabelText("Nombre visible"), {
+    target: { value: "Persona nueva" },
+  });
+  expect(
+    within(save.closest("form")!).getByLabelText("Etapa", { exact: true }),
+  ).toHaveValue("Nueva");
+  expect(save).toBeEnabled();
+  fireEvent.click(save);
+  await waitFor(() =>
+    expect(
+      calls.some(
+        (call) =>
+          call.method === "POST" &&
+          (call.body?.client as { stage: string })?.stage === "Nueva",
+      ),
+    ).toBe(true),
+  );
+});
+it("disables mutations for a read only human session", async () => {
+  open("inbox", ["crm.read", "inbox.read", "settings.crm.read"]);
+  await select();
+  expect(screen.getByLabelText("Nombre visible")).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "Tomar control humano" }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "Guardar mensaje local" }),
+  ).toBeDisabled();
+});
+it("marks read through the actual loaded message sequence", async () => {
+  open("inbox");
+  await select();
+  await screen.findByText("Mensaje registrado");
+  fireEvent.click(screen.getByRole("button", { name: "Marcar como leída" }));
+  await waitFor(() =>
+    expect(
+      calls.some(
+        (call) =>
+          call.method === "PUT" &&
+          call.body?.readThrough === "1" &&
+          call.body?.unread === false,
+      ),
+    ).toBe(true),
+  );
+});
+it("shows one editable ficha without a duplicated read only contact block", async () => {
+  open("inbox");
+  await select();
+  expect(screen.getAllByLabelText("Nombre visible")).toHaveLength(1);
+  expect(
+    screen.getAllByRole("heading", { name: "Ficha del contacto" }),
+  ).toHaveLength(1);
+  expect(
+    within(
+      screen.getByRole("region", { name: "Riesgo de abandono" }),
+    ).getByText("Sin evaluación"),
+  ).toBeInTheDocument();
+});

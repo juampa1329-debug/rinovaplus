@@ -1,0 +1,243 @@
+{
+  "version": 1,
+  "theme": "dark",
+  "status": "proposed-pending-user-approval",
+  "generator": "built-in image_gen.imagegen",
+  "date": "2026-10-13",
+  "scope": "Static visual mockups only. No application, database, or integration implementation.",
+  "palette": {
+    "background": "#101918",
+    "sidebar": "#091412",
+    "surface": "#192522",
+    "field": "#111D1A",
+    "border": "#30413B",
+    "text": "#F0F5F1",
+    "muted": "#ABBAB2",
+    "action": "#80D6AE",
+    "actionText": "#10281D",
+    "selectedNavigation": "#274F3E",
+    "selectedText": "#D3F7E4"
+  },
+  "assets": [
+    {
+      "id": "M-01",
+      "filename": "m01-access-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-f09d0279-4572-4ead-a48c-9a5e154b622c.png",
+      "path": "mockups-dark/m01-access-dark.png"
+    },
+    {
+      "id": "M-02",
+      "filename": "m02-overview-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-10dc65e5-f74c-49ef-95d9-299c620187b8.png",
+      "path": "mockups-dark/m02-overview-dark.png"
+    },
+    {
+      "id": "M-03",
+      "filename": "m03-prospects-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-919ba949-876d-4236-af67-ae3055c3cae7.png",
+      "path": "mockups-dark/m03-prospects-dark.png"
+    },
+    {
+      "id": "M-04",
+      "filename": "m04-conversations-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-15b7170e-c5f9-4150-bdc8-cade3b63bc49.png",
+      "path": "mockups-dark/m04-conversations-dark.png"
+    },
+    {
+      "id": "M-05",
+      "filename": "m05-application-form-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-09537245-3bc7-4708-b550-be33c54ca8b4.png",
+      "path": "mockups-dark/m05-application-form-dark.png"
+    },
+    {
+      "id": "M-06",
+      "filename": "m06-admissions-review-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-48dca560-33bb-492f-9793-38efa0b6e7fd.png",
+      "path": "mockups-dark/m06-admissions-review-dark.png"
+    },
+    {
+      "id": "M-07",
+      "filename": "m07-assistant-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-a72d6c42-489a-490f-a104-c548848af6ee.png",
+      "path": "mockups-dark/m07-assistant-dark.png"
+    },
+    {
+      "id": "M-08",
+      "filename": "m08-knowledge-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-ff01f6e5-866c-4ed4-a400-f43c74a7cabc.png",
+      "path": "mockups-dark/m08-knowledge-dark.png"
+    },
+    {
+      "id": "M-09",
+      "filename": "m09-sales-memory-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-e8f7b79c-8742-4e42-bdb0-2314a28c7c49.png",
+      "path": "mockups-dark/m09-sales-memory-dark.png"
+    },
+    {
+      "id": "M-10",
+      "filename": "m10-integrations-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-fed4ffc4-7343-4f05-b7c5-bbccb8959dd0.png",
+      "path": "mockups-dark/m10-integrations-dark.png"
+    },
+    {
+      "id": "M-11",
+      "filename": "m11-retention-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-dada6906-73fd-410e-a508-bf7d5a709122.png",
+      "path": "mockups-dark/m11-retention-dark.png"
+    },
+    {
+      "id": "M-12",
+      "filename": "m12-corporate-dark.png",
+      "source": "C:\\Users\\Developer_PC\\.codex\\generated_images\\01a13629-21ad-7770-8050-5e62e2f89405\\exec-a598865a-2353-41b5-8a85-7a9ebd10fde7.png",
+      "path": "mockups-dark/m12-corporate-dark.png"
+    }
+  ],
+  "lightPreservation": [
+    {
+      "id": "M-02",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m02-overview.png",
+      "sha256": "1D7B56BBC84F8FF6069750EF121B3B45FDBAF0F3F92BD3D2DAC1F2F2023F4974",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-04",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m04-conversations.png",
+      "sha256": "880129E3A599A9E80F72275981882C95B00B497B33C66FB7F02A62EFAEC1D8D4",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-03",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m03-prospects.png",
+      "sha256": "BD0EC9D25E12FC47E457A5D9C1EDB816EC32D381F1FF86F4E05DD25EC314EA1C",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-05",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m05-application-form.png",
+      "sha256": "C8ED6D5600B711F01E3F8357C33DE467C080685D747C418BDC80BE3E09112893",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-01",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m01-access.png",
+      "sha256": "71DDF560518833CFD3DEB5A932BA139C24AE471ADEDBA7DC39D1665219C02C63",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-06",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m06-admissions-review.png",
+      "sha256": "067C56A90E9426C080F2C4BCFB66712E16990DA4C45C5793E5884CE84D0A8FD0",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-07",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m07-assistant.png",
+      "sha256": "B2E55863CE97342A85B1C510B127914E9BDBB8240644438CFB97935C6EDA0441",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-08",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m08-knowledge.png",
+      "sha256": "CF8B7C9BF06023A3AEA27BFA744993D064FA41C8FCEE638372B0F7116DCAA2F7",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-09",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m09-sales-memory.png",
+      "sha256": "E257AA983673B5779172861C9C50965DB9C93B5234779C4FEF71BBECF1E9F2CF",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-10",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m10-integrations.png",
+      "sha256": "FD6F71B5F66B23FA53A9B6DF305A8893BA41F110F176A81A9EC8BEB1B43047DD",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-11",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m11-retention.png",
+      "sha256": "D4D405A3DCD64709E6922CDBD6B908173A8E3C30ACF8A12C871F611D7CFD1EE7",
+      "sameAsPreviouslyViewed": true
+    },
+    {
+      "id": "M-12",
+      "file": "E:\\Nuevos_Proyectos\\CRM_CBN\\docs\\design\\mockups\\m12-corporate.png",
+      "sha256": "BA0728CEC1274D321C5A21E35C00A68D2BA74432AFCEA4D77E4487A544E793B1",
+      "sameAsPreviouslyViewed": true
+    }
+  ],
+  "prompts": [
+    {
+      "id": "M-02",
+      "filename": "m02-overview-dark.png",
+      "sourceLight": "mockups/m02-overview.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nScreen: admissions overview / Resumen. Especially preserve 24,6,9 metrics and 42,24,16,9 route figures, all sidebar items, and simulated channel states. This first screen defines the dark theme for the whole suite."
+    },
+    {
+      "id": "M-04",
+      "filename": "m04-conversations-dark.png",
+      "sourceLight": "mockups/m04-conversations.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 is the exact EDIT TARGET: Conversaciones, preserve its three-column conversation workspace, pending-assessor status, chat messages and locked composer. Image 2 is COLOR STYLE reference only for the already-created dark overview; match that dark theme, never copy its layout. Clearly separate assistant bubble and prospect bubble in dark gray-green versus deeper green."
+    },
+    {
+      "id": "M-03",
+      "filename": "m03-prospects-dark.png",
+      "sourceLight": "mockups/m03-prospects.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: Prospectos. Preserve list/table, four rows with identical program/jornada/status values and selected Laura side panel. Image 2 is COLOR STYLE reference only, not its screen layout. Keep selected row distinguishable and each state badge readable in dark."
+    },
+    {
+      "id": "M-05",
+      "filename": "m05-application-form-dark.png",
+      "sourceLight": "mockups/m05-application-form.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: portrait public mobile application form. Preserve portrait aspect 853x1844, every field/placeholder, unchecked consent, heading, note that submission isn't enrollment. NO desktop sidebar. Image 2 is palette COLOR STYLE reference ONLY; never bring its sidebar/layout into the mobile form. Main form stays a full-height simple dark canvas, mint primary submit action, bright readable headings and labels, dark inset fields with subtle borders. Program summary deep green surface. No handset frame."
+    },
+    {
+      "id": "M-01",
+      "filename": "m01-access-dark.png",
+      "sourceLight": "mockups/m01-access.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: access/login screen. Preserve its split layout, left brand panel/large institutional statement and right login form. NO navigation sidebar. Image 2 COLOR reference ONLY. Translate right white background into dark canvas, white fields into darker inset fields, green submit button into mint with dark text. Keep left area a slightly deeper forest than right, all original text unchanged. No added authentication options."
+    },
+    {
+      "id": "M-06",
+      "filename": "m06-admissions-review-dark.png",
+      "sourceLight": "mockups/m06-admissions-review.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: academic admissions review. Preserve every field, checklist, amber pending review label, notes textarea, disabled 'Registrar en SIIE', and warning 'La solicitud aún no es una matrícula'. Image 2 dark color reference ONLY. Particularly retain disabled integration rail in subdued dark gray and readable text; it must never look like an enabled primary action."
+    },
+    {
+      "id": "M-07",
+      "filename": "m07-assistant-dark.png",
+      "sourceLight": "mockups/m07-assistant.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: assistant configuration revision 2. Keep slider labels 'Menos formal'/'Más formal', all settings and tabs, protected-rule locks, virtual assistant disclosure, no added counters. Image 2 COLOR reference only. Dark preview pane may be tinted deep forest but text bubble must have distinct dark surface with light text. Mint slider tracks/actions, white headings, muted readable help text."
+    },
+    {
+      "id": "M-08",
+      "filename": "m08-knowledge-dark.png",
+      "sourceLight": "mockups/m08-knowledge.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: sourced knowledge catalog. Keep all programs/jornadas, source SQL Server, no-connection note, unknown tuition, and amber no exact class schedules warning. Image 2 COLOR reference only, match its DARK selected-sidebar background #274F3E and light mint foreground, not bright mint sidebar. Main primary action stays bright mint. Keep index future status, no added real synchronization."
+    },
+    {
+      "id": "M-09",
+      "filename": "m09-sales-memory-dark.png",
+      "sourceLight": "mockups/m09-sales-memory.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: authorized sales memory. Preserve all future capability/consent/pending review disclaimers, cases and synthetic argument excerpt. Image 2 dark COLOR reference only, keep selected Memoria sidebar dark green with pale mint foreground like reference. Preserve disabled IA use, no approvals introduced."
+    },
+    {
+      "id": "M-10",
+      "filename": "m10-integrations-dark.png",
+      "sourceLight": "mockups/m10-integrations.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: integrations/providers. Preserve same Meta/SQL Server rows, separate LLM and TTS priority lists, secret-reference locks, missing provider/connection statuses, simulated error notice. Image 2 dark COLOR reference only, not layout. Active sidebar should be dark green with pale mint foreground. No real keys or connected success statuses introduced. Convert all light panels to dark."
+    },
+    {
+      "id": "M-11",
+      "filename": "m11-retention-dark.png",
+      "sourceLight": "mockups/m11-retention.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: future retention concept. Preserve table, synthetic students, all scope-pending/future disclaimers, bottom no-scoring/no-campaigns note. Image 2 color reference ONLY. Active Retención navigation dark green with pale mint, not bright mint. Selected row a soft deep green and future warning amber brown. Don't invent any actions or data."
+    },
+    {
+      "id": "M-12",
+      "filename": "m12-corporate-dark.png",
+      "sourceLight": "mockups/m12-corporate.png",
+      "prompt": "Use case: ui-mockup theme edit. The attached light-mode image is the EXACT EDIT TARGET, previously reviewed. Produce a DARK MODE VERSION of that same screen, not a redesign. Preserve the complete composition, positions, widths, typographic hierarchy, icons, every Spanish label, every fictitious data value, active sidebar item, disabled/locked states, warnings, date 13 oct 2026, and all controls. Do not add elements. Do not remove or rewrite text. Same aspect ratio and full frame, no crop or device frame. Translate colors into a polished, calm institutional dark theme: base canvas #101918, sidebar #091412, elevated surfaces #192522, inset fields #111D1A, subtle borders #30413B, primary text #F0F5F1, secondary text #ABBAB2. Primary actions mint #80D6AE with very dark #10281D labels; selected navigation #274F3E with pale mint #D3F7E4; selected rows #213D31; green active statuses #86D6AE. Amber warning background #35291A, border #765831, bright amber #F1C77E with cream text. Neutral disabled surfaces #26332E and clearly readable muted text. Keep subtle separation between background/surface/input. Avoid pure-black-on-black, neon glow, gradients, glass, unnecessary shadows. Recolor all original white/light panels and form fields; no unconverted white rectangle. All text must remain comfortably readable, including tiny helper text. Preserve labels indicating 'Vista de diseño', 'Datos ficticios', 'Sin conexión', future scope, disabled integration and AI disclosure. This is a static proposal, not production. Keep 'CRM CBN' plain typography, no new brand logo. Opaque background.\nImage 1 exact EDIT TARGET: future corporate relationship concept. Preserve future/pending scope banner, all three demo organizations, contact placeholders, last-interaction demo/date and no-convenios/vacancies/billing warning. Image 2 dark COLOR reference only. Active Corporativo sidebar dark green background with pale mint foreground. No new features or content."
+    }
+  ]
+}

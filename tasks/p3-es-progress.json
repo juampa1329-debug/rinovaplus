@@ -1,0 +1,43 @@
+{
+  "unit": "P3-ES",
+  "date": "2026-10-26",
+  "status": "accepted_local_SQL2019_Inbox_CRM_risk_surface",
+  "P3_accepted": true,
+  "institutional_production_accepted": false,
+  "clean_final_database": "CBN_P3ES_TRIAL_20261026_606a9bec",
+  "preview": "http://127.0.0.1:4178/",
+  "release_sha256": "7d4c3f55654d8d683246c2cd2547d29da5274825170f304b2c6b069e914d379b",
+  "tables": 144,
+  "logical_bindings": 114,
+  "physical_foreign_keys": 229,
+  "closed_phases": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "work_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "38.29%",
+    "P5": "45.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "done_milestones": 147,
+  "pending_milestones": 132,
+  "accepted_criteria": 20,
+  "fixed_criteria": 56,
+  "fixed_milestones": 279,
+  "next": "P4",
+  "offline_check": "backend/tools/check_p3_es_checkpoint.py --self-test",
+  "academic_source_writes": false,
+  "old_profiles_redirected": false,
+  "providers_enabled": false
+}

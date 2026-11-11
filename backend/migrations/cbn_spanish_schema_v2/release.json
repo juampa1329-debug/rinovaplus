@@ -1,0 +1,43 @@
+{
+  "version": "cbn-spanish-baseline-v2",
+  "units": [
+    {
+      "id": "ES-B000",
+      "file": "ES_B000_journal.sql",
+      "sha256": "e1374ce177fdc683c48d95e834973b053dcb2a79893faae6316b54c60f7db304",
+      "source": "backend/migrations/cbn_foundation/B000_journal.sql",
+      "normalized_body_sha256": "6675762992b275b4fdea3a33c90c2a9135a9ca11f5954f76dcb8d90b3a77753c"
+    },
+    {
+      "id": "ES-B001",
+      "file": "ES_B001_schema.sql",
+      "sha256": "40a8dbcfb0cf2acbc606286338955557f1317cb858631049223971526704387d",
+      "source": "source_creation.sql",
+      "normalized_body_sha256": "cd9c0ccb0a37ccc10b3d917831339f7ca30bdd7fc8c2f3bf5d3509fa1fa4feb2"
+    }
+  ],
+  "inputs": {
+    "backend/migrations/cbn_foundation/B000_journal.sql": "36978b8aa24cc7f5a5db4833903c435fd59174f35de8251557a2dcd9275b9dee",
+    "backend/migrations/cbn_spanish_schema_v2/ES_B000_journal.sql": "e1374ce177fdc683c48d95e834973b053dcb2a79893faae6316b54c60f7db304",
+    "backend/migrations/cbn_spanish_schema_v2/ES_B001_schema.sql": "40a8dbcfb0cf2acbc606286338955557f1317cb858631049223971526704387d",
+    "backend/migrations/cbn_spanish_schema_v2/expected_catalog.json": "c285d4c06acd3d9d283c3703f83013c1aa2e65b2318267ac1da6f351de4f2108",
+    "backend/migrations/cbn_spanish_schema_v2/source_creation.sql": "9ea58376e0c8739188d52b78bfa22e85efc9eaa79fa917e4e143985ae09f8cb4",
+    "backend/migrations/cbn_spanish_schema_v2/source_verify.sql": "ac24dc114f072fd0e74bd4d5b590af835b81bff59cbe0a5fad2c0ea3ca181bd4",
+    "backend/migrations/cbn_spanish_schema_v2/table_map.json": "4496ddee371590222f2a856abe5abca57b64ceeb97d014683a2d5de404a7b647",
+    "backend/tools/es_schema_catalog_v2.py": "a08485f69caac47989941cee145e1ca0c4fe387815a65c4db1d5522030d1f5c1",
+    "backend/tools/es_schema_migrate_v2.py": "341278b4dba230a1b8714e37bbd0e3dfffd6eb0740389f8334d2c65ed5c30173"
+  },
+  "source_archive_sha256": "f6a8468291c022b85b8c953cbcf6291d384258115fc443698be0b6f35ca69b40",
+  "scope": "new_explicitly_restored_SQL2019_targets_only",
+  "package_tables": 98,
+  "CRM_tables": 68,
+  "academic_structure_tables": 30,
+  "journal_tables_added": 1,
+  "expected_total_tables": 99,
+  "runtime_redirect": false,
+  "academic_DML": false,
+  "automatic_startup_DDL": false,
+  "parent_C13_sha256": "c55373d5c9a517f1691e9c3cb528336c8615b933253585902f0650cc8b1cfb75",
+  "engine_major": 15,
+  "compatibility": 150
+}

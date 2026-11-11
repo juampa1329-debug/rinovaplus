@@ -1,0 +1,601 @@
+{
+  "domain": "Marketing, campañas, anuncios y comentarios sociales",
+  "review_date": "2026-10-24",
+  "evidence_scope": "Lectura estática de código activo y documentación; consulta del grafo previo de Scentra. No acredita ejecución, SQL aplicado en este equipo, proveedor ni producción.",
+  "findings": [
+    {
+      "id": "marketing_campaign_builder",
+      "capability": "Campañas CRM, plantillas CRM y segmentos guardados",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 750
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 863
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 955
+        },
+        {
+          "file": "../saas-version/frontend/src/CampaignsPanel.jsx",
+          "line": 47
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 67
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 215
+        },
+        {
+          "file": "frontend/src/modules/campaigns/CampaignsPanel.tsx",
+          "line": 12
+        }
+      ],
+      "status": "parcial",
+      "gap": "El destino compone un módulo real de campañas, pero su modelo actual agrupa reglas, predicciones y difusiones. El segmento vive dentro de Campaign y la plantilla es de Meta; no equivalen al catálogo separado de plantillas CRM, segmentos persistidos y campañas CRM de Scentra.",
+      "acceptance": "Inventariar DTO y tablas existentes; añadir primero plantillas CRM y segmentos persistidos reutilizables mediante migración SQL Server 2019 nueva. Verificar crear/editar/preview/revisión/paginación, filtros de programa-período-jornada, conflictos y conservación de borradores. Mantener tokens y componentes Glass; no copiar colores ni crear una segunda autoridad de contactos.",
+      "phase": "Campañas CRM"
+    },
+    {
+      "id": "marketing_triggers_flows",
+      "capability": "Activadores y flujos de remarketing de varios pasos",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1213
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1634
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1743
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/remarketing.py",
+          "line": 132
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/triggers.py",
+          "line": 39
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 37
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 181
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 342
+        }
+      ],
+      "status": "parcial",
+      "gap": "RemarketingRule evalúa etapa/inactividad/riesgo/cooldown y prepara destinatarios. No implementa el constructor general de condiciones/acciones, simulación/copia/versiones ni inscripciones con progreso por pasos y esperas de los flujos de Scentra.",
+      "acceptance": "Separar reglas actuales de activadores y flujos; definir contratos tipados sin SQL libre. Añadir inscripciones y cursores de paso durables, replay, pausa/cancelación, espera persistida, expiración de lease, exclusión por respuesta/control humano y reanudación segura. Comparar ejemplos de Scentra con eventos educativos sintéticos; no activar envíos para demostrar el constructor.",
+      "phase": "Automatización y remarketing"
+    },
+    {
+      "id": "marketing_campaign_governance",
+      "capability": "Preflight, quiet hours, simulación, versiones y pruebas A/B",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 646
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 709
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1058
+        },
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 1277
+        },
+        {
+          "file": "../saas-version/migrations/037_saas_campaigns_phase7_enterprise.sql",
+          "line": 12
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 25
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 70
+        },
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 173
+        }
+      ],
+      "status": "ausente_como_equivalencia",
+      "gap": "La Policy destino configura pesos e intervalo de evaluación y usa revisiones CAS. Eso no cubre quiet hours, instantáneas inmutables de configuración, preflight versionado de campañas/activadores/flujos, simulación y atribución A/B.",
+      "acceptance": "Preservar revisiones CAS y añadir versiones/preflight antes de activación. Definir ventanas America/Bogota con persistencia UTC, incluidos cruces de medianoche; probar rechazos por configuración/plantilla obsoleta. Persistir asignación A/B estable y métricas con evidencia, nunca rellenar resultados vacíos.",
+      "phase": "Automatización y remarketing"
+    },
+    {
+      "id": "marketing_broadcast_transport",
+      "capability": "Mensajería masiva y ejecución de destinatarios",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1263
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1592
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 141
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 33
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 287
+        },
+        {
+          "file": "backend/app/modules/campaigns/transport.py",
+          "line": 6
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 443
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 630
+        }
+      ],
+      "status": "parcial_bloqueado_por_codigo",
+      "gap": "Crear borradores/audiencias/preparaciones está implementado, pero activate/start/send devuelven 423. La audiencia parte siempre de marketing_transport_disabled y el dispatcher rechaza campañas en dos fronteras. Ningún interruptor de configuración habilita la ejecución; retirar sólo el 423 no completa el transporte.",
+      "acceptance": "Implementar reserva transaccional por cuenta/cadencia, elegibilidad revalidada justo antes de encolar/enviar y enlace único a crm_channels.outbound_queue. Cubrir consentimiento/revocación, opt-out, plantilla aprobada vigente, identidad exacta, control humano, pausa, workers concurrentes, timeout incierto y reconciliación antes de reintentar. Habilitar únicamente en prueba controlada autorizada; rollback pausa nuevas reservas y conserva mensajes/recibos históricos.",
+      "phase": "Mensajería masiva"
+    },
+    {
+      "id": "marketing_meta_templates",
+      "capability": "Catálogo y administración de plantillas WhatsApp de Meta",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 857
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 934
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1022
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/router.py",
+          "line": 97
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 121
+        },
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 40
+        }
+      ],
+      "status": "parcial",
+      "gap": "El destino ya sincroniza plantillas versionadas por cuenta/idioma y evita seleccionar versiones superadas. Faltan la creación/edición de plantillas del proveedor y sus controles/pantallas equivalentes a Scentra.",
+      "acceptance": "Conservar IDs y versiones existentes; mapear componentes/parámetros, ejemplos y estados con validación servidor. Separar guardado de borrador y envío a revisión del proveedor. Revisar documentación oficial vigente de Meta antes de llamadas y verificar cambios sólo en cuenta de prueba autorizada. No fabricar aprobación desde estado local.",
+      "phase": "Mensajería masiva"
+    },
+    {
+      "id": "marketing_broadcast_reporting",
+      "capability": "Reportes, exportación, destinatarios y reintento de fallidos",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1462
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1518
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 1592
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 242
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 383
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 399
+        }
+      ],
+      "status": "parcial",
+      "gap": "El detalle destino muestra hasta 200 destinatarios y conteos agrupados, pero no equivale al reporte/exportación/filtros/paginación y reintento de Scentra. Estados del POST local no acreditan eventos firmados de entrega; debe conectarse la evidencia del dispatcher con CampaignRecipient.",
+      "acceptance": "Paginación y filtros estables por destinatario, conteos independientes de página y exportación autenticada protegida frente a fórmulas CSV. Distinguir queued/sent/delivered/read/failed/uncertain con IDs/fechas reales; reintentar sólo estados elegibles mediante idempotencia y consentimiento vigente, sin repetir uncertain sin reconciliar.",
+      "phase": "Mensajería masiva"
+    },
+    {
+      "id": "marketing_ads",
+      "capability": "Anuncios: cuentas, campañas, leads y conversión al Inbox",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 364
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 386
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 476
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 655
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 721
+        },
+        {
+          "file": "../saas-version/migrations/012_saas_ads_social.sql",
+          "line": 4
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/main.py",
+          "line": 39
+        },
+        {
+          "file": "frontend/src/shared/navigation.ts",
+          "line": 3
+        }
+      ],
+      "status": "ausente_en_composicion_activa",
+      "gap": "No se encontró módulo/ruta/pantalla activa equivalente a Ads en el destino. El módulo campaigns es CRM/marketing, no un administrador de cuentas/campañas/leads publicitarios. La paridad inicial debe seguir el comportamiento real de ads/router.py de Scentra; no atribuirle compra/publicación autónoma de anuncios si no existe en ese módulo.",
+      "acceptance": "Diseñar tablas aisladas para cuentas/campañas/leads publicitarios, claves externas por proveedor/cuenta y mapeo educativo; importación replay-safe y conversión a contacto/conversación sin duplicar identidad. Añadir panel Glass y trazabilidad origen-anuncio-programa-Inbox. Separar administración local, sincronización y cualquier escritura real del proveedor; no asumir permisos/token/leadgen disponibles.",
+      "phase": "Anuncios y captación"
+    },
+    {
+      "id": "marketing_social_comments",
+      "capability": "Comentarios sociales, respuestas, reacciones e IA asistida",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 49
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 78
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 87
+        },
+        {
+          "file": "../saas-version/backend/app_saas/social/router.py",
+          "line": 95
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 886
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/channels/router.py",
+          "line": 295
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 345
+        },
+        {
+          "file": "backend/migrations/011_channels.sql",
+          "line": 60
+        },
+        {
+          "file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+          "line": 1111
+        }
+      ],
+      "status": "parcial_backend_existente_ui_pendiente",
+      "gap": "Hay tabla crm_channels.social_comments, ingestión/deduplicación y endpoints activos GET /api/v1/social-comments y POST /{comment_id}/reply con outbox idempotente. Sin embargo Inbox muestra un aviso futuro y no consume esos endpoints. Faltan equivalencias de reacciones, generación de sugerencia IA, contexto de publicación, seguimiento/miniCRM y conversión a Inbox de Scentra.",
+      "acceptance": "Conectar primero listado/respuesta existentes al Inbox con carga/error/vacío/paginación y estados por envío. Añadir contexto/estado/última respuesta y enlace CRM de identidad explícita sin fusionar por teléfono. Incorporar reacciones y sugerencias IA con capacidad del proveedor verificada, revisión humana y deduplicación; mantener diferencias público/privado, restricciones por canal y callbacks firmados.",
+      "phase": "Inbox y comentarios"
+    },
+    {
+      "id": "marketing_receipt_ingestion",
+      "capability": "Recepción durable, firma y procesamiento de webhooks",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 920
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/ingest.py",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/webhooks/api/router.py",
+          "line": 137
+        },
+        {
+          "file": "backend/app/modules/channels/receipts.py",
+          "line": 26
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 539
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 619
+        }
+      ],
+      "status": "base_existente_a_extender",
+      "gap": "La composición activa ya delega POST Meta/TikTok en recepción con firma, payload acotado, digest y evento SQL durable; workers reclaman con UPDLOCK/READPAST/ROWLOCK y modelan incertidumbre de envío. Parte de documentación histórica presenta esto como sólo verificación. Faltan aceptación en este entorno y extensión explícita para leads publicitarios; no sustituir todo el receptor con otro paralelo.",
+      "acceptance": "Inventariar contratos actuales y actualizar documentación histórica. Reutilizar receptor/outbox únicos; añadir normalizadores de leadgen y pruebas de cuenta/identidad/digest, reentrega, firma inválida, caída y recuperación. Probar dos workers en SQL Server 2019 con configuración real de aislamiento antes de certificar concurrencia; no elevar un test mock a aceptación conectada.",
+      "phase": "Canales y webhooks"
+    },
+    {
+      "id": "marketing_no_billing",
+      "capability": "Independencia de planes sin perder controles operativos",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/campaigns/router.py",
+          "line": 10
+        },
+        {
+          "file": "../saas-version/backend/app_saas/broadcasts/router.py",
+          "line": 18
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ads/router.py",
+          "line": 12
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/remarketing.py",
+          "line": 9
+        },
+        {
+          "file": "../saas-version/backend/app_saas/workers/triggers.py",
+          "line": 14
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 96
+        },
+        {
+          "file": "backend/app/modules/campaigns/service.py",
+          "line": 298
+        },
+        {
+          "file": "backend/app/modules/channels/workers.py",
+          "line": 481
+        }
+      ],
+      "status": "decision_confirmada_con_trabajo_de_adaptacion",
+      "gap": "El origen acopla módulos y workers a billing/entitlements/cuotas comerciales. La copia institucional no debe importar esas restricciones ni necesita planes ficticios activos. Sí necesita presupuestos, rate limits, cadencia, consentimiento y controles de permisos.",
+      "acceptance": "Rastrear cada import/control comercial al portar la función y reemplazar sólo el derecho de plan por configuración institucional explícita. Mantener validación, autorización, límites de proveedor/coste, idempotencia y rate limiting. Verificar que ninguna expiración/suscripción del SaaS pueda detener la instalación institucional y que retirar billing no habilite envíos por accidente.",
+      "phase": "Fundación institucional y controles transversales"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "marketing_scentra_campaigns",
+        "label": "Campañas CRM Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/campaigns/router.py",
+        "source_location": "L512"
+      },
+      {
+        "id": "marketing_scentra_broadcasts",
+        "label": "Mensajería masiva Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/broadcasts/router.py",
+        "source_location": "L1074"
+      },
+      {
+        "id": "marketing_scentra_ads",
+        "label": "Anuncios y leads Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/ads/router.py",
+        "source_location": "L364"
+      },
+      {
+        "id": "marketing_scentra_social",
+        "label": "Comentarios sociales Scentra",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/social/router.py",
+        "source_location": "L49"
+      },
+      {
+        "id": "marketing_cbn_main",
+        "label": "Composición activa CRM CBN",
+        "file_type": "code",
+        "source_file": "backend/app/main.py",
+        "source_location": "L39"
+      },
+      {
+        "id": "marketing_cbn_campaigns",
+        "label": "Campañas SQL CRM CBN",
+        "file_type": "code",
+        "source_file": "backend/app/modules/campaigns/router.py",
+        "source_location": "L67"
+      },
+      {
+        "id": "marketing_cbn_marketing_schema",
+        "label": "Esquema crm_marketing",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L14"
+      },
+      {
+        "id": "marketing_cbn_transport_block",
+        "label": "Bloqueo actual de transporte de campañas",
+        "file_type": "code",
+        "source_file": "backend/app/modules/campaigns/transport.py",
+        "source_location": "L6"
+      },
+      {
+        "id": "marketing_cbn_dispatcher",
+        "label": "Dispatcher y receptor SQL existentes",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L539"
+      },
+      {
+        "id": "marketing_cbn_comments",
+        "label": "API existente de comentarios sociales",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L295"
+      },
+      {
+        "id": "marketing_cbn_inbox_comments",
+        "label": "Interfaz de comentarios pendiente",
+        "file_type": "code",
+        "source_file": "frontend/src/modules/inbox/pages/Inbox.tsx",
+        "source_location": "L1111"
+      },
+      {
+        "id": "marketing_cbn_receipts",
+        "label": "Firma y recepción durable Meta/TikTok",
+        "file_type": "code",
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L26"
+      },
+      {
+        "id": "marketing_sprint5_contract",
+        "label": "Contrato de campañas y frontera de transporte",
+        "file_type": "document",
+        "source_file": "docs/contracts/sprint-5-campaign-model.md",
+        "source_location": "L1"
+      }
+    ],
+    "edges": [
+      {
+        "source": "marketing_cbn_main",
+        "target": "marketing_cbn_campaigns",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/main.py",
+        "source_location": "L113"
+      },
+      {
+        "source": "marketing_cbn_dispatcher",
+        "target": "marketing_cbn_transport_block",
+        "relation": "calls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/workers.py",
+        "source_location": "L631"
+      },
+      {
+        "source": "marketing_cbn_campaigns",
+        "target": "marketing_cbn_marketing_schema",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/campaigns/service.py",
+        "source_location": "L27"
+      },
+      {
+        "source": "marketing_sprint5_contract",
+        "target": "marketing_cbn_transport_block",
+        "relation": "references",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/contracts/sprint-5-campaign-model.md",
+        "source_location": "L69"
+      },
+      {
+        "source": "marketing_cbn_comments",
+        "target": "marketing_cbn_dispatcher",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/router.py",
+        "source_location": "L361"
+      },
+      {
+        "source": "marketing_cbn_receipts",
+        "target": "marketing_cbn_dispatcher",
+        "relation": "shares_data_with",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/channels/receipts.py",
+        "source_location": "L63"
+      },
+      {
+        "source": "marketing_scentra_campaigns",
+        "target": "marketing_cbn_campaigns",
+        "relation": "semantically_similar_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.75,
+        "source_file": "docs/adaptation/fragments/marketing.json",
+        "source_location": null
+      },
+      {
+        "source": "marketing_scentra_broadcasts",
+        "target": "marketing_cbn_campaigns",
+        "relation": "semantically_similar_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.65,
+        "source_file": "docs/adaptation/fragments/marketing.json",
+        "source_location": null
+      },
+      {
+        "source": "marketing_scentra_social",
+        "target": "marketing_cbn_comments",
+        "relation": "semantically_similar_to",
+        "confidence": "INFERRED",
+        "confidence_score": 0.7,
+        "source_file": "docs/adaptation/fragments/marketing.json",
+        "source_location": null
+      }
+    ]
+  }
+}

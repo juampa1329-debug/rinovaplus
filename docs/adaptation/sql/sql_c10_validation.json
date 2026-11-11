@@ -1,0 +1,262 @@
+{
+  "stage": "SQL-C10",
+  "status": "accepted_contract_defined_offline",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "11abae86cd301fe5e349088b9016dc14f60bf90de792ee5ead0d19c645489dac",
+  "reference_baseline_sha256": "910073681c9fbcedd80cb4a9e12b24ee09cfdbfd5bcf9d5681370e3e99d2571b",
+  "previous_checkpoint_sha256": "f7615b5885d7e502aec07030f61ed8bb7a8d0f986d9f99995b46afd0d41a18cb",
+  "inherited_postimages": {},
+  "completion_scope": "versioned contract and field/action inventory only; no SQL/runtime/provider acceptance",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "channels_ui_checkpoint": "SQL-C9",
+  "checks": {
+    "unit": "SQL-C10",
+    "status": "passed_offline_definition_only",
+    "contract": {
+      "tables": 24,
+      "foreign_keys": 78,
+      "migration_units": 5,
+      "field_output_contexts": 115,
+      "action_instances": 83,
+      "baseline_inputs": 627,
+      "negative_designs_rejected": 52,
+      "scope": "offline_definition_only_no_SQL_or_provider_acceptance"
+    },
+    "history_negative_transitions": 53,
+    "history_stdout": [
+      "C7 additive release checks passed; 3 unsafe transitions rejected",
+      "Offline chain checks passed; 23 invalid transitions rejected",
+      "C8 history checks passed; 7 unsafe transitions rejected",
+      "C8 graph checks passed; 2 invalid pins rejected",
+      "C9 history checks passed; 8 unsafe transitions rejected",
+      "C10 contract-only history checks passed; 10 unsafe transitions rejected"
+    ],
+    "ruff_E_F_I": "All checks passed!",
+    "AST_parse": "passed",
+    "model_sha256": "376f5f1234347cd403fe9a71fb0c4421fa14f2eee552afc790e91ae95a1cd7ba",
+    "ui_contract_sha256": "7beee8a73c8292e4fc7d78162a5733805199d7d555c7f3df0f2e65eb28878842",
+    "checker_sha256": "f62862abc7182c7c373c30290ca84cca90a8b554dde794989b286dc842d0ce15",
+    "history_checker_sha256": "5cb16a6d9fdae6de6cc5c9bcec5bc730a2b786f3ed7abc59b0fb1a2c9c7a6d1c",
+    "preserved_runtime_migrations_and_reference_files": 430,
+    "database_connected": false,
+    "runtime_tests_run": false,
+    "DDL_compiled": false,
+    "provider_calls": 0,
+    "institutional2019_accepted": false
+  },
+  "semantic_reviews": [
+    {
+      "path": "artifacts/sql-c10/review-oauth.json",
+      "sha256": "34a3fc7dd5bae544700be6dd27e79db15e7457371e68cf8b9f8d89e59d12a67a",
+      "status": "designonly"
+    },
+    {
+      "path": "artifacts/sql-c10/review-tiktok.json",
+      "sha256": "589758f1e6ea150f307b27a023be7c0edb4ccbcdddbd98af6b52ec1fb2290c4e",
+      "status": "accepted_definition_only_with_explicit_deferred_outputs"
+    },
+    {
+      "path": "artifacts/sql-c10/review-webhooks.json",
+      "sha256": "3d263fc8ef04581e0e220ab13028cd6cd65ccaea435ef237c2c9426633867b23",
+      "status": "accepted_offline_contract"
+    }
+  ],
+  "baseline_inputs": 627,
+  "unchanged_inputs": 612,
+  "preimages_sha256": "e27d060f182fa9a272599d6fe57763afefd473508c5f561f14116e4136cca57b",
+  "reference_preimages_sha256": "bb6f9d74218b1448b684c58a82c47c08508e93b02aba563e9473f0cfea3f644d",
+  "crc_and_all_preimage_hashes_verified": true,
+  "native_C6_C7_C8_C9_untouched": true,
+  "migration_units_proposed": 5,
+  "tables_proposed": 24,
+  "foreign_keys_proposed": 78,
+  "field_output_contexts": 115,
+  "action_instances": 83,
+  "database_connected": false,
+  "SQL_DDL_or_DML_executed": false,
+  "migrations_applied": false,
+  "runtime_files_modified": false,
+  "live_preservation_reverified": false,
+  "academic_writes": false,
+  "source_or_shared_database_writes": false,
+  "provider_calls": 0,
+  "workers_enabled": false,
+  "public_routes_enabled": false,
+  "institutional_sql2019_accepted": false,
+  "limits": [
+    "Non-executable model, not T-SQL compilation or SQL2019 acceptance",
+    "UI identical-fields/actions contract defined; C9 UI remains partial and unchanged",
+    "B013 lead and dead-letter triage outputs explicitly unavailable until their stages",
+    "Authentication P2, UI/provider fixtures and transport have separate acceptance gates",
+    "Prior C9 database preservation evidence is historical, not reconnected in C10"
+  ],
+  "next_unit": "SQL-C11",
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "e2e71040c78111fdac693996c4b930b43807878731af4c25e914da3b33a28a45",
+      "after_sha256": "bc343cfd7c1c85f4a3458f39f4b9d8109882f3cb1c4fb8174a33e04d74fb6b50"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "a7c2c8e894a52ac1b9466bd1a6f46e129db0e7c134e3b6c918f509a44220c521",
+      "after_sha256": "a49c3028cc3d1d8cc04baea1bbf4486c50fd502b24b874a4cfe00d4629ab201a"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "48bb2c825a2e9a758f1455007f3acc9ec7cb9ca5903e2e2705c989875173da68",
+      "after_sha256": "c928310e816f5c877c14679eab3e936e38e43b55413a3ab4a0a9d35f962f0f91"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "900b3053ccd132b8a17682e4d7ae9f27eb0178fa2f7a6f21a80841d886f97ead",
+      "after_sha256": "3653c8068fb457569a4b96802a1fbd099de671b64cd26ea9863a573fab9b889f"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "96d4d2849c42b8adac1610aa8b3c77a71c987fcb25d3f7b3eb6cce86c2ec366f",
+      "after_sha256": "85ffdfefb7e2ad415056b2426f7392d41ed02be1535b3d8ca2828835ab7611c1"
+    },
+    {
+      "path": "artifacts/sql-c10/graph-diagnostics.json",
+      "before_sha256": null,
+      "after_sha256": "4682929fc2a676b65d14168ec657aaae42b3a693e217e0097cb1a4e03e7e36cf"
+    },
+    {
+      "path": "artifacts/sql-c10/link-checks.json",
+      "before_sha256": null,
+      "after_sha256": "ac71d89fdf4f2b960e092a23bd66e4cd46093cf0f2f6da8a6556d942e8798a78"
+    },
+    {
+      "path": "artifacts/sql-c10/offline-checks.json",
+      "before_sha256": null,
+      "after_sha256": "518695e7d03b9c96c2109e8ec16d7a0ca39f63f8d18f7a9abf374cfb3c114439"
+    },
+    {
+      "path": "artifacts/sql-c10/review-oauth.json",
+      "before_sha256": null,
+      "after_sha256": "34a3fc7dd5bae544700be6dd27e79db15e7457371e68cf8b9f8d89e59d12a67a"
+    },
+    {
+      "path": "artifacts/sql-c10/review-tiktok.json",
+      "before_sha256": null,
+      "after_sha256": "589758f1e6ea150f307b27a023be7c0edb4ccbcdddbd98af6b52ec1fb2290c4e"
+    },
+    {
+      "path": "artifacts/sql-c10/review-webhooks.json",
+      "before_sha256": null,
+      "after_sha256": "3d263fc8ef04581e0e220ab13028cd6cd65ccaea435ef237c2c9426633867b23"
+    },
+    {
+      "path": "artifacts/sql-c10/source-oauth.json",
+      "before_sha256": null,
+      "after_sha256": "46200241f475e348238a7b0d5dab8620a2d5f4b5740b9040609ea21155b87bf0"
+    },
+    {
+      "path": "artifacts/sql-c10/source-tiktok.json",
+      "before_sha256": null,
+      "after_sha256": "123e53757146108c273453ab53f858101aef5a6ebb623f6a9ae1b11784fe611a"
+    },
+    {
+      "path": "artifacts/sql-c10/source-webhooks-secrets.json",
+      "before_sha256": null,
+      "after_sha256": "d1df93694080c45c4d10ce0c4b168af568cc33e59bbb65bdf3aeda5fbdb66da5"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "f6c8a2dda97c85632be361c6c6d47b39aecd03d92e5dde48adadfab6cf48b23c",
+      "after_sha256": "5cb16a6d9fdae6de6cc5c9bcec5bc730a2b786f3ed7abc59b0fb1a2c9c7a6d1c"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "908aadc16339d3d28702446e950b27b21bf4c3cb7083b5f9604596249cb83cda",
+      "after_sha256": "5b59a2b634a793194df17a8abe6ba4062eff5dc847dc17d420e469abe1d4948a"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "2861290fcfa11bd56b5e682b029709f4589337625c68c99597f8ef55f8608636",
+      "after_sha256": "c0b9c7d373df352c885964cc7b7ee777ab0505fc2d749e6460a37ab47a7cc3a9"
+    },
+    {
+      "path": "docs/adaptation/PARITY_MATRIX.md",
+      "before_sha256": "652d65ad8f4e5f35dbb21243f276aa74434dad2c20d690925611186c5a4c56d7",
+      "after_sha256": "c6d3264a3da40751efc204848d3d116c63d1e9cf4d6afb0af781f52c70519ca5"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "e0ae992e4502a8419c6d8ddb4ba63e1135e17b8e7e5af7190a75b71cbf7569dc",
+      "after_sha256": "168bafd98110fc9ebe62ffe4ba0866fe5aab87a983072d471ca83c115d6d998f"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c10.json",
+      "before_sha256": null,
+      "after_sha256": "5cc71ee00639def2f7acea6199900a7a39f28f80e632e5e6a58212cc40bbc36a"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "da7bf3a2c9ede110247fe947bcaa8edf2e33305cc30335e728fd61fc86d7031c",
+      "after_sha256": "5ac44a62e574b6d83212c5357b381fc0a83490f986eab945727542569539a5a1"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "before_sha256": null,
+      "after_sha256": "897eb598ff28aca9dd9f7ae097711b2b3086647d53afa35fee96ebe256b3f4af"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C10_FIELD_MATRIX.md",
+      "before_sha256": null,
+      "after_sha256": "ce44c6970dff8092dad23ec313bb27a2804f0dd5922dd18f71c10ba6bc0478ec"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C10_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "a92ed608d97cfef4205c6d1a72c06b72732b596a8db73ec52af93f8482fb8a15"
+    },
+    {
+      "path": "docs/adaptation/sql/channels-parity-contract.json",
+      "before_sha256": null,
+      "after_sha256": "376f5f1234347cd403fe9a71fb0c4421fa14f2eee552afc790e91ae95a1cd7ba"
+    },
+    {
+      "path": "docs/adaptation/sql/channels-ui-parity-contract.json",
+      "before_sha256": null,
+      "after_sha256": "7beee8a73c8292e4fc7d78162a5733805199d7d555c7f3df0f2e65eb28878842"
+    },
+    {
+      "path": "docs/adaptation/sql/check_c10_contract.py",
+      "before_sha256": null,
+      "after_sha256": "f62862abc7182c7c373c30290ca84cca90a8b554dde794989b286dc842d0ce15"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "1d611af1e9a0092746597710c73f1fd9fa08fa6de02c0efb61dfe1e4885fb12a",
+      "after_sha256": "a8ae7f786bf4bd00dead01758674402cb10c71626f992ee7bedad59bb73369d6"
+    },
+    {
+      "path": "docs/decisions/ADR-022-channels-parity-contract.md",
+      "before_sha256": null,
+      "after_sha256": "4d34aff9929b4a139f6373d524524ddf9ec5f61625b5bc71aba09e721c8ad357"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "3baf98d92ac78e8c5eeb0f44545a9d0a1633bc0ef1a57b9cf95e7ca1cd66716f",
+      "after_sha256": "bfbb3efcf6a117601d2c63b4ba91e27b5e9e77668da6e72675613c3c65e7f91b"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "45096f7c1667facee5a70e81fd93119e3e0cee323f72f0fb208c27fbdd9538be",
+      "after_sha256": "20d35065b1c3a3641c130d481259b97d4b485983770dd40db93690f36f9d7148"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "3550393772c254e7a4b9825f76ae9f3d5c87c78282cd264b988b3177021134f1",
+      "after_sha256": "8c7038fabe2374b556a6aa5958bdf3de346406194dcb9a3c16cb6f8c3fc54f19"
+    },
+    {
+      "path": "tasks/sql-c10-progress.json",
+      "before_sha256": null,
+      "after_sha256": "a85ed40c55d89450118ff127abe89874c8bb38a22da3bdb803d05018d6c09f52"
+    }
+  ]
+}

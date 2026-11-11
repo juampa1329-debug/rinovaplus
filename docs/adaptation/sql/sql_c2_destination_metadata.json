@@ -1,0 +1,37 @@
+{
+  "unit": "SQL-C2",
+  "checked_at_utc": "2026-10-24T20:09:18.233834+00:00",
+  "database": "HORARIOSSIIE",
+  "mode": "SELECT_only_readonly_autocommit_strictTLS",
+  "query_sha256": {
+    "database_properties": "dab5044d37e094809efe236e36899665e5e18c61bbfc7d3cd5412358d49994a8",
+    "managed_schemas": "79f99a8d53b47ade1f67b572ed12c3d718f724d1b150fd91897bb0b2be181db5",
+    "managed_objects": "6f088ea0dc16535a0d4906936cd9ef4a8fd7880b318569ba762556b119fddf51",
+    "database_ddl_triggers": "463955f16b7ae05bf329baf4da6ac9755d04fc60db6ae5d68ed56f4331fab9dc",
+    "server_ddl_triggers": "c227d28de922b9602a8346635a7f6136f93b95db82cdc4257e0527caf8d9b364"
+  },
+  "database_properties": [
+    [
+      "Modern_Spanish_CI_AS",
+      1,
+      1
+    ]
+  ],
+  "managed_schemas": [],
+  "managed_objects": [],
+  "server_ddl_triggers": [],
+  "database_ddl_triggers": [],
+  "limitations": [
+    "No business rows",
+    "Trigger bodies not published; hashes/visibility only",
+    "No DDL executed; complete academic before/after signature still required at rehearsal",
+    "Server trigger bodies and migration principal permissions not accepted"
+  ],
+  "recorded_select_queries": {
+    "database_properties": "SELECT CONVERT(nvarchar(128),DATABASEPROPERTYEX(DB_NAME(),'Collation')), HAS_PERMS_BY_NAME(DB_NAME(),'DATABASE','VIEW DEFINITION'), IS_SRVROLEMEMBER('sysadmin')",
+    "managed_schemas": "SELECT name,USER_NAME(principal_id) FROM sys.schemas WHERE name=N'crm' OR name LIKE N'crm[_]%' ORDER BY name",
+    "managed_objects": "SELECT s.name,o.name,o.type_desc FROM sys.objects o JOIN sys.schemas s ON s.schema_id=o.schema_id WHERE o.is_ms_shipped=0 AND (s.name=N'crm' OR s.name LIKE N'crm[_]%') ORDER BY s.name,o.name",
+    "database_ddl_triggers": "SELECT name,is_disabled,OBJECT_DEFINITION(object_id) FROM sys.triggers WHERE parent_class=0 ORDER BY name",
+    "server_ddl_triggers": "SELECT name,is_disabled,is_ms_shipped FROM sys.server_triggers ORDER BY name"
+  }
+}

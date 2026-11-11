@@ -1,0 +1,1132 @@
+{
+  "domain": "P2-ES · fotografía final de fuentes UI/acceso",
+  "inspected_on": "2026-10-26",
+  "snapshot_utc": "2026-10-26T21:50:51.671913+00:00",
+  "artifact_status": "draft_current_source_and_attributed_results_no_new_acceptance",
+  "evidence_scope": "Fuentes actuales y resultados públicos leídos, sin ejecutar app/tests/SQL. Los resultados del equipo se atribuyen a sus archivos; no son ejecución de este extractor ni aceptación nueva. Informes previos y main14inputs preservados por la revisión.",
+  "findings": [
+    {
+      "id": "p2_es_ui_final_typed_numbers",
+      "capability": "TypedFields asigna step=any a number y convierte con Number; los campos integer conservan su restricción nativa. La prueba focalizada comprueba validez HTML para temperature=0.35.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Fields.tsx",
+          "line": 107
+        },
+        {
+          "file": "frontend/src/test/institution.test.tsx",
+          "line": 64
+        }
+      ],
+      "status": "source_observed_with_attributed_pure_and_UI_evidence",
+      "gap": "El caso focalizado de HTML no sustituye todas las combinaciones/rangos del DTO ni cada navegador.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "frontend",
+        "browser"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_session_boundary",
+      "capability": "SessionBoundary enlaza CSRF antes de los efectos normales de descendientes usando useLayoutEffect; cleanup borra el binding y cancela confirmación pendiente. El cliente conserva CSRF en memoria y una sesión expirada lo retira.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 223
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/api.tsx",
+          "line": 160
+        },
+        {
+          "file": "frontend/src/institution/api.tsx",
+          "line": 163
+        },
+        {
+          "file": "frontend/src/test/institution.test.tsx",
+          "line": 199
+        },
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 113
+        },
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 46
+        }
+      ],
+      "status": "source_observed_with_attributed_pure_and_UI_evidence",
+      "gap": "El test citado comprueba expiración/limpieza del binding; no se afirma una prueba aislada de todos los ordenamientos de montaje concurrente.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.2",
+        "P2.4",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "frontend",
+        "browser",
+        "access"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_crm_permission",
+      "capability": "CrmConfiguration consulta settings.crm.write y deshabilita su fieldset sin ese permiso. La UI no sustituye las comprobaciones del servidor, que releen rol/acciones y sesión en la transacción.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 225
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+          "line": 39
+        },
+        {
+          "file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+          "line": 117
+        },
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 52
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 95
+        }
+      ],
+      "status": "source_observed_with_attributed_UI_and_SQL_evidence",
+      "gap": "El informe de navegador constata viewer_CRM_create_disabled; el control fuente de Configuración CRM añade protección de interfaz al editor compartido.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.4",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "browser",
+        "http",
+        "access"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_secret_lifecycle",
+      "capability": "TOTP muestra semilla y URI; Ya la guardé oculta ambas preservando setup_id. useIntent.clear se invoca en finalizaciones sensibles; creación/rotación de endpoint trata replay sin redistribuir plaintext y dirige a rotación explícita. El formulario de webhook nuevo vacía URL y cuenta tras éxito.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 650
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 651
+        },
+        {
+          "file": "frontend/src/institution/api.tsx",
+          "line": 275
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 540
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 187
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 524
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 525
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 537
+        }
+      ],
+      "status": "source_observed_with_attributed_UI_and_SQL_evidence",
+      "gap": "Los informes cubren guardado/redacción y replay. Mostrar/ocultar URI se confirma aquí por fuente; no se atribuye una prueba de navegador específica de ese botón si el informe no la enumera.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "workflows",
+        "http",
+        "recovery"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_draft_navigation",
+      "capability": "La navegación con borrador pide confirmación y restaura hash al cancelar; el selector de proveedor y las cuentas respetan el guard. Ajustes, endpoint y formulario nuevo registran sus borradores. El 409 conserva el estado hasta carga explícita.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 379
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 587
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 93
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 80
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 235
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 480
+        }
+      ],
+      "status": "source_observed_with_attributed_UI_evidence",
+      "gap": "El informe de flujos enumera cancelación de ajustes/proveedor y descarte sin escritura; no se convierte eso en aceptación exhaustiva de cada ruta de salida.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "workflows",
+        "frontend"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_runtime_profile",
+      "capability": "Guardar/restaurar módulos recarga runtime del Shell sin F5. Perfil mantiene zona horaria y las fechas nuevas de Seguridad/Auditoría la aplican; el encabezado usa CRM CBN e institución educativa.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 591
+        },
+        {
+          "file": "frontend/src/institution/Settings.tsx",
+          "line": 167
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 716
+        },
+        {
+          "file": "frontend/src/institution/Access.tsx",
+          "line": 780
+        },
+        {
+          "file": "frontend/src/institution/InstitutionApp.tsx",
+          "line": 472
+        }
+      ],
+      "status": "source_observed_with_attributed_UI_evidence",
+      "gap": "profile_timezone_saved_from_UI es una comprobación UI. security_and_audit_use_profile_timezone_source_contract declara comprobación del contrato fuente, no una comparación visual de horas. Formateo heredado de Inbox/workflow queda en P3.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.2",
+        "P2.3"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "workflows",
+        "browser"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_authority_routes",
+      "capability": "Los patrones/métodos protegidos se obtienen de app.openapi y se comprueban por fullmatch; CRM/Inbox se autorizan antes del DTO y otra vez en transacción. IA recomputa proyecciones readonly desde Models cuando cambia proveedor; Canales reutiliza el recurso canónico Webhooks.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 333
+        },
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 96
+        },
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 113
+        },
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 46
+        },
+        {
+          "file": "backend/app/institutional/auth.py",
+          "line": 52
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 134
+        },
+        {
+          "file": "backend/app/institutional/settings.py",
+          "line": 143
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 473
+        },
+        {
+          "file": "frontend/src/institution/Channels.tsx",
+          "line": 453
+        }
+      ],
+      "status": "source_observed_with_attributed_SQL_evidence",
+      "gap": "La revisión no cambia ni recertifica los catorce inputs congelados o la ACL/TLS; los resultados SQL se atribuyen a sus informes públicos.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.4",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [
+        "http",
+        "access",
+        "browser"
+      ],
+      "new_acceptance": false
+    },
+    {
+      "id": "p2_es_ui_final_legacy_copy_note",
+      "capability": "El editor compartido CrmConfiguration muestra el resultado de guardado sin añadir detalles internos de persistencia. La etiqueta «Confirmado en SQL local.» detectada durante esta revisión fue retirada por coordinación.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 222
+        }
+      ],
+      "target": [
+        {
+          "file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+          "line": 82
+        }
+      ],
+      "status": "source_observed_copy_note_resolved",
+      "gap": "Corrección de presentación observada en fuente; no cambia permisos o persistencia ni añade aceptación de fase.",
+      "acceptance": "La fuente y los resultados públicos tienen el alcance declarado; el cierre canónico/reinicio/checkpoint final corresponde a coordinación y no se afirma en esta extracción.",
+      "phase": "P2",
+      "canonical_criteria": [
+        "P2.1",
+        "P2.close"
+      ],
+      "evidence_level": "source_review",
+      "attributed_evidence_ids": [],
+      "new_acceptance": false
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_ui_final_current_source_review",
+        "label": "P2 · fotografía final de fuentes UI/acceso y resultados atribuidos",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/ui-access-final-source-review.json",
+        "source_location": "L1",
+        "status": "source_review_no_phase_acceptance"
+      },
+      {
+        "id": "p2_es_ui_final_scope_1",
+        "label": "P2.1 · alcance canónico",
+        "criterion_id": "P2.1",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L222",
+        "status": "acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_final_scope_2",
+        "label": "P2.2 · alcance canónico",
+        "criterion_id": "P2.2",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L223",
+        "status": "acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_final_scope_3",
+        "label": "P2.3 · alcance canónico",
+        "criterion_id": "P2.3",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L224",
+        "status": "acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_final_scope_4",
+        "label": "P2.4 · alcance canónico",
+        "criterion_id": "P2.4",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L225",
+        "status": "acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_final_scope_close",
+        "label": "P2.close · alcance canónico",
+        "criterion_id": "P2.close",
+        "file_type": "document",
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L227",
+        "status": "acceptance_unchanged"
+      },
+      {
+        "id": "p2_es_ui_final_typed_numbers",
+        "label": "TypedFields asigna step=any a number y convierte con Number; los campos integer conservan su restricción nativa. La prueba focalizada comprueba validez HTML para temperature=0.35.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Fields.tsx",
+        "source_location": "L107",
+        "status": "source_observed_with_attributed_pure_and_UI_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_session_boundary",
+        "label": "SessionBoundary enlaza CSRF antes de los efectos normales de descendientes usando useLayoutEffect; cleanup borra el binding y cancela confirmación pendiente. El cliente conserva CSRF en memoria y una sesión expirada lo retira.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L160",
+        "status": "source_observed_with_attributed_pure_and_UI_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_crm_permission",
+        "label": "CrmConfiguration consulta settings.crm.write y deshabilita su fieldset sin ese permiso. La UI no sustituye las comprobaciones del servidor, que releen rol/acciones y sesión en la transacción.",
+        "file_type": "document",
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L39",
+        "status": "source_observed_with_attributed_UI_and_SQL_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_secret_lifecycle",
+        "label": "TOTP muestra semilla y URI; Ya la guardé oculta ambas preservando setup_id. useIntent.clear se invoca en finalizaciones sensibles; creación/rotación de endpoint trata replay sin redistribuir plaintext y dirige a rotación explícita. El formulario de webhook nuevo vacía URL y cuenta tras éxito.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L650",
+        "status": "source_observed_with_attributed_UI_and_SQL_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_draft_navigation",
+        "label": "La navegación con borrador pide confirmación y restaura hash al cancelar; el selector de proveedor y las cuentas respetan el guard. Ajustes, endpoint y formulario nuevo registran sus borradores. El 409 conserva el estado hasta carga explícita.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379",
+        "status": "source_observed_with_attributed_UI_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_runtime_profile",
+        "label": "Guardar/restaurar módulos recarga runtime del Shell sin F5. Perfil mantiene zona horaria y las fechas nuevas de Seguridad/Auditoría la aplican; el encabezado usa CRM CBN e institución educativa.",
+        "file_type": "document",
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L591",
+        "status": "source_observed_with_attributed_UI_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_authority_routes",
+        "label": "Los patrones/métodos protegidos se obtienen de app.openapi y se comprueban por fullmatch; CRM/Inbox se autorizan antes del DTO y otra vez en transacción. IA recomputa proyecciones readonly desde Models cuando cambia proveedor; Canales reutiliza el recurso canónico Webhooks.",
+        "file_type": "document",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333",
+        "status": "source_observed_with_attributed_SQL_evidence"
+      },
+      {
+        "id": "p2_es_ui_final_legacy_copy_note",
+        "label": "El editor compartido CrmConfiguration muestra el resultado de guardado sin añadir detalles internos de persistencia. La etiqueta «Confirmado en SQL local.» detectada durante esta revisión fue retirada por coordinación.",
+        "file_type": "document",
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L82",
+        "status": "source_observed_copy_note_resolved"
+      },
+      {
+        "id": "p2_es_ui_final_report_browser",
+        "label": "browser · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1",
+        "status": "attributed_UI_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_workflows",
+        "label": "workflows · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/browser/workflows-result.json",
+        "source_location": "L1",
+        "status": "attributed_UI_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_frontend",
+        "label": "frontend · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/frontend-test-result.json",
+        "source_location": "L1",
+        "status": "attributed_pure_test_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_http",
+        "label": "http · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1",
+        "status": "attributed_SQL_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_access",
+        "label": "access · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1",
+        "status": "attributed_SQL_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_recovery",
+        "label": "recovery · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L1",
+        "status": "attributed_SQL_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_previous_consumer",
+        "label": "previous_consumer · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/previous-consumer-result.json",
+        "source_location": "L1",
+        "status": "attributed_SQL_not_rerun_by_reviewer"
+      },
+      {
+        "id": "p2_es_ui_final_report_migration_faults",
+        "label": "migration_faults · resultado público passed",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/migration-fault-result.json",
+        "source_location": "L1",
+        "status": "attributed_SQL_not_rerun_by_reviewer"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_ui_final_scope_1",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L222"
+      },
+      {
+        "source": "p2_es_ui_final_scope_2",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L223"
+      },
+      {
+        "source": "p2_es_ui_final_scope_3",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L224"
+      },
+      {
+        "source": "p2_es_ui_final_scope_4",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L225"
+      },
+      {
+        "source": "p2_es_ui_final_scope_close",
+        "target": "P2",
+        "relation": "criterion_of_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+        "source_location": "L227"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_typed_numbers",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/Fields.tsx",
+        "source_location": "L107"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_session_boundary",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L160"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_crm_permission",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L39"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_secret_lifecycle",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L650"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_draft_navigation",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_runtime_profile",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L591"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_authority_routes",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_legacy_copy_note",
+        "relation": "extracts_current_source_behavior",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L82"
+      },
+      {
+        "source": "p2_es_ui_final_typed_numbers",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Fields.tsx",
+        "source_location": "L107"
+      },
+      {
+        "source": "p2_es_ui_final_session_boundary",
+        "target": "p2_es_ui_final_scope_2",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L160"
+      },
+      {
+        "source": "p2_es_ui_final_session_boundary",
+        "target": "p2_es_ui_final_scope_4",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L160"
+      },
+      {
+        "source": "p2_es_ui_final_session_boundary",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/api.tsx",
+        "source_location": "L160"
+      },
+      {
+        "source": "p2_es_ui_final_crm_permission",
+        "target": "p2_es_ui_final_scope_4",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L39"
+      },
+      {
+        "source": "p2_es_ui_final_crm_permission",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L39"
+      },
+      {
+        "source": "p2_es_ui_final_secret_lifecycle",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L650"
+      },
+      {
+        "source": "p2_es_ui_final_secret_lifecycle",
+        "target": "p2_es_ui_final_scope_2",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L650"
+      },
+      {
+        "source": "p2_es_ui_final_secret_lifecycle",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/Access.tsx",
+        "source_location": "L650"
+      },
+      {
+        "source": "p2_es_ui_final_draft_navigation",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_final_draft_navigation",
+        "target": "p2_es_ui_final_scope_2",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_final_draft_navigation",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L379"
+      },
+      {
+        "source": "p2_es_ui_final_runtime_profile",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L591"
+      },
+      {
+        "source": "p2_es_ui_final_runtime_profile",
+        "target": "p2_es_ui_final_scope_2",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L591"
+      },
+      {
+        "source": "p2_es_ui_final_runtime_profile",
+        "target": "p2_es_ui_final_scope_3",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/institution/InstitutionApp.tsx",
+        "source_location": "L591"
+      },
+      {
+        "source": "p2_es_ui_final_authority_routes",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333"
+      },
+      {
+        "source": "p2_es_ui_final_authority_routes",
+        "target": "p2_es_ui_final_scope_4",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333"
+      },
+      {
+        "source": "p2_es_ui_final_authority_routes",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L333"
+      },
+      {
+        "source": "p2_es_ui_final_legacy_copy_note",
+        "target": "p2_es_ui_final_scope_1",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L82"
+      },
+      {
+        "source": "p2_es_ui_final_legacy_copy_note",
+        "target": "p2_es_ui_final_scope_close",
+        "relation": "supports_review_of_requirement_without_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx",
+        "source_location": "L82"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_browser",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_workflows",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/browser/workflows-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_frontend",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/frontend-test-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_http",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_access",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_recovery",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_previous_consumer",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/previous-consumer-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_current_source_review",
+        "target": "p2_es_ui_final_report_migration_faults",
+        "relation": "reads_public_result_not_independently_rerun",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/p2-es/migration-fault-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_frontend",
+        "target": "p2_es_ui_final_typed_numbers",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/frontend-test-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_browser",
+        "target": "p2_es_ui_final_typed_numbers",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_frontend",
+        "target": "p2_es_ui_final_session_boundary",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/frontend-test-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_browser",
+        "target": "p2_es_ui_final_session_boundary",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_access",
+        "target": "p2_es_ui_final_session_boundary",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_browser",
+        "target": "p2_es_ui_final_crm_permission",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_http",
+        "target": "p2_es_ui_final_crm_permission",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_access",
+        "target": "p2_es_ui_final_crm_permission",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_workflows",
+        "target": "p2_es_ui_final_secret_lifecycle",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/workflows-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_http",
+        "target": "p2_es_ui_final_secret_lifecycle",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_recovery",
+        "target": "p2_es_ui_final_secret_lifecycle",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_workflows",
+        "target": "p2_es_ui_final_draft_navigation",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/workflows-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_frontend",
+        "target": "p2_es_ui_final_draft_navigation",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/frontend-test-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_workflows",
+        "target": "p2_es_ui_final_runtime_profile",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/workflows-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_browser",
+        "target": "p2_es_ui_final_runtime_profile",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_http",
+        "target": "p2_es_ui_final_authority_routes",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_access",
+        "target": "p2_es_ui_final_authority_routes",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_ui_final_report_browser",
+        "target": "p2_es_ui_final_authority_routes",
+        "relation": "provides_bounded_support_for",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "artifacts/p2-es/browser/result.json",
+        "source_location": "L1"
+      }
+    ]
+  },
+  "source_hashes": {
+    "frontend/src/institution/Fields.tsx": "919245e9e38c74e40cfccc8e1c49794f72876512ed33c1a22749d18887203479",
+    "frontend/src/test/institution.test.tsx": "6b17f1e73ef2185a2e6664815791596fa31bf99b19c1039fe3375ef77e6e8a0b",
+    "frontend/src/institution/api.tsx": "2b3ea0960554a5bb8f38b209c4fd50e77cb3831aba64c6959521ccc91e448f32",
+    "backend/app/institutional/api.py": "b4f474ce1be2eca7cf171b0f3c83c84b9777f29696d336061e038750b42d7457",
+    "backend/app/institutional/auth.py": "07eb52f327dfa55e87b372f3160d9ba0fe230d5ce41096f7bb8722272bdbdca5",
+    "frontend/src/modules/crm-configuration/pages/CrmConfiguration.tsx": "7aedf3f557610423e13a782a08728f76182cd08b0afeca62d5cc448acb9ba1af",
+    "backend/app/institutional/settings.py": "90ef3a2c390366b6f2ce73d387ba607c91dc4f3c436b229ccf2e0ba2a72c50c2",
+    "frontend/src/institution/Access.tsx": "80771690f30761a60881966f6f1bf249728478087003e35d164e88cdef629e8f",
+    "frontend/src/institution/Settings.tsx": "14d1159b9bf42bde571bbf931bd88a83a61595df5db0b0e46c8e59cb34195dfa",
+    "frontend/src/institution/Channels.tsx": "188b321efa5453417e86cb840bad3de05153ad43ca9bd7b455fc0147440f8998",
+    "frontend/src/institution/InstitutionApp.tsx": "e5832b8cbb2366824c59e9063c068072f6a7b4f58493b1feca86138c689272bb",
+    "artifacts/p2-es/browser/result.json": "a4001f516aa93b2e3384fb33d711b2e7ed607c29e0473bc130084e8e826a7b09",
+    "artifacts/p2-es/browser/workflows-result.json": "a2d16979be750d273c81cd28016e971a131b69c18a09a3364d8d6c104c471ed5",
+    "artifacts/p2-es/frontend-test-result.json": "53cfb21d2d94c6ed43b2f04e6b9e1a21a97ab5a3ae8f9d0122124515fd0bf2df",
+    "artifacts/p2-es/http-result.json": "c5f00a91c41657961e2c073b87cd2d375064d7873ad3c9e9eea6579b3b080680",
+    "artifacts/p2-es/access-result.json": "c1bf27246e12110d79222b75d5921e5409c710b0d71f8346e87422e75283133e",
+    "artifacts/p2-es/recovery-result.json": "faae1f73566ce092f645d790ffe8601e2e62163b6ee5566c359b0859c3c6a35d",
+    "artifacts/p2-es/previous-consumer-result.json": "3e5249d25df4a2dffbe86bfcbee0f24ab11d38c1c56af92d17bc6dfd46527607",
+    "artifacts/p2-es/migration-fault-result.json": "57cfc0c297adb330af67b2d4aa5df1a63bd7c83f7b8fa6d4a37c3358c422be75",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md": "8d4dce71d8be77b365cb4291ff99dfa214e13650befdd9853949aa946dd12e2c",
+    "artifacts/p2-es/ui-access-integration-review.json": "69376e0f06a86190ad8257d9e2f7799ad25f3ea10beeaf7851142d22b94fb9de",
+    "docs/adaptation/fragments/p2-es-ui-access.draft.json": "dddfca9d0b2e56034cf9b7666a502cb9bcb06a1af29657e31dd9ef3c39a6c39e",
+    "artifacts/p2-es/ui-access-final-source-review.json": "61e6278673c20e14d7d72766bf023d34a85be58fac0f988d602e36cb1b1303c0"
+  },
+  "context_graph": {
+    "path": "graphify-out/adaptation/graph.json",
+    "queried_before_source": true,
+    "snapshot_sha256": "f1056619972933bcd1c3aed074b66fa2f9c3f591e4841d994b6fe5d654fc5d79",
+    "derived_graph_not_used_as_input_freshness_contract": true
+  },
+  "new_acceptance": false
+}

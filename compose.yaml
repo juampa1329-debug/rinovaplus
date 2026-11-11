@@ -1,0 +1,79 @@
+services:
+  preview:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.development
+    image: crm-cbn-preview:development
+    pull_policy: never
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 20s
+    ports:
+      - "127.0.0.1:4173:4173"
+      - "127.0.0.1:4174:4174"
+    environment:
+      CRM_LIVE_DEVELOPMENT: "true"
+      CRM_APP_MODE: ${CRM_APP_MODE:-local_demo}
+      CRM_AI_STATE_DIR: /var/lib/crm-ai
+      CRM_AI_OUTBOUND_ENABLED: ${CRM_AI_OUTBOUND_ENABLED:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
+      GOOGLE_TTS_API_KEY: ${GOOGLE_TTS_API_KEY:-}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY:-}
+      SERPAPI_API_KEY: ${SERPAPI_API_KEY:-}
+      CRM_CATALOG_TOKEN: ${CRM_CATALOG_TOKEN:-}
+      CRM_META_VERIFY_TOKEN_SHA256: ${CRM_META_VERIFY_TOKEN_SHA256:-}
+      CRM_SQL_HOST: ${CRM_SQL_HOST:-}
+      CRM_SQL_ENVIRONMENT: ${CRM_SQL_ENVIRONMENT:-local_copy}
+      CRM_SQL_PORT: ${CRM_SQL_PORT:-}
+      CRM_SQL_USER: ${CRM_SQL_USER:-}
+      CRM_SQL_PASSWORD: ${CRM_SQL_PASSWORD:-}
+      CRM_SQL_EXPECTED_MACHINE: ${CRM_SQL_EXPECTED_MACHINE:-}
+      CRM_SQL_EXPECTED_SERVER: ${CRM_SQL_EXPECTED_SERVER:-}
+      CRM_SQL_EXPECTED_INSTANCE: ${CRM_SQL_EXPECTED_INSTANCE:-}
+      CRM_SQL_EXPECTED_LOGIN: ${CRM_SQL_EXPECTED_LOGIN:-}
+      CRM_SQL_EXPECTED_DATABASE_USER: ${CRM_SQL_EXPECTED_DATABASE_USER:-}
+      CRM_SQL_CERTIFICATE_HOSTNAME: ${CRM_SQL_CERTIFICATE_HOSTNAME:-}
+      CRM_SQL_SERVER: ${CRM_SQL_SERVER:-localhost\SQLEXPRESS}
+      CRM_SQL_DATABASE: ${CRM_SQL_DATABASE:-}
+      CRM_CATALOG_ORIGINS: http://127.0.0.1:4173,http://localhost:4173
+    volumes:
+      - ai-state:/var/lib/crm-ai
+      - type: bind
+        source: ./docker/nginx.development.conf
+        target: /etc/nginx/nginx.development.conf
+        read_only: true
+      - type: bind
+        source: ./backend/app
+        target: /app/backend/app
+        read_only: true
+      - type: bind
+        source: ./backend/tools
+        target: /app/backend/tools
+        read_only: true
+      - type: bind
+        source: ./backend/migrations
+        target: /app/backend/migrations
+        read_only: true
+      - type: bind
+        source: ./frontend
+        target: /app/frontend-source
+        read_only: true
+      - frontend-dependencies:/app/frontend-source/node_modules
+    networks:
+      - preview
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  ai-state:
+  frontend-dependencies:
+
+networks:
+  preview:
+    driver: bridge

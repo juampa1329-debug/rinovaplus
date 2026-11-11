@@ -1,0 +1,10 @@
+{
+  "version": "cbn-ads-operations-p9-v2",
+  "base_release_sha256": "cfc0496dc4707de991162dd5d3c97b36e513ff62e635953b60a3324d1b50d738",
+  "result_tables": 175,
+  "files": {
+    "P9ES-002.sql": "dc93dc54579ea67934e275bac6ecfd002b38e030e23c7376ab9c4b937eeb803c",
+    "expected-model.json": "f7fffdca233fbe822645f2e4c44d3879c09098cbeb0dc4ace33aec2ad2d6a53e"
+  },
+  "scope": "add_ignored_status_and_native_conversion_link_check; preserve_committed_v1"
+}

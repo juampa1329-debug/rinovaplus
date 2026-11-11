@@ -1,0 +1,213 @@
+{
+  "domain": "Repositorios CRM en restauraciÃƒÆ’Ã‚Â³n Ãƒâ€šÃ‚Â· SQL-C4",
+  "findings": [],
+  "review_scope": "Fuentes pÃƒÂºblicas revisadas mÃƒÂ¡s evidencia SQL-C4: 200 pruebas del nÃƒÂºcleo y 84 comprobaciones reales en restauraciÃƒÂ³n, preservaciÃƒÂ³n acadÃƒÂ©mica y diario. No acredita UI compartida, institucional2019 o suite completa.",
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c4_restored_repository_scope",
+        "label": "SQL-C4: contrato de repositorios limitado a B000+B001+B006 en restauraciÃƒÆ’Ã‚Â³n",
+        "file_type": "code",
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L17",
+        "verification": "restored_core_api_verified_SQL_C4"
+      },
+      {
+        "id": "sql_c4_minimal_crm_capabilities",
+        "label": "Capacidades base: contactos, conversaciones, texto local, configuraciÃƒÆ’Ã‚Â³n e Inbox",
+        "file_type": "code",
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L64"
+      },
+      {
+        "id": "sql_c4_blocked_integrations",
+        "label": "CatÃƒÆ’Ã‚Â¡logo/perfil acadÃƒÆ’Ã‚Â©mico, asignaciÃƒÆ’Ã‚Â³n, evaluaciÃƒÆ’Ã‚Â³n, canales, medios, agentes y workers excluidos",
+        "file_type": "code",
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L71"
+      },
+      {
+        "id": "sql_c4_exact_acl_overlay",
+        "label": "Principal runtime separado: ACL exacta y proyecciÃƒÆ’Ã‚Â³n sÃƒÆ’Ã‚Â³lo de ese actor",
+        "file_type": "code",
+        "source_file": "backend/app/foundation.py",
+        "source_location": "L125",
+        "rationale": "La comparaciÃƒÆ’Ã‚Â³n conserva permisos acadÃƒÆ’Ã‚Â©micos previos y la forma C3; la ACL nueva se verifica por separado."
+      },
+      {
+        "id": "sql_c4_frozen_c3_contract",
+        "label": "Release C3 b8de5466 y lector de metadatos congelados; ningÃƒÆ’Ã‚Âºn override C4",
+        "file_type": "code",
+        "source_file": "backend/tools/historical_checkpoint.py",
+        "source_location": "L56"
+      },
+      {
+        "id": "sql_c4_active_inventory",
+        "label": "inventory.active.json describe consumidores actuales; inventory.json permanece histÃƒÆ’Ã‚Â³rico",
+        "file_type": "code",
+        "source_file": "backend/tools/inventory_migrations.py",
+        "source_location": "L293"
+      },
+      {
+        "id": "sql_c4_explicit_source_transitions",
+        "label": "Checkpoint C4 exige SHA del baseline y transiciÃƒÆ’Ã‚Â³n explÃƒÆ’Ã‚Â­cita antes/despuÃƒÆ’Ã‚Â©s",
+        "file_type": "code",
+        "source_file": "backend/tools/historical_checkpoint.py",
+        "source_location": "L81"
+      },
+      {
+        "id": "sql_c4_institutional_acceptance_pending",
+        "label": "AceptaciÃƒÆ’Ã‚Â³n institucional SQL Server2019 pendiente; integraciÃƒÆ’Ã‚Â³n completa no preparada",
+        "file_type": "code",
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L83"
+      },
+      {
+        "id": "sql_c4_verified_acceptance",
+        "label": "SQL-C4: 200 pruebas nÃƒÂºcleo y 84 comprobaciones SQL/API",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json",
+        "verification": "connected_restored_evidence"
+      },
+      {
+        "id": "sql_c4_academic_preservation",
+        "label": "50 tablas y 44.180 filas acadÃƒÂ©micas conservadas; diario intacto",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json",
+        "verification": "connected_restored_evidence"
+      },
+      {
+        "id": "sql_c4_previous_regression_debt",
+        "label": "41 fallos ampliados reproducidos con cÃƒÂ³digo anterior; suite general pendiente",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json",
+        "verification": "baseline_reproduction"
+      }
+    ],
+    "edges": [
+      {
+        "source": "foundation_runtime",
+        "target": "sql_c4_restored_repository_scope",
+        "relation": "has_separate_restored_repository_composition_in_source",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c4_minimal_crm_capabilities",
+        "relation": "declares_available_foundation_capabilities",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L64"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c4_blocked_integrations",
+        "relation": "explicitly_excludes_dependent_capabilities",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L71"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c3_restored_release_v2",
+        "relation": "pins_c3_accepted_trial_and_release",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation.py",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c4_exact_acl_overlay",
+        "relation": "requires_separately_verified_runtime_identity_and_exact_acl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation.py",
+        "source_location": "L125"
+      },
+      {
+        "source": "sql_c4_exact_acl_overlay",
+        "target": "sql_c3_frozen_prefix_shapes",
+        "relation": "removes_only_runtime_actor_when_comparing_unchanged_c3_permissions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation.py",
+        "source_location": "L183"
+      },
+      {
+        "source": "foundation_sql_dialect",
+        "target": "sql_c4_frozen_c3_contract",
+        "relation": "preserves_frozen_sql_shapes_tools_and_legacy_inputs",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/historical_checkpoint.py",
+        "source_location": "L56"
+      },
+      {
+        "source": "sql_c4_active_inventory",
+        "target": "sql_c4_frozen_c3_contract",
+        "relation": "refuses_to_overwrite_signed_historical_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/inventory_migrations.py",
+        "source_location": "L304"
+      },
+      {
+        "source": "sql_c4_explicit_source_transitions",
+        "target": "sql_c4_frozen_c3_contract",
+        "relation": "rejects_c4_overrides_of_immutable_historical_inputs",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/historical_checkpoint.py",
+        "source_location": "L81"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c4_institutional_acceptance_pending",
+        "relation": "does_not_grant_institutional_sql2019_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/foundation_app.py",
+        "source_location": "L83"
+      },
+      {
+        "source": "sql_c4_institutional_acceptance_pending",
+        "target": "P1",
+        "relation": "retains_pending_institutional_database_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/decisions/ADR-015-foundation-restored-rehearsal.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c4_restored_repository_scope",
+        "target": "sql_c4_verified_acceptance",
+        "relation": "verified_in_isolated_restored_api",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json"
+      },
+      {
+        "source": "sql_c4_verified_acceptance",
+        "target": "sql_c4_academic_preservation",
+        "relation": "includes_full_precision_academic_preservation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json"
+      },
+      {
+        "source": "sql_c4_verified_acceptance",
+        "target": "sql_c4_previous_regression_debt",
+        "relation": "does_not_claim_full_repository_suite_green",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/sql_c4_validation.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,4068 @@
+{
+  "unit": "SQL-C10",
+  "version": "cbn-channels-parity-contract-v1",
+  "status": "defined_offline_not_implemented",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "previous_checkpoint_sha256": "f7615b5885d7e502aec07030f61ed8bb7a8d0f986d9f99995b46afd0d41a18cb",
+  "authorization": {
+    "contract_only": true,
+    "database_connections": false,
+    "apply_migrations": false,
+    "runtime_activation": false,
+    "provider_calls": false
+  },
+  "reference": {
+    "groups": [
+      "Meta WhatsApp Cloud",
+      "Verificar número WhatsApp",
+      "Instagram Business",
+      "Facebook Messenger",
+      "TikTok",
+      "Webhooks"
+    ],
+    "exact_fields_and_actions_required": true,
+    "cardinality_correction": "Scentra DDL/upsert is singleton per tenant/provider/channel; multiple WhatsApp integrations are explicit C10 user extension, not proven source behavior.",
+    "style": "CBN approved Azul noche Glass",
+    "billing_excluded": true,
+    "commerce_excluded": true
+  },
+  "sql": {
+    "minimum_major": 15,
+    "institutional_compatibility": 150,
+    "local_engine16_compat160_is_institutional_acceptance": false,
+    "schema": "crm_channels2",
+    "ddl_generated": false,
+    "ddl_compiled": false,
+    "json_type": "nvarchar(max)",
+    "json_check": "ISJSON=1; application DTO validates exact shape/array/object",
+    "identifier_collation": "Latin1_General_100_BIN2",
+    "time": "UTC datetime2(7), not rowversion/timestamp as time",
+    "concurrency": "rowversion as opaque binary8 ETag; all mutations require expected version",
+    "max_key_bytes": 900,
+    "forbidden_dependencies": [
+      "native json type",
+      "CREATE JSON INDEX",
+      "JSON_PATH_EXISTS",
+      "ISJSON type constraint argument",
+      "GENERATE_SERIES",
+      "MERGE upsert",
+      "runtime CREATE TABLE",
+      "SQLCLR",
+      "Enterprise-only features"
+    ],
+    "upsert": "parameterized UPDATE/INSERT under UPDLOCK,HOLDLOCK and unique key; no select latest/first by channel",
+    "accepted_engine_profiles": [
+      {
+        "purpose": "institutional_acceptance",
+        "major": 15,
+        "compatibility": 150
+      },
+      {
+        "purpose": "local_exploration_only",
+        "major": 16,
+        "compatibility": 160,
+        "institutional_acceptance": false
+      }
+    ]
+  },
+  "tables": [
+    {
+      "name": "crm_channels2.Context",
+      "columns": {
+        "ContextId": {
+          "type": "tinyint",
+          "nullable": false
+        },
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ContractVersion": {
+          "type": "varchar(40)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "ContextId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId"
+        ]
+      ],
+      "checks": [
+        "ContextId=1",
+        "exactly_one_context_row_at_guard"
+      ],
+      "defaults": {},
+      "mutable": false,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.Application",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Provider": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "ClientId": {
+          "type": "nvarchar(128)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "ApiVersion": {
+          "type": "varchar(20)",
+          "nullable": false
+        },
+        "IssuerProfile": {
+          "type": "varchar(40)",
+          "nullable": false
+        },
+        "RedirectUri": {
+          "type": "nvarchar(2048)",
+          "nullable": false
+        },
+        "EgressProfile": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "State": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "ApplicationId",
+          "Provider"
+        ],
+        [
+          "InstitutionId",
+          "Provider",
+          "ClientId",
+          "IssuerProfile"
+        ]
+      ],
+      "checks": [
+        "Provider IN(meta,tiktok)",
+        "State IN(draft,enabled,paused,retired)",
+        "RedirectUri exactly matches reviewed HTTPS profile; no query-selected return URL",
+        "identity/issuer changes with history require a new reviewed profile and explicit mapping; never rewrite historical ownership"
+      ],
+      "defaults": {
+        "State": "draft"
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.Integration",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Provider": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "Channel": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "Environment": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "DisplayName": {
+          "type": "nvarchar(160)",
+          "nullable": false
+        },
+        "ExternalAccountId": {
+          "type": "nvarchar(200)",
+          "nullable": true,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "ParentExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": true,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "PageName": {
+          "type": "nvarchar(200)",
+          "nullable": true
+        },
+        "UserName": {
+          "type": "nvarchar(200)",
+          "nullable": true
+        },
+        "PortfolioId": {
+          "type": "nvarchar(128)",
+          "nullable": true
+        },
+        "BusinessAccountId": {
+          "type": "nvarchar(128)",
+          "nullable": true
+        },
+        "AdvertiserId": {
+          "type": "nvarchar(128)",
+          "nullable": true
+        },
+        "ApiVersion": {
+          "type": "varchar(20)",
+          "nullable": false
+        },
+        "DispatchMode": {
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        "RequestedStatus": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "VerifiedStatus": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "InitialStageKey": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "InitialStageConfigHash": {
+          "type": "binary(32)",
+          "nullable": true
+        },
+        "TokenExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RefreshExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LastSyncAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "ConfiguredScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 and strict canonical array DTO"
+        },
+        "ApprovedScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 and strict canonical array DTO"
+        },
+        "AppReviewStatus": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "ExternalNamespace": {
+          "type": "binary(32)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ApplicationId"
+        ]
+      ],
+      "checks": [
+        "Channel IN(whatsapp,instagram,facebook,messenger,tiktok)",
+        "Provider/channel/dispatch combinations use versioned allowlist",
+        "RequestedStatus IN(connected,paused,disconnected)",
+        "VerifiedStatus is server-owned; requested connected alone is not evidence",
+        "identity/application changes with history require explicit rebind; no silent retarget"
+      ],
+      "defaults": {
+        "Environment": "development",
+        "RequestedStatus": "disconnected",
+        "VerifiedStatus": "unverified",
+        "ConfiguredScopes": [],
+        "ApprovedScopes": [],
+        "AppReviewStatus": "untracked"
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "UQ_Integration_External",
+          "columns": [
+            "InstitutionId",
+            "Provider",
+            "Channel",
+            "ExternalNamespace",
+            "ExternalAccountId"
+          ],
+          "where": "ExternalAccountId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.Audit",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "AuditId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ActorRef": {
+          "type": "nvarchar(128)",
+          "nullable": false
+        },
+        "Action": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ResultCode": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "AuditId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "append_only",
+        "metadata_allowlist_no_tokens_headers_password_PIN_or_full_request"
+      ],
+      "defaults": {},
+      "mutable": false,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.OAuthSession",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "OAuthSessionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ActorRef": {
+          "type": "nvarchar(128)",
+          "nullable": false
+        },
+        "AuthSessionHash": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "StateHash": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "IssuerProfile": {
+          "type": "varchar(40)",
+          "nullable": false
+        },
+        "RedirectUri": {
+          "type": "nvarchar(2048)",
+          "nullable": false
+        },
+        "RequestedScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "PkceMethod": {
+          "type": "varchar(8)",
+          "nullable": true
+        },
+        "Status": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "ExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "ClaimId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ClaimUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "ClaimVersion": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationVersion": {
+          "type": "binary(8)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "CompletedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "ClientSecretId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ClientSecretVersionNo": {
+          "type": "int",
+          "nullable": false
+        },
+        "GrantScope": {
+          "type": "varchar(24)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "OAuthSessionId"
+      ],
+      "unique_keys": [
+        [
+          "StateHash"
+        ],
+        [
+          "InstitutionId",
+          "OperationId"
+        ],
+        [
+          "InstitutionId",
+          "OAuthSessionId",
+          "IntegrationId",
+          "ApplicationId"
+        ],
+        [
+          "InstitutionId",
+          "OAuthSessionId",
+          "ApplicationId"
+        ]
+      ],
+      "checks": [
+        "one_use_atomic_claim",
+        "ExpiresAt > CreatedAt; maximum 30 minutes, default 10 minutes",
+        "state/client/issuer/redirect/actor/browser binding checked before exchange",
+        "no raw state, authorization code or verifier columns",
+        "GrantScope=create_connections requires IntegrationId NULL and institution create role; bound_connection requires IntegrationId NOT NULL; no client-controlled scope broadening"
+      ],
+      "defaults": {
+        "Status": "pending",
+        "ClaimVersion": 0
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.WebhookEndpoint",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Provider": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "ChannelSelector": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "EndpointKey": {
+          "type": "varchar(96)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "SignatureProfile": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "SignatureRequired": {
+          "type": "bit",
+          "nullable": false
+        },
+        "IsActive": {
+          "type": "bit",
+          "nullable": false
+        },
+        "ChallengeVerifiedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LastSeenAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "EndpointId"
+      ],
+      "unique_keys": [
+        [
+          "EndpointKey"
+        ],
+        [
+          "InstitutionId",
+          "EndpointId",
+          "ApplicationId"
+        ],
+        [
+          "InstitutionId",
+          "ApplicationId",
+          "ChannelSelector"
+        ]
+      ],
+      "checks": [
+        "SignatureRequired=1 for all public production endpoints",
+        "ChannelSelector excludes Stripe and commerce",
+        "challenge uses verify-token hash equality; challenge is not POST authentication"
+      ],
+      "defaults": {
+        "SignatureRequired": true,
+        "IsActive": false
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.SecretVersion",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "SecretId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "OAuthSessionId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "Kind": {
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        "VersionNo": {
+          "type": "int",
+          "nullable": false
+        },
+        "State": {
+          "type": "varchar(12)",
+          "nullable": false
+        },
+        "KeyVersion": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "Nonce": {
+          "type": "binary(12)",
+          "nullable": false
+        },
+        "Ciphertext": {
+          "type": "varbinary(max)",
+          "nullable": false
+        },
+        "Hint": {
+          "type": "nvarchar(4)",
+          "nullable": true
+        },
+        "Fingerprint": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "ExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "GraceUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RevokedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "AssetId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "SecretId"
+      ],
+      "unique_keys": [
+        [
+          "KeyVersion",
+          "Nonce"
+        ]
+      ],
+      "checks": [
+        "exactly_one_owner among ApplicationId/IntegrationId/EndpointId/OAuthSessionId/AssetId",
+        "scope_kind_allowlist",
+        "VersionNo>=1",
+        "State IN(staged,active,grace,retired,revoked)",
+        "16 < DATALENGTH(Ciphertext) <= 32784",
+        "grace only for explicitly enabled webhook signature overlap; never refresh-token reuse"
+      ],
+      "defaults": {
+        "State": "staged"
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "UQ_Secret_Version_ApplicationId",
+          "columns": [
+            "InstitutionId",
+            "ApplicationId",
+            "Kind",
+            "VersionNo"
+          ],
+          "where": "ApplicationId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Version_IntegrationId",
+          "columns": [
+            "InstitutionId",
+            "IntegrationId",
+            "Kind",
+            "VersionNo"
+          ],
+          "where": "IntegrationId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Version_EndpointId",
+          "columns": [
+            "InstitutionId",
+            "EndpointId",
+            "Kind",
+            "VersionNo"
+          ],
+          "where": "EndpointId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Version_OAuthSessionId",
+          "columns": [
+            "InstitutionId",
+            "OAuthSessionId",
+            "Kind",
+            "VersionNo"
+          ],
+          "where": "OAuthSessionId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Version_AssetId",
+          "columns": [
+            "InstitutionId",
+            "AssetId",
+            "Kind",
+            "VersionNo"
+          ],
+          "where": "AssetId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Active_AssetId",
+          "columns": [
+            "InstitutionId",
+            "AssetId",
+            "Kind"
+          ],
+          "where": "AssetId IS NOT NULL AND State='active'",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Active_ApplicationId",
+          "columns": [
+            "InstitutionId",
+            "ApplicationId",
+            "Kind"
+          ],
+          "where": "ApplicationId IS NOT NULL AND State='active'",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Active_IntegrationId",
+          "columns": [
+            "InstitutionId",
+            "IntegrationId",
+            "Kind"
+          ],
+          "where": "IntegrationId IS NOT NULL AND State='active'",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Active_EndpointId",
+          "columns": [
+            "InstitutionId",
+            "EndpointId",
+            "Kind"
+          ],
+          "where": "EndpointId IS NOT NULL AND State='active'",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "UQ_Secret_Active_OAuthSessionId",
+          "columns": [
+            "InstitutionId",
+            "OAuthSessionId",
+            "Kind"
+          ],
+          "where": "OAuthSessionId IS NOT NULL AND State='active'",
+          "unique": true,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.ProviderAsset",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "AssetId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "OAuthSessionId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "Kind": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "ParentExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": true,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "Name": {
+          "type": "nvarchar(200)",
+          "nullable": true
+        },
+        "UserName": {
+          "type": "nvarchar(200)",
+          "nullable": true
+        },
+        "ObservedScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "Metadata": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ObservedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "ExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "DiscoveryOperationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "AssetId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "DiscoveryOperationId",
+          "Kind",
+          "ExternalId"
+        ]
+      ],
+      "checks": [
+        "provider-origin assets; never client-asserted ownership",
+        "immutable per-operation/session snapshot; connect requires same actor/session/application/integration and unexpired ownership proof",
+        "per-page provisional access token stored in SecretVersion with AssetId owner; never Metadata JSON"
+      ],
+      "defaults": {},
+      "mutable": false,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.ProviderOperation",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ActorRef": {
+          "type": "nvarchar(128)",
+          "nullable": false
+        },
+        "Action": {
+          "type": "varchar(48)",
+          "nullable": false
+        },
+        "RequestDigest": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "Status": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "LeaseId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "LeaseUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LeaseVersion": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "Attempts": {
+          "type": "int",
+          "nullable": false
+        },
+        "ResultCode": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "ResultMetadata": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "CompletedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "EffectKey": {
+          "type": "binary(32)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "OperationId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "OperationId"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "OperationId",
+          "ApplicationId"
+        ],
+        [
+          "InstitutionId",
+          "ApplicationId",
+          "Action",
+          "EffectKey"
+        ],
+        [
+          "InstitutionId",
+          "OperationId",
+          "ApplicationId"
+        ]
+      ],
+      "checks": [
+        "operation UUID bound to target+actor+action+canonical HMAC request digest",
+        "no raw PIN/code/password/token or unredacted response persisted",
+        "no automatic replay of uncertain remote outcome",
+        "EffectKey is server-derived from account/asset/message/auth-session and semantic secret generation; a new UUID or expired lease cannot bypass uncertain outcome"
+      ],
+      "defaults": {
+        "Status": "pending",
+        "LeaseVersion": 0,
+        "Attempts": 0
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "IX_ProviderOperation_Work",
+          "columns": [
+            "InstitutionId",
+            "Status",
+            "LeaseUntil"
+          ],
+          "where": null,
+          "unique": false,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.TikTokPolicy",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ConfiguredScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ReviewStatus": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "ApprovedProducts": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ApprovedScopes": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "OperatorAttestedEvents": {
+          "type": "bit",
+          "nullable": false
+        },
+        "AppReviewNotes": {
+          "type": "nvarchar(2000)",
+          "nullable": true
+        },
+        "OutboundMode": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "RolloutPercent": {
+          "type": "tinyint",
+          "nullable": false
+        },
+        "DailyOutboundQuota": {
+          "type": "int",
+          "nullable": false
+        },
+        "DailyAiQuota": {
+          "type": "int",
+          "nullable": false
+        },
+        "BusinessMessagingEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "CommentReplyEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "AiEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "AgentsEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "TriggersEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "RemarketingEnabled": {
+          "type": "bit",
+          "nullable": false
+        },
+        "BusinessApiBaseUrl": {
+          "type": "nvarchar(300)",
+          "nullable": false
+        },
+        "BusinessApiVersion": {
+          "type": "varchar(20)",
+          "nullable": false
+        },
+        "SendMessagePath": {
+          "type": "nvarchar(260)",
+          "nullable": true
+        },
+        "CommentReplyPath": {
+          "type": "nvarchar(260)",
+          "nullable": true
+        },
+        "AccessTokenAlias": {
+          "type": "varchar(120)",
+          "nullable": true
+        },
+        "RuntimeNotes": {
+          "type": "nvarchar(1200)",
+          "nullable": true
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "Integration provider/channel must be tiktok",
+        "0<=RolloutPercent<=100",
+        "0<=DailyOutboundQuota<=1000000; 0<=DailyAiQuota<=1000000",
+        "source quota 0 means unlimited, never enables disabled mode",
+        "ReviewStatus IN(untracked,pending,changes_requested,approved)",
+        "OutboundMode IN(disabled,shadow,manual,live,stub)",
+        "API URL/path/env alias require reviewed immutable server profiles; no arbitrary host/env reads"
+      ],
+      "defaults": {
+        "ReviewStatus": "untracked",
+        "OutboundMode": "disabled",
+        "RolloutPercent": 0,
+        "DailyOutboundQuota": 0,
+        "DailyAiQuota": 0,
+        "OperatorAttestedEvents": false,
+        "BusinessMessagingEnabled": false,
+        "CommentReplyEnabled": false,
+        "AiEnabled": false,
+        "AgentsEnabled": false,
+        "TriggersEnabled": false,
+        "RemarketingEnabled": false
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.VerificationEvidence",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EvidenceId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "Kind": {
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        "Origin": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "Result": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "SubjectVersion": {
+          "type": "binary(8)",
+          "nullable": false
+        },
+        "EvidenceDigest": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "ObservedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "ExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "Summary": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ReceiptId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "EventId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "EvidenceId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "immutable evidence; local/stub/manual attestation cannot satisfy real-provider predicates",
+        "bind current application/integration/policy/secret versions in server-validated summary; expiry invalidates",
+        "signed-event evidence requires EventId/ReceiptId and equality of Event.ReceiptId, integration, endpoint and application; no independent-row substitution",
+        "provider-operation evidence binds exact account/application/action/result generation; attested review and signed ingress are distinct evidence kinds",
+        "EventId NOT NULL requires ReceiptId and EndpointId NOT NULL; all provenance columns match the linked event; non-event evidence requires its authorized evidence kind/source"
+      ],
+      "defaults": {},
+      "mutable": false,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.QuotaBucket",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "DayUtc": {
+          "type": "date",
+          "nullable": false
+        },
+        "Action": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "Reserved": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "Committed": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "IntegrationId",
+        "DayUtc",
+        "Action"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "Reserved>=0; Committed>=0",
+        "both counters participate in admission"
+      ],
+      "defaults": {
+        "Reserved": 0,
+        "Committed": 0
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.QuotaReservation",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ReservationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "DayUtc": {
+          "type": "date",
+          "nullable": false
+        },
+        "Action": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Units": {
+          "type": "int",
+          "nullable": false
+        },
+        "Status": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ReservationId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "OperationId",
+          "Action"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ReservationId"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ReservationId",
+          "OperationId"
+        ]
+      ],
+      "checks": [
+        "Units>0",
+        "Status IN(reserved,committed,released,uncertain)",
+        "uncertain holds reservation until reconciliation",
+        "Action IN(outbound,ai); chats and comment replies both reserve outbound; AI additionally reserves ai",
+        "real SendJob requires non-NULL reservation; uncertain holds; commit/release counters atomically exactly once"
+      ],
+      "defaults": {},
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.EndpointIntegration",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "RouteKind": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "IsActive": {
+          "type": "bit",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "EndpointId",
+        "IntegrationId",
+        "RouteKind",
+        "ExternalId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "EndpointId",
+          "RouteKind",
+          "ExternalId"
+        ]
+      ],
+      "checks": [
+        "application ownership of endpoint and integration must match",
+        "exact route; missing/ambiguous route quarantines"
+      ],
+      "defaults": {
+        "IsActive": false
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.WebhookReceipt",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ReceiptId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Digest": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "BodyKeyVersion": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "BodyNonce": {
+          "type": "binary(12)",
+          "nullable": true
+        },
+        "BodyCiphertext": {
+          "type": "varbinary(max)",
+          "nullable": true
+        },
+        "SignatureKeyVersion": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "SignatureProfile": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "Authentication": {
+          "type": "varchar(20)",
+          "nullable": false
+        },
+        "Status": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "ReceivedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "ExpiresAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "LeaseId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "LeaseUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LeaseVersion": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "Attempts": {
+          "type": "int",
+          "nullable": false
+        },
+        "LastErrorCode": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointVersion": {
+          "type": "binary(8)",
+          "nullable": false
+        },
+        "SignatureSecretId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "SignatureVerifiedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "BodyPurgedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ReceiptId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "EndpointId",
+          "Digest"
+        ],
+        [
+          "InstitutionId",
+          "ReceiptId",
+          "EndpointId",
+          "ApplicationId"
+        ]
+      ],
+      "checks": [
+        "raw body maximum 1000000 bytes before parsing",
+        "ACK only after durable COMMIT",
+        "no signature/auth/cookie/token header storage",
+        "BodyPurgedAt IS NULL implies all encrypted body fields NOT NULL; BodyPurgedAt NOT NULL implies all body fields NULL",
+        "purge only terminal nonleased receipts after retention; keep dedupe tombstone and authenticated metadata",
+        "verified Authentication requires SignatureSecretId and SignatureVerifiedAt; legacy imported receipts are quarantined/unverified with SignatureVerifiedAt NULL"
+      ],
+      "defaults": {
+        "Status": "queued",
+        "LeaseVersion": 0,
+        "Attempts": 0
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "UQ_Receipt_BodyNonce",
+          "columns": [
+            "BodyKeyVersion",
+            "BodyNonce"
+          ],
+          "where": "BodyKeyVersion IS NOT NULL AND BodyNonce IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "IX_WebhookReceipt_Work",
+          "columns": [
+            "InstitutionId",
+            "Status",
+            "LeaseUntil"
+          ],
+          "where": null,
+          "unique": false,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.WebhookEvent",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EventId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ReceiptId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "SubeventPath": {
+          "type": "nvarchar(200)",
+          "nullable": false
+        },
+        "Kind": {
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        "ProviderEventId": {
+          "type": "nvarchar(200)",
+          "nullable": true
+        },
+        "DedupeKey": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "IdentityStrength": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "Status": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "Payload": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ProviderOccurredAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "LeaseId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "LeaseUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LeaseVersion": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "Attempts": {
+          "type": "int",
+          "nullable": false
+        },
+        "LastErrorCode": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        },
+        "ApplicationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "EndpointId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "RouteKind": {
+          "type": "varchar(24)",
+          "nullable": false
+        },
+        "RouteExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "EventId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "ReceiptId",
+          "SubeventPath"
+        ],
+        [
+          "InstitutionId",
+          "EventId",
+          "IntegrationId"
+        ],
+        [
+          "InstitutionId",
+          "EventId",
+          "IntegrationId",
+          "ReceiptId",
+          "EndpointId",
+          "ApplicationId"
+        ]
+      ],
+      "checks": [
+        "one normalized row per subevent, not first entry only",
+        "NULL IntegrationId implies quarantine",
+        "weak/unknown identity must not produce irreversible effects"
+      ],
+      "defaults": {
+        "Status": "quarantined",
+        "LeaseVersion": 0,
+        "Attempts": 0
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "UQ_Event_Integration_Dedupe",
+          "columns": [
+            "InstitutionId",
+            "IntegrationId",
+            "DedupeKey"
+          ],
+          "where": "IntegrationId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        },
+        {
+          "name": "IX_WebhookEvent_Work",
+          "columns": [
+            "InstitutionId",
+            "Status",
+            "LeaseUntil"
+          ],
+          "where": null,
+          "unique": false,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.ConversationProfile",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ConversationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "LeadScore": {
+          "type": "tinyint",
+          "nullable": true
+        },
+        "Temperature": {
+          "type": "varchar(4)",
+          "nullable": true
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ConversationId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "LeadScore IS NULL OR 0<=LeadScore<=100",
+        "Temperature IN(cold,warm,hot) or NULL; no inferred assessment accepted by creating this table"
+      ],
+      "defaults": {},
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.ConversationControl",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ConversationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "Epoch": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "ReadSequence": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "UpdatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ConversationId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "Epoch>=0; ReadSequence>=0",
+        "handoff increments Epoch atomically; read sequence monotonic"
+      ],
+      "defaults": {
+        "Epoch": 0,
+        "ReadSequence": 0
+      },
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.ExternalIdentity",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IdentityId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "ContactId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ConversationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "LastIncomingAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "IdentityId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ExternalId"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "IdentityId"
+        ]
+      ],
+      "checks": [
+        "canonical crm Conversation.ContactId must match ContactId under transaction locks; no SIIE FK or core DML"
+      ],
+      "defaults": {},
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.ExternalMessage",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ExternalMessageId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "MessageId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "Payload": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "ExternalMessageId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ExternalId"
+        ]
+      ],
+      "checks": [
+        "per-integration message deduplication; no provider/channel-only key"
+      ],
+      "defaults": {},
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.SocialComment",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "CommentId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "AuthorExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": false,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "Body": {
+          "type": "nvarchar(max)",
+          "nullable": false
+        },
+        "Payload": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ReceivedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "CommentId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "ExternalId"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "CommentId"
+        ]
+      ],
+      "checks": [],
+      "defaults": {},
+      "mutable": true,
+      "indexes": []
+    },
+    {
+      "name": "crm_channels2.SendJob",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "QueueId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IdentityId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "MessageId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "CommentId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "OperationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "ReservationId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "Kind": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "State": {
+          "type": "varchar(16)",
+          "nullable": false
+        },
+        "Payload": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "ExternalId": {
+          "type": "nvarchar(200)",
+          "nullable": true,
+          "collation": "Latin1_General_100_BIN2"
+        },
+        "LeaseId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "LeaseUntil": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "LeaseVersion": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "DueAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "Attempts": {
+          "type": "int",
+          "nullable": false
+        },
+        "LastErrorCode": {
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        },
+        "CompletedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "QueueId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "OperationId"
+        ],
+        [
+          "InstitutionId",
+          "IntegrationId",
+          "QueueId",
+          "IdentityId",
+          "MessageId"
+        ]
+      ],
+      "checks": [
+        "chat requires IdentityId and MessageId; comment reply requires CommentId",
+        "state transitions monotonic; uncertain is not failed",
+        "no plaintext credentials in payload"
+      ],
+      "defaults": {
+        "State": "queued",
+        "LeaseVersion": 0,
+        "Attempts": 0
+      },
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "IX_SendJob_Work",
+          "columns": [
+            "InstitutionId",
+            "IntegrationId",
+            "State",
+            "DueAt"
+          ],
+          "where": null,
+          "unique": false,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.MessageRoute",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "MessageId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "IdentityId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "QueueId": {
+          "type": "uniqueidentifier",
+          "nullable": true
+        },
+        "ActorKind": {
+          "type": "varchar(8)",
+          "nullable": false
+        },
+        "ControlEpoch": {
+          "type": "bigint",
+          "nullable": true
+        },
+        "StartedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "CompletedAt": {
+          "type": "datetime2(7)",
+          "nullable": true
+        },
+        "RowVersion": {
+          "type": "rowversion",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "MessageId"
+      ],
+      "unique_keys": [],
+      "checks": [
+        "ActorKind IN(human,external,bot)",
+        "bot requires ControlEpoch; human/external require NULL",
+        "external requires QueueId NULL; outbound human/bot requires QueueId",
+        "identity/conversation/message ownership validated under common transaction; bot dispatch rechecks current Epoch",
+        "Message.ConversationId=Identity.ConversationId and Conversation.ContactId=Identity.ContactId; current control row for that conversation required; no auto-create/fallback Epoch0"
+      ],
+      "defaults": {},
+      "mutable": true,
+      "indexes": [
+        {
+          "name": "UQ_Route_Queue",
+          "columns": [
+            "InstitutionId",
+            "QueueId"
+          ],
+          "where": "QueueId IS NOT NULL",
+          "unique": true,
+          "clustered": false
+        }
+      ]
+    },
+    {
+      "name": "crm_channels2.LegacyBinding",
+      "columns": {
+        "InstitutionId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "BindingId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "LegacyTable": {
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        "LegacyKeyHash": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "LegacyKeyJson": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "SourceRowSha256": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "IntegrationId": {
+          "type": "uniqueidentifier",
+          "nullable": false
+        },
+        "TargetKeyJson": {
+          "type": "nvarchar(max)",
+          "nullable": false,
+          "json_validation": "ISJSON=1 plus strict canonical application DTO; no secrets"
+        },
+        "TargetRowSha256": {
+          "type": "binary(32)",
+          "nullable": false
+        },
+        "MigrationUnit": {
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        "CreatedAt": {
+          "type": "datetime2(7)",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "InstitutionId",
+        "BindingId"
+      ],
+      "unique_keys": [
+        [
+          "InstitutionId",
+          "LegacyTable",
+          "LegacyKeyHash"
+        ]
+      ],
+      "checks": [
+        "explicit 8-table allowlist only",
+        "hash collision requires exact canonical key equality; never routing authority"
+      ],
+      "defaults": {},
+      "mutable": false,
+      "indexes": []
+    }
+  ],
+  "foreign_keys": [
+    {
+      "table": "crm_channels2.Application",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.Integration",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.Audit",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.OAuthSession",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEndpoint",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderOperation",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.TikTokPolicy",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaBucket",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaReservation",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.EndpointIntegration",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookReceipt",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEvent",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ConversationProfile",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ConversationControl",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalIdentity",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalMessage",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SocialComment",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.LegacyBinding",
+      "columns": [
+        "InstitutionId"
+      ],
+      "references": "crm_channels2.Context",
+      "referenced_columns": [
+        "InstitutionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.Integration",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId",
+        "Provider"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId",
+        "Provider"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.Audit",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.OAuthSession",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderOperation",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.TikTokPolicy",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaBucket",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaReservation",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalIdentity",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalMessage",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SocialComment",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.LegacyBinding",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId",
+        "EndpointId"
+      ],
+      "references": "crm_channels2.WebhookEndpoint",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId",
+        "OAuthSessionId"
+      ],
+      "references": "crm_channels2.OAuthSession",
+      "referenced_columns": [
+        "InstitutionId",
+        "OAuthSessionId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId",
+        "EndpointId"
+      ],
+      "references": "crm_channels2.WebhookEndpoint",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.EndpointIntegration",
+      "columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.WebhookEndpoint",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.EndpointIntegration",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ConversationProfile",
+      "columns": [
+        "ConversationId"
+      ],
+      "references": "crm.Conversation",
+      "referenced_columns": [
+        "ConversationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ConversationControl",
+      "columns": [
+        "ConversationId"
+      ],
+      "references": "crm.Conversation",
+      "referenced_columns": [
+        "ConversationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalIdentity",
+      "columns": [
+        "ConversationId"
+      ],
+      "references": "crm.Conversation",
+      "referenced_columns": [
+        "ConversationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalIdentity",
+      "columns": [
+        "ContactId"
+      ],
+      "references": "crm.Contact",
+      "referenced_columns": [
+        "ContactId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ExternalMessage",
+      "columns": [
+        "MessageId"
+      ],
+      "references": "crm.Message",
+      "referenced_columns": [
+        "MessageId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "MessageId"
+      ],
+      "references": "crm.Message",
+      "referenced_columns": [
+        "MessageId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "columns": [
+        "MessageId"
+      ],
+      "references": "crm.Message",
+      "referenced_columns": [
+        "MessageId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "IdentityId"
+      ],
+      "references": "crm_channels2.ExternalIdentity",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "IdentityId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "CommentId"
+      ],
+      "references": "crm_channels2.SocialComment",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "CommentId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "IdentityId"
+      ],
+      "references": "crm_channels2.ExternalIdentity",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "IdentityId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.MessageRoute",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "QueueId",
+        "IdentityId",
+        "MessageId"
+      ],
+      "references": "crm_channels2.SendJob",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "QueueId",
+        "IdentityId",
+        "MessageId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.OAuthSession",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderOperation",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderOperation",
+      "columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.WebhookEndpoint",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId",
+        "OAuthSessionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.OAuthSession",
+      "referenced_columns": [
+        "InstitutionId",
+        "OAuthSessionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "DiscoveryOperationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.ProviderOperation",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SecretVersion",
+      "columns": [
+        "InstitutionId",
+        "AssetId"
+      ],
+      "references": "crm_channels2.ProviderAsset",
+      "referenced_columns": [
+        "InstitutionId",
+        "AssetId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.OAuthSession",
+      "columns": [
+        "InstitutionId",
+        "ClientSecretId"
+      ],
+      "references": "crm_channels2.SecretVersion",
+      "referenced_columns": [
+        "InstitutionId",
+        "SecretId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaReservation",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId"
+      ],
+      "references": "crm_channels2.ProviderOperation",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.QuotaReservation",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "DayUtc",
+        "Action"
+      ],
+      "references": "crm_channels2.QuotaBucket",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "DayUtc",
+        "Action"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId"
+      ],
+      "references": "crm_channels2.ProviderOperation",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.SendJob",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ReservationId",
+        "OperationId"
+      ],
+      "references": "crm_channels2.QuotaReservation",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ReservationId",
+        "OperationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEndpoint",
+      "columns": [
+        "InstitutionId",
+        "ApplicationId",
+        "Provider"
+      ],
+      "references": "crm_channels2.Application",
+      "referenced_columns": [
+        "InstitutionId",
+        "ApplicationId",
+        "Provider"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookReceipt",
+      "columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.WebhookEndpoint",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookReceipt",
+      "columns": [
+        "InstitutionId",
+        "SignatureSecretId"
+      ],
+      "references": "crm_channels2.SecretVersion",
+      "referenced_columns": [
+        "InstitutionId",
+        "SecretId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEvent",
+      "columns": [
+        "InstitutionId",
+        "ReceiptId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.WebhookReceipt",
+      "referenced_columns": [
+        "InstitutionId",
+        "ReceiptId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEvent",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.WebhookEvent",
+      "columns": [
+        "InstitutionId",
+        "EndpointId",
+        "IntegrationId",
+        "RouteKind",
+        "RouteExternalId"
+      ],
+      "references": "crm_channels2.EndpointIntegration",
+      "referenced_columns": [
+        "InstitutionId",
+        "EndpointId",
+        "IntegrationId",
+        "RouteKind",
+        "ExternalId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId",
+        "ReceiptId"
+      ],
+      "references": "crm_channels2.WebhookReceipt",
+      "referenced_columns": [
+        "InstitutionId",
+        "ReceiptId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId",
+        "OAuthSessionId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.OAuthSession",
+      "referenced_columns": [
+        "InstitutionId",
+        "OAuthSessionId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.ProviderAsset",
+      "columns": [
+        "InstitutionId",
+        "DiscoveryOperationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.ProviderOperation",
+      "referenced_columns": [
+        "InstitutionId",
+        "OperationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.Integration",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.ProviderOperation",
+      "referenced_columns": [
+        "InstitutionId",
+        "IntegrationId",
+        "OperationId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    },
+    {
+      "table": "crm_channels2.VerificationEvidence",
+      "columns": [
+        "InstitutionId",
+        "EventId",
+        "IntegrationId",
+        "ReceiptId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "references": "crm_channels2.WebhookEvent",
+      "referenced_columns": [
+        "InstitutionId",
+        "EventId",
+        "IntegrationId",
+        "ReceiptId",
+        "EndpointId",
+        "ApplicationId"
+      ],
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION"
+    }
+  ],
+  "external_parents": {
+    "crm.Contact": [
+      "ContactId"
+    ],
+    "crm.Conversation": [
+      "ConversationId"
+    ],
+    "crm.Message": [
+      "MessageId"
+    ]
+  },
+  "preservation": {
+    "academic_tables": 50,
+    "foundation_tables": 7,
+    "legacy_channels_tables": 8,
+    "old_partition_tables": 65,
+    "new_table_count": 24,
+    "proposed_total_tables": 89,
+    "alter_old_tables": false,
+    "academic_foreign_keys": false,
+    "source_or_shared_C5_C9_writes": false,
+    "runtime_guards_changed": false,
+    "live_reverified": false
+  },
+  "secret_contract": {
+    "algorithm": "AES-256-GCM",
+    "nonce_bytes": 12,
+    "tag_bytes": 16,
+    "key_material_in_database": false,
+    "key_regenerate_if_missing": false,
+    "aad": "canonical UTF8 tuple [cbn.channels.v2,InstitutionId,owner_type,owner_uuid,Kind,VersionNo,KeyVersion]; UUIDs canonical lowercase",
+    "scopes": {
+      "Application": [
+        "meta_app_secret",
+        "instagram_app_secret",
+        "facebook_app_secret",
+        "tiktok_client_secret"
+      ],
+      "Integration": [
+        "meta_permanent_access",
+        "instagram_user_access",
+        "instagram_page_access",
+        "facebook_user_access",
+        "facebook_page_access",
+        "tiktok_access",
+        "tiktok_refresh"
+      ],
+      "WebhookEndpoint": [
+        "webhook_verify",
+        "tiktok_webhook_secret",
+        "endpoint_hmac"
+      ],
+      "OAuthSession": [
+        "oauth_pkce_verifier",
+        "oauth_provisional_access",
+        "oauth_provisional_refresh"
+      ],
+      "ProviderAsset": [
+        "oauth_asset_access"
+      ]
+    },
+    "mutations": [
+      "keep_omitted",
+      "replace_explicit",
+      "revoke_explicit_stepup"
+    ],
+    "blank_secret_is_not_revoke": true,
+    "public_dto": [
+      "kind",
+      "present",
+      "state",
+      "expires_at",
+      "hint_last4",
+      "version"
+    ],
+    "never_public": [
+      "Ciphertext",
+      "Nonce",
+      "KeyVersion",
+      "raw_token",
+      "PIN",
+      "authorization_code",
+      "raw_state",
+      "pkce_verifier"
+    ],
+    "one_time_values": [
+      "new_endpoint_verify_token",
+      "new_endpoint_signature_secret"
+    ],
+    "one_time_lost_response": "status metadata then explicit rotation; never redisplay stored plaintext",
+    "rotation": "staged version -> verify -> activate atomically and retire prior; audit; bounded webhook overlap only; missing key fails closed; pin ClientSecretId/VersionNo in OAuthSession, bump parent Application version and cancel pending/ready sessions atomically; in-flight exchange becomes reconcile-only",
+    "legacy_aad": "crm_channels:{channel}:{kind}:v1",
+    "legacy_transition": "decrypt with verified old key and re-encrypt per explicit integration+kind mapping; keep original bytes. Missing key/ambiguous mapping blocks, no plaintext/Fernet/JWT fallback.",
+    "generated_signature_secret": "endpoint_hmac is an explicitly configured bridge/endpoint signature secret, never a locally generated Meta App Secret/TikTok Client Secret. Direct-provider signature uses its pinned provider application secret. No profile/key fallback.",
+    "canonical_meta_secret": "Meta App Secret/Instagram App Secret/Facebook App Secret labels bind one exact meta_app_secret kind of the explicitly chosen Meta application/issuer profile. Legacy alias kinds are imported explicitly; never try other profiles/keys as a fallback."
+  },
+  "oauth_contract": {
+    "flow": "authorization_code",
+    "ttl_seconds": 600,
+    "maximum_ttl_seconds": 1800,
+    "state_entropy_bytes": 32,
+    "stored_state": "SHA256 of random state; no raw state/code in DB or logs",
+    "browser_binding_required": true,
+    "binding": [
+      "InstitutionId",
+      "ApplicationId",
+      "IntegrationId",
+      "ActorRef",
+      "AuthSessionHash",
+      "IssuerProfile",
+      "RedirectUri",
+      "ApplicationVersion",
+      "ClientSecretId",
+      "ClientSecretVersionNo"
+    ],
+    "pkce": "S256 when supported by reviewed provider profile; no unverified assumption of provider support or silent downgrade",
+    "unsupported_pkce": "confidential client with server secret + state/session binding and separate reviewed issuer/callback; require provider-specific security acceptance before activation",
+    "claim": "single conditional UPDATE pending+notexpired+matchingbinding -> exchanging with ClaimId; commit durable intent before HTTP exchange",
+    "states": {
+      "pending": [
+        "exchanging",
+        "expired",
+        "cancelled"
+      ],
+      "exchanging": [
+        "assets_ready",
+        "completed",
+        "failed",
+        "uncertain"
+      ],
+      "assets_ready": [
+        "assets_ready",
+        "completed",
+        "expired",
+        "cancelled"
+      ],
+      "completed": [],
+      "failed": [],
+      "expired": [],
+      "cancelled": [],
+      "uncertain": [
+        "reconciled",
+        "abandoned"
+      ],
+      "reconciled": [],
+      "abandoned": []
+    },
+    "refresh": "serialize per IntegrationId; optimistic pinned secret version; token rotation atomic; omit new refresh token preserves verified prior; unknown outcome requires reconciliation/re-auth, not blind retry",
+    "configuration_merge": "merge only provider-owned returned fields; preserve policy/scopes/operator notes; never wholesale config replacement",
+    "callback": "new public composition, exact HTTPS redirect and issuer; authenticate browser binding, sanitize query, no-store/no-referrer; never weaken C9 LocalAiGuard",
+    "asset_selection": "state/code claimed once; actor/session/app-bound expiring grant may connect several explicitly selected IG/FB assets using one ProviderOperation per asset+channel. create_connections scope allocates/reuses exact authorized target IntegrationId; bound_connection cannot escape its pinned target. Preserve immutable snapshots and asset-owned provisional tokens; no global catalog authority.",
+    "secret_pin": "exact app secret row/kind/version pinned; no IG/FB/Meta fallback. Rotation invalidates pending sessions, never substitutes a different secret.",
+    "grant_scope": "creation grant bound to application+actor+browser+approved channels; existing-account grant additionally pins IntegrationId. Every connect rechecks actor role/scopes/snapshot/expiry and is idempotent by session+asset+target channel. Completing/cancelling/expiring closes the grant; never re-exchanges code."
+  },
+  "routing_contract": {
+    "selection": "explicit IntegrationId on every private operation; default by channel allowed only if exactly one and explicit compatibility adapter; otherwise 409 ambiguous",
+    "whatsapp": "one Integration per selected phone_number_id, multiple IntegrationIds per WABA/application allowed; original singleton inferred from UI corrected",
+    "identity_unique": [
+      "InstitutionId",
+      "IntegrationId",
+      "ExternalId"
+    ],
+    "message_unique": [
+      "InstitutionId",
+      "IntegrationId",
+      "ExternalId"
+    ],
+    "endpoint": "Application-owned endpoint with explicit EndpointIntegration routes; may serve many accounts; authenticate with pinned application/key before route parsing",
+    "receipt_dedupe": [
+      "InstitutionId",
+      "EndpointId",
+      "Digest"
+    ],
+    "event_dedupe": [
+      "InstitutionId",
+      "IntegrationId",
+      "DedupeKey"
+    ],
+    "event_key": "versioned per-provider normalization; include event kind/state/occurred_at where delivery transitions share message id. Stable id absent -> deterministic receipt/subpath fallback marked weak and quarantined before irreversible effects",
+    "unknown_or_ambiguous": "quarantine; never first/latest integration, body-selected institution, or global secret scan",
+    "provider_identifier_namespace": "ExternalNamespace is a server-derived SHA256 of the reviewed provider identity namespace. App-scoped IDs such as TikTok Open ID include client application scope; global provider resource IDs use their reviewed resource namespace. Integration account uniqueness includes this namespace, never blindly merges bare external IDs.",
+    "identity_mutation": "application/client/issuer/provider/asset identity with historical dependencies cannot be edited by blind PATCH; explicit new profile/mapping and controlled history-preserving rebind release required, otherwise409"
+  },
+  "webhook_contract": {
+    "public_default_active": false,
+    "signature_required": true,
+    "verify_token_is_POST_auth": false,
+    "raw_body_before_parsing": true,
+    "max_body_bytes": 1000000,
+    "signature_profiles": [
+      "meta_raw_sha256_v1",
+      "tiktok_timestamp_sha256_v1",
+      "reviewed_endpoint_shared_hmac_sha256_v1"
+    ],
+    "provider_profile_acceptance": "signature algorithms/keys, URLs, scopes and versions must be checked against provider primary docs and real controlled fixtures before activation; no claim of provider acceptance in C10",
+    "timestamp_window_seconds": 300,
+    "meta_no_timestamp": "HMAC-authenticated durable replay dedupe; never invent provider timestamps",
+    "headers_allowlist": [
+      "content-type",
+      "reviewed-correlation-id"
+    ],
+    "headers_forbidden": [
+      "authorization",
+      "cookie",
+      "x-scentra-webhook-token",
+      "x-verane-webhook-token",
+      "x-hub-signature-256",
+      "tiktok-signature"
+    ],
+    "durability": "authenticate -> durable encrypted raw receipt -> ACK2xx; no CRM/AI/provider side effects before commit; ACK loss reconciles exact receipt key",
+    "batch": "normalize every entry/change/message/status/comment into separate event rows; preserve receipt/subpath linkage",
+    "one_time_secrets": true,
+    "rotation_separate_from_update": true,
+    "delete": "soft deactivate, preserve audit/receipts/routes; no cascading history deletion",
+    "retention": "encrypted raw body default 7 days, institution-reviewed retention before operation; metadata tombstones prevent replay across policy window; no cleanup executed in C10",
+    "raw_body_aad": "canonical UTF8 [cbn.receipt.v1,InstitutionId,EndpointId,ReceiptId,Digest,BodyKeyVersion]; raw-body and credential key domains separated",
+    "authentication_provenance": "pin SignatureSecretId, VersionNo via immutable secret row, EndpointVersion, signature profile and verified timestamp; AES key version alone is not the provider-secret identity",
+    "purge": "terminal/unleased raw body only -> NULL body fields with BodyPurgedAt; keep receipt ID, endpoint, digest and authentication tombstone for replay policy; never purge queued/uncertain work",
+    "bridge_profile": "explicit trusted bridge only, no inferred direct-provider authenticity; exact key, timestamp and body scheme must be reviewed before enabling; bridge evidence never silently substitutes signed direct-provider evidence"
+  },
+  "tiktok_contract": {
+    "modes": [
+      "disabled",
+      "shadow",
+      "manual",
+      "live",
+      "stub"
+    ],
+    "default_mode": "disabled",
+    "rollout_default": 0,
+    "quota_zero": "unlimited exactly as source, never an activation flag",
+    "flags": [
+      "BusinessMessagingEnabled",
+      "CommentReplyEnabled",
+      "AiEnabled",
+      "AgentsEnabled",
+      "TriggersEnabled",
+      "RemarketingEnabled"
+    ],
+    "live_gate": [
+      "approved_app_review",
+      "required_products",
+      "requested_and_approved_scopes",
+      "exact_asset_ownership",
+      "current_valid_secret",
+      "signed_processed_real_event_evidence",
+      "operator_authorized_activation",
+      "rollout_bucket",
+      "quota_reservation",
+      "valid_provider_profile"
+    ],
+    "manual_attestation_is_signed_evidence": false,
+    "diagnostic_ok_is_delivery_evidence": false,
+    "local_stub_is_real_evidence": false,
+    "quota_atomicity": "UPDLOCK,HOLDLOCK bucket by IntegrationId+UTC day+action; reserve and enqueue atomically; unique operation/action; count comments in outbound budget and AI separately; uncertain retains reservation; every real dispatch needs a reservation linked to same integration AND operation; shared outbound bucket for chats/comments, separate ai bucket; no release of unknown outcomes",
+    "rollout": "stable HMAC bucket of IntegrationId+subject+policy version; retries do not reroll",
+    "egress": "HTTPS exact hosts and relative paths from reviewed server profiles; reject credentials/query/fragment/IP/private-address/redirect tricks; token aliases preinstalled allowlist bound to institution+integration, no arbitrary os.getenv",
+    "policy_edit": "all source fields preserved; no review/payload checkbox alone grants real permissions",
+    "mode_matrix": {
+      "disabled": "no external side effects",
+      "shadow": "evaluate only, no provider send",
+      "stub": "synthetic only, never provider evidence",
+      "manual": "authenticated explicit human action plus all account/review/scope/signature/quota/epoch guards; no bot",
+      "live": "all real guards plus rollout and corresponding flags; revalidate immediately before send"
+    },
+    "evidence_authority": "review/scopes/operator attestation remain recorded separately from current provider/ingress evidence; current version/expiry required; last_seen, diagnostic ok and checkbox do not prove signature/delivery"
+  },
+  "remote_operations": {
+    "intent_before_HTTP": true,
+    "hold_database_transaction_during_HTTP": false,
+    "lease_fencing": true,
+    "states": [
+      "pending",
+      "running",
+      "confirmed",
+      "failed",
+      "uncertain",
+      "reconciled",
+      "abandoned"
+    ],
+    "uncertain_auto_retry": false,
+    "error_persistence": "commit sanitized failed/uncertain outcome separately from a rolled-back business transaction",
+    "pin_and_OTP": "request-only password controls; not persisted, cached, echoed or logged; uncertain registration reconciles provider status or requires explicit new attempt",
+    "new_uuid_does_not_bypass_uncertain": true,
+    "natural_effect_identity": "EffectKey bound to semantic target+generation, server-derived and unique; repeated UUID/body mismatch409; new UUID for same unknown effect returns prior unknown status without HTTP"
+  },
+  "api": {
+    "version": "planned_v2_not_mounted",
+    "base": "/api/v2/channels",
+    "identity": "authenticated actor/role authority from P2; fixed institution/object authorization; preserve source current_password reauthentication for existing provider-secret replacements; no password persistence or invented business fields; otherwise deny",
+    "configuration": "strict DTOs, source snake_case keys preserved through mapping; extra keys422; expected rowversion; explicit operationId idempotency; GET never repairs/subscribes/writes",
+    "planned_operations": [
+      "GET integrations",
+      "POST integrations",
+      "GET integrations/{integrationId}",
+      "PATCH integrations/{integrationId}",
+      "POST integrations/{integrationId}/status",
+      "DELETE integrations/{integrationId}",
+      "POST integrations/{integrationId}/oauth/refresh",
+      "GET integrations/{integrationId}/token-health",
+      "POST integrations/{integrationId}/secrets",
+      "POST oauth/{applicationId}/start",
+      "GET oauth/callback/{issuerProfile}",
+      "GET oauth/{sessionId}/status",
+      "GET oauth/{sessionId}/assets",
+      "POST oauth/{sessionId}/connect",
+      "POST integrations/{integrationId}/phones/sync",
+      "POST integrations/{integrationId}/phones/register",
+      "POST integrations/{integrationId}/diagnostics",
+      "POST integrations/{integrationId}/resources/discover",
+      "PATCH integrations/{integrationId}/tiktok-policy",
+      "GET endpoints",
+      "POST endpoints",
+      "PATCH endpoints/{endpointId}",
+      "POST endpoints/{endpointId}/verify",
+      "POST endpoints/{endpointId}/rotate-token",
+      "POST endpoints/{endpointId}/rotate-signature",
+      "DELETE endpoints/{endpointId}",
+      "POST events/process",
+      "GET events",
+      "POST webhooks/{provider}/{endpointKey}",
+      "GET applications",
+      "POST applications",
+      "PATCH applications/{applicationId}",
+      "POST oauth/{sessionId}/discover",
+      "GET integrations/{integrationId}/status"
+    ],
+    "stable_errors": [
+      "invalid_request",
+      "stale_revision",
+      "ambiguous_integration",
+      "resource_not_owned",
+      "oauth_state_expired",
+      "oauth_state_replayed",
+      "oauth_binding_mismatch",
+      "credential_key_unavailable",
+      "signature_rejected",
+      "route_ambiguous",
+      "provider_outcome_unknown",
+      "capability_unavailable"
+    ],
+    "C9_v1_unchanged": true,
+    "ui_contract": "docs/adaptation/sql/channels-ui-parity-contract.json",
+    "request_dtos": {
+      "IntegrationWriteIn": [
+        "operation_id",
+        "expected_version?",
+        "provider",
+        "channel",
+        "status",
+        "application{application_id?,client_id,issuer_profile,graph_api_version}",
+        "config_json{channel-specific exact source keys}",
+        "secret_changes?",
+        "current_password?"
+      ],
+      "OAuthStartIn": [
+        "operation_id",
+        "application_id",
+        "integration_id?; server-derived creation or bound-account grant scope",
+        "expected_application_version",
+        "scopes",
+        "source-form app credentials when creating reviewed Application profile"
+      ],
+      "ConnectAssetIn": [
+        "operation_id",
+        "expected_integration_version?",
+        "session_id",
+        "asset_id",
+        "target channel from source Usar Instagram/Usar Facebook action",
+        "integration_id? authorized bound target or server allocated create target"
+      ],
+      "SecretChangesIn": [
+        "operation_id",
+        "expected_owner_versions",
+        "explicit owner IDs",
+        "replace/revoke kind operations",
+        "current_password when required by source reauth"
+      ],
+      "PhoneRegisterIn": [
+        "operation_id",
+        "expected_integration_version",
+        "phone_number_id",
+        "pin six digits request-only"
+      ],
+      "TokenRefreshIn": [
+        "operation_id",
+        "expected_integration_version",
+        "pinned_secret_version"
+      ],
+      "EndpointWriteIn": [
+        "operation_id",
+        "expected_version?",
+        "application_id",
+        "provider educational selector",
+        "signature_required",
+        "is_active requested only"
+      ],
+      "ProcessEventsIn": [
+        "operation_id",
+        "endpoint_id or authorized integration IDs",
+        "limit1..100"
+      ],
+      "MutationIn": [
+        "operation_id",
+        "expected_version"
+      ],
+      "ProviderDiagnosticIn": [
+        "operation_id",
+        "integration_id",
+        "expected_version"
+      ],
+      "DiscoveryIn": [
+        "operation_id",
+        "integration_id or session_id",
+        "expected_version"
+      ],
+      "IntegrationListOut": [
+        "safe IntegrationOut list",
+        "cursor"
+      ],
+      "EndpointListOut": [
+        "safe EndpointOut list",
+        "cursor"
+      ],
+      "IntegrationOut": [
+        "id",
+        "provider",
+        "channel",
+        "status requested plus verified_status",
+        "config_json safe source keys",
+        "secret presence/hints",
+        "version"
+      ],
+      "SecretMetadataOut": [
+        "owner IDs",
+        "kind",
+        "present",
+        "state",
+        "expires_at",
+        "hint",
+        "version"
+      ],
+      "EndpointMutationOut": [
+        "id",
+        "url_path",
+        "safe metadata",
+        "verify_token_once?",
+        "signature_secret_once?"
+      ],
+      "OperationOut": [
+        "operation_id",
+        "status",
+        "stable result/error codes",
+        "safe metadata",
+        "version"
+      ],
+      "AssetListOut": [
+        "session_id",
+        "safe asset IDs/labels/permissions",
+        "cursor"
+      ],
+      "StatusOut": [
+        "safe current status/evidence summary; never secret values"
+      ]
+    },
+    "query_limits": "cursor pagination, maximum100 rows, processing batch1..100; institution and actor target scope never accepted from unauthenticated body; GET no IO repair"
+  },
+  "permissions": {
+    "source_and_C5_roles_changed": false,
+    "dbo_denies": [
+      "SELECT",
+      "INSERT",
+      "UPDATE",
+      "DELETE",
+      "ALTER",
+      "REFERENCES",
+      "EXECUTE"
+    ],
+    "migrator": "new-target identity only; CREATE TABLE and ALTER/REFERENCES crm_channels2, REFERENCES exact 3 CRM parents, SELECT/INSERT journal, VIEW DEFINITION/dependency metadata; no dbo/core DML or key material",
+    "operator_ui": "configuration read/write and safe secret metadata only; no Ciphertext/Nonce/KeyVersion, raw receipts, direct evidence/lease/quota/verified-state writes or direct transport enqueue",
+    "secret_broker": "separate SQL principal/module boundary and keyring access; exact owner/kind lookup, controlled ciphertext DML; no academic/core data",
+    "ingress": "authenticated exact endpoint signature via broker; receipt INSERT and endpoint/binding metadata only; no CRM DML",
+    "transport": "own reviewed principal, IntegrationId-scoped state/lease/quota operations and exact canonical CRM DML needed after B015; no academic data or configuration/key/role changes",
+    "no_CONTROL_or_db_owner": true,
+    "exact_direct_and_effective_ACL_guard": true,
+    "metadata_admin_runtime_equality_required": true
+  },
+  "migration": {
+    "new_release_id": "CBN-channels-parity-v1",
+    "apply_authorized_in_C10": false,
+    "frozen_units_reused": false,
+    "units": [
+      {
+        "id": "CBN-CHP001",
+        "tables": [
+          "crm_channels2.Context",
+          "crm_channels2.Application",
+          "crm_channels2.Integration",
+          "crm_channels2.Audit"
+        ],
+        "depends_on": []
+      },
+      {
+        "id": "CBN-CHP002",
+        "tables": [
+          "crm_channels2.OAuthSession",
+          "crm_channels2.WebhookEndpoint",
+          "crm_channels2.ProviderOperation",
+          "crm_channels2.ProviderAsset",
+          "crm_channels2.SecretVersion"
+        ],
+        "depends_on": [
+          "CBN-CHP001"
+        ]
+      },
+      {
+        "id": "CBN-CHP003",
+        "tables": [
+          "crm_channels2.TikTokPolicy",
+          "crm_channels2.QuotaBucket",
+          "crm_channels2.QuotaReservation"
+        ],
+        "depends_on": [
+          "CBN-CHP002"
+        ]
+      },
+      {
+        "id": "CBN-CHP004",
+        "tables": [
+          "crm_channels2.EndpointIntegration",
+          "crm_channels2.WebhookReceipt",
+          "crm_channels2.WebhookEvent",
+          "crm_channels2.VerificationEvidence"
+        ],
+        "depends_on": [
+          "CBN-CHP003"
+        ]
+      },
+      {
+        "id": "CBN-CHP005",
+        "tables": [
+          "crm_channels2.ConversationProfile",
+          "crm_channels2.ConversationControl",
+          "crm_channels2.ExternalIdentity",
+          "crm_channels2.ExternalMessage",
+          "crm_channels2.SocialComment",
+          "crm_channels2.SendJob",
+          "crm_channels2.MessageRoute",
+          "crm_channels2.LegacyBinding"
+        ],
+        "depends_on": [
+          "CBN-CHP004"
+        ]
+      }
+    ],
+    "legacy_mapping": "each existing Account maps once to reviewed Application/Integration; explicit mappings for all 8 legacy tables; no first-account default",
+    "ambiguous_or_key_missing": "block promotion; preserve original rows/bytes, quarantine unverifiable historical receipts, never fabricate signature evidence",
+    "checkpoint": "new complete catalog reader/partition/ticket/profiles; 50+7+8+24=89 explicit objects; unknown table/collision/incomplete metadata blocks; do not widen old tickets",
+    "journal": "preserve 7 original rows byte-for-byte; new unique unit/hash IDs, durable STARTED and COMMITTED in DDL transaction; reconcile any unknown COMMIT before retry",
+    "rehearsal": "future fresh COPY_ONLY/CHECKSUM backup, VERIFYONLY, independent restore without REPLACE, CHECKDB; populated C9 legacy data and binary-row academic preservation checks before/after",
+    "rollback": "stop new composition and ingress/leases; preserve receipts/audit/mappings; retain old C5/C9 databases/profiles; restore independent pre-release backup if needed; never reverse remote success or DROP academic/foundation/legacy objects",
+    "B015": "CBN-CHP005 carries scoped equivalents of all three 015 tables plus jobs/identities; old 015 SQL remains frozen and is not run blindly; no enqueue or bots until ownership+ControlEpoch+quota acceptance",
+    "fk_creation": "create all tables of a unit first, then its FK constraints, in the same atomic transaction; allows the deliberate OAuthSession<->SecretVersion pin/owner cycle; units DAG remains acyclic"
+  },
+  "activation": {
+    "current_C5_changes": false,
+    "current_C9_changes": false,
+    "provider_credentials_requested": false,
+    "public_routes_enabled": false,
+    "workers_enabled": false,
+    "institutional2019_acceptance": false,
+    "gates": [
+      "explicit next-unit authorization",
+      "versioned SQL release and protected-copy rehearsal",
+      "independent new profiles/ACL/ticket",
+      "all UI fields/actions bound and tested",
+      "P2 authentication and step-up verified",
+      "provider primary-doc profiles and real controlled checks",
+      "SQL2019/150 acceptance",
+      "operator enabling individual capability"
+    ]
+  },
+  "next_unit": "SQL-C11: implement and rehearse reviewed schema/mapping in a new restored copy; keep provider activation a separate gate"
+}

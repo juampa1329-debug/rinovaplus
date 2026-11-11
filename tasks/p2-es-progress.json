@@ -1,0 +1,42 @@
+{
+  "unit": "P2-ES",
+  "date": "2026-10-26",
+  "status": "accepted_local_SQL2019_institutional_administration",
+  "P2_accepted": true,
+  "institutional_production_accepted": false,
+  "main_database": "CBN_P2ES_TRIAL_20261026_dc85a69e",
+  "clean_final_database": "CBN_P2ES_TRIAL_20261026_13f95607",
+  "preview": "http://127.0.0.1:4177/",
+  "migration_units_committed": 2,
+  "tables": 138,
+  "release_sha256": "1a7ba0dc7435e1e5dd61b431cca7f2164d698d4b4b6df9dd53cd66e8b40b10b4",
+  "closed_phases": [
+    "P0",
+    "P1",
+    "P2"
+  ],
+  "cross_phase_completed_milestone": "P4.3.m5",
+  "work_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "34.67%",
+    "P4": "38.29%",
+    "P5": "45.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "done_milestones": 129,
+  "pending_milestones": 150,
+  "accepted_criteria": 15,
+  "fixed_criteria": 56,
+  "next": "P3",
+  "checks": "backend/tools/check_p2_es_checkpoint.py --self-test",
+  "academic_source_writes": false,
+  "old_profiles_redirected": false,
+  "providers_enabled": false
+}

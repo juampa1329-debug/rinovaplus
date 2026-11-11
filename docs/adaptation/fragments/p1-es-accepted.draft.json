@@ -1,0 +1,356 @@
+{
+  "domain": "P1-ES · aceptación técnica SQL2019 en copia independiente",
+  "status": "accepted_scoped_technical_foundation_not_runtime_or_production",
+  "review_scope": "Graphify: revisión semántica delegada de evidencia pública conectada y fuentes R3 byte idénticas. No SQL/Docker/app/privados por este revisor. EXTRACTED describe lo explícito en reporte/fuentes; INFERRED relaciona snapshots/fases. No reimporta AST, no modifica ledger/porcentajes ni historia. Aceptación técnica acotada de P1.close; no aprobación externa o despliegue.",
+  "findings": [
+    {
+      "id": "p1_es_technical_foundation_acceptance",
+      "phase": "P1",
+      "capability": "Fundación SQL2019 restaurable con migraciones explícitas, historial/UNKNOWN, drift, TLS y perfil particionado",
+      "status": "aceptado_tecnico_en_copia_SQL2019_sin_adopcion_runtime",
+      "gap": "Cierra la calificación técnica del release exacto5457 en copia; no adopta namespace español en la aplicación ni importa datos/triggers completos, no cierra P2 o P11.",
+      "acceptance": "Prueba c09fa56a y fuentes R3 coherentes: engine15/150, backup/restauración previa, dos unidades, ocho fallos más ACK STARTED recuperado, ocho negativos, seis drifts, paralelo committed/noop, recuperación/reinicio, permisos y preservación before/after. C5/C13 intactos.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p1-es/acceptance-review.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/p1-es/connected-result.json",
+          "line": 1
+        },
+        {
+          "file": "backend/migrations/cbn_spanish_schema_v2/release.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/es_schema_migrate_v2.py",
+          "line": 632
+        },
+        {
+          "file": "backend/tools/es_schema_recovery_v2.py",
+          "line": 135
+        },
+        {
+          "file": "backend/app/es_schema_profile.py",
+          "line": 42
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p1_es_accept_technical",
+        "label": "P1.close técnico: fundación SQL2019 calificada en copia independiente",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/acceptance-review.json",
+        "source_location": "L1",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_proof",
+        "label": "Prueba conectada c09fa56a vinculada al release5457, fuente R3 intacta",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L1",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_engine_tls",
+        "label": "Motor15/compat150 real y TLS verificado; hostname incorrecto rechazado",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L6",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_model",
+        "label": "98 estructuras (68CRM+30académicas) y diario nuevo=99; sin datos académicos",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L43",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_pre_restore",
+        "label": "Restauración nativa verificada antes de la primera aplicación",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L55",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_migrations",
+        "label": "Dos unidades explícitas aplicadas sobre trial fe815d77 y repetición segura",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L89",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_faults",
+        "label": "Ocho fallos conectados con reconciliación independiente/reintento",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L166",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_gap_ack",
+        "label": "ACK perdido tras STARTED recuperado: reintento aprobado",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L341",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_guards_drift",
+        "label": "Ocho negativos y seis drifts; mismos conteos no ocultan cambios",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L256",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_concurrency",
+        "label": "Aplicación paralela committed+noop; dos claves de éxito únicas",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L333",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_recovery",
+        "label": "Reversión/restauración pre/post con CHECKDB; sin sobrescribir o borrar historia",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L343",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_restart",
+        "label": "Reinicio SQL2019 conserva catálogo/datos/diario/perfil; sin startupDDL",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L372",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_acl",
+        "label": "Perfil propio seis tablas core/30 denegadas y seis sentencias SQL rechazadas",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L416",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_preservation",
+        "label": "Seis fuentes: catálogo y huellas binarias before/after idénticas",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L453",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_old_previews",
+        "label": "C5/C13 siguen HTTP200 y perfiles sin redirección",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L554",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      },
+      {
+        "id": "p1_es_accept_limits",
+        "label": "Sin datos/triggers completos DBSIIE, adopción española, P2 o producción",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L576",
+        "status": "accepted_scoped_technical_foundation_not_runtime_or_production"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p1_es_accept_technical",
+        "target": "p1_es_accept_proof",
+        "relation": "accepted_on_reviewed_public_connected_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/acceptance-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_accept_proof",
+        "target": "p1_es_accept_engine_tls",
+        "relation": "records_real_SQL2019_strict_TLS",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L6"
+      },
+      {
+        "source": "p1_es_accept_proof",
+        "target": "p1_es_accept_model",
+        "relation": "qualifies_structure_only_partition",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L43"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_pre_restore",
+        "relation": "uses_native_restoration_before_first_apply",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L55"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_faults",
+        "relation": "passes_independent_reconcile_retry_frontiers",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L166"
+      },
+      {
+        "source": "p1_es_accept_faults",
+        "target": "p1_es_accept_gap_ack",
+        "relation": "includes_additional_recovered_STARTED_ACK_loss",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L341"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_guards_drift",
+        "relation": "rejects_identity_bytes_ACL_and_same_count_drift",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L256"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_concurrency",
+        "relation": "serializes_to_committed_and_noop",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L333"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_recovery",
+        "relation": "supports_non_destructive_previous_schema_restore",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L343"
+      },
+      {
+        "source": "p1_es_accept_migrations",
+        "target": "p1_es_accept_restart",
+        "relation": "persists_across_SQL_restart_without_startup_DDL",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L372"
+      },
+      {
+        "source": "p1_es_accept_model",
+        "target": "p1_es_accept_acl",
+        "relation": "exposes_only_six_core_tables_to_separate_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L133"
+      },
+      {
+        "source": "p1_es_accept_technical",
+        "target": "p1_es_accept_preservation",
+        "relation": "preserves_six_existing_sources_by_digest_equality",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L453"
+      },
+      {
+        "source": "p1_es_accept_technical",
+        "target": "p1_es_accept_old_previews",
+        "relation": "retains_existing_application_profiles_and_images",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L554"
+      },
+      {
+        "source": "p1_es_accept_technical",
+        "target": "p1_es_accept_limits",
+        "relation": "limits_acceptance_to_technical_foundation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L5"
+      },
+      {
+        "source": "p1_es_accept_technical",
+        "target": "p1_es_r3_acceptance_pending",
+        "relation": "advances_prior_pending_snapshot_with_new_connected_proof",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/acceptance-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_accept_gap_ack",
+        "target": "p1_es_r3_recovery_ack",
+        "relation": "satisfies_prior_connected_frontier_requirement",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L341"
+      },
+      {
+        "source": "p1_es_accept_preservation",
+        "target": "p1_es_r3_source_preservation",
+        "relation": "supplies_postrun_comparison_previously_pending",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L503"
+      },
+      {
+        "source": "p1_es_accept_technical",
+        "target": "P1",
+        "relation": "satisfies_scoped_technical_close_evidence",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/acceptance-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p1_es_accept_limits",
+        "target": "P2",
+        "relation": "retains_next_adoption_and_access_gate",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L576"
+      },
+      {
+        "source": "p1_es_accept_limits",
+        "target": "P11",
+        "relation": "retains_institutional_and_production_acceptance_gate",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/connected-result.json",
+        "source_location": "L576"
+      }
+    ]
+  }
+}

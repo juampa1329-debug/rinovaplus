@@ -1,0 +1,127 @@
+{
+  "unit": "P1-ES",
+  "date": "2026-10-26",
+  "status": "accepted_technical_SQL2019_foundation",
+  "P1_close_accepted": true,
+  "P1_percent": "100.00%",
+  "input_archive": "E:/documentos C/cbn/CRM_CBN_esquema_ES_2026-10-26.zip",
+  "input_archive_sha256": "f6a8468291c022b85b8c953cbcf6291d384258115fc443698be0b6f35ca69b40",
+  "baseline": "docs/adaptation/sql/p1_es_input_baseline.json",
+  "preserved_preimages": 787,
+  "V1_prototype": "preserved_history_not_final_acceptance",
+  "V2": {
+    "status": "accepted_in_isolated_native_restored_SQL2019_copy",
+    "manifest_sha256": "5457c8da43a9c303c5b7032cff625a3d7ae112c876187c61fdb31e7a8948e2d3",
+    "units": 2,
+    "main_database": "CBN_P1ES_TRIAL_20261026_fe815d77",
+    "tables": 99,
+    "scope": "technical_foundation_only_no_runtime_namespace_adoption"
+  },
+  "deliverables": [
+    {
+      "id": "P1ES.1",
+      "name": "Archive inspection and original98 SQL2019 execution",
+      "state": "done",
+      "evidence": "artifacts/p1-es/connected-result.json"
+    },
+    {
+      "id": "P1ES.2",
+      "name": "Approved immutable release, durable journal, independent full model",
+      "state": "done",
+      "evidence": "backend/migrations/cbn_spanish_schema_v2/release.json"
+    },
+    {
+      "id": "P1ES.3",
+      "name": "Failures, retry, conflicts, drift, concurrency and own-profile negatives",
+      "state": "done",
+      "evidence": "artifacts/p1-es/connected-result.json"
+    },
+    {
+      "id": "P1ES.4",
+      "name": "Native restore before first apply, postrestore, rollback, restart and source preservation",
+      "state": "done",
+      "evidence": "artifacts/p1-es/connected-result.json"
+    },
+    {
+      "id": "P1ES.5",
+      "name": "Source and connected-evidence review with scoped P1 acceptance",
+      "state": "done",
+      "evidence": "artifacts/p1-es/acceptance-review.json"
+    },
+    {
+      "id": "P1ES.6",
+      "name": "Fixed partial-work metric, roadmap, graph and memory",
+      "state": "done",
+      "evidence": "docs/adaptation/phase-work-progress.json"
+    }
+  ],
+  "tests": {
+    "P1_focused_passed": 75,
+    "institutional_regressions_passed": 61,
+    "partial_work_negative_cases_rejected": 14,
+    "checkpoint_negative_cases_rejected": 9,
+    "SQL_fault_scenarios": 8,
+    "SQL_negative_scenarios": 8,
+    "actual_catalog_drifts": 6,
+    "actual_denied_SQL_statements": 6,
+    "concurrency_committed_noop": true,
+    "recovery_started_ACK_loss_passed": true,
+    "SQL2019_restart_passed": true
+  },
+  "phase_work_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "48.67%",
+    "P3": "34.67%",
+    "P4": "35.43%",
+    "P5": "45.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "phase_acceptance_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "0.00%",
+    "P3": "0.00%",
+    "P4": "0.00%",
+    "P5": "0.00%",
+    "P6": "0.00%",
+    "P7": "0.00%",
+    "P8": "0.00%",
+    "P9": "0.00%",
+    "P10": "0.00%",
+    "P11": "0.00%"
+  },
+  "milestones": {
+    "fixed": 279,
+    "done": 113,
+    "pending": 166
+  },
+  "graph": {
+    "path": "graphify-out/p1-es",
+    "nodes": 910,
+    "edges": 1281,
+    "communities": 85
+  },
+  "remaining_in_next_phases": [
+    "P2 own access migration/profile and SQL-backed roles/sessions/settings",
+    "Explicit Spanish namespace/runtime bindings and transition rehearsal; no automatic alias or profile redirect",
+    "P2 UI/browser acceptance and removal of internal development labels in the new UI",
+    "Full DBSIIE mappings/data/business objects and institutional operation remain pending by capability"
+  ],
+  "next_unit": "P2 SQL integration and own profile, then UI and browser acceptance",
+  "old_previews_or_profiles_redirected": false,
+  "academic_source_DDL_or_DML": false,
+  "providers_enabled": false,
+  "new_HTTP_listener": false,
+  "P2_accepted": false,
+  "institutional_production_accepted": false,
+  "offline_resume": [
+    "python -B backend/tools/check_p1_es_checkpoint.py --self-test",
+    "python -B backend/tools/phase_work_progress.py --self-test"
+  ]
+}

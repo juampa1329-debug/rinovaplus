@@ -1,0 +1,639 @@
+{
+  "domain": "Agentes, ADN institucional, memoria, conocimiento y aprendizaje evaluado",
+  "findings": [
+    {
+      "id": "ai_agents_hierarchy",
+      "capability": "Constructor y ejecución de agentes con jerarquía educativa",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1028
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/router.py",
+          "line": 240
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/agents/domain.py",
+          "line": 32
+        },
+        {
+          "file": "backend/app/modules/agents/domain.py",
+          "line": 231
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 296
+        },
+        {
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 20
+        },
+        {
+          "file": "docs/contracts/admissions-agents.md",
+          "line": 37
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 625
+        }
+      ],
+      "status": "parcial_con_capacidades_educativas_propias",
+      "gap": "El destino ya incorpora instrucciones, objetivos, reglas, plantillas, modelos, ámbitos de memoria y restricciones heredadas. Su jerarquía orientador/programa/etapa es un requisito propio que no debe reemplazarse por el registro general del SaaS. Por decisión vigente del propietario del 2026-10-21, guardar una configuración válida deja el perfil disponible en la misma transacción; el diagnóstico es opcional y no existe aprobación humana adicional del perfil. ApprovedVersion es un sello técnico SQL. La paridad debe verificarse por acción y estado conservando esa excepción explícita frente a Scentra, sin reinstalar su aprobación obligatoria.",
+      "acceptance": "Tabla de equivalencias del constructor y de cada acción; crear/editar/replay/409; guardar perfil válido lo deja disponible en la misma transacción sin aprobación humana adicional; diagnóstico opcional; guardar un perfil pausado conserva la pausa; archivo/restauración y fuentes vigentes; una sola propiedad de respuesta; padre/programa/etapa preservados. Ensayo en copia SQL autorizada y reversión de configuración/versiones. La revisión de fuentes y la aprobación de acciones sensibles se tratan por sus contratos propios, no como aprobación obligatoria de perfil.",
+      "phase": "agentes"
+    },
+    {
+      "id": "ai_collective_memory",
+      "capability": "Memoria colectiva institucional editable y reutilizada",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1696
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1716
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1931
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/router.py",
+          "line": 247
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 101
+        },
+        {
+          "file": "backend/app/modules/agents/domain.py",
+          "line": 16
+        }
+      ],
+      "status": "parcial_sin_paridad_de_persistencia",
+      "gap": "El ámbito collective actual incorpora políticas y la instrucción de usar fuentes públicas autorizadas; no equivale al CRUD de recuerdos colectivos tipados de Scentra con título, contenido, ámbito, confianza, visibilidad, caducidad y auditoría. Diseñar persistencia institucional sin compartir conversaciones ni hechos privados de otros aspirantes.",
+      "acceptance": "Migración aditiva SQL Server 2019, API/UI de alta/listado/archivo o eliminación según contrato y consumo real en prompts; ámbitos institución/programa/etapa y vigencia; autorización y trazabilidad; rechazar contenido privado fuera de alcance; restauración/rollback probado.",
+      "phase": "memoria_institucional"
+    },
+    {
+      "id": "ai_applicant_memory",
+      "capability": "Memoria del aspirante con evidencia y separación por conversación",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 3468
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 3641
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 37
+        },
+        {
+          "file": "backend/app/modules/ai/application/admissions_prompt.py",
+          "line": 21
+        },
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 114
+        }
+      ],
+      "status": "implementada_en_codigo_con_validacion_conectada_por_verificar",
+      "gap": "El destino posee ProspectMemory y exige UUID/cita de mensaje entrante para hechos declarados; esto debe conservarse. Archivos/importación/exportación de memorias de agentes del SaaS son una capacidad distinta y no se acreditan por la memoria contextual. No se ha conectado la DB ni probado el runtime en esta auditoría.",
+      "acceptance": "Pruebas de persistencia, corrección, reinicio, caducidad, cambio de programa y ausencia de mezcla entre aspirantes; importación/exportación de memoria sólo con permisos y formato validado si se incorpora, sin restaurar instrucciones o datos ajenos silenciosamente.",
+      "phase": "memoria_institucional"
+    },
+    {
+      "id": "ai_institutional_dna",
+      "capability": "ADN institucional y memoria de marca",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 61
+        },
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 207
+        },
+        {
+          "file": "../saas-version/backend/app_saas/brand_brain/router.py",
+          "line": 458
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/ai/domain/models.py",
+          "line": 126
+        },
+        {
+          "file": "backend/app/modules/agents/domain.py",
+          "line": 32
+        },
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 95
+        }
+      ],
+      "status": "parcial_sin_perfil_institucional_equivalente",
+      "gap": "El destino tiene prompt global, tono/reglas por agente y políticas académicas. No se identificó un módulo activo equivalente al perfil Brand Brain con voz, públicos, límites, evidencias, briefs y control de versiones/gobierno. ADN debe descomponerse en perfil institucional y comportamiento medible; catálogo, precios y requisitos académicos conservan autoridad SIIE.",
+      "acceptance": "Contrato explícito de campos ADN aplicables a educación; perfil institucional versionado con fuentes, revisión y auditoría; composición determinista con restricciones de agentes sin sobrescribir SIIE; lectura del perfil efectivo y rollback de versión probado.",
+      "phase": "memoria_institucional"
+    },
+    {
+      "id": "ai_knowledge_retrieval",
+      "capability": "Conocimiento institucional publicado y recuperación relevante",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 231
+        },
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 1632
+        },
+        {
+          "file": "../saas-version/backend/app_saas/knowledge/router.py",
+          "line": 2107
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/knowledge/service.py",
+          "line": 62
+        },
+        {
+          "file": "backend/app/modules/knowledge/service.py",
+          "line": 94
+        },
+        {
+          "file": "backend/app/modules/agents/service.py",
+          "line": 246
+        },
+        {
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 19
+        }
+      ],
+      "status": "parcial_con_adaptador_sql_ya_existente",
+      "gap": "Scentra usa entre sus mecanismos vectores dispersos en vector_json y puntuación de fragmentos; no corresponde asumir pgvector o embeddings densos como requisito de esa implementación. El destino ya mantiene documentos/fragmentos/términos y búsqueda léxica de documentos publicados, con alcance de programa/etapa. Evaluar relevancia con preguntas educativas antes de elegir otro índice. SQL Server 2019 no debe recibir JSONB ni sintaxis PostgreSQL.",
+      "acceptance": "Conjunto revisado de preguntas y fuentes, procedencia de fragmento/revisión/página, recuperación sólo publicada/vigente/en alcance, abstención ante ausencia y conservación de SQL como fuente primaria. Comparar precisión y coste contra implementación vigente; migraciones e índices compatibles con 2019.",
+      "phase": "memoria_institucional"
+    },
+    {
+      "id": "ai_feedback",
+      "capability": "Correcciones humanas, resultados y candidatos de mejora",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/training/feedback_service.py",
+          "line": 602
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/feedback_service.py",
+          "line": 734
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 2905
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/conversation_analysis/api/router.py",
+          "line": 310
+        },
+        {
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 248
+        },
+        {
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 28
+        }
+      ],
+      "status": "parcial",
+      "gap": "Existen correcciones de análisis y planes/operaciones de estrategia, pero ello no demuestra un circuito equivalente de feedback/candidatos/packs ni un conjunto de entrenamiento. Separar declaración humana, evaluación del resultado, modificación de instrucciones y actualización de pesos de un modelo.",
+      "acceptance": "Contrato de resultado objetivo y origen autorizado; eventos inmutables/versionados; corrección no reescribe evidencia original; dataset revisado deduplicado con exclusión de datos sensibles y particiones temporales; trazabilidad desde feedback a candidato.",
+      "phase": "aprendizaje_evaluado"
+    },
+    {
+      "id": "ai_training_governance",
+      "capability": "Packs de entrenamiento, evaluaciones, promoción y reversión",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/training/service.py",
+          "line": 340
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 407
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 780
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 1041
+        },
+        {
+          "file": "../saas-version/backend/app_saas/training/eval_service.py",
+          "line": 1138
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/main.py",
+          "line": 39
+        },
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 31
+        }
+      ],
+      "status": "ausente_en_composicion_inspeccionada",
+      "gap": "El historial y A/B de configuración de agentes no sustituyen los packs, casos, ejecuciones de evaluación, promoción y rollback de Scentra. No se identificó un módulo activo destino que implemente ese ciclo completo. La planificación debe distinguir evaluación de prompts/RAG de entrenamiento ML.",
+      "acceptance": "Casos educativos reproducibles con criterios aprobados; ejecución guarda versión de prompt/fuentes/modelo/dataset y resultado; promoción sólo de una versión evaluada, historial y reversión a versión previa; no autoentrenamiento o despliegue de pesos al guardar un recuerdo.",
+      "phase": "aprendizaje_evaluado"
+    },
+    {
+      "id": "ai_ml_pipeline",
+      "capability": "Aprendizaje predictivo entrenado y registro de modelos",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+          "line": 200
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+          "line": 223
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+          "line": 244
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+          "line": 329
+        },
+        {
+          "file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+          "line": 373
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 2521
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/campaigns/domain/scoring.py",
+          "line": 73
+        },
+        {
+          "file": "backend/app/modules/conversation_analysis/application/runtime.py",
+          "line": 80
+        }
+      ],
+      "status": "ausente_como_entrenamiento_real_del_destino",
+      "gap": "Scentra contiene entrenamiento .fit con scikit-learn y opciones LightGBM/XGBoost sobre datos sintéticos o autoetiquetados, además de reglas baseline. No se verificó una red neuronal. El score determinista de abandono o un LLM de análisis de CRM CBN no acredita un modelo entrenado ni precisión predictiva. El port requerirá extracción de características/etiquetas SQL Server y artefactos derivados, sin una nueva DB transaccional ni activar entrenamiento en esta etapa.",
+      "acceptance": "Definir objetivo educativo medible y etiquetas verificadas; conjunto temporal independiente sin fuga; baseline, métricas y umbral de aceptación aprobados; modelo versionado con artefacto/hash/procedencia y shadow sin envíos; promoción y rollback; métricas sintéticas o autoetiquetadas no se presentan como resultado institucional real.",
+      "phase": "aprendizaje_evaluado"
+    },
+    {
+      "id": "ai_no_billing_policy",
+      "capability": "Políticas institucionales y presupuestos de IA sin planes comerciales",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 24
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1565
+        },
+        {
+          "file": "../saas-version/backend/app_saas/intelligence/service.py",
+          "line": 1058
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/agents/domain.py",
+          "line": 46
+        },
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 133
+        },
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 147
+        }
+      ],
+      "status": "adaptacion_transversal_necesaria",
+      "gap": "La fuente combina permisos funcionales con tenant operativo y límites de plan. La copia educativa excluye planes/cobros, pero conserva autorización institucional, cuotas de tokens, topes USD operativos, alarmas/corte y trazabilidad de consumo. El destino ya etiqueta su estimación como not_billing y la reserva por jerarquía. No eliminar estos controles por quitar billing.",
+      "acceptance": "Matriz de cada import/llamada de billing reutilizada por módulos elegidos y reemplazo explícito por política institucional; usuarios sin permiso no ejecutan; agotamiento detiene consumo; no tablas de suscripción/facturación ni interfaz de pagos; pruebas de concurrencia/reserva/liquidación y costes inciertos.",
+      "phase": "fundacion"
+    },
+    {
+      "id": "ai_execution_governance",
+      "capability": "Ejecución, selección por perfil, fallback y acciones asistidas",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/agents/router.py",
+          "line": 240
+        },
+        {
+          "file": "../saas-version/backend/app_saas/agents/service.py",
+          "line": 1854
+        }
+      ],
+      "target": [
+        {
+          "file": "backend/app/modules/agents/runtime.py",
+          "line": 50
+        },
+        {
+          "file": "backend/app/modules/agents/generation.py",
+          "line": 74
+        },
+        {
+          "file": "backend/app/modules/agents/operations.py",
+          "line": 82
+        },
+        {
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 12
+        }
+      ],
+      "status": "parcial_ya_implementada_en_codigo",
+      "gap": "El destino incluye experimentos deterministas, proveedor/modelo por perfil, reservas/liquidación, historial, acciones borrador/aprobación y control humano. La aprobación de acciones sensibles es independiente del guardado de perfiles: por decisión vigente del propietario, guardar un perfil válido lo deja disponible sin aprobación humana adicional y con diagnóstico opcional. La evidencia histórica describe aceptaciones parciales de SQL/UI/proveedor, pero esta auditoría es estática; revisar completitud de las herramientas expuestas y revalidación antes de ejecutarlas. No se atribuye a la sesión actual ninguna ejecución de pruebas ni estado de gates globales.",
+      "acceptance": "Cada herramienta del constructor enlaza a ejecutor real o se mantiene deshabilitada con causa; conflictos de versión, takeover humano, recuperación de lease, reinicio y fallback no producen respuestas duplicadas; escenarios por programa/etapa en SQL Server 2019 y reversión sin pérdida de memoria/historial. Se conserva guardar y utilizar sin aprobación adicional de perfil; permisos, fuentes y acciones sensibles mantienen controles propios.",
+      "phase": "agentes"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "ai_agents_hierarchy_source",
+        "label": "Scentra: Constructor y ejecución de agentes con jerarquía educativa",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L1028"
+      },
+      {
+        "id": "ai_agents_hierarchy_target",
+        "label": "CRM CBN: Constructor y ejecución de agentes con jerarquía educativa",
+        "file_type": "code",
+        "source_file": "backend/app/modules/agents/domain.py",
+        "source_location": "L32"
+      },
+      {
+        "id": "ai_collective_memory_source",
+        "label": "Scentra: Memoria colectiva institucional editable y reutilizada",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L1696"
+      },
+      {
+        "id": "ai_collective_memory_target",
+        "label": "CRM CBN: Memoria colectiva institucional editable y reutilizada",
+        "file_type": "code",
+        "source_file": "backend/app/modules/agents/runtime.py",
+        "source_location": "L101"
+      },
+      {
+        "id": "ai_applicant_memory_source",
+        "label": "Scentra: Memoria del aspirante con evidencia y separación por conversación",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L3468"
+      },
+      {
+        "id": "ai_applicant_memory_target",
+        "label": "CRM CBN: Memoria del aspirante con evidencia y separación por conversación",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L37"
+      },
+      {
+        "id": "ai_institutional_dna_source",
+        "label": "Scentra: ADN institucional y memoria de marca",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/brand_brain/router.py",
+        "source_location": "L61"
+      },
+      {
+        "id": "ai_institutional_dna_target",
+        "label": "CRM CBN: ADN institucional y memoria de marca",
+        "file_type": "code",
+        "source_file": "backend/app/modules/ai/domain/models.py",
+        "source_location": "L126"
+      },
+      {
+        "id": "ai_knowledge_retrieval_source",
+        "label": "Scentra: Conocimiento institucional publicado y recuperación relevante",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/knowledge/router.py",
+        "source_location": "L231"
+      },
+      {
+        "id": "ai_knowledge_retrieval_target",
+        "label": "CRM CBN: Conocimiento institucional publicado y recuperación relevante",
+        "file_type": "code",
+        "source_file": "backend/app/modules/knowledge/service.py",
+        "source_location": "L62"
+      },
+      {
+        "id": "ai_feedback_source",
+        "label": "Scentra: Correcciones humanas, resultados y candidatos de mejora",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/training/feedback_service.py",
+        "source_location": "L602"
+      },
+      {
+        "id": "ai_feedback_target",
+        "label": "CRM CBN: Correcciones humanas, resultados y candidatos de mejora",
+        "file_type": "code",
+        "source_file": "backend/app/modules/conversation_analysis/api/router.py",
+        "source_location": "L310"
+      },
+      {
+        "id": "ai_training_governance_source",
+        "label": "Scentra: Packs de entrenamiento, evaluaciones, promoción y reversión",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/training/service.py",
+        "source_location": "L340"
+      },
+      {
+        "id": "ai_training_governance_target",
+        "label": "CRM CBN: Packs de entrenamiento, evaluaciones, promoción y reversión",
+        "file_type": "code",
+        "source_file": "backend/app/main.py",
+        "source_location": "L39"
+      },
+      {
+        "id": "ai_ml_pipeline_source",
+        "label": "Scentra: Aprendizaje predictivo entrenado y registro de modelos",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+        "source_location": "L200"
+      },
+      {
+        "id": "ai_ml_pipeline_target",
+        "label": "CRM CBN: Aprendizaje predictivo entrenado y registro de modelos",
+        "file_type": "code",
+        "source_file": "backend/app/modules/campaigns/domain/scoring.py",
+        "source_location": "L73"
+      },
+      {
+        "id": "ai_no_billing_policy_source",
+        "label": "Scentra: Políticas institucionales y presupuestos de IA sin planes comerciales",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L24"
+      },
+      {
+        "id": "ai_no_billing_policy_target",
+        "label": "CRM CBN: Políticas institucionales y presupuestos de IA sin planes comerciales",
+        "file_type": "code",
+        "source_file": "backend/app/modules/agents/domain.py",
+        "source_location": "L46"
+      },
+      {
+        "id": "ai_execution_governance_source",
+        "label": "Scentra: Ejecución, selección por perfil, fallback y acciones asistidas",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/agents/router.py",
+        "source_location": "L240"
+      },
+      {
+        "id": "ai_execution_governance_target",
+        "label": "CRM CBN: Ejecución, selección por perfil, fallback y acciones asistidas",
+        "file_type": "code",
+        "source_file": "backend/app/modules/agents/runtime.py",
+        "source_location": "L50"
+      }
+    ],
+    "edges": [
+      {
+        "source": "ai_agents_hierarchy_source",
+        "target": "ai_agents_hierarchy_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L1028"
+      },
+      {
+        "source": "ai_collective_memory_source",
+        "target": "ai_collective_memory_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L1696"
+      },
+      {
+        "source": "ai_applicant_memory_source",
+        "target": "ai_applicant_memory_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L3468"
+      },
+      {
+        "source": "ai_institutional_dna_source",
+        "target": "ai_institutional_dna_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/brand_brain/router.py",
+        "source_location": "L61"
+      },
+      {
+        "source": "ai_knowledge_retrieval_source",
+        "target": "ai_knowledge_retrieval_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/knowledge/router.py",
+        "source_location": "L231"
+      },
+      {
+        "source": "ai_feedback_source",
+        "target": "ai_feedback_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/training/feedback_service.py",
+        "source_location": "L602"
+      },
+      {
+        "source": "ai_training_governance_source",
+        "target": "ai_training_governance_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/training/service.py",
+        "source_location": "L340"
+      },
+      {
+        "source": "ai_ml_pipeline_source",
+        "target": "ai_ml_pipeline_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/ml_service/pipeline.py",
+        "source_location": "L200"
+      },
+      {
+        "source": "ai_no_billing_policy_source",
+        "target": "ai_no_billing_policy_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/agents/service.py",
+        "source_location": "L24"
+      },
+      {
+        "source": "ai_execution_governance_source",
+        "target": "ai_execution_governance_target",
+        "relation": "comparison_for_adaptation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "../saas-version/backend/app_saas/agents/router.py",
+        "source_location": "L240"
+      },
+      {
+        "source": "ai_execution_governance_target",
+        "target": "ai_agents_hierarchy_target",
+        "relation": "imports_configuration_and_effective_configuration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/agents/runtime.py",
+        "source_location": "L7"
+      },
+      {
+        "source": "ai_collective_memory_target",
+        "target": "ai_agents_hierarchy_target",
+        "relation": "reads_configuration_memories",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/modules/agents/runtime.py",
+        "source_location": "L88"
+      }
+    ]
+  }
+}

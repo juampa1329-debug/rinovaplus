@@ -1,0 +1,1 @@
+"""Inbox application services."""

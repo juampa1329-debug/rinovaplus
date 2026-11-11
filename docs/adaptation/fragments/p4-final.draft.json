@@ -1,0 +1,879 @@
+{
+  "nodes": [
+    {
+      "id": "p4_final_scope",
+      "label": "Alcance local P4 con aceptación externa pendiente",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Alcance comprobado; ## Pendientes que impiden el100%",
+      "rationale": "El documento acepta sólo P4.1/P4.2 en alcance local controlado. Faltan dominioHTTPS, origen humano/cookieSecure, proxy/callbacks, apps/permisos/productos y pruebas reales por canal. El porcentaje no equivale a operación externa.",
+      "evidence_kind": "documentation_claim_at_read_epoch"
+    },
+    {
+      "id": "p4_final_reference",
+      "label": "Referencia inicial conserva su carácter histórico",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/reference-review.json",
+      "source_location": "$.status,$.source_hashes,$.comment_action_matrix",
+      "rationale": "Referencia anterior de115contextos/83instancias. No encontró respuesta privada a comentarios; las reacciones observadas son Me gusta y la conversión Ads tiene otra identidad. Sus huellas de fuentes no se adoptan como código actual.",
+      "evidence_kind": "historical_source_snapshot"
+    },
+    {
+      "id": "p4_final_model",
+      "label": "Tres tablas aditivas y padre P3 intacto",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_channels_operations_v1/expected-model.json",
+      "source_location": "$.tables,$.columns,$.foreign_keys",
+      "rationale": "VerificaciónJSON offline:147tablas/236FK. Al excluir tres tablas nuevas cada sección coincide con el modeloP3. Los hashes de las tres entradas del releaseP4 coinciden. No se ejecutóSQL para esta revisión.",
+      "evidence_kind": "offline_JSON_integrity"
+    },
+    {
+      "id": "p4_final_accounts",
+      "label": "Cuenta, endpoint y callback generados por institución",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_operations.py",
+      "source_location": "account L29-L45; endpoint L77-L134; Operations.runtime L472-L552",
+      "rationale": "Cada cuenta tiene IntegrationId/ApplicationId/issuer. EndpointKey y verifytoken son generados. URLcallback y redirect salen de PublicBaseUrl revisada, nunca Host/query. Sin dominio se devuelve ruta/requisito pendiente. Pausa/retiro/restauración y credenciales son acciones propias.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_oauth",
+      "label": "OAuth mantiene state y tokens provisionales ligados a sesión",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_oauth.py",
+      "source_location": "OAuth.start L275-L370; OAuth.callback L372-L600; OAuth.assets L602-L766",
+      "rationale": "Permiso reciente, hashstate, actor/sesión/issuer/redirect y versiónapp/secreto se fijan antes del canje. Claimdurable precedeHTTP; activos/tokens permanecen provisionales hasta selección de cuenta ligada. Seleccionar deja paused/unverified y exige verificación posterior.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_tiktok",
+      "label": "OAuth Business y LoginKit se distinguen",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_oauth.py",
+      "source_location": "SCOPES L26-L47; OAuth.start L275-L301",
+      "rationale": "Sólo tiktok_login_kit tiene scopes de identidad; el perfilBusiness se bloquea por falta de autorización del producto. LoginKit no concede BusinessMessaging ni comentarios comerciales.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_renew",
+      "label": "Renovación con límites por issuer",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_tokens.py",
+      "source_location": "renew L61-L160",
+      "rationale": "La fuente implementa renovación LoginKit/InstagramLogin/FacebookLogin con comprobación de identidad y tokens separados. BusinessTikTok sigue pendiente; no se presenta como renovación completa del productoBusiness.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_provider",
+      "label": "Intención durable y resultado incierto antes de repetir",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_provider.py",
+      "source_location": "ProviderOperations.perform L173-L415; provider_account L43-L81",
+      "rationale": "Verify/numbers/subscribe/register/health/refresh usan cuenta/token/revisión exactos, actor reciente y ProviderOperation antesIO. Se reevalúan autoridad/cuenta/secreto al finalizar. PIN de6dígitos es efímero. Cuenta synthetic_no_provider bloquea transporte.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_ingress",
+      "label": "Raw firmado y cifrado se confirma antes delACK",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_ingress.py",
+      "source_location": "signature_valid L38-L63; strict_json L75-L87; Ingress.receive L122-L207",
+      "rationale": "Límite1MB, firmaMeta con secretoapp pinneado o TikTok por endpoint, JSONestricto sin clavesduplicadas/no finitos, ClientKey ligado y rawAESGCM conAAD institución/endpoint/recibo. Dedupe endpoint+digest y ACK sólo tras confirmar transacción.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_events",
+      "label": "Proyección exige ruta y cuenta activas",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_events.py",
+      "source_location": "EventWorker.once L543-L675; EventWorker.project_once L677-L728",
+      "rationale": "Subeventos conservan recibo/aplicación/endpoint/ruta/integración; IDs sin evidencia quedan en cuarentena. Proyección exige módulo/ingress, endpointactivo y cuenta connected/verified. Pausa retiene entrada durable sin crear efectosCRM.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_delivery",
+      "label": "Accepted no significa delivered",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_events.py",
+      "source_location": "delivery L432-L448; project L451-L536",
+      "rationale": "Estados se aplican por institución/integración/idexterno exactos; reducer evita regresión. Borrado social conserva tombstone y cancela sólo repliesqueued, sin fingir deshacer entregas externas.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_outbox",
+      "label": "Outbox C10 revalida autoridad y conserva incertidumbre",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_outbox.py",
+      "source_location": "enqueue L18-L136; actor_allowed L139-L161; ready L164-L275; Dispatcher.once L377-L623",
+      "rationale": "Una SendJob liga actor/sesión/roles/módulos, cuenta/identidad/conversación/mensaje o comentario, ventana y cuotas. Reserva antesIO; sending con leasevencido pasauncertain y retiene reserva. Resultado se fencea porlease; ACKproveedor sólo marcaaccepted.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_workers",
+      "label": "P4 monta sólo consumidores C10",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_workers.py",
+      "source_location": "Workers.run L32-L53; lifespan L56-L69",
+      "rationale": "Sólo EventWorker, MediaWorker, DispatcherC10 y maintenance forman el cicloP4; no se inicia dispatcherB011. Diagnóstico de excepción es genérico, sin cuerpos/secretos.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_retry",
+      "label": "Fallo cierto y nueva autorización permiten reintento",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_retry.py",
+      "source_location": "recover_send L14-L108",
+      "rationale": "Retry requiere failed tanto en job como operación, rowversion, cuenta verificada y sesión/permiso recientes. Conserva mensaje/historia y marca el intento anterior retried. Cola restaurada requiere aprobación humana vigente.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_recovery",
+      "label": "Recuperar no equivale a reenviar incertidumbre",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_recovery.py",
+      "source_location": "Recoveries.apply L123-L306; maintenance L309-L358",
+      "rationale": "Reprocesar evento valida rawcifrado/digest/normalización/ruta y cuenta. Abandonar incertidumbre conserva historia y reserva; no reenvía. Maintenance conserva estados inciertos y purga sólo cuerpos terminales elegibles.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_media",
+      "label": "Adjuntos propios ligados a cuenta y archivo verificado",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_media.py",
+      "source_location": "file_for L71-L125; attach L128-L149; register_incoming L152-L191; Media.upload L198-L275; MediaWorker.once L302-L356",
+      "rationale": "MediaAssetP4 liga institución/cuenta/identidad/conversación/mensaje, aplica inspección/hash/cuota/límite y descarga autenticada. Worker no repite ready. TikTokdownload no está habilitado sin contrato; la integraciónremota delega a adaptadorTLS/hosts acotado.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_comments",
+      "label": "Filtros SQL y conversión preservan identidad",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_comments.py",
+      "source_location": "Comments.read L74-L119; Comments.action L121-L288",
+      "rationale": "Filtra cuenta/canal/estado/búsqueda antesOFFSET/FETCH. CAS/idempotencia gobiernan estadoCRM separado de provider. Conversión reutiliza autor+cuenta y parCRM verificado; no crea destinatarioDM a partir del autor social. Borrados bloqueanacciones.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_effects",
+      "label": "Me gusta y preview comparten diario de efectos",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/comment_effects.py",
+      "source_location": "call_provider L23-L56; Effects.perform L64-L237",
+      "rationale": "Sólo like/unlike/preview permitidos, sin catálogo de emojis o privado universal. Autoridad/revisión/cuenta se reevalúan y un resultadoambiguo quedauncertain.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_ai",
+      "label": "IA genera borrador humano bajo presupuesto explícito",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/comment_ai.py",
+      "source_location": "policy L58-L77; reserve_budget L80-L116; Drafts.suggest L197-L416",
+      "rationale": "Exige modelo/clave/tarifamáxima vigente, reserva tokens/coste antes inferencia y reevalúa autoridad/comentario/configuración. Replay recupera resultado sin segunda inferencia. automatic_send=false; no creaSendJob.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_limit_fix",
+      "label": "Límite UTF16 de nota corregido",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channel_comments.py",
+      "source_location": "Comments.action L203-L220; channel_text.sql_text",
+      "rationale": "Se detectó que prefijo+Body[:3600] podía exceder Note.Bodynvarchar2000. Fuente corregida aplica sql_text(textocompleto,2000), preservando SocialComment original. El hallazgo se revisó en código; el revisor no ejecutó la corrección enSQL.",
+      "evidence_kind": "current_code_review"
+    },
+    {
+      "id": "p4_final_report_api",
+      "label": "Resultado público api",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/api-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "26checks de endpoints/token, firma/recibo/dedupe, CSRF, efectosidempotentes, OAuthprovisional y outbox. real_provider_calls=0.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_extras",
+      "label": "Resultado público extras",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/extras-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "23checks de comentarios/conversión sinDM ni duplicados, likeúnico, replyC10, borrado, medios/autorización/contenidoactivo e IA congatewaycontrolado.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_storage",
+      "label": "Resultado público storage",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/storage-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "7checks: tres fallosdurables reconciliados, concurrenciaCOMMITTED/NOOP,4denegacionesSQL, restorepoblado/vault/retirosesiones yblobcopiado porhash. Motor15/compat150.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_recovery-api",
+      "label": "Resultado público recovery-api",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/recovery-api-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "9checks de fallocierto/nuevo intento, no duplicación, autoridadactual despuésrestore y prohibición de reenviarresultadoincierto.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_drift",
+      "label": "Resultado público drift",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/drift-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "2checks de driftaditivo rechazado y bytesacadémicos intactos.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_demo",
+      "label": "Resultado público demo",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/demo-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "Conserva8contactos/8conversaciones/26mensajes/8notas/8tareas; añade3comentarios y1cuentasintética pausada, con0envíosdemo.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_compile",
+      "label": "Resultado público compile",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/compile-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "Reporte decompilaciónSQL2019/150 con147tablas ytransacción revertida; no es publicaciónexterna.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_events",
+      "label": "Resultado público events",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/events-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "Resultado actual13checks: entrega porcuenta/antiregresión, pausa/dedupe/resume, mediosentrantesligados/inspeccionados/descargaautenticada/sin repeticiónready, cuarentena recuperada idempotentemente ycolapreservada enviadasólounavez alreanudar. Los conteosanteriores7/10 quedan superados por este artefacto actual.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_preservation",
+      "label": "Resultado público preservation",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/preservation-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "Compara107tablas de negocio de fuenteP3 conbackupfresco y30académicasvacías iguales; excluye7volátiles. older_database_fingerprints_claimed=false: no recalcula HORARIOSSIIEWindows ni todas las copiashistóricas.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_restart",
+      "label": "Resultado público restart",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/restart-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "Hashes antes/después iguales de142tablas/130filas, cinco volátiles excluidas yvolumen persistente. Su denominador no es el107 usado para preservar lafuente.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_frontend-regression",
+      "label": "Resultado público frontend-regression",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/frontend-regression-result.json",
+      "source_location": "$.current_full_suite,$.exact_pre_P4_replay,$.failures",
+      "rationale": "Suiteactual299/306 con7fallos; replayexactopreP4 deagentes8/15 reproduce losmismos7 en3archivos. No declarar suitecompleta verde.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_report_limits",
+      "label": "Resultado público limits",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/limits-result.json",
+      "source_location": "$.status,$.checks",
+      "rationale": "3checksSQL reportados: comentarioUnicode largo convierte sintruncación, originalíntegro yreplay deunasolanota. No fue ejecutado por esterevisor.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_browser",
+      "label": "Quince escenarios de navegador local",
+      "file_type": "document",
+      "source_file": "artifacts/p4-es/browser/result.json",
+      "source_location": "$.checks,$.count,$.page_errors,$.provider_calls",
+      "rationale": "Reporte passed15checks:login/registrosprevios/fichaúnica,3comentariosdemo yconversión,configcuenta/callback sin dominioinventado, outboundpausado, móvil/teclado y0errores. No afirma navegadorOAuth deproveedor ni una nuevaejecución delrevisor.",
+      "evidence_kind": "executed_result_report_not_reexecuted_by_reviewer"
+    },
+    {
+      "id": "p4_final_progress",
+      "label": "82,29% usa hitos fijos",
+      "file_type": "document",
+      "source_file": "docs/adaptation/phase-work-definition.json",
+      "source_location": "$.phases[id=P4].criteria",
+      "rationale": "Propuesta:P4.1/P4.2=100%; P4.3=5/7; P4.4=3/5; P4.close=4/5. Promedio82,285714…%. Permanecen P4.3.m6/m7, P4.4.m4/m5 yclose.m5. No se modifican56criterios/279hitos ni se usa cantidad de tests como porcentaje.",
+      "evidence_kind": "offline_fixed_definition_calculation"
+    }
+  ],
+  "edges": [
+    {
+      "source": "p4_final_oauth",
+      "target": "p4_final_accounts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_oauth.py",
+      "source_location": "OAuth.start L275-L370; OAuth.callback L372-L600; OAuth.assets L602-L766",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_oauth",
+      "target": "p4_final_tiktok",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_oauth.py",
+      "source_location": "OAuth.start L275-L370; OAuth.callback L372-L600; OAuth.assets L602-L766",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_provider",
+      "target": "p4_final_accounts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_provider.py",
+      "source_location": "ProviderOperations.perform L173-L415; provider_account L43-L81",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_provider",
+      "target": "p4_final_renew",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_provider.py",
+      "source_location": "ProviderOperations.perform L173-L415; provider_account L43-L81",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_ingress",
+      "target": "p4_final_accounts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_ingress.py",
+      "source_location": "signature_valid L38-L63; strict_json L75-L87; Ingress.receive L122-L207",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_events",
+      "target": "p4_final_ingress",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_events.py",
+      "source_location": "EventWorker.once L543-L675; EventWorker.project_once L677-L728",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_events",
+      "target": "p4_final_delivery",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_events.py",
+      "source_location": "EventWorker.once L543-L675; EventWorker.project_once L677-L728",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_outbox",
+      "target": "p4_final_provider",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_outbox.py",
+      "source_location": "enqueue L18-L136; actor_allowed L139-L161; ready L164-L275; Dispatcher.once L377-L623",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_workers",
+      "target": "p4_final_events",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_workers.py",
+      "source_location": "Workers.run L32-L53; lifespan L56-L69",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_workers",
+      "target": "p4_final_outbox",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_workers.py",
+      "source_location": "Workers.run L32-L53; lifespan L56-L69",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_workers",
+      "target": "p4_final_media",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_workers.py",
+      "source_location": "Workers.run L32-L53; lifespan L56-L69",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_workers",
+      "target": "p4_final_recovery",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_workers.py",
+      "source_location": "Workers.run L32-L53; lifespan L56-L69",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_retry",
+      "target": "p4_final_outbox",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_retry.py",
+      "source_location": "recover_send L14-L108",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_recovery",
+      "target": "p4_final_retry",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_recovery.py",
+      "source_location": "Recoveries.apply L123-L306; maintenance L309-L358",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_recovery",
+      "target": "p4_final_events",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_recovery.py",
+      "source_location": "Recoveries.apply L123-L306; maintenance L309-L358",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_comments",
+      "target": "p4_final_outbox",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_comments.py",
+      "source_location": "Comments.read L74-L119; Comments.action L121-L288",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_comments",
+      "target": "p4_final_limit_fix",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channel_comments.py",
+      "source_location": "Comments.read L74-L119; Comments.action L121-L288",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_effects",
+      "target": "p4_final_provider",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/comment_effects.py",
+      "source_location": "call_provider L23-L56; Effects.perform L64-L237",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_scope",
+      "target": "p4_final_reference",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Alcance comprobado; ## Pendientes que impiden el100%",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_scope",
+      "target": "p4_final_tiktok",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Alcance comprobado; ## Pendientes que impiden el100%",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_scope",
+      "target": "p4_final_progress",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Alcance comprobado; ## Pendientes que impiden el100%",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_browser",
+      "target": "p4_final_report_demo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/browser/result.json",
+      "source_location": "$.checks,$.count,$.page_errors,$.provider_calls",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_api",
+      "target": "p4_final_ingress",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_api",
+      "target": "p4_final_oauth",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_api",
+      "target": "p4_final_outbox",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_api",
+      "target": "p4_final_provider",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_extras",
+      "target": "p4_final_comments",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/extras-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_extras",
+      "target": "p4_final_effects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/extras-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_extras",
+      "target": "p4_final_ai",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/extras-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_extras",
+      "target": "p4_final_media",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/extras-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_storage",
+      "target": "p4_final_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/storage-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_storage",
+      "target": "p4_final_recovery",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/storage-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_recovery-api",
+      "target": "p4_final_retry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/recovery-api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_recovery-api",
+      "target": "p4_final_recovery",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/recovery-api-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_drift",
+      "target": "p4_final_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/drift-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_demo",
+      "target": "p4_final_accounts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/demo-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_demo",
+      "target": "p4_final_comments",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/demo-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_compile",
+      "target": "p4_final_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/compile-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_events",
+      "target": "p4_final_events",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/events-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_events",
+      "target": "p4_final_delivery",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/events-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_events",
+      "target": "p4_final_media",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/events-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_events",
+      "target": "p4_final_recovery",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/events-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_preservation",
+      "target": "p4_final_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/preservation-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_restart",
+      "target": "p4_final_workers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/restart-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_restart",
+      "target": "p4_final_media",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/restart-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_frontend-regression",
+      "target": "p4_final_scope",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/frontend-regression-result.json",
+      "source_location": "$.current_full_suite,$.exact_pre_P4_replay,$.failures",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_limits",
+      "target": "p4_final_limit_fix",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "artifacts/p4-es/limits-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_progress",
+      "target": "p4_final_report_api",
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/phase-work-definition.json",
+      "source_location": "$.phases[id=P4].criteria",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_progress",
+      "target": "p4_final_report_extras",
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/phase-work-definition.json",
+      "source_location": "$.phases[id=P4].criteria",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_progress",
+      "target": "p4_final_report_limits",
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/phase-work-definition.json",
+      "source_location": "$.phases[id=P4].criteria",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_progress",
+      "target": "p4_final_browser",
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/phase-work-definition.json",
+      "source_location": "$.phases[id=P4].criteria",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_final_report_preservation",
+      "target": "p4_final_report_restart",
+      "relation": "distinct_evidence_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "artifacts/p4-es/preservation-result.json",
+      "source_location": "$.status,$.checks",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "p4_final_local_comment_scope",
+      "label": "Aceptación local de comentarios y acciones por capacidad",
+      "nodes": [
+        "p4_final_comments",
+        "p4_final_effects",
+        "p4_final_ai",
+        "p4_final_report_extras",
+        "p4_final_report_limits",
+        "p4_final_browser"
+      ],
+      "relation": "supports_local_scope",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Alcance comprobado; ## Pendientes que impiden el100%"
+    },
+    {
+      "id": "p4_final_transport_safety",
+      "label": "Transporte local controlado con aceptación externa pendiente",
+      "nodes": [
+        "p4_final_ingress",
+        "p4_final_events",
+        "p4_final_outbox",
+        "p4_final_retry",
+        "p4_final_recovery",
+        "p4_final_report_api",
+        "p4_final_report_events"
+      ],
+      "relation": "constrains_local_transport",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/SQL_P4_ES_REVIEW.md",
+      "source_location": "## Evidencia y preservación"
+    }
+  ],
+  "source_review": "artifacts/p4-es/final-semantic-review.json",
+  "reviewed_at_UTC": "2026-10-27T05:04:31.724065+00:00",
+  "deep_mode": false,
+  "execution_claim": {
+    "SQL_connections": 0,
+    "provider_calls": 0,
+    "browser_runs_by_reviewer": 0,
+    "preparers_or_qualifiers_run": false,
+    "offline_only": "JSON, SHA/model comparison, unique-label counts and fixed milestone Fraction calculation"
+  }
+}

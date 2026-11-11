@@ -1,0 +1,474 @@
+{
+  "domain": "Extensión CRM ensayada con partición exacta e historia conservada · SQL-C7",
+  "review_scope": "Revisión semántica independiente de fuentes y resultados públicos. Se verificaron los hashes de v1/v2, el cambio de canonicalización y funciones puras mediante AST; los resultados SQL proceden de los reportes conectados del ejecutor, sin repetir conexiones, Docker, app o lecturas privadas. source está vacío porque el ensayo de adaptación SQL es una capacidad nativa y no una afirmación de paridad Scentra. La aceptación corresponde exclusivamente al esquema v2 de nuevas restauraciones; v1 está retirada, el runtime compartido permanece en C5 y C8/SQL2019 siguen pendientes. Ningún nodo declara completas las fases P1/P4/P7.",
+  "findings": [
+    {
+      "id": "foundation_extension_rehearsal",
+      "capability": "Ensayo versionado de extensión CRM que preserve SIIE, CRM poblado e historia",
+      "status": "ensayado_en_restauraciones_no_runtime",
+      "gap": "El alcance estructural B011 está aceptado únicamente en restauraciones independientes. El lector administrativo C7 exige CONTROL y compara las 199 filas CRM previas; no es un guard para datos mutables ni una autorización para ampliar el perfil C5. Faltan consumidores, principal y guard de runtime propios en C8 y aceptación institucional en SQL2019.",
+      "acceptance": "C7 v2: APPLIED+NOOP en otra restauración del C5 poblado; partición exacta 50+7+8; ocho tablas nuevas vacías; prefijo original de cinco filas conservado y diario final de siete; 119 pytest y 51 checks conectados sin pendientes; v1 retirada sin editar. Mantener los contratos históricos y fuente/C5 intactos. C8 debe probar repositorios y capacidades con perfil/ACL/guard propios, sin reutilizar el lector inmutable administrativo ni redirigir el ticket C4.",
+      "source": [],
+      "target": [
+        {
+          "file": "backend/tools/crm_extension_snapshot_v2.py",
+          "line": 36
+        },
+        {
+          "file": "backend/tools/crm_extension_v2.py",
+          "line": 67
+        },
+        {
+          "file": "backend/tools/crm_extension_contract.py",
+          "line": 57
+        },
+        {
+          "file": "backend/tools/rehearse_crm_extension_v2.py",
+          "line": 396
+        },
+        {
+          "file": "backend/tools/crm_extension_checks_v2.py",
+          "line": 550
+        },
+        {
+          "file": "backend/tests/test_crm_extension.py",
+          "line": 349
+        },
+        {
+          "file": "backend/tests/test_crm_extension_v2.py",
+          "line": 20
+        },
+        {
+          "file": "backend/tools/historical_checkpoint.py",
+          "line": 100
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c7_restored_schema_acceptance",
+        "label": "SQL-C7: esquema v2 aceptado sólo en restauraciones; runtime compartido C5",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L3",
+        "verification": "accepted_restored_channels_only"
+      },
+      {
+        "id": "sql_c7_v2_frozen_release",
+        "label": "CBN-channels-local-v2: nueve assets fijados y dependencias v1 verificadas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L9",
+        "release_sha256": "49f72eb835ce46b83ec9c6267da2f73c9d7799990de6fab8ed28762565985998",
+        "shape_version": "cbn-extension-shape-v3"
+      },
+      {
+        "id": "sql_c7_exact_object_partition",
+        "label": "Partición aceptada: 50 académicas + 7 foundation + 8 nuevas vacías",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L7",
+        "extension_columns": 57,
+        "extension_foreign_keys": 10,
+        "extension_indexes": 14,
+        "extension_check_constraints": 8,
+        "extension_defaults": 14,
+        "rationale": "La comparación cubre objetos, tipos y ACL completos; no convierte objetos ajenos a las siete tablas en académicos ni excluye esquemas por prefijo."
+      },
+      {
+        "id": "sql_c7_independent_reference_contract",
+        "label": "Referencia independiente verificada y congelada antes del ensayo APPLIED+NOOP",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L30",
+        "rationale": "Forma física contrastada con especificación de 011+012 y probe Audit INSERT+ROLLBACK antes del freeze. Once restauraciones v2; la referencia y el ensayo son destinos distintos."
+      },
+      {
+        "id": "sql_c7_scoped_migration_actor",
+        "label": "Actor WITHOUT LOGIN: diez GRANT, siete DENY dbo y ACL efectiva verificada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L41",
+        "rationale": "Preparación/evidencia administrativa separadas del DDL acotado; REFERENCES en crm_channels y tres padres CRM, diario sólo SELECT/INSERT. El runtime C4 conserva sus derechos y TLS."
+      },
+      {
+        "id": "sql_c7_versioned_atomic_history",
+        "label": "Diario append-only: cinco filas originales, STARTED durable y DDL+COMMITTED atómicos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L43",
+        "rationale": "Eventos C7 usan identidad/release/formato nuevos; SuccessKey impide repetir B011 confirmado con otros bytes. Una transacción ajena se rechaza sin rollback del llamador."
+      },
+      {
+        "id": "sql_c7_unknown_reconciliation",
+        "label": "UNKNOWN bloquea nuevas aplicaciones hasta reconciliar esquema e historial globales",
+        "file_type": "code",
+        "source_file": "backend/tools/crm_extension_v2.py",
+        "source_location": "L645",
+        "rationale": "Reconcile adquiere ambos locks y exige extended == committed antes de interpretar el intento; no aplica DDL para aclarar un ACK."
+      },
+      {
+        "id": "sql_c7_drift_and_failure_matrix",
+        "label": "51 checks conectados: 17 fronteras, 8 ACK, 13 drift, 11 restricciones y 2 locks",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L47",
+        "connected_checks": 51,
+        "offline_pytest": 119,
+        "rationale": "Labels únicos y grupos completos; ACK inyectado sobre transacciones reales, sin simular cortes eléctricos del servidor."
+      },
+      {
+        "id": "sql_c7_academic_populated_crm_preservation",
+        "label": "Fuente y C5 conservados: 50 tablas/44.180 filas académicas y CRM poblado intacto",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L45",
+        "academic_tables": 50,
+        "academic_rows": 44180,
+        "populated_crm_rows": 199,
+        "original_journal_rows": 5,
+        "rationale": "Las 199 filas de negocio CRM y cinco filas del diario pertenecen a C5; el ensayo agrega tablas únicamente en copias nuevas y preserva el perfil/ticket/login/ACL/destino del preview."
+      },
+      {
+        "id": "sql_c7_v1_retired_without_rewrite",
+        "label": "V1 retirada sin aceptación: release, nueve assets y copias preservados",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/sql_c7_v1_retirement.json",
+        "source_location": "L4",
+        "verification": "retired_not_accepted",
+        "release_sha256": "e4f76c63592b4a99f35380496d25a34afb205645a0c4f5e885cf9ece8f901ca1",
+        "rationale": "Ordenar antes de retirar identity_last_value cambió el orden de las mismas 608 filas de metadatos; no se atribuye a drift físico ni se reescribe v1."
+      },
+      {
+        "id": "sql_c7_v3_normalize_then_sort",
+        "label": "Formato v3: retirar IDENTITY volátil y normalizar SID antes del orden final",
+        "file_type": "code",
+        "source_file": "backend/tools/crm_extension_snapshot_v2.py",
+        "source_location": "L36",
+        "rationale": "metadata ordena todas las listas después de quitar identity_last_value; canonical vuelve a ordenar después de sustituir el SID verificado. Probado con rollback de Audit, sin reset del contador."
+      },
+      {
+        "id": "sql_c7_immutable_design_history",
+        "label": "Cadena C4→C5→C7 y C6 reproducida desde 402 preimágenes autenticadas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L70",
+        "input_baseline_files": 409,
+        "historical_design_inputs": 402,
+        "historical_negative_checks": 20,
+        "rationale": "Conserva prueba/plan/baseline/checker C6 y ambos releases. Las transiciones usan la última postimagen por ruta; sólo adiciones exactas de manifiestos congelados pueden crear migraciones."
+      },
+      {
+        "id": "sql_c7_forward_recovery_limits",
+        "label": "Reversión: rollback antes de COMMIT; después preservar, reconciliar y restaurar otra copia",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L72",
+        "rationale": "No hay DROP genérico, reset ni down migration destructiva. El preview C5 mantiene el punto operativo anterior."
+      },
+      {
+        "id": "sql_c7_c8_mutable_runtime_gate",
+        "label": "C8 pendiente: consumidores con perfil/ACL/guard propios para runtime mutable",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L76",
+        "verification": "not_implemented",
+        "rationale": "El lector C7 exige CONTROL y fija datos previos; no debe usarse como guard runtime ni motivar CONTROL para la app. No redirigir ticket C4; crear tablas no activa cuentas, proveedores, workers o envíos."
+      },
+      {
+        "id": "sql_c7_institutional_acceptance_pending",
+        "label": "SQL2019 institucional, suite general y capacidades de Canales siguen pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L74",
+        "institutional_sql2019_accepted": false,
+        "local_engine_major": 16,
+        "local_compatibility": 160,
+        "rationale": "SQL2022 Express local no acredita SQL2019. La UI C5 conserva aceptación histórica; no se recertificaron navegador ni paridad funcional en C7."
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c7_restored_schema_acceptance",
+        "relation": "continued_by_implemented_and_rehearsed_schema_on_separate_restorations",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-019-channels-restored-extension.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_v2_frozen_release",
+        "relation": "accepts_only_version_two_with_nine_frozen_assets",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c7_v2_frozen_release",
+        "target": "sql_c7_exact_object_partition",
+        "relation": "implements_final_011_012_shape_without_activating_consumers",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c7_exact_object_partition",
+        "target": "sql_c6_exact_object_partition",
+        "relation": "implements_the_planned_exact_table_partition_with_full_catalog_protection",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-019-channels-restored-extension.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c7_v2_frozen_release",
+        "target": "sql_c7_independent_reference_contract",
+        "relation": "was_frozen_after_independent_reference_validation_before_trial",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "sql_c7_independent_reference_contract",
+        "target": "sql_c3_frozen_prefix_shapes",
+        "relation": "preserves_earlier_sql_snapshots_and_contract_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-019-channels-restored-extension.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_scoped_migration_actor",
+        "relation": "separates_administrative_preparation_from_restricted_ddl_actor",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L41"
+      },
+      {
+        "source": "sql_c7_scoped_migration_actor",
+        "target": "sql_c5_encrypted_runtime_profile",
+        "relation": "does_not_expand_or_redirect_existing_runtime_permissions_or_ticket",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L41"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_versioned_atomic_history",
+        "relation": "preserves_old_prefix_and_appends_new_versioned_transactional_events",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L43"
+      },
+      {
+        "source": "sql_c7_versioned_atomic_history",
+        "target": "sql_c7_unknown_reconciliation",
+        "relation": "blocks_new_apply_after_uncertain_commit_until_shape_and_history_agree",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L43"
+      },
+      {
+        "source": "sql_c7_unknown_reconciliation",
+        "target": "sql_c7_forward_recovery_limits",
+        "relation": "resolves_uncertain_outcomes_without_reapplying_ddl_or_destructive_reset",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L72"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_drift_and_failure_matrix",
+        "relation": "has_fifty_one_distinct_connected_checks_and_one_hundred_nineteen_offline_tests",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_c7_drift_and_failure_matrix",
+        "target": "sql_c7_unknown_reconciliation",
+        "relation": "exercises_real_commit_or_rollback_with_injected_ack_response_loss",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L52"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_academic_populated_crm_preservation",
+        "relation": "preserves_academic_content_populated_crm_original_journal_and_prior_acl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_c7_academic_populated_crm_preservation",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "keeps_the_shared_c5_runtime_profile_ticket_login_acl_and_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_c7_v1_retired_without_rewrite",
+        "target": "sql_c7_v2_frozen_release",
+        "relation": "replaced_by_a_new_release_format_and_other_restorations_without_rewriting_v1",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L64"
+      },
+      {
+        "source": "sql_c7_v2_frozen_release",
+        "target": "sql_c7_v1_retired_without_rewrite",
+        "relation": "reuses_only_unchanged_contract_and_spec_with_transitive_asset_verification",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c7_v2_frozen_release",
+        "target": "sql_c7_v3_normalize_then_sort",
+        "relation": "normalizes_volatile_identity_and_verified_sid_before_sorting",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L64"
+      },
+      {
+        "source": "sql_c7_v3_normalize_then_sort",
+        "target": "sql_c7_drift_and_failure_matrix",
+        "relation": "has_offline_and_connected_identity_rollback_regressions_before_and_after_freeze",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L64"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_immutable_design_history",
+        "relation": "adds_explicit_historical_transitions_without_rebaselining_c6",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c7_immutable_design_history",
+        "target": "sql_c6_reviewed_design_only",
+        "relation": "reproduces_the_unchanged_checker_on_authenticated_historical_preimages",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c7_immutable_design_history",
+        "target": "sql_c5_immutable_history_chain",
+        "relation": "extends_c4_c5_history_using_latest_postimage_per_path",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_forward_recovery_limits",
+        "relation": "keeps_post_commit_evidence_and_uses_other_copies_for_new_releases",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L72"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_c8_mutable_runtime_gate",
+        "relation": "does_not_activate_consumers_and_requires_a_separate_runtime_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L76"
+      },
+      {
+        "source": "sql_c7_c8_mutable_runtime_gate",
+        "target": "sql_c6_c8_runtime_promotion_gate",
+        "relation": "retains_the_planned_separation_between_schema_and_runtime",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-019-channels-restored-extension.md",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "foundation_extension_rehearsal",
+        "relation": "provides_native_sql_extension_rehearsal_evidence_without_scentra_parity_claim",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c7_c8_mutable_runtime_gate",
+        "target": "foundation_runtime",
+        "relation": "requires_new_runtime_composition_without_administrative_control_permissions",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L76"
+      },
+      {
+        "source": "sql_c7_institutional_acceptance_pending",
+        "target": "foundation_sql_dialect",
+        "relation": "retains_separate_sql2019_acceptance_after_local_engine16_rehearsal",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "sql_c7_restored_schema_acceptance",
+        "target": "sql_c7_institutional_acceptance_pending",
+        "relation": "does_not_certify_sql2019_general_suite_browser_or_business_capabilities",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "sql_c7_v2_frozen_release",
+        "target": "P4",
+        "relation": "prepares_channel_webhook_and_comment_storage_while_phase_features_remain_pending",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_c7_c8_mutable_runtime_gate",
+        "target": "P7",
+        "relation": "keeps_messaging_consumers_and_later_b015_b018_packages_pending",
+        "confidence": "INFERRED",
+        "confidence_score": 0.96,
+        "source_file": "docs/adaptation/sql/SQL_C7_REVIEW.md",
+        "source_location": "L76"
+      }
+    ]
+  }
+}

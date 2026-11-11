@@ -1,0 +1,1 @@
+"""CRM configuration domain contracts."""

@@ -1,0 +1,1645 @@
+import { useState } from "react";
+import {
+  Badge,
+  Button,
+  Field,
+  Notice,
+  SelectField,
+  TextArea,
+} from "../shared/ui";
+import { useInstitution, useIntent, useTask } from "./api";
+import { ResourceState, useResource } from "./Settings";
+import { allowNavigation, useDraftGuard } from "./drafts";
+import "./broadcast.css";
+
+type Component = {
+  type: string;
+  text?: string;
+  format?: string;
+  buttons?: { type: string; text: string; url?: string }[];
+};
+type Template = {
+  id: string;
+  version: number;
+  integration_id: string;
+  name: string;
+  language: string;
+  category: string;
+  status: string;
+  origin: string;
+  paused: boolean;
+  components: Component[];
+  metadata?: { quality_score?: string; rejection_reason?: string };
+};
+type Binding = { source: string; value?: string };
+type Document = {
+  name: string;
+  integration_id: string;
+  template_id: string;
+  template_version: number;
+  filters: {
+    contact_ids: string[];
+    program_ids: number[];
+    stages: string[];
+    cities: string[];
+    tags: string[];
+  };
+  variables: Record<string, Binding>;
+  header_media_url: string;
+  scheduled_local: string | null;
+  timezone: string;
+};
+type Campaign = {
+  id: string;
+  name: string;
+  state: string;
+  revision: number;
+  epoch: number;
+  document: Document;
+};
+type Options = {
+  accounts: { id: string; name: string; verified_status: string }[];
+  templates: Template[];
+  programs: { program_id: number; name: string }[];
+  stages: string[];
+  outbound_enabled: boolean;
+};
+type Preview = {
+  counts: { matched: number; eligible: number; excluded: number };
+  exclusions: Record<string, number>;
+  items: {
+    identity_id: string;
+    name: string;
+    text: string;
+    eligible: boolean;
+    reasons: string[];
+  }[];
+};
+type Report = {
+  metrics?: {
+    replied: number;
+    delivered_percent: number | null;
+    read_percent: number | null;
+    reply_percent: number | null;
+  };
+  counts: Record<string, number>;
+  total: number;
+  offset: number;
+  has_more: boolean;
+  items: {
+    id: string;
+    name: string;
+    phone: string;
+    status: string;
+    attempts: number;
+    error: string | null;
+    provider_message_id: string | null;
+    body?: string;
+    prepared_at?: string;
+    queued_at?: string;
+    accepted_at?: string;
+    sent_at?: string;
+    delivered_at?: string;
+    read_at?: string;
+    replied_at?: string;
+    failed_at?: string;
+  }[];
+};
+const stateLabel: Record<string, string> = {
+  draft: "Borrador",
+  scheduled: "Programada",
+  running: "En curso",
+  paused: "Pausada",
+  cancelled: "Cancelada",
+  completed: "Completada",
+  prepared: "Preparado",
+  queued: "Pendiente",
+  sending: "En curso de envío",
+  replied: "Respondido con referencia al mensaje",
+  accepted: "Aceptado por Meta",
+  sent: "Enviado",
+  delivered: "Entregado",
+  read: "Leído",
+  failed: "Fallido",
+  uncertain: "Resultado incierto",
+  blocked: "Bloqueado",
+};
+const reasonLabel: Record<string, string> = {
+  human_control: "Atención humana",
+  canonical_contact_prior_effect:
+    "Esta persona ya tiene un envío aceptado o pendiente de conciliación",
+  broadcast_cadence_wait: "Esperando el intervalo entre envíos",
+  marketing_consent_required: "Sin consentimiento vigente",
+  no_contact: "No contactar",
+  conversation_closed: "Conversación cerrada",
+  duplicate_contact: "Contacto duplicado",
+  broadcast_provider_approved_template_required:
+    "La plantilla requiere aprobación de Meta",
+  broadcast_template_refresh_required: "Sincroniza el catálogo de plantillas",
+  broadcast_verified_whatsapp_account_required: "Cuenta sin verificar",
+  broadcast_template_changed_review_required:
+    "La plantilla cambió; revisa la campaña",
+};
+const label = (value: string) =>
+  stateLabel[value] || reasonLabel[value] || value.replaceAll("_", " ");
+const sources = [
+  "literal",
+  "customer_name",
+  "customer_first_name",
+  "customer_email",
+  "customer_city",
+  "customer_phone",
+  "program",
+  "stage",
+  "schedule",
+  "campaign_name",
+];
+const sourceLabels = [
+  "Texto fijo",
+  "Nombre completo",
+  "Primer nombre",
+  "Correo",
+  "Ciudad",
+  "Teléfono",
+  "Programa",
+  "Etapa",
+  "Jornada",
+  "Nombre de campaña",
+];
+export function variableKeys(template?: Template) {
+  const keys = new Set<string>();
+  for (const c of template?.components || []) {
+    if (["BODY", "HEADER"].includes(c.type))
+      for (const match of (c.text || "").matchAll(/\{\{\s*(\d+)\s*\}\}/g))
+        keys.add(`${c.type.toLowerCase()}.${match[1]}`);
+    if (c.type === "BUTTONS")
+      c.buttons?.forEach((b, i) => {
+        for (const match of (b.url || "").matchAll(/\{\{\s*(\d+)\s*\}\}/g))
+          keys.add(`button.${i}.${match[1]}`);
+      });
+  }
+  return [...keys];
+}
+const blank = (): Document => ({
+  name: "",
+  integration_id: "",
+  template_id: "",
+  template_version: 1,
+  filters: {
+    contact_ids: [],
+    program_ids: [],
+    stages: [],
+    cities: [],
+    tags: [],
+  },
+  variables: {},
+  header_media_url: "",
+  scheduled_local: null,
+  timezone: "America/Bogota",
+});
+
+export function BroadcastWorkspace() {
+  const options = useResource<Options>("broadcasts/options"),
+    listing = useResource<{ items: Campaign[] }>("broadcasts");
+  const [tab, setTab] = useState("campaigns"),
+    [chosen, setChosen] = useState<Campaign | null>(null),
+    [creating, setCreating] = useState(false),
+    [account, setAccount] = useState("");
+  if (!options.value || !listing.value)
+    return <ResourceState error={options.error || listing.error} />;
+  const reload = async () => {
+    await options.reload();
+    await listing.reload();
+  };
+  return (
+    <div className="broadcast-workspace">
+      <nav className="institution-tabs" aria-label="Mensajería masiva">
+        <Button
+          variant={tab === "campaigns" ? "primary" : "quiet"}
+          onClick={() => {
+            if (allowNavigation()) setTab("campaigns");
+          }}
+        >
+          Campañas de envío
+        </Button>
+        <Button
+          variant={tab === "templates" ? "primary" : "quiet"}
+          onClick={() => {
+            if (allowNavigation()) setTab("templates");
+          }}
+        >
+          Plantillas WhatsApp
+        </Button>
+        <Button
+          variant={tab === "consent" ? "primary" : "quiet"}
+          onClick={() => {
+            if (allowNavigation()) setTab("consent");
+          }}
+        >
+          Consentimiento y cadencia
+        </Button>
+      </nav>
+      {!options.value.outbound_enabled && (
+        <Notice>
+          Los envíos están deshabilitados. Puedes preparar campañas; un
+          administrador debe habilitar la salida en Canales antes de enviarlas.
+        </Notice>
+      )}
+      {tab !== "campaigns" && (
+        <SelectField
+          id="bulk-account"
+          label="Cuenta WhatsApp"
+          value={account}
+          options={[
+            { value: "", label: "Selecciona una cuenta" },
+            ...options.value.accounts.map((a) => ({
+              value: a.id,
+              label: `${a.name} · ${a.verified_status === "verified" ? "Verificada" : "Pendiente de verificar"}`,
+            })),
+          ]}
+          onChange={(e) => {
+            if (allowNavigation()) setAccount(e.target.value);
+          }}
+        />
+      )}
+      {tab === "campaigns" ? (
+        <div className="broadcast-columns">
+          <section className="panel">
+            <h2>Campañas de envío</h2>
+            <Button
+              onClick={() => {
+                if (allowNavigation()) {
+                  setCreating(true);
+                  setChosen(null);
+                }
+              }}
+            >
+              Nueva campaña
+            </Button>
+            {listing.value.items.length === 0 && (
+              <p>
+                Aún no hay campañas. Crea una para seleccionar la cuenta, la
+                plantilla y los destinatarios.
+              </p>
+            )}
+            {listing.value.items.map((c) => (
+              <Button
+                variant="quiet"
+                key={c.id}
+                onClick={() => {
+                  if (allowNavigation()) {
+                    setCreating(false);
+                    setChosen(c);
+                  }
+                }}
+              >
+                {c.name} · {label(c.state)}
+              </Button>
+            ))}
+          </section>
+          {creating || chosen ? (
+            <CampaignEditor
+              key={chosen ? `${chosen.id}-${chosen.revision}` : "new"}
+              initial={chosen}
+              options={options.value}
+              saved={async (id) => {
+                await reload();
+                setChosen(
+                  await listing
+                    .reload()
+                    .then((v) => v.items.find((c) => c.id === id) || null),
+                );
+                setCreating(false);
+              }}
+            />
+          ) : (
+            <section className="panel">
+              <h2>Mensajes con plantilla</h2>
+              <p>
+                Elige una campaña para revisar destinatarios, programar el envío
+                y consultar resultados.
+              </p>
+              <p>
+                Cada cuenta utiliza su catálogo de Meta y su consentimiento
+                registrado. Los programas y etapas proceden del CRM
+                institucional.
+              </p>
+            </section>
+          )}
+        </div>
+      ) : !account ? (
+        <Notice>
+          Selecciona una cuenta de Canales o{" "}
+          <a href="#/channels">agrega una cuenta WhatsApp</a>.
+        </Notice>
+      ) : tab === "templates" ? (
+        <TemplatePanel
+          key={account}
+          account={account}
+          templates={options.value.templates.filter(
+            (t) => t.integration_id === account,
+          )}
+          reload={reload}
+        />
+      ) : (
+        <ConsentPanel key={account} account={account} />
+      )}
+    </div>
+  );
+}
+
+function CampaignEditor({
+  initial,
+  options,
+  saved,
+}: {
+  initial: Campaign | null;
+  options: Options;
+  saved: (id: string) => Promise<void>;
+}) {
+  const { call, session } = useInstitution(),
+    task = useTask(),
+    intent = useIntent();
+  const [key] = useState(() => initial?.id || crypto.randomUUID()),
+    [doc, setDoc] = useState<Document>(() => initial?.document || blank()),
+    [baseline, setBaseline] = useState(() =>
+      JSON.stringify(initial?.document || blank()),
+    ),
+    [preview, setPreview] = useState<Preview | null>(null),
+    [reviewed, setReviewed] = useState(false),
+    [reason, setReason] = useState("");
+  const dirty = JSON.stringify(doc) !== baseline;
+  useDraftGuard(dirty);
+  const template = options.templates.find((t) => t.id === doc.template_id),
+    editable =
+      !initial ||
+      !["running", "scheduled", "cancelled", "completed"].includes(
+        initial.state,
+      );
+  const update = (changes: Partial<Document>) => {
+    setDoc({ ...doc, ...changes });
+    setReviewed(false);
+    setPreview(null);
+  };
+  const command = (extra = {}) => {
+    const body = {
+      revision: initial?.revision || 0,
+      reason: reason.trim() || "Revisión de campaña institucional",
+      ...extra,
+    };
+    return { ...body, operation_id: intent.get(body) };
+  };
+  const action = (name: string, ids?: string[]) =>
+    void task.run(
+      async () => {
+        await call(
+          `broadcasts/${key}/${name}`,
+          "POST",
+          command({ confirmed: reviewed, recipient_ids: ids || [] }),
+        );
+        intent.clear();
+        await saved(key);
+      },
+      name === "prepare"
+        ? "Destinatarios preparados. Aún no se han enviado mensajes."
+        : "Estado de la campaña actualizado.",
+    );
+  return (
+    <section className="panel">
+      <h2>{initial ? initial.name : "Nueva campaña"}</h2>
+      {task.notices}
+      {initial && (
+        <Badge>
+          {label(initial.state)} · versión {initial.revision}
+        </Badge>
+      )}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void task.run(async () => {
+            await call(`broadcasts/${key}`, "PUT", command(doc));
+            setBaseline(JSON.stringify(doc));
+            intent.clear();
+            await saved(key);
+          });
+        }}
+      >
+        <fieldset disabled={task.busy || !editable}>
+          <Field
+            id="bulk-name"
+            label="Nombre de campaña"
+            required
+            maxLength={160}
+            value={doc.name}
+            onChange={(e) => update({ name: e.target.value })}
+          />
+          <SelectField
+            id="campaign-account"
+            label="Cuenta de envío"
+            required
+            value={doc.integration_id}
+            options={[
+              { value: "", label: "Selecciona una cuenta WhatsApp" },
+              ...options.accounts.map((a) => ({ value: a.id, label: a.name })),
+            ]}
+            onChange={(e) =>
+              update({
+                integration_id: e.target.value,
+                template_id: "",
+                variables: {},
+              })
+            }
+          />
+          <SelectField
+            id="campaign-template"
+            label="Plantilla e idioma"
+            required
+            value={doc.template_id}
+            options={[
+              { value: "", label: "Selecciona una plantilla" },
+              ...options.templates
+                .filter((t) => t.integration_id === doc.integration_id)
+                .map((t) => ({
+                  value: t.id,
+                  label: `${t.name} · ${t.language} · ${t.status}${t.paused ? " · Pausada" : ""}`,
+                })),
+            ]}
+            onChange={(e) => {
+              const t = options.templates.find((t) => t.id === e.target.value);
+              update({
+                template_id: e.target.value,
+                template_version: t?.version || 1,
+                variables: Object.fromEntries(
+                  variableKeys(t).map((k) => [
+                    k,
+                    { source: "literal", value: "" },
+                  ]),
+                ),
+              });
+            }}
+          />
+          {template && (
+            <div className="broadcast-message">
+              {template.components
+                .filter((c) => c.text)
+                .map((c, i) => (
+                  <p key={i}>{c.text}</p>
+                ))}
+              {template.components
+                .flatMap((c) => c.buttons || [])
+                .map((b, i) => (
+                  <Badge key={i}>{b.text}</Badge>
+                ))}
+            </div>
+          )}
+          {template && template.version !== doc.template_version && (
+            <Button
+              variant="secondary"
+              disabled={!editable}
+              onClick={() =>
+                update({
+                  template_version: template.version,
+                  variables: Object.fromEntries(
+                    variableKeys(template).map((k) => [
+                      k,
+                      doc.variables[k] || { source: "literal", value: "" },
+                    ]),
+                  ),
+                })
+              }
+            >
+              Revisar versión actual de la plantilla
+            </Button>
+          )}
+          {variableKeys(template).map((k) => (
+            <div className="broadcast-binding" key={k}>
+              <SelectField
+                id={`variable-${k}`}
+                label={`Variable ${k}`}
+                value={doc.variables[k]?.source || "literal"}
+                options={sources.map((s, i) => ({
+                  value: s,
+                  label: sourceLabels[i],
+                }))}
+                onChange={(e) =>
+                  update({
+                    variables: {
+                      ...doc.variables,
+                      [k]: { source: e.target.value, value: "" },
+                    },
+                  })
+                }
+              />
+              {(!doc.variables[k] || doc.variables[k].source === "literal") && (
+                <Field
+                  id={`value-${k}`}
+                  label={`Texto de ${k}`}
+                  required
+                  maxLength={1000}
+                  value={doc.variables[k]?.value || ""}
+                  onChange={(e) =>
+                    update({
+                      variables: {
+                        ...doc.variables,
+                        [k]: { source: "literal", value: e.target.value },
+                      },
+                    })
+                  }
+                />
+              )}
+            </div>
+          ))}
+          {template?.components.some(
+            (c) => c.type === "HEADER" && c.format !== "TEXT",
+          ) && (
+            <Field
+              id="header-media"
+              label="URL HTTPS del archivo de cabecera"
+              type="url"
+              required
+              value={doc.header_media_url}
+              onChange={(e) => update({ header_media_url: e.target.value })}
+            />
+          )}
+          <details>
+            <summary>Segmentación de destinatarios</summary>
+            <SelectField
+              id="filter-program"
+              label="Programa declarado en CRM"
+              value={String(doc.filters.program_ids[0] || "")}
+              options={[
+                { value: "", label: "Todos los programas" },
+                ...options.programs.map((p) => ({
+                  value: String(p.program_id),
+                  label: p.name,
+                })),
+              ]}
+              onChange={(e) =>
+                update({
+                  filters: {
+                    ...doc.filters,
+                    program_ids: e.target.value ? [Number(e.target.value)] : [],
+                  },
+                })
+              }
+            />
+            <SelectField
+              id="filter-stage"
+              label="Etapa CRM"
+              value={doc.filters.stages[0] || ""}
+              options={[
+                { value: "", label: "Todas las etapas" },
+                ...options.stages,
+              ]}
+              onChange={(e) =>
+                update({
+                  filters: {
+                    ...doc.filters,
+                    stages: e.target.value ? [e.target.value] : [],
+                  },
+                })
+              }
+            />
+            {(["cities", "tags", "contact_ids"] as const).map((k, i) => (
+              <Field
+                key={k}
+                id={`filter-${k}`}
+                label={
+                  [
+                    "Ciudades, separadas por coma",
+                    "Etiquetas, separadas por coma",
+                    "IDs de contactos, separados por coma",
+                  ][i]
+                }
+                value={doc.filters[k].join(", ")}
+                onChange={(e) =>
+                  update({
+                    filters: {
+                      ...doc.filters,
+                      [k]: e.target.value
+                        .split(",")
+                        .map((v) => v.trim())
+                        .filter(Boolean),
+                    },
+                  })
+                }
+              />
+            ))}
+            <p>
+              Se excluyen personas sin consentimiento vigente, atención humana,
+              no contactar y duplicados.
+            </p>
+          </details>
+          <div className="broadcast-binding">
+            <Field
+              id="bulk-schedule"
+              label="Fecha y hora local (opcional)"
+              type="datetime-local"
+              value={doc.scheduled_local || ""}
+              onChange={(e) =>
+                update({ scheduled_local: e.target.value || null })
+              }
+            />
+            <Field
+              id="bulk-timezone"
+              label="Zona horaria IANA"
+              required
+              value={doc.timezone}
+              onChange={(e) => update({ timezone: e.target.value })}
+            />
+          </div>
+          <Button type="submit">Guardar campaña</Button>
+        </fieldset>
+      </form>
+      {initial && (
+        <>
+          <Field
+            id="campaign-reason"
+            label="Motivo de la operación"
+            value={reason}
+            maxLength={1000}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <div className="institution-actions">
+            <Button
+              variant="secondary"
+              disabled={dirty || task.busy}
+              onClick={() =>
+                void task.run(async () => {
+                  setPreview(await call<Preview>(`broadcasts/${key}/preview`));
+                }, "Vista previa actualizada.")
+              }
+            >
+              Vista previa de destinatarios
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={dirty || task.busy || !editable}
+              onClick={() => {
+                setReviewed(true);
+                void task.run(async () => {
+                  await call(
+                    `broadcasts/${key}/prepare`,
+                    "POST",
+                    command({ confirmed: true }),
+                  );
+                  await saved(key);
+                }, "Preparación guardada sin enviar mensajes.");
+              }}
+            >
+              Preparar sin enviar
+            </Button>
+          </div>
+          {preview && (
+            <div>
+              <h3>
+                {preview.counts.eligible} elegibles de {preview.counts.matched}{" "}
+                · {preview.counts.excluded} excluidos
+              </h3>
+              {Object.entries(preview.exclusions).map(([k, n]) => (
+                <p key={k}>
+                  {label(k)}: {n}
+                </p>
+              ))}
+              {preview.items.slice(0, 20).map((p) => (
+                <article className="broadcast-message" key={p.identity_id}>
+                  <strong>{p.name}</strong>
+                  <p>{p.eligible ? p.text : p.reasons.map(label).join("; ")}</p>
+                </article>
+              ))}
+              {preview.items.length > 20 && (
+                <p>
+                  Se muestran los primeros 20 resultados de la vista previa.
+                </p>
+              )}
+            </div>
+          )}
+          <label className="broadcast-check">
+            <input
+              type="checkbox"
+              checked={reviewed}
+              onChange={(e) => setReviewed(e.target.checked)}
+            />
+            He revisado la cuenta, la plantilla, el consentimiento y los
+            destinatarios.
+          </label>
+          <div className="institution-actions">
+            <Button
+              disabled={
+                dirty ||
+                task.busy ||
+                !reviewed ||
+                !session.actions.includes("inbox.write") ||
+                ["cancelled", "completed"].includes(initial.state)
+              }
+              onClick={() => action("activate")}
+            >
+              Activar o reanudar envío
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={dirty || task.busy || !reviewed}
+              onClick={() => action("pause")}
+            >
+              Pausar campaña
+            </Button>
+            <Button
+              variant="quiet"
+              disabled={dirty || task.busy || !reviewed}
+              onClick={() => action("cancel")}
+            >
+              Cancelar campaña
+            </Button>
+          </div>
+          <p>
+            La aceptación de Meta y la entrega son estados distintos. Un
+            resultado incierto requiere revisión antes de repetir un envío.
+          </p>
+          <CampaignReport
+            campaign={key}
+            canRetry={!dirty && reviewed && !task.busy}
+            retry={(ids) => action("retry", ids)}
+          />
+        </>
+      )}
+    </section>
+  );
+}
+
+function CampaignReport({
+  campaign,
+  canRetry,
+  retry,
+}: {
+  campaign: string;
+  canRetry: boolean;
+  retry: (ids: string[]) => void;
+}) {
+  const [state, setState] = useState(""),
+    [search, setSearch] = useState("");
+  const query = new URLSearchParams({ state, search }).toString();
+  const [offset, setOffset] = useState(0),
+    [selected, setSelected] = useState<string[]>([]),
+    data = useResource<Report>(
+      `broadcasts/${campaign}/report?offset=${offset}&${query}`,
+    ),
+    task = useTask();
+  const { expire } = useInstitution();
+  return (
+    <section>
+      <h3>Resultados por destinatario</h3>
+      <div className="broadcast-binding">
+        <SelectField
+          id="report-status"
+          label="Estado del destinatario"
+          value={state}
+          options={[
+            { value: "", label: "Todos los estados" },
+            ...Object.keys(stateLabel)
+              .filter(
+                (k) =>
+                  ![
+                    "draft",
+                    "scheduled",
+                    "running",
+                    "paused",
+                    "completed",
+                  ].includes(k),
+              )
+              .map((k) => ({ value: k, label: label(k) })),
+          ]}
+          onChange={(e) => {
+            setState(e.target.value);
+            setOffset(0);
+            setSelected([]);
+          }}
+        />
+        <Field
+          id="report-search"
+          label="Buscar por nombre, teléfono o mensaje"
+          maxLength={100}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setOffset(0);
+            setSelected([]);
+          }}
+        />
+      </div>
+      {task.notices}
+      {!data.value ? (
+        <ResourceState error={data.error} />
+      ) : (
+        <>
+          <p>
+            {Object.entries(data.value.counts)
+              .map(([k, n]) => `${label(k)}: ${n}`)
+              .join(" · ") || "Sin destinatarios preparados"}
+          </p>
+          {data.value.metrics && (
+            <p>
+              Respuestas atribuidas: {data.value.metrics.replied} · Entrega:{" "}
+              {data.value.metrics.delivered_percent ?? "—"}% · Lectura:{" "}
+              {data.value.metrics.read_percent ?? "—"}% · Respuesta:{" "}
+              {data.value.metrics.reply_percent ?? "—"}%
+            </p>
+          )}
+          <p>
+            Las fechas de entrega, lectura y respuesta indican cuándo se observó
+            el evento autenticado. Una respuesta sólo se atribuye si referencia
+            este mensaje.
+          </p>
+          <div className="institution-actions">
+            <Button
+              variant="secondary"
+              onClick={() =>
+                void task.run(async () => {
+                  await data.reload();
+                }, "Informe actualizado.")
+              }
+            >
+              Actualizar resultados
+            </Button>
+            <Button
+              variant="quiet"
+              onClick={() =>
+                void task.run(async () => {
+                  const response = await fetch(
+                    `/api/institution/broadcasts/${campaign}/export?${query}`,
+                    {
+                      credentials: "same-origin",
+                      cache: "no-store",
+                      headers: { "X-CRM-Local": "1" },
+                      signal: AbortSignal.timeout(45000),
+                    },
+                  );
+                  if (!response.ok) {
+                    if (response.status === 401) expire();
+                    throw Error("No se pudo exportar el informe.");
+                  }
+                  const url = URL.createObjectURL(await response.blob()),
+                    link = document.createElement("a");
+                  link.href = url;
+                  link.download = "destinatarios.csv";
+                  link.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }, "Informe exportado.")
+              }
+            >
+              Exportar CSV
+            </Button>
+          </div>
+          <div className="broadcast-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Reintentar</th>
+                  <th>Destinatario</th>
+                  <th>Estado</th>
+                  <th>Intentos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.value.items.map((p) => (
+                  <tr key={p.id}>
+                    <td>
+                      <input
+                        aria-label={`Reintentar ${p.name}`}
+                        type="checkbox"
+                        disabled={
+                          p.status !== "failed" || !!p.provider_message_id
+                        }
+                        checked={selected.includes(p.id)}
+                        onChange={(e) =>
+                          setSelected(
+                            e.target.checked
+                              ? [...selected, p.id]
+                              : selected.filter((id) => id !== p.id),
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      {p.name}
+                      <small>{p.phone}</small>
+                      <details>
+                        <summary>Ver mensaje y fechas</summary>
+                        <p>{p.body}</p>
+                        <dl>
+                          {(
+                            [
+                              "prepared_at",
+                              "queued_at",
+                              "accepted_at",
+                              "sent_at",
+                              "delivered_at",
+                              "read_at",
+                              "replied_at",
+                              "failed_at",
+                            ] as const
+                          ).map((field, i) => (
+                            <div key={field}>
+                              <dt>
+                                {
+                                  [
+                                    "Preparado",
+                                    "Pendiente",
+                                    "Aceptado",
+                                    "Enviado observado",
+                                    "Entregado observado",
+                                    "Leído observado",
+                                    "Respuesta atribuida observada",
+                                    "Fallo observado",
+                                  ][i]
+                                }
+                              </dt>
+                              <dd>
+                                {p[field]
+                                  ? new Date(p[field]!).toLocaleString()
+                                  : "Sin evento"}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </details>
+                    </td>
+                    <td>
+                      {label(p.status)}
+                      {p.error && <small>{label(p.error)}</small>}
+                    </td>
+                    <td>{p.attempts}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Button
+            variant="secondary"
+            disabled={!canRetry || selected.length === 0}
+            onClick={() => retry(selected)}
+          >
+            Reintentar fallidos seleccionados
+          </Button>
+          <div className="institution-actions">
+            <Button
+              variant="quiet"
+              disabled={offset === 0}
+              onClick={() => {
+                setOffset(Math.max(0, offset - 100));
+                setSelected([]);
+              }}
+            >
+              Anterior
+            </Button>
+            <span>
+              {offset + (data.value.total ? 1 : 0)}–
+              {offset + data.value.items.length} de {data.value.total}
+            </span>
+            <Button
+              variant="quiet"
+              disabled={!data.value.has_more}
+              onClick={() => {
+                setOffset(offset + 100);
+                setSelected([]);
+              }}
+            >
+              Siguiente
+            </Button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function TemplatePanel({
+  account,
+  templates,
+  reload,
+}: {
+  account: string;
+  templates: Template[];
+  reload: () => Promise<void>;
+}) {
+  const { call } = useInstitution(),
+    task = useTask(),
+    intent = useIntent();
+  const [creating, setCreating] = useState(false),
+    [reviewed, setReviewed] = useState(false);
+  const command = (revision = 0, extra = {}) => {
+    const value = {
+      revision,
+      reason: "Gestión de plantilla WhatsApp institucional",
+      ...extra,
+    };
+    return { ...value, operation_id: intent.get(value) };
+  };
+  return (
+    <section className="panel">
+      <h2>Plantillas WhatsApp</h2>
+      {task.notices}
+      <p>
+        La aprobación y la calidad proceden de Meta. Guardar un borrador no lo
+        aprueba ni envía mensajes.
+      </p>
+      <div className="institution-actions">
+        <Button
+          disabled={task.busy}
+          onClick={() =>
+            void task.run(async () => {
+              await call(
+                `broadcasts/accounts/${account}/templates/sync`,
+                "POST",
+                command(),
+              );
+              intent.clear();
+              await reload();
+            }, "Catálogo sincronizado con Meta.")
+          }
+        >
+          Sincronizar con Meta
+        </Button>
+        <Button variant="secondary" onClick={() => setCreating(!creating)}>
+          Crear plantilla
+        </Button>
+      </div>
+      {creating && (
+        <TemplateForm
+          account={account}
+          saved={async () => {
+            setCreating(false);
+            await reload();
+          }}
+        />
+      )}
+      {templates.length === 0 && (
+        <Notice>
+          No hay plantillas para esta cuenta. Sincroniza el catálogo o crea un
+          borrador.
+        </Notice>
+      )}
+      <label className="broadcast-check">
+        <input
+          type="checkbox"
+          checked={reviewed}
+          onChange={(e) => setReviewed(e.target.checked)}
+        />
+        Confirmo el envío de la plantilla a revisión de Meta.
+      </label>
+      {templates.map((t) => (
+        <article className="broadcast-message" key={t.id}>
+          <h3>
+            {t.name} · {t.language}
+          </h3>
+          <p>
+            {t.category} ·{" "}
+            {t.origin === "operator"
+              ? "Borrador local"
+              : t.origin === "controlled"
+                ? "Proveedor de prueba controlado"
+                : "Catálogo de Meta"}{" "}
+            · {t.status} {t.paused && "· Pausada en CRM"}
+          </p>
+          {t.metadata?.quality_score && (
+            <p>Calidad informada por Meta: {t.metadata.quality_score}</p>
+          )}
+          {t.metadata?.rejection_reason && (
+            <Notice error>
+              Motivo de rechazo de Meta: {t.metadata.rejection_reason}
+            </Notice>
+          )}
+          {t.components
+            .filter((c) => c.text)
+            .map((c, i) => (
+              <p key={i}>{c.text}</p>
+            ))}
+          {t.origin === "operator" && (
+            <Button
+              disabled={!reviewed || task.busy}
+              onClick={() =>
+                void task.run(async () => {
+                  const r = await call<{ status: string }>(
+                    `broadcasts/templates/${t.id}/submit`,
+                    "POST",
+                    command(t.version, { confirmed: true }),
+                  );
+                  intent.clear();
+                  await reload();
+                  if (r.status !== "confirmed")
+                    throw Error(
+                      "La solicitud no quedó confirmada. Consulta su estado antes de repetirla.",
+                    );
+                }, "Plantilla enviada a revisión. Sincroniza para consultar su aprobación.")
+              }
+            >
+              Enviar a revisión de Meta
+            </Button>
+          )}
+          <Button
+            variant="quiet"
+            disabled={task.busy}
+            onClick={() =>
+              void task.run(async () => {
+                await call(
+                  `broadcasts/templates/${t.id}/pause`,
+                  "POST",
+                  command(t.version, { paused: !t.paused }),
+                );
+                intent.clear();
+                await reload();
+              })
+            }
+          >
+            {t.paused ? "Permitir uso en CRM" : "Pausar uso en CRM"}
+          </Button>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function TemplateForm({
+  account,
+  saved,
+}: {
+  account: string;
+  saved: () => Promise<void>;
+}) {
+  const { call } = useInstitution(),
+    task = useTask(),
+    intent = useIntent(),
+    [key] = useState(() => crypto.randomUUID());
+  const initial = {
+    name: "",
+    language: "es",
+    category: "MARKETING",
+    body_text: "",
+    header_type: "",
+    header_text: "",
+    header_media_handle: "",
+    footer_text: "",
+    buttons: [] as {
+      type: string;
+      text: string;
+      url: string;
+      phone_number: string;
+    }[],
+    allow_category_change: true,
+  };
+  const [doc, setDoc] = useState(initial),
+    [clean, setClean] = useState(false);
+  useDraftGuard(!clean && JSON.stringify(doc) !== JSON.stringify(initial));
+  const change = (value: Partial<typeof doc>) => setDoc({ ...doc, ...value });
+  return (
+    <form
+      className="broadcast-message"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void task.run(async () => {
+          const body = {
+            ...doc,
+            revision: 0,
+            reason: "Borrador de plantilla institucional",
+          };
+          await call(`broadcasts/accounts/${account}/templates/${key}`, "PUT", {
+            ...body,
+            operation_id: intent.get(body),
+          });
+          setClean(true);
+          await saved();
+        });
+      }}
+    >
+      {task.notices}
+      <fieldset disabled={task.busy}>
+        <h3>Nueva plantilla</h3>
+        <Field
+          id="template-name"
+          label="Nombre de plantilla"
+          pattern="[a-z][a-z0-9_]*"
+          maxLength={128}
+          required
+          value={doc.name}
+          onChange={(e) => change({ name: e.target.value })}
+        />
+        <Field
+          id="template-language"
+          label="Idioma"
+          required
+          value={doc.language}
+          onChange={(e) => change({ language: e.target.value })}
+        />
+        <SelectField
+          id="template-category"
+          label="Categoría"
+          value={doc.category}
+          options={["MARKETING", "UTILITY", "AUTHENTICATION"]}
+          onChange={(e) => change({ category: e.target.value })}
+        />
+        <TextArea
+          id="template-body"
+          label="Cuerpo del mensaje"
+          required
+          maxLength={1024}
+          value={doc.body_text}
+          onChange={(e) => change({ body_text: e.target.value })}
+        />
+        <SelectField
+          id="template-header"
+          label="Tipo de cabecera"
+          value={doc.header_type}
+          options={[
+            { value: "", label: "Sin cabecera" },
+            "TEXT",
+            "IMAGE",
+            "VIDEO",
+            "DOCUMENT",
+          ]}
+          onChange={(e) => change({ header_type: e.target.value })}
+        />
+        {doc.header_type === "TEXT" ? (
+          <Field
+            id="template-header-text"
+            label="Texto de cabecera"
+            required
+            maxLength={60}
+            value={doc.header_text}
+            onChange={(e) => change({ header_text: e.target.value })}
+          />
+        ) : (
+          doc.header_type && (
+            <Field
+              id="template-header-example"
+              label="Identificador de archivo de ejemplo de Meta"
+              required
+              value={doc.header_media_handle}
+              onChange={(e) => change({ header_media_handle: e.target.value })}
+            />
+          )
+        )}
+        <Field
+          id="template-footer"
+          label="Pie del mensaje"
+          maxLength={60}
+          value={doc.footer_text}
+          onChange={(e) => change({ footer_text: e.target.value })}
+        />
+        {doc.buttons.map((b, i) => (
+          <div key={i} className="broadcast-message">
+            <SelectField
+              id={`button-type-${i}`}
+              label={`Tipo de botón ${i + 1}`}
+              value={b.type}
+              options={["QUICK_REPLY", "URL", "PHONE_NUMBER"]}
+              onChange={(e) =>
+                change({
+                  buttons: doc.buttons.map((v, j) =>
+                    j === i ? { ...v, type: e.target.value } : v,
+                  ),
+                })
+              }
+            />
+            <Field
+              id={`button-text-${i}`}
+              label={`Texto de botón ${i + 1}`}
+              required
+              maxLength={25}
+              value={b.text}
+              onChange={(e) =>
+                change({
+                  buttons: doc.buttons.map((v, j) =>
+                    j === i ? { ...v, text: e.target.value } : v,
+                  ),
+                })
+              }
+            />
+            {b.type !== "QUICK_REPLY" && (
+              <Field
+                id={`button-target-${i}`}
+                label={
+                  b.type === "URL"
+                    ? "URL HTTPS del botón"
+                    : "Teléfono con prefijo internacional"
+                }
+                required
+                value={b.type === "URL" ? b.url : b.phone_number}
+                onChange={(e) =>
+                  change({
+                    buttons: doc.buttons.map((v, j) =>
+                      j === i
+                        ? {
+                            ...v,
+                            [b.type === "URL" ? "url" : "phone_number"]:
+                              e.target.value,
+                          }
+                        : v,
+                    ),
+                  })
+                }
+              />
+            )}
+            <Button
+              variant="quiet"
+              onClick={() =>
+                change({ buttons: doc.buttons.filter((_, j) => j !== i) })
+              }
+            >
+              Quitar botón {i + 1}
+            </Button>
+          </div>
+        ))}
+        <Button
+          variant="secondary"
+          disabled={doc.buttons.length >= 3}
+          onClick={() =>
+            change({
+              buttons: [
+                ...doc.buttons,
+                { type: "QUICK_REPLY", text: "", url: "", phone_number: "" },
+              ],
+            })
+          }
+        >
+          Agregar botón
+        </Button>
+        <label className="broadcast-check">
+          <input
+            type="checkbox"
+            checked={doc.allow_category_change}
+            onChange={(e) =>
+              change({ allow_category_change: e.target.checked })
+            }
+          />
+          Permitir que Meta ajuste la categoría
+        </label>
+        <Button type="submit">Guardar borrador de plantilla</Button>
+      </fieldset>
+    </form>
+  );
+}
+
+type Cadence = {
+  revision: number;
+  enabled: boolean;
+  daily_limit: number;
+  interval_seconds: number;
+  reserved: number;
+};
+type Identity = {
+  id: string;
+  name: string;
+  phone: string;
+  consent: null | {
+    state: string;
+    version: number;
+    evidence: string;
+    expires_at: string | null;
+  };
+};
+function ConsentPanel({ account }: { account: string }) {
+  const data = useResource<Cadence>(`broadcasts/accounts/${account}/cadence`),
+    people = useResource<{ items: Identity[] }>(
+      `broadcasts/accounts/${account}/identities`,
+    );
+  return (
+    <div className="broadcast-columns">
+      <section className="panel">
+        <h2>Cadencia por cuenta</h2>
+        {data.value ? (
+          <CadenceEditor
+            key={data.value.revision}
+            account={account}
+            initial={data.value}
+            reload={data.reload}
+          />
+        ) : (
+          <ResourceState error={data.error} />
+        )}
+      </section>
+      <section className="panel">
+        <h2>Consentimiento de mensajería</h2>
+        <p>
+          Registra la evidencia de autorización para esta cuenta. No se deduce
+          del teléfono ni de una conversación anterior.
+        </p>
+        {!people.value ? (
+          <ResourceState error={people.error} />
+        ) : people.value.items.length === 0 ? (
+          <Notice>
+            No hay identidades WhatsApp recibidas para esta cuenta.
+          </Notice>
+        ) : (
+          <ConsentEditor
+            key={JSON.stringify(
+              people.value.items.map((p) => [p.id, p.consent?.version]),
+            )}
+            account={account}
+            people={people.value.items}
+            reload={people.reload}
+          />
+        )}
+      </section>
+    </div>
+  );
+}
+function CadenceEditor({
+  account,
+  initial,
+  reload,
+}: {
+  account: string;
+  initial: Cadence;
+  reload: () => Promise<unknown>;
+}) {
+  const { call } = useInstitution(),
+    task = useTask(),
+    intent = useIntent();
+  const [doc, setDoc] = useState(initial),
+    [clean, setClean] = useState(false);
+  useDraftGuard(!clean && JSON.stringify(doc) !== JSON.stringify(initial));
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        void task.run(async () => {
+          const { enabled, daily_limit, interval_seconds, revision } = doc,
+            body = {
+              enabled,
+              daily_limit,
+              interval_seconds,
+              revision,
+              reason: "Revisión de límites de mensajería",
+            };
+          await call(`broadcasts/accounts/${account}/cadence`, "PUT", {
+            ...body,
+            operation_id: intent.get(body),
+          });
+          setClean(true);
+          await reload();
+        });
+      }}
+    >
+      {task.notices}
+      <fieldset disabled={task.busy}>
+        <label className="broadcast-check">
+          <input
+            type="checkbox"
+            checked={doc.enabled}
+            onChange={(e) => setDoc({ ...doc, enabled: e.target.checked })}
+          />
+          Permitir campañas en esta cuenta
+        </label>
+        <Field
+          id="cadence-daily"
+          label="Máximo en 24 horas"
+          type="number"
+          min={1}
+          max={100000}
+          required
+          value={doc.daily_limit}
+          onChange={(e) =>
+            setDoc({ ...doc, daily_limit: Number(e.target.value) })
+          }
+        />
+        <Field
+          id="cadence-interval"
+          label="Intervalo mínimo entre mensajes (segundos)"
+          type="number"
+          min={1}
+          max={86400}
+          required
+          value={doc.interval_seconds}
+          onChange={(e) =>
+            setDoc({ ...doc, interval_seconds: Number(e.target.value) })
+          }
+        />
+        <p>
+          {initial.reserved} reservas en la ventana actual. Los resultados
+          inciertos conservan su reserva.
+        </p>
+        <Button type="submit">Guardar cadencia</Button>
+      </fieldset>
+    </form>
+  );
+}
+function ConsentEditor({
+  account,
+  people,
+  reload,
+}: {
+  account: string;
+  people: Identity[];
+  reload: () => Promise<unknown>;
+}) {
+  const { call } = useInstitution(),
+    task = useTask(),
+    intent = useIntent(),
+    [id, setId] = useState(people[0].id),
+    [evidence, setEvidence] = useState(""),
+    [origin, setOrigin] = useState(""),
+    [expires, setExpires] = useState(""),
+    [confirmed, setConfirmed] = useState(false),
+    [clean, setClean] = useState(false);
+  useDraftGuard(!clean && !!(evidence || origin || expires));
+  const person = people.find((p) => p.id === id)!;
+  const save = (state: string) =>
+    void task.run(async () => {
+      const body = {
+        revision: person.consent?.version || 0,
+        reason: "Registro de consentimiento de mensajería",
+        state,
+        evidence,
+        origin,
+        expires_at:
+          state === "granted" ? new Date(expires).toISOString() : null,
+        confirmed,
+      };
+      await call(`broadcasts/accounts/${account}/consent/${id}`, "PUT", {
+        ...body,
+        operation_id: intent.get(body),
+      });
+      setClean(true);
+      await reload();
+    });
+  return (
+    <div>
+      {task.notices}
+      <fieldset disabled={task.busy}>
+        <SelectField
+          id="consent-person"
+          label="Destinatario"
+          value={id}
+          options={people.map((p) => ({
+            value: p.id,
+            label: `${p.name} · ${p.phone}`,
+          }))}
+          onChange={(e) => {
+            if (allowNavigation()) {
+              setId(e.target.value);
+              setEvidence("");
+              setOrigin("");
+              setExpires("");
+              setConfirmed(false);
+            }
+          }}
+        />
+        <p>
+          Estado:{" "}
+          {person.consent
+            ? person.consent.state === "granted"
+              ? "Autorizado"
+              : "Revocado"
+            : "Sin autorización registrada"}
+          {person.consent?.expires_at &&
+            ` · Vigencia: ${person.consent.expires_at}`}
+        </p>
+        <TextArea
+          id="consent-evidence"
+          label="Evidencia de autorización o revocación"
+          maxLength={1000}
+          value={evidence}
+          onChange={(e) => setEvidence(e.target.value)}
+        />
+        <Field
+          id="consent-origin"
+          label="Origen de la evidencia"
+          maxLength={200}
+          value={origin}
+          onChange={(e) => setOrigin(e.target.value)}
+        />
+        <Field
+          id="consent-expiry"
+          label="Vigencia hasta (hora de este navegador)"
+          type="datetime-local"
+          value={expires}
+          onChange={(e) => setExpires(e.target.value)}
+        />
+        <label className="broadcast-check">
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+          />
+          Confirmo que la evidencia corresponde a esta persona y cuenta.
+        </label>
+        <div className="institution-actions">
+          <Button
+            disabled={
+              !confirmed || !evidence.trim() || !origin.trim() || !expires
+            }
+            onClick={() => save("granted")}
+          >
+            Registrar autorización
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={!confirmed || !evidence.trim() || !origin.trim()}
+            onClick={() => save("revoked")}
+          >
+            Revocar consentimiento
+          </Button>
+        </div>
+      </fieldset>
+    </div>
+  );
+}

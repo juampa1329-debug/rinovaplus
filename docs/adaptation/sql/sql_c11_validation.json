@@ -1,0 +1,532 @@
+{
+  "stage": "SQL-C11",
+  "status": "accepted_restored_channels_parity_schema_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "8696f03f0f3176ab699abbe526a568a71de817e25f2bbd82527c2ee1177125a2",
+  "previous_checkpoint_sha256": "a4ab948bafe0349b9b8695b0d4258a891da383d238cad5a3c3c9b9de2a030934",
+  "release_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32",
+  "inherited_postimages": {},
+  "trial_database": "CBN_C11_TRIAL_20261025_d30e2cb2",
+  "scope": "new_restoration_physical_schema_only",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "channels_UI_checkpoint": "SQL-C9",
+  "tables": 24,
+  "columns": 343,
+  "foreign_keys": 78,
+  "CHECK_constraints": 79,
+  "migration_units": 5,
+  "baseline_inputs": 648,
+  "unchanged_inputs": 633,
+  "preimages_sha256": "be1b3a90859b1889333de7ba8f4077ad9159ebafabac09089ef89e79bf08ac86",
+  "CRC_and_all_preimage_hashes_verified": true,
+  "checks": {
+    "unit": "SQL-C11",
+    "scope": "offline_validation_only",
+    "status": "passed",
+    "baseline_inputs": 648,
+    "CRC_and_all_preimage_hashes_verified": true,
+    "runtime_tests_migrations_reference_inputs_preserved": 432,
+    "offline_tests_passed": 39,
+    "history_invalid_transitions_rejected": 64,
+    "history_stdout": [
+      "C7 additive release checks passed; 3 unsafe transitions rejected",
+      "Offline chain checks passed; 23 invalid transitions rejected",
+      "C8 history checks passed; 7 unsafe transitions rejected",
+      "C8 graph checks passed; 2 invalid pins rejected",
+      "C9 history checks passed; 8 unsafe transitions rejected",
+      "C10 contract-only history checks passed; 10 unsafe transitions rejected",
+      "C11 additive schema checks passed; 11 unsafe transitions rejected"
+    ],
+    "ruff_E_F_I": "All checks passed!",
+    "AST_parse": "passed",
+    "release_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32",
+    "release_files_verified": 12,
+    "history_checker_sha256": "b9be68d9361e9904f8670d247bf1814c56f484e188f8b43384b8e0a72ee12075",
+    "general_suite_recertified": false
+  },
+  "connected_constraints": {
+    "all_synthetic_rows_rolled_back": true,
+    "negative_cases": [
+      "owner_xor",
+      "owner_none",
+      "owner_kind",
+      "secret_version",
+      "cipher_size",
+      "bad_json",
+      "scope_null",
+      "scope_create",
+      "oauth_ttl",
+      "oauth_status",
+      "quota_counter",
+      "reserve_units",
+      "reserve_account",
+      "unsigned_endpoint",
+      "receipt_secret",
+      "receipt_time",
+      "partial_purge",
+      "legacy_verified",
+      "event_account",
+      "event_null",
+      "evidence_receipt",
+      "evidence_endpoint",
+      "score",
+      "epoch",
+      "job_message",
+      "job_kind",
+      "bot_epoch",
+      "external_queue",
+      "human_queue",
+      "trailing_ID",
+      "duplicate_ID",
+      "endpoint_app"
+    ],
+    "phase": "constraints",
+    "physical_structure": {
+      "columns": 343,
+      "foreign_keys": 78,
+      "tables": 24,
+      "trusted_checks": 79
+    },
+    "positive_cases": [
+      "all_synthetic_fixture_rows_rollback",
+      "case_sensitive_IDs",
+      "two_purged_NULL_nonces",
+      "confirmed_remote_state"
+    ],
+    "sources_unchanged": true
+  },
+  "faults_and_recovery": {
+    "checks": [
+      {
+        "case": "rollback_boundary_2",
+        "passed": true,
+        "unit": "CBN-CHP001"
+      },
+      {
+        "case": "rollback_boundary_7",
+        "passed": true,
+        "unit": "CBN-CHP001"
+      },
+      {
+        "case": "rollback_boundary_2",
+        "passed": true,
+        "unit": "CBN-CHP002"
+      },
+      {
+        "case": "rollback_boundary_8",
+        "passed": true,
+        "unit": "CBN-CHP002"
+      },
+      {
+        "case": "rollback_boundary_2",
+        "passed": true,
+        "unit": "CBN-CHP003"
+      },
+      {
+        "case": "rollback_boundary_6",
+        "passed": true,
+        "unit": "CBN-CHP003"
+      },
+      {
+        "case": "rollback_boundary_2",
+        "passed": true,
+        "unit": "CBN-CHP004"
+      },
+      {
+        "case": "rollback_boundary_7",
+        "passed": true,
+        "unit": "CBN-CHP004"
+      },
+      {
+        "case": "rollback_boundary_2",
+        "passed": true,
+        "unit": "CBN-CHP005"
+      },
+      {
+        "case": "rollback_boundary_11",
+        "passed": true,
+        "unit": "CBN-CHP005"
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "started",
+        "reconciled": true
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "started_rolled_back",
+        "reconciled": true
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "applied",
+        "reconciled": true
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "applied_rolled_back",
+        "reconciled": true
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "failure",
+        "reconciled": true
+      },
+      {
+        "UNKNOWN_blocks_replay": true,
+        "case": "failure_rolled_back",
+        "reconciled": true
+      },
+      {
+        "blocked": true,
+        "case": "drift_column"
+      },
+      {
+        "blocked": true,
+        "case": "drift_object_owner"
+      },
+      {
+        "blocked": true,
+        "case": "drift_extra_permission"
+      },
+      {
+        "blocked": true,
+        "case": "drift_unknown_table"
+      },
+      {
+        "blocked": true,
+        "case": "drift_untrusted_FK"
+      }
+    ],
+    "checks_passed": 21,
+    "no_database_dropped_or_replaced": true,
+    "phase": "faults",
+    "protected_sources_unchanged": true,
+    "recovery_database": "CBN_C11_RECOVERY_20261025_a679da98",
+    "restored_before_release_exact": true
+  },
+  "preservation": {
+    "academic": {
+      "rows": 44180,
+      "sha256": "01b9058aeba6ea2e57243f9f09cc2f4f5d6c56013490c49988a1b689607be34b",
+      "tables": 50
+    },
+    "before_first_C11_restore_C9_data_sha256": "ed72f8289687d1d175f247093be901727457930e7b2b11630e315bb92d55de48",
+    "institutional_sql2019_accepted": false,
+    "journal_rows": 17,
+    "legacy_B011_rows": 23,
+    "legacy_CRM_rows_preserved": 226,
+    "legacy_foundation_rows": 203,
+    "local_compatibility": 160,
+    "local_engine": 16,
+    "new_context_rows": 1,
+    "original_journal_rows_preserved": 7,
+    "original_journal_sha256": "6fd201284f71d4e4a9acc5eec4a2cbb9875e5c6ec67eeb4dbe7a1d79cc243f32",
+    "runtime_databases_retargeted": false,
+    "source_snapshots": {
+      "CBN_C3_TRIAL_20261024_ac8505b8": {
+        "catalog_sha256": "119aeea4f7ff4318c08e0005939246988f2421d1ee75884dc6c86ef5f157280a",
+        "data": {
+          "rows": 44384,
+          "sha256": "2eeb4d7b17c965f15b8a27bf2fec141ed52ba62cb020445b4a5b502347daeb8a",
+          "tables": 57
+        }
+      },
+      "CBN_C9_TRIAL_20261025_23ac78d3": {
+        "catalog_sha256": "7d0c5af59cf6292819130ebca133970c9537b33e528c33f1a84a373e30a8d6e8",
+        "data": {
+          "rows": 44413,
+          "sha256": "ed72f8289687d1d175f247093be901727457930e7b2b11630e315bb92d55de48",
+          "tables": 65
+        },
+        "journal_rows": 7
+      },
+      "HORARIOSSIIE": {
+        "catalog_sha256": "03fbd4905e684233edf9d228ad410ce17300595bd9bfe8ac1944af901e2c1889",
+        "data": {
+          "rows": 44180,
+          "sha256": "01b9058aeba6ea2e57243f9f09cc2f4f5d6c56013490c49988a1b689607be34b",
+          "tables": 50
+        }
+      }
+    },
+    "sources_before_after_identical": true,
+    "trial_database": "CBN_C11_TRIAL_20261025_d30e2cb2",
+    "trial_tables": 89
+  },
+  "legacy_readiness": "artifacts/sql-c11/legacy-readiness.json",
+  "semantic_review": {
+    "path": "artifacts/sql-c11/review.json",
+    "sha256": "67d6d72beae63f9b2ea6bfc8d3acbcd94f2ee32e031924396250bbab0b79c958"
+  },
+  "graph_fragment": {
+    "path": "docs/adaptation/fragments/sql-c11.json",
+    "sha256": "796603d83abb10246f6d41fb09987ac14eacf675cf42fda922603e676b6ff008"
+  },
+  "database_connected": true,
+  "DDL_applied_only_to_new_copies": true,
+  "academic_DML": false,
+  "source_SIIE_C5_C9_modified": false,
+  "runtime_files_modified": false,
+  "provider_calls": 0,
+  "workers_enabled": false,
+  "legacy_rows_copied_to_new_schema": false,
+  "credential_decryption_performed": false,
+  "institutional_sql2019_accepted": false,
+  "limits": [
+    "Local SQL2022Express/160 rehearsal; no institutional SQL2019 acceptance",
+    "Physical tables/constraints/history only; server auth/OAuth/crypto/quota/HMAC/transport gates pending",
+    "C5/C9 applications and profiles unchanged; no complete UI parity or unified preview claimed",
+    "B011 inventory preserved but mapping/re-encryption/repositories need C12",
+    "Lost ACKs are controlled injection; no claim of a real network outage"
+  ],
+  "next_unit": "SQL-C12",
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "bc343cfd7c1c85f4a3458f39f4b9d8109882f3cb1c4fb8174a33e04d74fb6b50",
+      "after_sha256": "d8f13649f45826a0e0145e069e191e24e76d5ed8375da870b9458477a5aba43f"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "a49c3028cc3d1d8cc04baea1bbf4486c50fd502b24b874a4cfe00d4629ab201a",
+      "after_sha256": "f999146c3bd2f8b1e88035b2a76d82d62504338b62bdcfaf3463cfc781071490"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "c928310e816f5c877c14679eab3e936e38e43b55413a3ab4a0a9d35f962f0f91",
+      "after_sha256": "eb0440c3bb463d2dd8963a594da65cc99ee7734c001035a673e846490ec1a4d1"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "3653c8068fb457569a4b96802a1fbd099de671b64cd26ea9863a573fab9b889f",
+      "after_sha256": "2f04b83b0bc6daf37d05d931ea8b8c82cd88a11f71f8b81f02c7e3db8322fd6a"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "85ffdfefb7e2ad415056b2426f7392d41ed02be1535b3d8ca2828835ab7611c1",
+      "after_sha256": "73c0570ef86b918b71c2319aad26f733d9c504fa869aba0f6d09166bf1cee080"
+    },
+    {
+      "path": "artifacts/sql-c11/constraints-result.json",
+      "before_sha256": null,
+      "after_sha256": "5b5cceaaa6404169a64ffdc1d6102d56908b3f1685b6992709d365809ba9d605"
+    },
+    {
+      "path": "artifacts/sql-c11/faults-result.json",
+      "before_sha256": null,
+      "after_sha256": "3be78f2195b175a7f6ed064dfad7bc30b0412853601b51a6768d46f5958c8a21"
+    },
+    {
+      "path": "artifacts/sql-c11/graph-diagnostics.json",
+      "before_sha256": null,
+      "after_sha256": "4807a75ac8a6d312367b48001b05d7fe7c6c7becb842ca6ed837dea1493e6902"
+    },
+    {
+      "path": "artifacts/sql-c11/legacy-readiness.json",
+      "before_sha256": null,
+      "after_sha256": "969e80ec66c5133d1d7ee975f51817fa38e50904cf4d72c6c224e574841a274e"
+    },
+    {
+      "path": "artifacts/sql-c11/link-checks.json",
+      "before_sha256": null,
+      "after_sha256": "f2bfc024dc7c32d36f6244e9269291e940c15ae0faa5c9225369a3fefcaa2631"
+    },
+    {
+      "path": "artifacts/sql-c11/offline-checks.json",
+      "before_sha256": null,
+      "after_sha256": "482f842931953d722c88f563f8dfe5cd73482c6f91bb0077292809cdbd79b27e"
+    },
+    {
+      "path": "artifacts/sql-c11/offline-results.xml",
+      "before_sha256": null,
+      "after_sha256": "e93696742ef261b3266ebe0c5f031c6e039cf3f3a56d67d24c3902b715aee01e"
+    },
+    {
+      "path": "artifacts/sql-c11/preservation.json",
+      "before_sha256": null,
+      "after_sha256": "2c8399982ee4e54573765051a996e100eed674bda4bf2d2f390227c88587997a"
+    },
+    {
+      "path": "artifacts/sql-c11/previews.json",
+      "before_sha256": null,
+      "after_sha256": "f8fb6a92bb87f2fc183795e975541b4244727fd16c64f4297143177ae5216acd"
+    },
+    {
+      "path": "artifacts/sql-c11/reference-result.json",
+      "before_sha256": null,
+      "after_sha256": "69a55450441e8ae1ea2d527ce3e301fa214dae1fa8046896eb4d0c69b2394810"
+    },
+    {
+      "path": "artifacts/sql-c11/release-check.json",
+      "before_sha256": null,
+      "after_sha256": "ef566999ec4d151215116f4481426ea7ec16eb4b3e76ec72bb713e7e9826f505"
+    },
+    {
+      "path": "artifacts/sql-c11/review.json",
+      "before_sha256": null,
+      "after_sha256": "67d6d72beae63f9b2ea6bfc8d3acbcd94f2ee32e031924396250bbab0b79c958"
+    },
+    {
+      "path": "artifacts/sql-c11/trial-result.json",
+      "before_sha256": null,
+      "after_sha256": "1adc509c3d8b22b5f78c07526354efcbe8d78aeece960fcc4889c58a4118563c"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/CBN-CHP001.sql",
+      "before_sha256": null,
+      "after_sha256": "5263d2d6418f368e2fce0a16d5fd35a9de69b975dc4e42f3b1f732236605b47c"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/CBN-CHP002.sql",
+      "before_sha256": null,
+      "after_sha256": "3f6291e00cc2996c10fd1b92d7fcf55277377676db0cf515c95dc4ecc0a608c2"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/CBN-CHP003.sql",
+      "before_sha256": null,
+      "after_sha256": "098673dae67bb98a645e37f7db640cf8b7d616db736d4776ee7c580699655af7"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/CBN-CHP004.sql",
+      "before_sha256": null,
+      "after_sha256": "fcbc04ea5c26740757b0121a5848255d5e0f95e30cce1f07e846dfa51beb4dca"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/CBN-CHP005.sql",
+      "before_sha256": null,
+      "after_sha256": "a503dea27675372b769e48be4a44a216dfcaa4a8962ea41f01b47b39dbcbf866"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/constraint-coverage.json",
+      "before_sha256": null,
+      "after_sha256": "9890ee9cbc1be5e634b75fe796464777e0e6c116dcf543b1daa95dfdd60b0e36"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/expected-shapes.json",
+      "before_sha256": null,
+      "after_sha256": "994c0615e4121aef87cad4791536b540be1f22844ffd20ba21e32116b240ec1c"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/release.json",
+      "before_sha256": null,
+      "after_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32"
+    },
+    {
+      "path": "backend/migrations/cbn_channels_parity_v1/reviewed-checks.json",
+      "before_sha256": null,
+      "after_sha256": "c60ee1e72d8d425555b7c3e44984939028edb5401af2cfb3adba0a81f373c359"
+    },
+    {
+      "path": "backend/tests/test_channels_parity_migrations.py",
+      "before_sha256": null,
+      "after_sha256": "2e88dda11571498e1c72439b2ca608db1683244126d5db0bf41bb58c5071b3fc"
+    },
+    {
+      "path": "backend/tools/channels_parity.py",
+      "before_sha256": null,
+      "after_sha256": "3e36f45ae448127cc44b67eae0aa3ea942957b62bd0bcba2c4f811a2f44a35e2"
+    },
+    {
+      "path": "backend/tools/channels_parity_contract.py",
+      "before_sha256": null,
+      "after_sha256": "b80f48c2b7cdf5c223b45281cc69fb9581876808cd19d279141841b54ab31a61"
+    },
+    {
+      "path": "backend/tools/channels_parity_snapshot.py",
+      "before_sha256": null,
+      "after_sha256": "9303c95645d94f343bd396710f43deb121b98a36a13d212f8f84a4e110c14e03"
+    },
+    {
+      "path": "backend/tools/check_channels_parity.py",
+      "before_sha256": null,
+      "after_sha256": "d81061829609453becac7c4861b063a8230486a2550b04464131be60c9411070"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "5cb16a6d9fdae6de6cc5c9bcec5bc730a2b786f3ed7abc59b0fb1a2c9c7a6d1c",
+      "after_sha256": "b9be68d9361e9904f8670d247bf1814c56f484e188f8b43384b8e0a72ee12075"
+    },
+    {
+      "path": "backend/tools/rehearse_channels_parity.py",
+      "before_sha256": null,
+      "after_sha256": "b29c16d14d83ff0af9d7cedef5cb828d59df9196fc8b957f141f8cc33cd3ccf9"
+    },
+    {
+      "path": "backend/tools/rehearse_channels_parity_faults.py",
+      "before_sha256": null,
+      "after_sha256": "5cc71776c46b99750ec8dedbf2eeea2687671a89b41d54a38bdc1210b9ca013b"
+    },
+    {
+      "path": "docs/ADAPTATION_STATUS.md",
+      "before_sha256": null,
+      "after_sha256": "c7b97f95845a646faaba9a1fa006d5fa0bfd4aaff2c0fdce57fc531d73178d23"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "5b59a2b634a793194df17a8abe6ba4062eff5dc847dc17d420e469abe1d4948a",
+      "after_sha256": "1b08b7e4bee0fb57a88baac1e918b18f29744707b1569401a9e03e2516ffb598"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "c0b9c7d373df352c885964cc7b7ee777ab0505fc2d749e6460a37ab47a7cc3a9",
+      "after_sha256": "0fe3d08ef9c114986cb3509038e416cb44b1e6cefc0df78c96f4ad464dce1f3c"
+    },
+    {
+      "path": "docs/adaptation/PARITY_MATRIX.md",
+      "before_sha256": "c6d3264a3da40751efc204848d3d116c63d1e9cf4d6afb0af781f52c70519ca5",
+      "after_sha256": "2518de0a260e34eca67a050d1bc34b0e883fc0b92ea347f2ecdf0c7021ab07c0"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "168bafd98110fc9ebe62ffe4ba0866fe5aab87a983072d471ca83c115d6d998f",
+      "after_sha256": "def75aa0956aaaf8011abfa7917d365d3ebf072526150198b37b44b8b1ac106a"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c11.json",
+      "before_sha256": null,
+      "after_sha256": "796603d83abb10246f6d41fb09987ac14eacf675cf42fda922603e676b6ff008"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "5ac44a62e574b6d83212c5357b381fc0a83490f986eab945727542569539a5a1",
+      "after_sha256": "8dd7cb9d674fca4052f21c4881292269433f5c9553620c1166ca21ef49f780c3"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C11_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "ed4fcbbc67cf9647af9cec3ea79f22dc1c81f718cd55ee98cf0fd87253d0c518"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "a8ae7f786bf4bd00dead01758674402cb10c71626f992ee7bedad59bb73369d6",
+      "after_sha256": "0deb5bc16c6513b36223d41441193a4c7a48d777fc615067b1a92de3d16cd6bc"
+    },
+    {
+      "path": "docs/decisions/ADR-023-channels-parity-schema-rehearsal.md",
+      "before_sha256": null,
+      "after_sha256": "0d37b4d8154aff56e66e87bdafb4092f5c05da122d7235a273d6edb775db643a"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "bfbb3efcf6a117601d2c63b4ba91e27b5e9e77668da6e72675613c3c65e7f91b",
+      "after_sha256": "185b9cc38302f0fe73c7899c602b2375c766c08921bf79cfeb12a39f4132044d"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "20d35065b1c3a3641c130d481259b97d4b485983770dd40db93690f36f9d7148",
+      "after_sha256": "142d7f37b1eda831c69c94e86da4e3fef9667b0dba31f70df49a0b0950e10c27"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "8c7038fabe2374b556a6aa5958bdf3de346406194dcb9a3c16cb6f8c3fc54f19",
+      "after_sha256": "c48b17a906eb97a9544681a829d83aac0e573ad0d9bc081e08ea6ffa74e61145"
+    },
+    {
+      "path": "tasks/sql-c11-progress.json",
+      "before_sha256": null,
+      "after_sha256": "337bd17918e22c5fb11ab1d82f58ffe863aaa68ff9cb7d690469566de70c1f79"
+    }
+  ]
+}

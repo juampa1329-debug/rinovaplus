@@ -1,0 +1,138 @@
+{
+  "domain": "P2 — Extracción semántica de ajustes Scentra a CBN",
+  "inspected_on": "2026-10-26",
+  "artifact_status": "draft_source_inventory_before_p2_implementation",
+  "evidence_scope": "Consulta del grafo existente y lectura de fuentes públicas. No se leyeron .env, .local, secretos ni datos; no se importó la app, consultó SQL, ejecutó Docker o proveedor. Scentra y C13 permanecen intactos. Este borrador no acredita implementación, paridad completa ni cierre P2.",
+  "findings": [],
+  "inventory": [
+    {
+      "id": "institutional_profile",
+      "source": [{"file":"../saas-version/backend/app_saas/tenants/schemas.py","line":6},{"file":"../saas-version/backend/app_saas/tenants/router.py","line":88},{"file":"../saas-version/frontend/src/App.jsx","line":10637}],
+      "target": [{"file":"frontend/src/features/Settings.tsx","line":86}],
+      "fields": ["institution.name","institution.timezone","institution.locale","industry_code/reference only","profile.full_name","profile.email","profile.phone","profile.role_label/display only","profile.avatar_url","profile.timezone","current_password/ephemeral for email change"],
+      "actions": ["read institution","update institution","read own profile","update own profile","reauthenticate email change"],
+      "source_routes": ["GET /saas/v1/tenants","PATCH /saas/v1/tenants/{tenant_id}","GET /saas/v1/auth/me","PATCH /saas/v1/auth/profile"],
+      "authorization": "Tenant update: owner/admin. Own profile: authenticated user; changed email requires current password. role_label is descriptive and must not grant roles.",
+      "source_persistence": ["saas_tenants name/timezone/locale","saas_users full_name/email/profile_json","security event auth.profile_update"],
+      "p2_requirement": "Persist a single educational institution and own profile with validation, current authorization, audit and optimistic revision. Keep access user, SIIE employee and AI agent distinct. Exclude tenant marketplace/trial creation and plan display.",
+      "baseline_gap": "The ordinary CBN Settings view shows Identidad pendiente; this observation precedes the new P2 implementation."
+    },
+    {
+      "id": "institutional_modules",
+      "source": [{"file":"../saas-version/frontend/src/App.jsx","line":212},{"file":"../saas-version/frontend/src/App.jsx","line":2703},{"file":"../saas-version/backend/app_saas/verticals/router.py","line":25}],
+      "target": [{"file":"backend/app/general_preview/api.py","line":96},{"file":"backend/app/runtime_capabilities.py","line":1}],
+      "fields": ["module identifier","institutional availability","administration permission","operational readiness","reason unavailable","technical quota/budget distinct from plan"],
+      "actions": ["read module availability","configure institutional availability","enforce availability on direct API access","show readiness independently"],
+      "source_routes": ["GET /saas/v1/verticals/packs","GET /saas/v1/verticals/state","POST /saas/v1/verticals/apply"],
+      "authorization": "Vertical apply is owner/admin/supervisor in source. Generic institutional module settings is a CBN requirement, not a discovered Scentra CRUD endpoint.",
+      "source_persistence": ["saas_tenants industry_code/vertical pack","billing overview features used by source UI"],
+      "p2_requirement": "Use explicit institutional availability for Inbox/CRM/AI/agents/memory/campaigns/broadcast/remarketing/Meta Ads and approved educational capabilities. Deny unauthorized or disabled module access on the server. Enabling a module must not enable provider IO, workers or spending.",
+      "out_of_scope": ["plans/checkout/trials/subscriptions","WooCommerce","hotel/Stay","restaurant/Dine","automatic vertical pack application or business operation"]
+    },
+    {
+      "id": "ai_settings",
+      "source": [{"file":"../saas-version/backend/app_saas/ai_agent/schemas.py","line":8},{"file":"../saas-version/frontend/src/App.jsx","line":6672},{"file":"../saas-version/frontend/src/App.jsx","line":9142}],
+      "target": [{"file":"backend/app/modules/ai/domain/models.py","line":126},{"file":"backend/app/modules/ai/api/router.py","line":215},{"file":"backend/app/modules/ai/application/service.py","line":40}],
+      "fields": ["enabled","provider_code","fallback_provider_code","system_prompt","max_tokens","temperature","voice_enabled","prefer_voice","tts_provider","voice_analysis_provider","vision_analysis_provider","web_image_search_provider","voice_id","voice_name","voice_prompt","model_failover_enabled","model_fallback_mode","model_fallback_attempt_limit","model_fallbacks_json","human_reply_style_enabled","human_reply_splitting_enabled","reply_max_output_tokens","typing_indicator_enabled","inbound_cooldown_seconds","reply_initial_delay_ms","reply_chunk_delay_ms","reply_min_chunk_delay_ms","reply_chunk_chars","recent_message_limit","message_context_chars"],
+      "actions": ["read settings","save settings","select primary model","select fallback provider/model","retain per-provider selections","configure audio/vision/voice/search","show saved readiness"],
+      "source_routes": ["GET /saas/v1/ai/settings","PUT /saas/v1/ai/settings"],
+      "target_existing_routes": ["GET /api/ai/settings","PUT /api/ai/settings","PUT /api/ai/outbound"],
+      "authorization": "Source read uses authenticated user; save requires owner/admin. CBN LocalAiGuard is a local guard, not institutional authorization.",
+      "source_persistence": ["saas_ai_settings scalar fields and metadata_json"],
+      "target_existing_persistence": ["SettingsRepository atomic file/revision","SqlSettingsRepository when local_sql_copy","provider selections and credential revision"],
+      "p2_requirement": "Preserve existing selections and save behavior, add institutional permissions/audit/durable persistence, and keep optional diagnostics separate from saving valid settings. Map source metadata to typed CBN fields explicitly rather than losing values.",
+      "out_of_scope": ["provider inference","live model catalog fetch","paid model-health check","AI test/chat/media calls","knowledge indexing/evaluation/learning operations from the IA tab; their dedicated phase remains separate"]
+    },
+    {
+      "id": "provider_credentials_and_models",
+      "source": [{"file":"../saas-version/frontend/src/App.jsx","line":180},{"file":"../saas-version/backend/app_saas/api_credentials/router.py","line":153},{"file":"../saas-version/backend/app_saas/api_credentials/router.py","line":583},{"file":"../saas-version/backend/app_saas/ai_gateway/router.py","line":19}],
+      "target": [{"file":"frontend/src/shared/aiSettings.ts","line":1},{"file":"backend/app/modules/ai/infrastructure/credentials.py","line":15},{"file":"backend/app/modules/ai/api/router.py","line":230}],
+      "provider_reference": ["google/gemini name mapping required","openai","anthropic","hermes","xai","nvidia","groq","mistral","openrouter","kimi","elevenlabs","google_tts","piper/local voice","tavily","brave","serpapi"],
+      "fields": ["category","provider_code","credential_key","display_name","value/write only","selected_model","metadata_json","has_secret","secret_hint/safe only","updated_at","credential_revision","outbound_enabled","per-provider model and voice selections"],
+      "actions": ["list safe credential metadata","create/replace credential","remove credential where CBN supports it","choose and persist model","show configured/unavailable state","request catalog or health check only as an explicit provider operation"],
+      "source_routes": ["GET /saas/v1/api-credentials","POST /saas/v1/api-credentials","GET /saas/v1/api-credentials/{provider_code}/models","GET /saas/v1/ai-gateway/providers","GET /saas/v1/ai-gateway/routes","GET /saas/v1/ai-gateway/model-health","POST /saas/v1/ai-gateway/model-health/check"],
+      "target_existing_routes": ["PUT /api/ai/credentials/{provider}","DELETE /api/ai/credentials/{provider}","POST /api/ai/models/{provider}","POST /api/ai/model-status/{provider}","POST /api/ai/voice-catalog/{provider}"],
+      "authorization": "Source credential write requires owner/admin; model catalog requires authentication. Gateway runs/routes/health require owner/admin/supervisor. New CBN scopes must be explicit and enforced on direct endpoints.",
+      "source_persistence": ["saas_api_credentials and selected_model metadata","source _ensure_api_credentials_table performs DDL and must not be ported"],
+      "target_existing_persistence": ["Windows DPAPI credential repository","SQL credential repository for local copy","safe metadata and revisioned changes"],
+      "p2_requirement": "Configuration and encrypted local persistence belong to P2. Never return raw stored secrets, copy ciphertext without its verified owner/key, or expose .env. Preserve technical provider quotas/budget limits independently of institutional module availability.",
+      "out_of_scope": ["provider account activation","network validation","OAuth exchange","sending or inference","inherited WooCommerce entry"]
+    },
+    {
+      "id": "channels_configuration",
+      "source": [{"file":"../saas-version/frontend/src/App.jsx","line":9607},{"file":"../saas-version/backend/app_saas/integrations/schemas.py","line":6},{"file":"../saas-version/backend/app_saas/integrations/router.py","line":968}],
+      "target": [{"file":"frontend/src/features/ChannelSettings.tsx","line":125},{"file":"backend/app/parity_channels/api.py","line":22},{"file":"backend/app/general_preview/api.py","line":136}],
+      "common_fields": ["provider","channel","status","secret_ref/reference only","display_name","environment","initial CRM stage","app/client id","app/client secret/write only","access token/write only","verify token/write once","webhook secret/write only","API version","callback URL","external account id","parent/business account id","permissions/scopes and readiness"],
+      "whatsapp_fields": ["business_account_id","phone_number_id","graph_api_version","app_id","phone selection","six-digit registration PIN/ephemeral"],
+      "instagram_fields": ["app_id","business_id","dispatch_mode","graph_api_version","instagram_business_account_id","instagram_username","page_id","page_name","status"],
+      "facebook_fields": ["app_id","business_id","dispatch_mode","graph_api_version","page_id","page_name","status"],
+      "tiktok_fields": ["access_token_env/reference only","advertiser_id","agents_enabled","ai_enabled","app_review_status","approved_products","approved_scopes","business_account_id","business_api_base_url","business_api_version","business_messaging_enabled","client_key","comment_reply_enabled","comment_reply_path","daily_ai_quota","daily_outbound_quota","dispatch_mode","open_id","outbound_mode","payload_samples_validated","remarketing_enabled","rollout_percent","runtime_notes","scopes","send_message_path","status","triggers_enabled"],
+      "actions": ["list/read configuration","create integration","edit integration with revision","remove/deactivate configuration","show safe secret metadata","replace secrets","copy/generate verification token before submission","inspect phones/assets/permissions","OAuth start/refresh","verify/register phone","manage PIN","inspect diagnostics/token health","configure rollout and technical quotas"],
+      "source_routes": ["GET/POST /saas/v1/integrations","DELETE /saas/v1/integrations/{integration_id}","GET /saas/v1/integrations/meta/{channel}/token-health","POST /saas/v1/integrations/meta/{channel}/token-refresh","GET /saas/v1/integrations/meta/whatsapp/phone-numbers","POST /saas/v1/integrations/meta/whatsapp/register-phone"],
+      "target_existing_routes": ["GET /api/local/channels/{kind} in C13 safe-read composition","GET/POST /api/channels/applications in C12 composition","POST /api/channels/integrations in C12 composition","PATCH /api/channels/applications/{entity} in C12 composition","PATCH /api/channels/integrations/{entity} in C12 composition"],
+      "authorization": "Source integration writes owner/admin; diagnostics/phone listing owner/admin/supervisor. C12/C13 tickets are isolated local access, not accounts/roles/session authorization.",
+      "source_persistence": ["saas_integrations config_json plus secret references","source upsert uniqueness represents one integration per tenant/provider/channel; multicuenta is a separate explicit CBN requirement"],
+      "target_existing_persistence": ["C12 crm_channels2 application/integration schema with institution, UUID and revision","C13 safe projections editing=false"],
+      "p2_requirement": "Retain complete configuration vocabulary and account identity, attach institutional read/write permissions and durable revisioned settings. Do not reduce fields to the current C13 projection or redirect C13/C5/C9.",
+      "out_of_scope": ["OAuth network round trip","phone registration/reset network calls","asset discovery","token refresh with provider","receiving public events","subscription and message/comment delivery","provider workers and real diagnostics; these remain P4"]
+    },
+    {
+      "id": "webhooks_configuration",
+      "source": [{"file":"../saas-version/backend/app_saas/webhooks/schemas.py","line":6},{"file":"../saas-version/backend/app_saas/webhooks/router.py","line":584},{"file":"../saas-version/frontend/src/App.jsx","line":5592}],
+      "target": [{"file":"backend/app/modules/webhooks/api/router.py","line":25},{"file":"backend/app/parity_channels/api.py","line":127},{"file":"backend/app/general_preview/api.py","line":110}],
+      "fields": ["provider","endpoint_key","url_path/callback","is_active","signature_required","last_seen_at","verify_token_once/write once","signature_secret_once/write once","event provider/id/status/received_at/error/sanitized"],
+      "actions": ["list/read endpoints","create endpoint configuration","enable/disable configuration","require HMAC","rotate verification token","rotate signature secret","deactivate/delete endpoint","verify callback","list events","process/replay events"],
+      "source_routes": ["GET/POST /saas/v1/webhooks/endpoints","PATCH/DELETE /saas/v1/webhooks/endpoints/{endpoint_id}","POST /saas/v1/webhooks/endpoints/{endpoint_id}/rotate-token","POST /saas/v1/webhooks/endpoints/{endpoint_id}/rotate-signature","GET /saas/v1/webhooks/endpoints/{endpoint_id}/verify","GET /saas/v1/webhooks/events","POST /saas/v1/webhooks/events/process"],
+      "authorization": "Source mutations/process require owner/admin. CBN must distinguish configuration permission, secret rotation and receipt/replay operation; listing events must not expose secret/body data.",
+      "source_persistence": ["saas_webhook_endpoints","saas_webhook_events","saas_audit_events"],
+      "p2_requirement": "Persist endpoint settings and permissions without opening a listener or treating active=true as accepted public operation. Audit sanitized rotations/configuration; never persist verification plaintext in the settings document.",
+      "out_of_scope": ["public listener","provider callback verification","signature reception acceptance","event normalization/replay and delivery workers; P4"]
+    },
+    {
+      "id": "users_roles_sessions_security",
+      "source": [{"file":"../saas-version/backend/app_saas/auth/schemas.py","line":80},{"file":"../saas-version/backend/app_saas/auth/router.py","line":1221},{"file":"../saas-version/backend/app_saas/auth/router.py","line":1332},{"file":"../saas-version/backend/app_saas/shared/security.py","line":222},{"file":"../saas-version/backend/app_saas/auth/router.py","line":1591},{"file":"../saas-version/backend/app_saas/auth/router.py","line":1425},{"file":"../saas-version/backend/app_saas/shared/mfa.py","line":102},{"file":"../saas-version/backend/app_saas/shared/mfa.py","line":246}],
+      "target": [{"file":"frontend/src/features/Settings.tsx","line":86},{"file":"backend/app/contracts.py","line":41},{"file":"backend/app/general_preview/api.py","line":110}],
+      "fields": ["email","full_name","password/write only","role","send_email/reference action","membership id","is_active","current_password/ephemeral","new_password/write only","confirmation/client only","two_factor_enabled","two_factor_method","TOTP setup/verification","recovery codes/one display","password_changed_at","session id","session expiry/revocation","action-level permissions","audit actor/action/resource/result"],
+      "source_roles": ["owner","admin","supervisor","agent","viewer"],
+      "actions": ["login/logout","read own identity","list team","create user","assign role","activate/deactivate membership","change own password","revoke/list sessions","reauthenticate sensitive action","configure and verify second factor","recover access","read authorized audit"],
+      "source_routes": ["POST /saas/v1/auth/login","POST /saas/v1/auth/login/verify-otp","GET /saas/v1/auth/me","GET /saas/v1/auth/team","POST /saas/v1/auth/team/users","PATCH /saas/v1/auth/team/memberships/{membership_id}","POST /saas/v1/auth/password/change","GET /saas/v1/auth/security","PATCH /saas/v1/auth/security/2fa","POST /saas/v1/auth/security/totp/setup","POST /saas/v1/auth/security/totp/verify","POST /saas/v1/auth/refresh","POST /saas/v1/auth/logout"],
+      "authorization": "Source team mutation checks TEAM_ADMIN_ROLES; only owner may assign owner, and self-deactivation is rejected. CBN needs explicit action permissions rather than decorative role labels or a client-only menu guard.",
+      "source_persistence": ["saas_users","saas_memberships","refresh sessions","security events"],
+      "p2_requirement": "Implement current server-side account/session/role checks so logout, revocation, disable and role removal apply to direct requests immediately. Verify missing permission returns a denial and sanitized failure audit. Do not derive authentication from an SIIE employee or AI agent record.",
+      "source_caveat": "get_current_user validates access JWT claims without looking up current account/session/role; logout revokes refresh session. These source mechanisms alone do not prove immediate access-token revocation required by the CBN P2 closure.",
+      "source_second_factor_contract": "TOTP SHA1, six digits, 30-second period, window +/-1. Password-confirmed setup stores an encrypted secret; verification activates TOTP and returns eight recovery codes once, stored as hashes. Login challenge accepts TOTP or a remaining recovery code with expiry/attempt controls. email_otp is a real source option requiring configured SMTP outside local mode; disabling selects none. No SMS option was found. CBN can preserve the email option as explicitly unavailable until provider acceptance, without sending or inventing email delivery.",
+      "out_of_scope": ["trial self-registration","tenant switching/marketplace","external OAuth identity or email/SMS delivery without separate provider acceptance","academic employee mutation","customer deletion/export operation from Security tab belongs to its own business/privacy scope"]
+    }
+  ],
+  "billing_dependencies": [
+    {"source":{"file":"../saas-version/backend/app_saas/auth/router.py","line":41},"coupling":"Module imports trials; register creates tenant/trial/subscription at 377–397 and membership listing reads subscription status. Team user creation is not itself proven to call a plan quota.","disposition":"Replace signup/tenant context with institution accounts; no trial/subscription dependency."},
+    {"source":{"file":"../saas-version/backend/app_saas/tenants/router.py","line":52},"coupling":"Tenant creation chooses trial plan and creates trial subscription.","disposition":"Use configured institution; no commercial tenant creation."},
+    {"source":{"file":"../saas-version/backend/app_saas/integrations/router.py","line":979},"coupling":"Integration upsert calls ensure_integration_quota.","disposition":"Explicit institutional availability and technical capacity, not subscription limits."},
+    {"source":{"file":"../saas-version/backend/app_saas/verticals/router.py","line":40},"coupling":"Stay activation checks billing feature scentra_stay.","disposition":"Exclude hotel product; educational availability has no plan dependency."},
+    {"source":{"file":"../saas-version/backend/app_saas/ai_agent/service.py","line":28},"coupling":"AI operations import feature, AI-token and monthly-message quota guards.","disposition":"Preserve technical budgets/rate limits independently; operational providers remain their own phase."},
+    {"source":{"file":"../saas-version/frontend/src/App.jsx","line":2703},"coupling":"UI feature flags come from billing overview; Profile displays plan and a dedicated Plan tab exposes checkout/usage.","disposition":"Use institutional capability state; omit plans, payment, checkout, invoices and trials. Provider cost metadata does not equal institutional billing."}
+  ],
+  "graph": {
+    "nodes": [
+      {"id":"p2_source_profile","label":"Perfil de institución y perfil propio requieren contratos distintos","file_type":"document","source_file":"../saas-version/backend/app_saas/tenants/schemas.py","source_location":"L6","status":"draft_source_extracted"},
+      {"id":"p2_source_ai","label":"Ajustes IA tipados y metadatos conservados","file_type":"document","source_file":"../saas-version/frontend/src/App.jsx","source_location":"L6672","status":"draft_source_extracted"},
+      {"id":"p2_source_credentials","label":"Credenciales y selección de modelos con salida segura","file_type":"document","source_file":"../saas-version/backend/app_saas/api_credentials/router.py","source_location":"L153","status":"draft_source_extracted"},
+      {"id":"p2_source_channels","label":"Campos y acciones de Canales completos; operación P4 separada","file_type":"document","source_file":"../saas-version/frontend/src/App.jsx","source_location":"L9607","status":"draft_source_extracted"},
+      {"id":"p2_source_webhooks","label":"Endpoint, firma y rotación configurables sin recepción pública","file_type":"document","source_file":"../saas-version/backend/app_saas/webhooks/schemas.py","source_location":"L6","status":"draft_source_extracted"},
+      {"id":"p2_source_users","label":"Usuarios de acceso y roles separados de empleados y agentes","file_type":"document","source_file":"../saas-version/backend/app_saas/auth/schemas.py","source_location":"L95","status":"draft_source_extracted"},
+      {"id":"p2_source_revocation_gap","label":"JWT de acceso fuente no comprueba revocación actual en servidor","file_type":"document","source_file":"../saas-version/backend/app_saas/shared/security.py","source_location":"L222","status":"draft_source_extracted"},
+      {"id":"p2_institutional_availability","label":"Disponibilidad institucional sustituye acoplamiento comercial","file_type":"document","source_file":"../saas-version/frontend/src/App.jsx","source_location":"L2703","status":"draft_requirement_inferred"}
+    ],
+    "edges": [
+      {"source":"foundation_settings","target":"p2_source_profile","relation":"must_preserve_profile_fields","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"../saas-version/frontend/src/App.jsx","source_location":"L7177"},
+      {"source":"foundation_settings","target":"p2_source_ai","relation":"must_preserve_ai_configuration","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"../saas-version/frontend/src/App.jsx","source_location":"L6672"},
+      {"source":"foundation_settings","target":"p2_source_credentials","relation":"must_preserve_safe_provider_configuration","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"../saas-version/backend/app_saas/api_credentials/router.py","source_location":"L153"},
+      {"source":"foundation_settings","target":"p2_source_channels","relation":"must_preserve_channel_configuration","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"../saas-version/frontend/src/App.jsx","source_location":"L9607"},
+      {"source":"foundation_settings","target":"p2_source_webhooks","relation":"must_preserve_endpoint_configuration","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"../saas-version/backend/app_saas/webhooks/schemas.py","source_location":"L6"},
+      {"source":"foundation_users","target":"p2_source_users","relation":"requires_institutional_accounts_and_permissions","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"docs/SCENTRA_ADAPTATION_ROADMAP.md","source_location":"L207"},
+      {"source":"foundation_users","target":"p2_source_revocation_gap","relation":"must_strengthen_source_revocation_for_p2_closure","confidence":"INFERRED","confidence_score":0.99,"source_file":"../saas-version/backend/app_saas/shared/security.py","source_location":"L222"},
+      {"source":"foundation_settings","target":"p2_institutional_availability","relation":"requires_noncommercial_capability_policy","confidence":"EXTRACTED","confidence_score":1.0,"source_file":"docs/SCENTRA_ADAPTATION_ROADMAP.md","source_location":"L208"},
+      {"source":"p2_source_channels","target":"p2_institutional_availability","relation":"configuration_does_not_enable_provider_operation","confidence":"INFERRED","confidence_score":0.98,"source_file":"backend/app/general_preview/api.py","source_location":"L110"}
+    ]
+  }
+}

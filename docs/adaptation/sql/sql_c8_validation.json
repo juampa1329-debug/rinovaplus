@@ -1,0 +1,384 @@
+{
+  "stage": "SQL-C8",
+  "status": "accepted_restored_channels_repositories_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "a4f069769ab3e794b687b9615a85ef188ff6e187d63750523408eb1545db53b8",
+  "graph_input_baseline_sha256": "f97e91e6dba9e866aadb64212d0ef7595de48d91fb6f449ec7645967fa7b62d8",
+  "graph_anchor_refresh_only": true,
+  "graph_anchor_changes": 37,
+  "previous_checkpoint_sha256": "0ab917e62830a54461f51659ca448cc75f2b0e56a79098de674f107a1e3c96e2",
+  "source_release_sha256": "49f72eb835ce46b83ec9c6267da2f73c9d7799990de6fab8ed28762565985998",
+  "inherited_postimages": {},
+  "database": "CBN_C8_TRIAL_20261025_ca9bec36",
+  "runtime_checkpoint": "SQL-C5",
+  "runtime_composition_tested": "Docker TestClient against real SQL; no new server or shared preview activation",
+  "offline_tests": {
+    "passed": 189,
+    "failed": 0,
+    "new_C8_tests": 44,
+    "regression_tests": 145,
+    "evidence": "artifacts/sql-c8/unit-results.xml"
+  },
+  "connected": {
+    "academic_rows": 44180,
+    "academic_tables": 50,
+    "admin_runtime_metadata_equal": true,
+    "checks": 38,
+    "extension_counts": {
+      "crm_channels.Account": 1,
+      "crm_channels.Audit": 6,
+      "crm_channels.Credential": 2,
+      "crm_channels.ExternalIdentity": 1,
+      "crm_channels.ExternalMessage": 3,
+      "crm_channels.outbound_queue": 1,
+      "crm_channels.social_comments": 1,
+      "crm_channels.webhook_events": 1
+    },
+    "institutional_sql2019_accepted": false,
+    "journal_rows_preserved": 7,
+    "original_business_rows_preserved": 199,
+    "own_profile_and_login": true,
+    "phase": "final",
+    "provider_calls": 0,
+    "source_C5_C7_unchanged": true,
+    "stage": "SQL-C8",
+    "trial_business_rows": 203,
+    "workers": 0
+  },
+  "connected_groups": {
+    "repositories_and_API": 16,
+    "denials_and_drift": 17,
+    "concurrency_and_ack": 5
+  },
+  "preparation": {
+    "academic_permissions": false,
+    "control_granted": false,
+    "dbo_denies": 7,
+    "grant_count": 33,
+    "independent_login": true,
+    "independent_profile": true,
+    "journal_rows_preserved": 7,
+    "metadata_admin_runtime_identical": true,
+    "no_migrations": true,
+    "phase": "prepared",
+    "queue_insert": false,
+    "stage": "SQL-C8",
+    "tls_validated": true
+  },
+  "retired_draft": {
+    "accepted": false,
+    "database_preserved": true,
+    "login_disabled": true,
+    "phase": "draft_retired",
+    "reason": "Dependency catalog requires explicit SELECT",
+    "source_C7_and_C5_unchanged": true,
+    "stage": "SQL-C8"
+  },
+  "shared_preview": {
+    "stage": "SQL-C8",
+    "shared_preview_mode": "local_foundation",
+    "foundation_contract": "B000+B001+B006",
+    "shared_preview_preserved": true,
+    "read_only_http_checks": 2
+  },
+  "preservation": {
+    "baseline_input_files": 469,
+    "unchanged_input_files": 447,
+    "academic_source_C5_C7_unchanged": true,
+    "original_trial_business_rows_preserved": 199,
+    "academic_tables": 50,
+    "academic_rows": 44180,
+    "journal_rows": 7,
+    "c6_reproduced": {
+      "inputs": 402,
+      "negative_checks": 20
+    },
+    "frozen_C7_assets_and_native_evidence": 20,
+    "public_preimages": {
+      "path": ".local/sql-c8/public-input-preimages.zip",
+      "sha256": "470d290bf14e4fb316264d28c6c9542fd2578041dfb25d65f9c0b6acbf34d8f0",
+      "files": 469,
+      "crc_verified": true
+    }
+  },
+  "metadata": {
+    "catalog_version": "cbn-channels-runtime-catalog-v1",
+    "administrative_runtime_exact_equality": true,
+    "control_required": false,
+    "view_definition_required": true,
+    "dependency_catalog_select_required": true,
+    "business_data_frozen_by_guard": false,
+    "identity_last_value_excluded": true
+  },
+  "private_runtime": {
+    "encrypted_profile": true,
+    "independent_Aes_key": true,
+    "files": 4,
+    "files_with_non_owner_access": 0,
+    "credentials_or_profiles_published": false
+  },
+  "static_checks": {
+    "ruff_new_sources": "passed",
+    "ruff_legacy_except_preexisting_E501": "passed",
+    "invalid_history_transitions_rejected": 35
+  },
+  "independent_semantic_review": {
+    "fragment": "docs/adaptation/fragments/sql-c8.json",
+    "nodes": 16,
+    "edges": 34,
+    "material_blockers_remaining": 0
+  },
+  "new_migrations": false,
+  "source_or_shared_runtime_changed": false,
+  "academic_DML": false,
+  "workers_enabled": false,
+  "provider_calls": 0,
+  "institutional_sql2019_accepted": false,
+  "next_unit": "SQL-C9",
+  "limits": [
+    "Local SQL2022Express/160 does not accept institutional SQL2019",
+    "C8 repositories/local API only; no UI parity or shared runtime activation",
+    "Queue INSERT/enqueue_message remain unavailable until B015/MessageRoute is accepted",
+    "Synthetic credentials, receipts, queue fixture and statuses do not prove provider delivery",
+    "ACK loss injected around real COMMIT/rollback; no server power-loss test",
+    "General suite and previous C5 browser acceptance not recertified"
+  ],
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "6745b27efcfafd69e37e11201b981426693fa2d6f01e5fc0ea5983a4e9bebbe4",
+      "after_sha256": "d582225138d1c8da5e1c9c51e804cee2ca703d02b09f74cff3d4767998283293"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "f93693774706e3af52c594be3afb127b4f9ef0c02be721f9c4aac1c505fccdf8",
+      "after_sha256": "2c4d3e354d0df8dbf9d264c0c79e45c108e896fec7caad7d929799e732bc5306"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "1f13e77692ab67ae4edf42039ca57f9e954381a58e6c222f24a1415c87493ad8",
+      "after_sha256": "7dbc05f98fda176a32636c82f6d1362a0043dab9ed3c1f4926ecd34672967b0c"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "a169681f166a6fcebea286baceaff8a1482840106a03d3b24b3c98e5f2533b74",
+      "after_sha256": "dc9be25a0782aebaee6dd6608e7205eee22fe8b69e011ed5ee6dbe7c93749c5e"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "3423357349907d9967dbbabf3fd123aff796c4ba380087c95089ea58747037a2",
+      "after_sha256": "611c796d2044b846524b2bddec151f0174779446e25ed6baff876fd88a5322ee"
+    },
+    {
+      "path": "artifacts/sql-c8/c5-preview-check.json",
+      "before_sha256": null,
+      "after_sha256": "3794e39df7d6b9981f0cbd2e0a3f7067b6fbfdbf3433771d0cabf8c57d87e565"
+    },
+    {
+      "path": "artifacts/sql-c8/checks.json",
+      "before_sha256": null,
+      "after_sha256": "b3a0d40eba51bbfb972f216cd9b31010e909b292476c9a301369102f5af6521c"
+    },
+    {
+      "path": "artifacts/sql-c8/concurrency-result.json",
+      "before_sha256": null,
+      "after_sha256": "46c89be6fc3db72206f748fe82b1929871b49ee58fffe46d6585f53a0706fe62"
+    },
+    {
+      "path": "artifacts/sql-c8/denials_and_drift-result.json",
+      "before_sha256": null,
+      "after_sha256": "994d1bcda45f626354429887d177dbd38f6408fb923f6b3cf2f5e216f84e285d"
+    },
+    {
+      "path": "artifacts/sql-c8/draft-retired-result.json",
+      "before_sha256": null,
+      "after_sha256": "2af52a558afe4f446778a0d4c0af4d10ab7c1e3b7573542e0e99e20ed9b27554"
+    },
+    {
+      "path": "artifacts/sql-c8/final-result.json",
+      "before_sha256": null,
+      "after_sha256": "1eefc137a80a6debc3543efb0f8bd8803b8c9dc5d4e0ffaa16aaa59e3d477806"
+    },
+    {
+      "path": "artifacts/sql-c8/prepared-result.json",
+      "before_sha256": null,
+      "after_sha256": "d3d7d5635492ae4f385f43ec7b2dbbd7f3691476f27a6e3d4c9c2dbcbad59412"
+    },
+    {
+      "path": "artifacts/sql-c8/repositories-result.json",
+      "before_sha256": null,
+      "after_sha256": "c1750c04d6a709c3c0dce421c4959d1ce2b707489ca8df9107f79f72ce97e443"
+    },
+    {
+      "path": "artifacts/sql-c8/restored-result.json",
+      "before_sha256": null,
+      "after_sha256": "13fb4618a361d754ab6b2d02285f792eca06d6fdaa6d5237ff6c321973e28868"
+    },
+    {
+      "path": "artifacts/sql-c8/unit-results.xml",
+      "before_sha256": null,
+      "after_sha256": "9ba680eb1e08add0ca60523b8f9d53dcd3c89b9c6092fa7d869faac4c137b1ff"
+    },
+    {
+      "path": "backend/app/channels_app.py",
+      "before_sha256": null,
+      "after_sha256": "004756ca8f0850b6eafa44452dfe20f74f58d7730267bbeb8a5a8dcc81d46194"
+    },
+    {
+      "path": "backend/app/channels_catalog.py",
+      "before_sha256": null,
+      "after_sha256": "a335113e72a9c007d6c895d2898df05f645b40fe305418ddefe7e0f42d8f668b"
+    },
+    {
+      "path": "backend/app/channels_contract.py",
+      "before_sha256": null,
+      "after_sha256": "23717718db287e30a44456b7465451d7b2fa60144d0464abf0890b5c28b4ebeb"
+    },
+    {
+      "path": "backend/app/channels_profile.py",
+      "before_sha256": null,
+      "after_sha256": "0c2399c4fd45cb8b7e6cc4469019d0cb9073310fda7b01a1b3444d6c51efd4f5"
+    },
+    {
+      "path": "backend/app/config.py",
+      "before_sha256": "514161906488e3ac563e22490b0f900f91aeead4c2fcd8fddf091df1b52a98eb",
+      "after_sha256": "3b60ed05a36fc8e70419035dae10665d1488aa5908c10a469eebb8bef6a2677f"
+    },
+    {
+      "path": "backend/app/main.py",
+      "before_sha256": "2918d7e98d74916cd86c3831d89c3bdca4f2d182f718747cfc726ebb1234cbb1",
+      "after_sha256": "0444678b9a958854cc4660b9e5aa2d1b54b98a8139558448a9a37dccdf535854"
+    },
+    {
+      "path": "backend/app/modules/ai/api/router.py",
+      "before_sha256": "7bda7a9bdfcfa68ff873516bfa08bf409e3869f5201bfc753d257bdb13cd6cfe",
+      "after_sha256": "81225ba3718db0d2b477073b91afea922999cca08d7839296e6d63d8a61423dc"
+    },
+    {
+      "path": "backend/app/modules/channels/router.py",
+      "before_sha256": "559a05d3e9fd98cb7344609416e7112878576253a31589173218d76650a57b5b",
+      "after_sha256": "fbbaa67f817cfdc19c97d0c84e84e8cc9853ab5c5bbe9e645188ca86a301b1e9"
+    },
+    {
+      "path": "backend/app/modules/channels/storage.py",
+      "before_sha256": "fd696948057d3a3c46d4f4b5957fa14a9a2251e8d7142f06399bc84c740480b2",
+      "after_sha256": "ec6bfd895843372e8d63d9bc652cacdd47a6bd030eca8343abd889f33ae8159c"
+    },
+    {
+      "path": "backend/app/modules/channels/workers.py",
+      "before_sha256": "4853da5d9d446d733ec5e689776d718e0583a7b0a4a5bb97b523c8edcbb4ba81",
+      "after_sha256": "a86ca8d120aa3c97227358c5b311895654bb3b4f73e87731d25fe522c12ccf25"
+    },
+    {
+      "path": "backend/app/sql_target.py",
+      "before_sha256": "0c49f701aaf14303726365a98ea94040bf049f30edb8d7c4671052f831322749",
+      "after_sha256": "e31ef2292ff9b3da6c5e7828180211aeb637655f75a1e9535e6d094062e09459"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "before_sha256": "fdf18e2407ea4b396bb3be46c9e921aff434a2e3afb5a9dfeef10f686a568e40",
+      "after_sha256": "9605c01539464b95605bb64e1c2e116ac8f51420c44ece395d048ecfb6b91d8e"
+    },
+    {
+      "path": "backend/tests/test_channels_runtime.py",
+      "before_sha256": null,
+      "after_sha256": "c9a90d59d2bf210b7fc5ba2a59838ad7b0fd00db5e999a81589bef41964fcefd"
+    },
+    {
+      "path": "backend/tools/check_channels.py",
+      "before_sha256": null,
+      "after_sha256": "3d2c77cf44d8e8e3c74499db1b39cac427b6015e9d05140874216873a8b7c4d2"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "c661ab19c8a85cd0bdcdc84371c3bceb50ccfc4dc0ef217483b62c377fbd0275",
+      "after_sha256": "7024cb757096799edaf67e22696d6d08b740f7e6f3c55bf67718944b9b69a07d"
+    },
+    {
+      "path": "backend/tools/rehearse_channels.py",
+      "before_sha256": null,
+      "after_sha256": "560df6e1937a6d57623d0619aebe88ca6e76e28581fa2960f4eaf73ff4f2ba1f"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "1eaead328e2e6b490fa1c9b1940d62e09382a2d82e6dd2068ad6c6210d689f38",
+      "after_sha256": "d8c036ed9125985abffd380511929cb7780a83fcba7a80d742c31285fc901120"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "4bd13146220082a47aa92c591e3879b6b8ef313df3ba8ae1b4ac543c7250007d",
+      "after_sha256": "bc2f3335c95f4e88913e93bedc7ada2497c0a8f35873ab3ced0f096d115add91"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "f4613ecf3390188e18b368b700b7331c539d820980c87cafefae4700fe5c3009",
+      "after_sha256": "9a2f805e8d61af1a6cbc790a79fb8222c4ed34879a8055ec1e60f7a688fa3193"
+    },
+    {
+      "path": "docs/adaptation/fragments/ai-memory.json",
+      "before_sha256": "936347d78764c3375e4deee45f12f5e6ba42f08305bcd22dc6a8c9ce439d70e6",
+      "after_sha256": "cb50d4635a4c24b5f2a518a003509736d1d27ba927a6b218344b19d5aa63fac0"
+    },
+    {
+      "path": "docs/adaptation/fragments/foundation.json",
+      "before_sha256": "33b9d17fbc53e889dd2915e9f2bc76e74db2eaf8fc588bfbc7c25932cbde22be",
+      "after_sha256": "e86f441719faec5399ccd97da9606111a22b4ad071b6b27168be175c3ee42432"
+    },
+    {
+      "path": "docs/adaptation/fragments/inbox-crm.json",
+      "before_sha256": "a9414be2de7ed6a1a24ce41d46de31c204ae0d014e784f41855c37c475143def",
+      "after_sha256": "ea75c43661c4b65371c4cde1a46a4773acb0505a2c7e89257ad9f574bfebac90"
+    },
+    {
+      "path": "docs/adaptation/fragments/marketing.json",
+      "before_sha256": "5b1dd13e2eb48d7744a6c7e0fdf245e365a983ba698878fbed4703c1290acb60",
+      "after_sha256": "fbaf20f94cfed5c86e748389406e0416e37c7da42ef892cb9036808e7f312a3b"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c8.json",
+      "before_sha256": null,
+      "after_sha256": "4d19931eb0126413af187ae61baddefd5add73dc7e3210e89b7ec14dc85fee6d"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "be9e8f07e2f24bf01451b28bd9207bfec76c951b0697644fac5b436a26af77e4",
+      "after_sha256": "3afd138851423f3e4d499eb352973c7fc32b0ece38ace536a1e9520018c7f294"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C8_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "c50b6fa464344a9db7329dc452295e004df37227847818bac33102f9619560f5"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "64afc9bc0d807d05cc1a16d25176648d29d358e8f27cd63c89a9489b0ee5b8df",
+      "after_sha256": "90e9d21cc6c9062ec6dff975a33e2bde16a8edec8845c333bcf86fc8b2772c7f"
+    },
+    {
+      "path": "docs/adaptation/sql/sql_c8_anchor_changes.json",
+      "before_sha256": null,
+      "after_sha256": "4fc4905fc8156c7f8dfa1ba54d8be97ab575cf9802dfae0920a87b6470760816"
+    },
+    {
+      "path": "docs/decisions/ADR-020-channels-repository-rehearsal.md",
+      "before_sha256": null,
+      "after_sha256": "9589654f98797e6d19d96301145e3d2491c4991f45d33f0da8d1a517b061aa73"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "ff07c124707fd8947b97d0e6785277363c3ecf35aca3e326e283dfcfd67d7a00",
+      "after_sha256": "c1bed96d7e76e9ef09d4ccab3db39ab67ba9cdca87f7624031125f763dc1440f"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "dc05af78b27d07e8bca2b29c6a3adb632e423f7630394d8a003aafc97a674b99",
+      "after_sha256": "bd6307155020c9bc3de16f085e377b6a27e135702c6552d28669e3daf791ca4a"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "18caad0170723e281b1238ab97ebbb4746217081af911ce341ea98c08a282e8c",
+      "after_sha256": "fef678fb13401e937c5e17cfa6fc603ef09092374970d87b77053b6d65307665"
+    }
+  ]
+}

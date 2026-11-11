@@ -1,0 +1,706 @@
+{
+  "domain": "P2 · Revisión de fuentes de identidad,sesiones,roles y auditoría",
+  "status": "draft_source_review_implementation_in_progress_no_acceptance",
+  "review_date": "2026-10-26",
+  "timezone": "America/Bogota",
+  "review_scope": "Revisión semántica Graphify sólo de fuentes públicas CBN/Scentra,contrato canónico y grafo acotado. El revisor no conectóSQL/Docker,importóapp,leyó.env/.local/perfiles/credenciales ni cambió ledger/checkers/historia. Este draft no aceptaP2,SQL2019 o nuevosporcentajes. Identifica reutilización ybrechas;lasrelaciones dediseño estánmarcadasINFERRED. No duplica importsAST. Actualización: código P2 revisado sólo porfuente,35pruebas puras reportadas,no migración/perfil/listener/UI P2 aceptados. Implementación usa sesión opaca HMAC+SQL yPBKDF2 deliberadamente,en lugar del JWT/Argon propuesto inicialmente. El fixture SQL2019 contiene sólo39tablasCRM,no copiaacadémica;CHECK académico temporal bloqueó transferencia antes deCOMMIT,sin modificarconstraint/datos. Requisito de presentación sin«ensayo» todavía pendiente deUI. Última revisión puntual:KDF debootstrap/redemption movido despuésdevalidar token/estado/rate/MFA;38/38pruebas puras reportadas,tresregresiones leídas. Sin nueva evidencia conectada ni aceptación deUI/fase.",
+  "findings": [
+    {
+      "id": "p2_auth_source_contract",
+      "phase": "P2",
+      "capability": "Contrato fuente de identidad ypermisosP2 reutilizandoArgon2/JWT y corrigiendo revocación/rotación",
+      "status": "implementacion_en_curso_sin_aceptacion",
+      "gap": "Código P2 en construcción con fixes estáticos y38pruebas puras reportadas;quedan pruebas conectadas de permisos,revocación,MFA,replay,drift,persistencia yreversión. No hay migración/perfil/listener/UI P2 aceptados. P1.close siguependiente:fixture39CRM/motor15 no esrestauraciónacadémica. Ningúnporcentaje cambia.",
+      "acceptance": "Pendiente:release/runtime/UI nuevos enotra copia;pruebas directas de permisos,revocación inmediata,replay/rotación concurrente,auditoría/persistencia/reversión ymotor15 real. Se conservan C13/C5/C9/SIIE ycriterios históricos.",
+      "source": [
+        {
+          "file": "../saas-version/backend/app_saas/shared/security.py",
+          "line": 61
+        },
+        {
+          "file": "../saas-version/backend/app_saas/shared/security.py",
+          "line": 154
+        },
+        {
+          "file": "../saas-version/backend/app_saas/shared/security.py",
+          "line": 222
+        },
+        {
+          "file": "../saas-version/backend/app_saas/shared/sessions.py",
+          "line": 41
+        },
+        {
+          "file": "../saas-version/backend/app_saas/shared/sessions.py",
+          "line": 100
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 1244
+        },
+        {
+          "file": "../saas-version/backend/app_saas/auth/router.py",
+          "line": 1591
+        },
+        {
+          "file": "../saas-version/migrations/127_saas_auth_sessions_totp.sql",
+          "line": 3
+        },
+        {
+          "file": "../saas-version/migrations/001_saas_core.sql",
+          "line": 18
+        }
+      ],
+      "target": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 204
+        },
+        {
+          "file": "docs/adaptation/phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/scope.json",
+          "line": 80
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 122
+        },
+        {
+          "file": "backend/migrations/007_institutional_identity.sql",
+          "line": 21
+        },
+        {
+          "file": "backend/app/general_preview/api.py",
+          "line": 50
+        },
+        {
+          "file": "backend/app/modules/ai/domain/models.py",
+          "line": 7
+        },
+        {
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 24
+        },
+        {
+          "file": "backend/app/institutional/api.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/institutional/channels.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/institutional/store.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/institutional/management.py",
+          "line": 1
+        },
+        {
+          "file": "backend/migrations/cbn_institutional/P2_001_access.sql",
+          "line": 1
+        },
+        {
+          "file": "artifacts/p2/code-review-draft.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "recommendation": {
+    "reuse": "Reutilizar diseño y funciones pequeñas Argon2/JWT/normalización/DTO de Scentra y servicios CBN de configuración/CRM. Crear un módulo concreto de autenticación CBN y un adaptador SQL; no importar router/config/db/billing del SaaS ni crear plataforma IAM oDSLgenérica.",
+    "identity_separation": [
+      "Cuenta de acceso UUID propia con institución yestado;ninguna identificación por nombre/cargo del empleado.",
+      "Referencia al empleado SIIE sólo como vínculo opcional validado futuro;sin FK ni lectura/escritura académica para autenticar.",
+      "AgenteIA ycontacto CRM son dominios distintos,no sujetos de sesión humana."
+    ],
+    "session_contract": [
+      "JWT con algoritmo permitido fijo,issuer/audience yclaims requeridos sub/institution/sid/iat/exp;clave de firma propia,persistida fuera de imagen,sin secreto dev por defecto.",
+      "Cada ruta protegida valida cuenta/membresía/sesión no revocada/expirada/idle ypermisos vigentes enSQL;sin fallback de cookie propietarioC13.",
+      "Refresh hash+jti/versión consumidos atómicamente conCASoUPDLOCK/HOLDLOCK;rotación concurrente/reuso sólo un éxito,revocación y cambio de clave/rol efectivos para access emitido.",
+      "Conservar interfaz de login/perfil/cambio de clave/roles fuente;recovery/invitaciones/MFA de unuso conhash,expiry,intentos yconsumo atómico. No enviar contraseñas ni devolverOTP/reset de desarrollo como éxito institucional."
+    ],
+    "schema_entities_proposed_only": [
+      "Cuenta/membresía institucional yroles/acciones declarados.",
+      "Sesión revocable ydesafíos/reset/invitación de unuso.",
+      "Perfil institucional,ajustes versionados ydisponibilidad por módulo conlímites técnicos.",
+      "Auditoría append-only yoperaciones idempotentes para cambios sensibles."
+    ],
+    "SQL2019_contract": [
+      "DDL aditivo nuevo;uniqueidentifier,nvarchar acotado,binary32 hashes,datetime2(7)UTC,rowversion paraCAS de configuración yJSON nvarchar(max)+ISJSON. Sin tipos/operadores PG,DDL al arranque o ALTER de paquetes congelados.",
+      "Unicidademail normalizado e institución explícita con índiceacotado;FK compuestas porinstitución yNOACTION para conservar cuentas/auditoría. Verificar CHECK frenteaNULL yfiltrar índices únicos opcionales.",
+      "Principal migrador DB WITHOUT LOGIN acotado;runtime sinCONTROL/ALTER/DDL,dbo académico denegado ylectura de hashes sólo en servidor,nuncaDTO. Audit INSERT/SELECT acotado,sinUPDATE/DELETE.",
+      "Separar nuevolector/snapshot/ACL ydiario/manifest delrelease de versiones congeladas;identidadTLS/engine15/catálogo/historia antes de negocio. No reescribir pruebas C13 para admitir otromotor."
+    ],
+    "authorization": [
+      "Matriz método+ruta→acción+recurso+roles,denegar rutas no declaradas yvalidar InstitutionId/objectownership.",
+      "owner/admin/supervisor/agent/viewer como punto de partida,nocomo jerarquía implícita de todoslos privilegios;quién administraagentes/fuentes/campañas/Ads/usuarios se configura explícitamente.",
+      "Proteger último administrador bajoTX/lock yevitar autoescalado ydemoción concurrente de todoslos administradores.",
+      "Mutation y audit de éxito enmismaTX;fallos/denegaciones conevento saneado durable,sin secretos/passwordhash/JWT enpayloads,logs oerrors."
+    ],
+    "billing": "Inventariar imports/consultas antes de portar módulos;no registro público/trial/Stripe/subscription/checkout. Disponibilidad institucional explícita no equivale a todoenabled;conservar cuotas técnicas,presupuesto ycontroles delproveedor.",
+    "rollback": "Conservar cuentas,auditoría ysesiones revocadas;versionar yrevertir aplicación/config sinDROP/TRUNCATE/reabrir rutas. Paquete anterior debe tolerar esquema aditivo;backup/restauración a destino nuevo ensayados sin sustituirfuentes o previews históricos.",
+    "dependency": "Puede implementarseP2 porautorizaciónhumana,pero paraP2=100 elchecker congelado exigeP1accepted. Resolver P1.close conensayo auténticoSQL2019/restauración/guards/reintentos/conflictos ypaquete explícito;no cambiar denominador,dep ocriterios para llegar100."
+  },
+  "minimum_acceptance_checklist": [
+    {
+      "criterion": "P2.1",
+      "required_evidence": "Mapa de cada grupo deajustesScentra→CBN,catálogo completo proveedores/modelos/canales,perfil institucional,módulos/webhooks conDTOstrict,autorización,conflicto/readback ypersistencia trasrecreate."
+    },
+    {
+      "criterion": "P2.2",
+      "required_evidence": "Login cuentas verdaderas;expired/tampered/wrongissuer/type/audience ycuenta inactiva rechazados;logout/revoke/passwordchange/rolechange bloquean access yrefresh yaemitidos;rotación concurrente,challenge replay yúltimoadmin."
+    },
+    {
+      "criterion": "P2.3",
+      "required_evidence": "Inventario comercial cero dependencias deplanes/cobro/checkout runtime;toggle institucional efectivo más quotas/budgets técnicos,enforcement servidor ysin activarproveedores."
+    },
+    {
+      "criterion": "P2.4",
+      "required_evidence": "Cobertura de todos métodos/rutas conpermisos poracción/recurso yactor;IDOR/massassignment/crossinstitution;denials ymutaciones auditadas sin datossecretos."
+    },
+    {
+      "criterion": "P2.close",
+      "required_evidence": "Matrizdeacceso directo porroles,revocacióninmediata,persistencia,reversión app/config sincorrupción decuentas/audit;P1closeaccepted sobre motor15real conrestauración ynegativos. No acreditarporcontar tablas/tests."
+    }
+  ],
+  "source_pins": [
+    {
+      "file": "../saas-version/backend/app_saas/shared/security.py",
+      "sha256": "e1e8bff7b0f6410811d9fb61660a03839ad509a036c67004fba343549f8d6efe"
+    },
+    {
+      "file": "../saas-version/backend/app_saas/shared/sessions.py",
+      "sha256": "dc73d3e8662d5b26a05eac40421ac24945cbccc4dfe5f415eadea683acb3d038"
+    },
+    {
+      "file": "../saas-version/backend/app_saas/auth/router.py",
+      "sha256": "a20f4c9832bb222710af0ccb41275dfa53fe8fc6d4ddff062284e5fbed042d09"
+    },
+    {
+      "file": "../saas-version/backend/app_saas/shared/security_events.py",
+      "sha256": "7328d10a9347909482787cfe30d10900ee2b357e2cda1b5efb1fe8f99b489088"
+    },
+    {
+      "file": "../saas-version/migrations/001_saas_core.sql",
+      "sha256": "98f3df49c3e31d727cdc51296353affd757665a5034f22066b22a3cc257eece3"
+    },
+    {
+      "file": "../saas-version/migrations/127_saas_auth_sessions_totp.sql",
+      "sha256": "57dbbc7634f55f32a9998809bd6cf975b9bbaa07a2e9a5c1dd3c84b635a66eec"
+    },
+    {
+      "file": "backend/migrations/007_institutional_identity.sql",
+      "sha256": "ea00e603033eae3d5ef78a5ed8452b086a4d05324d764d6ebe7d5bab0086772b"
+    },
+    {
+      "file": "backend/migrations/013_ai_providers.sql",
+      "sha256": "73cedcbb6b9cff910ae01878bba7c3fceedc546de9848241be9788bced3bcee8"
+    },
+    {
+      "file": "backend/app/modules/ai/domain/models.py",
+      "sha256": "2f48b05af9e878804292d400fe32de7aed6af8c9b9b03922af12f7e55112a88c"
+    },
+    {
+      "file": "backend/tools/check_phase_progress.py",
+      "sha256": "7502d284b7fb88c889b37303212451252d7c9fc3ef9da9538107db444368a2c7"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_draft_canonical_scope",
+        "label": "P2: ajustes,cuentas/sesiones revocables,roles/acciones,disponibilidad sin billing y auditoría",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria",
+        "stage": "source_review_design_only_not_implemented",
+        "implementation_accepted": false
+      },
+      {
+        "id": "p2_draft_P1_dependency",
+        "label": "P2.close depende de P1 completo;P1 actual4/5=80 y motor15 pendiente",
+        "file_type": "document",
+        "source_file": "docs/adaptation/scope.json",
+        "source_location": "$.phases[2].depends_on",
+        "stage": "source_review_design_only_not_implemented",
+        "implementation_accepted": false
+      },
+      {
+        "id": "p2_draft_source_argon_JWT",
+        "label": "Scentra: Argon2id yJWT HS256 con issuer,type,exp ycontexto",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L61",
+        "stage": "source_review_design_only_not_implemented"
+      },
+      {
+        "id": "p2_draft_source_refresh_sessions",
+        "label": "Scentra: refresh hash+jti,sesión persistida,rotación y revocación",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/sessions.py",
+        "source_location": "L41",
+        "stage": "source_review_design_only_not_implemented"
+      },
+      {
+        "id": "p2_draft_source_roles",
+        "label": "Scentra: owner/admin/supervisor/agent/viewer;permitir roles concretos",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L19",
+        "stage": "source_review_design_only_not_implemented"
+      },
+      {
+        "id": "p2_draft_source_access_revocation_gap",
+        "label": "Access JWT fuente no verifica sesión/usuario/membresía SQL al acceder",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L222",
+        "stage": "source_review_design_only_not_implemented",
+        "observed_source_gap": true
+      },
+      {
+        "id": "p2_draft_source_refresh_race",
+        "label": "Rotación fuente: SELECT yUPDATE porid,sin CAS del hash/jti anterior",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/sessions.py",
+        "source_location": "L100",
+        "stage": "source_review_design_only_not_implemented",
+        "observed_source_gap": true
+      },
+      {
+        "id": "p2_draft_source_billing_coupling",
+        "label": "Auth fuente importa trials yconsulta planes/suscripciones al resolver membresías",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/auth/router.py",
+        "source_location": "L41",
+        "stage": "source_review_design_only_not_implemented",
+        "must_not_port_billing": true
+      },
+      {
+        "id": "p2_draft_source_security_DDL",
+        "label": "Auditoría fuente puede crear tablas/índices durante una petición",
+        "file_type": "code",
+        "source_file": "../saas-version/backend/app_saas/shared/security_events.py",
+        "source_location": "L57",
+        "stage": "source_review_design_only_not_implemented",
+        "must_not_port_runtime_DDL": true
+      },
+      {
+        "id": "p2_draft_source_users_memberships_audit",
+        "label": "Modelo PG: usuarios,membresías,roles yeventos audit;no SQLServer DDL",
+        "file_type": "code",
+        "source_file": "../saas-version/migrations/001_saas_core.sql",
+        "source_location": "L18",
+        "stage": "source_review_design_only_not_implemented"
+      },
+      {
+        "id": "p2_draft_CBN_contact_not_login",
+        "label": "crm_identity.Profile es perfil de contacto→crm.Contact,no cuenta de acceso",
+        "file_type": "code",
+        "source_file": "backend/migrations/007_institutional_identity.sql",
+        "source_location": "L21",
+        "stage": "source_review_design_only_not_implemented"
+      },
+      {
+        "id": "p2_draft_CBN_owner_preview_not_P2",
+        "label": "Cookie bootstrap C13 controla propietario local;no cuentas/roles institucionales",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L50",
+        "stage": "source_review_design_only_not_implemented",
+        "historical_C13_unchanged": true
+      },
+      {
+        "id": "p2_draft_CBN_AI_settings_gap",
+        "label": "Configuración AI existente admite más proveedores que CHECK SQL013 legado",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L24",
+        "stage": "source_review_design_only_not_implemented",
+        "must_not_apply_historical_SQL": true
+      },
+      {
+        "id": "p2_draft_proposed_immediate_revocation",
+        "label": "Diseño: JWT con sid/versión yverificación de sesión/usuario/acciones vigente porrecurso",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[4]",
+        "stage": "source_review_design_only_not_implemented",
+        "proposal_only": true
+      },
+      {
+        "id": "p2_draft_proposed_additive_auth_release",
+        "label": "Diseño: release SQL2019 aditivo,cuentas/sesiones/políticas/ajustes/audit sóloCRM",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[1]",
+        "stage": "source_review_design_only_not_implemented",
+        "proposal_only": true
+      },
+      {
+        "id": "p2_draft_proposed_explicit_availability",
+        "label": "Diseño: disponibilidad institucional por módulo ycuotas/presupuestos técnicos,sin plan/cobro",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[2]",
+        "stage": "source_review_design_only_not_implemented",
+        "proposal_only": true
+      },
+      {
+        "id": "p2_draft_proposed_endpoint_audit",
+        "label": "Diseño: cada método/ruta tiene acción,recurso,roles yresultadoaudit;denegar por defecto",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[3]",
+        "stage": "source_review_design_only_not_implemented",
+        "proposal_only": true
+      },
+      {
+        "id": "p2_draft_proposed_SQL2019_acceptance",
+        "label": "P1.close técnico: contratos/migraciones/guards/reintentos/restauración enmotor15 real",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+        "source_location": "L19",
+        "stage": "source_review_design_only_not_implemented",
+        "proposal_only": true
+      },
+      {
+        "id": "p2_draft_opaque_SQL_implementation",
+        "label": "Código en curso:sesiones opacas HMAC yrevocación SQL,no JWT activo",
+        "file_type": "code",
+        "source_file": "backend/app/institutional/auth.py",
+        "source_location": "L32",
+        "status": "source_verified_not_connected_or_accepted"
+      },
+      {
+        "id": "p2_draft_HTTP_channel_implementation",
+        "label": "Código P2 HTTP/Canales tipados con fixes revisados,sin listener/UI",
+        "file_type": "code",
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L46",
+        "status": "source_verified_not_connected_or_accepted"
+      },
+      {
+        "id": "p2_draft_academic_transfer_block",
+        "label": "Transferencia académica detenida por CHECK temporal;fixture15 sólo39CRM",
+        "file_type": "document",
+        "source_file": "artifacts/p2/code-review-draft.json",
+        "source_location": "$.execution_status_reported_by_parent_not_queried_by_reviewer",
+        "status": "reported_by_executor_not_new_reviewer_SQL_observation"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_draft_canonical_scope",
+        "target": "p2_draft_P1_dependency",
+        "relation": "retains_phase_closure_dependency_without_changing_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/scope.json",
+        "source_location": "$.phases[2].depends_on"
+      },
+      {
+        "source": "p2_draft_canonical_scope",
+        "target": "P2",
+        "relation": "defines_source_review_for_pending_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2]"
+      },
+      {
+        "source": "p2_draft_P1_dependency",
+        "target": "P1",
+        "relation": "requires_accepted_dependency_for_phase_closure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/check_phase_progress.py",
+        "source_location": "L122"
+      },
+      {
+        "source": "p2_draft_P1_dependency",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "retains_existing_real_SQL2019_gate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L47"
+      },
+      {
+        "source": "p2_draft_source_argon_JWT",
+        "target": "p2_draft_source_roles",
+        "relation": "issues_role_and_institution_context_in_access_tokens",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L154"
+      },
+      {
+        "source": "p2_draft_source_argon_JWT",
+        "target": "p2_draft_source_refresh_sessions",
+        "relation": "is_used_to_issue_hashed_persistent_refresh_tokens",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/shared/sessions.py",
+        "source_location": "L41"
+      },
+      {
+        "source": "p2_draft_source_refresh_sessions",
+        "target": "p2_draft_source_users_memberships_audit",
+        "relation": "references_users_and_optional_tenant",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/migrations/127_saas_auth_sessions_totp.sql",
+        "source_location": "L3"
+      },
+      {
+        "source": "p2_draft_source_access_revocation_gap",
+        "target": "p2_draft_source_refresh_sessions",
+        "relation": "shows_refresh_revocation_does_not_gate_access_request",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "../saas-version/backend/app_saas/auth/router.py",
+        "source_location": "L1591",
+        "rationale": "Logout revoca sólo refresh yget_current_user valida sólo JWT,porloque access emitido conserva claims hastaexp."
+      },
+      {
+        "source": "p2_draft_source_refresh_sessions",
+        "target": "p2_draft_source_refresh_race",
+        "relation": "has_non_CAS_rotation_read_update_pair",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/shared/sessions.py",
+        "source_location": "L100"
+      },
+      {
+        "source": "p2_draft_source_billing_coupling",
+        "target": "p2_draft_source_users_memberships_audit",
+        "relation": "mixes_identity_memberships_with_commercial_tenant_state",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/auth/router.py",
+        "source_location": "L124"
+      },
+      {
+        "source": "p2_draft_source_users_memberships_audit",
+        "target": "p2_draft_source_security_DDL",
+        "relation": "records_auth_events_using_dynamic_schema_ensure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "../saas-version/backend/app_saas/shared/security_events.py",
+        "source_location": "L135"
+      },
+      {
+        "source": "p2_draft_CBN_contact_not_login",
+        "target": "p2_draft_proposed_additive_auth_release",
+        "relation": "requires_separate_account_identity_domain",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[1]",
+        "rationale": "Perfil de contacto no tiene password/sesión/rol;P2 exige distinguir empleado,usuario y agente."
+      },
+      {
+        "source": "p2_draft_CBN_owner_preview_not_P2",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "cannot_replace_institutional_session_authorization",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[1]",
+        "rationale": "Bootstrap local ytoken único depreview no identifica cuentas niroles individuales."
+      },
+      {
+        "source": "p2_draft_source_argon_JWT",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "can_reuse_pure_crypto_primitives_with_session_binding",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "../saas-version/backend/app_saas/shared/security.py",
+        "source_location": "L154",
+        "rationale": "Reutilizar tecnología yfunciones pequeñas;añadir sid/versión yconsultaSQL para cumplirP2.close."
+      },
+      {
+        "source": "p2_draft_source_access_revocation_gap",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "must_be_closed_before_accepting_logout_revocation",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[4]",
+        "rationale": "El cierre canónico exigeque sesión cerrada/revocada deje de funcionar,incluidoaccessyaemitido."
+      },
+      {
+        "source": "p2_draft_source_refresh_race",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "requires_atomic_single_use_refresh_consumption",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "../saas-version/backend/app_saas/shared/sessions.py",
+        "source_location": "L100",
+        "rationale": "Dos renovaciones concurrentes delmismo hash/jti deben producirunsolo éxito medianteCAS/lock."
+      },
+      {
+        "source": "p2_draft_source_billing_coupling",
+        "target": "p2_draft_proposed_explicit_availability",
+        "relation": "commercial_dependencies_must_be_replaced_not_enabled_unconditionally",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[2]",
+        "rationale": "P2.3 pide disponibilidad institucional explícita conservando cuotas/presupuestos técnicos."
+      },
+      {
+        "source": "p2_draft_source_security_DDL",
+        "target": "p2_draft_proposed_additive_auth_release",
+        "relation": "must_move_schema_creation_to_explicit_migration_only",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[1].criteria[4]",
+        "rationale": "P1.close prohíbeDDL automáticoalarranque;runtimeaudit tampoco debe tenerprivilegiosDDL."
+      },
+      {
+        "source": "p2_draft_proposed_immediate_revocation",
+        "target": "p2_draft_proposed_endpoint_audit",
+        "relation": "requires_current_actions_and_resource_scope_on_every_access",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[3]",
+        "rationale": "Ocultar botón oconfiarenrolesJWTviejos no satisface denegación directa."
+      },
+      {
+        "source": "p2_draft_proposed_additive_auth_release",
+        "target": "p2_draft_proposed_endpoint_audit",
+        "relation": "must_preserve_append_only_audit_and_account_history",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[4]",
+        "rationale": "Reversión conservacuenta/auditoría;DDLaditivo sinCASCADEdecuentas oeventos."
+      },
+      {
+        "source": "p2_draft_proposed_additive_auth_release",
+        "target": "p2_draft_proposed_SQL2019_acceptance",
+        "relation": "needs_actual_engine15_compilation_and_restorable_rehearsal",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/sql_target.py",
+        "source_location": "L271",
+        "rationale": "Contratoinstitucional exigeProductMajor15;engine16/compat150 no lo sustituye."
+      },
+      {
+        "source": "p2_draft_P1_dependency",
+        "target": "p2_draft_proposed_SQL2019_acceptance",
+        "relation": "cannot_close_P2_at100_while_P1_remains_partial",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/check_phase_progress.py",
+        "source_location": "L122"
+      },
+      {
+        "source": "p2_draft_CBN_AI_settings_gap",
+        "target": "p2_draft_proposed_additive_auth_release",
+        "relation": "needs_full_provider_catalog_in_new_settings_contract",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/modules/ai/domain/models.py",
+        "source_location": "L7",
+        "rationale": "SQL013CHECKomitecinco proveedoresque elDTOexistentesíadmite;no perderlosalportar."
+      },
+      {
+        "source": "p2_draft_canonical_scope",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "requires_revocable_sessions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[1]"
+      },
+      {
+        "source": "p2_draft_canonical_scope",
+        "target": "p2_draft_proposed_explicit_availability",
+        "relation": "requires_commerce_replacement_with_technical_controls",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[2]"
+      },
+      {
+        "source": "p2_draft_canonical_scope",
+        "target": "p2_draft_proposed_endpoint_audit",
+        "relation": "requires_endpoint_authorization_and_audit_matrix",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].criteria[3]"
+      },
+      {
+        "source": "p2_draft_opaque_SQL_implementation",
+        "target": "p2_draft_proposed_immediate_revocation",
+        "relation": "implements_SQL_state_checks_in_source_without_accepting_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/auth.py",
+        "source_location": "L32"
+      },
+      {
+        "source": "p2_draft_HTTP_channel_implementation",
+        "target": "p2_draft_proposed_endpoint_audit",
+        "relation": "adds_HTTP_permission_and_audit_boundary_pending_connected_proof",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/api.py",
+        "source_location": "L60"
+      },
+      {
+        "source": "p2_draft_academic_transfer_block",
+        "target": "p2_draft_proposed_SQL2019_acceptance",
+        "relation": "keeps_real_restored_copy_gate_open_without_altering_academic_constraint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2/code-review-draft.json",
+        "source_location": "$.execution_status_reported_by_parent_not_queried_by_reviewer"
+      }
+    ]
+  },
+  "implementation_choice_update": {
+    "current": "Opaque HMAC-bound SQL sessions +PBKDF2-SHA2561M;source JWT/Argon remains a reviewed reference,not a claim of current implementation.",
+    "review": "artifacts/p2/code-review-draft.json",
+    "status": "source_verified_pure_tests_reported_connected_acceptance_pending",
+    "phase_credit": 0,
+    "SQL2019_fixture_is_academic_restoration": false,
+    "P2_UI_presentation_requirement_pending": true,
+    "remaining_material_source_issue_ids": []
+  },
+  "pure_validation_update": {
+    "reported_passed": 38,
+    "reviewer_reran_tests": false,
+    "source_cases_reviewed": [
+      {
+        "file": "backend/tests/test_institutional_http.py",
+        "symbol": "test_invalid_bootstrap_key_does_not_run_password_kdf",
+        "line": 116
+      },
+      {
+        "file": "backend/tests/test_institutional_http.py",
+        "symbol": "test_unknown_redemption_does_not_run_password_kdf",
+        "line": 139
+      },
+      {
+        "file": "backend/tests/test_institutional_http.py",
+        "symbol": "test_chunked_body_stops_before_reading_entire_request",
+        "line": 161
+      }
+    ],
+    "KDF_fix": "Bootstrap yredemption validan autorización/token antesdelKDF;login limitado tampoco ejecutaKDF.",
+    "ASGI_fix": "Carga chunked se corta al superar524288bytes;tercer bloque→413 sin consumir solicitudentera.",
+    "phase_credit": 0,
+    "UI_requirement_without_ensayo": "pending;no UI acceptance claimed"
+  }
+}

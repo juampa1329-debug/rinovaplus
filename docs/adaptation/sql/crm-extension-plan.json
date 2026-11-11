@@ -1,0 +1,901 @@
+{
+  "schema_version": "cbn-next-crm-release-plan-v1",
+  "unit": "SQL-C6",
+  "date": "2026-10-25",
+  "status": "reviewed_design_only",
+  "database_connection_allowed": false,
+  "execution_allowed": false,
+  "runtime_changes_allowed": false,
+  "baseline_file": "sql_c6_input_baseline.json",
+  "baseline_sha256": "042c6562826b022ab0cb48b72d05a9afbdf19eff6ae5f71189e0cb9252eb964c",
+  "runtime_checkpoint": {
+    "unit": "SQL-C5",
+    "proof": "sql_c5_validation.json",
+    "sha256": "660f968a1ccb162d411deb694ec267e33522a3849acdf3fee57ab1be445a3f5b",
+    "preserve_current_preview": true
+  },
+  "release": {
+    "proposed_id": "CBN-channels-local-v1",
+    "status": "not_implemented",
+    "scope": "new_restored_copy_only",
+    "sql_file": null,
+    "release_sha256": null,
+    "expected_shape_sha256": null,
+    "base_release": "CBN-foundation-local-v2",
+    "base_release_sha256": "b8de5466cd6c0e8b373490cc0987bacbf90deff95ffe45e8d84f54f6dc08827a",
+    "unit": "CBN-B011",
+    "source_ids": [
+      "011",
+      "012"
+    ],
+    "depends_on": [
+      "CBN-B000",
+      "CBN-B001"
+    ],
+    "source_files": [
+      {
+        "path": "backend/migrations/011_channels.sql",
+        "sha256": "a3e63c7d79c68f460297eefc178f5671eecc2bc6fa4b537e12cb3c570c38b3e4"
+      },
+      {
+        "path": "backend/migrations/012_channels_identity_collation.sql",
+        "sha256": "86d4ff87736eb38469e873fe890d7b2424f93c413f9d092015e1e01b5803d0ae"
+      }
+    ],
+    "new_table_count": 8,
+    "total_crm_table_count": 15,
+    "initial_rows": 0,
+    "create_order": [
+      "crm_channels.Account",
+      "crm_channels.Credential",
+      "crm_channels.webhook_events",
+      "crm_channels.ExternalIdentity",
+      "crm_channels.ExternalMessage",
+      "crm_channels.outbound_queue",
+      "crm_channels.social_comments",
+      "crm_channels.Audit"
+    ]
+  },
+  "partition": {
+    "matching": "exact_schema_and_object_names_with_target_collation_collision_check",
+    "unknown_objects": "reject_inconclusive_or_drift",
+    "metadata_visibility": "complete_required",
+    "academic_tables": [
+      "dbo.ACAsignatura",
+      "dbo.ACAsignaturaPlan",
+      "dbo.ACIntensidad",
+      "dbo.ACIntensidadAsignatura",
+      "dbo.ACJornada",
+      "dbo.ACPlanEducativo",
+      "dbo.ACProgramaOfrecido",
+      "dbo.ACProgramas",
+      "dbo.GEAlertasSeguridad",
+      "dbo.GEAuditoriaUsuarios",
+      "dbo.GECodigosBackup2FA",
+      "dbo.GECodigosRespaldo2FA",
+      "dbo.GEConfiguracion",
+      "dbo.GEConfiguracionSeguridad",
+      "dbo.GEDocente",
+      "dbo.GEDocenteporAsignatura",
+      "dbo.GEEstudiante",
+      "dbo.GEHistorialPasswords",
+      "dbo.GEIntentosLogin",
+      "dbo.GEMatricula",
+      "dbo.GEPeriodo",
+      "dbo.GEPermisos",
+      "dbo.GERoles",
+      "dbo.GERolPermiso",
+      "dbo.GESede",
+      "dbo.GESesionesActivas",
+      "dbo.GETokensRecuperacion",
+      "dbo.GEUsuarios",
+      "dbo.HOAulaAuditoria",
+      "dbo.HOAulaDetalle",
+      "dbo.HOAulaRequerida",
+      "dbo.HOAulas",
+      "dbo.HOBloqueRequerido",
+      "dbo.HOBloques",
+      "dbo.HOCatalogoSoftware",
+      "dbo.HODisponibilidadD",
+      "dbo.HODocenteDisponibilidad",
+      "dbo.HOEstadoAula",
+      "dbo.HOGeneracionJob",
+      "dbo.HOHorario",
+      "dbo.HOInventarioPC",
+      "dbo.HOLaboratorioInfo",
+      "dbo.HOMantenimientoAula",
+      "dbo.HONotificacion",
+      "dbo.HOReservaAula",
+      "dbo.HOReservaConflicto",
+      "dbo.HOSemana",
+      "dbo.HOSoftwarePC",
+      "dbo.HOTipoAula",
+      "dbo.sysdiagrams"
+    ],
+    "foundation_tables": [
+      "crm.Contact",
+      "crm.Conversation",
+      "crm.Message",
+      "crm.Operation",
+      "crm_config.Configuration",
+      "crm_config.Operation",
+      "crm_meta.MigrationJournal"
+    ],
+    "extension_tables": [
+      "crm_channels.Account",
+      "crm_channels.Credential",
+      "crm_channels.webhook_events",
+      "crm_channels.ExternalIdentity",
+      "crm_channels.ExternalMessage",
+      "crm_channels.outbound_queue",
+      "crm_channels.social_comments",
+      "crm_channels.Audit"
+    ],
+    "deferred_declared_tables": [
+      {
+        "name": "crm_admissions.AdmissionCase",
+        "unit": "CBN-B002",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_admissions.Followup",
+        "unit": "CBN-B002",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_admissions.Operation",
+        "unit": "CBN-B002",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_inbox.Member",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_inbox.Agent",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_inbox.Assignment",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_inbox.Task",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_inbox.SlaPolicy",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_inbox.Operation",
+        "unit": "CBN-B003",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_events.Event",
+        "unit": "CBN-B004",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_events.Preparation",
+        "unit": "CBN-B004",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_events.RetryOperation",
+        "unit": "CBN-B004",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.Policy",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.ConversationState",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.Receipt",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.Attempt",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.Feedback",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_analysis.Operation",
+        "unit": "CBN-B005",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_identity.Profile",
+        "unit": "CBN-B007",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_merge.MergeCase",
+        "unit": "CBN-B008",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_merge.Operation",
+        "unit": "CBN-B008",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_strategy.Policy",
+        "unit": "CBN-B009",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_strategy.EvaluationPlan",
+        "unit": "CBN-B009",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_strategy.Operation",
+        "unit": "CBN-B009",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.Configuration",
+        "unit": "CBN-B013",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_ai.Connection",
+        "unit": "CBN-B013",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_ai.Credential",
+        "unit": "CBN-B013",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_channels.ConversationProfile",
+        "unit": "CBN-B015",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_channels.ConversationControl",
+        "unit": "CBN-B015",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_channels.MessageRoute",
+        "unit": "CBN-B015",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_channels.MediaAsset",
+        "unit": "CBN-B016",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_ai.AdmissionsPolicy",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.KnowledgeDocument",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.KnowledgeChunk",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.KnowledgeTerm",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.ProspectMemory",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_ai.ResponseJob",
+        "unit": "CBN-B017",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_marketing.ChurnAssessment",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.MessageTemplate",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.ContactConsent",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.RemarketingRule",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.AccountCadence",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.Campaign",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.CampaignRecipient",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.EvaluationRun",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_marketing.Policy",
+        "unit": "CBN-B018",
+        "classification": "conditional_structural_candidate"
+      },
+      {
+        "name": "crm_agents.Stage",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.Profile",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.Context",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.SourceScope",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.Assignment",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.History",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.Usage",
+        "unit": "CBN-B019",
+        "classification": "employee_contract_pending"
+      },
+      {
+        "name": "crm_agents.Execution",
+        "unit": "CBN-B020",
+        "classification": "employee_contract_pending"
+      }
+    ],
+    "preexisting_non_table_objects": "freeze_all_definitions_owners_dependencies_and_acl_before_extension",
+    "cross_boundary_policy": "only_the_ten_listed_crm_foreign_keys; no academic dependencies or executable side effects",
+    "prefix_exclusion_allowed": false,
+    "count_only_acceptance_allowed": false
+  },
+  "extension_tables": [
+    {
+      "name": "crm_channels.Account",
+      "column_count": 8,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 12,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.Credential",
+      "column_count": 5,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 22,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.webhook_events",
+      "column_count": 10,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 28,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.ExternalIdentity",
+      "column_count": 6,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 37,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.ExternalMessage",
+      "column_count": 4,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 43,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.outbound_queue",
+      "column_count": 12,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 48,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.social_comments",
+      "column_count": 7,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 60,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    },
+    {
+      "name": "crm_channels.Audit",
+      "column_count": 5,
+      "source_file": "backend/migrations/011_channels.sql",
+      "source_line": 66,
+      "final_shape": "synthesize_011_plus_012_directly_on_empty_schema; do_not_run_legacy_files"
+    }
+  ],
+  "foreign_keys": [
+    {
+      "source_table": "crm_channels.Credential",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 23,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 38,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 39,
+      "definition": "ContactId uniqueidentifier NOT NULL REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 40,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 44,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 45,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 49,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 50,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 51,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.social_comments",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 61,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    }
+  ],
+  "provider_identifier_collations": [
+    {
+      "table": "crm_channels.ExternalIdentity",
+      "column": "ExternalId",
+      "collation": "Latin1_General_100_BIN2"
+    },
+    {
+      "table": "crm_channels.ExternalMessage",
+      "column": "ExternalId",
+      "collation": "Latin1_General_100_BIN2"
+    },
+    {
+      "table": "crm_channels.outbound_queue",
+      "column": "ExternalId",
+      "collation": "Latin1_General_100_BIN2"
+    },
+    {
+      "table": "crm_channels.social_comments",
+      "column": "ExternalId",
+      "collation": "Latin1_General_100_BIN2"
+    },
+    {
+      "table": "crm_channels.social_comments",
+      "column": "AuthorId",
+      "collation": "Latin1_General_100_BIN2"
+    }
+  ],
+  "final_named_keys": [
+    {
+      "table": "crm_channels.ExternalIdentity",
+      "name": "UQ_Channels_Identity",
+      "kind": "UNIQUE",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ]
+    },
+    {
+      "table": "crm_channels.ExternalMessage",
+      "name": "PK_Channels_ExternalMessage",
+      "kind": "PRIMARY KEY",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ]
+    },
+    {
+      "table": "crm_channels.social_comments",
+      "name": "UQ_Channels_Comment",
+      "kind": "UNIQUE",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ]
+    }
+  ],
+  "disabled_capabilities": [
+    "workers",
+    "provider_calls",
+    "external_delivery",
+    "channel_account_configuration",
+    "webhook_ingestion",
+    "comments_ui",
+    "unified_inbox_controls",
+    "churn_evaluation",
+    "campaigns",
+    "academic_lookup",
+    "institutional_identity",
+    "contact_merge",
+    "inbox_operations",
+    "agents",
+    "providers",
+    "automation"
+  ],
+  "required_contracts": [
+    {
+      "id": "partition_v2",
+      "status": "not_implemented",
+      "requirement": "New exact-object metadata/data reader and guard. Keep foundation_snapshot.py and foundation.py unchanged. Unknown schemas/objects, hidden metadata, object-kind substitution and case/accent collisions reject; no blanket crm_* exclusion. Preexisting object universe must match accepted C5 metadata, not blindly adopt a fresh initial catalog. Validate exact new-actor ACL overlay before projecting only its enumerated changes."
+    },
+    {
+      "id": "preservation",
+      "status": "not_implemented",
+      "requirement": "Capture full academic metadata/ACL/data binary signatures and foundation metadata/data immediately before rehearsal; compare after success, NOOP, failure and reconciliation. Private row/table hashes only; report scalar results."
+    },
+    {
+      "id": "security",
+      "status": "not_implemented",
+      "requirement": "Separate explicit schema preparation and migration actor; no runtime/admin fallback. DDL allowlist crm_channels only; REFERENCES only exact crm.Contact/Conversation/Message. Preserve C4 runtime ACL and all earlier principals; no academic object/DML/EXECUTE permissions or schema ownership for runtime."
+    },
+    {
+      "id": "history",
+      "status": "not_implemented",
+      "requirement": "Keep existing journal schema and immutable five-row C3 prefix; validate C3 history then new release chain. Commit STARTED separately before DDL, COMMITTED atomically with B011 DDL, FAILED_ROLLED_BACK after rollback. Any uncertain COMMIT including STARTED quarantines/reconciles; no blind retry. C3 runner/release never reissued or rehashed. Preserve old ShapeVersion/hash semantics; validate new version separately (varchar32). SuccessKey is globally unique by UnitId: never reuse successful B011 with different bytes; changed work needs a new forward unit."
+    },
+    {
+      "id": "destination",
+      "status": "not_implemented",
+      "requirement": "New restored database identity, new files, no REPLACE; exact TLS/server/database/login/SID ticket. Rehearsal engine16/compat160 explicit; engine15 institutional acceptance separately with compatibility130/140/150 per P1.2, without changing database compatibility. Never point C4 ticket/profile at new destination."
+    },
+    {
+      "id": "snapshots",
+      "status": "not_implemented",
+      "requirement": "Independent reference + trial restored from same populated C5 backup; freeze canonical before/after shapes and package hashes before trial. Original seven tables unchanged; eight new tables empty; stable named PK/UQ/FK/CHECK/default/index, BIN2 identifiers, triggers and permissions verified."
+    },
+    {
+      "id": "runtime_promotion",
+      "status": "not_implemented",
+      "requirement": "Old seven-table runtime must reject the extended database. C8 requires separately versioned guard/profile/permissions and capabilities; no installation by table existence, no new flags or workers in C7."
+    }
+  ],
+  "rehearsal_sequence": [
+    {
+      "id": "C7-01",
+      "depends_on": [],
+      "action": "Implement offline exact-object reader/guard/migrator and negative checks; no SQL yet"
+    },
+    {
+      "id": "C7-02",
+      "depends_on": [
+        "C7-01"
+      ],
+      "action": "Validate populated C5 identity/current state, TLS, visibility and effective permissions; pause writers only for backup consistency if needed; COPY_ONLY/CHECKSUM backup, VERIFYONLY; restore independent reference/trial with fresh files without REPLACE"
+    },
+    {
+      "id": "C7-03",
+      "depends_on": [
+        "C7-02"
+      ],
+      "action": "Independent reviewed reference construction, canonical snapshots and data assertions; freeze new release hashes before untouched trial; schema/principal preparation separate and audited"
+    },
+    {
+      "id": "C7-04",
+      "depends_on": [
+        "C7-03"
+      ],
+      "action": "Acquire migration SESSION lock then CRM transaction lock in fixed order; preflight exact prior partition+history+ACL, apply only B011 in transaction with journal success"
+    },
+    {
+      "id": "C7-05",
+      "depends_on": [
+        "C7-04"
+      ],
+      "action": "Verify full preservation, ten trusted FKs, final collations/keys/indexes, eight empty tables; repeat NOOP; reject drift, concurrency, partial/unknown objects, metadata invisibility and effective privilege escalation"
+    },
+    {
+      "id": "C7-06",
+      "depends_on": [
+        "C7-05"
+      ],
+      "action": "Exercise failure before each DDL/journal boundary and lost COMMIT acknowledgement; preserve states, reconcile, never blindly rerun. Do not mutate source/shared C5 preview"
+    },
+    {
+      "id": "C8",
+      "depends_on": [
+        "C7-06"
+      ],
+      "action": "Separate runtime integration acceptance and browser rehearsal; preserve workers/providers/outbound disabled until own explicit later unit"
+    }
+  ],
+  "acceptance_cases": [
+    "exact academic 50 / foundation7 / extension8 partition; unknown object rejected",
+    "complete metadata required; missing permissions is inconclusive",
+    "case/accent/object-type collision rejects before DDL",
+    "preexisting academic metadata, precision7 binary data, ACL and identities unchanged",
+    "populated foundation rows and metadata unchanged; no seed/reset/replay",
+    "journal five-row prefix immutable; new events append with release/hash chain",
+    "B011 creates eight tables, ten trusted CRM-only foreign keys and final012 collations/keys",
+    "all eight tables empty including Account, Credential, webhook_events and outbound_queue",
+    "correct repeat is NOOP, drift/partial schema and altered package rejected",
+    "migration and writer locks; concurrent executor fails/serializes safely",
+    "fault before commit rolls back; uncertain commit quarantines and reconciles without duplicate DDL",
+    "runtime denied DDL, academic access, broad role/public grants and ownership elevation",
+    "old C4/C5 ticket rejects new destination and extended managed shape",
+    "no workers, provider traffic, webhook routes, outbound jobs or flags activated"
+  ],
+  "recovery": {
+    "precommit": "rollback unit and record failure; preserve attempt",
+    "uncertain_commit": "pause/reconcile journal and exact shape before action",
+    "postcommit": "keep new independent copy for inspection; use compatible app/forward fix; no generic DROP or restore over source",
+    "current_preview": "remains C5 original destination/profile; not repointed"
+  },
+  "later_packages": [
+    {
+      "unit": "CBN-B015",
+      "source_ids": [
+        "015"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011"
+      ],
+      "purpose": "three unified inbox tables; requires runtime guard/consumer review; never install partially"
+    },
+    {
+      "unit": "CBN-B018",
+      "source_ids": [
+        "018"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011",
+        "CBN-B015"
+      ],
+      "purpose": "churn and marketing structure; proposed EvaluationEnabled=0, no worker/transport until separate acceptance"
+    },
+    {
+      "unit": "CBN-B013",
+      "source_ids": [
+        "013",
+        "014"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "purpose": "provider/model settings; separate credentials and Outbound=0 acceptance"
+    },
+    {
+      "unit": "CBN-B007/CBN-B008",
+      "source_ids": [
+        "007",
+        "008"
+      ],
+      "purpose": "deferred until academic identity and crm_inbox.Operation functional dependencies are accepted; SQL-only FK closure is insufficient"
+    }
+  ],
+  "next_unit": "SQL-C7: implement the exact-object extension contract and B011 package with offline tests and isolated populated-copy rehearsal. No runtime activation or source modification.",
+  "explicit_indexes": [
+    {
+      "name": "IX_Channels_Receipt_Work",
+      "table": "crm_channels.webhook_events",
+      "unique": false,
+      "kind": "NONCLUSTERED (default)",
+      "keys": "State,DueAt",
+      "tail": "",
+      "file": "backend/migrations/011_channels.sql",
+      "line": 36
+    },
+    {
+      "name": "IX_Channels_Outbound_Work",
+      "table": "crm_channels.outbound_queue",
+      "unique": false,
+      "kind": "NONCLUSTERED (default)",
+      "keys": "State,DueAt",
+      "tail": "",
+      "file": "backend/migrations/011_channels.sql",
+      "line": 58
+    },
+    {
+      "name": "IX_Channels_Queue_Message",
+      "table": "crm_channels.outbound_queue",
+      "unique": true,
+      "kind": "NONCLUSTERED (default)",
+      "keys": "MessageId",
+      "tail": "WHERE MessageId IS NOT NULL",
+      "file": "backend/migrations/011_channels.sql",
+      "line": 59
+    }
+  ],
+  "migration_permission_plan": {
+    "principal_kind": "new_database_user_without_login",
+    "preparation": "explicit_administrative_schema_and_acl_setup_audited_separately",
+    "database": [
+      "CREATE TABLE",
+      "VIEW DEFINITION"
+    ],
+    "schemas": {
+      "crm_channels": [
+        "ALTER"
+      ]
+    },
+    "objects": {
+      "crm.Contact": [
+        "REFERENCES"
+      ],
+      "crm.Conversation": [
+        "REFERENCES"
+      ],
+      "crm.Message": [
+        "REFERENCES"
+      ],
+      "crm_meta.MigrationJournal": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "forbidden": [
+      "academic_data_read_or_write_by_migrator",
+      "academic_DDL",
+      "foundation_DDL_or_DML",
+      "journal_UPDATE_DELETE",
+      "runtime_ACL_change",
+      "ownership_or_role_elevation",
+      "general_EXECUTE"
+    ]
+  },
+  "historical_continuity": "C6 is design, not a runtime checkpoint. Preserve its plan/checker/baseline/validation and recoverable public preimages. C7 adds explicit C5-to-C7 source transitions plus hashes of C6 design artifacts; evaluate C6 inputs historically through those transitions instead of rehashing baseline or running its raw checker against changed sources."
+}

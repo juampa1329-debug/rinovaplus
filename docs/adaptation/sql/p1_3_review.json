@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-24",
+  "method": "Independent read-only source/document semantic review; no app/test/DB/network execution",
+  "result": "No material contradictions after correcting 005/018; contract, bootstrap, adoption, unknown commit, shape and recovery reviewed",
+  "corrected_finding": "018 creates ChurnAssessment and ALTER RunId/FK inside the same script; 005 is not its physical predecessor",
+  "limits": "Definition checker proves selected documentary consistency, not live shape, recovery or an implemented state machine",
+  "graph": {
+    "nodes": [
+      {
+        "id": "p1_3_migration_definition",
+        "label": "P1.3: contrato definido offline, sin aplicación",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L3",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_planned_sequence",
+        "label": "18 unidades institucionales propuestas; legado conservado",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L11",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_atomic_journal",
+        "label": "Diario propuesto: éxito y DDL atómicos por unidad",
+        "file_type": "document",
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L13",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_legacy_adoption",
+        "label": "Adopción propuesta de legacy reconocido sin reejecución",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L57",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_uncertain_commit",
+        "label": "Commit incierto: detener y reconciliar",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L96",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_final_shape",
+        "label": "Drift propuesto contra modelo final, historia y artefactos",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L117",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_scoped_recovery",
+        "label": "Recuperación CRM propuesta preservando SIIE",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L139",
+        "status": "definition_only_not_implemented"
+      },
+      {
+        "id": "p1_3_execution_blocked",
+        "label": "Manifiesto no ejecutable; conexión no autorizada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L5",
+        "status": "definition_only_not_implemented"
+      }
+    ],
+    "edges": [
+      {
+        "source": "foundation_sql_dialect",
+        "target": "p1_3_migration_definition",
+        "relation": "partially_addressed_by_offline_migration_definition",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "P1",
+        "relation": "definition_within_phase_connected_acceptance_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L147"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_planned_sequence",
+        "relation": "defines_proposed_units_without_generating_sql",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_atomic_journal",
+        "relation": "requires_proposed_atomic_success_and_ddl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-013-migration-lifecycle.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_legacy_adoption",
+        "relation": "distinguishes_adoption_from_historical_execution",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L57"
+      },
+      {
+        "source": "p1_3_atomic_journal",
+        "target": "p1_3_uncertain_commit",
+        "relation": "requires_reconciliation_on_uncertain_commit",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L96"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_final_shape",
+        "relation": "requires_final_model_instead_of_create_inventory",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L117"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_scoped_recovery",
+        "relation": "prohibits_automatic_whole_database_restore",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L139"
+      },
+      {
+        "source": "p1_3_migration_definition",
+        "target": "p1_3_execution_blocked",
+        "relation": "remains_definition_only_not_executable",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L5"
+      },
+      {
+        "source": "p1_3_uncertain_commit",
+        "target": "p1_3_execution_blocked",
+        "relation": "requires_stop_without_automatic_retry",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/migration-plan.json",
+        "source_location": "L946"
+      },
+      {
+        "source": "foundation_runtime",
+        "target": "p1_3_execution_blocked",
+        "relation": "still_requires_separate_migration_runtime_and_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md",
+        "source_location": "L147"
+      }
+    ]
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "date": "2026-10-24",
+  "unit": "SQL-C3",
+  "status": "implemented_tested_in_restored_copy_only",
+  "release_id": "CBN-foundation-local-v2",
+  "release_sha256": "b8de5466cd6c0e8b373490cc0987bacbf90deff95ffe45e8d84f54f6dc08827a",
+  "package": "../../../backend/migrations/cbn_foundation/release.json",
+  "trial_database": "CBN_C3_TRIAL_20261024_ac8505b8",
+  "fault_database": "CBN_C3_TRIAL_20261024_df12f51b",
+  "source_database": "HORARIOSSIIE",
+  "source_tables": 50,
+  "source_columns": 437,
+  "source_foreign_keys": 41,
+  "source_unchanged": true,
+  "source_crm_tables_still_absent": true,
+  "restored_foundation": {
+    "tables": 7,
+    "columns": 69,
+    "indexes": 12,
+    "checks": 16,
+    "foreign_keys": 5
+  },
+  "expected_shape_origin": "Separate reference restoration; independently validated then frozen before release trial",
+  "offline_tests": {
+    "passed": 34,
+    "runtime": "Docker Python3.12",
+    "network_or_database_connections": false
+  },
+  "sql_integrity_checks": [
+    "contact_identity",
+    "contact_stage",
+    "contact_json_object",
+    "contact_json_valid",
+    "conversation_state",
+    "conversation_priority",
+    "conversation_control",
+    "message_body",
+    "message_direction",
+    "operation_action",
+    "operation_actor",
+    "operation_message",
+    "configuration_json",
+    "configuration_id",
+    "configuration_revision",
+    "conversation_fk",
+    "message_fk",
+    "operation_contact_fk",
+    "operation_conversation_fk",
+    "operation_message_fk",
+    "conversation_unique_contact",
+    "configuration_operation_revision",
+    "journal_update_denied",
+    "journal_delete_denied",
+    "journal_event_enum",
+    "journal_success_required",
+    "journal_success_only_terminal",
+    "journal_success_error_null",
+    "journal_success_unique",
+    "valid_enum_values",
+    "academic_and_dbo_permissions_denied"
+  ],
+  "rehearsal_scenarios": [
+    "separate_restoration_release_applied",
+    "repeat_noop",
+    "source_target_refused",
+    "administrative_principal_refused",
+    "outer_transaction_refused",
+    "wrong_certificate_hostname_refused",
+    "column_drift",
+    "check_trust_drift",
+    "fk_trust_drift",
+    "index_drift",
+    "marker_drift",
+    "unknown_partial_object",
+    "second_executor_lock_refused",
+    "fail_B000_rollback",
+    "fail_B001_rollback",
+    "writer_lock_refused",
+    "lost_commit_ack_requires_reconciliation",
+    "unknown_not_retried",
+    "explicit_reconciliation_without_ddl",
+    "fail_B006_rollback",
+    "resume_verified_prefix",
+    "legitimate_config_edit_preserved",
+    "missing_singleton_blocks_noop",
+    "missing_singleton_blocks_reconcile"
+  ],
+  "backup": {
+    "copy_only": true,
+    "checksum": true,
+    "verifyonly": true,
+    "restored_to_new_files_without_replace": true,
+    "restorations_retained": 7,
+    "initial_checkdb_all_restorations": true,
+    "post_release_checkdb": 2
+  },
+  "academic_preservation": {
+    "all_restorations_equal_to_source": true,
+    "protected_tables": 50,
+    "aggregate_rows_privately_hashed": 44180,
+    "sql_binary_value_precision_preserved": true,
+    "per_row_or_individual_table_hashes_published": false,
+    "academic_grants_added": false,
+    "new_db_principal_without_login": true,
+    "ddl_schemas_only": [
+      "crm_meta",
+      "crm",
+      "crm_config"
+    ],
+    "direct_academic_alter_insert_update_delete_denied": true,
+    "not_a_sandbox_against_arbitrary_sql_ownership_chaining": "Reviewed immutable SQL, shapes and data proof remain required"
+  },
+  "v1": {
+    "sha256": "12049a959562c7c70868b8e96307c7bcc46c368a514eed404f42122ebf38f2cf",
+    "accepted": false,
+    "reason": "SQL uppercase GUID vs external lowercase UUID in reconciliation; corrected with UUID canonical comparison",
+    "history_rewritten": false,
+    "manifest_sql_and_three_tool_bytes_retained_privately": true,
+    "v2_rehearsed_in_new_restorations": true
+  },
+  "limits": [
+    "Applied only to restored copies, not source",
+    "No business runtime/workers/providers activated",
+    "ACK loss simulated after real COMMIT; not real network/process outage",
+    "Local SQL2022Express/compat160, not institutional2019 acceptance",
+    "No generic legacy adoption, later groups, postcommit DOWN or global restoration implemented",
+    "New schema markers require explicit repository contract integration"
+  ],
+  "protected_baseline": "sql_c3_input_baseline.json",
+  "independent_review": {
+    "result": "no_new_material_findings_after_v2_fix",
+    "method": "Public source/package/docs review by Graphify skill subagent; no execution or private access",
+    "package_sha_and_artifact_hashes_independently_verified": true,
+    "semantic_fragment": "../fragments/sql_c3.json"
+  },
+  "foundation_graph": {
+    "nodes": 118,
+    "edges": 143,
+    "communities": 8,
+    "all_sql_columns_qualified_by_schema": true
+  },
+  "runtime_check": {
+    "live_http": 200,
+    "ready_http": 503,
+    "business_sql_inactive": true,
+    "saved_profile_revision": 2,
+    "selected_database": "HORARIOSSIIE",
+    "source_tables_columns_fk": [
+      50,
+      437,
+      41
+    ],
+    "tls_verified_again": true,
+    "mode": "local_demo",
+    "ai_outbound_enabled": false
+  },
+  "graph_checkpoint": {
+    "runtime": [
+      2349,
+      6124,
+      112
+    ],
+    "adaptation": [
+      258,
+      427,
+      30
+    ],
+    "legacy_declarations": [
+      933,
+      1199,
+      66
+    ],
+    "observed_source": [
+      529,
+      651,
+      23
+    ],
+    "source_comparison": [
+      202,
+      342,
+      10
+    ],
+    "restored_foundation": [
+      118,
+      143,
+      8
+    ]
+  },
+  "continuity_checks": {
+    "valid_local_links": 1272,
+    "broken_links": 0,
+    "graph_integrity_count": 6,
+    "protected_prior_files": 273,
+    "protected_prior_files_unchanged": true,
+    "semantic_evidence_locations_valid": true,
+    "release_hashes_verified_on_host_and_independent_review": true,
+    "historical_sql_files_unchanged": 19,
+    "historical_runners_unchanged": 9,
+    "migration_plan_12_negative_checks_passed": true
+  }
+}

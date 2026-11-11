@@ -1,0 +1,12 @@
+{
+  "version": "cbn-agents-operations-p5-v1",
+  "parent_release_sha256": "fd247602e95f7756deb77c7a71dfd53bf4b18f56eb555c499c1cc69a8d438e5b",
+  "parent_tables": 147,
+  "result_tables": 150,
+  "files": {
+    "P5ES-000.sql": "ddbfb34a90f9ef04b7e8f58f91d77752cc30c6ecd7dcc249d7bd5d845eb27aef",
+    "P5ES-001.sql": "a2b07bb4699a3ff14d78948ba825accf5cf5309dadb44f5bc0be85bd339ddd2c",
+    "expected-model.json": "d47ffb29aadbd752d72b3d3c7ca4d8f3aeebdcfad6bfa3d1577fbe29cb313079"
+  },
+  "scope": "additive_CRM_program_authority_and_actor_bound_request_journal; no_academic_changes"
+}

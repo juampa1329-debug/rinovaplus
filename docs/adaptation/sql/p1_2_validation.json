@@ -1,0 +1,144 @@
+{
+  "date": "2026-10-24",
+  "timezone": "America/Bogota",
+  "unit": "P1.2",
+  "scope": "SQL2019 environment/target contract implemented and tested with synthetic IO; no database connected or modified",
+  "database_connected": false,
+  "database_queries_executed": false,
+  "database_modified": false,
+  "migration_runners_executed": false,
+  "providers_called": false,
+  "containers_started": false,
+  "deployment": false,
+  "dependencies_installed": false,
+  "tests": {
+    "files": [
+      "test_sql_target.py",
+      "test_catalog.py",
+      "test_container_config.py",
+      "test_sql_workspace.py",
+      "test_environment.py"
+    ],
+    "passed": 254,
+    "failed": 2,
+    "new_contract_cases_passed": 72,
+    "full_repository_suite_run": false,
+    "command_from_backend": "python -c \"import site; site.addsitedir(r'C:\\verane-whatsapp-ai\\CRM_CBN\\backend\\.venv\\Lib\\site-packages'); import pytest; raise SystemExit(pytest.main(['tests/test_sql_target.py','tests/test_catalog.py','tests/test_container_config.py','tests/test_sql_workspace.py','tests/test_environment.py','-q','--tb=short']))\"",
+    "known_unrelated_failures": [
+      {
+        "test": "test_container_config.py::test_linux_environment_credentials_and_state_survive_restart",
+        "reason": "Existing fixture creates FastAPI without state.settings, required by unchanged install_ai."
+      },
+      {
+        "test": "test_sql_workspace.py::test_compact_commit_and_replay_never_read_bounded_snapshot",
+        "reason": "Existing assertion expects stored operation revision 7; unchanged compact replay returns current workspace revision (fake returns 1998). No replay product code changed."
+      }
+    ],
+    "io_isolation": [
+      "PYTHON_DOTENV_DISABLED before collection",
+      "ENV_FILE redirected to nonexistent fixture path before app import (also protects older host dotenv)",
+      "pyodbc.connect and socket.create_connection forbidden by autouse; permitted calls replaced by synthetic mocks",
+      "temporary AI state only"
+    ]
+  },
+  "runtime": {
+    "python": "3.13.3 host",
+    "project_python_declared": "3.12",
+    "packages": "Reused existing host packages; appended copied backend/.venv/Lib/site-packages for missing pure dependencies. Copied venv executable has stale base path. No package install.",
+    "limitation": "Not the final institutional Docker runtime.",
+    "initial_isolation_issue": "Host python-dotenv 1.1.0 ignored disable flag; initial in-process test app loaded private environment inadvertently. No SQL connection or secret output. Fixed via pre-collection path redirection; final tests use synthetic environment only."
+  },
+  "lint": {
+    "command": "python -m ruff check app/sql_target.py app/config.py tests/test_sql_target.py tests/conftest.py --output-format concise",
+    "result": "passed"
+  },
+  "independent_review": {
+    "result": "no new material defects found",
+    "method": "read-only source and semantic graph review; no app import/test/database/network execution",
+    "clarification": "Environment parsing requires explicit institutional port/database/instance; direct dataclass construction retains defaults and is validated at builder/identity boundaries."
+  },
+  "preservation": {
+    "historical_migrations_unchanged": 19,
+    "historical_runners_unchanged": 9,
+    "scentra_reference_files_unchanged": 30,
+    "baseline_runtime_migration_files": 232,
+    "changed_existing_runtime_files": [
+      "backend/app/config.py",
+      "backend/app/modules/catalog/infrastructure/sql_reader.py",
+      "backend/app/sql_workspace.py"
+    ],
+    "new_runtime_file": "backend/app/sql_target.py",
+    "baseline": "input-baseline.json retained unchanged; not rewritten to conceal P1.2 changes"
+  },
+  "connected_acceptance": "pending, requires separately authorized copy and real TLS/server/edition/compatibility/principal metadata; no production readiness claim",
+  "files": [
+    {
+      "path": "backend/app/config.py",
+      "sha256": "749314b73918fcf8c604f38d802e8f3ae97431da21da325d98477bbb8d60e003"
+    },
+    {
+      "path": "backend/app/sql_target.py",
+      "sha256": "e611853562505138e7fcddf1ab71c50ac3ba3e159785bc6876381f5538f970cc"
+    },
+    {
+      "path": "backend/app/sql_workspace.py",
+      "sha256": "4aabbb8df0b1a9110bbe8799d84871b5d92998d01c938194b8c968ee11730119"
+    },
+    {
+      "path": "backend/app/modules/catalog/infrastructure/sql_reader.py",
+      "sha256": "85e5a8e1628e240cd4ae050bbca99158cf8aad1cb64ac5b253172da5735e8dbd"
+    },
+    {
+      "path": "backend/tests/test_sql_target.py",
+      "sha256": "687ad6e7385c0d6da6cf7965f22bfec10c5618c69977c84f341f8354418ad9fb"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "sha256": "37f0d02078601f802b7b484a254b61e9e98c03c0464f4f9ac4015dcf950b4f88"
+    },
+    {
+      "path": "backend/tests/test_catalog.py",
+      "sha256": "180a5637730c524993ed02e809fdb19094adf8972f40ae6c0d9f2e7fa155eedc"
+    },
+    {
+      "path": "backend/tests/test_sql_workspace.py",
+      "sha256": "099f38a98bbf3dcee18ef11232662a37381f456aa2783eba6ccba02d7387ec43"
+    },
+    {
+      "path": "backend/tests/test_container_config.py",
+      "sha256": "11293bf21263a359c839f4e329890d225626145e272c9907e8135822c82026c1"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "e30448e61eef38c1eccf478ac18e20b2c8ba006815d76de4883abec2791f1276"
+    },
+    {
+      "path": "compose.yaml",
+      "sha256": "16e8f78badccdbd1451ac18b9b690de4b7ffa09f01d7ac30fd9e7b5e30105042"
+    }
+  ],
+  "graphs": "Updated offline after semantic/source review; current stats and all checkpoint hashes in graphify-out/source-manifest.json. Final --check verifies inventory and checkpoint.",
+  "graph_validation": {
+    "code": {
+      "nodes": 2303,
+      "edges": 6015,
+      "communities": 101
+    },
+    "adaptation": {
+      "nodes": 203,
+      "edges": 296,
+      "communities": 28
+    },
+    "sql_inventory": {
+      "nodes": 933,
+      "edges": 1199,
+      "communities": 66
+    },
+    "dangling_edges": 0,
+    "local_markdown_targets_checked": 777,
+    "source_checkpoint_check": "passed",
+    "inventory_reproducibility_check": "passed",
+    "html": "Regenerated with the previously verified Graphify renderer; not reopened this unit. Not evidence of CRM UI acceptance."
+  },
+  "python_ast_parse": "passed for 7 changed/new code and tool files without imports"
+}

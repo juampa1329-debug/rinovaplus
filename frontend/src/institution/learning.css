@@ -1,0 +1,80 @@
+.learning-workspace {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.learning-workspace .panel {
+  padding: 1rem;
+  min-width: 0;
+}
+.learning-controls,
+.learning-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.learning-heading h2 {
+  flex: 1 1 16rem;
+}
+.learning-heading p {
+  flex-basis: 100%;
+}
+.learning-controls .field {
+  min-width: 16rem;
+  flex: 1;
+}
+.learning-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow: auto;
+  padding-block: 0.25rem;
+}
+.learning-tabs button {
+  white-space: nowrap;
+}
+.learning-records {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: 1rem;
+}
+.learning-records article {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+.learning-workspace fieldset {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.learning-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+}
+.learning-table {
+  overflow: auto;
+}
+.learning-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.learning-table th,
+.learning-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.learning-hash {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .learning-controls {
+    align-items: stretch;
+  }
+  .learning-controls .field {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+}

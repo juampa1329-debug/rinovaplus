@@ -1,0 +1,994 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "unit": "P1.3",
+  "status": "definition_only_not_executable",
+  "execution_authorized": false,
+  "database_connection_allowed": false,
+  "legacy_execution_allowed": false,
+  "canonical_shape_version": "cbn-shape-v1",
+  "historical_order": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "005",
+    "006",
+    "007",
+    "008",
+    "009",
+    "011",
+    "012",
+    "013",
+    "014",
+    "015",
+    "016",
+    "017",
+    "018",
+    "019",
+    "020"
+  ],
+  "legacy": [
+    {
+      "id": "001",
+      "file": "backend/migrations/001_local_crm.sql",
+      "sha256": "a83b9f51627efd306318d3b9c50fcb9f0409b162c431b225a98b9a0ff823ee30",
+      "depends_on": [],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm.Contact",
+        "crm.Conversation",
+        "crm.Message",
+        "crm.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/001_local_crm.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "002",
+      "file": "backend/migrations/002_local_admissions.sql",
+      "sha256": "679f456b7e4696719349315239a17a18d9554560249f95e6fdd6a75dbd5dbc97",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_admissions.AdmissionCase",
+        "crm_admissions.Followup",
+        "crm_admissions.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/002_local_admissions.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "003",
+      "file": "backend/migrations/003_local_inbox.sql",
+      "sha256": "b34a9e5803253cc39b403959ae24627e3b1d6be86819d1bdb5d37aea8e6055a6",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_inbox.Member",
+        "crm_inbox.Agent",
+        "crm_inbox.Assignment",
+        "crm_inbox.Task",
+        "crm_inbox.SlaPolicy",
+        "crm_inbox.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/003_local_inbox.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "004",
+      "file": "backend/migrations/004_conversation_events.sql",
+      "sha256": "f052baa8e55df1210c2e338bb8ddd8ccae106e030351147258b00829f442aa5d",
+      "depends_on": [
+        "001",
+        "003"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_events.Event",
+        "crm_events.Preparation",
+        "crm_events.RetryOperation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/004_conversation_events.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "005",
+      "file": "backend/migrations/005_conversation_analysis.sql",
+      "sha256": "0806dd886215e8f14e85c88eb2bac280f609f999af2312397bd28bd3119ab566",
+      "depends_on": [
+        "001",
+        "003",
+        "004"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_analysis.Policy",
+        "crm_analysis.ConversationState",
+        "crm_analysis.Receipt",
+        "crm_analysis.Attempt",
+        "crm_analysis.Feedback",
+        "crm_analysis.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/005_conversation_analysis.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "006",
+      "file": "backend/migrations/006_crm_configuration.sql",
+      "sha256": "a67344ed0ac872b62a61daf95a45c88a55986aebc8a0ca1b3ef6420308e0ff69",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_config.Configuration",
+        "crm_config.Operation"
+      ],
+      "historical_changes": [
+        "derived_configuration_dml"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/006_crm_configuration.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "007",
+      "file": "backend/migrations/007_institutional_identity.sql",
+      "sha256": "ea00e603033eae3d5ef78a5ed8452b086a4d05324d764d6ebe7d5bab0086772b",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_identity.Profile"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/007_institutional_identity.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "008",
+      "file": "backend/migrations/008_contact_merge.sql",
+      "sha256": "05a26b72d9ea8bb11da825fd652d2c7eace36eadd1f17c5c1184320fb4033bc7",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_merge.MergeCase",
+        "crm_merge.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/008_contact_merge.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "009",
+      "file": "backend/migrations/009_conversation_strategy.sql",
+      "sha256": "9d6f0e2b2c4f5185cd774004e657b254c8bb9ac1042b3f0c09cb7e4afa10d7b6",
+      "depends_on": [
+        "001",
+        "003"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "script",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_strategy.Policy",
+        "crm_strategy.EvaluationPlan",
+        "crm_strategy.Operation"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/009_conversation_strategy.sql",
+          "line": 1
+        }
+      ],
+      "runners": []
+    },
+    {
+      "id": "011",
+      "file": "backend/migrations/011_channels.sql",
+      "sha256": "a3e63c7d79c68f460297eefc178f5671eecc2bc6fa4b537e12cb3c570c38b3e4",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_channels.Account",
+        "crm_channels.Credential",
+        "crm_channels.webhook_events",
+        "crm_channels.ExternalIdentity",
+        "crm_channels.ExternalMessage",
+        "crm_channels.outbound_queue",
+        "crm_channels.social_comments",
+        "crm_channels.Audit"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/011_channels.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_channels.py"
+      ]
+    },
+    {
+      "id": "012",
+      "file": "backend/migrations/012_channels_identity_collation.sql",
+      "sha256": "86d4ff87736eb38469e873fe890d7b2424f93c413f9d092015e1e01b5803d0ae",
+      "depends_on": [
+        "011"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [],
+      "historical_changes": [
+        "collation_and_key_rebuild"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/012_channels_identity_collation.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_channels.py"
+      ]
+    },
+    {
+      "id": "013",
+      "file": "backend/migrations/013_ai_providers.sql",
+      "sha256": "73cedcbb6b9cff910ae01878bba7c3fceedc546de9848241be9788bced3bcee8",
+      "depends_on": [
+        "001"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_ai.Configuration",
+        "crm_ai.Connection",
+        "crm_ai.Credential"
+      ],
+      "historical_changes": [
+        "connection_row",
+        "runner_may_import_settings"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_ai_providers.py"
+      ]
+    },
+    {
+      "id": "014",
+      "file": "backend/migrations/014_ai_provider_catalog.sql",
+      "sha256": "105155646a8498e120ba62082b55030febbc258bc143e4284394805daec42ff5",
+      "depends_on": [
+        "013"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [],
+      "historical_changes": [
+        "provider_check_replacement"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/014_ai_provider_catalog.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_ai_provider_catalog.py"
+      ]
+    },
+    {
+      "id": "015",
+      "file": "backend/migrations/015_inbox_unified.sql",
+      "sha256": "0f4423116379c6248a15798d317b88cf582289a812dada38a67984f83d89218e",
+      "depends_on": [
+        "001",
+        "011",
+        "012"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_channels.ConversationProfile",
+        "crm_channels.ConversationControl",
+        "crm_channels.MessageRoute"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_inbox.py"
+      ]
+    },
+    {
+      "id": "016",
+      "file": "backend/migrations/016_inbox_media.sql",
+      "sha256": "22d172bb2d0860d225ab1c3288ad0a537b0dfcbf8ab062a38b2781cc795ef9bb",
+      "depends_on": [
+        "001",
+        "011",
+        "015"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_channels.MediaAsset"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/016_inbox_media.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_inbox_media.py"
+      ]
+    },
+    {
+      "id": "017",
+      "file": "backend/migrations/017_ai_admissions.sql",
+      "sha256": "70dbfe7c7093a61ee4d1671c055185b216926595b0d748e25e12c6d46b28ad95",
+      "depends_on": [
+        "001",
+        "003",
+        "011",
+        "013",
+        "015"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_required_for_atomicity",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_ai.AdmissionsPolicy",
+        "crm_ai.KnowledgeDocument",
+        "crm_ai.KnowledgeChunk",
+        "crm_ai.KnowledgeTerm",
+        "crm_ai.ProspectMemory",
+        "crm_ai.ResponseJob"
+      ],
+      "historical_changes": [
+        "disabled_admissions_policy"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_ai_admissions.py"
+      ]
+    },
+    {
+      "id": "018",
+      "file": "backend/migrations/018_campaigns.sql",
+      "sha256": "cf126e73ce219bcb8d43b0186675cb21ba489cfd95835d225a472850cad05460",
+      "depends_on": [
+        "001",
+        "011",
+        "015"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_enforced",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_marketing.ChurnAssessment",
+        "crm_marketing.MessageTemplate",
+        "crm_marketing.ContactConsent",
+        "crm_marketing.RemarketingRule",
+        "crm_marketing.AccountCadence",
+        "crm_marketing.Campaign",
+        "crm_marketing.CampaignRecipient",
+        "crm_marketing.EvaluationRun",
+        "crm_marketing.Policy"
+      ],
+      "historical_changes": [
+        "enabled_evaluation_policy",
+        "alter_churn_runid_fk"
+      ],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_campaigns.py"
+      ]
+    },
+    {
+      "id": "019",
+      "file": "backend/migrations/019_admissions_agents.sql",
+      "sha256": "10206defeff0e86310d3b79e360ec6baacf915e25c92a1ec84054a68511dd959",
+      "depends_on": [
+        "001",
+        "003",
+        "017"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_enforced",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_agents.Stage",
+        "crm_agents.Profile",
+        "crm_agents.Context",
+        "crm_agents.SourceScope",
+        "crm_agents.Assignment",
+        "crm_agents.History",
+        "crm_agents.Usage"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_agents.py"
+      ]
+    },
+    {
+      "id": "020",
+      "file": "backend/migrations/020_agent_execution.sql",
+      "sha256": "b4a60ba5e25ee7987715444071ed9bab5574eb62d9d5caea6449004d5901fe6b",
+      "depends_on": [
+        "001",
+        "019"
+      ],
+      "dependency_semantics": "conservative_review_order_including_guards_runtime_and_fk",
+      "transaction_owner": "caller_enforced",
+      "institutional_execution_allowed": false,
+      "declared_tables": [
+        "crm_agents.Execution"
+      ],
+      "historical_changes": [],
+      "recovery": "data_aware_forward_fix_or_scoped_recovery",
+      "evidence": [
+        {
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 1
+        }
+      ],
+      "runners": [
+        "backend/tools/migrate_agent_execution.py"
+      ]
+    }
+  ],
+  "institutional_units": [
+    {
+      "id": "CBN-B000",
+      "order": 1,
+      "source_ids": [],
+      "depends_on": [],
+      "kind": "history_bootstrap",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "preserve_journal"
+    },
+    {
+      "id": "CBN-B001",
+      "order": 2,
+      "source_ids": [
+        "001"
+      ],
+      "depends_on": [
+        "CBN-B000"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B002",
+      "order": 3,
+      "source_ids": [
+        "002"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B003",
+      "order": 4,
+      "source_ids": [
+        "003"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B004",
+      "order": 5,
+      "source_ids": [
+        "004"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B005",
+      "order": 6,
+      "source_ids": [
+        "005"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B004"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B006",
+      "order": 7,
+      "source_ids": [
+        "006"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B007",
+      "order": 8,
+      "source_ids": [
+        "007"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B008",
+      "order": 9,
+      "source_ids": [
+        "008"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B009",
+      "order": 10,
+      "source_ids": [
+        "009"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B011",
+      "order": 11,
+      "source_ids": [
+        "011",
+        "012"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B013",
+      "order": 12,
+      "source_ids": [
+        "013",
+        "014"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B015",
+      "order": 13,
+      "source_ids": [
+        "015"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B016",
+      "order": 14,
+      "source_ids": [
+        "016"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011",
+        "CBN-B015"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B017",
+      "order": 15,
+      "source_ids": [
+        "017"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B011",
+        "CBN-B013",
+        "CBN-B015"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B018",
+      "order": 16,
+      "source_ids": [
+        "018"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B011",
+        "CBN-B015"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B019",
+      "order": 17,
+      "source_ids": [
+        "019"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B003",
+        "CBN-B017"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    },
+    {
+      "id": "CBN-B020",
+      "order": 18,
+      "source_ids": [
+        "020"
+      ],
+      "depends_on": [
+        "CBN-B000",
+        "CBN-B001",
+        "CBN-B019"
+      ],
+      "kind": "institutional_baseline_group",
+      "status": "design_only",
+      "transaction_owner": "runner",
+      "execution_authorized": false,
+      "sql_file": null,
+      "sql_sha256": null,
+      "expected_shape_sha256": null,
+      "data_assertions_status": "not_implemented",
+      "recovery": "compatible_app_then_data_aware_forward_fix_or_scoped_recovery"
+    }
+  ],
+  "initial_profiles": [
+    "no_managed_crm_objects",
+    "recognized_complete_legacy_020"
+  ],
+  "unknown_or_partial_schema": "blocked_requires_explicit_transition",
+  "atomic_success_with_ddl": true,
+  "uncertain_commit": "stop_and_reconcile_no_automatic_retry",
+  "whole_database_restore": "prohibited_without_separate_institutional_decision",
+  "history": {
+    "proposed_object": "crm_meta.MigrationJournal",
+    "created": false,
+    "append_only": true,
+    "state_model": "verified_active_unit_vector_not_max_ordinal",
+    "success_events": [
+      "COMMITTED",
+      "ADOPTED"
+    ],
+    "success_key_unique": true,
+    "events": [
+      "STARTED",
+      "COMMITTED",
+      "ADOPTED",
+      "FAILED_ROLLED_BACK",
+      "UNKNOWN",
+      "RECONCILED_COMMITTED",
+      "RECONCILED_NOT_APPLIED",
+      "RECOVERY_REQUIRED",
+      "COMPENSATED",
+      "RESTORED"
+    ]
+  },
+  "locks": {
+    "migration": {
+      "resource": "crm.schema.migrate.v1",
+      "owner": "Session",
+      "mode": "Exclusive"
+    },
+    "runtime": {
+      "resource": "crm.local.commit",
+      "owner": "Transaction",
+      "mode": "Exclusive"
+    },
+    "timeout_ms": 5000,
+    "writers_must_be_paused": true
+  },
+  "release_blockers": [
+    "released_institutional_sql_missing",
+    "full_shape_models_and_prefixes_missing",
+    "data_assertions_missing",
+    "migration_transport_and_runner_not_implemented",
+    "restored_copy_acceptance_not_performed",
+    "institutional_identity_permissions_and_backup_evidence_unknown"
+  ],
+  "specification": "docs/adaptation/sql/P1_3_MIGRATION_PLAN.md"
+}

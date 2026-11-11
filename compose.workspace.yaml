@@ -1,0 +1,27 @@
+services:
+  workspace:
+    image: crm-cbn-workspace:p3es-r6
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.workspace
+    container_name: crm-cbn-workspace-p3es
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=128m,uid=10001,gid=10001
+    ports: ["127.0.0.1:4178:4178"]
+    environment:
+      CRM_INSTITUTIONAL_PROFILE_DIR: /run/cbn-institution
+      SSL_CERT_FILE: /run/cbn-sql/ca-bundle.pem
+      CRM_AI_OUTBOUND_ENABLED: "false"
+    volumes:
+      - ./.local/p3-es/final-runtime:/run/cbn-institution:ro
+      - ./.local/p2/ca-bundle.pem:/run/cbn-sql/ca-bundle.pem:ro
+    networks: [sql19]
+    restart: unless-stopped
+networks:
+  sql19:
+    name: crm-cbn-p2-sql19
+    external: true

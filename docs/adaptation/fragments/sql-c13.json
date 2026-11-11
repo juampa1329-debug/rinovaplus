@@ -1,0 +1,854 @@
+{
+  "domain": "Preview general separado,recuperación durable local y cierre P1.4 · SQL-C13",
+  "review_scope": "Extracción semántica independiente de fuentes públicas, pruebas y hashes del ejecutor. Contrato nativo CBN:source vacía porque reúne consumidores aceptados y receta Docker propia; no afirma paridad Scentra completa. El revisor no conectó SQL/Docker, importó app ni leyó .local/perfiles/credenciales. Sí ejecutó sólo checker stdlib público14negativos. C13/P1.4 completo no equivale a P1 completo:ledger4/5=80,9/56 criterios y P1.close0. Se agregan IDs C13 para enlazar snapshotC12=60 conactual80,sin reescribir fragmentos/reviews/proof anteriores. La aprobación institucional sigueP11; siguiente sprintP2.1 autorizado. No se reimporta AST.",
+  "findings": [
+    {
+      "id": "general_preview_runtime_contract",
+      "phase": "P1",
+      "capability": "Preview general independiente y receta autónoma con persistencia,salud y recuperación local de P1.4",
+      "status": "implementado_verificado_en_preview_local_P1_4",
+      "gap": "P1.close pendiente de motor15/SQL2019 real,contratos/migraciones y reversión. Identidad institucionalP2,paridad funcional completa,OAuth/secretos operativos,proveedores,recepción pública y workers educativos/campañas conservan sus puertas. Canales aquí sólolectura;C9 mantiene su propia interfaz4175.",
+      "acceptance": "CopiaC13 1f10a824 desdeC12 conperfil/login/ticket propios yTLS;corefoundation editable yCanales seguro,14secciones conpendientes. Imagen oficial autónoma sinHMR/binds,UID10001/RO,volúmenes IA/media,perfil persistente ycompatibilidad imagenanterior.265backend/52frontend,25HTTP,15SQL,16Docker/worker;12observacionescompactas yentrega80. Cincofuentes y50tablas/44180filas académicas,diario17 intactos. P1.4accepted1;P1=4/5=80 y9/56criterios,no%horas/funcionalidad.",
+      "source": [],
+      "target": [
+        {
+          "file": "backend/app/general_preview/api.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/general_preview/store.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/general_preview/worker.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/general_preview/health.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/prepare_general_preview.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_general_http.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/audit_general_preview.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_general_progress.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tests/test_general_preview.py",
+          "line": 1
+        },
+        {
+          "file": "frontend/src/general/GeneralPreview.tsx",
+          "line": 1
+        },
+        {
+          "file": "frontend/src/general/main.tsx",
+          "line": 1
+        },
+        {
+          "file": "frontend/src/general/general.test.tsx",
+          "line": 1
+        },
+        {
+          "file": "frontend/src/general/general.css",
+          "line": 1
+        },
+        {
+          "file": "frontend/general.html",
+          "line": 1
+        },
+        {
+          "file": "frontend/vite.general.config.ts",
+          "line": 1
+        },
+        {
+          "file": "docker/Dockerfile.general",
+          "line": 1
+        },
+        {
+          "file": "docker/Dockerfile.general.dockerignore",
+          "line": 1
+        },
+        {
+          "file": "docker/general-start.sh",
+          "line": 1
+        },
+        {
+          "file": "docker/nginx.general.conf",
+          "line": 1
+        },
+        {
+          "file": "compose.general.yaml",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+          "line": 1
+        },
+        {
+          "file": "docs/decisions/ADR-025-general-preview-and-docker-sprint.md",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/academic-bindings-c13.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/offline-checks.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/build-materials.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/runtime-drill.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/http-checks.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/sql-audit.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/browser-checks.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/delivery.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/previews.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c13/review.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c13_general_preview_acceptance",
+        "label": "C13: preview general independiente y sprint P1.4 aceptados;P1 completo pendiente",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L45",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "status": "accepted_local_preview_and_P1_4_not_P1_close"
+      },
+      {
+        "id": "sql_c13_own_restoration",
+        "label": "Copia1f10a824 de C12,89 tablas,login/perfil/ticket C13 propios",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L3",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "database": "CBN_C13_TRIAL_20261025_1f10a824",
+        "engine": 16,
+        "compatibility": 160
+      },
+      {
+        "id": "sql_c13_local_owner_session",
+        "label": "Sesión local HttpOnly/SameSite,Host/Origin/cabecera y vencimiento;no P2",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L50",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "institutional_auth": false
+      },
+      {
+        "id": "sql_c13_per_transaction_guard",
+        "label": "Guard SQL completo por transacción:identidad,SID,catálogo,ACL,contexto y diario",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/store.py",
+        "source_location": "L109",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "provider_keys_loaded": false
+      },
+      {
+        "id": "sql_c13_core_workspace",
+        "label": "CRM/Inbox/miniCRM/Ajustes foundation con workspace y autoridad C13",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/store.py",
+        "source_location": "L271",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "no_academic_queries": true
+      },
+      {
+        "id": "sql_c13_safe_channels",
+        "label": "Canales: proyecciones seguras por institución,sin escritura o secretos/cuerpos",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L136",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "editing": false
+      },
+      {
+        "id": "sql_c13_strict_manifest",
+        "label": "Manifiesto general estricto antes de montar;sin fallback legacy o promoción de pendientes",
+        "file_type": "code",
+        "source_file": "frontend/src/general/GeneralPreview.tsx",
+        "source_location": "L50",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "providers": false,
+        "institutional_auth": false
+      },
+      {
+        "id": "sql_c13_drafts_preserved",
+        "label": "Core conservado montado/oculto al navegar;sin perder borradores",
+        "file_type": "code",
+        "source_file": "frontend/src/general/GeneralPreview.tsx",
+        "source_location": "L396",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "source_component": "existing_App_unchanged"
+      },
+      {
+        "id": "sql_c13_pending_sections",
+        "label": "14secciones visibles;productos pendientes no se montan ni se declaran operativos",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "section_count": 14,
+        "available_subset_count": 5
+      },
+      {
+        "id": "sql_c13_autonomous_image",
+        "label": "Imagen autónoma desde Python/Node oficiales fijados;build limpio sin base local/HMR",
+        "file_type": "code",
+        "source_file": "docker/Dockerfile.general",
+        "source_location": "L2",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "development_code_binds": false
+      },
+      {
+        "id": "sql_c13_hardened_runtime",
+        "label": "Runtime UID10001,raízRO,cap_dropALL,no-new-privileges yloopback4176",
+        "file_type": "code",
+        "source_file": "compose.general.yaml",
+        "source_location": "L9",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "port": 4176
+      },
+      {
+        "id": "sql_c13_AI_media_persistence",
+        "label": "Volúmenes IA/media propios y perfil/clave/ticket conservados tras recreación",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/runtime-drill.json",
+        "source_location": "$.checks",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "provider_effects": 0
+      },
+      {
+        "id": "sql_c13_SQL_readiness_and_previous_image",
+        "label": "Health SQL propio;imagen anterior compatible,arranque sin DDL",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/build-materials.json",
+        "source_location": "$.previous_image_readiness_against_current_C13_profile",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "migration_DDL_on_boot": false
+      },
+      {
+        "id": "sql_c13_local_worker_adapter",
+        "label": "Worker sólo acción/actor locales fijos;efecto marcador O_EXCL+fsync",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/worker.py",
+        "source_location": "L83",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "effect_kind": "local_marker_v1",
+        "external_delivery": false
+      },
+      {
+        "id": "sql_c13_fenced_recovery",
+        "label": "Claim durable,lease/version/fencing;SIGKILL y reconciliación sin repetir marcador",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/worker.py",
+        "source_location": "L110",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "source_evidence": "artifacts/sql-c13/runtime-drill.json"
+      },
+      {
+        "id": "sql_c13_uncertain_marker",
+        "label": "Evidencia local discrepante→uncertain sin reintento automático",
+        "file_type": "code",
+        "source_file": "backend/app/general_preview/worker.py",
+        "source_location": "L166",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "does_not_retry_local_evidence_mismatch": true
+      },
+      {
+        "id": "sql_c13_focused_validation",
+        "label": "265backend/52frontend;25HTTP,15SQL,16Docker/worker;no suite general recertificada",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/offline-checks.json",
+        "source_location": "$.offline_tests",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "backend": 265,
+        "frontend": 52,
+        "http": 25,
+        "sql": 15,
+        "durable_recovery": 16
+      },
+      {
+        "id": "sql_c13_source_preservation",
+        "label": "SIIE/C5/C9/C11/C12 intactos;50tablas/44180filas académicas,diario17",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/sql-audit.json",
+        "source_location": "$.checks",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "academic_DML": false,
+        "source_databases_preserved": 5
+      },
+      {
+        "id": "sql_c13_academic_binding_preparation",
+        "label": "22referencias académicas preparadas,sin aliases activos ni tablas ficticias",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+        "source_location": "L7",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "status": "prepared_not_active"
+      },
+      {
+        "id": "sql_c13_P1_4_acceptance",
+        "label": "P1.4 aceptado completo en su alcance técnico;no cierre global de P1",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L45",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "criterion": "P1.4",
+        "criterion_credit": 1
+      },
+      {
+        "id": "sql_c13_P1_progress_80",
+        "label": "P1 vigente C13:4/5=80%;transición explícita desde C12:3/5=60%",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.transition",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "accepted": 4,
+        "total": 5,
+        "percent_display": "80.00%",
+        "fixed_global_criteria": 56,
+        "total_accepted_criteria": 9
+      },
+      {
+        "id": "sql_c13_P1_close_pending",
+        "label": "P1.close pendiente:motor15 real,contratos/migraciones y restauración SQL2019",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L47",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "criterion_credit": 0,
+        "SQL2019_accepted": false
+      },
+      {
+        "id": "sql_c13_P2_next",
+        "label": "Próximo sprint autorizado P2.1;identidad/permisos institucionales aún pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L51",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "P2_criteria_accepted": 0
+      },
+      {
+        "id": "sql_c13_additive_progress_checker",
+        "label": "Checker C13 aditivo:validate C12 intacto y14negativos reales,summary+1",
+        "file_type": "code",
+        "source_file": "backend/tools/check_general_progress.py",
+        "source_location": "L10",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "historical_checker_modified": false,
+        "negative_count": 14
+      },
+      {
+        "id": "sql_c13_compact_browser",
+        "label": "12observaciones en viewport compacto;entrega final muestra4/5=80",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c13/browser-checks.json",
+        "source_location": "$.checks",
+        "scope": "C13_local_preview_and_P1_4_only",
+        "desktop_certification": false,
+        "delivery_progress_evidence": "artifacts/sql-c13/delivery.json"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_own_restoration",
+        "relation": "uses_independent_restored_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_core_workspace",
+        "relation": "composes_accepted_foundation_subset",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_safe_channels",
+        "relation": "exposes_safe_readonly_channels",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_strict_manifest",
+        "relation": "requires_validated_capabilities",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_local_owner_session",
+        "relation": "uses_local_owner_control_not_institutional_auth",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_autonomous_image",
+        "relation": "separates_runtime_from_development_recipe",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_P1_4_acceptance",
+        "relation": "accepts_only_complete_Docker_sprint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L45"
+      },
+      {
+        "source": "sql_c13_own_restoration",
+        "target": "sql_c13_per_transaction_guard",
+        "relation": "requires_own_identity_catalog_ACL_history_guard",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c13_own_restoration",
+        "target": "sql_c12_mapping_repository_acceptance",
+        "relation": "restored_from_accepted_C12_without_redirecting_source",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c13_core_workspace",
+        "target": "sql_c13_drafts_preserved",
+        "relation": "keeps_existing_component_state_across_general_navigation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c13_strict_manifest",
+        "target": "sql_c13_pending_sections",
+        "relation": "refuses_unsupported_product_activation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "frontend/src/general/GeneralPreview.tsx",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_c13_safe_channels",
+        "target": "sql_c13_per_transaction_guard",
+        "relation": "queries_only_after_guarded_transaction",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L140"
+      },
+      {
+        "source": "sql_c13_core_workspace",
+        "target": "P3",
+        "relation": "contributes_local_subset_without_closing_canonical_P3",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L7",
+        "rationale": "Reutiliza subconjunto foundation;ledger mantiene todos los criterios P3 sin crédito nuevo."
+      },
+      {
+        "source": "sql_c13_safe_channels",
+        "target": "P4",
+        "relation": "retains_partial_readonly_scope_without_provider_activation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L7",
+        "rationale": "Proyección C12 segura no completa los recorridos de Canales/P4."
+      },
+      {
+        "source": "sql_c13_autonomous_image",
+        "target": "sql_c13_hardened_runtime",
+        "relation": "runs_without_source_binds_as_nonroot_readonly_root",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c13_hardened_runtime",
+        "target": "sql_c13_AI_media_persistence",
+        "relation": "mounts_dedicated_AI_media_volumes_and_readonly_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c13_autonomous_image",
+        "target": "sql_c13_SQL_readiness_and_previous_image",
+        "relation": "validates_SQL_health_and_previous_image_compatibility",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_c13_local_worker_adapter",
+        "target": "sql_c13_fenced_recovery",
+        "relation": "uses_durable_claim_and_lease_fenced_completion",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/worker.py",
+        "source_location": "L110"
+      },
+      {
+        "source": "sql_c13_fenced_recovery",
+        "target": "sql_c13_uncertain_marker",
+        "relation": "quarantines_mismatched_effect_evidence_without_retry",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/worker.py",
+        "source_location": "L166"
+      },
+      {
+        "source": "sql_c13_AI_media_persistence",
+        "target": "sql_c13_fenced_recovery",
+        "relation": "preserves_local_effect_evidence_across_recreation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/runtime-drill.json",
+        "source_location": "$.checks"
+      },
+      {
+        "source": "sql_c13_focused_validation",
+        "target": "sql_c13_fenced_recovery",
+        "relation": "records_16_connected_Docker_recovery_checks",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L35"
+      },
+      {
+        "source": "sql_c13_focused_validation",
+        "target": "sql_c13_source_preservation",
+        "relation": "records_15_SQL_permission_drift_preservation_checks",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_c13_focused_validation",
+        "target": "sql_c13_compact_browser",
+        "relation": "separates_browser_observations_from_offline_focused_tests",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L39"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_focused_validation",
+        "relation": "accepted_with_focused_and_connected_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_source_preservation",
+        "relation": "preserves_five_earlier_sources_and_journal",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_autonomous_image",
+        "relation": "requires_autonomous_image_recipe",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_AI_media_persistence",
+        "relation": "requires_persistence_of_volumes_configuration_secrets",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_fenced_recovery",
+        "relation": "requires_restart_and_durable_local_worker_recovery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_SQL_readiness_and_previous_image",
+        "relation": "requires_health_and_previous_image_compatibility",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_P1_progress_80",
+        "relation": "adds_one_accepted_canonical_criterion_only",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.transition"
+      },
+      {
+        "source": "sql_c13_P1_progress_80",
+        "target": "phase_criteria_p1",
+        "relation": "supersedes_C12_60_percent_snapshot_without_rewriting_it",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.previous_checkpoint"
+      },
+      {
+        "source": "sql_c13_P1_progress_80",
+        "target": "P1",
+        "relation": "reports_four_of_five_criteria_not_phase_complete",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.transition"
+      },
+      {
+        "source": "sql_c13_P1_progress_80",
+        "target": "sql_c13_additive_progress_checker",
+        "relation": "validated_with_immutable_C12_canonical_validator_and_new_negatives",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.checks"
+      },
+      {
+        "source": "sql_c13_P1_progress_80",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "retains_last_phase_criterion_at_zero_credit",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/progress-review.json",
+        "source_location": "$.transition"
+      },
+      {
+        "source": "sql_c13_P1_4_acceptance",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "does_not_accept_SQL2019_contract_and_migration_gate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-025-general-preview-and-docker-sprint.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c13_P1_close_pending",
+        "target": "P11",
+        "relation": "distinguishes_technical_copy_gate_from_institutional_operational_approval",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c13_academic_binding_preparation",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "keeps_real_SQL2019_copy_and_mapping_validation_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_BINDINGS.md",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_academic_binding_preparation",
+        "relation": "documents_unknown_academic_bindings_without_activating_aliases",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L49"
+      },
+      {
+        "source": "sql_c13_general_preview_acceptance",
+        "target": "sql_c13_P2_next",
+        "relation": "continues_authorized_next_scoped_sprint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L51"
+      },
+      {
+        "source": "sql_c13_P2_next",
+        "target": "P2",
+        "relation": "plans_P2_1_without_claiming_institutional_identity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L51"
+      },
+      {
+        "source": "sql_c13_source_preservation",
+        "target": "sql_c5_encrypted_runtime_profile",
+        "relation": "keeps_C5_preview_profile_and_scope_separate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/previews.json",
+        "source_location": "$.prior_previews[0]"
+      },
+      {
+        "source": "sql_c13_source_preservation",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "keeps_C9_preview_and_scope_separate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/previews.json",
+        "source_location": "$.prior_previews[1]"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P5",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P6",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P7",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P8",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P9",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_pending_sections",
+        "target": "P10",
+        "relation": "shows_pending_integration_without_mounting_product",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/api.py",
+        "source_location": "L21"
+      },
+      {
+        "source": "sql_c13_compact_browser",
+        "target": "sql_c13_drafts_preserved",
+        "relation": "observes_unsaved_draft_across_channels_then_cancels_without_save",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/browser-checks.json",
+        "source_location": "$.checks"
+      },
+      {
+        "source": "sql_c13_compact_browser",
+        "target": "sql_c13_P1_progress_80",
+        "relation": "observes_final_delivered_ledger80",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/sql-c13/delivery.json",
+        "source_location": "$.browser_progress80"
+      }
+    ]
+  }
+}

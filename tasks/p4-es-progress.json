@@ -1,0 +1,56 @@
+{
+  "unit": "P4-ES",
+  "status": "local_operations_qualified_external_acceptance_pending",
+  "date": "2026-10-27",
+  "primary_url": "http://127.0.0.1:4178/",
+  "image_tag": "crm-cbn-workspace:p4es-r3",
+  "database": "CBN_P4ES_TRIAL_20261026_a8ef717a",
+  "compose": "compose.channels.yaml",
+  "phase_percentages": {
+    "P0": "100.00%",
+    "P1": "100.00%",
+    "P2": "100.00%",
+    "P3": "100.00%",
+    "P4": "82.29%",
+    "P5": "45.00%",
+    "P6": "33.90%",
+    "P7": "38.57%",
+    "P8": "30.83%",
+    "P9": "6.25%",
+    "P10": "8.00%",
+    "P11": "25.00%"
+  },
+  "accepted_P4_criteria": [
+    "P4.1",
+    "P4.2"
+  ],
+  "pending_P4_milestones": [
+    "P4.3.m6",
+    "P4.3.m7",
+    "P4.4.m4",
+    "P4.4.m5",
+    "P4.close.m5"
+  ],
+  "milestones_done": 158,
+  "canonical_milestone_denominator": 279,
+  "criteria_accepted": 22,
+  "canonical_criterion_denominator": 56,
+  "external_provider_calls": 0,
+  "academic_writes": false,
+  "next": "public_origin_and_provider_application_acceptance; preserve existing releases and copies; never rerun populated preparers",
+  "memory_files": [
+    "AGENTS.md",
+    "README.md",
+    "ai-memory/CURRENT_STATE.md",
+    "ai-memory/FILE_MAP.md",
+    "ai-memory/CRITICAL_WARNINGS.md",
+    "tasks/TASK_STATE.md",
+    "docs/ADAPTATION_STATUS.md",
+    "docs/roadmap.md",
+    "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+    "docs/adaptation/RESUME.md",
+    "docs/adaptation/WORK_PROGRESS.md",
+    "docs/adaptation/GRAPH_GUIDE.md",
+    "docs/adaptation/PREVIEW_STATUS.md"
+  ]
+}

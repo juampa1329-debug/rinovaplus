@@ -1,0 +1,333 @@
+{
+  "domain": "Diseño de extensión CRM y partición por objetos · SQL-C6",
+  "review_scope": "Revisión y extracción semántica independiente de fuentes públicas; validación offline del plan y sus 20 negativos, sin SQL, app, Docker, proveedores o archivos privados. source está vacío en el hallazgo porque el contrato de adaptación SQL es una capacidad nativa y no una afirmación de paridad Scentra. C6 es diseño; C5 sigue siendo el checkpoint runtime. Ningún nodo declara B011 aplicado, C7/C8 ejecutados o fases completas.",
+  "findings": [
+    {
+      "id": "foundation_extension_contract",
+      "capability": "Contrato de extensión por objetos que preserve CRM poblado y SIIE",
+      "status": "diseño_revisado_no_implementado",
+      "gap": "El lector y guard aceptados sólo cubren siete tablas foundation y separan el resto por complemento de esquemas. Ampliar su lista o ignorar prefijos ocultaría objetos desconocidos y alteraría evidencia congelada; falta el contrato versionado de extensión y su ensayo.",
+      "acceptance": "Pendiente SQL-C7: lector/guard/migrador nuevos, partición exacta 50 académicas + 7 foundation + 8 extensión, preservación del CRM poblado y diario, permisos acotados, snapshots revisados antes de otra restauración de ensayo y pruebas de drift/concurrencia/recuperación. Runtime/UI se aceptarán aparte en C8. El verificador C6 sólo valida el diseño offline.",
+      "source": [],
+      "target": [
+        {"file": "backend/app/foundation.py", "line": 155},
+        {"file": "backend/tools/foundation_snapshot.py", "line": 51},
+        {"file": "docs/adaptation/sql/check_c6_plan.py", "line": 27}
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c6_reviewed_design_only",
+        "label": "SQL-C6: diseño offline revisado; runtime C5 conservado",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L3",
+        "verification": "reviewed_design_only"
+      },
+      {
+        "id": "sql_c6_channels_release_proposal",
+        "label": "CBN-channels-local-v1 propuesto: B011 sintetiza 011+012, ocho tablas vacías",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L7",
+        "implementation": "not_implemented",
+        "declared_columns": 57,
+        "declared_foreign_keys": 10,
+        "explicit_create_indexes": 3
+      },
+      {
+        "id": "sql_c6_final_bin2_keys",
+        "label": "Forma final prevista: cinco identificadores BIN2, PK/UQ finales y outbox filtrada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L24",
+        "rationale": "Crear directamente la forma final conserva tamaños/nulabilidad y evita ejecutar el DROP dinámico histórico sobre objetos existentes."
+      },
+      {
+        "id": "sql_c6_exact_object_partition",
+        "label": "Partición propuesta: 50 académicas, siete foundation, ocho nuevas; desconocidos bloqueados",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L38",
+        "deferred_declared_tables": 54,
+        "rationale": "La aceptación debe enumerar objetos y tipos, conservar el universo C5, exigir visibilidad completa y comparar dependencias/ACL; conteos o prefijos no bastan."
+      },
+      {
+        "id": "sql_c6_new_reader_guard_required",
+        "label": "Lector y guard nuevos; los contratos congelados de siete tablas deben seguir rechazando la extensión",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L40",
+        "implementation": "not_implemented"
+      },
+      {
+        "id": "sql_c6_versioned_append_only_history",
+        "label": "Diario previsto: prefijo de cinco filas intacto, versiones de hash separadas y SuccessKey por UnitId",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L46",
+        "rationale": "No ALTER del diario ni repetición de B000/B001/B006; otra unidad hacia delante es necesaria para trabajo con bytes distintos tras B011 confirmado."
+      },
+      {
+        "id": "sql_c6_scoped_migration_actor",
+        "label": "Migrador propuesto WITHOUT LOGIN, REFERENCES CRM acotados y diario append-only",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L50",
+        "rationale": "Preparación y evidencia administrativa se separan del runtime. El overlay exacto se valida antes de proyectarlo; no se eliminan otras ACL ni se promete sandbox para SQL arbitrario."
+      },
+      {
+        "id": "sql_c6_populated_copy_rehearsal",
+        "label": "C7 propuesto: referencia y ensayo nuevos desde C5 poblado, sin REPLACE ni redirección del preview",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L57",
+        "implementation": "not_implemented",
+        "rationale": "La forma se revisará y congelará en una referencia antes de otra restauración de ensayo; los conteos históricos no sustituyen firmas nuevas del estado real."
+      },
+      {
+        "id": "sql_c6_c8_runtime_promotion_gate",
+        "label": "C8 separado: consumidores y UI pendientes; crear tablas no activa capacidades",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L61",
+        "rationale": "Workers, proveedores, cuentas, credenciales, webhooks y transporte permanecen bloqueados; el ticket C4/C5 no se amplía ni se redirige."
+      },
+      {
+        "id": "sql_c6_later_packages_and_blockers",
+        "label": "Plan posterior: B015 y B018; B013 independiente e identidad/unificación condicionadas",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L69",
+        "rationale": "Las FK CRM no cubren las consultas SIIE, crm_inbox.Operation o colas del runtime. social_comments no sustituye hilos/tareas; churn necesita evaluación y evidencia reales."
+      },
+      {
+        "id": "sql_c6_offline_plan_checker",
+        "label": "Verificador documental C6: 402 inputs y 20 negativos, sin ejecución SQL",
+        "file_type": "code",
+        "source_file": "docs/adaptation/sql/check_c6_plan.py",
+        "source_location": "L27",
+        "source_sha256": "67477004af36bfebd86b984c5ed06b9adbcac25d5b20e1a2fc24a8123234c9bd",
+        "verification": "offline_plan_validation_only"
+      },
+      {
+        "id": "sql_c6_forward_recovery_contract",
+        "label": "Recuperación prevista: rollback o reconciliación; sin DROP genérico ni restore sobre C5/SIIE",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L63",
+        "rationale": "Un COMMIT incierto, incluido STARTED, bloquea avance; tras commit se conserva la copia y se revisa una corrección compatible."
+      },
+      {
+        "id": "sql_c6_institutional_acceptance_pending",
+        "label": "SQL2019 institucional pendiente; contrato local motor16/compat160 separado",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L52",
+        "scope": "Institucional motor15, compatibilidad130/140/150 según P1.2; sin nueva aceptación conectada"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c5_restored_ui_acceptance",
+        "target": "sql_c6_reviewed_design_only",
+        "relation": "continued_by_offline_design_without_changing_the_accepted_runtime",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_channels_release_proposal",
+        "relation": "proposes_b011_from_final_011_012_shape_without_executing_historical_sql",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c6_channels_release_proposal",
+        "target": "sql_c6_final_bin2_keys",
+        "relation": "requires_final_collations_keys_and_filtered_index_before_release_freeze",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L24"
+      },
+      {
+        "source": "sql_c6_channels_release_proposal",
+        "target": "sql_c6_exact_object_partition",
+        "relation": "plans_fifteen_crm_tables_beside_fifty_preserved_academic_tables",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L36"
+      },
+      {
+        "source": "sql_c6_exact_object_partition",
+        "target": "sql_c6_new_reader_guard_required",
+        "relation": "requires_a_new_exact_object_contract_instead_of_schema_complement_exclusions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L40"
+      },
+      {
+        "source": "sql_c6_new_reader_guard_required",
+        "target": "sql_c3_frozen_prefix_shapes",
+        "relation": "preserves_frozen_c3_reader_helpers_hashes_and_snapshots",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-018-crm-extension-partition.md",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_versioned_append_only_history",
+        "relation": "requires_immutable_c3_prefix_and_separate_old_new_shape_hash_semantics",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L46"
+      },
+      {
+        "source": "sql_c6_versioned_append_only_history",
+        "target": "sql_c5_immutable_history_chain",
+        "relation": "keeps_c5_runtime_checkpoint_and_design_preimages_for_future_c7_transitions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L90"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_scoped_migration_actor",
+        "relation": "proposes_separate_preparation_migration_evidence_and_runtime_roles",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_c6_scoped_migration_actor",
+        "target": "sql_c6_exact_object_partition",
+        "relation": "validates_exact_actor_overlay_before_projecting_only_approved_acl_changes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_c6_channels_release_proposal",
+        "target": "sql_c6_populated_copy_rehearsal",
+        "relation": "requires_new_reference_and_trial_restorations_from_populated_c5",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L57"
+      },
+      {
+        "source": "sql_c6_populated_copy_rehearsal",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "preserves_the_shared_c5_database_profile_and_preview_without_ddl",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L57"
+      },
+      {
+        "source": "sql_c6_populated_copy_rehearsal",
+        "target": "sql_c6_c8_runtime_promotion_gate",
+        "relation": "must_finish_before_separate_runtime_and_ui_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-018-crm-extension-partition.md",
+        "source_location": "L30"
+      },
+      {
+        "source": "sql_c6_c8_runtime_promotion_gate",
+        "target": "sql_c6_later_packages_and_blockers",
+        "relation": "keeps_consumers_and_dependent_capabilities_in_later_acceptance_units",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/decisions/ADR-018-crm-extension-partition.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_c6_channels_release_proposal",
+        "target": "P4",
+        "relation": "plans_channel_webhook_and_social_comment_storage_without_activating_phase_features",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c6_later_packages_and_blockers",
+        "target": "P7",
+        "relation": "retains_future_mass_messaging_and_template_dependencies_without_transport_activation",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_offline_plan_checker",
+        "relation": "has_source_hash_and_twenty_negative_design_checks_without_sql_execution",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L81"
+      },
+      {
+        "source": "sql_c6_offline_plan_checker",
+        "target": "foundation_extension_contract",
+        "relation": "checks_the_native_extension_design_while_implementation_remains_pending",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/check_c6_plan.py",
+        "source_location": "L27"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_forward_recovery_contract",
+        "relation": "requires_preserving_copies_and_reviewed_forward_recovery_instead_of_generic_drop",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L63"
+      },
+      {
+        "source": "sql_c6_forward_recovery_contract",
+        "target": "sql_c6_versioned_append_only_history",
+        "relation": "quarantines_any_uncertain_commit_until_journal_and_shape_are_reconciled",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_c6_reviewed_design_only",
+        "target": "sql_c6_institutional_acceptance_pending",
+        "relation": "does_not_convert_local_rehearsal_design_into_institutional_sql2019_acceptance",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L52"
+      },
+      {
+        "source": "sql_c6_institutional_acceptance_pending",
+        "target": "P1",
+        "relation": "retains_pending_institutional_connected_acceptance_with_existing_p1_2_compatibility_contract",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C6_REVIEW.md",
+        "source_location": "L52"
+      }
+    ]
+  }
+}

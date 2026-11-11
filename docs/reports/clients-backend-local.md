@@ -1,0 +1,38 @@
+# Clientes: backend funcional con datos sintéticos locales
+
+**2026-10-15. Cerrado al 100 % del alcance local autorizado:** listado/búsqueda, creación, lectura, edición y reset de Clientes mediante FastAPI, conservando Inbox, campos y diseño V6. Suites completas, contenedor privado y navegador comprobados. SQL y fase de seguridad quedan diferidos hasta nueva instrucción. Este cierre no declara el proyecto ni la integración productiva al 100 %.
+
+## Comportamiento
+
+- `/api/local/clients`: GET lista/búsqueda por texto, etapa y etiqueta; POST crea. `/{client_id}`: GET consulta y PUT guarda la ficha completa. POST `/reset` restaura los cuatro fixtures. La metadata `/api/v1` conserva sus 154 operaciones y sus stubs; estas cinco operaciones sintéticas son independientes y aparecen en OpenAPI con DTOs propios.
+- `backend/app/client_fixtures.json` es la única fuente pública de los cuatro datos iniciales, importada también por `seedClients`. Es una fixture de lectura, no un almacén de negocio. El servidor no escribe JSON, SQL, SQLite ni archivos de fichas. Cada instancia tiene su estado en memoria; usar un solo proceso/worker. Reiniciar restaura fixtures; recargar el navegador conserva fichas confirmadas mientras viva el proceso.
+- Se preservan todos los campos de `Client`, incluidos valores personalizados como cadenas. El servidor valida forma, límites, claves permitidas y nombre o identificador. La validación de tipos de campos configurables sigue usando el esquema provisional de la pestaña; no establece reglas académicas. Definiciones CRM y mensajes continúan temporales en el navegador. Valores de campos definidos en otra sesión se conservan y muestran sin reinterpretarlos.
+- Cada escritura comprueba la revisión del conjunto: una edición o reset concurrente produce conflicto saneado y conserva el borrador. El ID sintético del borrador permite reintentar una creación incierta sin duplicarla. Máximo 500 fichas por proceso; cuerpo limitado por la guardia local existente.
+- App conserva el único conjunto completo compartido por Clientes, Inbox y Resumen. La búsqueda maneja solamente IDs visibles y descarta respuestas antiguas; no sustituye la colección global. Guardar espera confirmación. Error o navegación conservan el borrador; **Cancelar** conserva su significado previo de descarte explícito sin mutar el servidor. Una ficha nueva abre un hilo vacío de demostración bajo control humano; no crea conexión WhatsApp.
+- **Restablecer demo** confirma primero el reset del servidor. Solo después limpia el estado previo de la pestaña. Error o cancelación de esa confirmación conservan cambios. El reset de fichas afecta a otras pestañas del mismo servidor; sus escrituras antiguas se rechazan por revisión. No restablece configuración/cuotas/credenciales IA.
+
+La guardia existente exige peer loopback, Host/Origin permitidos, cabecera local y JSON; no se agregan hosts, CORS permisivo ni autenticación empresarial. La UI identifica datos sintéticos y muestra carga/reintento, vacío, búsqueda pendiente y errores sin reflejar valores del servidor. Vite enruta la API local y Docker copia la fixture pública para compilar; no cambia servicios, puertos o credenciales.
+
+## Comprobación y aceptación
+
+**1529 pruebas backend y 202 frontend aprobadas**, junto con formato, lint, tipos, exportación canónica, build frontend y build Docker. El incremento respecto de la integración previa es de 15 pruebas backend y seis frontend; las 18 pruebas backend enfocadas incluyen tres anteriores. Detector Impeccable sin hallazgos (`[]`). Resultados y capturas se conservan bajo `.local/clients-backend-20261015/`, excluido de Git.
+
+| Prueba | Evidencia |
+|---|---|
+| Suites y controles | `backend-full-verifier.log`: 1529 aprobadas en 167,77 s; `frontend-full-verifier.log`: 202 aprobadas y build correcto. Foco previo: 18 backend, 34 frontend en seis archivos y seis casos de ciclo de vida confirmados tras el último ajuste del efecto inicial. |
+| API y composición | Ciclo lista/creación/consulta/edición/reset, búsqueda, revisiones, reintento de creación, aislamiento entre instancias, validación/redacción, origen/host/peer/body y stubs intactos. Pruebas sin SQL ni proveedores reales. |
+| UI y transporte | Carga/error/reintento/vacío, borrador completo, guardado confirmado, nueva ficha→Inbox, recarga del owner, respuesta de búsqueda antigua y reset fallido; regresión de los módulos existentes. |
+| Contenedor privado | **54/54 comprobaciones HTTP/runtime** en `docker-smoke-verifier.json`; contenedor saludable, publicado solo en loopback 4173. Readiness 503, stubs 501 y SQL deshabilitado 503 esperados; IA outbound `false` y volumen IA idéntico en bytes. |
+| Navegador escritorio | Viewport 1265 × 720: creación de quinta ficha, búsqueda 1/5 sin perder contactos, Inbox con cuatro conversaciones originales y nuevo hilo humano vacío. Edición comparte notas, conserva borrador Inbox y sobrevive a recarga. Conflicto 409 entre dos pestañas avisa y conserva el borrador. Consola principal sin errores ni warnings. |
+| Navegador móvil y reset | Emulación 390 × 844, ancho efectivo 375: sin desbordamiento horizontal y guardado correcto. Cancelar reset conserva borrador; Cancelar del editor descarta intencionalmente sin escritura al servidor. Confirmar reset restaura cuatro fixtures y cero borradores. |
+| Vite desarrollo | HTTP 200 en `demo.ts` y fixture JSON transformada desde el backend, sin ampliar `fs.allow`. Prueba temporal en loopback 5179; servidor detenido al finalizar. |
+
+Imagen comprobada: `sha256:6c4debc19eb08a87f5c6a598c299cd66bffef60ce98ae7ddeb32e0905a23f99b`, proyecto Compose `crm-cbn-integration-20261014`. Capturas `browser-clients-final.jpg`, `browser-clients-conflict.jpg` y `browser-clients-mobile.jpg`; la pestaña original del usuario se conservó intacta. Esta evidencia corresponde al corte actual, no al contenedor anterior.
+
+Incidencias resueltas: el primer pase UI tuvo dos fallos de prueba (nombre de enlace incorrecto y búsqueda de fila antes de la carga); el segundo descubrió otras dos expectativas heredadas (texto de persistencia y campo todavía deshabilitado durante carga). Se ajustaron nombres/esperas y el texto comprobado, conservando las aserciones funcionales. ESLint detectó una actualización de estado dentro del efecto inicial; se eliminó la asignación redundante y se separó la suscripción inicial mediante callbacks de la promesa. El primer smoke Docker falló por capitalización de cabeceras al convertir `HTTPMessage` a `dict` en el script local de prueba; se corrigió ese script excluido de Git y pasaron las 54 comprobaciones, sin modificar el producto. No se aumentaron timeouts ni se habilitó IO para resolver pruebas.
+
+## Conservación y límites
+
+Antes de editar se copiaron y verificaron 267 archivos versionados en `.local/clients-backend-20261015/before`; `baseline.json` registra hashes y HEAD `d5539ebca377be3e9ac8e67885fc68f0dbf62b3e`. Al cierre, **129/129 archivos de `source-freeze.json` y 267/267 copias originales intactos**. HEAD permanece igual; este corte está sin commit ni push. Reversión: recuperar únicamente los archivos modificados de esa copia y retirar los archivos nuevos de este corte según el diff; nunca sustituir `.local` operativo ni revertir otras ramas.
+
+No hay persistencia durable de negocio, usuarios/permisos reales, datos de personas, conectividad SQL, envíos, proveedores reales, nuevos paquetes ni despliegue remoto. La guardia local existente no equivale a autenticación empresarial. Las 147 rutas de negocio planeadas continúan 501; ninguna escritura SIIE queda habilitada. El siguiente alcance requiere selección expresa del propietario; este cierre no autoriza publicación ni adelanta seguridad o SQL.

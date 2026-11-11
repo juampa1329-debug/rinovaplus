@@ -1,0 +1,166 @@
+.api-integrations {
+  display: grid;
+  gap: 1.25rem;
+}
+.api-integrations .api-group {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  min-width: 0;
+}
+.api-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.api-tile {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+}
+.api-tile h4,
+.api-editor h4,
+.api-selection h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+.api-tile p,
+.api-editor > .configuration-row p {
+  margin-bottom: 0.4rem;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.api-tile .button {
+  padding: 0.25rem 0;
+  min-height: 30px;
+  color: var(--link);
+}
+.api-editors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.api-editors:not(:empty) {
+  margin-top: 1rem;
+}
+.api-editor {
+  min-width: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.api-editor > .badge {
+  margin-bottom: 0.65rem;
+}
+.api-editor .actions {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.api-editor .actions .button {
+  font-size: 0.82rem;
+  padding: 0.55rem 0.75rem;
+}
+.api-credential-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.api-credential-row > div {
+  min-width: 0;
+}
+.api-credential-row strong {
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.api-credential-row small {
+  display: block;
+}
+.api-selection {
+  padding: 0 1.25rem 0.5rem;
+}
+.api-selection > p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.api-editors-channels {
+  grid-template-columns: minmax(0, 1fr);
+}
+.api-editors-channels .channel-section {
+  padding: 0.5rem 0;
+  border: 0;
+}
+.api-base-url {
+  display: block;
+  padding: 0.9rem 0;
+  overflow-wrap: anywhere;
+  color: var(--link);
+}
+.api-modal {
+  width: min(620px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 3rem);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+}
+.api-modal::backdrop {
+  background: rgba(3, 12, 24, 0.75);
+  backdrop-filter: blur(5px);
+}
+.api-modal p {
+  max-width: 65ch;
+  font-size: 0.9rem;
+}
+.api-modal .configuration-row {
+  align-items: flex-start;
+}
+.api-modal .actions {
+  flex-wrap: wrap;
+}
+.api-status-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+.api-status-facts dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.api-status-facts dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+@media (max-width: 1000px) {
+  .api-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .api-tiles,
+  .api-editors {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .api-integrations .api-group,
+  .api-modal {
+    padding: 1rem;
+  }
+  .api-selection {
+    padding: 0 1rem;
+  }
+  .api-credential-row {
+    align-items: flex-start;
+  }
+  .api-status-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "unit": "SQL-C6",
+  "date": "2026-10-25",
+  "status": "reviewed_design_only",
+  "plan_sha256": "2849328f06038bd9417d0556fa21f2b912cd3c98ff623a27a3fbc1235f155222",
+  "checker_sha256": "67477004af36bfebd86b984c5ed06b9adbcac25d5b20e1a2fc24a8123234c9bd",
+  "baseline_sha256": "042c6562826b022ab0cb48b72d05a9afbdf19eff6ae5f71189e0cb9252eb964c",
+  "protected_inputs": 402,
+  "partition_tables": {
+    "academic": 50,
+    "foundation": 7,
+    "extension": 8
+  },
+  "deferred_tables": 54,
+  "foreign_keys": 10,
+  "negative_checks": [
+    "execution",
+    "connection",
+    "runtime",
+    "fake_release",
+    "missing_012",
+    "academic_missing",
+    "extra_object",
+    "unknown_ignored",
+    "prefix",
+    "count_only",
+    "foreign_key_missing",
+    "index_missing",
+    "key_columns",
+    "academic_grant",
+    "collation",
+    "seed",
+    "worker",
+    "cycle",
+    "missing_trial_dependency",
+    "missing_runtime_dependency"
+  ],
+  "database_connected": false,
+  "sql_executed": false,
+  "runtime_changed": false,
+  "institutional_sql2019_accepted": false,
+  "public_input_preimages": {
+    "path": ".local/sql-c6/public-input-preimages.zip",
+    "sha256": "ec45f18aac0357797f0e644339af613687c86b1622b847c97f4bdf2c06b84cb9",
+    "files": 402,
+    "crc_verified": true,
+    "purpose": "Recover historical public source preimages, including active inventory. No private SQL profile or database row snapshot."
+  },
+  "documentation_validation": {
+    "files": 39,
+    "local_links": 1512,
+    "broken_links": 0
+  },
+  "independent_semantic_review": {
+    "fragment": "docs/adaptation/fragments/sql-c6.json",
+    "nodes": 13,
+    "edges": 22,
+    "native_findings": 1,
+    "material_defects_found_and_fixed": 3,
+    "final_material_defects": 0,
+    "source_anchors_verified": true,
+    "checker_in_source_manifest": true
+  }
+}

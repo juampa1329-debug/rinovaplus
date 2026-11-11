@@ -1,0 +1,787 @@
+{
+  "nodes": [
+    {
+      "id": "p4_existing_institutional_accounts",
+      "label": "Identidad institucional multicuenta existente",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/channels.py",
+      "source_location": "L28-L55,L133-L185,L197-L290,L297-L415",
+      "rationale": "Channels.create fija InstitutionId, ApplicationId/issuer y IntegrationId UUID; admite varias conexiones, exige client_id real, controla capacidad y registra idempotencia/auditoría. save usa revisión de configuración y dos rowversion; identidad histórica no se cambia en silencio."
+    },
+    {
+      "id": "p4_existing_field_catalog",
+      "label": "Contrato completo de115 contextos",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/p2-channel-fields.json",
+      "source_location": "$.groups,$.fields,$.value_contract",
+      "rationale": "Siete grupos:WhatsApp, Instagram, Facebook/Messenger, número, secretosMeta, TikTok y Webhooks.115 contextos:53input/43display/16secret/3transient; tipos/rangos/opciones y destinos definidos."
+    },
+    {
+      "id": "p4_existing_disabled_ui",
+      "label": "Interfaz conserva campos y acciones bloqueadas",
+      "file_type": "code",
+      "source_file": "frontend/src/institution/Channels.tsx",
+      "source_location": "L61-L71,L280-L389,L425-L446,L543-L570,L602-L641",
+      "rationale": "La UI permite configurar cuentas y credenciales, conserva borradores y presenta ConectarOAuth/Verificartoken/Verificarnúmero/Registrarnúmero/Sincronizar deshabilitados; callback aún es entrada del operador."
+    },
+    {
+      "id": "p4_existing_public_boundary",
+      "label": "API institucional sólo monta configuración local",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/api.py",
+      "source_location": "L60-L103,L337-L374",
+      "rationale": "create_app monta canales, endpoints/UIcontract y workspace; API exige cliente/Host/Origin loopback y x-crm-local. No monta routers públicos de recepción/OAuth ni ChannelWorkers."
+    },
+    {
+      "id": "p4_existing_sql_guard",
+      "label": "Guards SQL2019 y perfiles cerrados",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/spanish.py",
+      "source_location": "L67-L91,L165-L205,L264-L325,L330-L381",
+      "rationale": "Ticket liga identidad/motor15/compat150, mapa, ACL, catálogo y diario; P3 agrega política y hash de historia. Transacciones validan perfil y permisos actuales con locks y parámetros separados."
+    },
+    {
+      "id": "p4_existing_endpoints",
+      "label": "Endpoint único por aplicación y selector",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/webhooks.py",
+      "source_location": "L37-L132,L178-L198",
+      "rationale": "EndpointId determinista por institución+key; bindings se limitan a misma ApplicationId y cuentas reales. SignatureRequired=1 y IsActive=0; no se fabricanExternalId ni rutasactivas."
+    },
+    {
+      "id": "p4_existing_one_time_tokens",
+      "label": "Claves de endpoint emitidas una vez",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/webhooks.py",
+      "source_location": "L214-L284,L287-L354",
+      "rationale": "Create/rotate generan verify_token_once y signature_secret_once; Operation sólo conserva metadata y replay no vuelve a mostrar valores. Secretos se guardan por endpointUUID."
+    },
+    {
+      "id": "p4_existing_staged_secrets",
+      "label": "Secretos P2 cifrados y sólo staged",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/db.py",
+      "source_location": "L102-L150",
+      "rationale": "save_secret liga institución/scope/owner/kind/version/SecretId por AAD, retira staged previo y crea staged. No copia valores a Operation."
+    },
+    {
+      "id": "p4_existing_p3_webhook_owner_gap",
+      "label": "Validación de owner webhook diverge en P3",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/settings.py",
+      "source_location": "L330-L410",
+      "rationale": "Settings.secret usa búsqueda por EndpointIdUUID sólo si versión==cbn-institutional-spanish-p2-v1; para P3 compara endpoint.key con owner recibido. Endpoints.rotate ya utiliza UUID."
+    },
+    {
+      "id": "p4_existing_oauth_contract",
+      "label": "OAuth seguro ya tiene contrato y tablas",
+      "file_type": "document",
+      "source_file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "source_location": "L53-L63",
+      "rationale": "C10 exige hashstate32bytes, TTL10máximo30min, actor/sesión/issuer/redirect exactos, pin de versión app/secret, claimdurable antesHTTP, PKCES256 cuando corresponda, grants y activos por sesión."
+    },
+    {
+      "id": "p4_existing_operational_tables",
+      "label": "Tablas C10 ya presentes en144tablas",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.tables,$.columns,$.foreign_keys",
+      "rationale": "La composición P3 contiene las24 tablas C10:aplicación/integración, OAuth, secretos, recibos/eventos, evidencia/cuotas, identidades/mensajes/comentarios/jobs/rutas. MapaP2 tiene108 bindings y P3 añade6."
+    },
+    {
+      "id": "p4_existing_legacy_store",
+      "label": "ChannelStore legado es autoridad B011 por canal",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/storage.py",
+      "source_location": "L22-L76,L112-L192",
+      "rationale": "Store.get/save/secrets seleccionan Channel; claveAES de archivo y AAD crm_channels:channel:kind:v1. Pide modoslocal_channels/local_sql_copy y esquema crm_channels."
+    },
+    {
+      "id": "p4_existing_pure_parsers",
+      "label": "Parseadores Meta/TikTok reutilizables con validación",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L15-L169",
+      "rationale": "meta_effects reconoce WABA/phoneNumberId/Page/IG y mensajes/comments/status; tiktok_effects reconoce client_key/user_openid y eventos DM/read/send/comment.update."
+    },
+    {
+      "id": "p4_existing_provider_http",
+      "label": "Adaptador HTTP acotado y errores saneados",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L14-L121",
+      "rationale": "providers.request fija hostsMeta/IG/TikTok, no sigue redirects ni trust_env, usa timeout12 y respuesta máxima1MB; token no aparece en errores. ProviderFailure distingue retry y uncertain."
+    },
+    {
+      "id": "p4_existing_discovery",
+      "label": "Discovery/subscription existentes por proveedor",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L123-L272",
+      "rationale": "discover comprueba asset exacto y phone_en_WABA; tiktok_discover pruebaapp/business/lecturaconversación; subscribe configuraeventos."
+    },
+    {
+      "id": "p4_existing_number_actions",
+      "label": "PIN y verificación de número legados",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L71-L81,L133-L173",
+      "rationale": "NumberAction validaPIN6dígitos; verification request/verify usaSMS/VOICE y código efímero. Llamadas fuera de SQL en el router legado."
+    },
+    {
+      "id": "p4_existing_signed_legacy",
+      "label": "Ingreso legado verifica bytes antes de ACK",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/receipts.py",
+      "source_location": "L16-L72,L74-L97",
+      "rationale": "Receive limita1MB; MetaHMACsha256 y TikTokfirma timestamp±300s con compare_digest; despuésJSONdict y persistencia durable/dedupeProvider+Digest antesACK."
+    },
+    {
+      "id": "p4_existing_legacy_challenge",
+      "label": "ChallengeMeta global o token por canal",
+      "file_type": "code",
+      "source_file": "backend/app/modules/webhooks/api/router.py",
+      "source_location": "L83-L134",
+      "rationale": "verify_meta validaqueryexacta ylongitudes sin reflejarsecretos; compruebahashglobal o tokens de ChannelStore y devuelve challenge."
+    },
+    {
+      "id": "p4_existing_encrypted_receipts",
+      "label": "Recepción C10 conserva evidencia cifrada y vínculo completo",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalWebhookRecepcion],$.indexes,$.checks,$.foreign_keys",
+      "rationale": "WebhookReceipt tiene BodyCiphertext/Nonce/KeyVersion, Digest, EndpointVersion, SignatureSecretId/KeyVersion/Profile/VerifiedAt, Authentication y leaseversion. Uniqueinstitución+endpoint+digest; legacy_unverified sóloquarantined."
+    },
+    {
+      "id": "p4_existing_legacy_ingest",
+      "label": "Worker ingest legado usa colaB011",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "rationale": "Ingest reclama webhook_events conlease, procesa efectos en transacciónCRM y dedupe de mensajes; marca processed porlease."
+    },
+    {
+      "id": "p4_existing_crm_ingress",
+      "label": "Ingreso legado crea ficha y conversación atómicamente",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L170-L300",
+      "rationale": "append_message exigeetapainicialactiva, validaDTO/ficha, crea contacto/conversación/identidad/mensaje yUnreads; dedupe porChannel+ExternalId."
+    },
+    {
+      "id": "p4_existing_comments_read",
+      "label": "Comentarios legado filtra y pagina",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L295-L321",
+      "rationale": "Lista SocialCommentsB011 por canal conOFFSET/FETCH y camposbásicos."
+    },
+    {
+      "id": "p4_existing_comments_write",
+      "label": "Replies legado usa outbox pero capacidad parcial",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L323-L395",
+      "rationale": "ReplyoperationUUID idempotente admitepublic/private; private sóloIG/Messenger; TikTok exige comentario público yvideoid/cuerpo≤1200. Insertaoutbound_queueB011, noenvíaenHTTP."
+    },
+    {
+      "id": "p4_existing_comment_state_legacy",
+      "label": "TombstoneTikTok parcial en payload",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L345-L381",
+      "rationale": "record_comment evita regresión de timestamp y resurreccióninserttrasestado no público aigualtimestamp enTikTok; actualizaBody/Author/Payload."
+    },
+    {
+      "id": "p4_existing_social_payload",
+      "label": "SocialComment permite estadoJSON sin DDL obligatorio",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalComentarioSocial],$.checks[CK_C11_SocialComment_2]",
+      "rationale": "SocialComment tienePKUUID, InstitutionId/IntegrationId,ExternalId/AuthorExternalIdnvarchars200, Body/Payloadnvarcharmax, ReceivedAt yRowVersion; Payload debeISJSON. No hay columnasState/ConvertedContactId."
+    },
+    {
+      "id": "p4_existing_sendjob",
+      "label": "Una outbox C10 sirve chat y replies",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalEnvioTrabajo],$.checks[CK_C11_SendJob_0],$.foreign_keys",
+      "rationale": "SendJob tieneKindchat conIdentityId+MessageId y sinCommentId, ocomment_reply conCommentId ysinIdentityId/MessageId. FK liganIntegrationId/OperationId/QuotaReservation; LeaseId/LeaseVersion/RowVersion fencean."
+    },
+    {
+      "id": "p4_existing_provider_operations",
+      "label": "ProviderOperation cubre otros efectos por acción",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalOperacionProveedor],$.indexes[K_C11_ProviderOperation_3],$.checks[CK_C11_ProviderOperation_0]",
+      "rationale": "Actionvarchar48, ActorRefnvarchar128, digest/effectbinary32, estado pending/running/confirmed/failed/uncertain/reconciled/abandoned, LeaseVersion y ResultMetadataJSON. Uniqueinstitución+aplicación+acción+EffectKey."
+    },
+    {
+      "id": "p4_existing_legacy_dispatch",
+      "label": "Dispatcher legado distingue resultado incierto",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L612-L815",
+      "rationale": "DispatchreclamaB011 conlease; leasevencido sending pasauncertain. Revalida revisión,modo,epoch,ventana y origen; envío sinIDconfirmado otimeouttraswrite acabauncertain y no reencola ciegamente."
+    },
+    {
+      "id": "p4_existing_delivery",
+      "label": "Estados de entrega progresan sin regresión",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L383-L436",
+      "rationale": "delivery_state ordenasent<delivered<read y no degrada delivered/read afailed; record_delivery acepta eventos anticipados, dedupe e integraqueue cuandohayExternalId."
+    },
+    {
+      "id": "p4_existing_handoff",
+      "label": "Control humano previo a frontera externa",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L440-L491,L646-L735",
+      "rationale": "media_frontier revalida lease, revisión, controlEpoch/modo, estadoabierto yventana justoantesenvío; botobsolete se bloquea. Trabajo ya iniciadoincierto no desaparece."
+    },
+    {
+      "id": "p4_existing_p3_control",
+      "label": "P3 conserva control y lectura sobre tablas antiguas",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L814-L830,L1206-L1214",
+      "rationale": "Workspacecuenta in-flight/uncertain desdeB011 y llama change_control/mark_read legados."
+    },
+    {
+      "id": "p4_existing_quotas",
+      "label": "Reservas C10 evitan dobles gastos e incertidumbre liberada",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalCuota],$.columns[dbo.CRMCanalInstitucionalCuotaReserva],$.checks",
+      "rationale": "QuotaBucketporinstitución/integración/díaUTC/Action(ai|outbound) contiene Reserved/Committed≥0. ReservationUnits>0 yestadosreserved/committed/released/uncertain, ligada aOperation."
+    },
+    {
+      "id": "p4_existing_provider_media",
+      "label": "Adaptadores de adjuntos son reutilizables",
+      "file_type": "code",
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L348-L455,L457-L571",
+      "rationale": "send_media/envíosMeta usanarchivo localvalidado, uploadWhatsApp, multipartIG/Messenger yrevalidaciónbefore_send trasupload; TikTokimage≤3MB/sincaption yconversacióncompatible."
+    },
+    {
+      "id": "p4_existing_media_fk",
+      "label": "MediaAsset entrante referencia B011",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMArchivoMultimedia],$.foreign_keys[dbo.CRMArchivoMultimedia],$.checks",
+      "rationale": "MediaAsset.SourceKindupload exige IdentityId/ChannelNULL; provider exige ambos yFK aCRMIdentidadExterna/CRMCanalCuenta B011. MessageId/ConversationId sí sonCRMcomunes."
+    },
+    {
+      "id": "p4_existing_identity_pair",
+      "label": "FK C10 no garantizan todas las parejas CRM",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.foreign_keys[dbo.CRMCanalInstitucionalIdentidadExterna],$.foreign_keys[dbo.CRMCanalInstitucionalEnvioTrabajo]",
+      "rationale": "ExternalIdentity tieneFKseparadas aContactId yConversationId; SendJobtieneFK aMessageId yIdentityId; MessageRoute liga job ycampospero no expresaMessage.ConversationId=Identity.ConversationId."
+    },
+    {
+      "id": "p4_existing_repository",
+      "label": "RepositoryC12 ofrece proyecciones seguras, no motor operativo",
+      "file_type": "code",
+      "source_file": "backend/app/parity_channels/repository.py",
+      "source_location": "L96-L147,L149-L355",
+      "rationale": "Read filtraInstitutionId ycursor; write sóloCRUDApplication/Integration conHMACdigest/EffectKey yrowversion, ProviderOperationconfirmed/local_only conactorlocal-owner:SQL-C12."
+    },
+    {
+      "id": "p4_existing_legacy_binding",
+      "label": "LegacyBinding no es mapeo general de medios",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.checks[CK_C11_LegacyBinding_0]",
+      "rationale": "LegacyTableenumadmite exactamenteAccount,Credential,webhook_events,Audit,ExternalIdentity,ExternalMessage,outbound_queue,social_comments B011; cadafila conserva source/targethashes."
+    }
+  ],
+  "edges": [
+    {
+      "source": "p4_existing_institutional_accounts",
+      "target": "p4_existing_field_catalog",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/channels.py",
+      "source_location": "L28-L55,L133-L185,L197-L290,L297-L415",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_disabled_ui",
+      "target": "p4_existing_institutional_accounts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/institution/Channels.tsx",
+      "source_location": "L61-L71,L280-L389,L425-L446,L543-L570,L602-L641",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_public_boundary",
+      "target": "p4_existing_institutional_accounts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/api.py",
+      "source_location": "L60-L103,L337-L374",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_public_boundary",
+      "target": "p4_existing_endpoints",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/api.py",
+      "source_location": "L60-L103,L337-L374",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_public_boundary",
+      "target": "p4_existing_sql_guard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/api.py",
+      "source_location": "L60-L103,L337-L374",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_endpoints",
+      "target": "p4_existing_one_time_tokens",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/webhooks.py",
+      "source_location": "L37-L132,L178-L198",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_one_time_tokens",
+      "target": "p4_existing_staged_secrets",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/webhooks.py",
+      "source_location": "L214-L284,L287-L354",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_p3_webhook_owner_gap",
+      "target": "p4_existing_endpoints",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/settings.py",
+      "source_location": "L330-L410",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_oauth_contract",
+      "target": "p4_existing_operational_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "source_location": "L53-L63",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_store",
+      "target": "p4_existing_staged_secrets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "backend/app/modules/channels/storage.py",
+      "source_location": "L22-L76,L112-L192",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_discovery",
+      "target": "p4_existing_provider_http",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L123-L272",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_number_actions",
+      "target": "p4_existing_provider_http",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L71-L81,L133-L173",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_signed_legacy",
+      "target": "p4_existing_legacy_store",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/receipts.py",
+      "source_location": "L16-L72,L74-L97",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_challenge",
+      "target": "p4_existing_legacy_store",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/webhooks/api/router.py",
+      "source_location": "L83-L134",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_encrypted_receipts",
+      "target": "p4_existing_operational_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalWebhookRecepcion],$.indexes,$.checks,$.foreign_keys",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_ingest",
+      "target": "p4_existing_pure_parsers",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_ingest",
+      "target": "p4_existing_legacy_store",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_ingest",
+      "target": "p4_existing_crm_ingress",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_ingest",
+      "target": "p4_existing_comment_state_legacy",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_ingest",
+      "target": "p4_existing_delivery",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L532-L610",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_comments_read",
+      "target": "p4_existing_legacy_store",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L295-L321",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_comments_write",
+      "target": "p4_existing_legacy_store",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L323-L395",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_comments_write",
+      "target": "p4_existing_legacy_dispatch",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L323-L395",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_social_payload",
+      "target": "p4_existing_operational_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalComentarioSocial],$.checks[CK_C11_SocialComment_2]",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_sendjob",
+      "target": "p4_existing_provider_operations",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalEnvioTrabajo],$.checks[CK_C11_SendJob_0],$.foreign_keys",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_sendjob",
+      "target": "p4_existing_quotas",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalEnvioTrabajo],$.checks[CK_C11_SendJob_0],$.foreign_keys",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_sendjob",
+      "target": "p4_existing_social_payload",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMCanalInstitucionalEnvioTrabajo],$.checks[CK_C11_SendJob_0],$.foreign_keys",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_dispatch",
+      "target": "p4_existing_provider_http",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L612-L815",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_dispatch",
+      "target": "p4_existing_handoff",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L612-L815",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_dispatch",
+      "target": "p4_existing_delivery",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L612-L815",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_p3_control",
+      "target": "p4_existing_handoff",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L814-L830,L1206-L1214",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_provider_media",
+      "target": "p4_existing_provider_http",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L348-L455,L457-L571",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_provider_media",
+      "target": "p4_existing_handoff",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/channels/providers.py",
+      "source_location": "L348-L455,L457-L571",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_media_fk",
+      "target": "p4_existing_operational_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMArchivoMultimedia],$.foreign_keys[dbo.CRMArchivoMultimedia],$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_identity_pair",
+      "target": "p4_existing_sendjob",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.foreign_keys[dbo.CRMCanalInstitucionalIdentidadExterna],$.foreign_keys[dbo.CRMCanalInstitucionalEnvioTrabajo]",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_repository",
+      "target": "p4_existing_provider_operations",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/parity_channels/repository.py",
+      "source_location": "L96-L147,L149-L355",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_binding",
+      "target": "p4_existing_operational_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.checks[CK_C11_LegacyBinding_0]",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_signed_legacy",
+      "target": "p4_existing_encrypted_receipts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/channels/receipts.py",
+      "source_location": "L16-L72,L74-L97",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_comments_read",
+      "target": "p4_existing_social_payload",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/channels/router.py",
+      "source_location": "L295-L321",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_comment_state_legacy",
+      "target": "p4_existing_social_payload",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L345-L381",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_dispatch",
+      "target": "p4_existing_sendjob",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/channels/workers.py",
+      "source_location": "L612-L815",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_legacy_store",
+      "target": "p4_existing_institutional_accounts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/channels/storage.py",
+      "source_location": "L22-L76,L112-L192",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_media_fk",
+      "target": "p4_existing_provider_media",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.columns[dbo.CRMArchivoMultimedia],$.foreign_keys[dbo.CRMArchivoMultimedia],$.checks",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_oauth_contract",
+      "target": "p4_existing_staged_secrets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "source_location": "L53-L63",
+      "weight": 1.0
+    },
+    {
+      "source": "p4_existing_identity_pair",
+      "target": "p4_existing_crm_ingress",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/expected-model.json",
+      "source_location": "$.foreign_keys[dbo.CRMCanalInstitucionalIdentidadExterna],$.foreign_keys[dbo.CRMCanalInstitucionalEnvioTrabajo]",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "p4_existing_ingress_identity",
+      "label": "Frontera de recepción C10 por institución/aplicación/endpoint/integración",
+      "nodes": [
+        "p4_existing_endpoints",
+        "p4_existing_encrypted_receipts",
+        "p4_existing_institutional_accounts",
+        "p4_existing_pure_parsers"
+      ],
+      "relation": "constrains_ingress",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "source_location": "L93-L105"
+    },
+    {
+      "id": "p4_existing_dispatch_safety",
+      "label": "Efecto externo único con control y presupuesto",
+      "nodes": [
+        "p4_existing_sendjob",
+        "p4_existing_provider_operations",
+        "p4_existing_quotas",
+        "p4_existing_handoff"
+      ],
+      "relation": "constrains_dispatch",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "docs/adaptation/sql/SQL_C10_CONTRACT.md",
+      "source_location": "L75-L87,L109-L115"
+    }
+  ],
+  "source_review": "artifacts/p4-es/existing-review.json",
+  "deep_mode": false,
+  "execution_claim": "source_and_JSON_review_only_no_SQL_no_providers_no_runtime_tests_no_P4_acceptance"
+}

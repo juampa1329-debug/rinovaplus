@@ -1,0 +1,232 @@
+{
+  "version": "cbn-extension-shape-v3",
+  "unit": "CBN-B011",
+  "release": "CBN-channels-local-v2",
+  "academic": [
+    "dbo.ACAsignatura",
+    "dbo.ACAsignaturaPlan",
+    "dbo.ACIntensidad",
+    "dbo.ACIntensidadAsignatura",
+    "dbo.ACJornada",
+    "dbo.ACPlanEducativo",
+    "dbo.ACProgramaOfrecido",
+    "dbo.ACProgramas",
+    "dbo.GEAlertasSeguridad",
+    "dbo.GEAuditoriaUsuarios",
+    "dbo.GECodigosBackup2FA",
+    "dbo.GECodigosRespaldo2FA",
+    "dbo.GEConfiguracion",
+    "dbo.GEConfiguracionSeguridad",
+    "dbo.GEDocente",
+    "dbo.GEDocenteporAsignatura",
+    "dbo.GEEstudiante",
+    "dbo.GEHistorialPasswords",
+    "dbo.GEIntentosLogin",
+    "dbo.GEMatricula",
+    "dbo.GEPeriodo",
+    "dbo.GEPermisos",
+    "dbo.GERoles",
+    "dbo.GERolPermiso",
+    "dbo.GESede",
+    "dbo.GESesionesActivas",
+    "dbo.GETokensRecuperacion",
+    "dbo.GEUsuarios",
+    "dbo.HOAulaAuditoria",
+    "dbo.HOAulaDetalle",
+    "dbo.HOAulaRequerida",
+    "dbo.HOAulas",
+    "dbo.HOBloqueRequerido",
+    "dbo.HOBloques",
+    "dbo.HOCatalogoSoftware",
+    "dbo.HODisponibilidadD",
+    "dbo.HODocenteDisponibilidad",
+    "dbo.HOEstadoAula",
+    "dbo.HOGeneracionJob",
+    "dbo.HOHorario",
+    "dbo.HOInventarioPC",
+    "dbo.HOLaboratorioInfo",
+    "dbo.HOMantenimientoAula",
+    "dbo.HONotificacion",
+    "dbo.HOReservaAula",
+    "dbo.HOReservaConflicto",
+    "dbo.HOSemana",
+    "dbo.HOSoftwarePC",
+    "dbo.HOTipoAula",
+    "dbo.sysdiagrams"
+  ],
+  "foundation": [
+    "crm.Contact",
+    "crm.Conversation",
+    "crm.Message",
+    "crm.Operation",
+    "crm_config.Configuration",
+    "crm_config.Operation",
+    "crm_meta.MigrationJournal"
+  ],
+  "extension": [
+    "crm_channels.Account",
+    "crm_channels.Credential",
+    "crm_channels.webhook_events",
+    "crm_channels.ExternalIdentity",
+    "crm_channels.ExternalMessage",
+    "crm_channels.outbound_queue",
+    "crm_channels.social_comments",
+    "crm_channels.Audit"
+  ],
+  "create_order": [
+    "crm_channels.Account",
+    "crm_channels.Credential",
+    "crm_channels.webhook_events",
+    "crm_channels.ExternalIdentity",
+    "crm_channels.ExternalMessage",
+    "crm_channels.outbound_queue",
+    "crm_channels.social_comments",
+    "crm_channels.Audit"
+  ],
+  "foreign_keys": [
+    {
+      "source_table": "crm_channels.Credential",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 23,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 38,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 39,
+      "definition": "ContactId uniqueidentifier NOT NULL REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 40,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 44,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 45,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 49,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 50,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 51,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql"
+    },
+    {
+      "source_table": "crm_channels.social_comments",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 61,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "backend/migrations/011_channels.sql",
+      "sha256": "a3e63c7d79c68f460297eefc178f5671eecc2bc6fa4b537e12cb3c570c38b3e4"
+    },
+    {
+      "path": "backend/migrations/012_channels_identity_collation.sql",
+      "sha256": "86d4ff87736eb38469e873fe890d7b2424f93c413f9d092015e1e01b5803d0ae"
+    }
+  ],
+  "c6_plan_sha256": "2849328f06038bd9417d0556fa21f2b912cd3c98ff623a27a3fbc1235f155222",
+  "protected_synonyms": [
+    "dbo.HOTiposAula"
+  ]
+}

@@ -1,0 +1,1175 @@
+{
+  "version": "cbn-channels-contract-v1",
+  "derivation": "Columns/default semantics from frozen011, five BIN2 columns/final keys from012; stable constraint names reviewed against newB011. Independent of reference metadata.",
+  "source_files": [
+    {
+      "path": "backend/migrations/011_channels.sql",
+      "sha256": "a3e63c7d79c68f460297eefc178f5671eecc2bc6fa4b537e12cb3c570c38b3e4"
+    },
+    {
+      "path": "backend/migrations/012_channels_identity_collation.sql",
+      "sha256": "86d4ff87736eb38469e873fe890d7b2424f93c413f9d092015e1e01b5803d0ae"
+    }
+  ],
+  "columns": [
+    {
+      "table": "Account",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "Account",
+      "name": "Configuration",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "Account",
+      "name": "State",
+      "type_name": "varchar",
+      "max_length": 24,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": "DF_Channels_Account_State",
+      "default": "'configured'",
+      "ordinal": 3
+    },
+    {
+      "table": "Account",
+      "name": "Revision",
+      "type_name": "int",
+      "max_length": 4,
+      "precision": 10,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Account_Revision",
+      "default": "1",
+      "ordinal": 4
+    },
+    {
+      "table": "Account",
+      "name": "Capabilities",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": "DF_Channels_Account_Capabilities",
+      "default": "'{}'",
+      "ordinal": 5
+    },
+    {
+      "table": "Account",
+      "name": "LastError",
+      "type_name": "varchar",
+      "max_length": 80,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 6
+    },
+    {
+      "table": "Account",
+      "name": "VerifiedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 7
+    },
+    {
+      "table": "Account",
+      "name": "UpdatedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Account_Updated",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 8
+    },
+    {
+      "table": "Credential",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "Credential",
+      "name": "Kind",
+      "type_name": "varchar",
+      "max_length": 24,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "Credential",
+      "name": "KeyId",
+      "type_name": "varchar",
+      "max_length": 32,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "Credential",
+      "name": "Nonce",
+      "type_name": "binary",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "Credential",
+      "name": "Ciphertext",
+      "type_name": "varbinary",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 5
+    },
+    {
+      "table": "webhook_events",
+      "name": "EventId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "webhook_events",
+      "name": "Provider",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "webhook_events",
+      "name": "Digest",
+      "type_name": "binary",
+      "max_length": 32,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "webhook_events",
+      "name": "Payload",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "webhook_events",
+      "name": "State",
+      "type_name": "varchar",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": "DF_Channels_Webhook_State",
+      "default": "'queued'",
+      "ordinal": 5
+    },
+    {
+      "table": "webhook_events",
+      "name": "Attempts",
+      "type_name": "int",
+      "max_length": 4,
+      "precision": 10,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Webhook_Attempts",
+      "default": "0",
+      "ordinal": 6
+    },
+    {
+      "table": "webhook_events",
+      "name": "DueAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Webhook_Due",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 7
+    },
+    {
+      "table": "webhook_events",
+      "name": "LeaseId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 8
+    },
+    {
+      "table": "webhook_events",
+      "name": "LastError",
+      "type_name": "varchar",
+      "max_length": 80,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 9
+    },
+    {
+      "table": "webhook_events",
+      "name": "ReceivedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Webhook_Received",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 10
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "IdentityId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "ExternalId",
+      "type_name": "nvarchar",
+      "max_length": 256,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "Latin1_General_100_BIN2",
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "ContactId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "ConversationId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 5
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "LastIncomingAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 6
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "ExternalId",
+      "type_name": "nvarchar",
+      "max_length": 400,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "Latin1_General_100_BIN2",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "MessageId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "Payload",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "outbound_queue",
+      "name": "QueueId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "outbound_queue",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "outbound_queue",
+      "name": "IdentityId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "outbound_queue",
+      "name": "MessageId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "outbound_queue",
+      "name": "Payload",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 5
+    },
+    {
+      "table": "outbound_queue",
+      "name": "State",
+      "type_name": "varchar",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": "DF_Channels_Queue_State",
+      "default": "'queued'",
+      "ordinal": 6
+    },
+    {
+      "table": "outbound_queue",
+      "name": "Attempts",
+      "type_name": "int",
+      "max_length": 4,
+      "precision": 10,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Queue_Attempts",
+      "default": "0",
+      "ordinal": 7
+    },
+    {
+      "table": "outbound_queue",
+      "name": "DueAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Queue_Due",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 8
+    },
+    {
+      "table": "outbound_queue",
+      "name": "LeaseId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 9
+    },
+    {
+      "table": "outbound_queue",
+      "name": "ExternalId",
+      "type_name": "nvarchar",
+      "max_length": 400,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": "Latin1_General_100_BIN2",
+      "default_name": null,
+      "default": null,
+      "ordinal": 10
+    },
+    {
+      "table": "outbound_queue",
+      "name": "LastError",
+      "type_name": "varchar",
+      "max_length": 80,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 11
+    },
+    {
+      "table": "outbound_queue",
+      "name": "CreatedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Queue_Created",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 12
+    },
+    {
+      "table": "social_comments",
+      "name": "CommentId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "social_comments",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "social_comments",
+      "name": "ExternalId",
+      "type_name": "nvarchar",
+      "max_length": 400,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "Latin1_General_100_BIN2",
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "social_comments",
+      "name": "AuthorId",
+      "type_name": "nvarchar",
+      "max_length": 256,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "Latin1_General_100_BIN2",
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "social_comments",
+      "name": "Body",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 5
+    },
+    {
+      "table": "social_comments",
+      "name": "Payload",
+      "type_name": "nvarchar",
+      "max_length": -1,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 6
+    },
+    {
+      "table": "social_comments",
+      "name": "ReceivedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Comment_Received",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 7
+    },
+    {
+      "table": "Audit",
+      "name": "Revision",
+      "type_name": "bigint",
+      "max_length": 8,
+      "precision": 19,
+      "scale": 0,
+      "nullable": false,
+      "identity": true,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 1
+    },
+    {
+      "table": "Audit",
+      "name": "Channel",
+      "type_name": "varchar",
+      "max_length": 12,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 2
+    },
+    {
+      "table": "Audit",
+      "name": "Action",
+      "type_name": "varchar",
+      "max_length": 40,
+      "precision": 0,
+      "scale": 0,
+      "nullable": false,
+      "identity": false,
+      "collation": "<database>",
+      "default_name": null,
+      "default": null,
+      "ordinal": 3
+    },
+    {
+      "table": "Audit",
+      "name": "EntityId",
+      "type_name": "uniqueidentifier",
+      "max_length": 16,
+      "precision": 0,
+      "scale": 0,
+      "nullable": true,
+      "identity": false,
+      "collation": null,
+      "default_name": null,
+      "default": null,
+      "ordinal": 4
+    },
+    {
+      "table": "Audit",
+      "name": "CreatedAt",
+      "type_name": "datetime2",
+      "max_length": 8,
+      "precision": 27,
+      "scale": 7,
+      "nullable": false,
+      "identity": false,
+      "collation": null,
+      "default_name": "DF_Channels_Audit_Created",
+      "default": "SYSUTCDATETIME()",
+      "ordinal": 5
+    }
+  ],
+  "indexes": [
+    {
+      "table": "Account",
+      "name": "PK_Channels_Account",
+      "columns": [
+        "Channel"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "Credential",
+      "name": "PK_Channels_Credential",
+      "columns": [
+        "Channel",
+        "Kind"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "webhook_events",
+      "name": "PK_Channels_Webhook",
+      "columns": [
+        "EventId"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "webhook_events",
+      "name": "UQ_Channels_Webhook_Digest",
+      "columns": [
+        "Provider",
+        "Digest"
+      ],
+      "kind": "UQ",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "PK_Channels_Identity",
+      "columns": [
+        "IdentityId"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "ExternalIdentity",
+      "name": "UQ_Channels_Identity",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ],
+      "kind": "UQ",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "PK_Channels_ExternalMessage",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "outbound_queue",
+      "name": "PK_Channels_Queue",
+      "columns": [
+        "QueueId"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "social_comments",
+      "name": "PK_Channels_Comment",
+      "columns": [
+        "CommentId"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "social_comments",
+      "name": "UQ_Channels_Comment",
+      "columns": [
+        "Channel",
+        "ExternalId"
+      ],
+      "kind": "UQ",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "Audit",
+      "name": "PK_Channels_Audit",
+      "columns": [
+        "Revision"
+      ],
+      "kind": "PK",
+      "unique": true,
+      "filter": null
+    },
+    {
+      "table": "webhook_events",
+      "name": "IX_Channels_Receipt_Work",
+      "columns": [
+        "State",
+        "DueAt"
+      ],
+      "kind": "INDEX",
+      "unique": false,
+      "filter": null
+    },
+    {
+      "table": "outbound_queue",
+      "name": "IX_Channels_Outbound_Work",
+      "columns": [
+        "State",
+        "DueAt"
+      ],
+      "kind": "INDEX",
+      "unique": false,
+      "filter": null
+    },
+    {
+      "table": "outbound_queue",
+      "name": "IX_Channels_Queue_Message",
+      "columns": [
+        "MessageId"
+      ],
+      "kind": "INDEX",
+      "unique": true,
+      "filter": "MessageId IS NOT NULL"
+    }
+  ],
+  "checks": [
+    {
+      "table": "Account",
+      "name": "CK_Channels_Account_Json",
+      "column": "Configuration",
+      "kind": "json"
+    },
+    {
+      "table": "Account",
+      "name": "CK_Channels_Capabilities_Json",
+      "column": "Capabilities",
+      "kind": "json"
+    },
+    {
+      "table": "webhook_events",
+      "name": "CK_Channels_Webhook_Json",
+      "column": "Payload",
+      "kind": "json"
+    },
+    {
+      "table": "ExternalMessage",
+      "name": "CK_Channels_Message_Json",
+      "column": "Payload",
+      "kind": "json"
+    },
+    {
+      "table": "outbound_queue",
+      "name": "CK_Channels_Queue_Json",
+      "column": "Payload",
+      "kind": "json"
+    },
+    {
+      "table": "social_comments",
+      "name": "CK_Channels_Comment_Json",
+      "column": "Payload",
+      "kind": "json"
+    },
+    {
+      "table": "Account",
+      "name": "CK_Channels_Account_Channel",
+      "column": "Channel",
+      "kind": "in",
+      "values": [
+        "whatsapp",
+        "facebook",
+        "messenger",
+        "instagram",
+        "tiktok"
+      ]
+    },
+    {
+      "table": "outbound_queue",
+      "name": "CK_Channels_Queue_State",
+      "column": "State",
+      "kind": "in",
+      "values": [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "read",
+        "failed",
+        "uncertain"
+      ]
+    }
+  ],
+  "foreign_keys": [
+    {
+      "source_table": "crm_channels.Credential",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 23,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Credential_Account"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 38,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Identity_Account"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ContactId"
+      ],
+      "target_table": "crm.Contact",
+      "target_columns": [
+        "ContactId"
+      ],
+      "line": 39,
+      "definition": "ContactId uniqueidentifier NOT NULL REFERENCES crm.Contact(ContactId)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Identity_Contact"
+    },
+    {
+      "source_table": "crm_channels.ExternalIdentity",
+      "source_columns": [
+        "ConversationId"
+      ],
+      "target_table": "crm.Conversation",
+      "target_columns": [
+        "ConversationId"
+      ],
+      "line": 40,
+      "definition": "ConversationId uniqueidentifier NOT NULL REFERENCES crm.Conversation(ConversationId)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Identity_Conversation"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 44,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Message_Account"
+    },
+    {
+      "source_table": "crm_channels.ExternalMessage",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 45,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Message_Message"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 49,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Queue_Account"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "IdentityId"
+      ],
+      "target_table": "crm_channels.ExternalIdentity",
+      "target_columns": [
+        "IdentityId"
+      ],
+      "line": 50,
+      "definition": "IdentityId uniqueidentifier NULL REFERENCES crm_channels.ExternalIdentity(IdentityId)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Queue_Identity"
+    },
+    {
+      "source_table": "crm_channels.outbound_queue",
+      "source_columns": [
+        "MessageId"
+      ],
+      "target_table": "crm.Message",
+      "target_columns": [
+        "MessageId"
+      ],
+      "line": 51,
+      "definition": "MessageId uniqueidentifier NULL REFERENCES crm.Message(MessageId)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Queue_Message"
+    },
+    {
+      "source_table": "crm_channels.social_comments",
+      "source_columns": [
+        "Channel"
+      ],
+      "target_table": "crm_channels.Account",
+      "target_columns": [
+        "Channel"
+      ],
+      "line": 61,
+      "definition": "Channel varchar(12) NOT NULL REFERENCES crm_channels.Account(Channel)",
+      "file": "backend/migrations/011_channels.sql",
+      "name": "FK_Channels_Comment_Account"
+    }
+  ],
+  "properties": {
+    "crm_channels.contract": "CRM-channels-v1",
+    "crm_channels.identity_collation": "BIN2-v1"
+  }
+}

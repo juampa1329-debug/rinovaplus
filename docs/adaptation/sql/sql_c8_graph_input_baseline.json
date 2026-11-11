@@ -1,0 +1,28 @@
+{
+  "unit": "SQL-C8-anchor-refresh",
+  "captured_at": "C8-phase6-before-anchor-refresh",
+  "parent_manifest_sha256": "0cc488934b52d10b1994e762d6a9f1fdfc0272aa3b7a58a76b16d5bb3ab1a02c",
+  "files": [
+    {
+      "path": "docs/adaptation/fragments/ai-memory.json",
+      "sha256": "936347d78764c3375e4deee45f12f5e6ba42f08305bcd22dc6a8c9ce439d70e6"
+    },
+    {
+      "path": "docs/adaptation/fragments/foundation.json",
+      "sha256": "33b9d17fbc53e889dd2915e9f2bc76e74db2eaf8fc588bfbc7c25932cbde22be"
+    },
+    {
+      "path": "docs/adaptation/fragments/inbox-crm.json",
+      "sha256": "a9414be2de7ed6a1a24ce41d46de31c204ae0d014e784f41855c37c475143def"
+    },
+    {
+      "path": "docs/adaptation/fragments/marketing.json",
+      "sha256": "5b1dd13e2eb48d7744a6c7e0fdf245e365a983ba698878fbed4703c1290acb60"
+    }
+  ],
+  "archive": {
+    "path": ".local/sql-c8/graph-fragment-preimages.zip",
+    "sha256": "79dd34d828b631db3b5cf9eee4148750c5b03e2b58f231df409485ef781b7110",
+    "files": 5
+  }
+}

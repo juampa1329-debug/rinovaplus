@@ -1,0 +1,203 @@
+{
+  "unit": "P12",
+  "type": "auxiliary_execution_group",
+  "date": "2026-10-28",
+  "human_direction": "No URL available; create an additional phase for institutional URLs and online commissioning.",
+  "status": "pending_inputs_no_external_execution",
+  "auxiliary_execution_percent": "0.00%",
+  "canonical_weight_added": 0,
+  "fixed_criteria": 56,
+  "fixed_milestones": 279,
+  "no_double_credit": true,
+  "pending_existing_milestones": [
+    {
+      "id": "P4.3.m6",
+      "phase": "P4",
+      "criterion": "P4.3",
+      "description": "Aceptar OAuth/números/token/adjuntos/callback/identidad/entrega por canal.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 7
+      }
+    },
+    {
+      "id": "P4.3.m7",
+      "phase": "P4",
+      "criterion": "P4.3",
+      "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 7
+      }
+    },
+    {
+      "id": "P4.4.m4",
+      "phase": "P4",
+      "criterion": "P4.4",
+      "description": "Probar recuperación/reintento/incertidumbre externa acotada por canal.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P4.4.m5",
+      "phase": "P4",
+      "criterion": "P4.4",
+      "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P4.close.m5",
+      "phase": "P4",
+      "criterion": "P4.close",
+      "description": "Cerrar P4/unidades/dependencias sin aceptar por esquema.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P7.1.m5",
+      "phase": "P7",
+      "criterion": "P7.1",
+      "description": "Aceptar catálogo Meta positivo con credencial/plantilla aprobada sin fabricar datos.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 7
+      }
+    },
+    {
+      "id": "P7.1.m7",
+      "phase": "P7",
+      "criterion": "P7.1",
+      "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 7
+      }
+    },
+    {
+      "id": "P7.4.m4",
+      "phase": "P7",
+      "criterion": "P7.4",
+      "description": "Aceptar estados pendiente/aceptado/enviado/entregado/leído/fallido con recibos reales.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P7.4.m5",
+      "phase": "P7",
+      "criterion": "P7.4",
+      "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P7.close.m5",
+      "phase": "P7",
+      "criterion": "P7.close",
+      "description": "Cerrar P7 y P2/P3/P4 con recorrido no productivo completo.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P8.close.m5",
+      "phase": "P8",
+      "criterion": "P8.close",
+      "description": "Cerrar P8 y P5/P6/P7: evaluación local no equivale a remarketing completo.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P9.close.m4",
+      "phase": "P9",
+      "criterion": "P9.close",
+      "description": "Cerrar P9/dependencias con alcance de cuentas/acciones aceptado.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 4
+      }
+    },
+    {
+      "id": "P10.close.m4",
+      "phase": "P10",
+      "criterion": "P10.close",
+      "description": "Cerrar P10/P5/P6/P8/P9 con aprendizaje demostrado, no sólo eventos.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 4
+      }
+    },
+    {
+      "id": "P11.3.m2",
+      "phase": "P11",
+      "criterion": "P11.3",
+      "description": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P11.3.m4",
+      "phase": "P11",
+      "criterion": "P11.3",
+      "description": "Entregar/aceptar puesta en servicio externa con datos/entorno/alcance.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P11.3.m5",
+      "phase": "P11",
+      "criterion": "P11.3",
+      "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 5
+      }
+    },
+    {
+      "id": "P11.close.m1",
+      "phase": "P11",
+      "criterion": "P11.close",
+      "description": "Aceptar recorridos institucionales y todos los cierres/dependencias P1–P10.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 4
+      }
+    },
+    {
+      "id": "P11.close.m4",
+      "phase": "P11",
+      "criterion": "P11.close",
+      "description": "Cerrar puesta en servicio con aprobación y alcance explícitos.",
+      "criterion_share": {
+        "numerator": 1,
+        "denominator": 4
+      }
+    }
+  ],
+  "required_inputs": [
+    "Linux server and storage",
+    "DNS/public HTTPS URL",
+    "SQL2019 full schema and reviewed academic mappings",
+    "Meta/TikTok test apps/accounts",
+    "Institutional custodians, backup/retention/RPO/RTO and secret authority",
+    "Explicit commissioning approval"
+  ],
+  "plan": "docs/adaptation/sql/SQL_P12_ONLINE_PLAN.md"
+}

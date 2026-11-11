@@ -1,0 +1,266 @@
+{
+  "unit": "SQL-C8",
+  "anchor_changes": [
+    {
+      "fragment": "docs/adaptation/fragments/ai-memory.json",
+      "pointer": "/findings/6/target/0/line",
+      "path": "backend/app/main.py",
+      "before": 73,
+      "after": 39
+    },
+    {
+      "fragment": "docs/adaptation/fragments/ai-memory.json",
+      "pointer": "/graph/nodes/13/source_location",
+      "path": "backend/app/main.py",
+      "before": 73,
+      "after": 39
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/findings/2/target/0/line",
+      "path": "backend/app/sql_target.py",
+      "before": 134,
+      "after": 205
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/findings/3/target/1/line",
+      "path": "backend/app/config.py",
+      "before": 47,
+      "after": 41
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/findings/3/target/2/line",
+      "path": "backend/app/sql_target.py",
+      "before": 104,
+      "after": 169
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/findings/4/target/1/line",
+      "path": "README.md",
+      "before": 17,
+      "after": 31
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/graph/nodes/1/source_location",
+      "path": "backend/app/sql_target.py",
+      "before": 134,
+      "after": 205
+    },
+    {
+      "fragment": "docs/adaptation/fragments/foundation.json",
+      "pointer": "/graph/nodes/2/source_location",
+      "path": "backend/app/sql_target.py",
+      "before": 104,
+      "after": 169
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/findings/1/target/1/line",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 350,
+      "after": 295
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/findings/1/target/2/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 344,
+      "after": 348
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/findings/5/target/3/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 608,
+      "after": 612
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/nodes/3/source_location",
+      "path": "backend/app/main.py",
+      "before": 78,
+      "after": 39
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/nodes/6/source_location",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 350,
+      "after": 295
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/nodes/7/source_location",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 608,
+      "after": 612
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/2/source_location",
+      "path": "backend/app/main.py",
+      "before": 78,
+      "after": 93
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/3/source_location",
+      "path": "backend/app/main.py",
+      "before": 79,
+      "after": 94
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/4/source_location",
+      "path": "backend/app/main.py",
+      "before": 84,
+      "after": 99
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/5/source_location",
+      "path": "backend/app/main.py",
+      "before": 75,
+      "after": 90
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/11/source_location",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 369,
+      "after": 373
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/12/source_location",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 358,
+      "after": 303
+    },
+    {
+      "fragment": "docs/adaptation/fragments/inbox-crm.json",
+      "pointer": "/graph/edges/13/source_location",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 350,
+      "after": 295
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/3/target/4/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 439,
+      "after": 443
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/3/target/5/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 626,
+      "after": 630
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/5/target/1/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 379,
+      "after": 383
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/5/target/2/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 395,
+      "after": 399
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/6/target/0/line",
+      "path": "backend/app/main.py",
+      "before": 76,
+      "after": 39
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/7/target/0/line",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 350,
+      "after": 295
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/7/target/1/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 341,
+      "after": 345
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/8/target/2/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 535,
+      "after": 539
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/8/target/3/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 615,
+      "after": 619
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/findings/9/target/2/line",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 477,
+      "after": 481
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/nodes/4/source_location",
+      "path": "backend/app/main.py",
+      "before": 84,
+      "after": 39
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/nodes/8/source_location",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 535,
+      "after": 539
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/nodes/9/source_location",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 350,
+      "after": 295
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/edges/0/source_location",
+      "path": "backend/app/main.py",
+      "before": 94,
+      "after": 109
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/edges/1/source_location",
+      "path": "backend/app/modules/channels/workers.py",
+      "before": 627,
+      "after": 631
+    },
+    {
+      "fragment": "docs/adaptation/fragments/marketing.json",
+      "pointer": "/graph/edges/4/source_location",
+      "path": "backend/app/modules/channels/router.py",
+      "before": 416,
+      "after": 361
+    }
+  ],
+  "count": 37,
+  "finding_ids_statuses_edges_unchanged": true
+}

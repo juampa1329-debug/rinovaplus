@@ -1,0 +1,500 @@
+{
+  "stage": "SQL-C12",
+  "status": "accepted_restored_channels_mappings_repositories_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "00c8e80557af4f90b950aa07fe713cd552ffa1cdf9add04909b2c66df4744e96",
+  "previous_checkpoint_sha256": "d4e90466b829487e63ce3856d2be78cc97b88f588e30ab9c58ab73caaf34f2fb",
+  "release_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32",
+  "inherited_postimages": {},
+  "trial_database": "CBN_C12_TRIAL_20261025_7a309d11",
+  "scope": "independent_local_restored_mappings_API_profile",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "channels_UI_checkpoint": "SQL-C9",
+  "baseline_inputs": 684,
+  "unchanged_inputs": 668,
+  "preimages_sha256": "e94ef21c6f5540ed8e41fb83fccf6712c2315dd1fee82e40a81dfc4075ddd193",
+  "CRC_and_all_preimage_hashes_verified": true,
+  "offline_checks": {
+    "unit": "SQL-C12",
+    "scope": "offline_source_validation",
+    "status": "passed",
+    "baseline_inputs": 684,
+    "all_preimages_SHA_CRC_verified": true,
+    "prior_runtime_frontend_migrations_tests_reference_inputs_preserved": 442,
+    "historical_checker_prefix_preserved": true,
+    "offline_tests": {
+      "new_C12": 42,
+      "focused_regressions": 200,
+      "total_passed": 242,
+      "selection": [
+        "test_parity_channels.py",
+        "test_channels_parity_migrations.py",
+        "test_channels_runtime.py",
+        "test_channels_ui_runtime.py",
+        "test_foundation_runtime.py",
+        "test_foundation_ui.py"
+      ],
+      "general_suite_recertified": false
+    },
+    "history_invalid_transitions_rejected": 78,
+    "history_stdout": [
+      "C7 additive release checks passed; 3 unsafe transitions rejected",
+      "Offline chain checks passed; 23 invalid transitions rejected",
+      "C8 history checks passed; 7 unsafe transitions rejected",
+      "C8 graph checks passed; 2 invalid pins rejected",
+      "C9 history checks passed; 8 unsafe transitions rejected",
+      "C10 contract-only history checks passed; 10 unsafe transitions rejected",
+      "C11 additive schema checks passed; 11 unsafe transitions rejected",
+      "C12 additive repository checks passed; 14 unsafe transitions rejected"
+    ],
+    "progress_validation": {
+      "phases": 12,
+      "criteria": 56,
+      "accepted": 8,
+      "percentages": {
+        "P0": "100.00%",
+        "P1": "60.00%",
+        "P2": "0.00%",
+        "P3": "0.00%",
+        "P4": "0.00%",
+        "P5": "0.00%",
+        "P6": "0.00%",
+        "P7": "0.00%",
+        "P8": "0.00%",
+        "P9": "0.00%",
+        "P10": "0.00%",
+        "P11": "0.00%"
+      },
+      "invalid_progress_definitions_rejected": 14
+    },
+    "ruff_E_F_I": "All checks passed!",
+    "AST_parse": "passed",
+    "history_checker_sha256": "84b7d2e38121e89db3dda7fe7a6106c2dcdaf10871c9c2c36e9a6c681ba3d2b3",
+    "source_files": {
+      "backend/app/parity_channels/api.py": "76d1cbca1a1ac7ed1efa6e1ba18a79d22c1db21344a7085891cad0bc35aacee6",
+      "backend/app/parity_channels/catalog.py": "855dc648346030fcd81e52815d8e911121900f2f4b24602dfae7e7d57951be3b",
+      "backend/app/parity_channels/guard.py": "698a16fb64cf6a6ebe61d2afa23f69820d5ea6531571d5e4c3f2d287f8168230",
+      "backend/app/parity_channels/policy.py": "8622d45db43a3328e9d485b5561ac0bfc0ac6162849a79c31e0a9a50dd792830",
+      "backend/app/parity_channels/profile.py": "d84372dc77f06761bd0fdf333557c08e003373ca455bb27e81ed5427b0824c7a",
+      "backend/app/parity_channels/repository.py": "90a0c51418c474bf94da4369518b21e617673612c7872141ca2e72bb694cad63",
+      "backend/app/parity_channels/__init__.py": "e831fadc1b1998d7fb072ab1c17dc96bc245acbdc2b7b9a121dfbda1ef6d9814",
+      "backend/tools/parity_data.py": "02065a9eecc84a0df78cbf2b6ee384ba224e7515083a257339f0599f5e549626",
+      "backend/tools/parity_mapping.py": "7c21b4bdb51b0d82aca607963d4e05e99fbf4254d4eea7e1926a1d2eea3b68bb",
+      "backend/tools/rehearse_parity_repositories.py": "d83db9774ab6ff6bbd69f83d6dd722d5719e1f4b63666fb2726f74becd766397",
+      "backend/tools/check_parity_repositories.py": "5b35bafe567fb840fd5b0bda7104eba3d8740b90b0a7277ed85c259107b73b41",
+      "backend/tools/fault_parity_repositories.py": "859fd6394ef9320befa3c4b494e37378fec66d1f29b10736bb5ea05ac28c9de1",
+      "backend/tools/check_phase_progress.py": "7502d284b7fb88c889b37303212451252d7c9fc3ef9da9538107db444368a2c7",
+      "backend/tools/historical_checkpoint.py": "84b7d2e38121e89db3dda7fe7a6106c2dcdaf10871c9c2c36e9a6c681ba3d2b3",
+      "backend/tests/test_parity_channels.py": "74fda7ea8521c93526bcc62f0c5c803ba7365235c660fc9aa89b154110d7bae5"
+    },
+    "limitations": [
+      "No institutional SQL2019 acceptance",
+      "No provider, worker, complete UI or institutional user acceptance",
+      "Connected evidence is separately captured; this checker never imports the application or reads a profile."
+    ]
+  },
+  "connected_result": {
+    "unit": "SQL-C12",
+    "trial_database": "CBN_C12_TRIAL_20261025_7a309d11",
+    "preparation": {
+      "mapping": {
+        "applications": 2,
+        "bindings": 23,
+        "jobs_blocked": 0,
+        "jobs_quarantined_unroutable": 1,
+        "receipts_quarantined": 1,
+        "secrets_reciphered": 2,
+        "status": "imported"
+      },
+      "replay": {
+        "bindings": 23,
+        "status": "noop"
+      },
+      "rollback_faults": 2
+    },
+    "API_SQL_checks": [
+      "no_capability_before_SQL",
+      "read_capabilities",
+      "read_applications",
+      "read_integrations",
+      "two_mapped_drafts",
+      "no_grandfathered_verification",
+      "missing_tiktok_ID_not_fabricated",
+      "read_secrets",
+      "read_receipts",
+      "read_bindings",
+      "two_staged_secrets_safe_projection",
+      "encrypted_material_not_exposed",
+      "legacy_receipt_quarantined",
+      "all_source_rows_accounted",
+      "read_identities",
+      "read_comments",
+      "read_messages",
+      "read_jobs",
+      "read_events",
+      "optimistic_update_committed",
+      "same_operation_exact_replay",
+      "operation_payload_conflict",
+      "stale_revision_rejected",
+      "read_225f2695-7372-4f48-834f-3f074b5043f3",
+      "operation_reconciliation_read",
+      "read_D01A4303-92D9-5853-B112-8E789CE495B6",
+      "persisted_readback",
+      "unknown_integration_no_fallback",
+      "mass_assignment_rejected",
+      "multiple_whatsapp_accounts",
+      "read_8e239ba4-dc44-4518-b3ca-b96c706a88ce",
+      "binary_external_ID_preserved",
+      "duplicate_external_account_rejected",
+      "cross_provider_application_rejected",
+      "application_create",
+      "read_a92d5151-2b5d-4cc7-aeee-9657e5518aab",
+      "application_safe_defaults",
+      "duplicate_application_rejected",
+      "academic_read_denied",
+      "legacy_credential_denied",
+      "new_ciphertext_denied",
+      "receipt_body_denied",
+      "old_core_update_denied",
+      "new_secret_insert_denied",
+      "queue_insert_denied",
+      "old65_binary_rows_unchanged",
+      "SIIE_C5_C9_C11_catalog_and_data_unchanged"
+    ],
+    "fault_checks": [
+      "column_secret_escalation",
+      "role_escalation",
+      "extra_grant_other_actor",
+      "extra_schema_property",
+      "context_contract_drift",
+      "replay_after_runtime_configuration",
+      "binding_target_substitution",
+      "wrong_vault_key_rejected",
+      "wrong_receipt_key_rejected",
+      "immutable_identity_content",
+      "immutable_external_account",
+      "missing_vault_key_not_regenerated",
+      "all65_old_tables_after_faults",
+      "recovery_exact_C11_backup",
+      "SIIE_C5_C9_C11_final_preservation"
+    ],
+    "recovery_database": "CBN_C12_FAULT_20261025_df5cbd53",
+    "new_table_rows": {
+      "crm_channels2.Context": 1,
+      "crm_channels2.Application": 3,
+      "crm_channels2.Integration": 3,
+      "crm_channels2.Audit": 16,
+      "crm_channels2.OAuthSession": 0,
+      "crm_channels2.WebhookEndpoint": 2,
+      "crm_channels2.SecretVersion": 2,
+      "crm_channels2.ProviderAsset": 0,
+      "crm_channels2.ProviderOperation": 3,
+      "crm_channels2.TikTokPolicy": 0,
+      "crm_channels2.VerificationEvidence": 0,
+      "crm_channels2.QuotaBucket": 0,
+      "crm_channels2.QuotaReservation": 0,
+      "crm_channels2.EndpointIntegration": 0,
+      "crm_channels2.WebhookReceipt": 1,
+      "crm_channels2.WebhookEvent": 0,
+      "crm_channels2.ConversationProfile": 0,
+      "crm_channels2.ConversationControl": 0,
+      "crm_channels2.ExternalIdentity": 1,
+      "crm_channels2.ExternalMessage": 3,
+      "crm_channels2.SocialComment": 1,
+      "crm_channels2.SendJob": 0,
+      "crm_channels2.MessageRoute": 0,
+      "crm_channels2.LegacyBinding": 23
+    },
+    "runtime_acl": {
+      "DENY": 7,
+      "GRANT": 68
+    },
+    "importer_acl": {
+      "DENY": 7,
+      "GRANT": 39
+    },
+    "journal_rows": 17,
+    "old65_binary_rows_preserved": true,
+    "four_sources_catalog_and_binary_data_preserved": true,
+    "engine": 16,
+    "compatibility": 160,
+    "institutional_sql2019_accepted": false
+  },
+  "preservation": {
+    "unit": "SQL-C12",
+    "sources": [
+      "HORARIOSSIIE",
+      "CBN_C3_TRIAL_20261024_ac8505b8",
+      "CBN_C9_TRIAL_20261025_23ac78d3",
+      "CBN_C11_TRIAL_20261025_d30e2cb2"
+    ],
+    "trial_database": "CBN_C12_TRIAL_20261025_7a309d11",
+    "sources_catalog_and_binary_rows_unchanged": true,
+    "trial_old65_binary_rows_unchanged": true,
+    "academic_tables": 50,
+    "academic_rows": 44180,
+    "foundation_rows": 203,
+    "B011_rows": 23,
+    "journal_rows_before": 17,
+    "journal_rows_after": 17,
+    "new_tables": 24,
+    "total_tables": 89,
+    "migration_DDL_executed": false,
+    "academic_DML_executed": false,
+    "existing_previews_modified": false,
+    "providers_called": false,
+    "new_server_listener_started": false,
+    "recovery_exact_to_C11": true,
+    "recovery_database": "CBN_C12_FAULT_20261025_df5cbd53",
+    "evidence_scope": "Explicit executor read-only catalog/binary comparisons; not institutional SQL2019 acceptance."
+  },
+  "semantic_review": {
+    "path": "artifacts/sql-c12/review.json",
+    "sha256": "b1bba9ac8eb3fccbf5339a23dff27a4ae8c9f6094c330b5e500c360cd7980495"
+  },
+  "progress_contract": {
+    "path": "docs/adaptation/phase-progress-contract.json",
+    "sha256": "d105633a869012cfabf6d86f63dd1d6a7d94f7bb78001e0febbd37c85b232b76"
+  },
+  "graph_fragment": {
+    "path": "docs/adaptation/fragments/sql-c12.json",
+    "sha256": "25714a73a60b005ea3906997a684677a2c3396642370e12d79da56aa54c9a32a"
+  },
+  "database_connected": true,
+  "migration_DDL_applied": false,
+  "new_principals_only_in_restored_copy": true,
+  "academic_DML": false,
+  "source_SIIE_C5_C9_C11_modified": false,
+  "new_runtime_source_added": true,
+  "existing_runtime_UI_files_modified": false,
+  "new_listener_started": false,
+  "provider_calls": 0,
+  "workers_enabled": false,
+  "institutional_sql2019_accepted": false,
+  "limits": [
+    "Local SQL2022 Express/160 only; institutional SQL2019 pending",
+    "C12 local-owner capability is not institutional P2 authentication",
+    "No full UI, OAuth, provider sends, worker or public webhook activation",
+    "Legacy receipt is unverified/quarantined; unroutable legacy job is quarantine audit, not a fabricated SendJob",
+    "Progress percentages count canonical criteria closed, not functionality or hours"
+  ],
+  "next_unit": "SQL-C13",
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "before_sha256": "d8f13649f45826a0e0145e069e191e24e76d5ed8375da870b9458477a5aba43f",
+      "after_sha256": "b34f7d919d30b67b34b48738899d9061014e014a9ac19604841245514dda3d3d"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "f999146c3bd2f8b1e88035b2a76d82d62504338b62bdcfaf3463cfc781071490",
+      "after_sha256": "dd70f3528b40ad425ef59d59962a83dc6520bb1236b0c840af60291ebb217379"
+    },
+    {
+      "path": "ai-memory/CRITICAL_WARNINGS.md",
+      "before_sha256": "eb0440c3bb463d2dd8963a594da65cc99ee7734c001035a673e846490ec1a4d1",
+      "after_sha256": "d073fe28e9420b55db3cbc4c11962ad828dd5bd8e01d09e00541ff9d6b53cd69"
+    },
+    {
+      "path": "ai-memory/CURRENT_STATE.md",
+      "before_sha256": "2f04b83b0bc6daf37d05d931ea8b8c82cd88a11f71f8b81f02c7e3db8322fd6a",
+      "after_sha256": "b2575d877205fd358f93548b16d68dacb53296d73fb77fc13b356e4a9f8e701b"
+    },
+    {
+      "path": "ai-memory/FILE_MAP.md",
+      "before_sha256": "73c0570ef86b918b71c2319aad26f733d9c504fa869aba0f6d09166bf1cee080",
+      "after_sha256": "9ba81e5be99291ece734b399d4c4814b33696089d1c674b73adecf665da9a19a"
+    },
+    {
+      "path": "artifacts/sql-c12/connected-result.json",
+      "before_sha256": null,
+      "after_sha256": "67138b3d56c9a4a19d269b3cb64c8815dd6ba20d7838e67945f9ac135a72e8d9"
+    },
+    {
+      "path": "artifacts/sql-c12/graph-checks.json",
+      "before_sha256": null,
+      "after_sha256": "a69d469a91c8c84369e6d3d1caa8edefa44bbe16e9a54891d52df415fda1aeb0"
+    },
+    {
+      "path": "artifacts/sql-c12/link-checks.json",
+      "before_sha256": null,
+      "after_sha256": "28773d924a6475696cdb4b5693b7b98e0dec8d1ef053fa1159bdbf3f5c983774"
+    },
+    {
+      "path": "artifacts/sql-c12/offline-checks.json",
+      "before_sha256": null,
+      "after_sha256": "1c0860ffeedfcb1889d75d5c3fcf286f3fa1d234ca843a7055a0c3690c39fc60"
+    },
+    {
+      "path": "artifacts/sql-c12/preservation.json",
+      "before_sha256": null,
+      "after_sha256": "983e683a470190ee9d3f038500b3d4891ab88f7eea24b895163fb3a5bd8b607a"
+    },
+    {
+      "path": "artifacts/sql-c12/previews.json",
+      "before_sha256": null,
+      "after_sha256": "f8fb6a92bb87f2fc183795e975541b4244727fd16c64f4297143177ae5216acd"
+    },
+    {
+      "path": "artifacts/sql-c12/progress-review.json",
+      "before_sha256": null,
+      "after_sha256": "d40410b6cfcc8bc82eb1a934003699824ce61995ec1df620473eed9824340968"
+    },
+    {
+      "path": "artifacts/sql-c12/review.json",
+      "before_sha256": null,
+      "after_sha256": "b1bba9ac8eb3fccbf5339a23dff27a4ae8c9f6094c330b5e500c360cd7980495"
+    },
+    {
+      "path": "backend/app/parity_channels/__init__.py",
+      "before_sha256": null,
+      "after_sha256": "e831fadc1b1998d7fb072ab1c17dc96bc245acbdc2b7b9a121dfbda1ef6d9814"
+    },
+    {
+      "path": "backend/app/parity_channels/api.py",
+      "before_sha256": null,
+      "after_sha256": "76d1cbca1a1ac7ed1efa6e1ba18a79d22c1db21344a7085891cad0bc35aacee6"
+    },
+    {
+      "path": "backend/app/parity_channels/catalog.py",
+      "before_sha256": null,
+      "after_sha256": "855dc648346030fcd81e52815d8e911121900f2f4b24602dfae7e7d57951be3b"
+    },
+    {
+      "path": "backend/app/parity_channels/guard.py",
+      "before_sha256": null,
+      "after_sha256": "698a16fb64cf6a6ebe61d2afa23f69820d5ea6531571d5e4c3f2d287f8168230"
+    },
+    {
+      "path": "backend/app/parity_channels/policy.py",
+      "before_sha256": null,
+      "after_sha256": "8622d45db43a3328e9d485b5561ac0bfc0ac6162849a79c31e0a9a50dd792830"
+    },
+    {
+      "path": "backend/app/parity_channels/profile.py",
+      "before_sha256": null,
+      "after_sha256": "d84372dc77f06761bd0fdf333557c08e003373ca455bb27e81ed5427b0824c7a"
+    },
+    {
+      "path": "backend/app/parity_channels/repository.py",
+      "before_sha256": null,
+      "after_sha256": "90a0c51418c474bf94da4369518b21e617673612c7872141ca2e72bb694cad63"
+    },
+    {
+      "path": "backend/tests/test_parity_channels.py",
+      "before_sha256": null,
+      "after_sha256": "74fda7ea8521c93526bcc62f0c5c803ba7365235c660fc9aa89b154110d7bae5"
+    },
+    {
+      "path": "backend/tools/check_parity_repositories.py",
+      "before_sha256": null,
+      "after_sha256": "5b35bafe567fb840fd5b0bda7104eba3d8740b90b0a7277ed85c259107b73b41"
+    },
+    {
+      "path": "backend/tools/check_phase_progress.py",
+      "before_sha256": null,
+      "after_sha256": "7502d284b7fb88c889b37303212451252d7c9fc3ef9da9538107db444368a2c7"
+    },
+    {
+      "path": "backend/tools/fault_parity_repositories.py",
+      "before_sha256": null,
+      "after_sha256": "859fd6394ef9320befa3c4b494e37378fec66d1f29b10736bb5ea05ac28c9de1"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "b9be68d9361e9904f8670d247bf1814c56f484e188f8b43384b8e0a72ee12075",
+      "after_sha256": "84b7d2e38121e89db3dda7fe7a6106c2dcdaf10871c9c2c36e9a6c681ba3d2b3"
+    },
+    {
+      "path": "backend/tools/parity_data.py",
+      "before_sha256": null,
+      "after_sha256": "02065a9eecc84a0df78cbf2b6ee384ba224e7515083a257339f0599f5e549626"
+    },
+    {
+      "path": "backend/tools/parity_mapping.py",
+      "before_sha256": null,
+      "after_sha256": "7c21b4bdb51b0d82aca607963d4e05e99fbf4254d4eea7e1926a1d2eea3b68bb"
+    },
+    {
+      "path": "backend/tools/rehearse_parity_repositories.py",
+      "before_sha256": null,
+      "after_sha256": "d83db9774ab6ff6bbd69f83d6dd722d5719e1f4b63666fb2726f74becd766397"
+    },
+    {
+      "path": "docs/ADAPTATION_STATUS.md",
+      "before_sha256": "c7b97f95845a646faaba9a1fa006d5fa0bfd4aaff2c0fdce57fc531d73178d23",
+      "after_sha256": "790220aeaa9cd0b919475106da9f8f4d96869ff67e6bb6c0bb4bf04690c237d5"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "before_sha256": "1b08b7e4bee0fb57a88baac1e918b18f29744707b1569401a9e03e2516ffb598",
+      "after_sha256": "ee505fec24ea9233eef4f65af10aeee0afcbf21ecd73c7c6ddcffb30305beae5"
+    },
+    {
+      "path": "docs/adaptation/GRAPH_GUIDE.md",
+      "before_sha256": "0fe3d08ef9c114986cb3509038e416cb44b1e6cefc0df78c96f4ad464dce1f3c",
+      "after_sha256": "4e30b8a8a99d4b5cf6c8a920a51d364a453c380c657efdd7d701fa4e897270ff"
+    },
+    {
+      "path": "docs/adaptation/PARITY_MATRIX.md",
+      "before_sha256": "2518de0a260e34eca67a050d1bc34b0e883fc0b92ea347f2ecdf0c7021ab07c0",
+      "after_sha256": "adefac1809a303d21781df42f2c7325be3ddecb45dcb3c78c760813510b29129"
+    },
+    {
+      "path": "docs/adaptation/RESUME.md",
+      "before_sha256": "def75aa0956aaaf8011abfa7917d365d3ebf072526150198b37b44b8b1ac106a",
+      "after_sha256": "8052001830fe17f12a97815f50555de2037ebe0b6355b3b8eaa0a84e04384029"
+    },
+    {
+      "path": "docs/adaptation/fragments/sql-c12.json",
+      "before_sha256": null,
+      "after_sha256": "25714a73a60b005ea3906997a684677a2c3396642370e12d79da56aa54c9a32a"
+    },
+    {
+      "path": "docs/adaptation/phase-progress-contract.json",
+      "before_sha256": null,
+      "after_sha256": "d105633a869012cfabf6d86f63dd1d6a7d94f7bb78001e0febbd37c85b232b76"
+    },
+    {
+      "path": "docs/adaptation/scope.json",
+      "before_sha256": "8dd7cb9d674fca4052f21c4881292269433f5c9553620c1166ca21ef49f780c3",
+      "after_sha256": "bdfb494a0b1a6370e7983dfb0e0560a8b8377704c445c18f35e3cbcb7f55ce29"
+    },
+    {
+      "path": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+      "before_sha256": null,
+      "after_sha256": "9447e29ea34bbe6457f5e19831ba6e391b60889df7bb000f0e4a51998f17fdef"
+    },
+    {
+      "path": "docs/adaptation/sql/inventory.active.json",
+      "before_sha256": "0deb5bc16c6513b36223d41441193a4c7a48d777fc615067b1a92de3d16cd6bc",
+      "after_sha256": "c660e728d6d8ffa8b4d246c72fb1de3708947c8346ed2f638826d0a4642f20bd"
+    },
+    {
+      "path": "docs/decisions/ADR-024-channels-parity-repositories.md",
+      "before_sha256": null,
+      "after_sha256": "757c8fa36ddefeb1ec14d9499ae0f8954803f2923bfdd39e246bda87462a6bcb"
+    },
+    {
+      "path": "docs/pending.md",
+      "before_sha256": "185b9cc38302f0fe73c7899c602b2375c766c08921bf79cfeb12a39f4132044d",
+      "after_sha256": "44e6d89eed7646cb8d202670e3e9abd32105d512ce561844891ecaa39b91e008"
+    },
+    {
+      "path": "docs/progress.md",
+      "before_sha256": "142d7f37b1eda831c69c94e86da4e3fef9667b0dba31f70df49a0b0950e10c27",
+      "after_sha256": "d0f62d58ac2e8bb584ce7d1def57ed564941a46029bfab8852b5a5311e175546"
+    },
+    {
+      "path": "tasks/TASK_STATE.md",
+      "before_sha256": "c48b17a906eb97a9544681a829d83aac0e573ad0d9bc081e08ea6ffa74e61145",
+      "after_sha256": "70521870cbc07d722060f83994235f3a8bbb7e62bddf9513ce475a12d8655218"
+    },
+    {
+      "path": "tasks/sql-c12-progress.json",
+      "before_sha256": null,
+      "after_sha256": "f90a247b79f402e4479ba9f086fa7df922fd61d833ef2c2c8a965191dcaa54d9"
+    }
+  ]
+}

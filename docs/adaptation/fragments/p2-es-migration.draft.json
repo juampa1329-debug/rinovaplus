@@ -1,0 +1,313 @@
+{
+  "domain": "P2-ES · contrato de migración aditiva y revisión R2 antes del primer COMMIT",
+  "status": "draft_source_suitable_for_rehearsal_no_P2_acceptance",
+  "review_scope": "Extracción Graphify delegada sólo de fuentes públicas; sin ejecutar SQL/Docker/app ni leer credenciales/perfiles/privados, sin editar código. EXTRACTED cita comportamiento explícito, INFERRED relaciona contratos y límites. No reimportar AST ni otorgar aceptación por referencia o90pruebas reportadas.",
+  "findings": [
+    {
+      "id": "p2_es_migration_source_contract",
+      "phase": "P2",
+      "capability": "Migración española aditiva con prefijo P1 intacto, semillas verificadas, WAL/reconciliación y perfil físico acotado",
+      "status": "fuente_revisada_apta_para_ensayo_aceptacion_SQL_UI_pendiente",
+      "gap": "Los hallazgos de semillas/UUID/owner/history/mapa se corrigieron por fuente R2. Faltan ensayo comprometido, fallos/permisos, recuperación poblada y UI; no hay aceptación P2.",
+      "acceptance": "Revisión confirma sello1a7ba0dc y14inputs, cuerpos DDL derivados íntegramente de fuentes congeladas y validación de datos sin reset. La fuente es apta para comenzar el ensayo controlado en otra restauración ya autorizado por el propietario; esta revisión no acredita ejecución ni concede aceptación.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p2-es/migration-source-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/migrations/cbn_institutional_spanish_v1/release.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/p2_es_migrations.py",
+          "line": 659,
+          "symbol": "apply"
+        },
+        {
+          "file": "backend/tools/p2_es_migrations.py",
+          "line": 236,
+          "symbol": "validate_data"
+        },
+        {
+          "file": "backend/tools/p2_es_recovery.py",
+          "line": 132,
+          "symbol": "restore"
+        },
+        {
+          "file": "backend/app/institutional/spanish.py",
+          "line": 150,
+          "symbol": "verify"
+        },
+        {
+          "file": "backend/tools/rehearse_p2_spanish.py",
+          "line": 175,
+          "symbol": "reference"
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_migration_candidate",
+        "label": "R2 1a7ba0dc: dos unidades99→123→138; apta por fuente, aún no aceptada",
+        "file_type": "document",
+        "source_file": "backend/migrations/cbn_institutional_spanish_v1/release.json",
+        "source_location": "L1",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_parent",
+        "label": "Prefijo P1 de tres filas preservado por SHA binario",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L337",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_map",
+        "label": "Mapa cerrado preserva los68 CRM y30 académicos del P1 aceptado",
+        "file_type": "code",
+        "source_file": "backend/app/institutional/spanish_bindings.py",
+        "source_location": "L34",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_derivation",
+        "label": "DDL conserva cuerpos C11/access, nombres adaptados y ancho declarado",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/migration-source-review.json",
+        "source_location": "L1",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_actor",
+        "label": "Actor loginless acotado; fingerprint DBA antes de impersonación",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L474",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_seed_binding",
+        "label": "Institución/hash bootstrap forman parte del destino del intento",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L143",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_wal",
+        "label": "WAL durable ordenado y correlacionado con SQL por unidad/intento",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L529",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_reconcile",
+        "label": "STARTED ausente y ACK perdido se recuperan sin atribuir otro intento",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L772",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_data",
+        "label": "Contexto, owner útil, datos tipados, history y proyecciones se validan sin reset",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L236",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_uuid",
+        "label": "UUID de SQL se canoniza en contexto y ticket",
+        "file_type": "code",
+        "source_file": "backend/app/institutional/spanish_bindings.py",
+        "source_location": "L30",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_native",
+        "label": "Restauración nativa autenticada compara catálogo y huellas binarias",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_es_recovery.py",
+        "source_location": "L132",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_profile",
+        "label": "Guard físico/ACL por columna valida datos antes del cursor de negocio",
+        "file_type": "code",
+        "source_file": "backend/app/institutional/spanish.py",
+        "source_location": "L150",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_reference",
+        "label": "Referencia en rollback no sustituye ensayo del release comprometido",
+        "file_type": "code",
+        "source_file": "backend/tools/rehearse_p2_spanish.py",
+        "source_location": "L175",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      },
+      {
+        "id": "p2_es_migration_acceptance_pending",
+        "label": "Faltan SQL/fallos/permisos y acceso/UI/recuperación poblada para P2",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/migration-source-review.json",
+        "source_location": "L1",
+        "status": "source_suitable_for_rehearsal_acceptance_pending"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_migration_candidate",
+        "target": "p2_es_migration_parent",
+        "relation": "pins_immutable_inherited_history",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L382"
+      },
+      {
+        "source": "p2_es_migration_candidate",
+        "target": "p2_es_migration_map",
+        "relation": "requires_parent_semantic_map_unchanged",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/spanish_bindings.py",
+        "source_location": "L34"
+      },
+      {
+        "source": "p2_es_migration_candidate",
+        "target": "p2_es_migration_derivation",
+        "relation": "supported_by_independent_full_body_derivation_check",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/migration-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_migration_actor",
+        "target": "p2_es_migration_parent",
+        "relation": "reads_initial_business_fingerprint_excluding_durable_journal",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L474"
+      },
+      {
+        "source": "p2_es_migration_seed_binding",
+        "target": "p2_es_migration_wal",
+        "relation": "binds_WAL_target_to_seed_and_identity",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L153"
+      },
+      {
+        "source": "p2_es_migration_wal",
+        "target": "p2_es_migration_reconcile",
+        "relation": "requires_correlated_attempt_outcomes",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L629"
+      },
+      {
+        "source": "p2_es_migration_reconcile",
+        "target": "p2_es_migration_data",
+        "relation": "validates_required_data_before_reconciliation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L772"
+      },
+      {
+        "source": "p2_es_migration_candidate",
+        "target": "p2_es_migration_data",
+        "relation": "validates_NOOP_and_after_unit_seed",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L659"
+      },
+      {
+        "source": "p2_es_migration_data",
+        "target": "p2_es_migration_uuid",
+        "relation": "normalizes_SQL_UUID_casing",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/p2_es_migrations.py",
+        "source_location": "L236"
+      },
+      {
+        "source": "p2_es_migration_profile",
+        "target": "p2_es_migration_data",
+        "relation": "validates_business_invariants_inside_guarded_transaction",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/spanish.py",
+        "source_location": "L150"
+      },
+      {
+        "source": "p2_es_migration_profile",
+        "target": "p2_es_migration_map",
+        "relation": "checks_exact_physical_partition_before_mapping_business_SQL",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/institutional/spanish.py",
+        "source_location": "L67"
+      },
+      {
+        "source": "p2_es_migration_native",
+        "target": "p2_es_migration_candidate",
+        "relation": "restores_separate_destination_before_release_apply",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/rehearse_p2_spanish.py",
+        "source_location": "L311"
+      },
+      {
+        "source": "p2_es_migration_reference",
+        "target": "p2_es_migration_acceptance_pending",
+        "relation": "does_not_grant_acceptance_from_rollback_compilation",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/migration-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_migration_profile",
+        "target": "p2_es_access_source",
+        "relation": "supports_reused_access_protocol_with_separate_profile",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": "backend/app/institutional/spanish.py",
+        "source_location": "L268"
+      },
+      {
+        "source": "p2_es_migration_candidate",
+        "target": "p1_es_accept_technical",
+        "relation": "extends_only_native_restored_accepted_foundation",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/cbn_institutional_spanish_v1/release.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_migration_acceptance_pending",
+        "target": "P2",
+        "relation": "awards_no_completion_before_connected_and_UI_evidence",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/migration-source-review.json",
+        "source_location": "L1"
+      }
+    ]
+  }
+}

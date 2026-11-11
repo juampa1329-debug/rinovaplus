@@ -1,0 +1,2188 @@
+{
+  "scope": "P1.1 revisión estática de migraciones011–020; ningún SQL ejecutado",
+  "date": "2026-10-24",
+  "migrations": [
+    {
+      "file": "backend/migrations/011_channels.sql",
+      "id": "011",
+      "purpose": "Cuentas, secretos cifrados, eventos de webhook, identidades externas, outbox única, comentarios y auditoría de canales.",
+      "schemas": [
+        "crm_channels"
+      ],
+      "tables_created": [
+        "crm_channels.Account",
+        "crm_channels.Credential",
+        "crm_channels.webhook_events",
+        "crm_channels.ExternalIdentity",
+        "crm_channels.ExternalMessage",
+        "crm_channels.outbound_queue",
+        "crm_channels.social_comments",
+        "crm_channels.Audit"
+      ],
+      "indexes_created": [
+        "IX_Channels_Receipt_Work",
+        "IX_Channels_Outbound_Work",
+        "IX_Channels_Queue_Message"
+      ],
+      "contracts": [
+        {
+          "name": "crm_channels.contract",
+          "value": "CRM-channels-v1",
+          "line": 71
+        }
+      ],
+      "prerequisites": [
+        "001: crm.Contact, crm.Conversation y crm.Message; runner exige contrato ADR-006-v1."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_channels.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            24
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/011_channels.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Si el esquema existe y su marcador CRM-channels-v1 coincide, RETURN; no compara la forma completa de tablas, FK o índices.",
+      "seed_writes": "No INSERT/UPDATE de datos; defaults de estados no equivalen a cuentas activas.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "IDENTITY",
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 3,
+          "detail": "El guard SQL compara InstanceName sin ISNULL. Con DB_NAME correcto e InstanceName NULL, la expresión OR resulta UNKNOWN y no ejecuta THROW. El runner sí rechaza ese destino mediante verify_target de Python.",
+          "recommendation": "En P1.2 definir contrato institucional fail-closed y normalizar NULL; no retirar la verificación ni usar SQL crudo como guard suficiente."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/011_channels.sql",
+          "line": 7,
+          "detail": "Retorno por marcador de esquema sin validar todas las tablas/constraints/índices.",
+          "recommendation": "En P1.3 incluir fingerprint/validación de forma antes de aceptar migración ya aplicada."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/012_channels_identity_collation.sql",
+      "id": "012",
+      "purpose": "Preservar identificadores opacos de proveedores con collation binaria y reconstruir claves dependientes.",
+      "schemas": [
+        "crm_channels"
+      ],
+      "tables_created": [],
+      "indexes_created": [],
+      "contracts": [
+        {
+          "name": "crm_channels.identity_collation",
+          "value": "BIN2-v1",
+          "line": 28
+        }
+      ],
+      "prerequisites": [
+        "011: contrato CRM-channels-v1 y tablas ExternalIdentity/ExternalMessage/outbound_queue/social_comments."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_channels.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            24
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/012_channels_identity_collation.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Marcador crm_channels.identity_collation presente: rechaza collation distinta en columnas encontradas y retorna; no acredita que existan todas las columnas ni claves esperadas.",
+      "seed_writes": "Sin DML de filas; ALTER COLUMN y DROP/ADD de constraints afectan metadatos/índices de registros existentes.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "COLLATE",
+          "THROW",
+          "nvarchar",
+          "sp_addextendedproperty"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/012_channels_identity_collation.sql",
+          "line": 3,
+          "detail": "Mismo guard NULL de InstanceName; ejecución directa SQL no falla cerrado en la instancia por defecto si la DB coincide.",
+          "recommendation": "Conservar protecciones del runner; diseñar guard institucional explícito en P1.2."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/012_channels_identity_collation.sql",
+          "line": 9,
+          "detail": "Con marcador presente se comprueba sólo collation en columnas encontradas; columnas o claves ausentes no se detectan por este SELECT.",
+          "recommendation": "Añadir comprobación del conjunto esperado y claves en la futura verificación de drift, sin editar migración aplicada en este corte."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/013_ai_providers.sql",
+      "id": "013",
+      "purpose": "Configuración IA, conexión/consentimiento de salida y credenciales cifradas por proveedor.",
+      "schemas": [
+        "crm_ai"
+      ],
+      "tables_created": [
+        "crm_ai.Configuration",
+        "crm_ai.Connection",
+        "crm_ai.Credential"
+      ],
+      "indexes_created": [],
+      "contracts": [
+        {
+          "name": "crm_ai.contract",
+          "value": "CRM-ai-v1",
+          "line": 31
+        }
+      ],
+      "prerequisites": [
+        "Runner exige 001 y destino local verificado; el SQL no declara FK a SIIE."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_ai_providers.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            37
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Esquema existente con CRM-ai-v1 retorna sin fingerprint completo; runner inserta Configuration sólo si no hay ConfigurationId=1.",
+      "seed_writes": "SQL INSERT crm_ai.Connection(ConnectionId=1,Outbound=0). Runner puede importar ajustes no secretos del archivo local ai-settings.json (o valores por defecto) a Configuration con UPDLOCK/HOLDLOCK. No exporta/importa Credential.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "COLLATE",
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 3,
+          "detail": "Guard InstanceName NULL no fail-closed en SQL; runner tiene verificación independiente.",
+          "recommendation": "Adaptar contrato de destino, manteniendo TLS e identidad."
+        },
+        {
+          "severity": "info",
+          "file": "backend/migrations/013_ai_providers.sql",
+          "line": 30,
+          "detail": "La migración tiene semilla de conexión y su runner puede crear Configuration a partir del archivo local; no es un runner exclusivamente DDL.",
+          "recommendation": "Ensayar preservación/importación de ajustes no secretos antes de aplicar en una copia; no ejecutar como simple diagnóstico."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/014_ai_provider_catalog.sql",
+      "id": "014",
+      "purpose": "Ampliar el CHECK de proveedores de credenciales IA; no añade comercio electrónico.",
+      "schemas": [
+        "crm_ai"
+      ],
+      "tables_created": [],
+      "indexes_created": [],
+      "contracts": [],
+      "prerequisites": [
+        "013: CRM-ai-v1 y crm_ai.Credential con CHECK cuya definición contiene Provider."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_ai_provider_catalog.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            24
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/014_ai_provider_catalog.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Cada ejecución busca, elimina y vuelve a crear un CHECK; no tiene RETURN ni marcador propio de versión. Repetir no duplica datos, pero sí vuelve a ejecutar DDL.",
+      "seed_writes": "Sin DML; reemplaza restricción de Provider con lista ampliada. Conserva claves/secretos existentes.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "THROW",
+          "nvarchar"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/014_ai_provider_catalog.sql",
+          "line": 3,
+          "detail": "Guard InstanceName NULL no fail-closed cuando se ejecuta directamente el SQL.",
+          "recommendation": "Contrato de destino institucional explícito en P1.2."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/014_ai_provider_catalog.sql",
+          "line": 9,
+          "detail": "SELECT @constraint=name por LIKE %Provider% asume un único CHECK pertinente; no hay marcador propio y cada repetición hace DROP/ADD.",
+          "recommendation": "Inventariar nombres/definiciones esperados y decidir versión/fingerprint de constraints en P1.3 antes de aplicar."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/015_inbox_unified.sql",
+      "id": "015",
+      "purpose": "Perfil manual, epoch de control y trazabilidad mensaje-identidad-outbox del Inbox.",
+      "schemas": [
+        "crm_channels"
+      ],
+      "tables_created": [
+        "crm_channels.ConversationProfile",
+        "crm_channels.ConversationControl",
+        "crm_channels.MessageRoute"
+      ],
+      "indexes_created": [
+        "IX_Inbox_MessageRoute_Queue",
+        "IX_Inbox_MessageRoute_Identity"
+      ],
+      "contracts": [
+        {
+          "name": "crm_channels.inbox",
+          "value": "inbox-unified-v1",
+          "line": 34
+        }
+      ],
+      "prerequisites": [
+        "011 y 001: canales reconocidos, identidades/outbox y conversaciones/mensajes CRM."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_inbox.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            24,
+            34
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Marcador inbox-unified-v1 retorna sin comprobar forma; si no está, rechaza tres objetos ya existentes antes de crear.",
+      "seed_writes": "No semillas ni edición de conversaciones existentes; defaults de epoch/lectura son para filas futuras.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 3,
+          "detail": "Guard InstanceName puede producir UNKNOWN; verify_target del runner sigue impidiendo destino no local.",
+          "recommendation": "Diseñar guard nuevo para la ubicación SQL confirmada; no eliminar el existente sin sustituto."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/015_inbox_unified.sql",
+          "line": 7,
+          "detail": "Marcador inbox-unified-v1 provoca RETURN sin cotejar forma de ConversationProfile/Control/MessageRoute.",
+          "recommendation": "Comprobar forma, FK y filtros de índices de manera explícita en P1.3."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/016_inbox_media.sql",
+      "id": "016",
+      "purpose": "Metadatos privados de adjuntos de Inbox, procesamiento, hash, tamaño, estado y expiración.",
+      "schemas": [
+        "crm_channels"
+      ],
+      "tables_created": [
+        "crm_channels.MediaAsset"
+      ],
+      "indexes_created": [
+        "IX_InboxMedia_Message",
+        "IX_InboxMedia_Work",
+        "IX_InboxMedia_Conversation"
+      ],
+      "contracts": [
+        {
+          "name": "crm_channels.media",
+          "value": "inbox-media-v1",
+          "line": 34
+        }
+      ],
+      "prerequisites": [
+        "015: inbox-unified-v1; 011 identidades/cuentas; 001 conversaciones/mensajes."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_inbox_media.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            24,
+            34
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/016_inbox_media.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Marcador inbox-media-v1 retorna; tabla previa sin marcador se rechaza. No compara el fingerprint completo si el marcador existe.",
+      "seed_writes": "No filas iniciales; metadatos sólo. Los archivos binarios/media no son creados por esta migración.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/016_inbox_media.sql",
+          "line": 3,
+          "detail": "Guard InstanceName sin normalización de NULL.",
+          "recommendation": "Tratar ausencia de identidad esperada como rechazo; conservar verificación del runner."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/017_ai_admissions.sql",
+      "id": "017",
+      "purpose": "Política de respuestas de admisiones, documentos publicados, chunks/términos léxicos, memoria de aspirante y jobs de respuesta.",
+      "schemas": [
+        "crm_ai"
+      ],
+      "tables_created": [
+        "crm_ai.AdmissionsPolicy",
+        "crm_ai.KnowledgeDocument",
+        "crm_ai.KnowledgeChunk",
+        "crm_ai.KnowledgeTerm",
+        "crm_ai.ProspectMemory",
+        "crm_ai.ResponseJob"
+      ],
+      "indexes_created": [
+        "IX_KnowledgeTerm_Chunk",
+        "IX_AdmissionsJob_Work"
+      ],
+      "contracts": [
+        {
+          "name": "crm_ai.admissions",
+          "value": "admissions-ai-v1",
+          "line": 56
+        }
+      ],
+      "prerequisites": [
+        "013: CRM-ai-v1; 015: crm_channels.MessageRoute; 003: crm_inbox.Task; 011: ExternalIdentity; 001: conversaciones/mensajes."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_ai_admissions.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            22,
+            26
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": false
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 3,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName'))<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "Marcador admissions-ai-v1 retorna. Antes de crear comprueba cuatro de los seis objetos; colisión en KnowledgeChunk/KnowledgeTerm queda para el motor y rollback del runner.",
+      "seed_writes": "INSERT AdmissionsPolicy(PolicyId=1), Enabled=0 por default, modelos vacíos y prompt institucional. No documentos, conocimiento de aspirantes ni jobs iniciales.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "COLLATE",
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 3,
+          "detail": "Guard InstanceName sin normalización de NULL.",
+          "recommendation": "Contrato institucional fail-closed en P1.2."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/017_ai_admissions.sql",
+          "line": 9,
+          "detail": "Marcador puede ocultar drift; precheck de objetos enumera cuatro aunque se crean seis. La atomicidad depende del runner, ya que el SQL no exige @@TRANCOUNT.",
+          "recommendation": "Verificar forma completa de los seis objetos y ejecutar sólo por runner transaccional autorizado en una copia."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/018_campaigns.sql",
+      "id": "018",
+      "purpose": "Evaluación de abandono, plantillas Meta, consentimiento, reglas de remarketing, cadencia por cuenta, campañas/destinatarios y ejecuciones durables.",
+      "schemas": [
+        "crm_marketing"
+      ],
+      "tables_created": [
+        "crm_marketing.ChurnAssessment",
+        "crm_marketing.MessageTemplate",
+        "crm_marketing.ContactConsent",
+        "crm_marketing.RemarketingRule",
+        "crm_marketing.AccountCadence",
+        "crm_marketing.Campaign",
+        "crm_marketing.CampaignRecipient",
+        "crm_marketing.EvaluationRun",
+        "crm_marketing.Policy"
+      ],
+      "indexes_created": [
+        "IX_Marketing_Churn_Recent",
+        "IX_Marketing_Consent_Current",
+        "IX_Marketing_Campaign_Due",
+        "IX_Marketing_Recipient_Queue",
+        "IX_Marketing_Recipient_Due",
+        "IX_Marketing_Recipient_Identity",
+        "IX_Marketing_Run_Due"
+      ],
+      "contracts": [
+        {
+          "name": "crm_marketing.contract",
+          "value": "campaigns-v1",
+          "line": 180
+        }
+      ],
+      "prerequisites": [
+        "011: CRM-channels-v1 y cuentas/identidades/outbox; 015: MessageRoute; 001: contactos/conversaciones. Transacción del llamador obligatoria."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_campaigns.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            26,
+            38
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": true
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 4,
+          "text": "IF @@TRANCOUNT=0 THROW 51000,'Explicit caller-owned transaction required.',1;"
+        },
+        {
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 5,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR ISNULL(CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName')),N'')<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "SQL rechaza cualquier esquema crm_marketing previo. Runner --preflight informa existencia sin aplicar; ejecución repetida normal rechaza y requiere inspección, no es no-op.",
+      "seed_writes": "INSERT PolicyId=1; EvaluationEnabled DEFAULT 1, intervalo 60 minutos y NextRunAtUtc futuro. Habilita la política de evaluación interna, no el transporte. Campañas/reglas/destinatarios/consentimientos quedan sin semillas.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "COLLATE",
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "sp_getapplock",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 5,
+          "detail": "Guard ISNULL rechaza la instancia por defecto: aunque el lenguaje sea 2019, el contrato existente sólo acepta DBSIIE/SQLEXPRESS.",
+          "recommendation": "No ejecutar sobre el destino institucional hasta sustituir/aceptar contrato y comprobar TLS/identidad en P1.2."
+        },
+        {
+          "severity": "info",
+          "file": "backend/migrations/018_campaigns.sql",
+          "line": 176,
+          "detail": "La política semilla tiene EvaluationEnabled=1; no equivale a todos los procesos de evaluación apagados, aun con marketing bloqueado.",
+          "recommendation": "Registrar efecto de la semilla y acordar preservación/activación de evaluación interna antes del ensayo SQL."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/019_admissions_agents.sql",
+      "id": "019",
+      "purpose": "Jerarquía institucional/programa/etapa, perfiles sobre registro Agent, contexto, ámbitos de fuentes, asignación, historial y reservas de consumo.",
+      "schemas": [
+        "crm_agents"
+      ],
+      "tables_created": [
+        "crm_agents.Stage",
+        "crm_agents.Profile",
+        "crm_agents.Context",
+        "crm_agents.SourceScope",
+        "crm_agents.Assignment",
+        "crm_agents.History",
+        "crm_agents.Usage"
+      ],
+      "indexes_created": [
+        "UX_Agents_Program",
+        "UX_Agents_Stage",
+        "UX_Agents_Guide",
+        "IX_Agents_History_Entity"
+      ],
+      "contracts": [
+        {
+          "name": "crm_agents.contract",
+          "value": "admissions-agents-v1",
+          "line": 74
+        }
+      ],
+      "prerequisites": [
+        "003: crm_inbox.Agent; 017: ResponseJob y KnowledgeDocument; 001: Conversation. Transacción del llamador y bloqueo crm.local.commit."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_agents.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            28,
+            91
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": true
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 3,
+          "text": "IF @@TRANCOUNT=0 THROW 51000,'Explicit transaction required.',1;"
+        },
+        {
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 4,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR ISNULL(CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName')),N'')<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "SQL rechaza esquema previo. Runner acepta como no-op contrato admissions-agents-v1 y comprueba presencia de columnas seleccionadas mediante COL_LENGTH; no valida todas las definiciones/FK/índices.",
+      "seed_writes": "No agentes, etapas, fuentes, contextos ni consumo iniciales. CHECK de ApprovedVersion conserva compatibilidad con guardado directo: servicio guarda versión aprobada igual a Version al activar, sin puerta humana adicional.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "IDENTITY",
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "sp_getapplock",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 4,
+          "detail": "Contrato de destino exige SQLEXPRESS y transacción; no es portable sin decisión a una instancia SQL por defecto.",
+          "recommendation": "Validar destino institucional en P1.2 y mantener guard de transacción/applock."
+        },
+        {
+          "severity": "info",
+          "file": "backend/migrations/019_admissions_agents.sql",
+          "line": 32,
+          "detail": "ApprovedVersion es parte del CHECK de integridad, pero no debe interpretarse como necesidad de reinstalar aprobación humana obligatoria del perfil.",
+          "recommendation": "Preservar semántica actual: guardar válido establece ApprovedVersion=Version (service.py:675/687); controles de fuentes/acciones son independientes."
+        }
+      ]
+    },
+    {
+      "file": "backend/migrations/020_agent_execution.sql",
+      "id": "020",
+      "purpose": "Ledger de ejecuciones IA con ruta/modelo, variante, reservas/costo, intentos y uso confirmado o incierto.",
+      "schemas": [
+        "crm_agents"
+      ],
+      "tables_created": [
+        "crm_agents.Execution"
+      ],
+      "indexes_created": [
+        "IX_AgentExecution_AgentCreated",
+        "IX_AgentExecution_Conversation"
+      ],
+      "contracts": [
+        {
+          "name": "crm_agents.execution_contract",
+          "value": "agent-execution-v1",
+          "line": 32
+        }
+      ],
+      "prerequisites": [
+        "019: Usage, History, Profile; 001: Conversation. Transacción del llamador y bloqueo crm.local.commit."
+      ],
+      "runners": [
+        {
+          "file": "backend/tools/migrate_agent_execution.py",
+          "mode": "local_sql_copy",
+          "transaction": "pyodbc autocommit=False; commit explícito; rollback en BaseException; finally close",
+          "verify_target_lines": [
+            50,
+            69
+          ],
+          "go_handling": "No divide GO; los archivos 011–020 no contienen separadores GO. Ejecuta cada archivo como un batch y drena nextset().",
+          "preflight": true
+        }
+      ],
+      "guards": [
+        {
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 3,
+          "text": "IF @@TRANCOUNT=0 THROW 51000,'Explicit transaction required.',1;"
+        },
+        {
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 4,
+          "text": "IF DB_NAME()<>N'DBSIIE' OR ISNULL(CONVERT(nvarchar(128),SERVERPROPERTY('InstanceName')),N'')<>N'SQLEXPRESS'"
+        }
+      ],
+      "idempotency": "SQL rechaza tabla Execution previa. Runner --preflight/existencia valida contrato, columnas/tipos/longitudes/nulabilidad, precisión decimal, tres FK y dos índices, luego rollback/no-op.",
+      "seed_writes": "No INSERT de ejecuciones ni modificación de consumos/secretos. No habilita proveedor ni transporte.",
+      "core_effects": "No CREATE/ALTER/DML explícito sobre tablas académicas core SIIE en este archivo. Las FK a crm y otros esquemas son dependencias CRM. Triggers/auditoría DDL de la base real no inspeccionados; no se afirma ausencia de efectos implícitos.",
+      "compatibility_2019": {
+        "verdict": "sin_sintaxis_posterior_a_2019_identificada_en_lectura_estatica",
+        "features": [
+          "ISJSON",
+          "THROW",
+          "datetime2",
+          "nvarchar",
+          "sp_addextendedproperty",
+          "sp_getapplock",
+          "uniqueidentifier"
+        ],
+        "json": "ISJSON de un argumento/NVARCHAR; sin tipo JSON nativo, JSON_PATH_EXISTS ni restricciones ISJSON de tipo introducidas después de2019. No aparece OPENJSON en estos DDL.",
+        "operational_status": "no_verificado_y_contrato_actual_solo_copia_local",
+        "limitations": "No hubo parser/compilación T-SQL, conexión o ejecución. Permisos, edición, compatibilidad efectiva, datos, collation de la base y efectos de triggers DDL se deben verificar en copia autorizada."
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 4,
+          "detail": "Destino SQL sigue fijado a la copia local SQLEXPRESS; soporte de sintaxis2019 no acredita preparación institucional.",
+          "recommendation": "Resolver contrato de entorno antes de aplicación, manteniendo transacción y locks."
+        },
+        {
+          "severity": "medium",
+          "file": "backend/migrations/020_agent_execution.sql",
+          "line": 6,
+          "detail": "SQL valida presencia de Usage/History, no valor de crm_agents.contract; el runner verifica Usage y forma final de Execution pero no comprueba por sí solo todo el contrato previo de agentes.",
+          "recommendation": "En P1.3 hacer explícito el contrato/prerequisitos de la cadena 019→020 y su forma, sin suponer que OBJECT_ID acredita versión."
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_late_m011",
+        "label": "011_channels.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_channels_account",
+        "label": "crm_channels.Account",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L12"
+      },
+      {
+        "id": "sql_late_table_crm_channels_credential",
+        "label": "crm_channels.Credential",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L22"
+      },
+      {
+        "id": "sql_late_table_crm_channels_webhook_events",
+        "label": "crm_channels.webhook_events",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L28"
+      },
+      {
+        "id": "sql_late_table_crm_channels_externalidentity",
+        "label": "crm_channels.ExternalIdentity",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L37"
+      },
+      {
+        "id": "sql_late_table_crm_channels_externalmessage",
+        "label": "crm_channels.ExternalMessage",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L43"
+      },
+      {
+        "id": "sql_late_table_crm_channels_outbound_queue",
+        "label": "crm_channels.outbound_queue",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L48"
+      },
+      {
+        "id": "sql_late_table_crm_channels_social_comments",
+        "label": "crm_channels.social_comments",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L60"
+      },
+      {
+        "id": "sql_late_table_crm_channels_audit",
+        "label": "crm_channels.Audit",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L66"
+      },
+      {
+        "id": "sql_late_runner_migrate_channels",
+        "label": "migrate_channels.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_channels.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_channels_contract",
+        "label": "crm_channels.contract = CRM-channels-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L71"
+      },
+      {
+        "id": "sql_late_m012",
+        "label": "012_channels_identity_collation.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/012_channels_identity_collation.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_channels_identity_collation",
+        "label": "crm_channels.identity_collation = BIN2-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/012_channels_identity_collation.sql",
+        "source_location": "L28"
+      },
+      {
+        "id": "sql_late_m013",
+        "label": "013_ai_providers.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_ai_configuration",
+        "label": "crm_ai.Configuration",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L12"
+      },
+      {
+        "id": "sql_late_table_crm_ai_connection",
+        "label": "crm_ai.Connection",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L18"
+      },
+      {
+        "id": "sql_late_table_crm_ai_credential",
+        "label": "crm_ai.Credential",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L24"
+      },
+      {
+        "id": "sql_late_runner_migrate_ai_providers",
+        "label": "migrate_ai_providers.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_ai_providers.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_ai_contract",
+        "label": "crm_ai.contract = CRM-ai-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L31"
+      },
+      {
+        "id": "sql_late_m014",
+        "label": "014_ai_provider_catalog.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/014_ai_provider_catalog.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_runner_migrate_ai_provider_catalog",
+        "label": "migrate_ai_provider_catalog.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_ai_provider_catalog.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_m015",
+        "label": "015_inbox_unified.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_channels_conversationprofile",
+        "label": "crm_channels.ConversationProfile",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L11"
+      },
+      {
+        "id": "sql_late_table_crm_channels_conversationcontrol",
+        "label": "crm_channels.ConversationControl",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L17"
+      },
+      {
+        "id": "sql_late_table_crm_channels_messageroute",
+        "label": "crm_channels.MessageRoute",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L22"
+      },
+      {
+        "id": "sql_late_runner_migrate_inbox",
+        "label": "migrate_inbox.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_inbox.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_channels_inbox",
+        "label": "crm_channels.inbox = inbox-unified-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L34"
+      },
+      {
+        "id": "sql_late_m016",
+        "label": "016_inbox_media.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_channels_mediaasset",
+        "label": "crm_channels.MediaAsset",
+        "file_type": "code",
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L9"
+      },
+      {
+        "id": "sql_late_runner_migrate_inbox_media",
+        "label": "migrate_inbox_media.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_inbox_media.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_channels_media",
+        "label": "crm_channels.media = inbox-media-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L34"
+      },
+      {
+        "id": "sql_late_m017",
+        "label": "017_ai_admissions.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_ai_admissionspolicy",
+        "label": "crm_ai.AdmissionsPolicy",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L12"
+      },
+      {
+        "id": "sql_late_table_crm_ai_knowledgedocument",
+        "label": "crm_ai.KnowledgeDocument",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L19"
+      },
+      {
+        "id": "sql_late_table_crm_ai_knowledgechunk",
+        "label": "crm_ai.KnowledgeChunk",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L26"
+      },
+      {
+        "id": "sql_late_table_crm_ai_knowledgeterm",
+        "label": "crm_ai.KnowledgeTerm",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L31"
+      },
+      {
+        "id": "sql_late_table_crm_ai_prospectmemory",
+        "label": "crm_ai.ProspectMemory",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L37"
+      },
+      {
+        "id": "sql_late_table_crm_ai_responsejob",
+        "label": "crm_ai.ResponseJob",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L44"
+      },
+      {
+        "id": "sql_late_runner_migrate_ai_admissions",
+        "label": "migrate_ai_admissions.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_ai_admissions.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_ai_admissions",
+        "label": "crm_ai.admissions = admissions-ai-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L56"
+      },
+      {
+        "id": "sql_late_m018",
+        "label": "018_campaigns.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_churnassessment",
+        "label": "crm_marketing.ChurnAssessment",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L16"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_messagetemplate",
+        "label": "crm_marketing.MessageTemplate",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L40"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_contactconsent",
+        "label": "crm_marketing.ContactConsent",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L57"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_remarketingrule",
+        "label": "crm_marketing.RemarketingRule",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L77"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_accountcadence",
+        "label": "crm_marketing.AccountCadence",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L96"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_campaign",
+        "label": "crm_marketing.Campaign",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L107"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_campaignrecipient",
+        "label": "crm_marketing.CampaignRecipient",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L129"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_evaluationrun",
+        "label": "crm_marketing.EvaluationRun",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L159"
+      },
+      {
+        "id": "sql_late_table_crm_marketing_policy",
+        "label": "crm_marketing.Policy",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L173"
+      },
+      {
+        "id": "sql_late_runner_migrate_campaigns",
+        "label": "migrate_campaigns.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_campaigns.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_marketing_contract",
+        "label": "crm_marketing.contract = campaigns-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L180"
+      },
+      {
+        "id": "sql_late_m019",
+        "label": "019_admissions_agents.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_agents_stage",
+        "label": "crm_agents.Stage",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L13"
+      },
+      {
+        "id": "sql_late_table_crm_agents_profile",
+        "label": "crm_agents.Profile",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L20"
+      },
+      {
+        "id": "sql_late_table_crm_agents_context",
+        "label": "crm_agents.Context",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L37"
+      },
+      {
+        "id": "sql_late_table_crm_agents_sourcescope",
+        "label": "crm_agents.SourceScope",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L47"
+      },
+      {
+        "id": "sql_late_table_crm_agents_assignment",
+        "label": "crm_agents.Assignment",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L54"
+      },
+      {
+        "id": "sql_late_table_crm_agents_history",
+        "label": "crm_agents.History",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L61"
+      },
+      {
+        "id": "sql_late_table_crm_agents_usage",
+        "label": "crm_agents.Usage",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L68"
+      },
+      {
+        "id": "sql_late_runner_migrate_agents",
+        "label": "migrate_agents.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_agents.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_agents_contract",
+        "label": "crm_agents.contract = admissions-agents-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L74"
+      },
+      {
+        "id": "sql_late_m020",
+        "label": "020_agent_execution.sql",
+        "file_type": "code",
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_table_crm_agents_execution",
+        "label": "crm_agents.Execution",
+        "file_type": "code",
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L12"
+      },
+      {
+        "id": "sql_late_runner_migrate_agent_execution",
+        "label": "migrate_agent_execution.py",
+        "file_type": "code",
+        "source_file": "backend/tools/migrate_agent_execution.py",
+        "source_location": "L1"
+      },
+      {
+        "id": "sql_late_contract_crm_agents_execution_contract",
+        "label": "crm_agents.execution_contract = agent-execution-v1",
+        "file_type": "code",
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L32"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L12"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_credential",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_webhook_events",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L37"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_externalmessage",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L43"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_outbound_queue",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_social_comments",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L60"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_audit",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L66"
+      },
+      {
+        "source": "sql_late_runner_migrate_channels",
+        "target": "sql_late_m011",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_channels.py",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_contract_crm_channels_contract",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L71"
+      },
+      {
+        "source": "sql_late_runner_migrate_channels",
+        "target": "sql_late_m012",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_channels.py",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_late_m012",
+        "target": "sql_late_contract_crm_channels_identity_collation",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/012_channels_identity_collation.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_late_m013",
+        "target": "sql_late_table_crm_ai_configuration",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L12"
+      },
+      {
+        "source": "sql_late_m013",
+        "target": "sql_late_table_crm_ai_connection",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L18"
+      },
+      {
+        "source": "sql_late_m013",
+        "target": "sql_late_table_crm_ai_credential",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L24"
+      },
+      {
+        "source": "sql_late_runner_migrate_ai_providers",
+        "target": "sql_late_m013",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_ai_providers.py",
+        "source_location": "L42"
+      },
+      {
+        "source": "sql_late_m013",
+        "target": "sql_late_contract_crm_ai_contract",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/013_ai_providers.sql",
+        "source_location": "L31"
+      },
+      {
+        "source": "sql_late_runner_migrate_ai_provider_catalog",
+        "target": "sql_late_m014",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_ai_provider_catalog.py",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_table_crm_channels_conversationprofile",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_table_crm_channels_conversationcontrol",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L17"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_table_crm_channels_messageroute",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_late_runner_migrate_inbox",
+        "target": "sql_late_m015",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_inbox.py",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_contract_crm_channels_inbox",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_late_m016",
+        "target": "sql_late_table_crm_channels_mediaasset",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_late_runner_migrate_inbox_media",
+        "target": "sql_late_m016",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_inbox_media.py",
+        "source_location": "L29"
+      },
+      {
+        "source": "sql_late_m016",
+        "target": "sql_late_contract_crm_channels_media",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L34"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_admissionspolicy",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L12"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_knowledgedocument",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_knowledgechunk",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L26"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_knowledgeterm",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L31"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_prospectmemory",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L37"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_responsejob",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L44"
+      },
+      {
+        "source": "sql_late_runner_migrate_ai_admissions",
+        "target": "sql_late_m017",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_ai_admissions.py",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_contract_crm_ai_admissions",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L56"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_churnassessment",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L16"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_messagetemplate",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L40"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_contactconsent",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L57"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_remarketingrule",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L77"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_accountcadence",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L96"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_campaign",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L107"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_campaignrecipient",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L129"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_evaluationrun",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L159"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_policy",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L173"
+      },
+      {
+        "source": "sql_late_runner_migrate_campaigns",
+        "target": "sql_late_m018",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_campaigns.py",
+        "source_location": "L35"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_contract_crm_marketing_contract",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L180"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_stage",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_profile",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_context",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L37"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_sourcescope",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L47"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_assignment",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L54"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_history",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L61"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_usage",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L68"
+      },
+      {
+        "source": "sql_late_runner_migrate_agents",
+        "target": "sql_late_m019",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_agents.py",
+        "source_location": "L86"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_contract_crm_agents_contract",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L74"
+      },
+      {
+        "source": "sql_late_m020",
+        "target": "sql_late_table_crm_agents_execution",
+        "relation": "declares_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L12"
+      },
+      {
+        "source": "sql_late_runner_migrate_agent_execution",
+        "target": "sql_late_m020",
+        "relation": "executes_migration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/tools/migrate_agent_execution.py",
+        "source_location": "L66"
+      },
+      {
+        "source": "sql_late_m020",
+        "target": "sql_late_contract_crm_agents_execution_contract",
+        "relation": "declares_contract",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L32"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L38"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L44"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L49"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L50"
+      },
+      {
+        "source": "sql_late_m011",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/011_channels.sql",
+        "source_location": "L61"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L24"
+      },
+      {
+        "source": "sql_late_m015",
+        "target": "sql_late_table_crm_channels_outbound_queue",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/015_inbox_unified.sql",
+        "source_location": "L25"
+      },
+      {
+        "source": "sql_late_m016",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_late_m016",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/016_inbox_media.sql",
+        "source_location": "L14"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_knowledgedocument",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L27"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_ai_knowledgechunk",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L33"
+      },
+      {
+        "source": "sql_late_m017",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/017_ai_admissions.sql",
+        "source_location": "L47"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L19"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L42"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L59"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L60"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_contactconsent",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L70"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L80"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_messagetemplate",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L89"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_account",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L97"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_remarketingrule",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L113"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_accountcadence",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L118"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_messagetemplate",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L120"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_externalidentity",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L132"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_channels_outbound_queue",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L137"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_campaign",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L147"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_campaign",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L148"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_contactconsent",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L149"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_remarketingrule",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L163"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_campaign",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L164"
+      },
+      {
+        "source": "sql_late_m018",
+        "target": "sql_late_table_crm_marketing_evaluationrun",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/018_campaigns.sql",
+        "source_location": "L172"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_profile",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L23"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_stage",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L28"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_stage",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L44"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_ai_knowledgedocument",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_stage",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L51"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_context",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L59"
+      },
+      {
+        "source": "sql_late_m019",
+        "target": "sql_late_table_crm_agents_profile",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/019_admissions_agents.sql",
+        "source_location": "L69"
+      },
+      {
+        "source": "sql_late_m020",
+        "target": "sql_late_table_crm_agents_usage",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L13"
+      },
+      {
+        "source": "sql_late_m020",
+        "target": "sql_late_table_crm_agents_profile",
+        "relation": "references_table",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "backend/migrations/020_agent_execution.sql",
+        "source_location": "L14"
+      }
+    ]
+  },
+  "shared_findings": [
+    {
+      "file": "backend/app/sql_target.py",
+      "line": 104,
+      "detail": "ODBC18/TCP/TLS estricto Encrypt=Yes,TrustServerCertificate=No; base DBSIIE fija y HostnameInCertificate configurable sólo dentro de controles locales. Se mantiene, no relajarTLS.",
+      "observed_at": "P1.1; original observation retained below; runtime superseded by P1.2",
+      "p1_2_note": "Ver P1_2_CONTRACT.md: contrato compartido SQL 2019/TLS, workspace institucional bloqueado; SQL/runners históricos intactos."
+    },
+    {
+      "file": "backend/app/sql_workspace.py",
+      "line": 161,
+      "detail": "verify_target exige tuple DB_NAME/InstanceName/MachineName/crm.contract exacta y SHAPE_SQL. Rechaza NULL InstanceName aunque 011–017 SQL crudo no fallen cerrado.",
+      "observed_at": "P1.1; original observation retained below; runtime superseded by P1.2",
+      "p1_2_note": "Ver P1_2_CONTRACT.md: contrato compartido SQL 2019/TLS, workspace institucional bloqueado; SQL/runners históricos intactos."
+    },
+    {
+      "file": "backend/app/config.py",
+      "line": 47,
+      "detail": "Modo local_sql_copy limita hosts loopback/host.docker.internal, certificado localhost y máquina explícita; no es contrato de despliegue institucional.",
+      "observed_at": "P1.1; original observation retained below; runtime superseded by P1.2",
+      "p1_2_note": "Ver P1_2_CONTRACT.md: contrato compartido SQL 2019/TLS, workspace institucional bloqueado; SQL/runners históricos intactos."
+    }
+  ],
+  "not_performed": [
+    "No import de aplicación/pyodbc ni lectura.env",
+    "No conexión SQL/migración/transacción real",
+    "No tests/builds/proveedores ni producción"
+  ]
+}

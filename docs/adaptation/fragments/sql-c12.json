@@ -1,0 +1,1482 @@
+{
+  "domain": "Correspondencias y repositorios/API Canales aislados, con progreso por criterios · SQL-C12",
+  "review_scope": "Extracción y revisión semántica independiente de código público, tres reportes y contrato de medición. Un finding funcional de alcance local y12 findings exclusivamente de reporte; no son13 capacidades entregadas ni alteran56 criterios/8accepted. C12 sólo aporta evidencia parcial de P4.3. El revisor no ejecutó SQL/Docker/app ni leyó perfiles/.local/keys. Las pruebas conectadas y242 tests son del ejecutor; el revisor validó públicamente porcentajes con14 negativos. No se reimportan nodos AST ni se modifican C10/C11. Cuenta final59 filas nuevas incluye fixtures/contexto/bindings, no funciones. La API es ASGI TestClient sin servidor/página4176; P2,UI completa y proveedores siguen pendientes.",
+  "findings": [
+    {
+      "id": "channels_parity_mapping_repositories",
+      "phase": "P1",
+      "capability": "Correspondencias B011 y repositorios/API C12 independientes, con claves verificadas y permisos mínimos",
+      "status": "implementado_verificado_en_api_aislada",
+      "gap": "C12 acepta importación y CRUD/lecturas locales; no UI completa, P2, OAuth, rotación operativa, HMAC público, cuotas, workers, proveedores o SQL2019 institucional. No hay listener nuevo en4176;4173 C5 y4175 C9 mantienen sus alcances.",
+      "acceptance": "23 bindings,2 aplicaciones/integraciones importadas draft,2 secretos staged recifrados y cuarentena explícita de recibo/cola; NOOP sin duplicados y con claves/targets validados.47 SQL/API,15 fallos y2 rollbacks;42 nuevas+200 regresiones=242. Cuatro fuentes y65 tablas anteriores intactas; diario17. Perfil/login/ticket propios,68 GRANT y7 DENY runtime; no acceso a raw secrets/body o DML académico.",
+      "source": [
+        {
+          "file": "docs/adaptation/sql/channels-parity-contract.json",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C11_REVIEW.md",
+          "line": 36
+        }
+      ],
+      "target": [
+        {
+          "file": "artifacts/sql-c12/connected-result.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c12/preservation.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/sql-c12/offline-checks.json",
+          "line": 1
+        },
+        {
+          "file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+          "line": 1
+        },
+        {
+          "file": "docs/decisions/ADR-024-channels-parity-repositories.md",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/api.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/guard.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/profile.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/policy.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/repository.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/parity_channels/catalog.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/parity_mapping.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/parity_data.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/rehearse_parity_repositories.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_parity_repositories.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/fault_parity_repositories.py",
+          "line": 1
+        },
+        {
+          "file": "backend/tests/test_parity_channels.py",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p0",
+      "phase": "P0",
+      "capability": "Reporte de criterios canónicos aceptados en P0",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "5/5 criterios; 100.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p1",
+      "phase": "P1",
+      "capability": "Reporte de criterios canónicos aceptados en P1",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "3/5 criterios; 60.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p2",
+      "phase": "P2",
+      "capability": "Reporte de criterios canónicos aceptados en P2",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p3",
+      "phase": "P3",
+      "capability": "Reporte de criterios canónicos aceptados en P3",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p4",
+      "phase": "P4",
+      "capability": "Reporte de criterios canónicos aceptados en P4",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p5",
+      "phase": "P5",
+      "capability": "Reporte de criterios canónicos aceptados en P5",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/4 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p6",
+      "phase": "P6",
+      "capability": "Reporte de criterios canónicos aceptados en P6",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p7",
+      "phase": "P7",
+      "capability": "Reporte de criterios canónicos aceptados en P7",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p8",
+      "phase": "P8",
+      "capability": "Reporte de criterios canónicos aceptados en P8",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/4 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p9",
+      "phase": "P9",
+      "capability": "Reporte de criterios canónicos aceptados en P9",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/4 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p10",
+      "phase": "P10",
+      "capability": "Reporte de criterios canónicos aceptados en P10",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/5 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "id": "phase_progress_p11",
+      "phase": "P11",
+      "capability": "Reporte de criterios canónicos aceptados en P11",
+      "status": "reported_exact_accepted_criteria",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "gap": "El porcentaje cuenta criterios completamente aceptados; no horas, esfuerzo o funcionalidad operativa. Parciales y cierres pendientes no suman crédito.",
+      "acceptance": "0/4 criterios; 0.00%. Denominador global fijo56,8accepted; sin promedio global ni crédito por este reporte.",
+      "source": [
+        {
+          "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+          "line": 1
+        }
+      ],
+      "target": [
+        {
+          "file": "docs\\adaptation\\phase-progress-contract.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts\\sql-c12\\progress-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/check_phase_progress.py",
+          "line": 53
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "sql_c12_mapping_repository_acceptance",
+        "label": "C12: mappings y repositorios/API aceptados sólo en copia aislada",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L3",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_independent_copy",
+        "label": "Copia7a309d11, login/perfil/ticket propios; sin migración del esquema",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.trial_database",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_atomic_import",
+        "label": "Importación DML SERIALIZABLE:23 bindings y dos rollbacks completos",
+        "file_type": "code",
+        "source_file": "backend/tools/rehearse_parity_repositories.py",
+        "source_location": "L329",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_binding_NOOP_integrity",
+        "label": "NOOP valida claves, targets deterministas y snapshots inmutables",
+        "file_type": "code",
+        "source_file": "backend/tools/parity_mapping.py",
+        "source_location": "L180",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_product_stage_identity",
+        "label": "Identidad por producto y etapa B006 activa/versionada",
+        "file_type": "code",
+        "source_file": "backend/tools/parity_mapping.py",
+        "source_location": "L54",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_reciphered_staged_secrets",
+        "label": "Dos secretos recifrados staged; key original autenticada, AAD canónico y bóveda separada",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/connected-result.json",
+        "source_location": "$.preparation.mapping.secrets_reciphered",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_quarantined_legacy_data",
+        "label": "Recibo no verificado y cola sin ruta en cuarentena; sin evento/job ficticio",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L10",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_column_ACL_guard",
+        "label": "Runtime68 GRANT/7 DENY y matriz efectiva por columna; sin raw secrets/body",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/connected-result.json",
+        "source_location": "$.runtime_acl",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_scoped_importer",
+        "label": "Importador WITHOUT LOGIN39 GRANT/7 DENY; fuentes/B006 readonly y destinos insert",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/connected-result.json",
+        "source_location": "$.importer_acl",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_encrypted_TLS_profile",
+        "label": "Perfil cifrado, TLS estricto, ticket y capacidad local con vencimiento",
+        "file_type": "code",
+        "source_file": "backend/app/parity_channels/profile.py",
+        "source_location": "L21",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_etag_idempotent_configuration",
+        "label": "Rowversion+Idempotency-Key+HMAC; configuración, operación y auditoría en un commit",
+        "file_type": "code",
+        "source_file": "backend/app/parity_channels/repository.py",
+        "source_location": "L96",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_ASGI_not_UI_listener",
+        "label": "API probada con TestClient; no listener ni página nueva en4176",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L16",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_preserved_sources",
+        "label": "SIIE/C5/C9/C11 y65 tablas anteriores preservados; diario17",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.sources_catalog_and_binary_rows_unchanged",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_test_evidence",
+        "label": "242 pruebas focalizadas,47 SQL/API y15 fallos; sin recertificar suite general",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/offline-checks.json",
+        "source_location": "$.offline_tests",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_recovery",
+        "label": "Recuperación independiente exacta al respaldo C11",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.recovery_exact_to_C11",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_pending_gates",
+        "label": "C13/P2/UI completa/OAuth/proveedores/SQL2019 permanecen pendientes",
+        "file_type": "document",
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L48",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_criteria_measurement",
+        "label": "56 criterios fijos,8 aceptados; C12 sólo evidencia parcial de P4.3",
+        "file_type": "document",
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_criteria_checker",
+        "label": "Checker público:14 rechazos de porcentajes/cierres inválidos",
+        "file_type": "document",
+        "source_file": "artifacts/sql-c12/offline-checks.json",
+        "source_location": "$.progress_validation",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_semantic_review",
+        "label": "Revisión independiente sin observaciones materiales abiertas",
+        "file_type": "document",
+        "source_file": "artifacts\\sql-c12\\review.json",
+        "source_location": "$.remaining_material_issue_ids",
+        "scope": "C12_isolated_mapping_API_or_criteria_reporting_only"
+      },
+      {
+        "id": "sql_c12_mapping_account",
+        "label": "2 cuentas→aplicaciones/integraciones draft y endpoints inactivos",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582",
+        "source_table": "crm_channels.Account",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_credential",
+        "label": "2 credenciales→SecretVersion staged recifrada",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L714",
+        "source_table": "crm_channels.Credential",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_webhook_events",
+        "label": "1 recibo→WebhookReceipt legacy_unverified/quarantined",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L880",
+        "source_table": "crm_channels.webhook_events",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_externalidentity",
+        "label": "1 identidad externa→vínculo CRM preservado",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L795",
+        "source_table": "crm_channels.ExternalIdentity",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_externalmessage",
+        "label": "3 mensajes externos→metadata con firma de fuente",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L829",
+        "source_table": "crm_channels.ExternalMessage",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_outbound_queue",
+        "label": "1 trabajo sin ruta→auditoría de cuarentena;0 SendJob",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L936",
+        "source_table": "crm_channels.outbound_queue",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_social_comments",
+        "label": "1 comentario→lectura local, sin respuesta de proveedor",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L854",
+        "source_table": "crm_channels.social_comments",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "sql_c12_mapping_audit",
+        "label": "12 auditorías→actor heredado no supuesto autenticado",
+        "file_type": "code",
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L1021",
+        "source_table": "crm_channels.Audit",
+        "verification": "actual_imported_or_quarantined_outcome",
+        "does_not_enable_provider": true
+      },
+      {
+        "id": "phase_criteria_p0",
+        "label": "P0 · 100.00% (5/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[0].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P0",
+        "reporting_finding_id": "phase_progress_p0"
+      },
+      {
+        "id": "phase_criteria_p1",
+        "label": "P1 · 60.00% (3/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[1].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P1",
+        "reporting_finding_id": "phase_progress_p1"
+      },
+      {
+        "id": "phase_criteria_p2",
+        "label": "P2 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P2",
+        "reporting_finding_id": "phase_progress_p2"
+      },
+      {
+        "id": "phase_criteria_p3",
+        "label": "P3 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[3].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P3",
+        "reporting_finding_id": "phase_progress_p3"
+      },
+      {
+        "id": "phase_criteria_p4",
+        "label": "P4 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[4].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P4",
+        "reporting_finding_id": "phase_progress_p4"
+      },
+      {
+        "id": "phase_criteria_p5",
+        "label": "P5 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[5].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P5",
+        "reporting_finding_id": "phase_progress_p5"
+      },
+      {
+        "id": "phase_criteria_p6",
+        "label": "P6 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[6].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P6",
+        "reporting_finding_id": "phase_progress_p6"
+      },
+      {
+        "id": "phase_criteria_p7",
+        "label": "P7 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[7].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P7",
+        "reporting_finding_id": "phase_progress_p7"
+      },
+      {
+        "id": "phase_criteria_p8",
+        "label": "P8 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[8].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P8",
+        "reporting_finding_id": "phase_progress_p8"
+      },
+      {
+        "id": "phase_criteria_p9",
+        "label": "P9 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[9].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P9",
+        "reporting_finding_id": "phase_progress_p9"
+      },
+      {
+        "id": "phase_criteria_p10",
+        "label": "P10 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[10].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P10",
+        "reporting_finding_id": "phase_progress_p10"
+      },
+      {
+        "id": "phase_criteria_p11",
+        "label": "P11 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[11].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P11",
+        "reporting_finding_id": "phase_progress_p11"
+      }
+    ],
+    "edges": [
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_account",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582"
+      },
+      {
+        "source": "sql_c12_mapping_account",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582"
+      },
+      {
+        "source": "sql_c12_mapping_account",
+        "target": "sql_c11_table_application",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582"
+      },
+      {
+        "source": "sql_c12_mapping_account",
+        "target": "sql_c11_table_integration",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582"
+      },
+      {
+        "source": "sql_c12_mapping_account",
+        "target": "sql_c11_table_webhookendpoint",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L582"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_credential",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L714"
+      },
+      {
+        "source": "sql_c12_mapping_credential",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L714"
+      },
+      {
+        "source": "sql_c12_mapping_credential",
+        "target": "sql_c11_table_secretversion",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L714"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_webhook_events",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L880"
+      },
+      {
+        "source": "sql_c12_mapping_webhook_events",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L880"
+      },
+      {
+        "source": "sql_c12_mapping_webhook_events",
+        "target": "sql_c11_table_webhookreceipt",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L880"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_externalidentity",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L795"
+      },
+      {
+        "source": "sql_c12_mapping_externalidentity",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L795"
+      },
+      {
+        "source": "sql_c12_mapping_externalidentity",
+        "target": "sql_c11_table_externalidentity",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L795"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_externalmessage",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L829"
+      },
+      {
+        "source": "sql_c12_mapping_externalmessage",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L829"
+      },
+      {
+        "source": "sql_c12_mapping_externalmessage",
+        "target": "sql_c11_table_externalmessage",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L829"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_outbound_queue",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L936"
+      },
+      {
+        "source": "sql_c12_mapping_outbound_queue",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L936"
+      },
+      {
+        "source": "sql_c12_mapping_outbound_queue",
+        "target": "sql_c11_table_audit",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L936"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_social_comments",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L854"
+      },
+      {
+        "source": "sql_c12_mapping_social_comments",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L854"
+      },
+      {
+        "source": "sql_c12_mapping_social_comments",
+        "target": "sql_c11_table_socialcomment",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L854"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_mapping_audit",
+        "relation": "maps_source_rows_atomically",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L1021"
+      },
+      {
+        "source": "sql_c12_mapping_audit",
+        "target": "sql_c11_table_legacybinding",
+        "relation": "records_source_hash_and_deterministic_target",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L1021"
+      },
+      {
+        "source": "sql_c12_mapping_audit",
+        "target": "sql_c11_table_audit",
+        "relation": "maps_actual_legacy_outcome_to_structure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "backend\\tools\\parity_mapping.py",
+        "source_location": "L1021"
+      },
+      {
+        "source": "sql_c11_legacy_mapping_block",
+        "target": "sql_c12_mapping_repository_acceptance",
+        "relation": "continued_by_scoped_import_not_full_provider_activation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L7"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_independent_copy",
+        "relation": "uses_new_restoration_and_own_profile",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_atomic_import",
+        "relation": "imports_B011_without_altering_legacy_or_DDL_journal",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_binding_NOOP_integrity",
+        "relation": "replays_only_after_source_key_and_target_validation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L22"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_product_stage_identity",
+        "relation": "preserves_product_parent_ID_and_active_stage_binding",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L8"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_reciphered_staged_secrets",
+        "relation": "reencrypts_after_verified_original_key_without_runtime_key_access",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L9"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_quarantined_legacy_data",
+        "relation": "does_not_fabricate_authentication_or_routable_jobs",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L10"
+      },
+      {
+        "source": "sql_c12_atomic_import",
+        "target": "sql_c12_scoped_importer",
+        "relation": "runs_as_without_login_with_insert_only_targets",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L11"
+      },
+      {
+        "source": "sql_c12_independent_copy",
+        "target": "sql_c12_column_ACL_guard",
+        "relation": "requires_own_SID_catalog_ownership_and_exact_effective_rights",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L12"
+      },
+      {
+        "source": "sql_c12_independent_copy",
+        "target": "sql_c12_encrypted_TLS_profile",
+        "relation": "uses_strict_TLS_and_private_encrypted_configuration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts\\sql-c12\\review.json",
+        "source_location": "$.limits"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_etag_idempotent_configuration",
+        "relation": "offers_only_explicit_local_draft_mutations",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L20"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_ASGI_not_UI_listener",
+        "relation": "is_tested_with_ASGI_and_SQL_not_a_new_preview",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L16"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_preserved_sources",
+        "relation": "preserves_four_sources_and_all_old65_rows",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.sources_catalog_and_binary_rows_unchanged"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_test_evidence",
+        "relation": "has_scoped_published_positive_and_fault_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/connected-result.json",
+        "source_location": "$.API_SQL_checks"
+      },
+      {
+        "source": "sql_c12_test_evidence",
+        "target": "sql_c12_recovery",
+        "relation": "includes_independent_exact_backup_recovery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/connected-result.json",
+        "source_location": "$.fault_checks"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_pending_gates",
+        "relation": "does_not_complete_UI_authentication_or_external_operation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_c12_pending_gates",
+        "target": "sql_c5_restored_ui_acceptance",
+        "relation": "preserves_shared4173_C5_foundation",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.existing_previews_modified"
+      },
+      {
+        "source": "sql_c12_pending_gates",
+        "target": "sql_c9_capability_ui_implementation",
+        "relation": "preserves4175_C9_channels_subset",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/preservation.json",
+        "source_location": "$.existing_previews_modified"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_criteria_measurement",
+        "relation": "adds_partial_P4_evidence_without_criterion_credit",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/decisions/ADR-024-channels-parity-repositories.md",
+        "source_location": "L15"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "sql_c12_criteria_checker",
+        "relation": "uses_fixed_definition_and_exact_arithmetic",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts/sql-c12/offline-checks.json",
+        "source_location": "$.progress_validation"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "sql_c12_semantic_review",
+        "relation": "has_independent_source_and_evidence_review",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "artifacts\\sql-c12\\review.json",
+        "source_location": "$.remaining_material_issue_ids"
+      },
+      {
+        "source": "sql_c12_mapping_repository_acceptance",
+        "target": "P1",
+        "relation": "advances_repositories_on_preserved_restored_schema",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L3"
+      },
+      {
+        "source": "sql_c12_pending_gates",
+        "target": "P4",
+        "relation": "keeps_full_channels_and_webhooks_parity_pending",
+        "confidence": "INFERRED",
+        "confidence_score": 0.98,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "sql_c12_pending_gates",
+        "target": "P2",
+        "relation": "does_not_replace_institutional_users_roles_and_sessions",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/sql/SQL_C12_REVIEW.md",
+        "source_location": "L18"
+      },
+      {
+        "source": "phase_criteria_p0",
+        "target": "P0",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[0].completion"
+      },
+      {
+        "source": "phase_criteria_p1",
+        "target": "P1",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[1].completion"
+      },
+      {
+        "source": "phase_criteria_p2",
+        "target": "P2",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].completion"
+      },
+      {
+        "source": "phase_criteria_p3",
+        "target": "P3",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[3].completion"
+      },
+      {
+        "source": "phase_criteria_p4",
+        "target": "P4",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[4].completion"
+      },
+      {
+        "source": "phase_criteria_p5",
+        "target": "P5",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[5].completion"
+      },
+      {
+        "source": "phase_criteria_p6",
+        "target": "P6",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[6].completion"
+      },
+      {
+        "source": "phase_criteria_p7",
+        "target": "P7",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[7].completion"
+      },
+      {
+        "source": "phase_criteria_p8",
+        "target": "P8",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[8].completion"
+      },
+      {
+        "source": "phase_criteria_p9",
+        "target": "P9",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[9].completion"
+      },
+      {
+        "source": "phase_criteria_p10",
+        "target": "P10",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[10].completion"
+      },
+      {
+        "source": "phase_criteria_p11",
+        "target": "P11",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[11].completion"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p0",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p1",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p2",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p3",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p4",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p5",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p6",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p7",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p8",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p9",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p10",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      },
+      {
+        "source": "sql_c12_criteria_measurement",
+        "target": "phase_criteria_p11",
+        "relation": "reports_phase_criteria_without_counting_reporting_as_delivery",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs\\adaptation\\phase-progress-contract.json",
+        "source_location": "$.summary"
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "unit": "SQL-C7",
+  "release_id": "CBN-channels-local-v1",
+  "status": "retired_not_accepted",
+  "release_sha256": "e4f76c63592b4a99f35380496d25a34afb205645a0c4f5e885cf9ece8f901ca1",
+  "reason": "Canonical sorting occurred before removing volatile identity_last_value; Audit rollback changed only column row order",
+  "reference_metadata_sha256": "d9e43d4426d61aa4e6c295276f2ea2c76c2abe1bf552b5a14f2ec5738930ee41",
+  "trial_metadata_sha256": "e4a916b1094e8c50f76a9ecdbd460d28168ebed5f9137fe01061523a60945493",
+  "changed_key": "columns",
+  "rows": 608,
+  "same_metadata_rows_after_sort": true,
+  "academic_and_crm_data_unchanged": true,
+  "original_C5_unchanged": true,
+  "core_files_unchanged": true,
+  "new_release_required": true,
+  "no_identity_reset_or_database_drop": true
+}

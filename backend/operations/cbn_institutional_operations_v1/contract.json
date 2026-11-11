@@ -1,0 +1,16 @@
+{
+  "version": "cbn-institutional-operations-p11-v1",
+  "scope": "local_operations_only",
+  "schema_parent": "P10ES-001",
+  "tables": 185,
+  "academic_tables_denied": 30,
+  "new_sql_tables": 0,
+  "runtime_ddl": false,
+  "operator_api": "read_only_users.manage",
+  "receipt": "hmac_sha256_domain_separated_profile_database_institution_release_v1",
+  "worker_freshness_seconds": 180,
+  "backup_freshness_seconds": 86400,
+  "restoration": "new_database_profile_media_pause_and_review",
+  "retention": "dry_run_only_preserve_previous_copies",
+  "external_commissioning": "P12_pending"
+}

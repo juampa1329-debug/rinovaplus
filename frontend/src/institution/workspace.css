@@ -1,0 +1,155 @@
+.p3-workspace {
+  min-width: 0;
+}
+.p3-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-4, 1rem);
+  align-items: end;
+}
+.p3-columns {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.7fr) minmax(0, 2.3fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: start;
+}
+.p3-directory {
+  max-height: 80vh;
+  overflow: auto;
+}
+.p3-contact {
+  display: grid;
+  width: 100%;
+  gap: 0.35rem;
+  text-align: left;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  margin-bottom: 0.6rem;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.p3-contact[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+}
+.p3-contact span {
+  font-size: 0.875rem;
+}
+.p3-person {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 1rem;
+  min-width: 0;
+}
+.p3-ficha,
+.p3-thread {
+  min-width: 0;
+}
+.p3-ficha > *,
+.p3-person > form {
+  margin-bottom: 1rem;
+}
+.p3-risk {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.p3-risk p {
+  font-size: 0.875rem;
+}
+.p3-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-block: 1rem;
+}
+.p3-messages {
+  list-style: none;
+  padding: 0;
+  max-height: 50vh;
+  overflow: auto;
+  display: grid;
+  gap: 0.75rem;
+}
+.p3-messages li {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  max-width: 95%;
+  overflow-wrap: anywhere;
+}
+.p3-messages li[data-direction="outgoing"] {
+  margin-left: auto;
+  background: var(--surface);
+}
+.p3-messages p {
+  white-space: pre-wrap;
+}
+.p3-workspace fieldset {
+  min-width: 0;
+}
+.p3-workspace summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.p3-contact {
+  overflow-wrap: anywhere;
+}
+.p3-assignee-search {
+  margin-top: 0.5rem;
+}
+.p3-assignee-search summary {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+@media (min-width: 1200px) {
+  .p3-inbox-person {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+  .p3-inbox-person > .p3-thread,
+  .p3-inbox-person > .p3-ficha {
+    max-height: var(--p3-panel-height, 70vh);
+    overflow: auto;
+  }
+  .p3-directory {
+    max-height: var(--p3-panel-height, 70vh);
+  }
+}
+.p3-workspace input,
+.p3-workspace textarea,
+.p3-workspace select {
+  max-width: 100%;
+}
+.p3-workspace details li {
+  overflow-wrap: anywhere;
+}
+.p3-contact:focus-visible,
+.p3-workspace summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .p3-columns {
+    grid-template-columns: 1fr;
+  }
+  .p3-directory {
+    max-height: 45vh;
+  }
+  .p3-person {
+    grid-template-columns: 1fr;
+  }
+  .p3-filters {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .p3-workspace * {
+    scroll-behavior: auto;
+  }
+}

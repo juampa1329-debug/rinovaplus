@@ -1,0 +1,9 @@
+{
+  "version": "cbn-channels-operations-v1",
+  "parent_release_sha256": "7d4c3f55654d8d683246c2cd2547d29da5274825170f304b2c6b069e914d379b",
+  "files": {
+    "P4ES-000.sql": "00d6daf9906b3c718e641afb7ddf9a62c582a7313b02686bb47403c1a4043a26",
+    "P4ES-001.sql": "8320a1e3087d05e27c2c1b42c3612536187c695e6f016f429c77d1c926a31340",
+    "expected-model.json": "725abd989be3d64a29bae8031cf6cc5bf54fc0b74acb5f0d0595622b8100f120"
+  }
+}

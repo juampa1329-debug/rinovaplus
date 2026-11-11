@@ -1,0 +1,435 @@
+{
+  "nodes": [
+    {
+      "id": "p3_existing_reversible_merge",
+      "label": "Unificación reversible por alias",
+      "file_type": "code",
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L121-L155,L395-L617",
+      "rationale": "Se conservan contactos y conversaciones originales; MergeCase enlaza fuente a destino y sólo la ficha destino recibe los campos elegidos. Undo desactiva el vínculo y resuelve ficha anterior frente a cambios posteriores. No hay reparentado de mensajes ni borrado de contactos."
+    },
+    {
+      "id": "p3_existing_merge_cas",
+      "label": "Confirmación, fingerprint e idempotencia de unificación",
+      "file_type": "code",
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L50-L89,L363-L393,L523-L559",
+      "rationale": "MergeCommit y UndoCommit exigen confirmación humana literal true. La previsualización incorpora revisiones, membresía y estado; fingerprint cambiante devuelve409. OperationId más hash permite replay idéntico y rechaza payload diferente."
+    },
+    {
+      "id": "p3_existing_merge_privacy",
+      "label": "Privacidad e invalidación tras unificación",
+      "file_type": "code",
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L198-L293,L633-L670",
+      "rationale": "El alcance de identificadores conserva miembros históricos incluso después de undo. Intentos de análisis reservados bloquean; unificación y edición invalidan el análisis. Un alias activo es de sólo lectura."
+    },
+    {
+      "id": "p3_existing_declared_identity",
+      "label": "Perfil declarado CRM separado de autoridad SIIE",
+      "file_type": "code",
+      "source_file": "backend/app/modules/contacts/api/router.py",
+      "source_location": "L45-L112",
+      "rationale": "crm_identity.Profile almacena datos declarados. Validar IDs de tipo documental/período/programa usa SELECT sobre catálogos académicos; la comparación de aspirantes/alumnos es lectura. No convierte un contacto CRM en alumno."
+    },
+    {
+      "id": "p3_existing_spanish_guards",
+      "label": "Guards heredados por esquema requieren adaptación española",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/spanish_bindings.py",
+      "source_location": "L16-L20,L60-L77",
+      "rationale": "El traductor cerrado sustituye identificadores lógicos y OBJECT_ID de tablas, preservando literales. No reescribe SCHEMA_ID ni propiedades extendidas de esquema; módulos identity/merge/inbox/marketing los usan como guards. La mera traducción de tablas no acredita disponibilidad."
+    },
+    {
+      "id": "p3_existing_spanish_tables",
+      "label": "Mapeo español conserva columnas y claves originales",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/table_map.json",
+      "source_location": "L51-L68,L98",
+      "rationale": "Perfil institucional, asignación, tareas, churn y unificación apuntan a tablas dbo.CRM*. Las columnas conservan HumanEmployeeId int y UserId uniqueidentifier según expected-stages.P2ES-002."
+    },
+    {
+      "id": "p3_existing_employee_actor",
+      "label": "Responsable legado EmployeeId de SIIE",
+      "file_type": "code",
+      "source_file": "backend/app/modules/inbox/application/operations.py",
+      "source_location": "L21,L90-L110,L149-L177,L360-L373",
+      "rationale": "AssignmentWrite y TaskWrite usan EmployeeId int. verify valida forma/PK GEEmpleado; seleccionar responsable requiere Member.Enabled y GEEmpleado.Actvo. Assignment/Task referencian Member, que representa empleado, no cuenta de acceso."
+    },
+    {
+      "id": "p3_existing_access_actor",
+      "label": "Cuenta humana institucional UUID",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/expected-stages.json",
+      "source_location": "$.P2ES-002.columns[dbo.CRMAccesoUsuario.UserId]",
+      "rationale": "CRMAccesoUsuario.UserId es uniqueidentifier; InstitutionId/RoleKey vinculan roles. Es identidad distinta de EmployeeId int y de AiAgentId. No debe sustituirse por conversión de tipo o por nombre mostrado."
+    },
+    {
+      "id": "p3_existing_legacy_actor_audit",
+      "label": "Actor histórico local es una etiqueta",
+      "file_type": "code",
+      "source_file": "backend/app/modules/contacts/application/activity.py",
+      "source_location": "L466-L472",
+      "rationale": "El historial declara actorIdentity=local_label_not_authenticated. Las escrituras merge/inbox estampan local-operator. No son evidencia de usuario autenticado P2 ni de autoría individual."
+    },
+    {
+      "id": "p3_existing_task_page",
+      "label": "Tareas legadas paginadas por conversación",
+      "file_type": "code",
+      "source_file": "backend/app/modules/inbox/application/operations.py",
+      "source_location": "L286-L356,L375-L416,L578-L630",
+      "rationale": "La consulta devuelve25 filas y hasMore usando26; ordenCreatedAt/TaskId y offset. Escritura usa revisión global e idempotencia propia. Directorio y lectura incorporan GEEmpleado; no son una lista global de tareas filtrada por AccessUser."
+    },
+    {
+      "id": "p3_existing_read_control",
+      "label": "Lectura monotónica con secuencia observada",
+      "file_type": "code",
+      "source_file": "backend/app/modules/inbox/application/state.py",
+      "source_location": "L46-L73",
+      "rationale": "ReadSequence sólo aumenta; una secuencia inexistente o mayor al máximo devuelve409. Unread queda activo si llegaron entrantes posteriores al límite observado."
+    },
+    {
+      "id": "p3_existing_human_control",
+      "label": "Handoff incrementa época de control",
+      "file_type": "code",
+      "source_file": "backend/app/modules/inbox/application/state.py",
+      "source_location": "L27-L43",
+      "rationale": "Un cambio de modo incrementa Epoch y falla trabajos bot no iniciados de época obsoleta. No demuestra cancelar envíos externos ya en curso o inciertos."
+    },
+    {
+      "id": "p3_existing_manual_assessment",
+      "label": "Valoración manual independiente",
+      "file_type": "code",
+      "source_file": "backend/app/modules/inbox/application/state.py",
+      "source_location": "L77-L92",
+      "rationale": "LeadScore y Temperature se almacenan en ConversationProfile por conversación y UpdatedAt. Son entradas manuales, no probabilidad de abandono ni resultado de modelo entrenado."
+    },
+    {
+      "id": "p3_existing_receipt_evidence",
+      "label": "Churn exige recibos persistidos y respuesta confirmada",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L27-L79",
+      "rationale": "Reconstrucción acotada: una identidad externa exacta, máximo100 mensajes enroutados y50 recibos procesados. Comprueba digest raw y payload; normaliza efectos por cuenta/canal. Sin recibo entrante coherente no puntúa. La autenticidad depende de la frontera de ingestión que marcó processed."
+    },
+    {
+      "id": "p3_existing_confirmed_reply",
+      "label": "Respuesta posterior ligada al último entrante",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L80-L101",
+      "rationale": "Sólo se aceptan estados sent/delivered/read confirmados para la identidad, QueueId/ExternalId y replyToMessageId que coincide con el último entrante. Un ACK o edad de cola no suple una confirmación."
+    },
+    {
+      "id": "p3_existing_rubric",
+      "label": "Rúbrica explicable, sin probabilidad",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/domain/scoring.py",
+      "source_location": "L73-L173",
+      "rationale": "Requiere tiempoUTC, conversación activa, evidencia completa, watermark válido, etapa configurada0..25 y entrante provider_inbound. Calcula inactividad hasta60, etapa hasta25 y respuestas sin nueva entrada hasta15; niveles low/medium/high. No es predicción calibrada."
+    },
+    {
+      "id": "p3_existing_unknown",
+      "label": "Sin evaluación cuando faltan pruebas",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/domain/scoring.py",
+      "source_location": "L82-L142",
+      "rationale": "La falta o contradicción de evidencia produce unknown y scoreNone con razones; conversación cerrada devuelve not_applicable. Si no hubo respuesta confirmada posterior al entrante, advisor_response_pending representa deuda del asesor, no abandono del aspirante."
+    },
+    {
+      "id": "p3_existing_cost_signal",
+      "label": "Señal de precio requiere respuesta monetaria confirmada",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L87-L101",
+      "rationale": "Pregunta de precio sin respuesta monetaria confirmada devuelve unknown. La rúbrica sólo eleva a>=80 tras72h desde respuesta confirmada a la solicitud actual; nueva entrada reinicia señal y reloj."
+    },
+    {
+      "id": "p3_existing_persisted_assessment",
+      "label": "Evaluación conservada con origen temporal",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L367-L375",
+      "rationale": "ChurnAssessment conserva FormulaVersion, AsOfUtc, InputSequence, StageSnapshot, EvidenceJson, razones, score/nivel y RunId. Es posible comprobar contra conversación/etapa/mensajes actuales antes de mostrar vigencia; la comprobación no está implementada en predictions legado."
+    },
+    {
+      "id": "p3_existing_legacy_prediction_list",
+      "label": "Predictions legado acotado pero sin proyección por contacto",
+      "file_type": "code",
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L81-L97",
+      "rationale": "LeeTOP201 conversaciones activas, devuelve413 si excede200 y usa último assessment. Separa ManualLeadScore de ComputedLeadScore. No pagina, no proyecta por grupo de contacto ni verifica freshness contra watermark o etapa actual."
+    },
+    {
+      "id": "p3_existing_rights_boundary",
+      "label": "Perfil P2 cerrado y partición académica DENY",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/spanish.py",
+      "source_location": "L33-L64,L68-L89,L202-L245",
+      "rationale": "P2 integra CORE_RIGHTS de siete tablas foundation, ACLs de canales y acceso; no otorga automáticamente permisos sobre merge/identity/inbox/marketing. El nuevo alcance requiere perfil/ACL/guard propios sin ampliar el principal anterior ni retirar DENY académico."
+    },
+    {
+      "id": "p3_existing_p3_scope",
+      "label": "Criterios P3 preservan reversión y límites de inferencia",
+      "file_type": "document",
+      "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "source_location": "L258-L265",
+      "rationale": "P3 exige coherencia CRM/Inbox, ficha única, filtros antes de paginar, borradores/handoff seguros, churn con origen/frescura/razones/acción y Sin evaluación. Inferencia entrenada queda enP10; reversión aditiva sin borrar o reparentar contactos."
+    }
+  ],
+  "edges": [
+    {
+      "source": "p3_existing_reversible_merge",
+      "target": "p3_existing_merge_cas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L121-L155,L395-L617",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_reversible_merge",
+      "target": "p3_existing_merge_privacy",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L121-L155,L395-L617",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_reversible_merge",
+      "target": "p3_existing_declared_identity",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L121-L155,L395-L617",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_reversible_merge",
+      "target": "p3_existing_legacy_actor_audit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/contacts/application/merge.py",
+      "source_location": "L121-L155,L395-L617",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_employee_actor",
+      "target": "p3_existing_task_page",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/inbox/application/operations.py",
+      "source_location": "L21,L90-L110,L149-L177,L360-L373",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_read_control",
+      "target": "p3_existing_human_control",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/inbox/application/state.py",
+      "source_location": "L46-L73",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_receipt_evidence",
+      "target": "p3_existing_rubric",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L27-L79",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_receipt_evidence",
+      "target": "p3_existing_confirmed_reply",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L27-L79",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_receipt_evidence",
+      "target": "p3_existing_cost_signal",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/evidence.py",
+      "source_location": "L27-L79",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_rubric",
+      "target": "p3_existing_unknown",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/domain/scoring.py",
+      "source_location": "L73-L173",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_rubric",
+      "target": "p3_existing_cost_signal",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/domain/scoring.py",
+      "source_location": "L73-L173",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_persisted_assessment",
+      "target": "p3_existing_receipt_evidence",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L367-L375",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_legacy_prediction_list",
+      "target": "p3_existing_persisted_assessment",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L81-L97",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_legacy_prediction_list",
+      "target": "p3_existing_manual_assessment",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L81-L97",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_spanish_tables",
+      "target": "p3_existing_employee_actor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/table_map.json",
+      "source_location": "L51-L68,L98",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_spanish_tables",
+      "target": "p3_existing_access_actor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/table_map.json",
+      "source_location": "L51-L68,L98",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_rights_boundary",
+      "target": "p3_existing_spanish_tables",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/spanish.py",
+      "source_location": "L33-L64,L68-L89,L202-L245",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_p3_scope",
+      "target": "p3_existing_reversible_merge",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "source_location": "L258-L265",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_p3_scope",
+      "target": "p3_existing_unknown",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "source_location": "L258-L265",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_employee_actor",
+      "target": "p3_existing_access_actor",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/inbox/application/operations.py",
+      "source_location": "L21,L90-L110,L149-L177,L360-L373",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_spanish_guards",
+      "target": "p3_existing_spanish_tables",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/institutional/spanish_bindings.py",
+      "source_location": "L16-L20,L60-L77",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_legacy_actor_audit",
+      "target": "p3_existing_access_actor",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/contacts/application/activity.py",
+      "source_location": "L466-L472",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_persisted_assessment",
+      "target": "p3_existing_p3_scope",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/modules/campaigns/service.py",
+      "source_location": "L367-L375",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_rights_boundary",
+      "target": "p3_existing_employee_actor",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "backend/app/institutional/spanish.py",
+      "source_location": "L33-L64,L68-L89,L202-L245",
+      "weight": 1.0
+    },
+    {
+      "source": "p3_existing_task_page",
+      "target": "p3_existing_legacy_prediction_list",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "backend/app/modules/inbox/application/operations.py",
+      "source_location": "L286-L356,L375-L416,L578-L630",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "source_review": "artifacts/p3-es/existing-source-review.json",
+  "execution_claim": "source_only_no_SQL_no_runtime_tests_no_acceptance"
+}

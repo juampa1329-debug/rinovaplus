@@ -1,0 +1,425 @@
+{
+  "domain": "Paquete estructural español P1-ES · revisión y calificación pendiente",
+  "status": "draft_offline_review_no_SQL2019_acceptance",
+  "review_scope": "Fuente explícitamente autorizada bajo.local/p1-es/incoming/2026-10-26. Se leyeron README/SQL/manifiesto/verificación yse contrastaron huellas;textos/instruccionesdelpaquete no se ejecutaron. NoSQL/Docker/app/scriptsPS1/Python/CJS,nootrasrutasprivadas,nocambios deZIP/runtime/snapshots/historia. EXTRACTED describearchivos yreportes adjuntos;INFERRED deducebrechas contraelruntime;AMBIGUOUS conserva incertidumbre deerror/cliente. No se reimportaAST ni se concedeaceptación por98tablas/ZIP. Porcentajes parciales se evalúan enotrocontrato.",
+  "findings": [
+    {
+      "id": "p1_es_schema_package_qualification",
+      "phase": "P1",
+      "capability": "Inventario semántico del esquema español y condiciones de calificación SQL2019 independiente",
+      "status": "inventariado_no_calificado_en_SQL2019",
+      "gap": "Validación adjunta sóloSQL17;objeto renombrado/vacío sinhistoria,markers,seeds,ACL ocontratos C11/P2. Faltaengine15,driftcompleto,errores/UNKNOWN/reintento/restauración ynuevoperfil/versionado si se integra. Tres visuales anunciados ausentes.",
+      "acceptance": "La revisión offline verificó4huellas adjuntas yconsistencia textual98tablas/795cols/170CHECK/125FK conpadresinternos. NoejecutóSQL ni acreditaP1.close,datos académicos,UI o funcionamiento delruntime. Calificar únicamente en copias nuevas conservando fuentes ehistoria.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p1-es/package-review-draft.json",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/README.md",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/crear_esquema_crm_es.sql",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/verificar_esquema.sql",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/manifiesto.json",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.json",
+          "line": 1
+        },
+        {
+          "file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+          "line": 1
+        },
+        {
+          "file": "backend/app/foundation.py",
+          "line": 1
+        },
+        {
+          "file": "backend/app/general_preview/store.py",
+          "line": 1
+        },
+        {
+          "file": "backend/migrations/cbn_channels_parity_v1/CBN-CHP001.sql",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p1_es_package",
+        "label": "ZIP candidato:98tablas vacías,68CRM españolas+30SIIE;sin aceptación por existir",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L3",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_reported_SQL17",
+        "label": "Ejecución adjunta sólo SQL2025/17.0.1000.7,compat150",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L24",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_new_destination_guard",
+        "label": "Nombre fijo nuevo;destino existente rechazado antes de cambios",
+        "file_type": "code",
+        "source_file": ".local/p1-es/incoming/2026-10-26/crear_esquema_crm_es.sql",
+        "source_location": "L8",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_multi_batch_transaction",
+        "label": "CREATE DATABASE fueraTX;98tablas enTX multibatch SQLCMD",
+        "file_type": "code",
+        "source_file": ".local/p1-es/incoming/2026-10-26/crear_esquema_crm_es.sql",
+        "source_location": "L13",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_FK_closure",
+        "label": "125FK cierran dentro de98tablas declaradas;datos0",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/manifiesto.json",
+        "source_location": "$.scope",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_limited_SQL_verifier",
+        "label": "Verificador SQL:sets/conteos yestados nombrados,noforma final completa",
+        "file_type": "code",
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificar_esquema.sql",
+        "source_location": "L104",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_full_SQL17_catalogue_evidence",
+        "label": "Comparación completa adjunta sin diferencias,sólo alcanceSQL17",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L48",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_spanish_names",
+        "label": "68CRM→dbo.CRM*,columnas conservadas;30académicas sin renombrar",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L106",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_excluded_contract_state",
+        "label": "Sinseeds,logins/permisos,markers,journal,routines oautomatismos",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L187",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_runtime_mismatch",
+        "label": "Runtime previo mantiene nombres/identidad/contratos;no redirigir conexión",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L218",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_dbo_ACL_collision",
+        "label": "Nueva mezcla dbo CRM/académico requiereACL porobjetos,noprotección global removida",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.issues[2]",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_client_rollback_uncertainty",
+        "label": "Error/compilación/SSMS:rollback multibatch requierecalificación específica",
+        "file_type": "code",
+        "source_file": ".local/p1-es/incoming/2026-10-26/crear_esquema_crm_es.sql",
+        "source_location": "L30",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_pending_qualification",
+        "label": "Pendiente:engine15 real,fullshape,guards,fallos yrestauraciónSQL2019",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.qualification_sequence_proposed_not_executed",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_pending_migration_lifecycle",
+        "label": "Raw98tablas no incorpora historia/adopción/UNKNOWN/bootstrap/reversión",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L187",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_missing_visual_assets",
+        "label": "FaltanHTML y2Mermaid anunciados;no visualización acreditada",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L9",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_selected_empty_academics",
+        "label": "30SIIEseleccionadas sinfilas no equivalen a restauración de datos institucionales",
+        "file_type": "document",
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L66",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      },
+      {
+        "id": "p1_es_review_only",
+        "label": "Revisión fuente completa;P1.close no aceptado porZIP oSQL17",
+        "file_type": "document",
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.acceptance",
+        "status": "candidate_not_SQL2019_or_runtime_accepted"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_reported_SQL17",
+        "relation": "carries_only_SQL17_execution_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L5"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_new_destination_guard",
+        "relation": "creates_only_fixed_new_destination",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L19"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_multi_batch_transaction",
+        "relation": "requires_SQLCMD_batch_error_semantics",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L27"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_FK_closure",
+        "relation": "declares_recursive_outgoing_FK_closure",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L66"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_spanish_names",
+        "relation": "renames_only_new_CRM_tables_into_dbo",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L106"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_excluded_contract_state",
+        "relation": "intentionally_excludes_runtime_and_business_state",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L187"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_limited_SQL_verifier",
+        "relation": "supplies_separate_readonly_SQL_verifier",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "p1_es_reported_SQL17",
+        "target": "p1_es_full_SQL17_catalogue_evidence",
+        "relation": "reports_complete_catalogue_comparison",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "p1_es_limited_SQL_verifier",
+        "target": "p1_es_full_SQL17_catalogue_evidence",
+        "relation": "needs_separate_full_catalogue_comparison_for_structural_proof",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L48"
+      },
+      {
+        "source": "p1_es_spanish_names",
+        "target": "p1_es_runtime_mismatch",
+        "relation": "requires_new_consumer_and_guard_mapping",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L218"
+      },
+      {
+        "source": "p1_es_excluded_contract_state",
+        "target": "p1_es_runtime_mismatch",
+        "relation": "cannot_satisfy_existing_bootstrap_and_contract_guards",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L187"
+      },
+      {
+        "source": "p1_es_spanish_names",
+        "target": "p1_es_dbo_ACL_collision",
+        "relation": "changes_security_partition_of_CRM_and_academic_objects",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L106"
+      },
+      {
+        "source": "p1_es_dbo_ACL_collision",
+        "target": "p1_es_pending_qualification",
+        "relation": "requires_new_exact_object_ACL_without_weakening_sources",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.issues[2]"
+      },
+      {
+        "source": "p1_es_multi_batch_transaction",
+        "target": "p1_es_client_rollback_uncertainty",
+        "relation": "may_depend_on_client_disconnect_after_nonruntime_errors",
+        "confidence": "AMBIGUOUS",
+        "confidence_score": 0.5,
+        "source_file": ".local/p1-es/incoming/2026-10-26/README.md",
+        "source_location": "L40"
+      },
+      {
+        "source": "p1_es_client_rollback_uncertainty",
+        "target": "p1_es_pending_qualification",
+        "relation": "requires_fault_and_transaction_state_drills",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.issues[4]"
+      },
+      {
+        "source": "p1_es_reported_SQL17",
+        "target": "p1_es_pending_qualification",
+        "relation": "does_not_establish_actual_engine15_compatibility",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "p1_es_new_destination_guard",
+        "target": "p1_es_pending_migration_lifecycle",
+        "relation": "rejects_reapply_instead_of_history_based_NOOP_or_adoption",
+        "confidence": "INFERRED",
+        "confidence_score": 0.99,
+        "source_file": ".local/p1-es/incoming/2026-10-26/crear_esquema_crm_es.sql",
+        "source_location": "L8"
+      },
+      {
+        "source": "p1_es_pending_migration_lifecycle",
+        "target": "p1_es_pending_qualification",
+        "relation": "needs_new_versioned_history_recovery_contract",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.issues[5]"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_missing_visual_assets",
+        "relation": "contains_unresolved_README_visual_links",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.missing_README_targets"
+      },
+      {
+        "source": "p1_es_package",
+        "target": "p1_es_selected_empty_academics",
+        "relation": "is_selected_schema_copy_with_no_source_business_rows",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L76"
+      },
+      {
+        "source": "p1_es_selected_empty_academics",
+        "target": "p1_es_review_only",
+        "relation": "does_not_accept_operational_or_academic_data_restoration",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": ".local/p1-es/incoming/2026-10-26/verificacion_independiente.md",
+        "source_location": "L74"
+      },
+      {
+        "source": "p1_es_pending_qualification",
+        "target": "p1_es_review_only",
+        "relation": "keeps_acceptance_ungranted_until_new_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.acceptance"
+      },
+      {
+        "source": "p1_es_review_only",
+        "target": "P1",
+        "relation": "contributes_review_evidence_without_closing_phase",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p1-es/package-review-draft.json",
+        "source_location": "$.acceptance"
+      },
+      {
+        "source": "p1_es_pending_qualification",
+        "target": "sql_c13_P1_close_pending",
+        "relation": "retains_existing_real_SQL2019_acceptance_gate",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+        "source_location": "L47"
+      },
+      {
+        "source": "p1_es_runtime_mismatch",
+        "target": "sql_c13_per_transaction_guard",
+        "relation": "cannot_reuse_C13_target_engine_or_shape_ticket",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "backend/app/general_preview/store.py",
+        "source_location": "L44"
+      }
+    ]
+  }
+}

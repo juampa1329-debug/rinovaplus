@@ -1,0 +1,132 @@
+{
+  "unit": "SQL-C11",
+  "status": "complete_restored_schema_only",
+  "scope": "new_restored_copy_physical_schema_only",
+  "source_checkpoint": "SQL-C9",
+  "shared_runtime_checkpoint": "SQL-C5",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Línea base y revisión del contrato C10",
+      "status": "complete",
+      "baseline_inputs": 648
+    },
+    {
+      "phase": 2,
+      "name": "SQL de las 24 tablas, catálogo y migrador versionados",
+      "status": "complete",
+      "tables": 24,
+      "columns": 343,
+      "foreign_keys": 78,
+      "trusted_checks": 79,
+      "release_sha256": "f5200dad8a3f8295bc2bbaf71ed6feecf2c847eab5e8031fc86038c94e9c2e32"
+    },
+    {
+      "phase": 3,
+      "name": "Pruebas offline y revisión independiente",
+      "status": "complete",
+      "offline_tests": 39,
+      "static_review": "physical_constraints_reviewed"
+    },
+    {
+      "phase": 4,
+      "name": "Respaldo, restauraciones, fallos y reversión",
+      "status": "complete",
+      "fault_drift_scenarios": 21,
+      "recovery_exact": true,
+      "journal_before": 7,
+      "journal_after": 17
+    },
+    {
+      "phase": 5,
+      "name": "Constraints reales y preservación SIIE/C5/C9",
+      "status": "complete",
+      "SQL_negative_cases": 32,
+      "SQL_positive_cases": 4,
+      "source_SIIE_C5_C9_unchanged": true,
+      "academic_rows": 44180,
+      "foundation_rows": 203,
+      "B011_rows": 23
+    },
+    {
+      "phase": 6,
+      "name": "Grafos, memoria, roadmap y acceso a previews",
+      "status": "complete",
+      "code_nodes": 2496,
+      "code_edges": 6586,
+      "adaptation_nodes": 625,
+      "adaptation_edges": 1018,
+      "findings": 43,
+      "acyclic_phases": 12,
+      "SQL_FK_nodes_preserved": 78,
+      "history_invalid_transitions_rejected": 64
+    }
+  ],
+  "institutional_sql2019_accepted": false,
+  "runtime_or_provider_activation": false,
+  "completion_scope": "restored_physical_schema_only",
+  "next_unit": "SQL-C12",
+  "trial_database": "CBN_C11_TRIAL_20261025_d30e2cb2",
+  "project_phases": [
+    {
+      "id": "P0",
+      "status": "complete",
+      "progress": "Completa: inventario, grafos y continuidad."
+    },
+    {
+      "id": "P1",
+      "status": "in_progress",
+      "progress": "En curso: foundation y esquema C11 implementados/ensayados en copias; consumidores nuevos y SQL2019 institucional pendientes."
+    },
+    {
+      "id": "P2",
+      "status": "pending",
+      "progress": "Paridad pendiente; Ajustes CRM foundation aceptados en C5."
+    },
+    {
+      "id": "P3",
+      "status": "pending",
+      "progress": "Paridad pendiente; ficha única/Inbox básico C5; churn y funciones avanzadas pendientes."
+    },
+    {
+      "id": "P4",
+      "status": "in_progress",
+      "progress": "En curso: esquema/repositorios/UI local C7–C9, contrato C10 y 24 tablas C11; mapping, API/UI completas, OAuth y proveedores pendientes."
+    },
+    {
+      "id": "P5",
+      "status": "pending",
+      "progress": "Pendiente: agentes educativos y paridad funcional."
+    },
+    {
+      "id": "P6",
+      "status": "pending",
+      "progress": "Pendiente: memoria colectiva y ADN."
+    },
+    {
+      "id": "P7",
+      "status": "pending",
+      "progress": "Pendiente: mensajería masiva y transporte real."
+    },
+    {
+      "id": "P8",
+      "status": "pending",
+      "progress": "Pendiente: campañas y remarketing."
+    },
+    {
+      "id": "P9",
+      "status": "pending",
+      "progress": "Pendiente: Meta Ads."
+    },
+    {
+      "id": "P10",
+      "status": "pending",
+      "progress": "Pendiente: inteligencia y entrenamiento."
+    },
+    {
+      "id": "P11",
+      "status": "pending",
+      "progress": "Pendiente: aceptación integral y operación institucional."
+    }
+  ]
+}

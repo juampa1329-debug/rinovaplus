@@ -1,0 +1,11 @@
+# Explicit local-copy overlay. The certificate is public and never enters the image.
+services:
+  preview:
+    environment:
+      CRM_SQL_HOST: host.docker.internal
+      CRM_SQL_CA_FILE: /run/crm-sql/public.pem
+    volumes:
+      - type: bind
+        source: ${CRM_SQL_PUBLIC_CERT_FILE:?Public SQL certificate path required}
+        target: /run/crm-sql/public.pem
+        read_only: true

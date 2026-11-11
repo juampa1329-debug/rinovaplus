@@ -1,0 +1,21 @@
+flowchart LR
+    User[Sesión institucional y permisos actuales] --> UI[Shell Glass P3 :4178]
+    UI --> Inbox[Inbox y lectura observada]
+    UI --> CRM[CRM paginado y tareas]
+    Inbox --> Ficha[Ficha editable compartida y borradores de sesión]
+    CRM --> Ficha
+    Inbox --> Risk[Estado, origen, razones, fecha y próxima acción]
+    CRM --> Risk
+    Ficha --> Risk
+    Risk --> Evidence[Rúbrica vigente con identidad, watermark y etapa]
+    Evidence --> Unknown[Sin evaluación cuando no hay evidencia válida]
+    Ficha --> API[API tipada: CSRF, CAS, replay y autoridad SQL]
+    Inbox --> API
+    CRM --> API
+    API --> Map[114 identificadores SQL cerrados]
+    Map --> SQL[SQL Server 2019 TLS / copia P3 / 144 tablas]
+    SQL --> Work[Notas, tareas, responsable, vínculos reversibles, revisión y diario]
+    SQL -. DENY escritura y lectura académica .-> SIIE[SIIE y copias previas preservadas]
+    SQL --> Restore[Backup CHECKSUM y restauración nativa a otra copia]
+    Restore --> Profile[Perfil propio, linaje y sesiones retiradas]
+    Previous[Imagen, base y perfil P2 :4177 conservados] -. retorno de consumidor .-> User

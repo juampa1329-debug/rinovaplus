@@ -1,0 +1,267 @@
+{
+  "stage": "SQL-C5",
+  "status": "accepted_restored_ui_only",
+  "date": "2026-10-25",
+  "timezone": "America/Bogota",
+  "input_baseline_sha256": "0f115397d93d8d4bc1016b5e0721015194afbd007792623805bd3b530e6d4967",
+  "previous_checkpoint_sha256": "2a25870cef5a7700b1bf7cbb65854dbc75cf75d44df736243fd9b6d5e07a4075",
+  "database": "CBN_C3_TRIAL_20261024_ac8505b8",
+  "release_sha256": "b8de5466cd6c0e8b373490cc0987bacbf90deff95ffe45e8d84f54f6dc08827a",
+  "backend_tests": {
+    "passed": 280,
+    "skipped": 1,
+    "failed": 0,
+    "new_c5_tests": 11,
+    "files": 11
+  },
+  "frontend_tests": {
+    "passed": 43,
+    "failed": 0,
+    "new_c5_tests": 11,
+    "files": 7
+  },
+  "browser": {
+    "checks_passed": 25,
+    "evidence": "artifacts/sql-c5/browser-checks.json",
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "noteEditors": 1,
+      "academicProgramInputs": 0,
+      "mediaControls": 0
+    },
+    "fresh_tab_console_errors": 0,
+    "temporary_viewport_reset": true
+  },
+  "static_validation": {
+    "typescript": true,
+    "eslint_changed_files": true,
+    "ruff_new_and_reorganized_files": true,
+    "frontend_build": true,
+    "build_warning": "Main chunk exceeds 500kB; performance not otherwise accepted"
+  },
+  "preservation": {
+    "before_evidence": "sql_c5_before_result.json",
+    "after_evidence": "sql_c5_after_result.json",
+    "source_unchanged": true,
+    "academic_tables": 50,
+    "academic_rows": 44180,
+    "academic_metadata_data_and_preexisting_acl_preserved": true,
+    "migration_journal_unchanged": true,
+    "frozen_managed_shape_unchanged": true,
+    "no_sql_ddl_or_migrations": true,
+    "no_sql_permissions_or_credentials_changed": true,
+    "crm_counts_before": {
+      "crm.Contact": 26,
+      "crm.Conversation": 26,
+      "crm.Message": 52,
+      "crm.Operation": 81,
+      "crm_config.Configuration": 1,
+      "crm_config.Operation": 1,
+      "crm_meta.MigrationJournal": 5
+    },
+    "crm_counts_after": {
+      "crm.Contact": 27,
+      "crm.Conversation": 27,
+      "crm.Message": 53,
+      "crm.Operation": 87,
+      "crm_config.Configuration": 1,
+      "crm_config.Operation": 4,
+      "crm_meta.MigrationJournal": 5
+    }
+  },
+  "activation": {
+    "url": "http://127.0.0.1:4173/#/inbox",
+    "mode": "local_foundation",
+    "profile": "foundation",
+    "docker_project": "crm-cbn-integration-20261014",
+    "overlay": "compose.foundation.yaml",
+    "profile_encrypted_and_readonly": true,
+    "sql_admin_credentials_not_used_by_runtime": true,
+    "tls_preserved": true,
+    "provider_credentials_cleared_in_service": true,
+    "workers_started": 0,
+    "external_messages_sent": 0,
+    "live_status": 200,
+    "global_ready_status": 503
+  },
+  "private_acl_repair": "Owner-only file ACE corrected without changing encrypted profile/key bytes; readable from readonly Docker mount",
+  "limits": [
+    "Institutional SQL2019 acceptance pending; local SQL2022 Express/compat160",
+    "Only B000+B001+B006 capabilities enabled",
+    "General repository suite not recertified; 41 prior C4 failures remain documented",
+    "No deployment, provider calls, academic links/assignment, commit or push"
+  ],
+  "next_unit": "SQL-C6: define next CRM release and explicit academic/CRM partition without changing frozen C3/C4/C5 checkpoints",
+  "changed_files": [
+    {
+      "path": "artifacts/sql-c5/browser-checks.json",
+      "before_sha256": null,
+      "after_sha256": "b17c32b01c34a4459f94810266ac6a8008141ac995470b2c2bdb659a5d1d8005"
+    },
+    {
+      "path": "artifacts/sql-c5/inbox-desktop.png",
+      "before_sha256": null,
+      "after_sha256": "f9d89ecf057cf42be9129c7bc62ef02f120da70521fdb2cc19fb8a2a472a0fb6"
+    },
+    {
+      "path": "artifacts/sql-c5/inbox-mobile.png",
+      "before_sha256": null,
+      "after_sha256": "98d93eca54a22e13f15e8fecf2b221e232df2ac6d9e200f163f75a68fa597e96"
+    },
+    {
+      "path": "backend/app/config.py",
+      "before_sha256": "f36f5ab2505d62dcbc36da9ff2772c30d0982328975fedef042061d5306e4dc5",
+      "after_sha256": "514161906488e3ac563e22490b0f900f91aeead4c2fcd8fddf091df1b52a98eb"
+    },
+    {
+      "path": "backend/app/foundation_app.py",
+      "before_sha256": "aefa935fccb5d184f8b8c34bae6b3395291f9b6864600a8854e35c92b89d8c95",
+      "after_sha256": "a1fa6943929b2a29e2b3bde2b358fa50471ea5f251b17bf23dbcb870b125de91"
+    },
+    {
+      "path": "backend/app/foundation_profile.py",
+      "before_sha256": null,
+      "after_sha256": "94a8b9dfd18507e69d3fe07e75d8824303ae1333e203e63acf668c2f45222b70"
+    },
+    {
+      "path": "backend/app/main.py",
+      "before_sha256": "1479c1c71def39233e52d864ae5eeb9c08af0dbbdb9bcf4e292ce832f653eca5",
+      "after_sha256": "2918d7e98d74916cd86c3831d89c3bdca4f2d182f718747cfc726ebb1234cbb1"
+    },
+    {
+      "path": "backend/app/runtime_capabilities.py",
+      "before_sha256": null,
+      "after_sha256": "c51b5b1bf61d92d4a0086df31a11d2c96b739f2f1746c4f4d6345d44b1e3a612"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "before_sha256": "b57b4214cc2e25915ad044388111f2b48b447a7a4e62c0d19f81cc7ab2a04c0d",
+      "after_sha256": "fdf18e2407ea4b396bb3be46c9e921aff434a2e3afb5a9dfeef10f686a568e40"
+    },
+    {
+      "path": "backend/tests/test_foundation_ui.py",
+      "before_sha256": null,
+      "after_sha256": "0ca119e3e5897046843f86b5f39a3a304dbd648c6e60e2b5471e13c8ec6e63e7"
+    },
+    {
+      "path": "backend/tools/adaptation_graphs.py",
+      "before_sha256": "51cf434e12ec8a9a2818baa281248d402b3697e7d68de291c7585171f46f6abc",
+      "after_sha256": "e6b3969f1e139dd30232413a3f6d10a2cd0a92b4c8138ee8fcebd1af6b75e3c6"
+    },
+    {
+      "path": "backend/tools/compare_horariosiie.py",
+      "before_sha256": "6ced930a1a7371f4fd7200056bbbe5edb1bf5e98262202903150a4b079766209",
+      "after_sha256": "b003bd9a6c0095d60c109fbc7da18f30872fb97b04c0fdb2a89cb92af9f475bd"
+    },
+    {
+      "path": "backend/tools/foundation_graph.py",
+      "before_sha256": "3ed4e24dafeecc847adfd1d7d75cb446c6f0bbd5fed6a77d7fd0e8f13a78a7cc",
+      "after_sha256": "2ffb9b0973e26d17aa57e41f403f808b03a724cab3c99d58d1c319abd00950a0"
+    },
+    {
+      "path": "backend/tools/historical_checkpoint.py",
+      "before_sha256": "7262b15caa758570ad8ef42a57064b64c209fd694d855a45c8cc9cf06c0a10cb",
+      "after_sha256": "f5a71e842c00b71f7a454777e53b6b9b4b1f296f6b0a9664fbd3cf8d918a5f5d"
+    },
+    {
+      "path": "backend/tools/inventory_migrations.py",
+      "before_sha256": "6bb3a12cb97ac53a179a3e8bf75392b375c0e97c961a2f8b32f595a938e1289a",
+      "after_sha256": "5acbf8b6146818db5056d231d59effeeecbefa87d887f952b944eeb8e6ba41ad"
+    },
+    {
+      "path": "backend/tools/rehearse_foundation_ui.py",
+      "before_sha256": null,
+      "after_sha256": "7efff31def98920d433d392e43b306b89e77a1fd764d67cb9645856227071748"
+    },
+    {
+      "path": "compose.foundation.yaml",
+      "before_sha256": null,
+      "after_sha256": "ece9bb4c7793e1aa47e5836f7c45c87718e159769a6207722f691b026cf37519"
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "before_sha256": "29270e2789f46d7e02001d9f8d17a3fac86733dc675eb524b354acf7668c118b",
+      "after_sha256": "782d0bb9698a7cc80cc800009310933288fa01311733f83be8df80e074d95baf"
+    },
+    {
+      "path": "frontend/src/features/MiniCrm.tsx",
+      "before_sha256": "cd998177f7ad7c61f8aefb8718ffeb626a642c6b67a73359833659e9046828b2",
+      "after_sha256": "bcc168c955ef3e47388ef13068ccf9c654742495a67fbda2e30e5f3653f743e1"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "before_sha256": "383d5cc528b7e159b065140158ad1b194c26a1a80693eeb87f8fce47ce2af686",
+      "after_sha256": "48cf57236a69c0443178dd5af2fb68083e79ea7eee6d57e9b95ec706ad5cdfc2"
+    },
+    {
+      "path": "frontend/src/modules/clients/components/ClientFields.tsx",
+      "before_sha256": "b01ab3be6d35d12b663fbf5ffb409773da7cd69f1aa391d95ca2500053c38524",
+      "after_sha256": "e952b18dc6b7dca1286df206a9b9e47333a0be7c74879060c28617b6641569d9"
+    },
+    {
+      "path": "frontend/src/modules/clients/pages/Clients.tsx",
+      "before_sha256": "801c37f237cbd7cfd538528d90c932ed3706d08914cc22216b85030b824ba19f",
+      "after_sha256": "543a8f52e1f56c76da462d97d1f496a8ea5aadca80a8052b52343947dcde40c6"
+    },
+    {
+      "path": "frontend/src/modules/inbox/api/inboxApi.ts",
+      "before_sha256": "6d0e0d8bc0c46109ca62c12c40c048af77500fc1a96438529c93d22f6682d29d",
+      "after_sha256": "4ab0c32e46b3b890d16680de093f9ce8e63df10c876339bd8b2e39e8fa3616d9"
+    },
+    {
+      "path": "frontend/src/modules/inbox/components/InboxAssessment.tsx",
+      "before_sha256": "89d12a9eebca8b6d4cb2324ea318990f8b04c9223f1630b7eba5660cae622dd2",
+      "after_sha256": "7f99f4c6f3fd56f921173540aa984e23c87aec0b4ffbe7676c19a9189f7d2dcb"
+    },
+    {
+      "path": "frontend/src/modules/inbox/components/InboxContactEditor.tsx",
+      "before_sha256": "0512923e17d4e6e10debf41e15e54daca9494e92796209bf0e9e2b895f2fbd0c",
+      "after_sha256": "25e428f6a567964c517ce60af4db2be6591575c7bef6c3951257fdeb18d7c870"
+    },
+    {
+      "path": "frontend/src/modules/inbox/hooks/useInbox.ts",
+      "before_sha256": "37bc51acea61ffe40b60abe86dd7d0b521d478c38e51eb1b96f823b3fe771400",
+      "after_sha256": "7dd4857eb7d09d5e5ef475e7db1f6660a65ea57bf3a5ae319ac68c7510e5b6a6"
+    },
+    {
+      "path": "frontend/src/modules/inbox/pages/Inbox.tsx",
+      "before_sha256": "c56d444f20b15d647961162e1a7843c40017a1131e1aaaa002b45a56cb4214a4",
+      "after_sha256": "e62f4202af31580e48e8d5cac8f9a0c0a300c4ab699538a43547ccd9e62082ce"
+    },
+    {
+      "path": "frontend/src/shared/runtimeCapabilities.tsx",
+      "before_sha256": null,
+      "after_sha256": "5b34f45fa47ae5af26f965ac59898a552567baa564a2f130a3a9ef04755cbd6c"
+    },
+    {
+      "path": "frontend/src/shared/shell-navigation.css",
+      "before_sha256": "21aa5123f16f14f297925d9bacb922ecfacca4fad765f45a81d596610808cb30",
+      "after_sha256": "c8747758359735c56315d72960c3ffd3467a39bec3c2f4aa180cb84dc265f1da"
+    },
+    {
+      "path": "frontend/src/test/foundationUi.test.tsx",
+      "before_sha256": null,
+      "after_sha256": "171f2be5dee41c86f17f53bb72cb09139fc6ec532fd58491ade7755407683932"
+    }
+  ],
+  "documentation_validation": {
+    "files": 37,
+    "local_links": 1449,
+    "broken_links": 0
+  },
+  "independent_semantic_review": {
+    "fragment": "docs/adaptation/fragments/sql-c5.json",
+    "nodes": 10,
+    "edges": 20,
+    "material_defects": 0,
+    "inferred_phase_links": 4,
+    "sql_or_private_data_access": false
+  }
+}

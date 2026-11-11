@@ -1,0 +1,108 @@
+{
+  "nodes": [
+    {
+      "id": "p3_ddl_users_key",
+      "label": "PK de usuario incluye InstitutionId",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/expected-stages.json",
+      "source_location": "$.P2ES-002.indexes[PK_P2_User]"
+    },
+    {
+      "id": "p3_ddl_ddl_actor",
+      "label": "FK de actor candidata incompleta",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L13,L31,L41"
+    },
+    {
+      "id": "p3_ddl_task_pair",
+      "label": "Tarea conserva pareja contacto/conversación",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L17-L32"
+    },
+    {
+      "id": "p3_ddl_conversation_key",
+      "label": "Conversación tiene PKGUID y ContactId único",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_institutional_spanish_v1/expected-stages.json",
+      "source_location": "$.P2ES-002.indexes[dbo.CRMConversacion]"
+    },
+    {
+      "id": "p3_ddl_merge_cycle",
+      "label": "Unificación exige guard de ciclo transaccional",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": "L46-L60"
+    },
+    {
+      "id": "p3_ddl_journal",
+      "label": "Diario P3 propio conserva hashpadre",
+      "file_type": "document",
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-000.sql",
+      "source_location": "L1-L10"
+    },
+    {
+      "id": "p3_ddl_rights",
+      "label": "ACL P3 independiente de P2",
+      "file_type": "code",
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": "L28-L40"
+    }
+  ],
+  "edges": [
+    {
+      "source": "p3_ddl_ddl_actor",
+      "target": "p3_ddl_users_key",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "p3_ddl_task_pair",
+      "target": "p3_ddl_conversation_key",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "p3_ddl_rights",
+      "target": "p3_ddl_journal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "p3_ddl_rights",
+      "target": "p3_ddl_ddl_actor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/workspace_policy.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "p3_ddl_merge_cycle",
+      "target": "p3_ddl_task_pair",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "backend/migrations/cbn_workspace_spanish_v1/P3ES-001.sql",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "source_review": "artifacts/p3-es/ddl-candidate-source-review.json",
+  "execution_claim": "source_only_no_SQL_no_acceptance"
+}

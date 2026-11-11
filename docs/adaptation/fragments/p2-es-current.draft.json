@@ -1,0 +1,266 @@
+{
+  "domain": "P2-ES · corte vigente de fuentes y evidencia pública de recuperación/consumidor",
+  "status": "draft_current_source_and_public_evidence_reviewed_no_P2_acceptance",
+  "review_scope": "Nueva extracción semántica Graphify con hashes/anclas actuales; preserva todos los informes anteriores. Sólo fuentes y evidencias públicas, sin SQL/Docker/app/privados o código editado. EXTRACTED describe reportes y fuente; INFERRED relaciona snapshots y límites. P2 sigue pendiente de cierre final.",
+  "findings": [
+    {
+      "id": "p2_es_current_source_evidence",
+      "phase": "P2",
+      "capability": "Consistencia del release inmutable, recuperación poblada y consumidor previo con continuidad de cuentas y configuración",
+      "status": "evidencia_publica_revisada_reinicio_checkpoint_y_aceptacion_P2_pendientes",
+      "gap": "Hay prueba pública de migraciones/fallos/roles/recuperación/consumidor, incluyendo denegación anónima y contraseña sin factor en la imagen previa. Faltan reinicio y preservación/checkpoint finales; no se concede aceptación global de P2.",
+      "acceptance": "Corte fuente-only: R2 y 14 entradas intactos; import eliminado verificado como único cambio; reportes públicos coherentes conservan 9 cuentas/MFA y permiten escritura/restauración de ajustes en imagen 652a. No otorga aceptación P2 o producción.",
+      "source": [],
+      "target": [
+        {
+          "file": "artifacts/p2-es/current-source-review.json",
+          "line": 1
+        },
+        {
+          "file": "backend/tools/p2_profile_restore.py",
+          "line": 26
+        },
+        {
+          "file": "artifacts/p2-es/recovery-result.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/p2-es/previous-consumer-result.json",
+          "line": 1
+        },
+        {
+          "file": "artifacts/p2-es/migration-fault-result.json",
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "p2_es_current_review",
+        "label": "Corte actual: fuentes y pruebas públicas revisadas; P2 aún pendiente",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_release",
+        "label": "Release R2 1a7 y 14 entradas congelados intactos",
+        "file_type": "document",
+        "source_file": "backend/migrations/cbn_institutional_spanish_v1/release.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_helper",
+        "label": "Cambio de helper sólo elimina import sin alterar protocolo",
+        "file_type": "code",
+        "source_file": "backend/tools/p2_profile_restore.py",
+        "source_location": "L26",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_migrations",
+        "label": "Dos COMMIT sobre SQL15 y respaldo/restauración antes de aplicar",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/main.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_faults",
+        "label": "Diez fallos, cinco drifts y paralelo committed/noop aprobados",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/migration-fault-result.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_access",
+        "label": "Roles/acciones: 22 DTO denegados, 24 GET y carreras de cuenta/token",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_HTTP",
+        "label": "38 comprobaciones HTTP reportados, sin proveedores o DML académico",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_recovery",
+        "label": "Nueve cuentas y prefijo de 130 auditorías conservados en b803ab53",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L17",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_antireplay",
+        "label": "Credenciales viejas rechazadas; TOTP nuevo acepta sin desactivar MFA",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L44",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_previous_image",
+        "label": "Imagen previa 652a conserva nueve cuentas, exige MFA y restaura configuración",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/previous-consumer-result.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_pending",
+        "label": "Faltan reinicio, checkpoint y preservación final publicada",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      },
+      {
+        "id": "p2_es_current_scope",
+        "label": "RPO del respaldo; exige fuente online; sin producción/desastre total",
+        "file_type": "document",
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1",
+        "status": "current_source_public_evidence_reviewed_P2_final_checkpoint_pending"
+      }
+    ],
+    "edges": [
+      {
+        "source": "p2_es_current_review",
+        "target": "p2_es_current_release",
+        "relation": "pins_frozen_release_without_modification",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_review",
+        "target": "p2_es_current_helper",
+        "relation": "refreshes_current_anchor_and_import_only_hash",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_release",
+        "target": "p2_es_current_migrations",
+        "relation": "has_reported_two_unit_apply_on_restored_SQL2019",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/main.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_migrations",
+        "target": "p2_es_current_faults",
+        "relation": "has_connected_retry_drift_and_concurrency_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/migration-fault-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_review",
+        "target": "p2_es_current_access",
+        "relation": "reviews_direct_authorization_matrix_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/access-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_review",
+        "target": "p2_es_current_HTTP",
+        "relation": "reviews_no_billing_and_lifecycle_evidence",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/http-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_helper",
+        "target": "p2_es_current_recovery",
+        "relation": "has_public_populated_restore_report",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_recovery",
+        "target": "p2_es_current_antireplay",
+        "relation": "preserves_MFA_and_rejects_restored_credential_replay",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L44"
+      },
+      {
+        "source": "p2_es_current_recovery",
+        "target": "p2_es_current_previous_image",
+        "relation": "is_used_by_previous_compatible_API_consumer",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/previous-consumer-result.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_previous_image",
+        "target": "p2_es_current_pending",
+        "relation": "retains_final_restart_and_checkpoint_gate",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_recovery",
+        "target": "p2_es_current_scope",
+        "relation": "limits_preservation_to_checkpoint",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/recovery-result.json",
+        "source_location": "L55"
+      },
+      {
+        "source": "p2_es_current_review",
+        "target": "p2_es_restore_consumer_pending",
+        "relation": "adds_new_public_consumer_evidence_without_rewriting_prior_snapshot",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_pending",
+        "target": "P2",
+        "relation": "awards_no_closure_before_final_acceptance",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      },
+      {
+        "source": "p2_es_current_scope",
+        "target": "P11",
+        "relation": "retains_operational_disaster_and_production_gates",
+        "confidence": "INFERRED",
+        "confidence_score": 1.0,
+        "source_file": "artifacts/p2-es/current-source-review.json",
+        "source_location": "L1"
+      }
+    ]
+  }
+}
