@@ -47,8 +47,12 @@ def key(settings):
 
 
 def bound_hash(settings, value, purpose):
+    if getattr(settings, "deployment_transport", None):
+        database = settings.ticket["identity"]["database"]
+    else:
+        database = settings.connection["database"]
     context = {
-        "database": settings.connection["database"],
+        "database": database,
         "institution": institution(settings),
         "purpose": purpose,
         "value": value,

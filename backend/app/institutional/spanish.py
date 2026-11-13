@@ -15,6 +15,7 @@ from fastapi import HTTPException
 
 from app.es_schema_profile import journal_digest
 from app.foundation import RIGHTS as CORE_RIGHTS
+from app.institutional import deployment
 from app.institutional.policy import request_authority
 from app.institutional.spanish_bindings import (
     TARGET,
@@ -461,48 +462,7 @@ def verify(cursor, settings):
     from tools.p2_es_migrations import validate_data
 
     validate_data(cursor, 2, ticket["seed"])
-    rights = {
-        mapping["tables"].get(table, table): set(right)
-        for table, right in expected_rights.items()
-    }
-    columns = {
-        mapping["tables"][table]: allowed for table, allowed in column_policy.items()
-    }
-    # One read evaluates every object permission; values are parameters, never SQL.
-    table_values = ",".join("(?)" for _ in ticket["tables"])
-    permission_values = ",".join("(?)" for _ in PERMISSIONS)
-    checks = cursor.execute(
-        (
-            "SELECT objects.name,permissions.name,H"
-            "AS_PERMS_BY_NAME(objects.name,'OBJECT'"
-            ",permissions.name) FROM (VALUES "
-        )
-        + table_values
-        + ") objects(name) CROSS JOIN (VALUES "
-        + permission_values
-        + ") permissions(name)",
-        *ticket["tables"],
-        *PERMISSIONS,
-    ).fetchall()
-    for table, permission, actual_permission in checks:
-        if table in columns and permission == "SELECT":
-            continue
-        if actual_permission != int(permission in rights.get(table, set())):
-            raise ValueError("P2ES_effective_object_permission")
-    for table, allowed in columns.items():
-        checks = cursor.execute(
-            (
-                "SELECT name,HAS_PERMS_BY_NAME(?,'OBJEC"
-                "T','SELECT',name,'COLUMN') FROM sys.co"
-                "lumns WHERE object_id=OBJECT_ID(?)"
-            ),
-            table,
-            table,
-        ).fetchall()
-        if not checks or any(
-            value != int(column in allowed) for column, value in checks
-        ):
-            raise ValueError("P2ES_column_permission")
+    verify_object_permissions(cursor, mapping, ticket["tables"], expected_rights, column_policy)
     principals = {r["name"] for r in current["principals"]}
     if (
         principals != set(ticket["principals"])
@@ -550,15 +510,76 @@ def verify(cursor, settings):
                 raise ValueError("P2ES_login_impersonation")
 
 
+def verify_object_permissions(
+    cursor, mapping, tables, expected_rights, column_policy, *, deployment_mode=False
+):
+    rights = {
+        mapping["tables"].get(table, table): set(right)
+        for table, right in expected_rights.items()
+    }
+    columns = {
+        mapping["tables"][table]: allowed for table, allowed in column_policy.items()
+    }
+    # One read evaluates every object permission; values are parameters, never SQL.
+    table_values = ",".join("(?)" for _ in tables)
+    permissions = (*PERMISSIONS, "TAKE OWNERSHIP") if deployment_mode else PERMISSIONS
+    permission_values = ",".join("(?)" for _ in permissions)
+    checks = cursor.execute(
+        (
+            "SELECT objects.name,permissions.name,H"
+            "AS_PERMS_BY_NAME(objects.name,'OBJECT'"
+            ",permissions.name) FROM (VALUES "
+        )
+        + table_values
+        + ") objects(name) CROSS JOIN (VALUES "
+        + permission_values
+        + ") permissions(name)",
+        *tables,
+        *permissions,
+    ).fetchall()
+    for table, permission, actual_permission in checks:
+        if table in columns and permission == "SELECT":
+            continue
+        if actual_permission != int(permission in rights.get(table, set())):
+            raise ValueError("P2ES_effective_object_permission")
+    if deployment_mode:
+        no_update = [table for table in tables if "UPDATE" not in rights.get(table, set())]
+        table_params = ",".join("(?)" for _ in no_update)
+        if cursor.execute(
+            "SELECT TOP(1) 1 FROM (VALUES " + table_params + ") v(name) "
+            "JOIN sys.columns c ON c.object_id=OBJECT_ID(v.name) "
+            "WHERE HAS_PERMS_BY_NAME(v.name,'OBJECT','UPDATE',c.name,'COLUMN')=1",
+            *no_update,
+        ).fetchone():
+            raise ValueError("P2ES_column_update_permission")
+    for table, allowed in columns.items():
+        checks = cursor.execute(
+            (
+                "SELECT name,HAS_PERMS_BY_NAME(?,'OBJEC"
+                "T','SELECT',name,'COLUMN') FROM sys.co"
+                "lumns WHERE object_id=OBJECT_ID(?)"
+            ),
+            table,
+            table,
+        ).fetchall()
+        if not checks or any(
+            value != int(column in allowed) for column, value in checks
+        ):
+            raise ValueError("P2ES_column_permission")
+
+
 @contextmanager
 def transaction(
     settings, write=False, *, permission=None, anonymous=False, recent=False
 ):
     connection = None
+    transport = getattr(settings, "deployment_transport", None)
     stage = "connect"
     try:
-        connection = pyodbc.connect(
-            connection_string(settings), timeout=5, autocommit=False
+        connection = (
+            deployment.open_connection(transport)
+            if transport
+            else pyodbc.connect(connection_string(settings), timeout=5, autocommit=False)
         )
         connection.timeout = 20
         cursor = connection.cursor()
@@ -597,7 +618,10 @@ def transaction(
             ):
                 raise ValueError("P2ES_transaction_lock")
         stage = "verify"
-        verify(cursor, settings)
+        if transport:
+            deployment.verify(cursor, settings)
+        else:
+            verify(cursor, settings)
         mapped = Cursor(cursor, settings.ticket["table_map"])
         if not anonymous:
             from app.institutional.auth import authorize
@@ -617,7 +641,13 @@ def transaction(
         stage = "commit"
         connection.commit()
     except (pyodbc.Error, ValueError, OSError, KeyError, TypeError) as failure:
-        if (
+        if transport:
+            logging.getLogger(__name__).warning(
+                "Deployment SQL guard stage=%s reason=%s",
+                stage,
+                str(failure) if isinstance(failure, deployment.DeploymentError) else "redacted",
+            )
+        elif (
             getattr(settings, "ticket", {}).get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
         ):
             tag = (

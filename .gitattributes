@@ -1,2 +1,17 @@
 # Shell entrypoints must remain executable by Bash after a Windows checkout.
 docker/*.sh text eol=lf
+
+# Migration manifests and their inputs are verified by byte-level SHA-256.
+backend/migrations/** -text
+backend/operations/** -text
+backend/app/institutional/model_settings.py -text
+backend/app/institutional/models.py -text
+backend/app/institutional/policy.py -text
+backend/app/institutional/spanish_bindings.py -text
+backend/tools/es_schema_catalog.py -text
+backend/tools/es_schema_catalog_v2.py -text
+backend/tools/es_schema_migrate.py -text
+backend/tools/es_schema_migrate_v2.py -text
+backend/tools/institutional_migrations.py -text
+backend/tools/p2_es_migrations.py -text
+docs/adaptation/sql/p2-channel-fields.json -text

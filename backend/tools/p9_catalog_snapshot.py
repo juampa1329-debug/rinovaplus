@@ -38,7 +38,7 @@ def model(snapshot):
     return canonical(result)
 
 
-def snapshot(cursor, *, omit_journal=False, raw_catalog=None):
+def snapshot(cursor, *, omit_journal=False, raw_catalog=None, only_tables=None):
     # Trusted internal reuse is confined to the same guarded transaction.
     raw = metadata(cursor) if raw_catalog is None else raw_catalog
     selected = {
@@ -46,6 +46,8 @@ def snapshot(cursor, *, omit_journal=False, raw_catalog=None):
         for r in raw["catalog"]
         if r["type"].strip() == "U"
     }
+    if only_tables is not None:
+        selected = {(schema, name) for schema, name in selected if f"{schema}.{name}" in only_tables}
     if omit_journal:
         selected.discard(JOURNAL)
     # No complement of a schema is silently trusted. Any extra table remains visible.
@@ -54,7 +56,7 @@ def snapshot(cursor, *, omit_journal=False, raw_catalog=None):
         for r in raw["catalog"]
         if r["type"].strip() not in {"U", "PK", "UQ", "C", "F", "D"}
     ]
-    if unsupported:
+    if only_tables is None and unsupported:
         raise ValueError("ES_unexpected_routine_trigger_or_object")
     features = records(
         cursor,

@@ -2,6 +2,7 @@
 !docker/
 !docker/Dockerfile.coolify
 !docker/institution-start.sh
+!docker/coolify-start.sh
 !docker/nginx.operations.conf
 !backend/
 !backend/app/

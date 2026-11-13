@@ -1,5 +1,6 @@
 "Institutional HTTP boundary. No owner-preview cookie, startup DDL or provider IO."
 
+import logging
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,7 +12,7 @@ from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.routing import compile_path
 
-from app.institutional import models
+from app.institutional import deployment, models
 from app.institutional.auth import Identity, cookie_name
 from app.institutional.db import audit
 from app.institutional.management import Management
@@ -120,6 +121,8 @@ def create_app(
         workspace = WorkspaceV4(settings)
     app.state.sql_workspace = workspace or Workspace(settings)
     port = 4178 if is_workspace else 4177
+    public_host = getattr(settings, "public_host", None)
+    public_origin = getattr(settings, "public_origin", None)
     local_cookie = cookie_name(settings)
     identity, management, configuration = (
         Identity(settings),
@@ -134,7 +137,18 @@ def create_app(
 
     @app.middleware("http")
     async def access(request: Request, call_next):
-        if is_operational and request.url.path.startswith("/hooks/"):
+        host = request.headers.get("host")
+        origin = request.headers.get("origin")
+        path = request.url.path
+        loopback = request.client and request.client.host in {"127.0.0.1", "::1"}
+        if public_host and not (
+            loopback and (
+                host == public_host
+                or (host in {f"127.0.0.1:{port}", f"localhost:{port}"} and path.startswith("/health/"))
+            )
+        ):
+            return JSONResponse({"detail": "deployment_host_required"}, 403)
+        if is_operational and path.startswith("/hooks/"):
             # Public ingress authenticates raw provider signatures, not local human
             # cookies.
             response = await call_next(request)
@@ -142,13 +156,16 @@ def create_app(
             response.headers["Referrer-Policy"] = "no-referrer"
             response.headers["X-Content-Type-Options"] = "nosniff"
             return response
-        if (
-            not request.client
-            or request.client.host not in {"127.0.0.1", "::1"}
-            or request.headers.get("host")
-            not in {"127.0.0.1:8004", f"127.0.0.1:{port}", f"localhost:{port}"}
-            or request.headers.get("origin")
-            not in {None, f"http://127.0.0.1:{port}", f"http://localhost:{port}"}
+        if public_host:
+            if origin not in {None, public_origin} or (
+                path.startswith("/api/") and request.method not in {"GET", "HEAD", "OPTIONS"}
+                and origin != public_origin
+            ):
+                return JSONResponse({"detail": "deployment_origin_required"}, 403)
+        elif (
+            not loopback
+            or host not in {"127.0.0.1:8004", f"127.0.0.1:{port}", f"localhost:{port}"}
+            or origin not in {None, f"http://127.0.0.1:{port}", f"http://localhost:{port}"}
         ):
             return JSONResponse({"detail": "local_access_required"}, 403)
         authority = None
@@ -292,6 +309,7 @@ def create_app(
                 local_cookie,
                 raw,
                 httponly=True,
+                secure=bool(public_host),
                 samesite="lax" if is_operational else "strict",
                 max_age=28800,
                 path="/" if is_operational else "/api",
@@ -308,6 +326,8 @@ def create_app(
 
     @app.post("/api/institution/auth/bootstrap")
     def bootstrap(body: models.Bootstrap):
+        if getattr(settings, "deployment_transport", None):
+            raise HTTPException(404, "resource_not_found")
         return signed(identity.bootstrap(body))
 
     @app.post("/api/institution/auth/login")
@@ -330,7 +350,10 @@ def create_app(
     def logout(request: Request):
         result = identity.logout(request.state.authority)
         response = JSONResponse(result)
-        response.delete_cookie(local_cookie, path="/" if is_operational else "/api")
+        response.delete_cookie(
+            local_cookie, path="/" if is_operational else "/api", secure=bool(public_host),
+            httponly=True, samesite="lax" if is_operational else "strict",
+        )
         return response
 
     @app.post("/api/institution/auth/confirm")
@@ -563,4 +586,11 @@ def create_app(
 
 
 def application():
+    try:
+        transport = deployment.transport_from_env(os.environ)
+        if transport:
+            return create_app(deployment.load(transport, os.environ))
+    except deployment.DeploymentError as error:
+        logging.getLogger(__name__).error("%s", error)
+        raise SystemExit(1) from None
     return create_app(load(Path(os.environ["CRM_INSTITUTIONAL_PROFILE_DIR"])))

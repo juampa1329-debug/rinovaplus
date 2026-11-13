@@ -30,15 +30,7 @@ flowchart LR
 
 ## Publicación en Coolify
 
-El propietario confirmó Coolify como plataforma de P12. El código actual toma `PublicBaseUrl` de la configuración de Canales en SQL Server. Los webhooks, OAuth y los enlaces de adjuntos de campañas construyen sus URLs desde esa base. El Compose de P11 usa loopback y carece de una referencia a una variable de origen público.
-
-Contrato propuesto para la implementación P12:
-
-- Declarar `CRM_PUBLIC_BASE_URL` como variable obligatoria de ejecución en el Compose de P12 con `${CRM_PUBLIC_BASE_URL:?}`. El valor para este entorno será `https://app.rinovaplus.com`. Validar un origen HTTPS exacto y usarlo como base de las URLs generadas en P12. Mantener un solo origen efectivo en el perfil público y resolver cualquier diferencia con la configuración persistida antes de habilitar OAuth.
-- Configurar Domains de Coolify sobre el servicio CRM con su puerto interno. Si se conserva 4178, la entrada en el panel es `https://app.rinovaplus.com:4178`. El valor de `CRM_PUBLIC_BASE_URL` lleva el origen público sin el puerto interno. Usar el proxy de Coolify y conservar SQL Server en red privada.
-- El backend debe leer y validar la variable. La declaración en el panel por sí sola no configura Canales ni habilita el perfil público. El ensayo debe verificar generación de URLs, rechazo de orígenes incorrectos, cookies seguras y retorno OAuth con la sesión original.
-
-[Configuración de Docker Compose en Coolify](https://coolify.io/docs/applications/builds/docker-compose)
+El propietario confirmó Coolify como plataforma de P12. La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` y expone el servicio en `4178`. `CRM_PUBLIC_BASE_URL=https://app.rinovaplus.com` activa la validación de origen y configura la base de URLs de Canales. La conexión SQL se configura mediante variables de ejecución independientes del perfil firmado de ensayo. Antes de publicar, ejecutar desde Coolify el diagnóstico de solo lectura de `dbsiie` y verificar la ruta TLS, la confianza del certificado y el inventario esperado. [Runbook de Coolify](../../deployment/coolify.md)
 
 ## Contrato a comprobar en P12
 
@@ -50,4 +42,4 @@ Contrato propuesto para la implementación P12:
 
 ## Progreso
 
-Dominio base informado y registro preparado para entrega. P12 online **0,00% de ejecución**, con 18 hitos canónicos aún pendientes. Roadmap general **93,62%**. P0, P1, P2, P3, P5 y P6 al 100%, P4 y P7 al 82,29%, P8 y P10 al 95%, P9 al 93,75% y P11 al 72,50% con el sprint local al 100%. Ver [roadmap](../../SCENTRA_ADAPTATION_ROADMAP.md). Este registro complementa la evidencia P11 y el backlog congelado.
+Dominio base informado, registro DNS preparado y conexión SQL de Coolify probada localmente. P12 online **0,00% de ejecución**, con 18 hitos canónicos aún pendientes. Roadmap general **93,62%**. P0, P1, P2, P3, P5 y P6 al 100%, P4 y P7 al 82,29%, P8 y P10 al 95%, P9 al 93,75% y P11 al 72,50% con el sprint local al 100%. Ver [roadmap](../../SCENTRA_ADAPTATION_ROADMAP.md). Este registro complementa la evidencia P11 y el backlog congelado.

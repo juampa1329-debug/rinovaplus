@@ -1,4 +1,50 @@
-# Preview privado en Docker y preparación para Coolify
+# RinovaPlus en Coolify
+
+## Rama `deploy/coolify-rinovaplus`
+
+En Coolify, seleccionar el repositorio privado, la rama `deploy/coolify-rinovaplus` y el método **Dockerfile**. Usar `/` como contexto, `/docker/Dockerfile.coolify` como ruta y `4178` como puerto del servicio. El proxy de Coolify termina HTTPS. Configurar `https://app.rinovaplus.com` como dominio del servicio y conservar un solo origen para interfaz, API y webhooks. Montar un volumen persistente en `/var/lib/crm-ai` para adjuntos de Inbox y campañas, con acceso de escritura para el UID `10001`.
+
+Configurar los valores únicamente en **Environment Variables** de ejecución de Coolify. Mantener desactivada la opción de pasarlos durante el build.
+
+| Variable | Valor o función |
+|---|---|
+| `CRM_SQL_URL` | `sqlserver://50.62.180.142:1433/dbsiie`. Admite también el nombre DNS del servidor SQL. |
+| `CRM_SQL_USER` | Login SQL dedicado al CRM, con usuario en la base y permisos de la aplicación. |
+| `CRM_SQL_PASSWORD` | Contraseña del login SQL, tal como la entrega el custodio. |
+| `CRM_SECURITY_KEY` | Clave persistente de la aplicación. Usar 32 bytes codificados en Base64, guardados como secreto. Para una instalación nueva se puede generar con `openssl rand -base64 32`. Si se trasladan secretos CRM cifrados, revisar primero la custodia y compatibilidad de la clave existente. |
+| `CRM_PUBLIC_BASE_URL` | `https://app.rinovaplus.com`. Define el origen de sesión y las URLs de Canales, OAuth, webhooks y adjuntos. |
+| `CRM_SQL_CERTIFICATE_HOSTNAME` | Opcional. Nombre DNS del certificado de SQL Server cuando el transporte usa una IP o un alias. |
+| `SSL_CERT_FILE` | Opcional para una CA privada. Ruta dentro del contenedor de un bundle PEM de confianza, montado en solo lectura. |
+
+El backend lee la configuración al arrancar. Con las tres variables SQL activas, ODBC Driver 18 exige cifrado y valida la cadena de confianza y el nombre del certificado. Con las tres ausentes, conserva el perfil firmado de ensayos. Una configuración parcial detiene el arranque. El arranque comprueba SQL Server 2019 y compatibilidad 150, identidad, catálogo CRM, diarios, usuario propietario y permisos efectivos. La identidad, los permisos y el historial se vuelven a comprobar en las transacciones. El arranque requiere una institución inicializada.
+
+### Primera comprobación desde Coolify
+
+Desde el host de Coolify, ejecutar la imagen con su punto de entrada sustituido por `python` y los argumentos `-m app.institutional.deployment`. Usar las tres variables SQL de ejecución y una cuenta de diagnóstico con `CONNECT` y `VIEW DEFINITION`. Este comando consulta el catálogo en solo lectura y finaliza sin arrancar el CRM. Un resultado correcto devuelve `{"sql": "verified", "scope": "catalog_read_only"}`. Usar una copia restaurada con la cuenta CRM antes de habilitar el servicio institucional.
+
+Si aparece `sql_tls_validation_failed`, pedir al DBA que configure en la instancia un certificado de servidor con cadena válida. Para validar directamente la IP, debe figurar como dirección IP en el SAN y su CA debe ser de confianza para el contenedor. Si el certificado está emitido para un nombre DNS, usar ese nombre en `CRM_SQL_URL` o declararlo en `CRM_SQL_CERTIFICATE_HOSTNAME`. El certificado que usa el proxy web de Coolify corresponde a otra conexión. Los diagnósticos omiten usuario y contraseña.
+
+Si aparece `sql_tables_missing`, el mensaje lista las tablas esperadas ausentes. El [generador SQL para el DBA](../../backend/tools/coolify_sql_grants.py) emite inventario de solo lectura o una propuesta separada de permisos con reversión por defecto. Ejecutar desde `/app/backend` en la imagen o desde `backend` con las dependencias instaladas.
+
+```bash
+python -m tools.coolify_sql_grants --database dbsiie --inventory > inventario-rinovaplus.sql
+python -m tools.coolify_sql_grants --database dbsiie --login rinovaplus_runtime > permisos-rinovaplus.sql
+```
+
+El inventario identifica objetos `MISSING` por nombre y dominio. El DBA debe comparar el catálogo de destino con los contratos de [migraciones](../../backend/migrations) y preparar un script de esquema para revisar en una restauración antes de aplicar cambios. El arranque no ejecuta DDL ni concede permisos.
+
+```mermaid
+flowchart LR
+    A[Variables de ejecución de Coolify] --> T[Transporte ODBC con TLS]
+    T --> D[Inventario SQL de solo lectura]
+    T --> P[Validación de identidad, esquema y permisos CRM]
+    P --> C[Aplicación y sesiones RinovaPlus]
+    F[Perfil firmado de ensayo] --> C
+```
+
+Referencias de configuración de [Coolify Dockerfile](https://coolify.io/docs/applications/builds/dockerfile), [variables de Coolify](https://coolify.io/docs/applications/configuration/environment-variables) y [opciones TLS de ODBC](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/connection-string-keywords-and-data-source-names-dsns?view=sql-server-ver17).
+
+## Referencia histórica del preview privado
 
 El paquete ejecuta el CRM integrado en **un contenedor Linux privado**, con React compilado, Nginx y un proceso Uvicorn. SQL Server permanece externo. No es una entrega productiva ni habilita un dominio público: autenticación/RBAC y aceptación de fase 1 siguen pendientes.
 

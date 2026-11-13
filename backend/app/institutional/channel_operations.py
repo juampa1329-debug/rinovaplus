@@ -55,6 +55,8 @@ def configuration(c, settings):
         raise HTTPException(503, "channel_configuration_unavailable")
     from app.institutional.settings import setting
 
+    if getattr(settings, "public_origin", None):
+        value["PublicBaseUrl"] = settings.public_origin
     value["ModuleEnabled"] = setting(c, settings, "modules")["document"]["enabled"].get(
         "channels", False
     )
@@ -481,6 +483,8 @@ class Operations:
             current = configuration(c, self.settings)
             if body:
                 origin = base_url(body.public_base_url)
+                if getattr(self.settings, "public_origin", None) and origin != self.settings.public_origin:
+                    raise HTTPException(422, "public_origin_managed_by_deployment")
                 digest, prior = replay(
                     c,
                     self.settings,
