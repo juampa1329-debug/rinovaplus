@@ -22,7 +22,7 @@ El propietario indicó GitHub como origen para la publicación de Rinova Plus. L
 
 ## Conexión SQL para Coolify · 13 de noviembre de 2026
 
-La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` en 4178 y admite SQL Server 2019 mediante `CRM_SQL_URL`, `CRM_SQL_USER` y `CRM_SQL_PASSWORD` de ejecución. La aplicación requiere `CRM_SECURITY_KEY` persistente. `CRM_PUBLIC_BASE_URL` configura el origen y las URLs públicas. El ensayo firmado sigue disponible sin las tres variables SQL.
+La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` en 4178 y admite SQL Server 2019 mediante `CRM_SQL_URL`, `CRM_SQL_USER` y `CRM_SQL_PASSWORD` de ejecución. Por solicitud del propietario, el modo usa `Encrypt=Yes;TrustServerCertificate=Yes` para conectar por IP sin validar el certificado de SQL Server. La aplicación requiere `CRM_SECURITY_KEY` persistente. `CRM_PUBLIC_BASE_URL` configura el origen y las URLs públicas. El ensayo firmado sigue disponible sin las tres variables SQL y conserva su validación del certificado.
 
 La imagen se probó en una restauración separada con TLS y privilegios acotados. El catálogo del destino y los permisos se verifican antes de arrancar. `python -m app.institutional.deployment` es el diagnóstico de solo lectura para `dbsiie` desde Coolify. El [runbook](../docs/deployment/coolify.md) incluye las salidas SQL separadas para inventario y revisión de permisos.
 

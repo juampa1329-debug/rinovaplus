@@ -30,11 +30,11 @@ flowchart LR
 
 ## Publicación en Coolify
 
-El propietario confirmó Coolify como plataforma de P12. La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` y expone el servicio en `4178`. `CRM_PUBLIC_BASE_URL=https://app.rinovaplus.com` activa la validación de origen y configura la base de URLs de Canales. La conexión SQL se configura mediante variables de ejecución independientes del perfil firmado de ensayo. Antes de publicar, ejecutar desde Coolify el diagnóstico de solo lectura de `dbsiie` y verificar la ruta TLS, la confianza del certificado y el inventario esperado. [Runbook de Coolify](../../deployment/coolify.md)
+El propietario confirmó Coolify como plataforma de P12. La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` y expone el servicio en `4178`. `CRM_PUBLIC_BASE_URL=https://app.rinovaplus.com` activa la validación de origen y configura la base de URLs de Canales. La conexión SQL se configura mediante variables de ejecución independientes del perfil firmado de ensayo. Antes de publicar, ejecutar desde Coolify el diagnóstico de solo lectura de `dbsiie` para comprobar la conexión cifrada y el inventario esperado. [Runbook de Coolify](../../deployment/coolify.md)
 
 ## Contrato a comprobar en P12
 
-- La receta P11 en 4178 exige loopback para la interfaz y la API. P12 necesita su propio perfil de entrada, con host y origen exactos, cookies de sesión Secure y HttpOnly, permisos y CSRF en el backend, y validación TLS hasta SQL Server.
+- La receta P11 en 4178 exige loopback para la interfaz y la API. P12 usa su propio perfil de entrada con host y origen exactos, cookies de sesión Secure y HttpOnly, permisos y CSRF en el backend. El transporte a SQL Server exige cifrado TLS y acepta el certificado sin validarlo.
 - El callback OAuth usa una cookie de sesión ligada al estado, al usuario y a la cuenta. Se mantendrá `Path=/`, SameSite=Lax para el retorno de primer nivel, cookie sin Domain y el origen público efectivo del perfil P12. Validar cookies y retorno OAuth en navegador. El origen único permite mantener las llamadas relativas y prescindir de CORS entre subdominios.
 - En el proxy público, servir únicamente las rutas necesarias. Cerrar bootstrap público y mantener los puertos internos y comprobaciones administrativas en la red privada. Confiar cabeceras de reenvío sólo desde el proxy. Excluir consultas, cookies y credenciales de los registros.
 - Canales genera sus URLs exactas. Verificar el desafío del proveedor, firmas sobre el cuerpo original, rechazo de callbacks inválidos, OAuth real con cuenta de prueba y reintentos con recibos. Registrar URLs en los proveedores cuando HTTPS esté disponible y exista alcance de prueba acordado.

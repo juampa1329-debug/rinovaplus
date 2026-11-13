@@ -13,16 +13,16 @@ Configurar los valores únicamente en **Environment Variables** de ejecución de
 | `CRM_SQL_PASSWORD` | Contraseña del login SQL, tal como la entrega el custodio. |
 | `CRM_SECURITY_KEY` | Clave persistente de la aplicación. Usar 32 bytes codificados en Base64, guardados como secreto. Para una instalación nueva se puede generar con `openssl rand -base64 32`. Si se trasladan secretos CRM cifrados, revisar primero la custodia y compatibilidad de la clave existente. |
 | `CRM_PUBLIC_BASE_URL` | `https://app.rinovaplus.com`. Define el origen de sesión y las URLs de Canales, OAuth, webhooks y adjuntos. |
-| `CRM_SQL_CERTIFICATE_HOSTNAME` | Opcional. Nombre DNS del certificado de SQL Server cuando el transporte usa una IP o un alias. |
-| `SSL_CERT_FILE` | Opcional para una CA privada. Ruta dentro del contenedor de un bundle PEM de confianza, montado en solo lectura. |
 
-El backend lee la configuración al arrancar. Con las tres variables SQL activas, ODBC Driver 18 exige cifrado y valida la cadena de confianza y el nombre del certificado. Con las tres ausentes, conserva el perfil firmado de ensayos. Una configuración parcial detiene el arranque. El arranque comprueba SQL Server 2019 y compatibilidad 150, identidad, catálogo CRM, diarios, usuario propietario y permisos efectivos. La identidad, los permisos y el historial se vuelven a comprobar en las transacciones. El arranque requiere una institución inicializada.
+El backend lee la configuración al arrancar. Con las tres variables SQL activas, ODBC Driver 18 usa `Encrypt=Yes;TrustServerCertificate=Yes`. La sesión va cifrada y el controlador acepta el certificado sin autenticar el servidor por TLS. El modo permite conectar por IP con un certificado autofirmado y prescinde de `CRM_SQL_CERTIFICATE_HOSTNAME` y de una CA privada en el contenedor. Con las tres variables ausentes, se usa el perfil firmado de ensayos con su propia validación del certificado. Una configuración parcial detiene el arranque.
+
+El arranque comprueba SQL Server 2019 y compatibilidad 150, identidad de la base, catálogo CRM, diarios, usuario propietario y permisos efectivos. La identidad de la base, los permisos y el historial se vuelven a comprobar en las transacciones. El arranque requiere una institución inicializada.
 
 ### Primera comprobación desde Coolify
 
 Desde el host de Coolify, ejecutar la imagen con su punto de entrada sustituido por `python` y los argumentos `-m app.institutional.deployment`. Usar las tres variables SQL de ejecución y una cuenta de diagnóstico con `CONNECT` y `VIEW DEFINITION`. Este comando consulta el catálogo en solo lectura y finaliza sin arrancar el CRM. Un resultado correcto devuelve `{"sql": "verified", "scope": "catalog_read_only"}`. Usar una copia restaurada con la cuenta CRM antes de habilitar el servicio institucional.
 
-Si aparece `sql_tls_validation_failed`, pedir al DBA que configure en la instancia un certificado de servidor con cadena válida. Para validar directamente la IP, debe figurar como dirección IP en el SAN y su CA debe ser de confianza para el contenedor. Si el certificado está emitido para un nombre DNS, usar ese nombre en `CRM_SQL_URL` o declararlo en `CRM_SQL_CERTIFICATE_HOSTNAME`. El certificado que usa el proxy web de Coolify corresponde a otra conexión. Los diagnósticos omiten usuario y contraseña.
+Si aparece `sql_tls_negotiation_failed`, el DBA puede revisar las versiones y la configuración TLS que admite la instancia. Si aparece `sql_login_rejected`, revisar el acceso del login a la base. Los diagnósticos omiten usuario y contraseña.
 
 Si aparece `sql_tables_missing`, el mensaje lista las tablas esperadas ausentes. El [generador SQL para el DBA](../../backend/tools/coolify_sql_grants.py) emite inventario de solo lectura o una propuesta separada de permisos con reversión por defecto. Ejecutar desde `/app/backend` en la imagen o desde `backend` con las dependencias instaladas.
 

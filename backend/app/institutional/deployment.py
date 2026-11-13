@@ -32,7 +32,6 @@ class Transport:
     database: str
     user: str = field(repr=False)
     password: str = field(repr=False)
-    certificate_name: str | None = None
 
     def odbc_string(self):
         values = {
@@ -42,11 +41,9 @@ class Transport:
             "UID": _quoted(self.user),
             "PWD": _quoted(self.password),
             "Encrypt": "Yes",
-            "TrustServerCertificate": "No",
+            "TrustServerCertificate": "Yes",
             "APP": "RinovaPlus",
         }
-        if self.certificate_name:
-            values["HostnameInCertificate"] = self.certificate_name
         return ";".join(f"{name}={value}" for name, value in values.items()) + ";"
 
 
@@ -74,10 +71,7 @@ def transport_from_env(env):
         or any(ord(character) < 32 or ord(character) == 127 for character in user + password)
     ):
         raise DeploymentError("sql_credentials_invalid")
-    certificate = env.get("CRM_SQL_CERTIFICATE_HOSTNAME")
-    if certificate is not None and not HOST.fullmatch(certificate):
-        raise DeploymentError("sql_certificate_hostname_invalid")
-    return Transport(match[1], int(match[2]), database, user, password, certificate)
+    return Transport(match[1], int(match[2]), database, user, password)
 
 
 def public_origin(env):
@@ -98,14 +92,12 @@ def open_connection(transport, *, probe=False):
     except pyodbc.Error as error:
         message = str(error).lower()
         state = error.args[0] if error.args else ""
-        if any(word in message for word in ("certificate", "ssl provider", "tls", "hostname mismatch")):
-            raise DeploymentError(
-                "sql_tls_validation_failed: install the issuing CA in the container and bind a "
-                "valid SQL Server certificate with the target IP in its SAN, or use the "
-                "certificate DNS name via CRM_SQL_URL or CRM_SQL_CERTIFICATE_HOSTNAME"
-            ) from None
         if state == "28000" or "login failed" in message:
             raise DeploymentError("sql_login_rejected") from None
+        if any(word in message for word in ("certificate", "ssl provider", "tls")):
+            raise DeploymentError(
+                "sql_tls_negotiation_failed: check that SQL Server and ODBC support a common TLS configuration"
+            ) from None
         raise DeploymentError("sql_connection_failed: check routing, firewall and TCP port") from None
     return connection
 

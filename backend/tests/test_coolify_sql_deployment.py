@@ -22,10 +22,16 @@ def test_deployment_transport_uses_tls_and_quotes_credentials():
     transport = deployment.transport_from_env(environment())
     assert transport.database == "dbsiie"
     assert "DRIVER={ODBC Driver 18 for SQL Server}" in transport.odbc_string()
-    assert "Encrypt=Yes;TrustServerCertificate=No;" in transport.odbc_string()
+    assert "Encrypt=Yes;TrustServerCertificate=Yes;" in transport.odbc_string()
     assert "PWD={example;with}}braces};" in transport.odbc_string()
     assert "fake_runtime" not in repr(transport)
     assert "example;with" not in repr(transport)
+
+
+def test_previous_certificate_hostname_does_not_block_deployment():
+    transport = deployment.transport_from_env(environment(CRM_SQL_CERTIFICATE_HOSTNAME=""))
+    assert "TrustServerCertificate=Yes;" in transport.odbc_string()
+    assert "HostnameInCertificate" not in transport.odbc_string()
 
 
 def test_unset_keeps_signed_profile_and_partial_configuration_fails():
@@ -51,7 +57,7 @@ def test_driver_errors_are_redacted(monkeypatch):
         raise pyodbc.Error("08001", "SSL Provider: certificate failure fake_runtime example;with}braces")
 
     monkeypatch.setattr(pyodbc, "connect", reject)
-    with pytest.raises(deployment.DeploymentError, match="sql_tls_validation_failed") as error:
+    with pytest.raises(deployment.DeploymentError, match="sql_tls_negotiation_failed") as error:
         deployment.open_connection(deployment.transport_from_env(environment()))
     assert "fake_runtime" not in str(error.value)
     assert "example;with" not in str(error.value)

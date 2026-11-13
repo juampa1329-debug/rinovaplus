@@ -37,7 +37,7 @@ No reejecutar preparadores/seeds/calificadores en bases pobladas. El preparador 
 | P10 | 95,00% | 4/5 |
 | P11 | 72,50% | 2/4 |
 
-P12 tiene **0,00% de ejecución online**, fuera del denominador general. La conexión SQL por variables de ejecución y el diagnóstico de solo lectura se probaron en Docker con una restauración local de SQL Server 2019. Quedan el inventario de `dbsiie` desde Coolify, HTTPS público y la aceptación institucional. [Runbook de Coolify](deployment/coolify.md)
+P12 tiene **0,00% de ejecución online**, fuera del denominador general. La conexión SQL cifrada por IP sin validar el certificado y el diagnóstico de solo lectura se probaron en Docker con una restauración local de SQL Server 2019. Quedan el inventario de `dbsiie` desde Coolify, HTTPS público y la aceptación institucional. [Runbook de Coolify](deployment/coolify.md)
 
 ## Historia anterior a P11; prevalece el estado superior
 
