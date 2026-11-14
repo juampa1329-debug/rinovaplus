@@ -21,6 +21,11 @@ from tools.es_schema_migrate_v2 import identity
 from tools.foundation_snapshot import sha
 
 VARIABLES = ("CRM_SQL_URL", "CRM_SQL_USER", "CRM_SQL_PASSWORD")
+DATABASE_VARIABLE = "CRM_SQL_DATABASE"
+DATABASE_NAME = re.compile(r"[\w -]{1,128}")
+SYSTEM_DATABASES = frozenset(
+    {"master", "model", "msdb", "tempdb", "mssqlsystemresource"}
+)
 TEST_DATABASE = re.compile(r"RinovaPlus_Trial_[a-f0-9]{8}", re.IGNORECASE)
 LOG = logging.getLogger(__name__)
 
@@ -48,21 +53,43 @@ class Transport:
 
 
 def transport_from_env(env):
-    if not any(name in env for name in VARIABLES):
+    if DATABASE_VARIABLE not in env and not any(name in env for name in VARIABLES):
         return None
     if not all(env.get(name) for name in VARIABLES):
-        raise DeploymentError("sql_environment_incomplete: set CRM_SQL_URL, CRM_SQL_USER and CRM_SQL_PASSWORD")
+        raise DeploymentError(
+            "sql_environment_incomplete: set CRM_SQL_URL, CRM_SQL_USER and "
+            "CRM_SQL_PASSWORD"
+        )
     url, user, password = (env[name] for name in VARIABLES)
-    match = re.fullmatch(r"sqlserver://([A-Za-z0-9.-]+):([0-9]{1,5})/([A-Za-z0-9_]{1,128})", url)
+    match = re.fullmatch(
+        r"sqlserver://([A-Za-z0-9.-]+):([0-9]{1,5})(?:/([A-Za-z0-9_]{1,128})?)?", url
+    )
     if not match or not HOST.fullmatch(match[1]) or not 1 <= int(match[2]) <= 65535:
-        raise DeploymentError("sql_url_invalid: use sqlserver://host:port/database")
-    database = match[3]
-    if not (
-        database.lower() == "dbsiie"
-        or operations_policy.TARGET.fullmatch(database)
-        or TEST_DATABASE.fullmatch(database)
-    ):
-        raise DeploymentError("sql_database_not_allowed: use dbsiie or a named rehearsal")
+        raise DeploymentError(
+            "sql_url_invalid: use sqlserver://host:port or sqlserver://host:port/database"
+        )
+    if DATABASE_VARIABLE in env:
+        database = env[DATABASE_VARIABLE]
+        if (
+            not DATABASE_NAME.fullmatch(database)
+            or database != database.strip()
+            or database.lower() in SYSTEM_DATABASES
+        ):
+            raise DeploymentError(
+                "sql_database_invalid: set CRM_SQL_DATABASE to a valid database name"
+            )
+    else:
+        database = match[3]
+        if database is None:
+            raise DeploymentError("sql_database_missing: set CRM_SQL_DATABASE")
+        if not (
+            database.lower() == "dbsiie"
+            or operations_policy.TARGET.fullmatch(database)
+            or TEST_DATABASE.fullmatch(database)
+        ):
+            raise DeploymentError(
+                "sql_database_not_allowed: use dbsiie or set CRM_SQL_DATABASE"
+            )
     if (
         not user.strip()
         or len(user) > 128
