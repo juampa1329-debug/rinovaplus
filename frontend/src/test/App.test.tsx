@@ -26,7 +26,7 @@ describe("local SQL application shell", () => {
     expect(
       screen.queryByRole("button", { name: "Restablecer demo" }),
     ).not.toBeInTheDocument();
-    expect(document.title).toBe("Resumen de admisiones · CRM CBN");
+    expect(document.title).toBe("Resumen de admisiones · RinovaPlus");
   });
   it("does not present zero business totals when SQL loading fails", async () => {
     vi.mocked(clientsApi.workspace).mockRejectedValue(new ClientsError(503));
@@ -67,11 +67,11 @@ describe("local SQL application shell", () => {
       nextMode === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
     );
     await user.click(
-      screen.getByRole("button", { name: "Abrir menú CRM CBN" }),
+      screen.getByRole("button", { name: "Abrir menú RinovaPlus" }),
     );
     expect(
       screen
-        .getAllByRole("button", { name: "Cerrar menú CRM CBN" })
+        .getAllByRole("button", { name: "Cerrar menú RinovaPlus" })
         .find((button) => button.classList.contains("mobile-logo-toggle")),
     ).toHaveAttribute("aria-expanded", "true");
   });
