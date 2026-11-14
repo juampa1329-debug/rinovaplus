@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+FROM python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl nginx unixodbc libgssapi-krb5-2 ffmpeg \
+    && curl --fail --silent --show-error --location https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb --output /tmp/packages-microsoft-prod.deb \
+    && dpkg -i /tmp/packages-microsoft-prod.deb \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18=18.7.1.1-1 \
+    && rm -rf /var/lib/apt/lists/* /tmp/packages-microsoft-prod.deb \
+    && groupadd --gid 10001 crm \
+    && useradd --uid 10001 --gid crm --no-create-home --shell /usr/sbin/nologin crm
+WORKDIR /app/backend
+COPY backend/requirements.lock ./requirements.lock
+RUN python -m pip install --no-cache-dir -r requirements.lock
+COPY backend/app ./app
+COPY backend/tools ./tools
+COPY backend/operations ./operations
+COPY backend/migrations ./migrations
+COPY docs/adaptation/phase-progress-contract.json /app/docs/adaptation/phase-progress-contract.json
+COPY docs/adaptation/sql/channels-parity-contract.json /app/docs/adaptation/sql/channels-parity-contract.json
+COPY docs/adaptation/sql/p2-channel-fields.json /app/docs/adaptation/sql/p2-channel-fields.json
+COPY docker/institution-start.sh /app/institution-start.sh
+COPY docker/coolify-start.sh /app/coolify-start.sh
+COPY docker/nginx.operations.conf /etc/nginx/general.conf
+RUN sed -i '/root \/app\/institution-frontend;/c\            return 404;' /etc/nginx/general.conf \
+    && sed -i '/index workspace.html;/d; /try_files .*workspace.html;/d' /etc/nginx/general.conf \
+    && mkdir -p /var/lib/crm-ai /var/lib/crm-ai/inbox-media /var/lib/crm-media \
+    && chown -R 10001:10001 /var/lib/crm-ai /var/lib/crm-media \
+    && chmod 0555 /app/institution-start.sh
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 CRM_AI_OUTBOUND_ENABLED=false \
+    CRM_AI_STATE_DIR=/var/lib/crm-ai CRM_INSTITUTIONAL_PROFILE_DIR=/run/cbn-institution
+USER 10001:10001
+EXPOSE 4178
+HEALTHCHECK --interval=45s --timeout=30s --start-period=90s --retries=3 CMD ["python", "-B", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:4178/health/ready',timeout=25).read()"]
+ENTRYPOINT ["/bin/bash", "/app/coolify-start.sh"]
