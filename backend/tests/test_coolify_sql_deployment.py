@@ -52,6 +52,43 @@ def test_url_rejects_extra_credentials_options_and_unknown_databases(url):
     assert url not in str(error.value)
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "sqlserver://192.0.2.42:1433",
+        "sqlserver://192.0.2.42:1433/",
+        "sqlserver://192.0.2.42:1433/dbsiie",
+    ],
+)
+@pytest.mark.parametrize("name", ["DBSIIE_Copia", "DBSIIE - Réplica"])
+def test_explicit_database_selects_the_copy(url, name):
+    transport = deployment.transport_from_env(
+        environment(CRM_SQL_URL=url, CRM_SQL_DATABASE=name)
+    )
+    assert transport.database == name
+    assert f"DATABASE={{{name}}};" in transport.odbc_string()
+
+
+@pytest.mark.parametrize(
+    "name", ["", " copia", "copia;UID=sa", "MaStEr", "model", "msdb", "tempdb"]
+)
+def test_explicit_database_rejects_invalid_names_and_system_databases(name):
+    with pytest.raises(deployment.DeploymentError, match="sql_database_invalid"):
+        deployment.transport_from_env(environment(CRM_SQL_DATABASE=name))
+
+
+def test_url_without_database_requires_the_database_variable():
+    with pytest.raises(deployment.DeploymentError, match="sql_database_missing"):
+        deployment.transport_from_env(
+            environment(CRM_SQL_URL="sqlserver://192.0.2.42:1433")
+        )
+
+
+def test_database_variable_alone_is_an_incomplete_configuration():
+    with pytest.raises(deployment.DeploymentError, match="sql_environment_incomplete"):
+        deployment.transport_from_env({"CRM_SQL_DATABASE": "DBSIIE_Copia"})
+
+
 def test_driver_errors_are_redacted(monkeypatch):
     def reject(*_args, **_kwargs):
         raise pyodbc.Error("08001", "SSL Provider: certificate failure fake_runtime example;with}braces")
@@ -61,6 +98,23 @@ def test_driver_errors_are_redacted(monkeypatch):
         deployment.open_connection(deployment.transport_from_env(environment()))
     assert "fake_runtime" not in str(error.value)
     assert "example;with" not in str(error.value)
+
+
+def test_deployment_normalizes_only_equivalent_fill_factors():
+    from tools.p9_catalog_snapshot import compare
+
+    base = dict.fromkeys(
+        ("tables", "columns", "checks", "foreign_keys", "table_options", "ansi_padding"), []
+    )
+    expected = {**base, "indexes": [{"name": "crm_index", "fill_factor": 0}]}
+    equivalent = {**base, "indexes": [{"name": "crm_index", "fill_factor": 100}]}
+    different = {**base, "indexes": [{"name": "crm_index", "fill_factor": 80}]}
+    normalize = operations_policy._deployment_index_model
+
+    assert compare(normalize(equivalent), normalize(expected))["passed"]
+    rejected = compare(normalize(different), normalize(expected))
+    assert rejected["differing_sections"] == ["indexes"]
+    assert equivalent["indexes"][0]["fill_factor"] == 100
 
 
 def test_missing_tables_are_listed_by_fixed_catalog_name():
