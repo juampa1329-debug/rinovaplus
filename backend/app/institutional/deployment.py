@@ -207,13 +207,18 @@ def load(transport, env):
     )
 
 
-def verify(cursor, settings):
+def verify_schema_and_permissions(cursor, settings):
     transport = settings.deployment_transport
     check_target(cursor, transport, expected=settings.ticket["identity"])
     mapping = operations_policy.deployment_catalog(cursor)
-    if operations_policy.deployment_authority(cursor, transport.user, mapping) != {
-        key: settings.ticket[key] for key in ("sid", "context", "history_sha256")
+    if operations_policy.deployment_permissions(cursor, transport.user, mapping) != {
+        key: settings.ticket[key] for key in ("sid", "history_sha256")
     }:
+        raise DeploymentError("sql_deployment_authority_drift")
+
+
+def verify_data(cursor, settings):
+    if operations_policy.deployment_data(cursor) != settings.ticket["context"]:
         raise DeploymentError("sql_deployment_authority_drift")
 
 

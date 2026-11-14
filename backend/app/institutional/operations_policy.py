@@ -227,11 +227,13 @@ def deployment_catalog(cursor, *, inventory_only=False):
 
 
 def deployment_authority(cursor, login, mapping):
+    return {**deployment_permissions(cursor, login, mapping), "context": deployment_data(cursor)}
+
+
+def deployment_permissions(cursor, login, mapping):
     from app.es_schema_profile import journal_digest
     from app.institutional.spanish import RIGHTS, verify_object_permissions
-    from app.institutional.spanish_bindings import canonical_context
     from app.parity_channels.policy import COLUMNS
-    from tools.p2_es_migrations import validate_data
 
     actor = cursor.execute(
         """SELECT ORIGINAL_LOGIN(),SUSER_SNAME(),USER_NAME(),
@@ -300,6 +302,16 @@ def deployment_authority(cursor, login, mapping):
     ).fetchone():
         raise DeploymentError("sql_runtime_impersonation_permission")
 
+    return {
+        "sid": actor[3],
+        "history_sha256": deployment_history(cursor, journal_digest(cursor), mapping["tables"]),
+    }
+
+
+def deployment_data(cursor):
+    from app.institutional.spanish_bindings import canonical_context
+    from tools.p2_es_migrations import validate_data
+
     context = canonical_context(cursor.execute(
         "SELECT ContextId,InstitutionId,ContractVersion FROM dbo.CRMCanalInstitucionalContexto"
     ).fetchall())
@@ -312,11 +324,7 @@ def deployment_authority(cursor, login, mapping):
     if not bootstrap or not bootstrap[1]:
         raise DeploymentError("sql_institution_not_initialized: provision the institutional owner before deployment")
     validate_data(cursor, 2, {"institution": context[0][1]})
-    return {
-        "sid": actor[3],
-        "context": context,
-        "history_sha256": deployment_history(cursor, journal_digest(cursor), mapping["tables"]),
-    }
+    return context
 
 
 def deployment_history(cursor, baseline_digest, table_map):

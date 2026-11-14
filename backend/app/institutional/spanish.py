@@ -617,9 +617,16 @@ def transaction(
                 < 0
             ):
                 raise ValueError("P2ES_transaction_lock")
+            if transport and resource == "crm.schema.migrate.v1":
+                # Writes never edit the SQL catalog or migration journals.
+                # Validate them under the schema lock before competing for the
+                # commit lock. Keep mutable-data checks and writes serialized.
+                stage = "verify_schema"
+                deployment.verify_schema_and_permissions(cursor, settings)
+                stage = "locks"
         stage = "verify"
         if transport:
-            deployment.verify(cursor, settings)
+            deployment.verify_data(cursor, settings)
         else:
             verify(cursor, settings)
         mapped = Cursor(cursor, settings.ticket["table_map"])
