@@ -285,7 +285,7 @@ export function GeneralPreview() {
     return () => controller.abort();
   }, [attempt]);
   useEffect(() => {
-    document.title = "CRM CBN · Vista general";
+    document.title = "RinovaPlus · Vista general";
   }, [route, manifest]);
   if (!manifest)
     return (
@@ -325,13 +325,13 @@ export function GeneralPreview() {
         <aside className="sidebar">
           <button
             className="sidebar-logo-toggle"
-            aria-label="Menú CRM CBN"
+            aria-label="Menú RinovaPlus"
             aria-expanded={menu}
             aria-controls="general-navigation"
             onClick={() => setMenu(!menu)}
           >
             <Icon name="menu" />
-            <span>CRM CBN</span>
+            <span>RinovaPlus</span>
           </button>
           <nav
             id="general-navigation"
