@@ -97,6 +97,83 @@ def _deployment_index_model(model):
     }
 
 
+# Deployment only needs the structural sections and the object inventory.
+# The foundation reader also captures permissions and other rehearsal evidence.
+_DEPLOYMENT_CATALOG = {
+    "columns": """SELECT s.name AS schema_name,o.name AS table_name,c.name,
+          c.column_id AS ordinal,TYPE_NAME(c.user_type_id) AS type_name,
+          c.max_length,c.precision,c.scale,c.is_nullable,c.is_identity,c.is_computed,
+          c.collation_name,cc.definition AS computed_definition,cc.is_persisted,
+          dc.name AS default_name,dc.definition AS default_definition,
+          CONVERT(nvarchar(100),ic.seed_value) AS identity_seed,
+          CONVERT(nvarchar(100),ic.increment_value) AS identity_increment
+          FROM sys.columns c JOIN sys.objects o ON o.object_id=c.object_id
+          JOIN sys.schemas s ON s.schema_id=o.schema_id
+          LEFT JOIN sys.identity_columns ic ON ic.object_id=c.object_id
+            AND ic.column_id=c.column_id
+          LEFT JOIN sys.computed_columns cc ON cc.object_id=c.object_id
+            AND cc.column_id=c.column_id
+          LEFT JOIN sys.default_constraints dc ON dc.object_id=c.default_object_id
+          WHERE o.is_ms_shipped=0 ORDER BY s.name,o.name,c.column_id""",
+    "indexes": """SELECT s.name AS schema_name,o.name AS table_name,i.name,
+          i.type_desc,i.is_unique,i.is_primary_key,i.is_unique_constraint,
+          i.is_disabled,i.has_filter,i.filter_definition,i.fill_factor,i.is_padded,
+          i.ignore_dup_key,i.allow_row_locks,i.allow_page_locks,
+          c.name AS column_name,ic.key_ordinal,ic.is_descending_key,
+          ic.is_included_column,
+          ic.index_column_id
+          FROM sys.indexes i JOIN sys.objects o ON o.object_id=i.object_id
+          JOIN sys.schemas s ON s.schema_id=o.schema_id
+          LEFT JOIN sys.index_columns ic ON ic.object_id=i.object_id
+            AND ic.index_id=i.index_id
+          LEFT JOIN sys.columns c ON c.object_id=ic.object_id
+            AND c.column_id=ic.column_id
+          WHERE o.is_ms_shipped=0
+          ORDER BY s.name,o.name,i.name,ic.index_column_id""",
+    "checks": """SELECT s.name AS schema_name,
+          OBJECT_NAME(c.parent_object_id) AS table_name,
+          c.name,c.definition,c.is_disabled,c.is_not_trusted,c.is_not_for_replication
+          FROM sys.check_constraints c JOIN sys.schemas s ON s.schema_id=c.schema_id
+          ORDER BY s.name,c.name""",
+    "foreign_keys": """SELECT s.name AS schema_name,
+          OBJECT_NAME(f.parent_object_id) AS table_name,
+          f.name,COL_NAME(k.parent_object_id,k.parent_column_id) AS column_name,
+          OBJECT_SCHEMA_NAME(k.referenced_object_id) AS target_schema,
+          OBJECT_NAME(k.referenced_object_id) AS target_table,
+          COL_NAME(k.referenced_object_id,k.referenced_column_id) AS target_column,
+          k.constraint_column_id AS ordinal,f.delete_referential_action,
+          f.update_referential_action,f.is_disabled,f.is_not_trusted,
+          f.is_not_for_replication
+          FROM sys.foreign_keys f JOIN sys.foreign_key_columns k
+            ON k.constraint_object_id=f.object_id
+          JOIN sys.schemas s ON s.schema_id=f.schema_id
+          ORDER BY s.name,f.name,k.constraint_column_id""",
+    "catalog": """SELECT s.name AS schema_name,o.name,o.type,
+          OBJECT_NAME(o.parent_object_id) AS parent_name
+          FROM sys.objects o JOIN sys.schemas s ON s.schema_id=o.schema_id
+          WHERE o.is_ms_shipped=0""",
+}
+
+
+def _read_catalog_batch(cursor):
+    cursor.execute(";\n".join(_DEPLOYMENT_CATALOG.values()))
+    catalog = {}
+    for section in _DEPLOYMENT_CATALOG:
+        if cursor.description is None:
+            raise DeploymentError("sql_catalog_read_failed")
+        columns = [column[0] for column in cursor.description]
+        rows = []
+        while chunk := cursor.fetchmany(1000):
+            rows.extend(dict(zip(columns, row, strict=True)) for row in chunk)
+            if len(rows) > 200000:
+                raise DeploymentError("sql_catalog_read_failed")
+        catalog[section] = rows
+        more = cursor.nextset()
+        if bool(more) != (section != "catalog"):
+            raise DeploymentError("sql_catalog_read_failed")
+    return catalog
+
+
 def deployment_catalog(cursor, *, inventory_only=False):
     if cursor.execute(
         "SELECT HAS_PERMS_BY_NAME(DB_NAME(),'DATABASE','VIEW DEFINITION')"
@@ -116,19 +193,9 @@ def deployment_catalog(cursor, *, inventory_only=False):
         return mapping
 
     # Only CRM schema is frozen. SIIE remains owned by the institution.
-    from tools.foundation_snapshot import metadata, records
     from tools.p9_catalog_snapshot import compare, snapshot
 
-    # Reuse the structure reader without the wider dependency-visibility
-    # grants required by the signed rehearsal's complete ACL snapshot.
-    sections = ("columns", "indexes", "checks", "foreign_keys")
-    left, right = (metadata(cursor, managed=scope) for scope in (True, False))
-    raw = {key: left[key] + right[key] for key in sections}
-    raw["catalog"] = records(
-        cursor,
-        "SELECT s.name AS schema_name,o.name,o.type,OBJECT_NAME(o.parent_object_id) AS parent_name "
-        "FROM sys.objects o JOIN sys.schemas s ON s.schema_id=o.schema_id WHERE o.is_ms_shipped=0",
-    )
+    raw = _read_catalog_batch(cursor)
     expected = json.loads((parent.PACKAGE / "expected-model.json").read_text(encoding="utf-8"))
     model = {
         key: [
@@ -286,22 +353,41 @@ def deployment_history(cursor, baseline_digest, table_map):
         ("P9", "crm_ads9.Journal", ads_policy),
         ("P10", "crm_learning10.Journal", parent),
     )
+    # Read the state and the canonical digest inputs together. Every batch
+    # runs under the caller's transaction and the same SQL application locks.
+    journal_queries = []
+    for phase, journal, _ in stages:
+        parent_column = "ParentJournalSha256" if phase == "P3" else "ParentHistorySha256"
+        digest_columns = (
+            "UnitId", "ManifestSha256", "TargetDatabase", parent_column,
+            "Status", "StartedAt", "CommittedAt",
+        )
+        binary = ",".join(f"CONVERT(varbinary(max),{name})" for name in digest_columns)
+        journal_queries.append(
+            f"SELECT UnitId,ManifestSha256,{parent_column},Status,{binary} "
+            f"FROM {table_map[journal]} ORDER BY UnitId"
+        )
+    cursor.execute(";\n".join(journal_queries))
     history = {"baseline": baseline_digest}
     prior = baseline_digest
-    for phase, journal, policy in stages:
-        parent_column = "ParentJournalSha256" if phase == "P3" else "ParentHistorySha256"
+    for phase, _, policy in stages:
+        rows = cursor.fetchmany(3)
+        payload = [
+            [bytes(value).hex() if value is not None else None for value in row[4:]]
+            for row in rows
+        ]
         units = [(phase + "ES-001", policy.release(), prior)]
         if phase == "P9":
+            base_rows = [data for row, data in zip(rows, payload) if row[0] == "P9ES-001"]
             units = [
                 ("P9ES-001", ads_policy.base.release(), prior),
-                ("P9ES-002", policy.release(), ads_policy.base_history_digest(cursor)),
+                ("P9ES-002", policy.release(), sha(base_rows)),
             ]
-        rows = cursor.execute(
-            f"SELECT UnitId,ManifestSha256,{parent_column},Status FROM {table_map[journal]} ORDER BY UnitId"
-        ).fetchall()
-        if [tuple(row) for row in rows] != [(*unit, "COMMITTED") for unit in units]:
+        if [tuple(row[:4]) for row in rows] != [(*unit, "COMMITTED") for unit in units]:
             raise DeploymentError("sql_crm_journal_invalid: " + phase)
-        history[phase] = policy.history_digest(cursor)
+        history[phase] = sha(payload)
+        if bool(cursor.nextset()) != (phase != "P10"):
+            raise DeploymentError("sql_crm_journal_invalid: " + phase)
         prior = sha({phase: history[phase], "parents": prior})
         if phase == "P3":
             prior = sha({"baseline": baseline_digest, "workspace": history[phase]})
