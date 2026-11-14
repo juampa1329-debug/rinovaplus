@@ -86,6 +86,17 @@ def verify(cursor, ticket):
     parent.verify(cursor, ticket)
 
 
+def _deployment_index_model(model):
+    # SQL Server treats a fill factor of 0 and 100 identically.
+    return {
+        **model,
+        "indexes": [
+            {**index, "fill_factor": 0} if index["fill_factor"] == 100 else index
+            for index in model["indexes"]
+        ],
+    }
+
+
 def deployment_catalog(cursor, *, inventory_only=False):
     if cursor.execute(
         "SELECT HAS_PERMS_BY_NAME(DB_NAME(),'DATABASE','VIEW DEFINITION')"
@@ -127,7 +138,9 @@ def deployment_catalog(cursor, *, inventory_only=False):
         for key, rows in expected.items()
     }
     actual = snapshot(cursor, raw_catalog=raw, only_tables=managed)
-    drift = compare(actual, model)["differing_sections"]
+    drift = compare(
+        _deployment_index_model(actual), _deployment_index_model(model)
+    )["differing_sections"]
     if drift:
         raise DeploymentError("sql_crm_schema_drift: " + ", ".join(drift))
 
