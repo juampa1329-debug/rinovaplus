@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1
+FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS frontend
+WORKDIR /build/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/tsconfig.json frontend/vite.workspace.config.ts frontend/workspace.html ./
+COPY frontend/src ./src
+RUN ./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/vite build --config vite.workspace.config.ts
+
+FROM python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nginx gettext-base \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 10001 crm \
+    && useradd --uid 10001 --gid crm --no-create-home --shell /usr/sbin/nologin crm
+COPY --from=frontend /build/frontend/dist-workspace /app/frontend
+COPY docker/nginx.coolify-frontend.conf /etc/nginx/frontend.conf.template
+COPY docker/coolify-frontend-start.sh /app/frontend-start.sh
+USER 10001:10001
+EXPOSE 4178
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD ["python", "-B", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4178/frontend-health', timeout=3).close()"]
+ENTRYPOINT ["/bin/bash", "/app/frontend-start.sh"]
