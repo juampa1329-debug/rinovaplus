@@ -131,7 +131,7 @@ export function InstitutionApp({
     return (
       <main className="institution-login">
         <section className="panel">
-          <h1>CRM CBN</h1>
+          <h1>RinovaPlus</h1>
           <ResourceState error={error} />
         </section>
       </main>
@@ -185,7 +185,7 @@ function AccessScreen({
               ? "Configura tu acceso"
               : mode === "redeem"
                 ? "Activa o recupera tu cuenta"
-                : "Bienvenido a CRM CBN"}
+                : "Bienvenido a RinovaPlus"}
         </h1>
         <p>
           {mode === "bootstrap"
@@ -499,7 +499,7 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
             >
               Menú
             </Button>
-            <span>CRM CBN · Institución educativa</span>
+            <span>RinovaPlus · Institución educativa</span>
             <SelectField
               id="workspace-theme"
               label="Apariencia"
@@ -520,7 +520,7 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
             <PageHeading
               title={
                 sections.find((row) => row[0] === location.page)?.[1] ??
-                "CRM CBN"
+                "RinovaPlus"
               }
               description={
                 location.page === "settings"
