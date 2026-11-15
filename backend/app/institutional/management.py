@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from fastapi import HTTPException
 
+from app.branding import PRODUCT_NAME
 from app.institutional.auth import Identity, authorize, factor_code, rate, user
 from app.institutional.crypto import (
     matching_step,
@@ -540,12 +541,12 @@ class Management:
             audit(c, self.settings, actor["UserId"], "auth.totp_setup", actor["UserId"])
             uri = (
                 "otpauth://totp/"
-                + quote("CRM CBN:" + actor["Login"], safe="")
+                + quote(f"{PRODUCT_NAME}:{actor['Login']}", safe="")
                 + "?"
                 + urlencode(
                     {
                         "secret": secret,
-                        "issuer": "CRM CBN",
+                        "issuer": PRODUCT_NAME,
                         "algorithm": "SHA1",
                         "digits": 6,
                         "period": 30,

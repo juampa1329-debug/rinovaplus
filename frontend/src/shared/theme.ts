@@ -35,7 +35,7 @@ export function useTheme() {
     document.documentElement.style.colorScheme = theme;
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", theme === "dark" ? "#061225" : "#f4f7fb");
+      ?.setAttribute("content", theme === "dark" ? "#0f282c" : "#f5f7f2");
   }, [theme]);
 
   function chooseTheme(value: ThemePreference) {

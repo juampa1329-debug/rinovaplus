@@ -19,6 +19,7 @@ import { useCrmConfiguration } from "./modules/crm-configuration";
 import { modules, navigate, useRoute } from "./shared/navigation";
 import { Badge, Button, EmptyState, Notice, PageHeading } from "./shared/ui";
 import { Icon } from "./shared/Icon";
+import { BrandMark } from "./shared/BrandMark";
 import { useRuntime } from "./shared/runtimeCapabilities";
 import { CrmConfiguration } from "./modules/crm-configuration/pages/CrmConfiguration";
 import { useTheme } from "./shared/theme";
@@ -230,7 +231,7 @@ function CoreApp() {
       : "Ruta no disponible");
 
   useEffect(() => {
-    document.title = `${title} · CRM CBN`;
+    document.title = `${title} · RinovaPlus`;
     headingRef.current?.focus();
   }, [title]);
 
@@ -278,7 +279,7 @@ function CoreApp() {
             Saltar al contenido
           </a>
           {!publicForm && (
-            <aside className="sidebar" aria-label="Menú CRM CBN">
+            <aside className="sidebar" aria-label="Menú RinovaPlus">
               <button
                 type="button"
                 className="sidebar-logo-toggle desktop-logo-toggle"
@@ -286,13 +287,13 @@ function CoreApp() {
                 aria-controls="main-navigation"
                 aria-label={
                   sidebarCollapsed
-                    ? "Abrir menú CRM CBN"
-                    : "Cerrar menú CRM CBN"
+                    ? "Abrir menú RinovaPlus"
+                    : "Cerrar menú RinovaPlus"
                 }
                 title={
                   sidebarCollapsed
-                    ? "Abrir menú CRM CBN"
-                    : "Cerrar menú CRM CBN"
+                    ? "Abrir menú RinovaPlus"
+                    : "Cerrar menú RinovaPlus"
                 }
                 onClick={() => {
                   const next = !sidebarCollapsed;
@@ -301,7 +302,10 @@ function CoreApp() {
                 }}
               >
                 <Icon name="menu" />
-                <span className="sidebar-project-name">CRM CBN</span>
+                <span className="sidebar-project-name brand-wordmark">
+                  <BrandMark width={24} />
+                  RinovaPlus
+                </span>
               </button>
               <button
                 type="button"
@@ -309,13 +313,18 @@ function CoreApp() {
                 aria-expanded={mobileNav}
                 aria-controls="main-navigation"
                 aria-label={
-                  mobileNav ? "Cerrar menú CRM CBN" : "Abrir menú CRM CBN"
+                  mobileNav ? "Cerrar menú RinovaPlus" : "Abrir menú RinovaPlus"
                 }
-                title={mobileNav ? "Cerrar menú CRM CBN" : "Abrir menú CRM CBN"}
+                title={
+                  mobileNav ? "Cerrar menú RinovaPlus" : "Abrir menú RinovaPlus"
+                }
                 onClick={() => setMobileNav(!mobileNav)}
               >
                 <Icon name="menu" />
-                <span className="sidebar-project-name">CRM CBN</span>
+                <span className="sidebar-project-name brand-wordmark">
+                  <BrandMark width={24} />
+                  RinovaPlus
+                </span>
               </button>
               <nav
                 id="main-navigation"
@@ -481,10 +490,10 @@ function CoreApp() {
           <div className="workspace">
             {publicForm && (
               <header className="topbar public-toolbar">
-                <a className="public-brand" href="#/overview">
-                  CRM CBN
+                <a className="public-brand brand-wordmark" href="#/overview">
+                  <BrandMark width={28} />
+                  RinovaPlus
                 </a>
-                <span className="demo-banner">CRM CBN</span>
                 <div className="topbar-actions">
                   <ThemeControl theme={theme} chooseTheme={chooseTheme} />
                 </div>
@@ -701,7 +710,7 @@ function CoreApp() {
                   </>
                 )}
               </div>
-              <footer className="workspace-footer">CRM CBN</footer>
+              <footer className="workspace-footer">RinovaPlus</footer>
             </main>
           </div>
         </div>

@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from app.branding import PRODUCT_DESCRIPTION, PRODUCT_NAME
 from app.config import Settings
 from app.contracts import register_contracts
 from app.database_connections import install_database_connections
@@ -79,7 +80,10 @@ def create_app(
                 await asyncio.to_thread(application.state.event_worker.stop)
 
     application = FastAPI(
-        title="CRM CBN local integration", version="0.0.1", lifespan=lifespan
+        title=PRODUCT_NAME,
+        description=PRODUCT_DESCRIPTION,
+        version="0.0.1",
+        lifespan=lifespan,
     )
     application.state.settings = settings
     install_runtime_capabilities(application)

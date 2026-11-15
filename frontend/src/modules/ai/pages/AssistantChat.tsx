@@ -482,7 +482,7 @@ export function AssistantChat({ active }: { active: boolean }) {
         <div>
           <h2 id="assistant-chat-title">Conversar con el asistente</h2>
           <p>
-            Asistente virtual de CRM CBN · Conexión real al proveedor
+            Asistente virtual de RinovaPlus · Conexión real al proveedor
             configurado
           </p>
         </div>

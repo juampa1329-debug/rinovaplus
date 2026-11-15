@@ -1,4 +1,8 @@
-# Diseño vigente — Azul noche · Glass
+# Diseño de RinovaPlus
+
+El acceso, la navegación y los módulos comparten la [identidad de RinovaPlus](docs/design-system.md). El rinoceronte, el verde petróleo y los acentos lima vienen de la referencia del propietario. Manrope se usa en títulos y Source Sans 3 en texto y controles.
+
+## Historial · Azul noche y Glass
 
 **Aprobación del propietario, 2026-10-19:** aplicar el diseño aprobado a todo el CRM, conservando funcionalidades, navegación y animaciones. Esta unidad modifica presentación; no incorpora los datos, acciones ilustrativas ni nuevas pantallas del comparador. Los registros históricos siguientes conservan su contexto original.
 

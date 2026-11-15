@@ -10,6 +10,7 @@ import {
   SelectField,
 } from "../shared/ui";
 import { Icon } from "../shared/Icon";
+import { BrandMark } from "../shared/BrandMark";
 import { ChannelsUiPanel } from "./ChannelsUiPanel";
 import "./channels-ui.css";
 
@@ -19,7 +20,7 @@ export function ChannelsWorkspace() {
   const route = useRoute();
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
-    document.title = "Canales · CRM CBN";
+    document.title = "Canales · RinovaPlus";
   }, []);
   if (capabilities.profile !== "channels") return null;
   const available = route === "settings" || !window.location.hash;
@@ -39,13 +40,16 @@ export function ChannelsWorkspace() {
         <button
           type="button"
           className="sidebar-logo-toggle"
-          aria-label="Menú CRM CBN"
+          aria-label="Menú RinovaPlus"
           aria-expanded={menuOpen}
           aria-controls="channels-navigation"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           <Icon name="menu" />
-          <span>CRM CBN</span>
+          <span className="brand-wordmark">
+            <BrandMark width={24} />
+            RinovaPlus
+          </span>
         </button>
         <nav
           id="channels-navigation"

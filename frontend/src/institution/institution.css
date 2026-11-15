@@ -16,19 +16,49 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
+  background: var(--rinova-petrol);
+  color: var(--rinova-paper);
+  --focus: var(--rinova-lime);
+  --surface: #1a4147;
+  --ink: var(--rinova-paper);
+  --muted: #b8ccca;
+  --border: #55777a;
+  --link: var(--rinova-paper);
+  --selected-ink: var(--rinova-paper);
+  --active: #254d51;
 }
 .institution-brand {
-  display: flex;
-  align-items: baseline;
-  gap: 0.65rem;
-  font-size: 1.75rem;
-  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: fit-content;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--rinova-paper);
 }
-.institution-brand span {
-  font-size: 0.75rem;
-  font-weight: 500;
+.institution-brand img {
+  flex: none;
+}
+.institution-brand strong {
+  display: block;
+  font-family: var(--heading-font);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+.institution-brand small {
+  display: block;
+  margin-top: 0.15rem;
+  color: #c7d7d4;
+  font-size: 0.875rem;
+  line-height: 1.15;
+}
+.institution-shell .institution-brand {
+  padding: 0.25rem 0 0.75rem;
+}
+.institution-shell .institution-brand img {
+  width: 2.1rem;
+  height: auto;
 }
 .institution-shell .sidebar nav {
   display: grid;
@@ -40,9 +70,17 @@
   padding: 0.6rem 0.8rem;
   border-radius: 0.6rem;
 }
-.institution-shell nav a[aria-current="page"] {
-  background: var(--accent-soft, #2979ff25);
-  color: var(--selected-ink, #b8d2ff);
+.institution-shell .sidebar nav a:hover {
+  background: var(--active);
+}
+.institution-shell .sidebar nav a[aria-current="page"] {
+  background: var(--rinova-lime);
+  color: var(--rinova-petrol);
+  font-weight: 700;
+}
+.institution-shell .institution-tabs a[aria-current="page"] {
+  background: var(--accent-soft);
+  color: var(--selected-ink);
   font-weight: 650;
 }
 .institution-account {
@@ -67,6 +105,12 @@
 }
 .institution-topbar .field-support {
   display: none;
+}
+.institution-mobile-brand {
+  display: none;
+  font-family: var(--heading-font);
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 .institution-content {
   padding: 1.5rem 1.75rem;
@@ -118,28 +162,132 @@
   padding-bottom: 0.75rem;
 }
 .institution-login {
-  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: var(--canvas);
+}
+.access-brand-panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(2rem, 5vw, 5.25rem);
+  gap: 2rem;
+  color: var(--rinova-paper);
+  background:
+    radial-gradient(ellipse at 68% 53%, #215356 0%, transparent 64%),
+    var(--rinova-petrol);
+}
+.access-art {
+  position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
-  padding: 2rem 1rem;
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 29rem);
+  aspect-ratio: 1.28;
+  background-image:
+    linear-gradient(to bottom, #f5f7f21a 1px, transparent 1px),
+    linear-gradient(to right, #f5f7f21a 1px, transparent 1px);
+  background-size: 20% 25%;
+  border-right: 1px solid #f5f7f21a;
+  border-bottom: 1px solid #f5f7f21a;
 }
-.institution-login > .panel {
-  width: min(100%, 30rem);
-  padding: 2rem;
+.access-art::before,
+.access-art::after {
+  position: absolute;
+  z-index: -1;
+  border: 1px dashed #f5f7f258;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  content: "";
 }
-.institution-login fieldset {
+.access-art::before {
+  inset: 5% auto auto 5%;
+  width: 60%;
+}
+.access-art::after {
+  inset: auto 9% 11% auto;
+  width: 46%;
+}
+.access-art img {
+  width: 68%;
+  height: auto;
+}
+.access-tagline {
+  max-width: 8.7em;
+  margin: 0;
+  font-family: var(--heading-font);
+  font-size: clamp(2.8rem, 5.4vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.068em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.access-content {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 1.75rem;
+  padding: clamp(1.25rem, 4vw, 4rem);
+  color: var(--ink);
+}
+.access-appearance {
+  justify-self: end;
+}
+.access-appearance .field {
+  min-width: 8rem;
+  margin: 0;
+}
+.access-form {
+  align-self: center;
+  width: min(100%, 26rem);
+}
+.access-copyright {
+  width: 100%;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  text-align: center;
+}
+.access-form h1 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(2rem, 3.4vw, 3.125rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+.access-form > p {
+  margin: 0 0 1.65rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+.access-form fieldset {
+  min-width: 0;
+  margin: 0;
   border: 0;
   padding: 0;
 }
-.institution-login h1 {
-  font-size: 1.75rem;
-  margin: 1.5rem 0 0.75rem;
+.access-form .field > label {
+  font-size: 0.95rem;
 }
-.institution-login form {
-  margin: 1rem 0;
+.access-form .field input {
+  min-height: 3.25rem;
+  font-size: 1rem;
 }
-.institution-login form .button {
+.access-form .button {
   width: 100%;
+  font-size: 1rem;
+}
+.access-form form .button {
+  min-height: 3.25rem;
+  margin-top: 0.25rem;
+  border-radius: var(--radius-control);
+}
+.access-form > .button.quiet {
+  margin-top: 0.65rem;
 }
 .institution-list-row {
   display: flex;
@@ -251,7 +399,6 @@
     position: fixed;
     z-index: 30;
     width: min(85vw, 19rem);
-    background: var(--surface, #111d34);
   }
   .institution-shell .sidebar.is-open {
     display: flex;
@@ -265,8 +412,14 @@
   .institution-topbar {
     padding: 0.75rem 1rem;
   }
-  .institution-topbar > span {
+  .institution-topbar .institution-name {
     display: none;
+  }
+  .institution-mobile-brand {
+    display: inline;
+  }
+  .institution-topbar .field {
+    min-width: 0;
   }
   .institution-channel-layout {
     grid-template-columns: 1fr;
@@ -279,6 +432,28 @@
   }
   .institution-list-row {
     flex-wrap: wrap;
+  }
+}
+@media (max-width: 760px) {
+  .institution-login {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .access-brand-panel {
+    grid-template-rows: auto auto;
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+  .access-art {
+    display: none;
+  }
+  .access-tagline {
+    max-width: none;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    letter-spacing: -0.045em;
+  }
+  .access-content {
+    gap: 1.25rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

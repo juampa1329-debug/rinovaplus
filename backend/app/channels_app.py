@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.branding import PRODUCT_NAME
 from app.channels_contract import ticket
 from app.modules.ai.api.router import LocalAiGuard
 from app.modules.channels.router import (
@@ -26,7 +27,7 @@ def create_channels_app(settings):
     validate_settings(settings)
     ticket(settings)
     application = FastAPI(
-        title="CRM CBN channels rehearsal",
+        title=f"{PRODUCT_NAME} · Ensayo de canales",
         version="SQL-C8",
         docs_url=None,
         redoc_url=None,

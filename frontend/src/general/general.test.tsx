@@ -12,7 +12,7 @@ vi.mock("../App", () => ({
   App: () => (
     <div
       ref={() => {
-        document.title = "Ruta no disponible · CRM CBN";
+        document.title = "Ruta no disponible · RinovaPlus";
       }}
     >
       CRM aceptado
@@ -126,7 +126,7 @@ describe("C13 capabilities", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByRole("link")).toHaveLength(16);
     expect(screen.getByText("CRM aceptado")).not.toBeVisible();
-    expect(document.title).toBe("CRM CBN · Vista general");
+    expect(document.title).toBe("RinovaPlus · Vista general");
   });
   it("malformed contract keeps the app unmounted", async () => {
     vi.stubGlobal(

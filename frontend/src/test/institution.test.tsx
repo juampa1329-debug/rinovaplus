@@ -112,6 +112,12 @@ describe("Institutional entry boundary", () => {
     expect(
       await screen.findByRole("button", { name: "Iniciar sesión" }),
     ).toBeEnabled();
+    expect(screen.getByText("CRM inteligente de CBN")).toBeVisible();
+    expect(
+      screen.getByText(
+        "© 2026. Software desarrollado por la Corporación Bolivariana del Norte - CBN.",
+      ),
+    ).toBeVisible();
     expect(
       fetch.mock.calls.every(([url]) =>
         String(url).startsWith("/api/institution/"),

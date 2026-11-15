@@ -1,4 +1,4 @@
-# Producto CRM CBN
+# RinovaPlus
 
 <!-- impeccable:product-schema 1 -->
 
@@ -28,7 +28,7 @@ SQL Server SIIE es la fuente transaccional única futura. Sin DB/API, auth, IA, 
 
 ## Brand Commitments
 
-Texto CRM CBN, sin inventar logotipo. Se preservan mockups y referencias de `docs/design/`; dirección Institucional sereno provisional en `docs/design-system.md`.
+RinovaPlus, CRM inteligente de CBN, usa el rinoceronte y el lema «La fuerza de conectar.» de la referencia del propietario. La Corporación Bolivariana del Norte figura en el crédito del acceso. La [identidad visual](docs/design-system.md) se aplica al espacio de trabajo y a las superficies generadas por el software.
 
 ## Evidence on Hand
 

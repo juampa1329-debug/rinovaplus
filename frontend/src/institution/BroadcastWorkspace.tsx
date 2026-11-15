@@ -880,7 +880,7 @@ function CampaignReport({
                   const url = URL.createObjectURL(await response.blob()),
                     link = document.createElement("a");
                   link.href = url;
-                  link.download = "destinatarios.csv";
+                  link.download = "rinovaplus-destinatarios.csv";
                   link.click();
                   setTimeout(() => URL.revokeObjectURL(url), 1000);
                 }, "Informe exportado.")

@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.branding import PRODUCT_NAME
+
 Provider = Literal[
     "gemini",
     "nvidia",
@@ -51,7 +53,7 @@ PROVIDERS = {
     "serpapi": "SERPAPI_API_KEY",
 }
 SAFETY_PROMPT = (
-    "Eres un asistente virtual de CRM CBN y debes identificarte como tal. "
+    f"Eres un asistente virtual de {PRODUCT_NAME} y debes identificarte como tal. "
     "Esta es una prueba sintética aislada sin acceso a datos institucionales. "
     "No inventes precios, disponibilidad ni políticas. No tomes decisiones de "
     "matrícula o pago. No ejecutes herramientas, SQL ni acciones externas. "

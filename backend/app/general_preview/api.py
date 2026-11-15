@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.branding import PRODUCT_NAME
 from app.general_preview.store import VERSION, Workspace, load, transaction
 from app.modules.clients.api.router import install_clients
 from app.modules.crm_configuration.application.service import install_crm_configuration
@@ -38,7 +39,10 @@ SECTIONS = [
 
 def create_app(settings, workspace=None):
     app = FastAPI(
-        title="CRM CBN general preview", docs_url=None, redoc_url=None, openapi_url=None
+        title=f"{PRODUCT_NAME} · Vista general",
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
     )
     app.state.settings = SimpleNamespace(mode="local_foundation")
     app.state.sql_workspace = workspace or Workspace(settings)

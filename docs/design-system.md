@@ -1,6 +1,12 @@
 # Un solo sistema visual
 
-## Dirección vigente aprobada — 2026-10-19
+## Identidad RinovaPlus · revisión local del 2026-11-15
+
+La referencia del propietario fija verde petróleo `#12343B`, lima `#C4F04D`, blanco cálido `#F5F7F2`, gris petróleo `#52666B` y blanco `#FFFFFF`. El esquema claro y oscuro deriva de esos colores mediante los tokens semánticos de `frontend/src/shared/tokens.css`. Manrope y Source Sans 3 se sirven desde el paquete de la aplicación.
+
+La marca combina el rinoceronte, «RinovaPlus» y «CRM inteligente de CBN». El acceso incorpora «La fuerza de conectar.» y el crédito «© 2026. Software desarrollado por la Corporación Bolivariana del Norte - CBN.» El nombre del producto se usa también en la API, la confirmación de Canales, los nuevos registros del autenticador y la descarga de destinatarios.
+
+## Dirección anterior aprobada — 2026-10-19
 
 El propietario aprobó **Azul noche · Glass** y su aplicación exclusivamente visual a todo el CRM. Sustituye la combinación de acción verde/menta y selección violeta del piloto. Los apartados posteriores se conservan como historial; no definen los colores vigentes.
 
