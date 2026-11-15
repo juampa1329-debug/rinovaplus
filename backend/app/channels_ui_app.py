@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.branding import PRODUCT_NAME
 from app.channels_app import ChannelDraft
 from app.channels_ui_contract import ticket, transaction
 from app.modules.ai.api.router import LocalAiGuard
@@ -59,7 +60,7 @@ def create_channels_ui_app(settings):
     validate_settings(settings)
     ticket(settings)
     application = FastAPI(
-        title="CRM CBN channels UI rehearsal",
+        title=f"{PRODUCT_NAME} · Interfaz de canales",
         version="SQL-C9",
         docs_url=None,
         redoc_url=None,

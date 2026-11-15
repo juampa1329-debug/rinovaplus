@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.branding import PRODUCT_NAME
 from app.modules.ai.api.router import LocalAiGuard
 from app.modules.catalog.domain.contracts import CatalogUnavailable
 from app.modules.clients.api.router import install_clients
@@ -18,7 +19,7 @@ from app.sql_workspace import install_sql_workspace
 def create_foundation_app(settings):
     validate_settings(settings)
     application = FastAPI(
-        title="CRM CBN restored foundation",
+        title=f"{PRODUCT_NAME} · Ensayo de base restaurada",
         version="SQL-C4",
         docs_url=None,
         redoc_url=None,

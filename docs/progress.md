@@ -1,5 +1,11 @@
 # Informe de avance — 2026-10-19
 
+## RinovaPlus · identidad y revisión local — 2026-11-15
+
+La identidad se aplica al acceso, la navegación, los módulos, los metadatos de la API, la pantalla de retorno de Canales, los nuevos registros del autenticador y el nombre de las descargas de destinatarios. El acceso muestra el crédito a la Corporación Bolivariana del Norte.
+
+El contenedor P11 sirve el proyecto en `http://127.0.0.1:4178/`. Vite aplica cambios de frontend en la pestaña abierta y Uvicorn observa los cambios del backend. Se verificaron el inicio de sesión con un usuario de consulta, la lectura de módulos y la actualización de CSS en navegador sin recarga manual. La configuración de desarrollo y los datos de acceso se guardan en `.local/brand-preview/`.
+
 ## SQL-C13 · composición y recuperación — 2026-10-25
 
 SQL-C13 integra el preview general independiente en `http://127.0.0.1:4176/`, sobre `CBN_C13_TRIAL_20261025_1f10a824` restaurada de C12, con perfil cifrado y principal propios. Muestra 14 secciones: CRM/Inbox/mini CRM/Ajustes CRM locales, Canales en lectura segura y pendientes explícitos. C5 (4173), C9 (4175), SIIE, C11 y C12 se conservan, igual que las 50 tablas/44.180 filas académicas y el diario de 17 entradas. Sin DDL, DML académico ni proveedores. Pasan 265 pruebas backend (23 nuevas), 52 frontend (11 nuevas), 25 checks HTTP, 15 SQL y 16 Docker/worker local durable. La imagen autónoma oficial, volúmenes, healthcheck y recuperación por SIGKILL cierran el sprint P1.4. Los workers de fallo quedan detenidos y sus contenedores conservados. TLS permanece verificado.

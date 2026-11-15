@@ -3,7 +3,10 @@
 import hmac
 import json
 import re
+from base64 import b64encode
 from datetime import timedelta
+from hashlib import sha256
+from html import escape
 from urllib.parse import urlencode
 from uuid import uuid4
 
@@ -12,6 +15,7 @@ from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse
 from pydantic import Field
 
+from app.branding import PRODUCT_DESCRIPTION, PRODUCT_NAME
 from app.institutional.auth import authorize, cookie_name
 from app.institutional.channel_operations import account, app_secret_kind, configuration
 from app.institutional.channel_secrets import get, put
@@ -21,6 +25,22 @@ from app.institutional.db import bound_hash, institution, one, rows, uid
 from app.institutional.models import Strict
 from app.institutional.store import transaction
 from app.modules.channels.providers import ProviderFailure
+
+_RESULT_STYLE = """
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: #12343b;
+  color: #f5f7f2;
+  font: 1rem/1.6 system-ui, sans-serif;
+}
+main { width: min(28rem, calc(100% - 3rem)); }
+h1 { color: #c4f04d; font-size: 2.5rem; line-height: 1.1; margin-bottom: .4rem; }
+p { margin: 0 0 1rem; }
+"""
+_RESULT_STYLE_HASH = b64encode(sha256(_RESULT_STYLE.encode()).digest()).decode()
 
 SCOPES = {
     "meta_whatsapp": {
@@ -803,14 +823,16 @@ def install(app, settings):
         )
         return HTMLResponse(
             (
-                "<!doctype html><html lang='es'><meta charset='utf-8'><title>"
-                "CRM CBN</title><p>"
-            )
-            + message
-            + "</p></html>",
+                "<!doctype html><html lang='es'><head><meta charset='utf-8'>"
+                "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+                f"<title>{PRODUCT_NAME}</title><style>{_RESULT_STYLE}</style></head>"
+                f"<body><main><h1>{PRODUCT_NAME}</h1><p>{PRODUCT_DESCRIPTION}</p>"
+                f"<p>{escape(message)}</p></main></body></html>"
+            ),
             headers={
                 "Content-Security-Policy": (
                     "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+                    f"; style-src 'sha256-{_RESULT_STYLE_HASH}'"
                 )
             },
         )

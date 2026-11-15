@@ -1,6 +1,6 @@
-# Rinova Plus
+# RinovaPlus
 
-CRM CBN. Este repositorio privado inicia con el código actual de P11 y la preparación de P12 para Coolify. Los respaldos SQL, perfiles de ejecución y evidencias locales se conservan en el entorno de origen. Para continuar, consultar el [roadmap](docs/SCENTRA_ADAPTATION_ROADMAP.md) y el [plan de P12](docs/adaptation/sql/P12_DNS_HANDOFF.md).
+CRM inteligente de CBN, desarrollado por la Corporación Bolivariana del Norte. Este repositorio privado parte del código de P11 y la preparación de P12 para Coolify. Los respaldos SQL, perfiles de ejecución y evidencias locales se conservan en el entorno de origen. Para continuar, consultar el [roadmap](docs/SCENTRA_ADAPTATION_ROADMAP.md) y el [plan de P12](docs/adaptation/sql/P12_DNS_HANDOFF.md).
 
 ## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
 

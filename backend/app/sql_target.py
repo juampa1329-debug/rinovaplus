@@ -3,6 +3,8 @@
 import re
 from typing import TYPE_CHECKING
 
+from app.branding import PRODUCT_NAME
+
 if TYPE_CHECKING:
     from app.config import Settings
 
@@ -234,7 +236,7 @@ def connection_string(settings: "Settings", *, catalog: bool = False) -> str:
         f"SERVER={server};DATABASE={_quoted(settings.sql_database)};"
         "Encrypt=Yes;TrustServerCertificate=No;"
         f"{certificate}{authentication}"
-        f"APP=CRM CBN {'local catalog' if catalog else 'local copy'};"
+        f"APP={PRODUCT_NAME} {'local catalog' if catalog else 'local copy'};"
     )
 
 

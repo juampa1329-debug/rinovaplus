@@ -1,6 +1,26 @@
+@font-face {
+  font-family: Manrope;
+  src: url("./fonts/manrope-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("./fonts/sourcesans3-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 :root {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --heading-font: Manrope, "Segoe UI", system-ui, sans-serif;
+  --rinova-petrol: #12343b;
+  --rinova-lime: #c4f04d;
+  --rinova-paper: #f5f7f2;
+  --rinova-slate: #52666b;
+  font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -27,29 +47,29 @@
 /* One material and color contract for every route, including legacy surfaces. */
 [data-theme="light"] {
   color-scheme: light;
-  --canvas: #f4f7fb;
+  --canvas: var(--rinova-paper);
   --surface: #ffffff;
-  --field: #f7faff;
-  --navigation: #e8eff9;
-  --ink: #172b4d;
-  --muted: #506481;
+  --field: #ffffff;
+  --navigation: #edf1eb;
+  --ink: var(--rinova-petrol);
+  --muted: var(--rinova-slate);
   --navigation-text: var(--ink);
   --navigation-muted: var(--muted);
-  --border: #c9d7e9;
-  --control-border: #8296b2;
-  --primary: #245bdb;
-  --primary-hover: #1d4dc0;
-  --on-primary: #ffffff;
-  --accent: #245bdb;
-  --accent-hover: #1d4dc0;
-  --accent-soft: #e3edff;
+  --border: #d5ded6;
+  --control-border: #829693;
+  --primary: var(--rinova-lime);
+  --primary-hover: #b4e23a;
+  --on-primary: var(--rinova-petrol);
+  --accent: #35696b;
+  --accent-hover: #255559;
+  --accent-soft: #e4efdc;
   --on-accent: #ffffff;
   --active: var(--accent-soft);
-  --brand-soft: #e8effd;
-  --selected-ink: #214eac;
-  --link: #214eac;
-  --focus: #245bdb;
-  --hover: #eaf1fb;
+  --brand-soft: #e9eee7;
+  --selected-ink: #224f54;
+  --link: #285a5e;
+  --focus: #2a6870;
+  --hover: #e7eee8;
   --success: #176747;
   --success-soft: #e7f3eb;
   --warning: #805200;
@@ -57,58 +77,54 @@
   --error: #a52b3a;
   --error-soft: #fff0f2;
   --error-surface: var(--error-soft);
-  --info: #245b8a;
-  --info-soft: #eaf3fb;
-  --notice-surface: #e8effd;
-  --notice-ink: #25446f;
-  --disabled-ink: #53647c;
-  --disabled-surface: #e7edf5;
-  --chart-1: #245bdb;
-  --chart-2: #007c98;
-  --chart-3: #547bc0;
-  --chart-4: #637b97;
+  --info: #235760;
+  --info-soft: #e8f0ed;
+  --notice-surface: #e9eee7;
+  --notice-ink: #2a5358;
+  --disabled-ink: #52666b;
+  --disabled-surface: #e6ece5;
+  --chart-1: #27666c;
+  --chart-2: #537c20;
+  --chart-3: #30868a;
+  --chart-4: #657e72;
   --glass-panel: linear-gradient(145deg, #ffffff66, transparent 60%), #ffffffcf;
   --glass-data: #fffffff0;
-  --glass-metric:
-    linear-gradient(155deg, #ffffffa6, transparent 70%), #e8f1ffcf;
-  --glass-navigation:
-    linear-gradient(160deg, #ffffff60, transparent 45%), #edf4ffd9;
-  --glass-toolbar: #f7faffcc;
-  --glass-edge: #a9c0df66;
+  --glass-metric: linear-gradient(155deg, #ffffffa6, transparent 70%), #eaf0e5;
+  --glass-navigation: #edf2edeb;
+  --glass-toolbar: #f5f7f2e6;
+  --glass-edge: #99aca74d;
   --glass-rim: #ffffff;
   --glass-inset: inset 0 1px 0 #ffffffb3;
-  --ambient:
-    radial-gradient(ellipse at 8% 8%, #9ac4ff59, transparent 43%),
-    radial-gradient(ellipse at 100% 40%, #a8caff47, transparent 44%);
+  --ambient: radial-gradient(ellipse at 88% 2%, #e5ebd6 0%, transparent 53%);
   --shadow-panel: 0 10px 25px #1638610d;
   --shadow-navigation: 0 16px 40px #16386112;
   --shadow-control: 0 3px 8px #16386112;
 }
 [data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #061225;
-  --surface: #12243b;
-  --field: #0c192c;
-  --navigation: #0c192c;
-  --ink: #edf4ff;
-  --muted: #b7c9df;
+  --canvas: #0f282c;
+  --surface: #16373b;
+  --field: #102b30;
+  --navigation: #12343b;
+  --ink: var(--rinova-paper);
+  --muted: #bed0cc;
   --navigation-text: var(--ink);
   --navigation-muted: var(--muted);
-  --border: #35516f;
-  --control-border: #7e9aba;
-  --primary: #245bdb;
-  --primary-hover: #2d63e8;
-  --on-primary: #ffffff;
-  --accent: #2f6bff;
-  --accent-hover: #447aff;
-  --accent-soft: #1d3a60;
-  --on-accent: #ffffff;
+  --border: #3e5c60;
+  --control-border: #789794;
+  --primary: var(--rinova-lime);
+  --primary-hover: #d2f675;
+  --on-primary: var(--rinova-petrol);
+  --accent: #a4d33b;
+  --accent-hover: #bbec47;
+  --accent-soft: #2b4b42;
+  --on-accent: var(--rinova-petrol);
   --active: var(--accent-soft);
-  --brand-soft: #182e49;
-  --selected-ink: #b8d2ff;
-  --link: #a7c6ff;
-  --focus: #a7c6ff;
-  --hover: #203d61;
+  --brand-soft: #214145;
+  --selected-ink: #d7f394;
+  --link: #d1ec9c;
+  --focus: var(--rinova-lime);
+  --hover: #2b4c4f;
   --success: #9edbb8;
   --success-soft: #173c30;
   --warning: #f2cd80;
@@ -116,30 +132,26 @@
   --error: #ffb2be;
   --error-soft: #452932;
   --error-surface: var(--error-soft);
-  --info: #a5d2fb;
-  --info-soft: #1b3554;
-  --notice-surface: #182e49;
-  --notice-ink: #d4e4fa;
-  --disabled-ink: #b7c9df;
-  --disabled-surface: #21344c;
-  --chart-1: #2f6bff;
-  --chart-2: #37c8e8;
-  --chart-3: #7ca4ff;
-  --chart-4: #537da8;
-  --glass-panel: linear-gradient(145deg, #c1ddff09, transparent 55%), #0f223ad1;
-  --glass-data: linear-gradient(155deg, #bed8ff06, transparent 60%), #0d1f35e6;
+  --info: #acd7d9;
+  --info-soft: #25494e;
+  --notice-surface: #22454a;
+  --notice-ink: #dcebe7;
+  --disabled-ink: #bed0cc;
+  --disabled-surface: #27484c;
+  --chart-1: #c4f04d;
+  --chart-2: #79d4ce;
+  --chart-3: #9ac0a9;
+  --chart-4: #b4c782;
+  --glass-panel: linear-gradient(145deg, #eafff509, transparent 55%), #17373be8;
+  --glass-data: #153438ed;
   --glass-metric:
-    linear-gradient(155deg, #c6e0ff13, transparent 70%), #1c395bbd;
-  --glass-navigation:
-    linear-gradient(160deg, #b9d8ff0d, transparent 40%), #0a1c33ba;
-  --glass-toolbar: #132844b3;
-  --glass-edge: #8eb2e035;
-  --glass-rim: #c3ddf95c;
+    linear-gradient(155deg, #ecffef0e, transparent 70%), #1e4346e8;
+  --glass-navigation: #12343beb;
+  --glass-toolbar: #193b3edb;
+  --glass-edge: #8fb5b448;
+  --glass-rim: #b7dad45c;
   --glass-inset: inset 0 1px 0 #edf6ff0a;
-  --ambient:
-    radial-gradient(ellipse at 8% 8%, #1e5aab91, transparent 43%),
-    radial-gradient(ellipse at 100% 40%, #185ec771, transparent 44%),
-    radial-gradient(ellipse at 38% 100%, #204f805e, transparent 46%);
+  --ambient: radial-gradient(ellipse at 75% 0%, #1d4548 0%, transparent 55%);
   --shadow-panel: 0 11px 24px #0209192b;
   --shadow-navigation: 0 17px 40px #02081545;
   --shadow-control: 0 5px 15px #03112a33;

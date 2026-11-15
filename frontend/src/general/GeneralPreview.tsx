@@ -16,6 +16,7 @@ import {
   SelectField,
 } from "../shared/ui";
 import { Icon } from "../shared/Icon";
+import { BrandMark } from "../shared/BrandMark";
 
 type Section = {
   path: string;
@@ -331,7 +332,10 @@ export function GeneralPreview() {
             onClick={() => setMenu(!menu)}
           >
             <Icon name="menu" />
-            <span>RinovaPlus</span>
+            <span className="brand-wordmark">
+              <BrandMark width={24} />
+              RinovaPlus
+            </span>
           </button>
           <nav
             id="general-navigation"
@@ -404,7 +408,7 @@ export function GeneralPreview() {
               <>
                 <PageHeading
                   title={selected.label}
-                  description="Adaptación educativa de las funciones de Scentra."
+                  description="Funciones disponibles en RinovaPlus."
                 />
                 <section className="panel">
                   <Badge>{selected.phase} · Integración pendiente</Badge>

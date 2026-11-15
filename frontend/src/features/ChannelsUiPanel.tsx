@@ -80,8 +80,8 @@ function PendingConnection({
         {title} <Badge>Pendiente de portar</Badge>
       </summary>
       <p>
-        Esta función de Scentra requiere completar su contrato en SQL Server. No
-        está habilitada en este ensayo.
+        Esta función requiere completar su contrato en SQL Server. No está
+        habilitada en este ensayo.
       </p>
       <div className="actions">
         {actions.map((action) => (

@@ -10,6 +10,8 @@ from email.utils import parsedate_to_datetime
 
 import httpx2 as httpx
 
+from app.branding import PRODUCT_NAME
+
 from .providers import AiError
 
 TRANSIENT = {408, 429, 500, 502, 503, 504, 529}
@@ -42,8 +44,13 @@ class OpenRouterClient:
                 "temperature": policy.temperature, "max_tokens": policy.max_tokens,
                 "response_format": {"type": "json_object"},
                 "provider": {"require_parameters": True, "data_collection": "deny"}}
-        headers = {"Authorization": "Bearer " + self.key, "HTTP-Referer": "http://localhost:4173",
-                   "X-Title": "CRM CBN Admisiones", "X-OpenRouter-Title": "CRM CBN Admisiones"}
+        title = f"{PRODUCT_NAME} Admisiones"
+        headers = {
+            "Authorization": "Bearer " + self.key,
+            "HTTP-Referer": "http://localhost:4173",
+            "X-Title": title,
+            "X-OpenRouter-Title": title,
+        }
         deadline = time.monotonic() + 40
         async with httpx.AsyncClient(transport=self.transport, follow_redirects=False, trust_env=False) as client:
             for attempt in range(3):

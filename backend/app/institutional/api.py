@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.routing import compile_path
 
+from app.branding import PRODUCT_DESCRIPTION, PRODUCT_NAME
 from app.institutional import deployment, models
 from app.institutional.auth import Identity, cookie_name
 from app.institutional.db import audit
@@ -88,7 +89,13 @@ def create_app(
     settings, workspace=None, agent_gateway_factory=None, broadcast_gateway=None,
     *, channel_transport=None, media_downloader=None,
 ):
-    app = FastAPI(title="CRM CBN", docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(
+        title=PRODUCT_NAME,
+        description=PRODUCT_DESCRIPTION,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+    )
     protected_routes = []
     app.state.settings = SimpleNamespace(mode="local_foundation")
     postgres = getattr(settings, "postgres_profile", False)

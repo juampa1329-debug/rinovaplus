@@ -10,6 +10,7 @@ import {
   SelectField,
 } from "../shared/ui";
 import { Icon } from "../shared/Icon";
+import { BrandMark } from "../shared/BrandMark";
 import { ChannelsUiPanel } from "./ChannelsUiPanel";
 import "./channels-ui.css";
 
@@ -45,7 +46,10 @@ export function ChannelsWorkspace() {
           onClick={() => setMenuOpen(!menuOpen)}
         >
           <Icon name="menu" />
-          <span>RinovaPlus</span>
+          <span className="brand-wordmark">
+            <BrandMark width={24} />
+            RinovaPlus
+          </span>
         </button>
         <nav
           id="channels-navigation"

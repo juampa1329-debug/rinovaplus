@@ -3,6 +3,7 @@
 from fastapi import Query, Request
 from fastapi.responses import Response
 
+from app.branding import PRODUCT_NAME
 from app.institutional.broadcast_models import (
     CadenceWrite,
     CampaignWrite,
@@ -85,7 +86,9 @@ def install(app, settings, gateway=None):
             ),
             media_type="text/csv; charset=utf-8",
             headers={
-                "Content-Disposition": 'attachment; filename="destinatarios.csv"',
+                "Content-Disposition": (
+                    f'attachment; filename="{PRODUCT_NAME.lower()}-destinatarios.csv"'
+                ),
                 "Cache-Control": "no-store",
             },
         )

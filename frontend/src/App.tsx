@@ -19,6 +19,7 @@ import { useCrmConfiguration } from "./modules/crm-configuration";
 import { modules, navigate, useRoute } from "./shared/navigation";
 import { Badge, Button, EmptyState, Notice, PageHeading } from "./shared/ui";
 import { Icon } from "./shared/Icon";
+import { BrandMark } from "./shared/BrandMark";
 import { useRuntime } from "./shared/runtimeCapabilities";
 import { CrmConfiguration } from "./modules/crm-configuration/pages/CrmConfiguration";
 import { useTheme } from "./shared/theme";
@@ -301,7 +302,10 @@ function CoreApp() {
                 }}
               >
                 <Icon name="menu" />
-                <span className="sidebar-project-name">RinovaPlus</span>
+                <span className="sidebar-project-name brand-wordmark">
+                  <BrandMark width={24} />
+                  RinovaPlus
+                </span>
               </button>
               <button
                 type="button"
@@ -311,11 +315,16 @@ function CoreApp() {
                 aria-label={
                   mobileNav ? "Cerrar menú RinovaPlus" : "Abrir menú RinovaPlus"
                 }
-                title={mobileNav ? "Cerrar menú RinovaPlus" : "Abrir menú RinovaPlus"}
+                title={
+                  mobileNav ? "Cerrar menú RinovaPlus" : "Abrir menú RinovaPlus"
+                }
                 onClick={() => setMobileNav(!mobileNav)}
               >
                 <Icon name="menu" />
-                <span className="sidebar-project-name">RinovaPlus</span>
+                <span className="sidebar-project-name brand-wordmark">
+                  <BrandMark width={24} />
+                  RinovaPlus
+                </span>
               </button>
               <nav
                 id="main-navigation"
@@ -481,10 +490,10 @@ function CoreApp() {
           <div className="workspace">
             {publicForm && (
               <header className="topbar public-toolbar">
-                <a className="public-brand" href="#/overview">
+                <a className="public-brand brand-wordmark" href="#/overview">
+                  <BrandMark width={28} />
                   RinovaPlus
                 </a>
-                <span className="demo-banner">RinovaPlus</span>
                 <div className="topbar-actions">
                   <ThemeControl theme={theme} chooseTheme={chooseTheme} />
                 </div>

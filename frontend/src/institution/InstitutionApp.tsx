@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Button, Field, Notice, PageHeading, SelectField } from "../shared/ui";
 import { useTheme } from "../shared/theme";
 import { RuntimeContext, featureNames } from "../shared/runtimeCapabilities";
@@ -34,6 +34,7 @@ import { OperationsWorkspace } from "./OperationsWorkspace";
 import { BroadcastWorkspace } from "./BroadcastWorkspace";
 import "./knowledge.css";
 import { AssistantChat as AgentAssistantChat } from "../modules/ai/pages/AgentAssistantChat";
+import { BrandMark } from "../shared/BrandMark";
 
 const sections = [
   ["overview", "Resumen"],
@@ -129,12 +130,10 @@ export function InstitutionApp({
   }, []);
   if (initialized === null)
     return (
-      <main className="institution-login">
-        <section className="panel">
-          <h1>RinovaPlus</h1>
-          <ResourceState error={error} />
-        </section>
-      </main>
+      <AccessLayout>
+        <h1 id="access-title">Acceso a RinovaPlus</h1>
+        <ResourceState error={error} />
+      </AccessLayout>
     );
   if (!session)
     return (
@@ -156,6 +155,61 @@ export function InstitutionApp({
     </SessionBoundary>
   );
 }
+function ProductBrand() {
+  return (
+    <>
+      <BrandMark />
+      <span>
+        <strong>RinovaPlus</strong>
+        <small>CRM inteligente de CBN</small>
+      </span>
+    </>
+  );
+}
+
+function AccessLayout({ children }: { children: ReactNode }) {
+  const theme = useTheme();
+  return (
+    <main className="institution-login">
+      <div className="access-brand-panel">
+        <div className="institution-brand">
+          <ProductBrand />
+        </div>
+        <div className="access-art" aria-hidden="true">
+          <BrandMark width={224} />
+        </div>
+        <p className="access-tagline">La fuerza de conectar.</p>
+      </div>
+      <div className="access-content">
+        <div className="access-appearance">
+          <SelectField
+            id="access-theme"
+            label="Apariencia"
+            value={theme.preference}
+            options={[
+              { value: "system", label: "Sistema" },
+              { value: "dark", label: "Oscura" },
+              { value: "light", label: "Clara" },
+            ]}
+            onChange={(event) =>
+              theme.chooseTheme(
+                event.target.value as "dark" | "light" | "system",
+              )
+            }
+          />
+        </div>
+        <section className="access-form" aria-labelledby="access-title">
+          {children}
+        </section>
+        <footer className="access-copyright">
+          © 2026. Software desarrollado por la Corporación Bolivariana del Norte
+          - CBN.
+        </footer>
+      </div>
+    </main>
+  );
+}
+
 function AccessScreen({
   initialized,
   accepted,
@@ -163,8 +217,7 @@ function AccessScreen({
   initialized: boolean;
   accepted: (session: Session) => void;
 }) {
-  const theme = useTheme(),
-    task = useTask();
+  const task = useTask();
   const [mode, setMode] = useState(initialized ? "login" : "bootstrap"),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
@@ -173,205 +226,185 @@ function AccessScreen({
     [challenge, setChallenge] = useState(""),
     [code, setCode] = useState("");
   return (
-    <main className="institution-login">
-      <section className="panel">
-        <div className="institution-brand">
-          CBN <span>Institución educativa</span>
-        </div>
-        <h1>
-          {challenge
-            ? "Verifica tu identidad"
-            : mode === "bootstrap"
-              ? "Configura tu acceso"
-              : mode === "redeem"
-                ? "Activa o recupera tu cuenta"
-                : "Bienvenido a RinovaPlus"}
-        </h1>
-        <p>
-          {mode === "bootstrap"
-            ? "Crea la primera cuenta de administración con el código privado de configuración."
-            : "Accede con tu cuenta institucional para continuar."}
-        </p>
-        {task.notices}
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            void task.run(
-              async () => {
-                if (mode === "redeem") {
-                  await send("auth/redeem", "POST", {
-                    token,
-                    new_password: password,
-                    ...(code ? { code } : {}),
-                  });
-                  setToken("");
-                  setPassword("");
-                  setCode("");
-                  setMode("login");
-                  return;
+    <AccessLayout>
+      <h1 id="access-title">
+        {challenge
+          ? "Verifica tu identidad"
+          : mode === "bootstrap"
+            ? "Configura tu acceso"
+            : mode === "redeem"
+              ? "Activa o recupera tu cuenta"
+              : "Inicia sesión"}
+      </h1>
+      <p>
+        {mode === "bootstrap"
+          ? "Crea la primera cuenta de administración con el código privado de configuración."
+          : "Accede con tu cuenta institucional para continuar."}
+      </p>
+      {task.notices}
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void task.run(
+            async () => {
+              if (mode === "redeem") {
+                await send("auth/redeem", "POST", {
+                  token,
+                  new_password: password,
+                  ...(code ? { code } : {}),
+                });
+                setToken("");
+                setPassword("");
+                setCode("");
+                setMode("login");
+                return;
+              }
+              const result = challenge
+                ? await send<Session>("auth/verify", "POST", {
+                    challenge_token: challenge,
+                    code,
+                  })
+                : await send<
+                    Session & {
+                      mfa_required?: boolean;
+                      challenge_token?: string;
+                    }
+                  >(
+                    mode === "bootstrap" ? "auth/bootstrap" : "auth/login",
+                    "POST",
+                    {
+                      email,
+                      password,
+                      ...(mode === "bootstrap"
+                        ? { full_name: name, bootstrap_token: token }
+                        : {}),
+                    },
+                  );
+              if (
+                "mfa_required" in result &&
+                result.mfa_required &&
+                "challenge_token" in result
+              ) {
+                setChallenge(String(result.challenge_token));
+                setPassword("");
+                setCode("");
+              } else {
+                setPassword("");
+                setToken("");
+                setCode("");
+                accepted(result);
+              }
+            },
+            mode === "redeem"
+              ? "Contraseña guardada. Ya puedes iniciar sesión."
+              : "Acceso verificado.",
+          );
+        }}
+      >
+        <fieldset disabled={task.busy}>
+          {challenge ? (
+            <Field
+              id="login-code"
+              label="Código del autenticador o de recuperación"
+              autoComplete="one-time-code"
+              required
+              autoFocus
+              value={code}
+              onChange={(event) => setCode(event.target.value)}
+            />
+          ) : (
+            <>
+              {mode !== "redeem" && (
+                <Field
+                  id="login-email"
+                  label="Correo"
+                  type="email"
+                  autoComplete="username"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              )}
+              {mode === "bootstrap" && (
+                <Field
+                  id="login-name"
+                  label="Nombre completo"
+                  autoComplete="name"
+                  maxLength={180}
+                  required
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              )}
+              {mode !== "login" && (
+                <Field
+                  id="login-token"
+                  label={
+                    mode === "bootstrap"
+                      ? "Código privado de configuración"
+                      : "Código de activación o recuperación"
+                  }
+                  type="password"
+                  autoComplete="off"
+                  required
+                  value={token}
+                  onChange={(event) => setToken(event.target.value)}
+                />
+              )}
+              <Field
+                id="login-password"
+                label={mode === "redeem" ? "Nueva contraseña" : "Contraseña"}
+                type="password"
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
                 }
-                const result = challenge
-                  ? await send<Session>("auth/verify", "POST", {
-                      challenge_token: challenge,
-                      code,
-                    })
-                  : await send<
-                      Session & {
-                        mfa_required?: boolean;
-                        challenge_token?: string;
-                      }
-                    >(
-                      mode === "bootstrap" ? "auth/bootstrap" : "auth/login",
-                      "POST",
-                      {
-                        email,
-                        password,
-                        ...(mode === "bootstrap"
-                          ? { full_name: name, bootstrap_token: token }
-                          : {}),
-                      },
-                    );
-                if (
-                  "mfa_required" in result &&
-                  result.mfa_required &&
-                  "challenge_token" in result
-                ) {
-                  setChallenge(String(result.challenge_token));
-                  setPassword("");
-                  setCode("");
-                } else {
-                  setPassword("");
-                  setToken("");
-                  setCode("");
-                  accepted(result);
-                }
-              },
-              mode === "redeem"
-                ? "Contraseña guardada. Ya puedes iniciar sesión."
-                : "Acceso verificado.",
-            );
+                minLength={mode === "login" ? 1 : 15}
+                maxLength={128}
+                required
+                value={password}
+                hint={mode !== "login" ? "De 15 a 128 caracteres." : undefined}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+              {mode === "redeem" && (
+                <Field
+                  id="redeem-code"
+                  label="Código del autenticador, si está activo"
+                  autoComplete="one-time-code"
+                  value={code}
+                  onChange={(event) => setCode(event.target.value)}
+                />
+              )}
+            </>
+          )}
+          <Button type="submit">
+            {task.busy
+              ? "Comprobando…"
+              : challenge
+                ? "Verificar código"
+                : mode === "bootstrap"
+                  ? "Crear cuenta de administración"
+                  : mode === "redeem"
+                    ? "Guardar contraseña"
+                    : "Iniciar sesión"}
+          </Button>
+        </fieldset>
+      </form>
+      {initialized && (
+        <Button
+          variant="quiet"
+          onClick={() => {
+            setChallenge("");
+            setToken("");
+            setPassword("");
+            setMode(mode === "redeem" ? "login" : "redeem");
           }}
         >
-          <fieldset disabled={task.busy}>
-            {challenge ? (
-              <Field
-                id="login-code"
-                label="Código del autenticador o de recuperación"
-                autoComplete="one-time-code"
-                required
-                autoFocus
-                value={code}
-                onChange={(event) => setCode(event.target.value)}
-              />
-            ) : (
-              <>
-                {mode !== "redeem" && (
-                  <Field
-                    id="login-email"
-                    label="Correo"
-                    type="email"
-                    autoComplete="username"
-                    required
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                  />
-                )}
-                {mode === "bootstrap" && (
-                  <Field
-                    id="login-name"
-                    label="Nombre completo"
-                    autoComplete="name"
-                    maxLength={180}
-                    required
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                  />
-                )}
-                {mode !== "login" && (
-                  <Field
-                    id="login-token"
-                    label={
-                      mode === "bootstrap"
-                        ? "Código privado de configuración"
-                        : "Código de activación o recuperación"
-                    }
-                    type="password"
-                    autoComplete="off"
-                    required
-                    value={token}
-                    onChange={(event) => setToken(event.target.value)}
-                  />
-                )}
-                <Field
-                  id="login-password"
-                  label={mode === "redeem" ? "Nueva contraseña" : "Contraseña"}
-                  type="password"
-                  autoComplete={
-                    mode === "login" ? "current-password" : "new-password"
-                  }
-                  minLength={mode === "login" ? 1 : 15}
-                  maxLength={128}
-                  required
-                  value={password}
-                  hint={
-                    mode !== "login" ? "De 15 a 128 caracteres." : undefined
-                  }
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-                {mode === "redeem" && (
-                  <Field
-                    id="redeem-code"
-                    label="Código del autenticador, si está activo"
-                    autoComplete="one-time-code"
-                    value={code}
-                    onChange={(event) => setCode(event.target.value)}
-                  />
-                )}
-              </>
-            )}
-            <Button type="submit">
-              {task.busy
-                ? "Comprobando…"
-                : challenge
-                  ? "Verificar código"
-                  : mode === "bootstrap"
-                    ? "Crear cuenta de administración"
-                    : mode === "redeem"
-                      ? "Guardar contraseña"
-                      : "Iniciar sesión"}
-            </Button>
-          </fieldset>
-        </form>
-        {initialized && (
-          <Button
-            variant="quiet"
-            onClick={() => {
-              setChallenge("");
-              setToken("");
-              setPassword("");
-              setMode(mode === "redeem" ? "login" : "redeem");
-            }}
-          >
-            {mode === "redeem"
-              ? "Volver al acceso"
-              : "Tengo un código de activación o recuperación"}
-          </Button>
-        )}
-        <SelectField
-          id="access-theme"
-          label="Apariencia"
-          value={theme.preference}
-          options={[
-            { value: "system", label: "Sistema" },
-            { value: "dark", label: "Oscura" },
-            { value: "light", label: "Clara" },
-          ]}
-          onChange={(event) =>
-            theme.chooseTheme(event.target.value as "dark" | "light" | "system")
-          }
-        />
-      </section>
-    </main>
+          {mode === "redeem"
+            ? "Volver al acceso"
+            : "Tengo un código de activación o recuperación"}
+        </Button>
+      )}
+    </AccessLayout>
   );
 }
 function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
@@ -438,7 +471,7 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
       <div className="app-shell pilot-shell institution-shell">
         <aside className={`sidebar ${menu ? "is-open" : ""}`}>
           <a className="institution-brand" href="#/overview">
-            CBN <span>CRM educativo</span>
+            <ProductBrand />
           </a>
           <nav aria-label="Navegación principal">
             {sections
@@ -499,7 +532,10 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
             >
               Menú
             </Button>
-            <span>RinovaPlus · Institución educativa</span>
+            <span className="institution-name">
+              Corporación Bolivariana del Norte
+            </span>
+            <span className="institution-mobile-brand">RinovaPlus</span>
             <SelectField
               id="workspace-theme"
               label="Apariencia"

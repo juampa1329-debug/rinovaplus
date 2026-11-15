@@ -13,6 +13,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import Field, SecretStr, field_validator
 
+from app.branding import PRODUCT_NAME
 from app.schemas import LocalModel
 from app.sql_profile import ProfileUnavailable, SqlProfileStore
 from app.sql_target import HOST, _name, _quoted
@@ -164,7 +165,7 @@ class DatabaseConnections:
                 "Encrypt=Yes;TrustServerCertificate=No;"
                 f"HostnameInCertificate={request.certificate_hostname};"
                 f"UID={_quoted(request.username)};PWD={_quoted(password)};"
-                "APP=CRM CBN database metadata;"
+                f"APP={PRODUCT_NAME} database metadata;"
             )
             connection = pyodbc.connect(text, timeout=5, autocommit=True, readonly=True)
             connection.timeout = 10

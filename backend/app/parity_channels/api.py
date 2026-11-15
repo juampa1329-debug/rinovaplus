@@ -11,6 +11,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.branding import PRODUCT_NAME
 from app.parity_channels.policy import VERSION, identifier
 from app.parity_channels.repository import PROJECTIONS, Repository
 
@@ -75,7 +76,10 @@ class IntegrationEdit(Strict):
 
 def create_app(settings, repository=None):
     app = FastAPI(
-        title="CBN C12 local channels", docs_url=None, redoc_url=None, openapi_url=None
+        title=f"{PRODUCT_NAME} · Canales locales",
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
     )
     repo = repository or Repository(settings)
 

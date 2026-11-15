@@ -10,6 +10,7 @@ from uuid import uuid4
 from fastapi import HTTPException, Request
 from pydantic import Field
 
+from app.branding import PRODUCT_NAME
 from app.institutional.auth import authorize
 from app.institutional.channel_operations import account, configuration
 from app.institutional.comment_effects import Effect
@@ -22,7 +23,7 @@ from app.modules.ai.domain.models import AiSettings
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 SYSTEM = (
-    "Eres el asistente virtual de CRM CBN. Redacta "
+    f"Eres el asistente virtual de {PRODUCT_NAME}. Redacta "
     "sólo un borrador breve en español para un come"
     "ntario público de una institución educativa. N"
     "o tomes decisiones de matrícula o pagos ni inv"
