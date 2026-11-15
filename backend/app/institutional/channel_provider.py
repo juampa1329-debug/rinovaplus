@@ -196,6 +196,11 @@ class ProviderOperations:
             },
             "provider-intent",
         )
+        effect_key = (
+            bound_hash(self.settings, operation, "provider-diagnostic")
+            if action in {"verify", "numbers", "health"}
+            else digest
+        )
         with transaction(self.settings, True, anonymous=True) as c:
             actor = authorize(
                 c, self.settings, authority, "settings.channels.write", recent=True
@@ -284,7 +289,7 @@ class ProviderOperations:
                 str(actor["UserId"]).lower(),
                 action,
                 digest,
-                digest,
+                effect_key,
                 str(uuid4()),
             )
         try:

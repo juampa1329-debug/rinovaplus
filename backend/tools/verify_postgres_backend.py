@@ -194,6 +194,24 @@ def checked(response, expected=200):
     return response.json()
 
 
+def verify_diagnostic_retry(api, integration, csrf, attempts):
+    accounts = PREFIX + "/channels"
+    account = next(row for row in checked(api.get(accounts))["items"] if row["id"] == integration)
+    path = f"{accounts}/{integration}/actions/verify"
+    command = {"operation_id": str(uuid4()), "row_version": account["row_version"]}
+    rejected = checked(api.post(path, headers=csrf, json=command))
+    assert rejected["status"] == "failed"
+    assert rejected["code"] == "provider_permission_or_request_rejected"
+    assert checked(api.post(path, headers=csrf, json=command)) == rejected
+    assert attempts == ["verify"]
+
+    new_command = {**command, "operation_id": str(uuid4())}
+    confirmed = checked(api.post(path, headers=csrf, json=new_command))
+    assert confirmed["status"] == "confirmed"
+    assert checked(api.post(path, headers=csrf, json=new_command)) == confirmed
+    assert attempts == ["verify", "verify"]
+
+
 class PostgresJourney(JourneyHarness):
     def __init__(self, api, settings, csrf, gateway):
         self.api, self.settings, self.csrf, self.gateway = api, settings, csrf, gateway
@@ -423,6 +441,14 @@ def run():
     endpoint, verify, signature, integration = seed_channel(settings, stage, config_digest)
     gateway = Gateway()
     sent = []
+    diagnostic_attempts = []
+
+    def diagnose(adapter, action, item, pin):
+        assert adapter["channel"] == "whatsapp" and action == "verify" and pin is None
+        diagnostic_attempts.append(action)
+        if len(diagnostic_attempts) == 1:
+            raise ProviderFailure("provider_permission_or_request_rejected")
+        return {"apiAssetValidated": True, "asset": {"id": item["ExternalAccountId"]}}
 
     def transport(adapter, payload, *, media=None, before_send=None):
         assert adapter["channel"] == "whatsapp" and payload["target"] == PHONE
@@ -440,9 +466,10 @@ def run():
 
     with tempfile.TemporaryDirectory(prefix="rinova-pg-media-") as media:
         os.environ["CRM_AI_STATE_DIR"] = media
-        app = create_app(
-            settings, broadcast_gateway=gateway, channel_transport=transport, media_downloader=downloader,
-        )
+        with patch("app.institutional.channel_provider.call_provider", diagnose):
+            app = create_app(
+                settings, broadcast_gateway=gateway, channel_transport=transport, media_downloader=downloader,
+            )
         with TestClient(
             app, base_url=FIXTURE_ORIGIN if deployment else "http://127.0.0.1:4178", client=("127.0.0.1", 40000),
             headers={**LOCAL, "Origin": FIXTURE_ORIGIN} if deployment else LOCAL, raise_server_exceptions=False,
@@ -466,7 +493,8 @@ def run():
             assert all(status == 200 for status in observed.values()), observed
             checked(api.get("/api/v1/agents/selection"))
             if deployment:
-                checked(api.get(PREFIX + "/channels"))
+                checked(post(AUTH + "/confirm", json={"current_password": password}, headers=csrf))
+                verify_diagnostic_retry(api, integration, csrf, diagnostic_attempts)
             wait_for(lambda: api.get("/health/ready").status_code, lambda code: code == 200)
 
             hooks = "/hooks/channels/" + endpoint

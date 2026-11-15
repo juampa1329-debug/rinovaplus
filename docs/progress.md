@@ -6,6 +6,8 @@ Canales usa un diálogo de error con explicación y un siguiente paso. Cubre err
 
 El depurador de Meta mostró un token válido para el App ID configurado. RinovaPlus pudo consultar los números de la WABA, pero su verificación de salud devolvió un rechazo. La llamada a `/debug_token` ahora presenta la credencial de la app en `Authorization` y pasa el token inspeccionado como `input_token`. La confirmación con la cuenta real queda pendiente del despliegue y una nueva verificación.
 
+El primer reintento en producción devolvió HTTP 503 por una colisión PostgreSQL `23505`. El nuevo intento reutilizaba la clave de efecto del diagnóstico anterior aunque su identificador de operación era distinto. Las consultas de verificación, salud y números usan ahora su propio identificador para esa clave. Se conserva el resultado al repetir el mismo identificador y la protección de las operaciones con efectos externos.
+
 Etapa propuesta para todo RinovaPlus: extender el mismo componente por módulo, definir la causa y la salida de cada error conocido y comprobar los recorridos en escritorio, móvil, teclado y movimiento reducido. El alcance inicial es Canales. La extensión general queda fuera del cálculo actual de P0–P11.
 
 ## Canales · guardado de identificadores de WhatsApp — 2026-11-15
