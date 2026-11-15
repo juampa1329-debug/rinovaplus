@@ -92,6 +92,7 @@ def create_app(
     protected_routes = []
     app.state.settings = SimpleNamespace(mode="local_foundation")
     postgres = getattr(settings, "postgres_profile", False)
+    rehearsal = postgres and not getattr(settings, "postgres_deployment", False)
     is_operational = getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-channels-p4-v1",
         "cbn-institutional-agents-p5-v1",
@@ -120,7 +121,7 @@ def create_app(
 
         workspace = WorkspaceV3(settings)
     if is_operational and workspace is None:
-        if postgres:
+        if rehearsal:
             from app.institutional.postgres_workspace import Workspace as WorkspaceV4
         else:
             from app.institutional.channel_workspace import Workspace as WorkspaceV4
@@ -148,7 +149,7 @@ def create_app(
         origin = request.headers.get("origin")
         path = request.url.path
         loopback = request.client and request.client.host in {"127.0.0.1", "::1"}
-        if postgres and path.startswith("/hooks/") and not (
+        if rehearsal and path.startswith("/hooks/") and not (
             loopback and host in {"127.0.0.1:8004", "127.0.0.1:4178", "localhost:4178"}
         ):
             return JSONResponse({"detail": "local_access_required"}, 403)
@@ -590,7 +591,7 @@ def create_app(
 
     # Public OpenAPI generation resolves included routers as well as direct
     # handlers. Keep only fixed method/path patterns; never log raw object IDs.
-    if postgres:
+    if rehearsal:
         from app.institutional.postgres_rehearsal import REHEARSAL_ROUTES
         routes = REHEARSAL_ROUTES.items()
     else:
@@ -603,7 +604,13 @@ def create_app(
 
 
 def application():
-    if "CRM_POSTGRES_URL" in os.environ:
+    engine = os.environ.get("CRM_DATABASE_ENGINE")
+    if engine not in (None, "sqlserver", "postgresql"):
+        logging.getLogger(__name__).error("crm_database_engine_invalid")
+        raise SystemExit(1)
+    if engine == "postgresql" or (
+        engine is None and "CRM_POSTGRES_URL" in os.environ and "CRM_SQL_URL" not in os.environ
+    ):
         from app.institutional.postgres_rehearsal import ProfileError, apply_environment
 
         try:

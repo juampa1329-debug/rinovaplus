@@ -183,7 +183,7 @@ RETURN CASE WHEN $1 IS JSON ARRAY OR $1 IS JSON OBJECT THEN 1 ELSE 0 END;
 """
 
 
-def build(model, digest):
+def build(model, digest, *, transaction=True):
     if not re.fullmatch(r"[0-9a-f]{64}", digest):
         raise ValueError("invalid snapshot digest")
     columns = {t["schema"] + "." + t["name"]: [] for t in model["tables"]}
@@ -192,7 +192,7 @@ def build(model, digest):
     for c in sorted(model["columns"], key=lambda item: item["ordinal"]):
         columns[c["schema"] + "." + c["table"]].append(c)
     lines = [
-        "BEGIN;",
+        *(["BEGIN;"] if transaction else []),
         f"""DO $$ BEGIN
           IF current_database() NOT IN ('rinovaplus', 'rinovaplus_rehearsal')
              OR current_setting('server_version_num')::int < 160000
@@ -273,7 +273,9 @@ def build(model, digest):
         target_fields = ", ".join(identifier(c["referenced_column"]) for c in pairs)
         lines.append(f"ALTER TABLE {physical(key)} ADD CONSTRAINT {index_name(fk['name'], key)} "
                      f"FOREIGN KEY ({source_fields}) REFERENCES {physical(target)} ({target_fields});")
-    return "\n".join([*lines, "COMMIT;", ""])
+    if transaction:
+        lines.append("COMMIT;")
+    return "\n".join([*lines, ""])
 
 
 def main():

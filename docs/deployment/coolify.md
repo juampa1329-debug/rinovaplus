@@ -1,6 +1,22 @@
 # RinovaPlus en Coolify
 
-## Rama `deploy/coolify-rinovaplus`
+## Conexión PostgreSQL
+
+La rama `deploy/coolify-rinovaplus` admite un despliegue de RinovaPlus en PostgreSQL 16 o posterior. Usar el método Dockerfile, la ruta `/docker/Dockerfile.coolify`, el puerto 4178 y el volumen existente de adjuntos. El servidor debe alcanzar PostgreSQL por la red privada.
+
+| Variable de ejecución | Función |
+|---|---|
+| `CRM_DATABASE_ENGINE` | `postgresql` para activar el motor después de conciliar la candidata. `sqlserver` selecciona explícitamente el motor anterior durante una reversión. |
+| `CRM_POSTGRES_URL` | URL privada del recurso PostgreSQL, con base `rinovaplus` y sin credenciales. |
+| `CRM_POSTGRES_USER` | `rinovaplus_app`, rol PostgreSQL con los permisos CRM de P11. |
+| `CRM_POSTGRES_PASSWORD` | Contraseña del rol PostgreSQL. Mantenerla como literal, solo para ejecución. |
+| `CRM_POSTGRES_SNAPSHOT_SHA256` | Huella de la instantánea conciliada en la base de destino. |
+| `CRM_SECURITY_KEY` | Clave de cifrado vigente de RinovaPlus. Conservar el valor anterior. |
+| `CRM_PUBLIC_BASE_URL` | Origen HTTPS de RinovaPlus. |
+
+Conservar el volumen de adjuntos y verificar que las escrituras CRM estén pausadas durante la sincronización final. Usar el [procedimiento de migración](postgresql-migration.md) para leer únicamente las tablas CRM de SQL Server y verificar la carga. Mantener la copia PostgreSQL anterior con otro nombre. Al desplegar, verificar `/health/ready` con `scope=postgres_deployment`. Una reversión después de nuevas escrituras en PostgreSQL exige conciliarlas antes de reabrir SQL Server.
+
+## Conexión SQL Server
 
 En Coolify, seleccionar el repositorio privado, la rama `deploy/coolify-rinovaplus` y el método **Dockerfile**. Usar `/` como contexto, `/docker/Dockerfile.coolify` como ruta y `4178` como puerto del servicio. El proxy de Coolify termina HTTPS. Configurar `https://app.rinovaplus.com` como dominio del servicio y conservar un solo origen para interfaz, API y webhooks. Montar un volumen persistente en `/var/lib/crm-ai` para adjuntos de Inbox y campañas, con acceso de escritura para el UID `10001`.
 

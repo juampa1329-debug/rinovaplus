@@ -8,8 +8,8 @@ from app.institutional.deployment import DeploymentError, public_origin, transpo
 
 def main():
     try:
-        transport = transport_from_env(os.environ)
-        origin = public_origin(os.environ) if transport else None
+        postgres = os.environ.get("CRM_DATABASE_ENGINE") == "postgresql"
+        origin = public_origin(os.environ) if postgres or transport_from_env(os.environ) else None
     except DeploymentError as error:
         raise SystemExit(str(error)) from None
     config = Path("/etc/nginx/general.conf").read_text(encoding="utf-8")

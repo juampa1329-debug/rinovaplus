@@ -519,8 +519,8 @@ class Operations:
                 c.execute(
                     (
                         "UPDATE crm_channels2.Application SET RedirectUri=CASE WHEN ?"
-                        "='' THEN '' ELSE ?+'/hooks/oauth/'+CONVERT(varchar(36),Appli"
-                        "cationId) END,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId"
+                        "='' THEN '' ELSE CONCAT(?,'/hooks/oauth/',CONVERT(varchar(36),"
+                        "ApplicationId)) END,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId"
                         "=?"
                     ),
                     origin,

@@ -28,7 +28,10 @@ flowchart LR
     Q --> R[Backend y ocho etapas de workers · copia de prueba]
     R --> O[Oracle · arranque, recorridos y restauración aislada]
     N -->|Esquema y respaldo CRM| O
+    S -.->|Captura final CRM pendiente| C[Archivo fresco con huella]
+    C -->|Carga atómica probada con datos sintéticos| D[PostgreSQL candidato vacío]
     O -.-> B[Paridad pendiente, medición y corte]
+    D -.-> B
     S --> E[SIIE · operación académica]
 ```
 
@@ -88,13 +91,13 @@ En PostgreSQL 16 aislado con autenticación SCRAM y el rol con los permisos P11 
 
 El conjunto ampliado también pasó en Oracle sobre otra restauración aislada. El recorrido tomó 33 segundos e incluyó las ocho etapas, los listados institucionales y el arranque de Coolify. La restauración volvió a conciliar 155 tablas, 298 claves foráneas y 48 filas con cero diferencias. El recibo de origen y la identidad de los contenedores activos coincidieron al finalizar. La prueba SCRAM se ejecutó en local.
 
-Quedan por validar la operación completa de campañas y envíos masivos, las ejecuciones de agentes y las escrituras de los demás módulos, los adjuntos salientes, el rendimiento comparativo y el corte. Los hitos de integración y validación integral conservan su estado parcial.
+La ampliación del recorrido verificó, en PostgreSQL 16 local y en otra restauración aislada de Oracle, la creación y edición de contactos, la escritura idempotente de ajustes y perfiles de agente, la simulación de un agente sin invocar un modelo, un envío masivo y una campaña CRM hasta la aceptación del proveedor simulado. En Oracle pasaron las ocho etapas de workers y el arranque real de Coolify en 37 segundos de recorrido. Se volvieron a conciliar 155 tablas, 298 claves foráneas y 48 filas con cero diferencias. El recibo de origen y los contenedores activos coincidieron al finalizar. Restan las escrituras de los demás módulos, los adjuntos salientes, el rendimiento comparativo y el corte.
 
 ### Cuenta de RinovaPlus y rol técnico
 
-Un conteo de solo lectura en Oracle encontró una cuenta propietaria activa de RinovaPlus con hash PBKDF2 compatible. Las cuentas que conservan su hash usan la misma contraseña de la aplicación después del corte. Conservar la `CRM_SECURITY_KEY` vigente para los secretos cifrados del CRM y validar el inicio de sesión en la copia de corte. La auditoría solo registró conteos. El rol PostgreSQL `rinovaplus_app` todavía no existe en el recurso.
+Un conteo de solo lectura en Oracle encontró una cuenta propietaria activa de RinovaPlus con hash PBKDF2 compatible. Las cuentas que conservan su hash usan la misma contraseña de la aplicación después del corte. Conservar la `CRM_SECURITY_KEY` vigente para los secretos cifrados del CRM y validar el inicio de sesión en la copia de corte. La auditoría solo registró conteos.
 
-El rol técnico es distinto del login `WebCRM` de SQL Server y del correo con el que se inicia sesión en RinovaPlus. El DBA puede generar sus permisos con `python -m tools.postgres_runtime_role` desde `backend` y ejecutar la salida con `psql` conectado a `rinovaplus`. El script crea `rinovaplus_app` con `NOLOGIN` y aplica los privilegios CRM de P11. Desde la sesión de administración de `psql`, asignar una contraseña nueva sin incluirla en el SQL o el historial de comandos:
+El rol técnico es distinto del login `WebCRM` de SQL Server y del correo con el que se inicia sesión en RinovaPlus. El script generado por `python -m tools.postgres_runtime_role` se ejecutó en **RinovaPlus PostgreSQL → Terminal**, desde `psql` conectado a `rinovaplus`. El script creó `rinovaplus_app` con `NOLOGIN` y los privilegios CRM de P11. El propietario habilitó el rol con una contraseña nueva. Se comprobó `LOGIN` y SCRAM sin mostrar el verificador. Estos son los pasos de configuración desde la sesión de administración de `psql`.
 
 ```text
 SET password_encryption = 'scram-sha-256';
@@ -102,7 +105,28 @@ SET password_encryption = 'scram-sha-256';
 ALTER ROLE rinovaplus_app LOGIN;
 ```
 
-Para el corte, el host de `CRM_POSTGRES_URL=postgresql://<host-interno>:5432/rinovaplus` debe salir de la URL privada del recurso de Coolify. Usar `CRM_POSTGRES_USER=rinovaplus_app` y guardar la contraseña nueva en `CRM_POSTGRES_PASSWORD` como secreto. Estos valores se aplicarán cuando la base de despliegue y la paridad estén calificadas.
+Se confirmó conectividad TCP privada desde el backend al recurso PostgreSQL. Coolify guarda la URL privada de `rinovaplus`, `CRM_POSTGRES_USER=rinovaplus_app`, `CRM_POSTGRES_PASSWORD` como literal de ejecución y la huella de la candidata en `CRM_POSTGRES_SNAPSHOT_SHA256`. La revisión preparada admite `CRM_DATABASE_ENGINE=postgresql` con la base `rinovaplus` y un origen público HTTPS. El perfil con `rinovaplus_rehearsal` conserva su aislamiento local. El [runbook de Coolify](coolify.md) contiene las variables y el procedimiento para el cambio.
+
+### Preparación de la copia de corte
+
+El [comando de corte](../../backend/tools/cutover_postgres_crm.py) captura una instantánea CRM con `SELECT`, valida el catálogo de columnas contra el archivo base y exige lectura efectiva en las 155 tablas del mapeo. La carga comprueba la huella recibida y crea el esquema intermedio, el esquema tipado y las rutinas de colas dentro de una transacción. En una prueba local con PostgreSQL 16 cargó las 155 tablas y una fila tipada sintética. Un segundo intento sobre la misma base fue rechazado.
+
+Durante el corte, pausar escrituras y workers CRM antes de la captura definitiva. Ejecutar el primer comando desde `backend` en un entorno de diagnóstico con acceso de solo lectura al origen y el segundo desde una terminal con acceso a una base PostgreSQL candidata vacía. Mantener el archivo nuevo y sus huellas en un directorio privado. Usar credenciales del entorno para conectar `psql`.
+
+```bash
+set -o pipefail
+python -m tools.cutover_postgres_crm capture \
+  --baseline /ruta/privada/crm-export.zip --baseline-sha256 "$BASELINE_SHA256" \
+  --output /ruta/privada/crm-cutover.zip
+
+python -m tools.cutover_postgres_crm prepare \
+  --archive /ruta/privada/crm-cutover.zip --sha256 "$FRESH_SHA256" \
+  --database rinovaplus_rehearsal | psql -X -v ON_ERROR_STOP=1 -d rinovaplus_rehearsal
+```
+
+La captura fresca de validación leyó las 155 tablas de SQL Server 2019 y 48 filas. La restauración aislada y la candidata en el PostgreSQL de Oracle conciliaron 155 tablas, 298 claves foráneas y 48 filas con cero diferencias. El modo de despliegue con PostgreSQL 16 y origen HTTPS pasó el arranque real con Nginx en Docker local. El ensayo cubrió autenticación, rutas CRM e Inbox, filtros, análisis de abandono sin evidencia, Canales, los ocho workers, campañas, masivos y perfiles de agente con proveedores simulados. Antes de habilitar el corte definitivo se debe conciliar otra captura con las escrituras CRM pausadas y verificar el arranque con la contraseña técnica real.
+
+Después del corte, comprobar conteos, identidad de la aplicación, inicio de sesión, acceso a adjuntos y estado de colas. Si el destino ya recibió escrituras, decidir la reversión con ambos entornos controlados para preservar los cambios.
 
 ## Avance de la migración
 
@@ -113,8 +137,8 @@ Para el corte, el host de `CRM_POSTGRES_URL=postgresql://<host-interno>:5432/rin
 | 3. Cargar y conciliar la copia inicial disponible | Completo |
 | 4. Verificar las 36 tablas y validar la copia completa | Completo para la copia inicial. Cobertura de lectura 155 de 155. Las 36 pendientes devolvieron cero filas tanto en SQL Server como en PostgreSQL. |
 | 5. Construir el esquema tipado y cargar el dominio | Completo para el alcance del respaldo disponible. Las filas de las 36 tablas se revisan en el hito 4. |
-| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Parcial. Ocho de ocho etapas probadas en Oracle (100 % de las etapas). Pasaron lecturas adicionales de módulos. Restan escrituras y recorridos de negocio completos. |
-| 7. Validar paridad, rendimiento y recuperación | Parcial. Pasaron en Oracle el arranque real, el recorrido de Canales en la copia aislada y la restauración conciliada con las 48 filas. Restan paridad de módulos, adjuntos salientes y rendimiento comparativo. |
-| 8. Pasar las últimas escrituras y activar PostgreSQL para el CRM | Pendiente |
+| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Parcial. Ocho de ocho etapas y cinco de cinco recorridos de negocio del ensayo ampliado pasaron en Oracle. Restan escrituras en los demás módulos. |
+| 7. Validar paridad, rendimiento y recuperación | Parcial. Pasaron en Oracle el arranque real, el recorrido de Canales y la restauración conciliada con las 48 filas. Restan adjuntos salientes, paridad de los demás módulos y rendimiento comparativo. |
+| 8. Pasar las últimas escrituras y activar PostgreSQL para el CRM | Parcial. Rol SCRAM y URL privada preparados. La carga atómica fue probada en una base vacía con datos sintéticos. Restan la captura final y la activación. |
 
 **5 de 8 hitos completos (62,50 %).** Cobertura comprobada de lectura **155 de 155 tablas (100 %)**. El corte requiere validar usuarios, permisos, adjuntos, secretos cifrados y colas, y comparar el 503 y la latencia con la misma carga de prueba.

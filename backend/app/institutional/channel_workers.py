@@ -17,7 +17,7 @@ class Workers:
         self.thread = None
         from app.institutional.operations import Pulse
 
-        if getattr(settings, "postgres_profile", False):
+        if getattr(settings, "postgres_profile", False) and not getattr(settings, "postgres_deployment", False):
             from app.institutional.postgres_rehearsal import WORKER_STAGES, network_disabled
 
             self.transport = transport or network_disabled

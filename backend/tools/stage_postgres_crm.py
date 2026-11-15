@@ -63,9 +63,10 @@ def validate(archive):
     return manifest, schema
 
 
-def write_staging_sql(archive, manifest, schema, sha256, out):
-    out.write("""BEGIN;
-DO $$ BEGIN
+def write_staging_sql(archive, manifest, schema, sha256, out, *, transaction=True):
+    if transaction:
+        out.write("BEGIN;\n")
+    out.write("""DO $$ BEGIN
   IF current_database() NOT IN ('rinovaplus', 'rinovaplus_rehearsal')
      OR current_setting('server_version_num')::integer < 160000 THEN
     RAISE EXCEPTION 'Unexpected PostgreSQL staging target';
@@ -90,7 +91,9 @@ COPY rinova_migration.source_snapshot FROM STDIN WITH (FORMAT csv);
             with archive.open(table["path"]) as rows:
                 for index, row in enumerate(rows, start=1):
                     writer.writerow((name, index, row.decode("utf-8").rstrip("\n")))
-    out.write("\\.\nCOMMIT;\n")
+    out.write("\\.\n")
+    if transaction:
+        out.write("COMMIT;\n")
 
 
 def main():

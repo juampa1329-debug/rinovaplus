@@ -23,6 +23,30 @@ def test_rehearsal_rejects_other_database_or_combined_profiles():
         })
 
 
+def test_deployment_requires_https_and_a_separate_application_login():
+    env = {
+        "CRM_DATABASE_ENGINE": "postgresql",
+        "CRM_POSTGRES_URL": "postgresql://localhost/rinovaplus",
+        "CRM_SQL_URL": "sqlserver://localhost:1433/dbsiie",
+    }
+    with pytest.raises(ProfileError, match="postgres_public_origin_required"):
+        load(env)
+    with pytest.raises(ProfileError, match="postgres_deployment_credentials_required"):
+        load({**env, "CRM_PUBLIC_BASE_URL": "https://crm.example.invalid", "CRM_POSTGRES_USER": "postgres"})
+
+
+def test_lateral_and_nested_limit_keep_parameters_bound():
+    query = (
+        "SELECT p.Name, (SELECT TOP(1) Name FROM crm.Contact WHERE Name=? ORDER BY Name) "
+        "FROM crm.Contact p OUTER APPLY (SELECT Name FROM crm.Contact WHERE Name=?) q WHERE p.Name LIKE ?"
+    )
+    assert postgres_sql(query, MAP) == (
+        "SELECT p.Name, (SELECT Name FROM rinovaplus_crm.crmcontacto WHERE Name=%s ORDER BY Name LIMIT 1) "
+        "FROM rinovaplus_crm.crmcontacto p LEFT JOIN LATERAL (SELECT Name FROM rinovaplus_crm.crmcontacto "
+        'WHERE Name=%s) q ON TRUE WHERE (p.Name COLLATE "default") ILIKE %s'
+    )
+
+
 @pytest.mark.parametrize("credentials", [
     {"CRM_POSTGRES_USER": "rinovaplus_app"},
     {"CRM_POSTGRES_PASSWORD": "example"},

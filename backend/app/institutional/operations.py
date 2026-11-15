@@ -276,7 +276,8 @@ def queues(c, settings):
 
 def install(app, settings):
     postgres = getattr(settings, "postgres_profile", False)
-    scope = "postgres_rehearsal" if postgres else "local"
+    deployment = getattr(settings, "postgres_deployment", False)
+    scope = "postgres_deployment" if deployment else "postgres_rehearsal" if postgres else "local"
 
     @app.get("/api/institution/operations")
     def status(request: Request):
@@ -295,7 +296,7 @@ def install(app, settings):
             },
             "workers": workers,
             "queues": counts,
-            "backup": {"state": "rehearsal"} if postgres else backup_status(settings),
+            "backup": {"state": "unverified" if deployment else "rehearsal"} if postgres else backup_status(settings),
             "local_ready": workers["ready"],
             "online": {"state": "pending", "phase": "P12"},
             "observed_at": time.time(),

@@ -626,7 +626,7 @@ def observe_contact(c, s, id):
 class Worker:
     def __init__(self, settings, gateway=None):
         self.settings = settings
-        if getattr(settings, "postgres_profile", False):
+        if getattr(settings, "postgres_profile", False) and not getattr(settings, "postgres_deployment", False):
             from app.institutional.postgres_rehearsal import network_disabled
 
             self.request = gateway or network_disabled

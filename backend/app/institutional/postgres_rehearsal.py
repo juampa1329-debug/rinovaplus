@@ -1,4 +1,4 @@
-"""Opt-in PostgreSQL backend and transaction guards for the rehearsal copy."""
+"""PostgreSQL connection and transaction guards for RinovaPlus CRM."""
 
 import hashlib
 import hmac
@@ -22,6 +22,8 @@ from app.institutional.postgres_dialect import Cursor
 
 
 DATABASE = "rinovaplus_rehearsal"
+DEPLOYMENT_DATABASE = "rinovaplus"
+DEPLOYMENT_USER = "rinovaplus_app"
 PROFILE = operations_policy.VERSION
 WORKER_STAGES = STAGES
 REHEARSAL_ROUTES = {
@@ -33,17 +35,30 @@ REHEARSAL_ROUTES = {
     "/api/institution/auth/confirm": {"post"},
     "/api/institution/operations": {"get"},
     "/api/institution/runtime": {"get"},
-    "/api/institution/settings/{section}": {"get"},
+    "/api/institution/settings/{section}": {"get", "put"},
     "/api/institution/users": {"get"},
     "/api/institution/roles": {"get"},
     "/api/institution/sessions": {"get"},
     "/api/institution/campaigns": {"get"},
+    "/api/institution/campaigns/{record}": {"get", "put"},
+    "/api/institution/campaigns/{record}/preflight": {"post"},
+    "/api/institution/campaigns/{record}/{action}": {"post"},
     "/api/institution/broadcasts": {"get"},
+    "/api/institution/broadcasts/options": {"get"},
+    "/api/institution/broadcasts/{campaign}": {"get", "put"},
+    "/api/institution/broadcasts/{campaign}/report": {"get"},
+    "/api/institution/broadcasts/{campaign}/{action}": {"post"},
+    "/api/institution/broadcasts/accounts/{integration}/identities": {"get"},
+    "/api/institution/broadcasts/accounts/{integration}/cadence": {"get", "put"},
+    "/api/institution/broadcasts/accounts/{integration}/consent/{identity}": {"put"},
+    "/api/institution/broadcasts/accounts/{integration}/templates/sync": {"post"},
     "/api/institution/knowledge": {"get"},
     "/api/institution/memory": {"get"},
     "/api/institution/ads/accounts": {"get"},
     "/api/institution/learning/packs": {"get"},
     "/api/v1/agents/selection": {"get"},
+    "/api/v1/agents/profiles/{agent_id}": {"put"},
+    "/api/v1/agents/simulate": {"post"},
     "/api/institution/media/{identity}": {"get"},
     "/api/institution/workspace/clients": {"get"},
     "/api/institution/workspace/clients/{contact_id}": {"post", "put"},
@@ -67,19 +82,34 @@ def load(env):
     from psycopg2 import Error
     from psycopg2.extensions import make_dsn
 
+    deployment_mode = env.get("CRM_DATABASE_ENGINE") == "postgresql"
+    database = DEPLOYMENT_DATABASE if deployment_mode else DATABASE
+    origin = None
+    if deployment_mode:
+        from app.institutional.deployment import DeploymentError, public_origin
+
+        try:
+            origin = public_origin(env)
+        except DeploymentError as error:
+            raise ProfileError(str(error)) from None
+        if not origin:
+            raise ProfileError("postgres_public_origin_required")
     dsn = env.get("CRM_POSTGRES_URL", "")
     try:
         url = urlsplit(dsn)
+        port = url.port
     except ValueError:
         raise ProfileError("postgres_url_invalid") from None
     if (
         url.scheme not in {"postgres", "postgresql"}
-        or url.path != "/" + DATABASE or not url.hostname
-        or url.query or url.fragment or env.get("CRM_SQL_URL")
+        or url.path != "/" + database or not url.hostname or port == 0
+        or url.query or url.fragment or (not deployment_mode and env.get("CRM_SQL_URL"))
     ):
-        raise ProfileError("postgres_rehearsal_target_required")
+        raise ProfileError("postgres_deployment_target_required" if deployment_mode else "postgres_rehearsal_target_required")
     user = env.get("CRM_POSTGRES_USER")
     password = env.get("CRM_POSTGRES_PASSWORD")
+    if deployment_mode and (user != DEPLOYMENT_USER or not password):
+        raise ProfileError("postgres_deployment_credentials_required")
     if user is not None or password is not None:
         if not user or not password or url.username is not None or url.password is not None:
             raise ProfileError("postgres_credentials_invalid")
@@ -117,9 +147,10 @@ def load(env):
                    has_schema_privilege(current_user, 'rinovaplus_crm', 'CREATE')
                    FROM pg_catalog.pg_roles WHERE rolname=current_user"""
             )
-            target, version, user, privileged, create_database, create_schema = c.fetchone()
-            if target != DATABASE or version < 160000 or privileged or create_database or create_schema:
-                raise ProfileError("postgres_rehearsal_identity_or_privilege")
+            target, version, actor, privileged, create_database, create_schema = c.fetchone()
+            if (target != database or version < 160000 or privileged or create_database or create_schema
+                    or (deployment_mode and actor != DEPLOYMENT_USER)):
+                raise ProfileError("postgres_identity_or_privilege")
             c.execute(
                 """SELECT c.relname FROM pg_catalog.pg_class c
                    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
@@ -129,7 +160,7 @@ def load(env):
                 raise ProfileError("postgres_crm_catalog_drift")
             c.execute("SELECT archive_sha256 FROM rinova_migration.source_snapshot")
             if c.fetchall() != [(digest,)]:
-                raise ProfileError("postgres_rehearsal_snapshot_mismatch")
+                raise ProfileError("postgres_snapshot_mismatch")
             c.execute(
                 """SELECT institutionid,contractversion FROM rinovaplus_crm.crmcanalinstitucionalcontexto
                    WHERE contextid=1"""
@@ -138,22 +169,23 @@ def load(env):
             if len(context) != 1 or context[0][1] != "CBN-channels-parity-v1":
                 raise ProfileError("postgres_institution_context_required")
     except Error:
-        raise ProfileError("postgres_rehearsal_connection_or_permissions") from None
+        raise ProfileError("postgres_connection_or_permissions") from None
     institution = str(UUID(context[0][0]))
-    binding = hashlib.sha256((DATABASE + ":" + digest + ":" + institution).encode()).hexdigest()
+    binding = hashlib.sha256((database + ":" + digest + ":" + institution).encode()).hexdigest()
     session_key = hmac.digest(key, ("rinova-pg-session:" + binding).encode(), "sha256")
     return SimpleNamespace(
         postgres_profile=True,
+        postgres_deployment=deployment_mode,
         postgres_connect=lambda: open_connection(dsn),
-        postgres_user=user,
+        postgres_user=actor,
         postgres_columns=columns,
-        connection={"database": DATABASE},
-        public_origin=None,
-        public_host=None,
+        connection={"database": database},
+        public_origin=origin,
+        public_host=urlsplit(origin).netloc if origin else None,
         review={"secrets_key": encoded, "session_token": b64encode(session_key).decode()},
         ticket={
-            "version": PROFILE, "scope": "postgres_rehearsal",
-            "identity": {"database": DATABASE}, "context": [[1, institution, context[0][1]]],
+            "version": PROFILE, "scope": "postgres_deployment" if deployment_mode else "postgres_rehearsal",
+            "identity": {"database": database}, "context": [[1, institution, context[0][1]]],
             "table_map": mapping,
         },
     )
@@ -174,8 +206,8 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
                 "SELECT current_database(), current_user, institutionid"
                 " FROM rinovaplus_crm.crmcanalinstitucionalcontexto WHERE contextid=1"
             )
-            if raw.fetchone() != (DATABASE, settings.postgres_user, settings.ticket["context"][0][1]):
-                raise ProfileError("postgres_rehearsal_identity_changed")
+            if raw.fetchone() != (settings.connection["database"], settings.postgres_user, settings.ticket["context"][0][1]):
+                raise ProfileError("postgres_identity_changed")
             # Existing security and idempotency paths expect serialized writes.
             # Keep the lock within this PostgreSQL database and institution.
             lock = "pg_advisory_xact_lock" if write else "pg_advisory_xact_lock_shared"
@@ -190,7 +222,7 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
                 authorize(cursor, settings, authority, permission or authority["permission"], recent=recent)
             yield cursor
     except (Error, ProfileError, ValueError) as error:
-        LOG.warning("postgres_rehearsal_storage_error state=%s", getattr(error, "pgcode", None) or type(error).__name__)
+        LOG.warning("postgres_storage_error state=%s", getattr(error, "pgcode", None) or type(error).__name__)
         raise HTTPException(503, "general_storage_unavailable") from None
 
 
