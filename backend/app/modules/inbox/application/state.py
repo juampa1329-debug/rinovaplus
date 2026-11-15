@@ -6,6 +6,10 @@ from fastapi import HTTPException
 
 
 def installed(cursor):
+    if getattr(cursor, "dialect", None) == "postgresql":
+        return bool(cursor.native(
+            "SELECT to_regclass('rinovaplus_crm.crmconversacioncontrol')"
+        ).fetchval())
     return bool(
         cursor.execute(
             "SELECT OBJECT_ID(N'crm_channels.ConversationControl')"
@@ -16,6 +20,13 @@ def installed(cursor):
 def control(cursor, conversation_id):
     if not installed(cursor):
         raise HTTPException(503, "inbox_extension_required")
+    if getattr(cursor, "dialect", None) == "postgresql":
+        cursor.native(
+            "INSERT INTO rinovaplus_crm.crmconversacioncontrol(conversationid)"
+            " VALUES(%s) ON CONFLICT (conversationid) DO NOTHING",
+            conversation_id,
+        )
+        return
     cursor.execute(
         "IF NOT EXISTS(SELECT 1 FROM crm_channels.ConversationControl WHERE ConversationId=?) "
         "INSERT crm_channels.ConversationControl(ConversationId) VALUES(?)",

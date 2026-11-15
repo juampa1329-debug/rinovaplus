@@ -259,6 +259,14 @@ def verify(cursor, settings):
 def transaction(
     settings, write=False, *, permission=None, anonymous=False, recent=False
 ):
+    if getattr(settings, "postgres_profile", False):
+        from app.institutional.postgres_rehearsal import transaction as postgres_transaction
+
+        with postgres_transaction(
+            settings, write, permission=permission, anonymous=anonymous, recent=recent
+        ) as cursor:
+            yield cursor
+        return
     if settings.ticket.get("version") in {
         "cbn-institutional-spanish-p2-v1",
         "cbn-institutional-spanish-p3-v1",

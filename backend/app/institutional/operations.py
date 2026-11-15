@@ -36,12 +36,12 @@ BACKUP_MAX_AGE = 86400
 class Pulse:
     """A stage succeeds only after its consumer returns, including a no-work poll."""
 
-    def __init__(self, clock=time.monotonic):
+    def __init__(self, clock=time.monotonic, *, stages=STAGES):
         self.clock = clock
         self.lock = threading.Lock()
         self.started = clock()
         self.values = {
-            stage: {"success": None, "failure": None, "failures": 0} for stage in STAGES
+            stage: {"success": None, "failure": None, "failures": 0} for stage in stages
         }
 
     def observe(self, stage, action):
@@ -242,6 +242,10 @@ def worker_status(app):
 
 def queues(c, settings):
     """Global grouped counts, never the truncated administrative activity list."""
+    if getattr(settings, "postgres_profile", False):
+        from app.institutional.postgres_queue import counts
+
+        return counts(c, institution(settings))
     definitions = {
         "webhook_receipts": ("crm_channels2.WebhookReceipt", "Status"),
         "webhook_events": ("crm_channels2.WebhookEvent", "Status"),
@@ -271,6 +275,9 @@ def queues(c, settings):
 
 
 def install(app, settings):
+    postgres = getattr(settings, "postgres_profile", False)
+    scope = "postgres_rehearsal" if postgres else "local"
+
     @app.get("/api/institution/operations")
     def status(request: Request):
         # A separate transaction revalidates SQL identity, model, journals and ACL.
@@ -279,16 +286,16 @@ def install(app, settings):
             counts = queues(c, settings)
         workers = worker_status(app)
         return {
-            "scope": "local",
+            "scope": scope,
             "sql": {
                 "state": "verified",
-                "engine": 2019,
-                "tables": 185,
+                "engine": 16 if postgres else 2019,
+                "tables": len(settings.ticket["table_map"]) if postgres else 185,
                 "academic_access": False,
             },
             "workers": workers,
             "queues": counts,
-            "backup": backup_status(settings),
+            "backup": {"state": "rehearsal"} if postgres else backup_status(settings),
             "local_ready": workers["ready"],
             "online": {"state": "pending", "phase": "P12"},
             "observed_at": time.time(),
@@ -303,6 +310,6 @@ def install(app, settings):
         except Exception:
             ok = False
         return JSONResponse(
-            {"status": "ready" if ok else "unavailable", "scope": "local"},
+            {"status": "ready" if ok else "unavailable", "scope": scope},
             200 if ok else 503,
         )

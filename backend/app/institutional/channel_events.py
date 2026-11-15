@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from fastapi import HTTPException
 
+from app.institutional import postgres_queue
 from app.institutional.channel_ingress import body_owner, strict_json
 from app.institutional.channel_operations import configuration
 from app.institutional.channel_text import sql_text
@@ -580,7 +581,8 @@ class EventWorker:
 
     def once(self):
         with transaction(self.settings, True, anonymous=True) as c:
-            receipt = one(
+            inst = institution(self.settings)
+            receipt = postgres_queue.receipt(c, inst) if getattr(self.settings, "postgres_profile", False) else one(
                 c,
                 (
                     "SELECT TOP(1) r.*,e.Provider FROM crm_"
@@ -592,7 +594,7 @@ class EventWorker:
                     "ation='verified' ORDER BY r.ReceivedAt"
                     ",r.ReceiptId"
                 ),
-                institution(self.settings),
+                inst,
             )
             if not receipt:
                 return False
@@ -727,7 +729,8 @@ class EventWorker:
             config = configuration(c, self.settings)
             if not config["IngressEnabled"] or not config["ModuleEnabled"]:
                 return False
-            value = one(
+            inst = institution(self.settings)
+            value = postgres_queue.event(c, inst) if getattr(self.settings, "postgres_profile", False) else one(
                 c,
                 (
                     "SELECT TOP(1) ev.* FROM crm_channels2."
@@ -743,7 +746,7 @@ class EventWorker:
                     " AND ep.IsActive=1 ORDER BY ev.Created"
                     "At,ev.EventId"
                 ),
-                institution(self.settings),
+                inst,
             )
             if not value:
                 return False

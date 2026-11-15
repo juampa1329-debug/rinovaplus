@@ -11,13 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 class Workers:
-    def __init__(self, settings):
+    def __init__(self, settings, *, transport=None, media_downloader=None):
         self.settings = settings
         self.stop_event = threading.Event()
         self.thread = None
         from app.institutional.operations import Pulse
 
-        self.pulse = Pulse()
+        if getattr(settings, "postgres_profile", False):
+            from app.institutional.postgres_rehearsal import WORKER_STAGES, network_disabled
+
+            self.transport = transport or network_disabled
+            self.media_downloader = media_downloader or network_disabled
+            self.pulse = Pulse(stages=WORKER_STAGES)
+        else:
+            self.transport = transport
+            self.media_downloader = media_downloader
+            self.pulse = Pulse()
 
     def start(self):
         if self.thread is not None:
@@ -36,8 +45,9 @@ class Workers:
         from app.institutional.channel_media import MediaWorker
         from app.institutional.channel_recovery import maintenance
 
-        events, dispatcher = EventWorker(self.settings), Dispatcher(self.settings)
-        media = MediaWorker(self.settings)
+        events = EventWorker(self.settings)
+        dispatcher = Dispatcher(self.settings, self.transport)
+        media = MediaWorker(self.settings, self.media_downloader)
         failures = 0
         while not self.stop_event.is_set():
             try:
@@ -98,10 +108,10 @@ class Workers:
             self.stop_event.wait(min(30, 3 + failures * 2))
 
 
-def lifespan(settings):
+def lifespan(settings, *, transport=None, media_downloader=None):
     @asynccontextmanager
     async def running(app):
-        workers = Workers(settings)
+        workers = Workers(settings, transport=transport, media_downloader=media_downloader)
         app.state.channel_workers = workers
         workers.start()
         try:

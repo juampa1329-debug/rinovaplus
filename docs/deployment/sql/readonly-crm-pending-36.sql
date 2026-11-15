@@ -1,13 +1,40 @@
--- Review and run as DBA connected to DBSIIE_2025A.
--- Create a fresh server login named rinovaplus_pg_reader separately in SSMS.
--- This script creates only its database user and grants SELECT on these CRM tables.
+-- Abrir este archivo completo en SSMS y seleccionar DBSIIE_2025A en la barra superior.
+-- Ejecutar con F5 en una ventana nueva. El login rinovaplus_pg_reader debe existir.
+GO
+
+IF @@TRANCOUNT <> 0
+BEGIN
+    RAISERROR ('Open a new query without an active transaction', 16, 1);
+    RETURN;
+END;
+
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 
 IF DB_NAME() <> N'DBSIIE_2025A'
-    THROW 51000, 'Connect to DBSIIE_2025A first', 1;
-IF SUSER_ID(N'rinovaplus_pg_reader') IS NULL OR USER_ID(N'rinovaplus_pg_reader') IS NOT NULL
-    THROW 51001, 'Use a new dedicated server login without an existing database user', 1;
+    THROW 51000, 'Select DBSIIE_2025A in the database selector and run this file again', 1;
+IF SUSER_ID(N'rinovaplus_pg_reader') IS NULL
+    THROW 51001, 'Create the SQL Server login rinovaplus_pg_reader under Security > Logins on this instance first', 1;
+IF NOT EXISTS (
+    SELECT 1 FROM sys.server_principals
+    WHERE name = N'rinovaplus_pg_reader' AND type = 'S' AND is_disabled = 0
+)
+    THROW 51006, 'The SQL Server login must be an enabled SQL login', 1;
+IF USER_ID(N'rinovaplus_pg_reader') IS NOT NULL AND NOT EXISTS (
+    SELECT 1 FROM sys.database_principals
+    WHERE name = N'rinovaplus_pg_reader' AND type = 'S'
+      AND sid = SUSER_SID(N'rinovaplus_pg_reader')
+)
+    THROW 51007, 'The existing database user is mapped to a different login. Ask the DBA to review it', 1;
+IF EXISTS (
+    SELECT 1 FROM sys.database_principals
+    WHERE sid = SUSER_SID(N'rinovaplus_pg_reader') AND name <> N'rinovaplus_pg_reader'
+)
+    THROW 51008, 'The login is already linked to a different database user. Ask the DBA to review it', 1;
+IF EXISTS (
+    SELECT 1 FROM sys.database_role_members WHERE member_principal_id = USER_ID(N'rinovaplus_pg_reader')
+)
+    THROW 51009, 'Remove the dedicated reader from database roles before granting per-table read access', 1;
 IF ISNULL(IS_SRVROLEMEMBER(N'sysadmin', N'rinovaplus_pg_reader'), 1) <> 0
 OR EXISTS (SELECT 1 FROM sys.server_role_members WHERE member_principal_id = SUSER_ID(N'rinovaplus_pg_reader'))
 OR EXISTS (
@@ -16,8 +43,8 @@ OR EXISTS (
 )
     THROW 51002, 'Use a reader without server roles or extra server permissions', 1;
 
-DECLARE @scope table (name sysname PRIMARY KEY);
-INSERT @scope VALUES
+DECLARE @RinovaReadScope TABLE (name sysname PRIMARY KEY);
+INSERT @RinovaReadScope VALUES
     (N'CRMAdmision'),
     (N'CRMAdmisionOperacion'),
     (N'CRMAdmisionSeguimiento'),
@@ -55,29 +82,34 @@ INSERT @scope VALUES
     (N'CRMRespuestaTrabajo'),
     (N'CRMUnificacionOperacion');
 
-IF (SELECT COUNT(*) FROM @scope) <> 36
+IF (SELECT COUNT(*) FROM @RinovaReadScope) <> 36
     THROW 51003, 'Unexpected CRM table scope', 1;
-IF EXISTS (SELECT 1 FROM @scope WHERE OBJECT_ID(N'dbo.' + QUOTENAME(name), N'U') IS NULL)
+IF EXISTS (SELECT 1 FROM @RinovaReadScope WHERE OBJECT_ID(N'dbo.' + QUOTENAME(name), N'U') IS NULL)
+BEGIN
+    SELECT name AS tabla_faltante FROM @RinovaReadScope
+    WHERE OBJECT_ID(N'dbo.' + QUOTENAME(name), N'U') IS NULL ORDER BY name;
     THROW 51004, 'One or more reviewed CRM tables is missing', 1;
+END;
 
-DECLARE @objects table (qualified nvarchar(520) PRIMARY KEY, expected_read bit NOT NULL);
-INSERT @objects
+DECLARE @RinovaReadObjects TABLE (qualified nvarchar(520) NOT NULL, expected_read bit NOT NULL);
+INSERT @RinovaReadObjects
 SELECT QUOTENAME(s.name) + N'.' + QUOTENAME(o.name),
        CASE WHEN s.name = N'dbo' AND a.name IS NOT NULL THEN 1 ELSE 0 END
 FROM sys.objects o JOIN sys.schemas s ON s.schema_id = o.schema_id
-LEFT JOIN @scope a ON o.name = a.name
+LEFT JOIN @RinovaReadScope a ON o.name = a.name
 WHERE o.is_ms_shipped = 0 AND o.parent_object_id = 0;
 
-DECLARE @columns table (qualified nvarchar(520) NOT NULL, name sysname NOT NULL, expected_read bit NOT NULL);
-INSERT @columns
+DECLARE @RinovaReadColumns TABLE (qualified nvarchar(520) NOT NULL, name sysname NOT NULL, expected_read bit NOT NULL);
+INSERT @RinovaReadColumns
 SELECT o.qualified, c.name, o.expected_read
-FROM @objects o JOIN sys.columns c ON c.object_id = OBJECT_ID(o.qualified)
+FROM @RinovaReadObjects o JOIN sys.columns c ON c.object_id = OBJECT_ID(o.qualified)
 WHERE OBJECTPROPERTY(c.object_id, 'IsUserTable') = 1 OR OBJECTPROPERTY(c.object_id, 'IsView') = 1;
 
-DECLARE @impersonated bit = 0;
+DECLARE @RinovaReadContext bit = 0;
 BEGIN TRY
     BEGIN TRANSACTION;
-    CREATE USER [rinovaplus_pg_reader] FOR LOGIN [rinovaplus_pg_reader] WITH DEFAULT_SCHEMA = [dbo];
+    IF USER_ID(N'rinovaplus_pg_reader') IS NULL
+        CREATE USER [rinovaplus_pg_reader] FOR LOGIN [rinovaplus_pg_reader] WITH DEFAULT_SCHEMA = [dbo];
     GRANT CONNECT TO [rinovaplus_pg_reader];
     GRANT SELECT ON OBJECT::[dbo].[CRMAdmision] TO [rinovaplus_pg_reader];
     GRANT SELECT ON OBJECT::[dbo].[CRMAdmisionOperacion] TO [rinovaplus_pg_reader];
@@ -117,14 +149,14 @@ BEGIN TRY
     GRANT SELECT ON OBJECT::[dbo].[CRMUnificacionOperacion] TO [rinovaplus_pg_reader];
 
     EXECUTE AS USER = N'rinovaplus_pg_reader';
-    SET @impersonated = 1;
+    SET @RinovaReadContext = 1;
     IF EXISTS (
         SELECT 1 FROM sys.fn_my_permissions(NULL, 'DATABASE')
         WHERE permission_name NOT IN (N'CONNECT', N'VIEW ANY COLUMN ENCRYPTION KEY DEFINITION',
                                       N'VIEW ANY COLUMN MASTER KEY DEFINITION')
     )
     OR EXISTS (
-        SELECT 1 FROM @objects o
+        SELECT 1 FROM @RinovaReadObjects o
         WHERE ISNULL(HAS_PERMS_BY_NAME(o.qualified, 'OBJECT', 'SELECT'), 0) <> o.expected_read
            OR HAS_PERMS_BY_NAME(o.qualified, 'OBJECT', 'INSERT') = 1
            OR HAS_PERMS_BY_NAME(o.qualified, 'OBJECT', 'UPDATE') = 1
@@ -133,17 +165,21 @@ BEGIN TRY
            OR HAS_PERMS_BY_NAME(o.qualified, 'OBJECT', 'ALTER') = 1
     )
     OR EXISTS (
-        SELECT 1 FROM @columns c
+        SELECT 1 FROM @RinovaReadColumns c
         WHERE ISNULL(HAS_PERMS_BY_NAME(c.qualified, 'OBJECT', 'SELECT', c.name, 'COLUMN'), 0) <> c.expected_read
            OR HAS_PERMS_BY_NAME(c.qualified, 'OBJECT', 'UPDATE', c.name, 'COLUMN') = 1
     )
         THROW 51005, 'Unexpected permissions, including permissions inherited from public', 1;
     REVERT;
-    SET @impersonated = 0;
+    SET @RinovaReadContext = 0;
     COMMIT;
+    SELECT DB_NAME() AS base_de_datos, N'rinovaplus_pg_reader' AS usuario_lector,
+           COUNT(*) AS tablas_crm_con_select
+    FROM @RinovaReadScope;
 END TRY
 BEGIN CATCH
-    IF @impersonated = 1 REVERT;
+    IF @RinovaReadContext = 1 REVERT;
     IF XACT_STATE() <> 0 ROLLBACK;
     THROW;
 END CATCH;
+GO

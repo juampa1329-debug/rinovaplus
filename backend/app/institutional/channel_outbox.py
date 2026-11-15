@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from fastapi import HTTPException
 
+from app.institutional import postgres_queue
 from app.institutional.channel_operations import account, configuration
 from app.institutional.channel_provider import provider_account
 from app.institutional.db import bound_hash, institution, one, rows, uid
@@ -415,34 +416,18 @@ def reserve(c, settings, job):
         if policy["DailyOutboundQuota"] <= 0 or own >= policy["DailyOutboundQuota"]:
             raise HTTPException(429, "tiktok_daily_outbound_quota")
     identity = str(uuid4())
-    c.execute(
-        (
-            "IF NOT EXISTS(SELECT 1 FROM crm_channe"
-            "ls2.QuotaBucket WHERE InstitutionId=? "
-            "AND IntegrationId=? AND DayUtc=CONVERT"
-            "(date,SYSUTCDATETIME()) AND Action='ou"
-            "tbound') INSERT crm_channels2.QuotaBuc"
-            "ket(InstitutionId,IntegrationId,DayUtc"
-            ",Action,Reserved,Committed,UpdatedAt) "
-            "VALUES(?,?,CONVERT(date,SYSUTCDATETIME"
-            "()),'outbound',0,0,SYSUTCDATETIME())"
-        ),
-        inst,
-        job["IntegrationId"],
-        inst,
-        job["IntegrationId"],
-    )
-    c.execute(
-        (
-            "UPDATE crm_channels2.QuotaBucket SET R"
-            "eserved=Reserved+1,UpdatedAt=SYSUTCDAT"
-            "ETIME() WHERE InstitutionId=? AND Inte"
-            "grationId=? AND DayUtc=CONVERT(date,SY"
-            "SUTCDATETIME()) AND Action='outbound'"
-        ),
-        inst,
-        job["IntegrationId"],
-    )
+    if getattr(settings, "postgres_profile", False):
+        c.native(
+            """INSERT INTO rinovaplus_crm.crmcanalinstitucionalcuota
+                  AS bucket (institutionid,integrationid,dayutc,action,reserved,committed,updatedat)
+               VALUES(%s,%s,(statement_timestamp() AT TIME ZONE 'UTC')::date,
+                      'outbound',1,0,statement_timestamp() AT TIME ZONE 'UTC')
+               ON CONFLICT (institutionid,integrationid,dayutc,action)
+               DO UPDATE SET reserved=bucket.reserved+1,updatedat=excluded.updatedat""",
+            inst, job["IntegrationId"],
+        )
+    else:
+        increment_reservation(c, inst, job["IntegrationId"])
     c.execute(
         (
             "INSERT crm_channels2.QuotaReservation("
@@ -459,6 +444,37 @@ def reserve(c, settings, job):
         job["OperationId"],
     )
     return identity
+
+
+def increment_reservation(c, institution, integration):
+    c.execute(
+        (
+            "IF NOT EXISTS(SELECT 1 FROM crm_channe"
+            "ls2.QuotaBucket WHERE InstitutionId=? "
+            "AND IntegrationId=? AND DayUtc=CONVERT"
+            "(date,SYSUTCDATETIME()) AND Action='ou"
+            "tbound') INSERT crm_channels2.QuotaBuc"
+            "ket(InstitutionId,IntegrationId,DayUtc"
+            ",Action,Reserved,Committed,UpdatedAt) "
+            "VALUES(?,?,CONVERT(date,SYSUTCDATETIME"
+            "()),'outbound',0,0,SYSUTCDATETIME())"
+        ),
+        institution,
+        integration,
+        institution,
+        integration,
+    )
+    c.execute(
+        (
+            "UPDATE crm_channels2.QuotaBucket SET R"
+            "eserved=Reserved+1,UpdatedAt=SYSUTCDAT"
+            "ETIME() WHERE InstitutionId=? AND Inte"
+            "grationId=? AND DayUtc=CONVERT(date,SY"
+            "SUTCDATETIME()) AND Action='outbound'"
+        ),
+        institution,
+        integration,
+    )
 
 
 class Dispatcher:
@@ -507,10 +523,13 @@ class Dispatcher:
 
     def once(self):
         inst = institution(self.settings)
+        postgres = getattr(self.settings, "postgres_profile", False)
         with transaction(self.settings, True, anonymous=True) as c:
             # A crashed POST is fenced as uncertain. Never reset it to queued
             # automatically.
-            expired = rows(
+            if postgres:
+                postgres_queue.expire(c, inst)
+            expired = [] if postgres else rows(
                 c,
                 (
                     "SELECT QueueId,OperationId,Reservation"
@@ -555,7 +574,7 @@ class Dispatcher:
             config = configuration(c, self.settings)
             if not config["OutboundEnabled"] or not config["ModuleEnabled"]:
                 return False
-            job = one(
+            job = postgres_queue.outbound(c, inst) if postgres else one(
                 c,
                 (
                     "SELECT TOP(1) * FROM crm_channels2.Sen"
@@ -587,43 +606,11 @@ class Dispatcher:
                 )
                 return True
             lease = str(uuid4())
-            c.execute(
-                (
-                    "UPDATE crm_channels2.SendJob SET State"
-                    "='sending',LeaseId=?,LeaseUntil=DATEAD"
-                    "D(second,60,SYSUTCDATETIME()),LeaseVer"
-                    "sion=LeaseVersion+1,Attempts=Attempts+"
-                    "1,ReservationId=? WHERE InstitutionId="
-                    "? AND QueueId=? AND State='queued'"
-                ),
-                lease,
-                reservation,
-                inst,
-                job["QueueId"],
-            )
-            c.execute(
-                (
-                    "UPDATE crm_channels2.ProviderOperation"
-                    " SET Status='running',Attempts=Attempt"
-                    "s+1,LeaseId=?,LeaseUntil=DATEADD(secon"
-                    "d,60,SYSUTCDATETIME()),LeaseVersion=Le"
-                    "aseVersion+1 WHERE InstitutionId=? AND"
-                    " OperationId=?"
-                ),
-                lease,
-                inst,
-                job["OperationId"],
-            )
-            if job["MessageId"]:
-                c.execute(
-                    (
-                        "UPDATE crm_channels2.MessageRoute SET "
-                        "StartedAt=SYSUTCDATETIME() WHERE Insti"
-                        "tutionId=? AND MessageId=?"
-                    ),
-                    inst,
-                    job["MessageId"],
-                )
+            if postgres:
+                if not postgres_queue.lease(c, inst, job["QueueId"], lease, reservation):
+                    raise HTTPException(409, "send_lease_lost")
+            else:
+                mark_sending(c, inst, job, lease, reservation)
         # Recheck just before the provider effect; authority/account changes fence the
         # intent.
         try:
@@ -780,7 +767,18 @@ class Dispatcher:
                 inst,
                 reservation,
             )
-            if state != "uncertain":
+            if state != "uncertain" and postgres:
+                c.native(
+                    """UPDATE rinovaplus_crm.crmcanalinstitucionalcuota b
+                       SET reserved=b.reserved-1,committed=b.committed+%s,
+                           updatedat=statement_timestamp() AT TIME ZONE 'UTC'
+                       FROM rinovaplus_crm.crmcanalinstitucionalcuotareserva r
+                       WHERE r.institutionid=b.institutionid
+                         AND r.integrationid=b.integrationid AND r.dayutc=b.dayutc
+                         AND r.action=b.action AND r.institutionid=%s AND r.reservationid=%s""",
+                    int(state == "accepted"), inst, reservation,
+                )
+            elif state != "uncertain":
                 c.execute(
                     (
                         "UPDATE b SET Reserved=Reserved-1,Commi"
@@ -811,3 +809,24 @@ class Dispatcher:
                 ("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
             )
         return True
+
+
+def mark_sending(c, institution, job, lease, reservation):
+    c.execute(
+        "UPDATE crm_channels2.SendJob SET State='sending',LeaseId=?,"
+        "LeaseUntil=DATEADD(second,60,SYSUTCDATETIME()),LeaseVersion=LeaseVersion+1,"
+        "Attempts=Attempts+1,ReservationId=? WHERE InstitutionId=? AND QueueId=? AND State='queued'",
+        lease, reservation, institution, job["QueueId"],
+    )
+    c.execute(
+        "UPDATE crm_channels2.ProviderOperation SET Status='running',Attempts=Attempts+1,"
+        "LeaseId=?,LeaseUntil=DATEADD(second,60,SYSUTCDATETIME()),LeaseVersion=LeaseVersion+1"
+        " WHERE InstitutionId=? AND OperationId=?",
+        lease, institution, job["OperationId"],
+    )
+    if job["MessageId"]:
+        c.execute(
+            "UPDATE crm_channels2.MessageRoute SET StartedAt=SYSUTCDATETIME()"
+            " WHERE InstitutionId=? AND MessageId=?",
+            institution, job["MessageId"],
+        )

@@ -10,6 +10,7 @@ from fastapi import HTTPException, Request
 from fastapi.responses import FileResponse
 from pydantic import Field
 
+from app.institutional import postgres_queue
 from app.institutional.auth import authorize
 from app.institutional.channel_operations import account, configuration
 from app.institutional.channel_provider import provider_account
@@ -304,7 +305,8 @@ class MediaWorker:
             config = configuration(c, self.settings)
             if not config["IngressEnabled"] or not config["ModuleEnabled"]:
                 return False
-            value = one(
+            inst = institution(self.settings)
+            value = postgres_queue.media(c, inst) if getattr(self.settings, "postgres_profile", False) else one(
                 c,
                 (
                     "SELECT TOP(1) m.* FROM crm_channels4.MediaAsset m JOIN crm_c"
@@ -314,7 +316,7 @@ class MediaWorker:
                     "tedStatus='connected' AND i.VerifiedStatus='verified' ORDER "
                     "BY m.CreatedAt,m.MediaId"
                 ),
-                institution(self.settings),
+                inst,
             )
             if not value:
                 return False

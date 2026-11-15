@@ -85,11 +85,13 @@ def core_permission(path, method):
 
 
 def create_app(
-    settings, workspace=None, agent_gateway_factory=None, broadcast_gateway=None
+    settings, workspace=None, agent_gateway_factory=None, broadcast_gateway=None,
+    *, channel_transport=None, media_downloader=None,
 ):
     app = FastAPI(title="CRM CBN", docs_url=None, redoc_url=None, openapi_url=None)
     protected_routes = []
     app.state.settings = SimpleNamespace(mode="local_foundation")
+    postgres = getattr(settings, "postgres_profile", False)
     is_operational = getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-channels-p4-v1",
         "cbn-institutional-agents-p5-v1",
@@ -101,7 +103,9 @@ def create_app(
     if is_operational:
         from app.institutional.channel_workers import lifespan
 
-        app.router.lifespan_context = lifespan(settings)
+        app.router.lifespan_context = lifespan(
+            settings, transport=channel_transport, media_downloader=media_downloader
+        )
     is_workspace = getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-spanish-p3-v1",
         "cbn-institutional-channels-p4-v1",
@@ -116,7 +120,10 @@ def create_app(
 
         workspace = WorkspaceV3(settings)
     if is_operational and workspace is None:
-        from app.institutional.channel_workspace import Workspace as WorkspaceV4
+        if postgres:
+            from app.institutional.postgres_workspace import Workspace as WorkspaceV4
+        else:
+            from app.institutional.channel_workspace import Workspace as WorkspaceV4
 
         workspace = WorkspaceV4(settings)
     app.state.sql_workspace = workspace or Workspace(settings)
@@ -141,6 +148,10 @@ def create_app(
         origin = request.headers.get("origin")
         path = request.url.path
         loopback = request.client and request.client.host in {"127.0.0.1", "::1"}
+        if postgres and path.startswith("/hooks/") and not (
+            loopback and host in {"127.0.0.1:8004", "127.0.0.1:4178", "localhost:4178"}
+        ):
+            return JSONResponse({"detail": "local_access_required"}, 403)
         if public_host and not (
             loopback and (
                 host == public_host
@@ -326,7 +337,7 @@ def create_app(
 
     @app.post("/api/institution/auth/bootstrap")
     def bootstrap(body: models.Bootstrap):
-        if getattr(settings, "deployment_transport", None):
+        if postgres or getattr(settings, "deployment_transport", None):
             raise HTTPException(404, "resource_not_found")
         return signed(identity.bootstrap(body))
 
@@ -508,7 +519,9 @@ def create_app(
     if is_workspace:
         from app.institutional.workspace import install as install_workspace
 
-        if is_operational:
+        if postgres:
+            install_workspace(app, settings, app.state.sql_workspace)
+        elif is_operational:
             from app.institutional.channel_workspace import Workspace as WorkspaceV4
 
             install_workspace(app, settings, WorkspaceV4(settings))
@@ -562,7 +575,7 @@ def create_app(
         from app.institutional.learning_api import install as install_learning
         install_learning(app,settings)
 
-    if getattr(settings, "ticket", {}).get("version") == "cbn-institutional-operations-p11-v1":
+    if postgres or getattr(settings, "ticket", {}).get("version") == "cbn-institutional-operations-p11-v1":
         from app.institutional.operations import install as install_operations
 
         install_operations(app, settings)
@@ -577,15 +590,27 @@ def create_app(
 
     # Public OpenAPI generation resolves included routers as well as direct
     # handlers. Keep only fixed method/path patterns; never log raw object IDs.
+    if postgres:
+        from app.institutional.postgres_rehearsal import REHEARSAL_ROUTES
+        routes = REHEARSAL_ROUTES.items()
+    else:
+        routes = app.openapi()["paths"].items()
     protected_routes.extend(
         (path, set(methods), compile_path(path)[0])
-        for path, methods in app.openapi()["paths"].items()
-        if path != "/api/{path}"
+        for path, methods in routes if path != "/api/{path}"
     )
     return app
 
 
 def application():
+    if "CRM_POSTGRES_URL" in os.environ:
+        from app.institutional.postgres_rehearsal import ProfileError, apply_environment
+
+        try:
+            return create_app(apply_environment())
+        except ProfileError as error:
+            logging.getLogger(__name__).error("%s", error)
+            raise SystemExit(1) from None
     try:
         transport = deployment.transport_from_env(os.environ)
         if transport:

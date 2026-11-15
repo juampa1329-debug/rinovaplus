@@ -23,7 +23,8 @@ flowchart LR
     A -->|Huella y filas verificadas| P[PostgreSQL · rinova_migration]
     P --> N[Esquema tipado de RinovaPlus]
     N --> Q[Consultas y colas migradas]
-    Q -.-> B[Backend PostgreSQL]
+    Q --> R[Backend y cinco etapas de Canales · copia local]
+    R -.-> B[Validación y corte del backend en Coolify]
     S --> E[SIIE · operación académica]
 ```
 
@@ -45,15 +46,21 @@ Aplicado en el destino privado `rinovaplus` a partir del ZIP con huella comproba
 
 Los UUID, decimales y binarios conservan sus tipos. Las fechas de SQL Server con siete decimales quedan a la precisión de microsegundos de PostgreSQL y el ZIP conserva los valores de origen. El equivalente de `rowversion` conserva los tokens importados y usa una secuencia para las actualizaciones. Para los textos se representan las reglas de comparación con ICU según el perfil de origen. La paridad de ordenación y búsquedas completas se comprobará en el backend.
 
-La [migración de consultas y colas](../../backend/migrations/postgresql/001_copy_queries_and_queues.sql) incluye paginación de contactos y mensajes, conteos de ocho colas, selección de recepción, eventos, medios y envíos por `FOR UPDATE SKIP LOCKED`, reserva de envío y paso a incierto tras vencer una concesión. Son rutinas para la copia y sus pruebas. Los workers deberán aplicar las comprobaciones de cuenta, permisos, reserva y despacho en su integración con PostgreSQL.
+La [migración de consultas y colas](../../backend/migrations/postgresql/001_copy_queries_and_queues.sql) incluye paginación de contactos y mensajes, conteos de ocho colas, selección de recepción, eventos, medios y envíos por `FOR UPDATE SKIP LOCKED`, reserva de envío y paso a incierto tras vencer una concesión. El perfil PostgreSQL conecta estas rutinas a los workers de Canales de la copia.
 
 El [ensayo SQL](../../backend/migrations/postgresql/verify_copy_rollback.sql) validó los conteos y ejecutó las consultas con registros sintéticos. Comprobó la reserva inválida, la toma repetida, el cambio de `rowversion`, el vencimiento sin devolver el envío a pendientes y la transición conjunta de operación y reserva. Las filas sintéticas se revirtieron. En un contenedor desechable sin red, dos sesiones ejecutaron la función instalada de toma de envíos. La segunda tomó la fila siguiente mientras la primera mantenía el bloqueo. Se ejecutaron nueve pruebas unitarias del generador, el cargador y la lista de accesos.
 
 ## Acceso de lectura para las 36 tablas
 
-1. El DBA crea en SQL Server un login nuevo `rinovaplus_pg_reader` con contraseña custodiada y sin roles de servidor. Conectado a `DBSIIE_2025A`, revisa y ejecuta [readonly-crm-pending-36.sql](sql/readonly-crm-pending-36.sql). El script crea el usuario en esa base y concede `SELECT` en las 36 tablas CRM enumeradas. Comprueba permisos efectivos por objeto y columna y revierte si detecta permisos inesperados.
+1. El DBA crea en SQL Server un login nuevo `rinovaplus_pg_reader` con contraseña custodiada y sin roles de servidor. En SSMS abre [readonly-crm-pending-36.sql](sql/readonly-crm-pending-36.sql) como archivo, elige `DBSIIE_2025A` en el selector de base y presiona **F5** para ejecutar el archivo completo. El script verifica la base seleccionada, crea o reutiliza el usuario dedicado, concede `SELECT` en las 36 tablas CRM y revierte ante permisos efectivos inesperados. Al completar muestra `tablas_crm_con_select = 36`.
 2. En un recurso temporal de diagnóstico con la misma ruta de red a SQL Server, configurar las variables de ejecución `CRM_SQL_URL` con el mismo servidor, `CRM_SQL_DATABASE=DBSIIE_2025A`, `CRM_SQL_USER=rinovaplus_pg_reader` y `CRM_SQL_PASSWORD` como secreto. Conservar las variables del backend activo. Avisar cuando el recurso tenga acceso para consultar conteos exactos y exportar las filas que existan.
 3. Después de verificar los datos, el DBA puede retirar el acceso temporal. Un export privado del DBA limitado a las mismas tablas también sirve.
+
+## Backend y workers en la copia PostgreSQL
+
+El perfil se activa con `CRM_POSTGRES_URL`, `CRM_POSTGRES_SNAPSHOT_SHA256` y `CRM_SECURITY_KEY`. Requiere PostgreSQL 16 o posterior, la base `rinovaplus_rehearsal`, un rol de aplicación sin privilegios administrativos ni `CREATE`, el catálogo de 155 tablas CRM y la huella de la instantánea registrada. El modo PostgreSQL excluye una configuración simultánea de `CRM_SQL_URL` y mantiene los transportes externos deshabilitados.
+
+El [ensayo de backend](../../backend/tools/verify_postgres_backend.py) arranca la API FastAPI y los workers contra PostgreSQL 16 con el mismo modelo versionado y datos sintéticos. Verifica autenticación, permisos, CSRF, alta de contacto por webhook, consulta de CRM e Inbox, firma y deduplicación, proyección, respuesta idempotente y descarga, inspección y almacenamiento de una imagen entrante. El transporte de prueba confirma la secuencia `accepted` → `delivered` y un caso `uncertain` sin reenvío. El endpoint de operaciones comprueba el sondeo de las cinco etapas de Canales. Quedan por validar el acceso a adjuntos en la interfaz, los envíos con adjuntos, las tres etapas de otros productores, los demás módulos, el rendimiento, la restauración y la ejecución con la copia de Oracle.
 
 ## Avance de la migración
 
@@ -64,8 +71,8 @@ El [ensayo SQL](../../backend/migrations/postgresql/verify_copy_rollback.sql) va
 | 3. Cargar y conciliar la copia inicial disponible | Completo |
 | 4. Verificar las 36 tablas y validar la copia completa | Parcial, 119 de 155 tablas verificadas por lectura |
 | 5. Construir el esquema tipado y cargar el dominio | Completo para el alcance del respaldo disponible. Las filas de las 36 tablas se revisan en el hito 4. |
-| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Parcial. Consultas iniciales y selección de cuatro colas instaladas en la copia. Queda integrar las rutinas, completar los repositorios y conectar los workers. |
-| 7. Validar paridad, rendimiento y recuperación | Parcial. Ensayo SQL con conciliación y rollback completado. Restan recorridos de API, rendimiento y restauración. |
+| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Parcial. Autenticación, CRM básico, Inbox y cinco de ocho etapas de workers integradas en la copia local (62,50 % de las etapas). Restan campañas, masivos y solicitudes de agentes, además de los demás repositorios. |
+| 7. Validar paridad, rendimiento y recuperación | Parcial. Ensayo SQL y recorrido de mensajes y adjuntos entrantes superados con datos sintéticos. Restan paridad de módulos, adjuntos salientes, rendimiento, restauración y comprobación en Oracle. |
 | 8. Pasar las últimas escrituras y activar PostgreSQL para el CRM | Pendiente |
 
 **4 de 8 hitos completos (50,00 %).** Cobertura comprobada de lectura **119 de 155 tablas (76,77 %)**. El corte requiere validar usuarios, permisos, adjuntos, secretos cifrados y colas, y comparar el 503 y la latencia con la misma carga de prueba.
