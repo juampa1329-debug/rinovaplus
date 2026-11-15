@@ -520,6 +520,13 @@ def run():
             )
             thread = inbox["items"][0]["conversationId"]
             assert checked(api.get(WORKSPACE + "/clients", params={"q": PHONE}))["total"] == 1
+            for route in ("/directory", "/inbox/directory"):
+                directory = checked(api.get(WORKSPACE + route))
+                assert [entry["name"] for entry in directory["items"]] == ["owner"]
+                assert directory["hasMore"] is False
+                assert checked(api.get(WORKSPACE + route, params={"q": "OWN"})) == directory
+                assert checked(api.get(WORKSPACE + route, params={"q": "agent"}))["items"] == []
+                assert checked(api.get(WORKSPACE + route, params={"offset": 1}))["items"] == []
             empty_page = checked(api.get(WORKSPACE + "/inbox", params={"offset": 30, "anchor": inbox["revision"]}))
             assert empty_page["items"] == [] and empty_page["total"] == 1
             path = WORKSPACE + "/conversations/" + thread + "/messages"

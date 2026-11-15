@@ -1,5 +1,9 @@
 # Informe de avance — 2026-10-19
 
+## Inbox · directorio de responsables en PostgreSQL — 2026-11-15
+
+El primer mensaje real de la WABA llegó con firma válida, se procesó y se pudo abrir en el Inbox. El aviso HTTP 503 lo causó el selector de responsable humano. El adaptador de PostgreSQL ahora traduce la lectura de permisos del rol y conserva el filtro de usuarios activos con `inbox.write`, la búsqueda y la paginación. La regresión cubre ambos puntos de entrada al directorio.
+
 ## Canales · avisos de error y verificación de Meta — 2026-11-15
 
 Canales usa un diálogo de error con explicación y un siguiente paso. Cubre errores de carga, operaciones y rechazos del proveedor que llegan con HTTP 200. Conserva el borrador, devuelve el foco y respeta la preferencia de movimiento reducido. Los resultados inciertos indican revisar la actividad antes de reintentar.

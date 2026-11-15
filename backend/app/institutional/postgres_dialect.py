@@ -152,7 +152,10 @@ def postgres_sql(statement, table_map):
         part = re.sub(r"\bCOLLATE\s+Latin1_General_100_BIN2\b", 'COLLATE "C"', part, flags=re.I)
         part = re.sub(r"\bCROSS\s+APPLY\s*\(", "CROSS JOIN LATERAL (", part, flags=re.I)
         part = re.sub(
-            r"\bOPENJSON\(\?\)", "jsonb_array_elements_text(CAST(? AS jsonb)) AS json_values(value)", part, flags=re.I
+            r"\bOPENJSON\((\?|r\.Actions)\)",
+            r"jsonb_array_elements_text(CAST(\1 AS jsonb)) AS json_values(value)",
+            part,
+            flags=re.I,
         )
         part = re.sub(r"\bCONVERT\(uniqueidentifier,\s*value\)", "CAST(value AS uuid)", part, flags=re.I)
         part = re.sub(
