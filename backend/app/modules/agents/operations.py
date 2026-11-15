@@ -37,7 +37,12 @@ def profile(cursor, key, request=None):
 
 def actions(cursor, key):
     rows = cursor.execute(
-        "WITH a AS(SELECT Document,ROW_NUMBER() OVER(PARTITION BY JSON_VALUE(Document,'$.action_id') ORDER BY EventId DESC) AS n FROM crm_agents.History WHERE EntityId=? AND Kind IN('action_draft','action_approve','action_reject','action_execute')) SELECT TOP(25) Document FROM a WHERE n=1",
+        "SELECT TOP(25) Document FROM ("
+        "SELECT Document,ROW_NUMBER() OVER("
+        "PARTITION BY JSON_VALUE(Document,'$.action_id') ORDER BY EventId DESC) AS n "
+        "FROM crm_agents.History WHERE EntityId=? "
+        "AND Kind IN('action_draft','action_approve','action_reject','action_execute')"
+        ") a WHERE n=1",
         key,
     ).fetchall()
     return [json.loads(row[0]) for row in rows]

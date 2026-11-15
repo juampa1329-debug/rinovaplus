@@ -102,6 +102,12 @@ def joined_update(statement):
 
 def postgres_sql(statement, table_map):
     statement = statement.strip()
+    if statement == "SELECT OBJECT_ID(N'crm_agents.Execution')":
+        execution = table_map.get("crm_agents.Execution")
+        if execution is None:
+            return "SELECT NULL"
+        table = execution.split(".", 1)[1].lower()
+        return f"SELECT to_regclass('rinovaplus_crm.{table}')"
     savepoint = SAVEPOINT.fullmatch(statement)
     if savepoint:
         command = "SAVEPOINT" if savepoint[1] == "SAVE" else "ROLLBACK TO SAVEPOINT"
@@ -112,6 +118,10 @@ def postgres_sql(statement, table_map):
     statement = statement.replace(
         "DATEDIFF_BIG(second,CONVERT(datetime2,'19700101'),SYSUTCDATETIME())",
         "floor(extract(epoch FROM SYSUTCDATETIME()))::bigint",
+    )
+    statement = statement.replace(
+        "DATEFROMPARTS(YEAR(SYSUTCDATETIME()),MONTH(SYSUTCDATETIME()),1)",
+        "date_trunc('month',SYSUTCDATETIME())",
     )
     statement = rewrite_subqueries(statement)
     statement = re.sub(
@@ -157,6 +167,12 @@ def postgres_sql(statement, table_map):
             part,
             flags=re.I,
         )
+        part = re.sub(
+            r"\bOPENJSON\((u\.ChainJson)\)\s+j\b",
+            r"jsonb_array_elements_text(CAST(\1 AS jsonb)) AS j(value)",
+            part,
+            flags=re.I,
+        )
         part = re.sub(r"\bCONVERT\(uniqueidentifier,\s*value\)", "CAST(value AS uuid)", part, flags=re.I)
         part = re.sub(
             r"\bTRY_CONVERT\(int,\s*value\)",
@@ -180,6 +196,7 @@ def postgres_sql(statement, table_map):
         part = re.sub(r"CONVERT\(date,SYSUTCDATETIME\(\)\)", NOW + "::date", part, flags=re.I)
         part = re.sub(r"CONVERT\(varchar\(\d+\),\s*([\w.]+)\)", r"(\1)::text", part, flags=re.I)
         part = re.sub(r"CONVERT\(bigint,\s*([\w.]+)\)", r"(\1)::bigint", part, flags=re.I)
+        part = re.sub(r"CONVERT\(int,\s*(FallbackUsed)\)", r"(\1)::integer", part, flags=re.I)
         part = re.sub(r"\bSYSUTCDATETIME\(\)", NOW, part, flags=re.I)
         if re.search(r"(?:--|/\*|;)|\b(?:OPENJSON|OUTPUT|JSON_VALUE|OUTER APPLY|OBJECT_ID)\b", part, re.I):
             raise ValueError("unported_statement")
@@ -267,6 +284,10 @@ class Cursor:
 
     def fetchall(self):
         return [self._row(row) for row in self._cursor.fetchall()]
+
+    def nextset(self):
+        # PostgreSQL workspace calls execute single statements.
+        return None
 
     def __iter__(self):
         return (self._row(row) for row in self._cursor)

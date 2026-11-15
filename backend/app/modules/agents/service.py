@@ -1400,20 +1400,25 @@ class AgentsService:
             expected_tokens = tokens if known else None
             token_update = "TokensUsed=?" if known else "TokensUsed=NULL"
             parameters = (
-                [expected_state, tokens, request_id, request_id]
+                [expected_state, tokens, request_id]
                 if known
-                else [expected_state, request_id, request_id]
+                else [expected_state, request_id]
             )
-            rows = cursor.execute(
-                (
-                    "SET NOCOUNT ON; UPDATE crm_agents.Usage SET State=?,"
-                    + token_update
-                    + " "
-                    "WHERE RequestId=? AND State='reserved'; "
-                    "SELECT State,TokensUsed FROM crm_agents.Usage WHERE RequestId=?"
-                ),
-                *parameters,
-            ).fetchall()
+            update = (
+                f"UPDATE crm_agents.Usage SET State=?,{token_update} "
+                "WHERE RequestId=? AND State='reserved'"
+            )
+            if getattr(cursor, "dialect", None) == "postgresql":
+                rows = cursor.execute(
+                    update + " RETURNING State,TokensUsed", *parameters
+                ).fetchall()
+            else:
+                rows = cursor.execute(
+                    "SET NOCOUNT ON; " + update + "; "
+                    "SELECT State,TokensUsed FROM crm_agents.Usage WHERE RequestId=?",
+                    *parameters,
+                    request_id,
+                ).fetchall()
             while cursor.nextset():
                 if cursor.description is not None:
                     cursor.fetchall()

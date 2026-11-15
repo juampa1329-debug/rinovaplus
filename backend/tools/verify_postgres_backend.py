@@ -29,6 +29,7 @@ from app.institutional.broadcast_templates import send as send_template
 from app.institutional.campaign_runtime import Worker as CampaignWorker
 from app.institutional.channel_outbox import Dispatcher
 from app.institutional.channel_secrets import put
+from app.institutional.comment_ai import DraftGateway
 from app.institutional.crypto import password_hash
 from app.institutional.models import SECTIONS
 from app.institutional.policy import ACTIONS, MODULES
@@ -254,13 +255,14 @@ def verify_writes(h):
     assert edited["contactId"] == id and found[0]["name"] == "Contacto sintético corregido"
 
 
-def verify_agents(h):
+def verify_agents(h, gemini_calls):
     id = str(uuid4())
     body = {
         "operation_id": str(uuid4()), "revision": 0, "name": "Orientador sintético",
         "level": "guide", "configuration": AgentConfiguration(
             provider="gemini", primary_model="fixture-model", channels=["local"],
             instructions="Usa solo fuentes autorizadas.", monthly_token_limit=250000,
+            input_usd_per_million=0.20, output_usd_per_million=0.50,
         ).model_dump(mode="json"),
     }
     path = "/api/v1/agents/profiles/" + id
@@ -272,6 +274,38 @@ def verify_agents(h):
         "request_id": str(uuid4()), "call_provider": False,
     }))
     assert result["agent_id"] == id and not result["network_called"] and not result["delivered"]
+
+    ai = h.call("settings/ai")
+    h.call("settings/ai", "PUT", {
+        "operation_id": str(uuid4()), "revision": ai["revision"],
+        "document": {**ai["document"], "enabled": True, "model": "fixture-model"},
+    })
+    budget = h.call("settings/budgets")
+    h.call("settings/budgets", "PUT", {
+        "operation_id": str(uuid4()), "revision": budget["revision"],
+        "document": {**budget["document"], "daily_tokens": 50000, "daily_usd_micros": 250000},
+    })
+    checked(h.api.put(PREFIX + "/credentials", headers=h.csrf, json={
+        "operation_id": str(uuid4()), "scope": "provider", "owner": "gemini",
+        "kind": "api_key", "value": "synthetic-gemini-key",
+    }))
+    simulation = {
+        "agent_id": id, "config_version": agent["version"], "question": "Consulta sintética",
+        "request_id": str(uuid4()), "call_provider": True,
+    }
+    denied = checked(h.api.post("/api/v1/agents/simulate", headers=h.csrf, json=simulation), 409)
+    assert denied["code"] == "agents_consumption_confirmation_required" and gemini_calls == []
+    command = {**simulation, "request_id": str(uuid4()), "acknowledge_consumption": True}
+    response = checked(h.api.post("/api/v1/agents/simulate", headers=h.csrf, json=command))
+    assert response["provider"] == "gemini" and response["model"] == "fixture-model"
+    assert response["network_called"] and not response["delivered"] and not response["crm_written"]
+    assert response["text"] == "Puedo orientarte si me cuentas qué quieres consultar."
+    assert response["usage"] == {"prompt_tokens": 30, "completion_tokens": 10}
+    assert checked(h.api.post("/api/v1/agents/simulate", headers=h.csrf, json=command)) == response
+    assert len(gemini_calls) == 1
+    console = checked(h.api.get(path + "/console"))
+    assert console["metrics"]["tokens_reported"] == 40
+    assert console["runs"][0]["state"] == "completed"
 
 
 def verify_marketing(h, integration, thread):
@@ -442,6 +476,26 @@ def run():
     gateway = Gateway()
     sent = []
     diagnostic_attempts = []
+    gemini_calls = []
+
+    def gemini_response(request):
+        assert request.method == "POST"
+        assert request.url.host == "generativelanguage.googleapis.com"
+        assert request.url.path == "/v1beta/models/fixture-model:generateContent"
+        assert request.headers["x-goog-api-key"] == "synthetic-gemini-key"
+        assert json.loads(request.content)["generationConfig"]["responseMimeType"] == "application/json"
+        gemini_calls.append(request.url.path)
+        reply = {
+            "answer": "Puedo orientarte si me cuentas qué quieres consultar.",
+            "handoff": True, "references": [], "memory": [],
+        }
+        return httpx.Response(200, json={
+            "candidates": [{"content": {"parts": [{"text": json.dumps(reply)}]}, "finishReason": "STOP"}],
+            "usageMetadata": {"promptTokenCount": 30, "candidatesTokenCount": 10, "totalTokenCount": 40},
+        })
+
+    def gemini_gateway(keys):
+        return DraftGateway(keys, httpx.MockTransport(gemini_response))
 
     def diagnose(adapter, action, item, pin):
         assert adapter["channel"] == "whatsapp" and action == "verify" and pin is None
@@ -468,7 +522,8 @@ def run():
         os.environ["CRM_AI_STATE_DIR"] = media
         with patch("app.institutional.channel_provider.call_provider", diagnose):
             app = create_app(
-                settings, broadcast_gateway=gateway, channel_transport=transport, media_downloader=downloader,
+                settings, agent_gateway_factory=gemini_gateway, broadcast_gateway=gateway,
+                channel_transport=transport, media_downloader=downloader,
             )
         with TestClient(
             app, base_url=FIXTURE_ORIGIN if deployment else "http://127.0.0.1:4178", client=("127.0.0.1", 40000),
@@ -592,7 +647,7 @@ def run():
             app.state.channel_workers.stop()
             journey = PostgresJourney(api, settings, csrf, gateway)
             verify_writes(journey)
-            verify_agents(journey)
+            verify_agents(journey, gemini_calls)
             verify_marketing(journey, integration, thread)
             checked(post(AUTH + "/logout", headers=csrf))
             checked(api.get(WORKSPACE + "/clients"), 401)
