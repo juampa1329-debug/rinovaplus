@@ -1,0 +1,293 @@
+"""Build the native CRM schema from the hash-pinned SQL Server CRM snapshot."""
+
+import argparse
+import hashlib
+import io
+import json
+import re
+from collections import defaultdict
+from pathlib import Path
+from zipfile import ZipFile
+
+
+SCHEMA = "rinovaplus_crm"
+TYPES = {
+    "bigint": "bigint", "int": "integer", "smallint": "smallint",
+    "tinyint": "smallint", "bit": "smallint", "date": "date",
+    "uniqueidentifier": "uuid", "datetime2": "timestamp without time zone",
+    "binary": "bytea", "varbinary": "bytea", "timestamp": "bytea",
+    "varchar": "text", "nvarchar": "text", "char": "text", "sysname": "text",
+}
+COLLATIONS = {
+    "Modern_Spanish_CI_AS": f"{SCHEMA}.es_cs2",
+    "Latin1_General_100_CI_AI": f"{SCHEMA}.latin_ci_ai",
+    "Latin1_General_100_BIN2": 'pg_catalog."C"',
+}
+TABLE = re.compile(r"(?:dbo\.CRM[A-Za-z0-9]+|crm_meta\.MigrationJournal)\Z")
+TOKEN = re.compile(r"N?'(?:''|[^'])*'|\[[A-Za-z_][A-Za-z_0-9]*\]|[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+|[(),+<>=\s-]")
+FUNCTIONS = {
+    "len": f"{SCHEMA}.tsql_len", "datalength": f"{SCHEMA}.tsql_datalength",
+    "isjson": f"{SCHEMA}.tsql_isjson", "left": "left", "lower": "lower", "ltrim": "ltrim",
+    "rtrim": "rtrim",
+}
+KEYWORDS = {"and", "or", "not", "in", "is", "null", "case", "when", "then", "else", "end"}
+
+
+def identifier(name):
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name) or len(name) > 63:
+        raise ValueError("unsupported PostgreSQL identifier")
+    return '"' + name.lower() + '"'
+
+
+def literal(value):
+    return "'" + value.replace("'", "''") + "'"
+
+
+def physical(key):
+    if not TABLE.fullmatch(key):
+        raise ValueError("non-CRM table in source catalog")
+    return f"{SCHEMA}." + identifier(key.split(".", 1)[1])
+
+
+def index_name(name, table):
+    digest = hashlib.sha256((table + "." + name).encode()).hexdigest()[:12]
+    return identifier(name[:50] + "_" + digest)
+
+
+def compile_expression(source, columns):
+    # The source snapshot may contain executable SQL. Accept only the expression
+    # grammar used by this release and never pass through unchecked fragments.
+    conversion = r"CONVERT\(\[varchar\]\(36\),(\[[A-Za-z_0-9]+\])\)"
+    dateadd = r"dateadd\(minute,\((\d+)\),(\[[A-Za-z_0-9]+\])\)"
+    replacements = {}
+    for pattern, render in (
+        (conversion, lambda m: "(" + identifier(m[1][1:-1]) + "::text)"),
+        (dateadd, lambda m: "(" + identifier(m[2][1:-1]) + " + make_interval(mins => " + m[1] + "))"),
+    ):
+        def replace(match):
+            marker = "rinova_special_" + str(len(replacements))
+            replacements[marker] = render(match)
+            return marker
+
+        # Leave quotes alone when recognizing the two special SQL Server forms.
+        pieces = re.split(r"(N?'(?:''|[^'])*')", source)
+        source = "".join(re.sub(pattern, replace, part, flags=re.I) if i % 2 == 0 else part
+                         for i, part in enumerate(pieces))
+
+    tokens = TOKEN.findall(source)
+    if "".join(tokens) != source:
+        raise ValueError("unsupported predicate syntax")
+    result = []
+    for item in tokens:
+        word = item.lower()
+        if item.startswith("["):
+            column = item[1:-1]
+            if column not in columns:
+                raise ValueError("unrecognized predicate column")
+            item = identifier(column)
+        elif item.startswith("N'"):
+            item = item[1:]
+        elif word in replacements:
+            item = replacements[word]
+        elif word in FUNCTIONS:
+            item = FUNCTIONS[word]
+        elif item[0].isalpha() and word not in KEYWORDS:
+            raise ValueError("unrecognized predicate token: " + word)
+        result.append(item)
+    return "".join(result)
+
+
+def default_value(text):
+    value = text
+    while value.startswith("(") and value.endswith(")"):
+        value = value[1:-1]
+    now = "(statement_timestamp() AT TIME ZONE 'UTC')"
+    if value.lower() in {"sysutcdatetime()", "getdate()"}:
+        return now
+    if value.lower() == "dateadd(minute,(60),sysutcdatetime())":
+        return now + " + interval '60 minutes'"
+    if re.fullmatch(r"(?:-?\d+|N?'(?:''|[^'])*')", value):
+        return value.removeprefix("N")
+    raise ValueError("unsupported source default")
+
+
+def column_type(column):
+    source = column["type_name"]
+    if source == "decimal":
+        return f"numeric({int(column['precision'])},{int(column['scale'])})"
+    return TYPES[source]
+
+
+def column_ddl(column):
+    source = column["type_name"]
+    name = identifier(column["name"])
+    kind = column_type(column)
+    sql = name + " " + kind
+    if column["collation_name"]:
+        sql += " COLLATE " + COLLATIONS[column["collation_name"]]
+    if column["is_computed"] or column["encryption_type"] or column["generated_always_type"]:
+        raise ValueError("source column needs an explicit conversion")
+    if column["is_identity"]:
+        sql += (
+            " GENERATED BY DEFAULT AS IDENTITY (START WITH "
+            + str(int(column["identity_seed"])) + " INCREMENT BY "
+            + str(int(column["identity_increment"])) + ")"
+        )
+    elif source == "timestamp":
+        sql += f" DEFAULT int8send(nextval('{SCHEMA}.row_versions'))"
+    elif column["default_definition"] is not None:
+        sql += " DEFAULT " + default_value(column["default_definition"])
+    if not column["is_nullable"]:
+        sql += " NOT NULL"
+    size = int(column["max_length"])
+    if source == "bit":
+        sql += f" CHECK ({name} IN (0,1))"
+    elif source == "tinyint":
+        sql += f" CHECK ({name} BETWEEN 0 AND 255)"
+    elif source == "timestamp" or (source == "binary" and size > 0):
+        sql += f" CHECK (octet_length({name}) = {size})"
+    elif source == "varbinary" and size > 0:
+        sql += f" CHECK (octet_length({name}) <= {size})"
+    elif kind == "text" and size > 0:
+        limit = size // 2 if source in {"nvarchar", "sysname"} else size
+        sql += f" CHECK ({SCHEMA}.utf16_units({name}) <= {limit})"
+    return sql
+
+
+def row_value(column):
+    position = int(column["ordinal"]) - 1
+    if column_type(column) == "bytea":
+        return f"decode(source_values -> {position} ->> 'hex', 'hex')"
+    text = f"(source_values ->> {position})"
+    if column["type_name"] == "bit":
+        return f"(CASE {text} WHEN 'true' THEN '1' WHEN 'false' THEN '0' ELSE {text} END)::smallint"
+    return f"{text}::{column_type(column)}"
+
+
+HELPERS = f"""
+CREATE SCHEMA {SCHEMA};
+REVOKE ALL ON SCHEMA {SCHEMA} FROM PUBLIC;
+CREATE SEQUENCE {SCHEMA}.row_versions AS bigint;
+CREATE COLLATION {SCHEMA}.es_cs2 (provider=icu, locale='es-u-ks-level2', deterministic=false);
+CREATE COLLATION {SCHEMA}.latin_ci_ai (provider=icu, locale='und-u-ks-level1', deterministic=false);
+CREATE FUNCTION {SCHEMA}.utf16_units(text) RETURNS integer LANGUAGE sql IMMUTABLE STRICT
+RETURN length($1) + length(regexp_replace($1 COLLATE "C", '[^' || chr(65536) || '-' || chr(1114111) || ']', '', 'g'));
+CREATE FUNCTION {SCHEMA}.tsql_len(text) RETURNS integer LANGUAGE sql IMMUTABLE STRICT
+RETURN {SCHEMA}.utf16_units(rtrim($1));
+CREATE FUNCTION {SCHEMA}.tsql_datalength(text) RETURNS integer LANGUAGE sql IMMUTABLE STRICT
+RETURN {SCHEMA}.utf16_units($1) * 2;
+CREATE FUNCTION {SCHEMA}.tsql_datalength(bytea) RETURNS integer LANGUAGE sql IMMUTABLE STRICT
+RETURN octet_length($1);
+CREATE FUNCTION {SCHEMA}.tsql_isjson(text) RETURNS integer LANGUAGE sql IMMUTABLE STRICT
+RETURN CASE WHEN $1 IS JSON ARRAY OR $1 IS JSON OBJECT THEN 1 ELSE 0 END;
+"""
+
+
+def build(model, digest):
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ValueError("invalid snapshot digest")
+    columns = {t["schema"] + "." + t["name"]: [] for t in model["tables"]}
+    if not columns or len(columns) != len(model["tables"]):
+        raise ValueError("invalid table catalog")
+    for c in sorted(model["columns"], key=lambda item: item["ordinal"]):
+        columns[c["schema"] + "." + c["table"]].append(c)
+    lines = [
+        "BEGIN;",
+        f"""DO $$ BEGIN
+          IF current_database() NOT IN ('rinovaplus', 'rinovaplus_rehearsal')
+             OR current_setting('server_version_num')::int < 160000
+             OR NOT EXISTS (SELECT 1 FROM rinova_migration.source_snapshot WHERE archive_sha256 = '{digest}')
+          THEN RAISE EXCEPTION 'Unverified CRM target or snapshot'; END IF;
+        END $$;""",
+        HELPERS,
+    ]
+    version_queries = []
+    for key, items in columns.items():
+        table = physical(key)
+        if [c["ordinal"] for c in items] != list(range(1, len(items) + 1)):
+            raise ValueError("unexpected column order")
+        lines.append(f"CREATE TABLE {table} (" + ", ".join(map(column_ddl, items)) + ");")
+        names = ", ".join(identifier(c["name"]) for c in items)
+        values = ", ".join(map(row_value, items))
+        lines.append(f"INSERT INTO {table} ({names}) SELECT {values} "
+                     f"FROM rinova_migration.source_row WHERE source_table={literal(key)};")
+        lines.append(f"DO $$ BEGIN IF (SELECT count(*) FROM {table}) <> "
+                     f"(SELECT count(*) FROM rinova_migration.source_row WHERE source_table={literal(key)}) "
+                     "THEN RAISE EXCEPTION 'Typed load count mismatch'; END IF; END $$;")
+        for c in items:
+            name = identifier(c["name"])
+            if c["is_identity"]:
+                seq = f"pg_get_serial_sequence({literal(table)}, {literal(c['name'].lower())})"
+                seed = int(c["identity_seed"])
+                extreme = "max" if int(c["identity_increment"]) > 0 else "min"
+                lines.append(f"SELECT setval({seq}, COALESCE({extreme}({name}), {seed}), "
+                             f"count(*) > 0) FROM {table};")
+            if c["type_name"] == "timestamp":
+                version_queries.append(f"SELECT max(('x'||encode({name},'hex'))::bit(64)::bigint) v FROM {table}")
+                func = f"{SCHEMA}." + index_name("row_version", key + c["name"])
+                lines.append(
+                    f"CREATE FUNCTION {func}() RETURNS trigger LANGUAGE plpgsql AS $$ "
+                    f"BEGIN NEW.{name} := int8send(nextval('{SCHEMA}.row_versions')); RETURN NEW; END $$;"
+                    f"CREATE TRIGGER bump_row_version BEFORE UPDATE ON {table} FOR EACH ROW EXECUTE FUNCTION {func}();"
+                )
+    if version_queries:
+        lines.append(f"SELECT setval('{SCHEMA}.row_versions', greatest(coalesce(max(v),0),1), "
+                     "coalesce(max(v),0) >= 1) FROM (" + " UNION ALL ".join(version_queries) + ") s;")
+    for check in model["checks"]:
+        key = check["schema"] + "." + check["table"]
+        if check["is_disabled"] or check["is_not_trusted"] or check["is_not_for_replication"]:
+            raise ValueError("nonstandard source check")
+        expr = compile_expression(check["definition"], {c["name"] for c in columns[key]})
+        lines.append(f"ALTER TABLE {physical(key)} ADD CONSTRAINT {index_name(check['name'], key)} CHECK ({expr});")
+    for index in model["indexes"]:
+        key = index["schema"] + "." + index["table"]
+        table, name = physical(key), index_name(index["name"], key)
+        if index["type_desc"] not in {"CLUSTERED", "NONCLUSTERED"} or index["is_disabled"] or index["ignore_dup_key"]:
+            raise ValueError("nonstandard source index")
+        keys = sorted((c for c in index["columns"] if c["key_ordinal"]), key=lambda c: c["key_ordinal"])
+        if index["is_primary_key"]:
+            names = ", ".join(identifier(c["name"]) for c in keys)
+            lines.append(f"ALTER TABLE {table} ADD CONSTRAINT {name} PRIMARY KEY ({names});")
+            continue
+        keys = ", ".join(identifier(c["name"]) + (" DESC NULLS LAST" if c["is_descending_key"] else " ASC NULLS FIRST")
+                         for c in keys)
+        includes = ", ".join(identifier(c["name"]) for c in index["columns"] if c["is_included_column"])
+        unique = "UNIQUE " if index["is_unique"] else ""
+        sql = f"CREATE {unique}INDEX {name} ON {table} ({keys})"
+        if includes:
+            sql += f" INCLUDE ({includes})"
+        if unique:
+            sql += " NULLS NOT DISTINCT"
+        if index["has_filter"]:
+            sql += " WHERE " + compile_expression(index["filter_definition"], {c["name"] for c in columns[key]})
+        lines.append(sql + ";")
+    for fk in model["foreign_keys"]:
+        key = fk["schema"] + "." + fk["table"]
+        target = fk["referenced_schema"] + "." + fk["referenced_table"]
+        if target not in columns or fk["is_disabled"] or fk["is_not_trusted"] or fk["is_not_for_replication"]:
+            raise ValueError("non-CRM or untrusted foreign key")
+        if (fk["delete_action"], fk["update_action"]) != ("NO_ACTION", "NO_ACTION"):
+            raise ValueError("foreign key action needs review")
+        pairs = sorted(fk["columns"], key=lambda c: c["ordinal"])
+        source_fields = ", ".join(identifier(c["column"]) for c in pairs)
+        target_fields = ", ".join(identifier(c["referenced_column"]) for c in pairs)
+        lines.append(f"ALTER TABLE {physical(key)} ADD CONSTRAINT {index_name(fk['name'], key)} "
+                     f"FOREIGN KEY ({source_fields}) REFERENCES {physical(target)} ({target_fields});")
+    return "\n".join([*lines, "COMMIT;", ""])
+
+
+def main():
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument("archive", type=Path)
+    cli.add_argument("--sha256", required=True)
+    args = cli.parse_args()
+    content = args.archive.read_bytes()
+    if hashlib.sha256(content).hexdigest() != args.sha256:
+        cli.error("source archive digest mismatch")
+    with ZipFile(io.BytesIO(content)) as archive:
+        model = json.loads(archive.read("schema.json"))
+    print(build(model, args.sha256), end="")
+
+
+if __name__ == "__main__":
+    main()

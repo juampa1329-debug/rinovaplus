@@ -37,7 +37,7 @@ No reejecutar preparadores/seeds/calificadores en bases pobladas. El preparador 
 | P10 | 95,00% | 4/5 |
 | P11 | 72,50% | 2/4 |
 
-El 0,00% online corresponde al último cierre formal de P12. Al 14 de noviembre se comprobó el backend activo en Coolify y se inició el traslado del CRM a PostgreSQL. Se completaron **3 de 8 hitos de migración (37,50 %)**, con lectura de filas comprobada en **119 de 155 tablas (76,77 %)**. El resultado es auxiliar y el roadmap ponderado de criterios aceptados sigue en **93,62%**. La aceptación institucional y el corte a PostgreSQL quedan pendientes. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
+El 0,00% online corresponde al último cierre formal de P12. Al 14 de noviembre se completaron **4 de 8 hitos de la migración PostgreSQL (50,00 %)**. La copia tiene 155 tablas tipadas, 48 filas conciliadas y una primera adaptación de consultas y colas. La cobertura comprobada de lectura sigue en **119 de 155 tablas (76,77 %)**. Están parciales la integración del backend y la verificación integral. El avance de migración es auxiliar y el roadmap ponderado de criterios aceptados sigue en **93,62%**. El corte a PostgreSQL queda pendiente. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
 
 ## Historia anterior a P11; prevalece el estado superior
 

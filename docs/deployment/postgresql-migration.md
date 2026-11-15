@@ -15,14 +15,15 @@ Al 14 de noviembre de 2026, el backend en Coolify ejecuta la revisión `8a84f987
 
 Archivo privado en Oracle en `/var/lib/rinovaplus-migration/2026-11-14/crm-export.zip`, tamaño de 97.210 bytes y permisos `0600`. SHA-256 `90ad45bc17455a2c878139bbec65c82e7dc9796770a37461172d2322eb9ab64d`. El archivo permanece en el servidor y contiene filas del CRM. El directorio y los registros del cargador tienen acceso restringido.
 
-La extracción ejecutó consultas de catálogo y `SELECT` únicamente en tablas CRM del mapeo. Los datos académicos quedaron fuera. PostgreSQL contiene una copia intermedia para construir el esquema de aplicación. El backend activo sigue apuntando al origen SQL Server.
+La extracción ejecutó consultas de catálogo y `SELECT` únicamente en tablas CRM del mapeo. Los datos académicos quedaron fuera. PostgreSQL conserva la copia intermedia en `rinova_migration` y el esquema tipado en `rinovaplus_crm`. El backend activo sigue apuntando al origen SQL Server.
 
 ```mermaid
 flowchart LR
     S[SQL Server · DBSIIE_2025A] -->|SELECT de tablas CRM| A[Archivo privado en Oracle]
     A -->|Huella y filas verificadas| P[PostgreSQL · rinova_migration]
-    P -.-> N[Esquema tipado de RinovaPlus]
-    N -.-> B[Backend PostgreSQL]
+    P --> N[Esquema tipado de RinovaPlus]
+    N --> Q[Consultas y colas migradas]
+    Q -.-> B[Backend PostgreSQL]
     S --> E[SIIE · operación académica]
 ```
 
@@ -38,6 +39,22 @@ python3 backend/tools/stage_postgres_crm.py "$PRIVATE_ARCHIVE" --sha256 "$EXPECT
 
 El SQL que circula por la tubería incluye datos del CRM. Usar la conexión PostgreSQL privada del operador y conservar los logs de error en el mismo ámbito. Las pruebas unitarias cubren el filtrado de tablas restringidas, el número de columnas y la huella de las filas.
 
+## Esquema tipado y primera adaptación SQL
+
+Aplicado en el destino privado `rinovaplus` a partir del ZIP con huella comprobada. El [generador del esquema](../../backend/tools/postgres_crm_schema.py) creó 155 tablas con 1.564 columnas, 313 índices incluyendo claves primarias, 334 comprobaciones de origen y 298 claves foráneas internas del CRM. Cargó las 48 filas disponibles, con cero diferencias de conteo por tabla. El catálogo de origen carece de claves foráneas de esas tablas hacia SIIE. Los campos de referencia académica conservan los IDs existentes.
+
+Los UUID, decimales y binarios conservan sus tipos. Las fechas de SQL Server con siete decimales quedan a la precisión de microsegundos de PostgreSQL y el ZIP conserva los valores de origen. El equivalente de `rowversion` conserva los tokens importados y usa una secuencia para las actualizaciones. Para los textos se representan las reglas de comparación con ICU según el perfil de origen. La paridad de ordenación y búsquedas completas se comprobará en el backend.
+
+La [migración de consultas y colas](../../backend/migrations/postgresql/001_copy_queries_and_queues.sql) incluye paginación de contactos y mensajes, conteos de ocho colas, selección de recepción, eventos, medios y envíos por `FOR UPDATE SKIP LOCKED`, reserva de envío y paso a incierto tras vencer una concesión. Son rutinas para la copia y sus pruebas. Los workers deberán aplicar las comprobaciones de cuenta, permisos, reserva y despacho en su integración con PostgreSQL.
+
+El [ensayo SQL](../../backend/migrations/postgresql/verify_copy_rollback.sql) validó los conteos y ejecutó las consultas con registros sintéticos. Comprobó la reserva inválida, la toma repetida, el cambio de `rowversion`, el vencimiento sin devolver el envío a pendientes y la transición conjunta de operación y reserva. Las filas sintéticas se revirtieron. En un contenedor desechable sin red, dos sesiones ejecutaron la función instalada de toma de envíos. La segunda tomó la fila siguiente mientras la primera mantenía el bloqueo. Se ejecutaron nueve pruebas unitarias del generador, el cargador y la lista de accesos.
+
+## Acceso de lectura para las 36 tablas
+
+1. El DBA crea en SQL Server un login nuevo `rinovaplus_pg_reader` con contraseña custodiada y sin roles de servidor. Conectado a `DBSIIE_2025A`, revisa y ejecuta [readonly-crm-pending-36.sql](sql/readonly-crm-pending-36.sql). El script crea el usuario en esa base y concede `SELECT` en las 36 tablas CRM enumeradas. Comprueba permisos efectivos por objeto y columna y revierte si detecta permisos inesperados.
+2. En un recurso temporal de diagnóstico con la misma ruta de red a SQL Server, configurar las variables de ejecución `CRM_SQL_URL` con el mismo servidor, `CRM_SQL_DATABASE=DBSIIE_2025A`, `CRM_SQL_USER=rinovaplus_pg_reader` y `CRM_SQL_PASSWORD` como secreto. Conservar las variables del backend activo. Avisar cuando el recurso tenga acceso para consultar conteos exactos y exportar las filas que existan.
+3. Después de verificar los datos, el DBA puede retirar el acceso temporal. Un export privado del DBA limitado a las mismas tablas también sirve.
+
 ## Avance de la migración
 
 | Hito | Estado |
@@ -46,9 +63,9 @@ El SQL que circula por la tubería incluye datos del CRM. Usar la conexión Post
 | 2. Preparar PostgreSQL privado con almacenamiento persistente | Completo |
 | 3. Cargar y conciliar la copia inicial disponible | Completo |
 | 4. Verificar las 36 tablas y validar la copia completa | Parcial, 119 de 155 tablas verificadas por lectura |
-| 5. Construir el esquema tipado y cargar el dominio | Pendiente |
-| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Pendiente |
-| 7. Validar paridad, rendimiento y recuperación | Pendiente |
+| 5. Construir el esquema tipado y cargar el dominio | Completo para el alcance del respaldo disponible. Las filas de las 36 tablas se revisan en el hito 4. |
+| 6. Adaptar transacciones, repositorios y workers al nuevo motor | Parcial. Consultas iniciales y selección de cuatro colas instaladas en la copia. Queda integrar las rutinas, completar los repositorios y conectar los workers. |
+| 7. Validar paridad, rendimiento y recuperación | Parcial. Ensayo SQL con conciliación y rollback completado. Restan recorridos de API, rendimiento y restauración. |
 | 8. Pasar las últimas escrituras y activar PostgreSQL para el CRM | Pendiente |
 
-Para el hito 4, usar un export del DBA limitado al CRM o un login temporal de lectura que cubra las 36 tablas en `DBSIIE_2025A`. El hito 5 conservará las claves e IDs y revisará fechas de alta precisión, concurrencia con `rowversion`, colaciones, índices filtrados y referencias hacia SIIE. El corte requiere validar usuarios, permisos, adjuntos, secretos cifrados y colas, y comparar el 503 y la latencia con la misma carga de prueba.
+**4 de 8 hitos completos (50,00 %).** Cobertura comprobada de lectura **119 de 155 tablas (76,77 %)**. El corte requiere validar usuarios, permisos, adjuntos, secretos cifrados y colas, y comparar el 503 y la latencia con la misma carga de prueba.

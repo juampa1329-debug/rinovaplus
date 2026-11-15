@@ -32,4 +32,6 @@ Roadmap técnico **93,62%** y P12 **0,00% de ejecución online**. El modo SQL qu
 
 Coolify muestra el backend de RinovaPlus en la revisión `8a84f9876e5f`, conectado a `DBSIIE_2025A` en SQL Server 2019. La rama local `migration/rinovaplus-postgresql` parte de esa revisión. La copia de solo lectura retuvo 48 filas de 119 tablas CRM y el esquema de 155. Las otras 36 tablas tienen permisos incompletos y cero filas estimadas por el catálogo. Se dejó el archivo privado en Oracle y se conciliaron las 48 filas en `rinova_migration` de la base PostgreSQL 16 `rinovaplus`. SIIE sigue en SQL Server y el CRM activo sigue en su origen.
 
-**Migración 3/8 hitos (37,50 %). Roadmap general 93,62 %.** Quedan completar la lectura CRM, definir el esquema tipado y adaptar el backend. [Procedimiento, grafo y evidencia](../docs/deployment/postgresql-migration.md)
+El mismo destino PostgreSQL tiene `rinovaplus_crm`, con 155 tablas tipadas, 298 claves foráneas y las 48 filas conciliadas. Se instalaron consultas de contactos y mensajes, conteos y selección de cuatro colas. El ensayo SQL revirtió las filas sintéticas y verificó que los envíos con concesión vencida quedaran inciertos. El backend activo sigue en SQL Server y SIIE permanece allí.
+
+**Migración 4/8 hitos (50,00 %). Roadmap general 93,62 %.** La lectura cubre 119/155 tablas (76,77 %). El DBA tiene un script acotado para las 36 tablas pendientes. Quedan integrar el backend y workers, validar paridad y hacer el corte. [Procedimiento, grafo y evidencia](../docs/deployment/postgresql-migration.md)
