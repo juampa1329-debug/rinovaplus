@@ -27,3 +27,9 @@ La rama `deploy/coolify-rinovaplus` usa `docker/Dockerfile.coolify` en 4178 y ad
 La imagen se probó en una restauración separada con TLS y privilegios acotados. El catálogo del destino y los permisos se verifican antes de arrancar. `python -m app.institutional.deployment` es el diagnóstico de solo lectura para `dbsiie` desde Coolify. El [runbook](../docs/deployment/coolify.md) incluye las salidas SQL separadas para inventario y revisión de permisos.
 
 Roadmap técnico **93,62%** y P12 **0,00% de ejecución online**. El modo SQL quedó probado localmente. Quedan la comprobación de solo lectura desde Coolify y la aceptación institucional.
+
+## Inicio de la migración PostgreSQL · 14 de noviembre de 2026
+
+Coolify muestra el backend de RinovaPlus en la revisión `8a84f9876e5f`, conectado a `DBSIIE_2025A` en SQL Server 2019. La rama local `migration/rinovaplus-postgresql` parte de esa revisión. La copia de solo lectura retuvo 48 filas de 119 tablas CRM y el esquema de 155. Las otras 36 tablas tienen permisos incompletos y cero filas estimadas por el catálogo. Se dejó el archivo privado en Oracle y se conciliaron las 48 filas en `rinova_migration` de la base PostgreSQL 16 `rinovaplus`. SIIE sigue en SQL Server y el CRM activo sigue en su origen.
+
+**Migración 3/8 hitos (37,50 %). Roadmap general 93,62 %.** Quedan completar la lectura CRM, definir el esquema tipado y adaptar el backend. [Procedimiento, grafo y evidencia](../docs/deployment/postgresql-migration.md)

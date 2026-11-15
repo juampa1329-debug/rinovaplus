@@ -37,7 +37,7 @@ No reejecutar preparadores/seeds/calificadores en bases pobladas. El preparador 
 | P10 | 95,00% | 4/5 |
 | P11 | 72,50% | 2/4 |
 
-P12 tiene **0,00% de ejecución online**, fuera del denominador general. La conexión SQL cifrada por IP sin validar el certificado y el diagnóstico de solo lectura se probaron en Docker con una restauración local de SQL Server 2019. Quedan el inventario de `dbsiie` desde Coolify, HTTPS público y la aceptación institucional. [Runbook de Coolify](deployment/coolify.md)
+El 0,00% online corresponde al último cierre formal de P12. Al 14 de noviembre se comprobó el backend activo en Coolify y se inició el traslado del CRM a PostgreSQL. Se completaron **3 de 8 hitos de migración (37,50 %)**, con lectura de filas comprobada en **119 de 155 tablas (76,77 %)**. El resultado es auxiliar y el roadmap ponderado de criterios aceptados sigue en **93,62%**. La aceptación institucional y el corte a PostgreSQL quedan pendientes. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
 
 ## Historia anterior a P11; prevalece el estado superior
 
