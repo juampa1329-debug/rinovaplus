@@ -14,13 +14,23 @@ import { ClientFields } from "../modules/clients/components/ClientFields";
 import { useCrmConfiguration } from "../modules/crm-configuration/hooks/useCrmConfiguration";
 import { CrmConfiguration } from "../modules/crm-configuration/pages/CrmConfiguration";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
-import { ApiError, useInstitution } from "./api";
+import { ApiError, operationFailure, useInstitution } from "./api";
 import { MediaDownload, MediaUpload } from "./ChannelMedia";
 import type { Attachment } from "./ChannelMedia";
 import { useWorkspaceState } from "../shared/workspaceSession";
 import "./workspace.css";
 import { AgentConversationPanel } from "../modules/agents/AgentConversationPanel";
 import { PrivateMemory } from "./KnowledgeWorkspace";
+import { Icon } from "../shared/Icon";
+import { ErrorFeedback, ErrorFeedbackContext } from "./ErrorFeedback";
+import { explainInboxError, MessageDelivery } from "./InboxDelivery";
+import { EmojiPicker } from "./InboxComposer";
+import {
+  ChannelLabel,
+  ConversationRow,
+  InboxListControls,
+  initialInboxFilters,
+} from "./InboxPresentation";
 
 export type Risk = {
   status: string;
@@ -43,6 +53,12 @@ type Row = {
   mode: string;
   unread: boolean;
   assignee: string | null;
+  channel?: string;
+  updatedAt?: string;
+  preview?: string | null;
+  temperature?: string | null;
+  leadScore?: number | null;
+  program?: string | null;
   risk: Risk;
 };
 type Page = {
@@ -141,18 +157,38 @@ const prefix = "workspace/";
 const options = (values: string[]) =>
   values.map((value) => ({ value, label: value }));
 const DateZone = createContext("America/Bogota");
-function DateText({ value }: { value: string | null }) {
+function DateText({
+  value,
+  compactAt,
+}: {
+  value: string | null;
+  compactAt?: number;
+}) {
   const zone = useContext(DateZone);
+  if (!value) return <>Sin fecha</>;
+  const date = new Date(value);
+  if (!Number.isFinite(date.valueOf())) return <>Sin fecha</>;
+  const full = new Intl.DateTimeFormat("es-CO", {
+    timeZone: zone,
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+  if (compactAt === undefined) return <time dateTime={value}>{full}</time>;
+  const day = new Intl.DateTimeFormat("es-CO", {
+    timeZone: zone,
+    dateStyle: "short",
+  });
+  const sameDay = day.format(date) === day.format(compactAt);
+  const label = new Intl.DateTimeFormat("es-CO", {
+    timeZone: zone,
+    ...(sameDay
+      ? { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }
+      : { day: "numeric", month: "short" }),
+  }).format(date);
   return (
-    <>
-      {value
-        ? new Intl.DateTimeFormat("es-CO", {
-            timeZone: zone,
-            dateStyle: "short",
-            timeStyle: "short",
-          }).format(new Date(value))
-        : "Sin fecha"}
-    </>
+    <time dateTime={value} title={full}>
+      {label}
+    </time>
   );
 }
 const DraftCache = createContext<Map<string, unknown> | null>(null);
@@ -215,7 +251,11 @@ function useEntity(key: string) {
 
 function useRead<T>(path: string, refresh = 0, enabled = true) {
   const { call } = useInstitution();
-  const [data, setData] = useState<{ path: string; value: T } | null>(null),
+  const [data, setData] = useState<{
+      path: string;
+      value: T;
+      loadedAt: number;
+    } | null>(null),
     [error, setError] = useState<{ path: string; message: string } | null>(
       null,
     );
@@ -226,7 +266,7 @@ function useRead<T>(path: string, refresh = 0, enabled = true) {
       void call<T>(prefix + path)
         .then((value) => {
           if (active) {
-            setData({ path, value });
+            setData({ path, value, loadedAt: Date.now() });
             setError(null);
           }
         })
@@ -248,12 +288,14 @@ function useRead<T>(path: string, refresh = 0, enabled = true) {
   }, [path, refresh, enabled, call]);
   return {
     value: enabled && data?.path === path ? data.value : null,
+    loadedAt: enabled && data?.path === path ? data.loadedAt : undefined,
     error: error?.path === path ? error.message : "",
   };
 }
 function useCommand(onSaved: () => void) {
   const { call } = useInstitution(),
     cache = useCache();
+  const report = useContext(ErrorFeedbackContext);
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   async function save(
@@ -261,6 +303,7 @@ function useCommand(onSaved: () => void) {
     method: string,
     body: Record<string, unknown>,
   ) {
+    const trigger = document.activeElement;
     setBusy(true);
     setError("");
     const identity = { ...body };
@@ -289,11 +332,12 @@ function useCommand(onSaved: () => void) {
         failure.detail === "revision_conflict"
       )
         cache.delete(key);
-      setError(
-        failure instanceof Error
-          ? failure.message
-          : "No se pudo guardar. Tu borrador se conserva.",
+      const info = operationFailure(
+        failure,
+        "No se pudo guardar. Tu borrador se conserva.",
       );
+      if (report) report(info, trigger);
+      else setError(info.message);
       return null;
     } finally {
       setBusy(false);
@@ -343,7 +387,13 @@ export function RiskSummary({ risk }: { risk: Risk }) {
     </section>
   );
 }
-export function WorkspaceP3({ page }: { page: string }) {
+export function WorkspaceP3({
+  page,
+  showComments = false,
+}: {
+  page: string;
+  showComments?: boolean;
+}) {
   const [workspaceSession] = useWorkspaceState("institutional");
   const cache = workspaceSession.cache;
   const { session } = useInstitution();
@@ -352,12 +402,25 @@ export function WorkspaceP3({ page }: { page: string }) {
       value={session.user.profile.timezone || "America/Bogota"}
     >
       <DraftCache.Provider value={cache}>
-        <WorkspaceView page={page} />
+        {page === "inbox" ? (
+          <ErrorFeedback explain={explainInboxError}>
+            <WorkspaceView page={page} showComments={showComments} />
+          </ErrorFeedback>
+        ) : (
+          <WorkspaceView page={page} />
+        )}
       </DraftCache.Provider>
     </DateZone.Provider>
   );
 }
-function WorkspaceView({ page }: { page: string }) {
+function WorkspaceView({
+  page,
+  showComments = false,
+}: {
+  page: string;
+  showComments?: boolean;
+}) {
+  const inbox = page === "inbox";
   const gridRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const grid = gridRef.current;
@@ -394,24 +457,22 @@ function WorkspaceView({ page }: { page: string }) {
     [city, setCity] = useState(""),
     [type, setType] = useState(""),
     [program, setProgram] = useState(""),
-    [queue, setQueue] = useState("all"),
-    [channel, setChannel] = useState(""),
+    [inboxFilters, setInboxFilters] = useState(initialInboxFilters),
     [offset, setOffset] = useState(0),
     [anchor, setAnchor] = useState(""),
     [tab, setTab] = useState("contacts"),
+    [showContact, setShowContact] = useState(true),
     [creating, setCreating] = useState(false);
   const [workspaceSession] = useWorkspaceState("institutional");
   const drafts = workspaceSession.contacts,
     messages = workspaceSession.messages;
   const changed = () => setRefresh((n) => n + 1);
   const params = new URLSearchParams({
-    q,
-    stage,
     offset: String(offset),
     anchor: offset ? anchor : "",
-    ...(page === "inbox"
-      ? { queue, channel }
-      : { tag, city, contactType: type, program }),
+    ...(inbox
+      ? inboxFilters
+      : { q, stage, tag, city, contactType: type, program }),
   });
   const list = useRead<Page>(
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
@@ -427,8 +488,7 @@ function WorkspaceView({ page }: { page: string }) {
     city,
     type,
     program,
-    queue,
-    channel,
+    inboxFilters,
   ]);
   const [lastFilterKey, setLastFilterKey] = useState(filterKey);
   if (lastFilterKey !== filterKey) {
@@ -463,7 +523,7 @@ function WorkspaceView({ page }: { page: string }) {
   if (!canRead)
     return <Notice>Tu rol no permite consultar este apartado.</Notice>;
   return (
-    <div className="p3-workspace">
+    <div className={`p3-workspace${inbox ? " institutional-inbox" : ""}`}>
       {page === "clients" && (
         <nav className="institution-tabs" aria-label="Vistas CRM">
           <Button
@@ -495,140 +555,189 @@ function WorkspaceView({ page }: { page: string }) {
         />
       ) : (
         <>
-          <section
-            className="panel p3-filters"
-            aria-label="Filtros de contactos y conversaciones"
-          >
-            <Field
-              id="p3-search"
-              label="Buscar"
-              value={q}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <SelectField
-              id="p3-stage"
-              label="Etapa"
-              value={stage}
-              options={[
-                { value: "", label: "Todas" },
-                ...options(cfg.config.stages.map((s) => s.label)),
-              ]}
-              onChange={(e) => setStage(e.target.value)}
-            />
-            {page === "inbox" ? (
-              <>
-                <SelectField
-                  id="p3-queue"
-                  label="Bandeja"
-                  value={queue}
-                  options={queues}
-                  onChange={(e) => setQueue(e.target.value)}
-                />
-                <SelectField
-                  id="p3-channel"
-                  label="Canal"
-                  value={channel}
-                  options={[
-                    { value: "", label: "Todos" },
-                    { value: "local", label: "Local" },
-                    { value: "whatsapp", label: "WhatsApp" },
-                    { value: "messenger", label: "Messenger" },
-                    { value: "instagram", label: "Instagram" },
-                    { value: "tiktok", label: "TikTok" },
-                  ]}
-                  onChange={(e) => setChannel(e.target.value)}
-                />
-              </>
-            ) : (
-              <>
-                <SelectField
-                  id="p3-tag"
-                  label="Etiqueta"
-                  value={tag}
-                  options={[
-                    { value: "", label: "Todas" },
-                    ...options(cfg.config.tags),
-                  ]}
-                  onChange={(e) => setTag(e.target.value)}
-                />
-                <Field
-                  id="p3-city"
-                  label="Ciudad"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                <Field
-                  id="p3-program"
-                  label="Programa informado"
-                  value={program}
-                  onChange={(event) => setProgram(event.target.value)}
-                />
-                <Field
-                  id="p3-type"
-                  label="Tipo de contacto"
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                />
-              </>
-            )}
-            <Button
-              onClick={() => {
-                setOffset(0);
-                setAnchor("");
-                changed();
-              }}
+          {!inbox && (
+            <section
+              className="panel p3-filters"
+              aria-label="Filtros de contactos y conversaciones"
             >
-              Actualizar listado
-            </Button>
-            {session.actions.includes("crm.write") && (
+              <Field
+                id="p3-search"
+                label="Buscar"
+                value={q}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <SelectField
+                id="p3-stage"
+                label="Etapa"
+                value={stage}
+                options={[
+                  { value: "", label: "Todas" },
+                  ...options(cfg.config.stages.map((s) => s.label)),
+                ]}
+                onChange={(e) => setStage(e.target.value)}
+              />
+              <SelectField
+                id="p3-tag"
+                label="Etiqueta"
+                value={tag}
+                options={[
+                  { value: "", label: "Todas" },
+                  ...options(cfg.config.tags),
+                ]}
+                onChange={(e) => setTag(e.target.value)}
+              />
+              <Field
+                id="p3-city"
+                label="Ciudad"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+              <Field
+                id="p3-program"
+                label="Programa informado"
+                value={program}
+                onChange={(event) => setProgram(event.target.value)}
+              />
+              <Field
+                id="p3-type"
+                label="Tipo de contacto"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              />
               <Button
-                disabled={
-                  !cfg.ready ||
-                  !cfg.config.stages.some((stage) => stage.active !== false)
-                }
                 onClick={() => {
-                  setCreating(true);
-                  setSelected("");
+                  setOffset(0);
+                  setAnchor("");
+                  changed();
                 }}
               >
-                Nuevo contacto
+                Actualizar listado
               </Button>
-            )}
-          </section>
+              {session.actions.includes("crm.write") && (
+                <Button
+                  disabled={
+                    !cfg.ready ||
+                    !cfg.config.stages.some((stage) => stage.active !== false)
+                  }
+                  onClick={() => {
+                    setCreating(true);
+                    setSelected("");
+                  }}
+                >
+                  Nuevo contacto
+                </Button>
+              )}
+            </section>
+          )}
           {cfg.error && <Notice error>{cfg.error}</Notice>}
-          {list.error && <Notice error>{list.error}</Notice>}
-          <div className="p3-columns" ref={gridRef}>
+          {!inbox && list.error && <Notice error>{list.error}</Notice>}
+          <div
+            className="p3-columns"
+            ref={gridRef}
+            data-thread-open={(inbox && !!selected) || undefined}
+          >
             <aside
               className="panel p3-directory"
               aria-label={page === "inbox" ? "Conversaciones" : "Contactos CRM"}
             >
-              {!list.value ? (
-                <Notice>Cargando listado…</Notice>
-              ) : (
-                <>
-                  <p>{list.value.total} resultados</p>
-                  {list.value.items.map((row) => (
-                    <button
-                      className="p3-contact"
-                      key={row.conversationId}
-                      aria-pressed={selected === row.conversationId}
+              {inbox && (
+                <InboxListControls
+                  filters={inboxFilters}
+                  set={setInboxFilters}
+                  stages={[
+                    { value: "", label: "Todas" },
+                    ...options(cfg.config.stages.map((s) => s.label)),
+                  ]}
+                  queues={queues}
+                  comments={showComments}
+                  refresh={changed}
+                >
+                  {session.actions.includes("crm.write") && (
+                    <Button
+                      variant="quiet"
+                      disabled={
+                        !cfg.ready ||
+                        !cfg.config.stages.some((s) => s.active !== false)
+                      }
                       onClick={() => {
-                        setCreating(false);
-                        setSelected(row.conversationId);
+                        setCreating(true);
+                        setSelected("");
                       }}
                     >
-                      <strong>{row.name || row.phone}</strong>
-                      <span>
-                        {row.stage} · {row.assignee || "Sin asignar"}
-                        {row.unread ? " · No leída" : ""}
-                      </span>
-                      <span>
-                        {row.risk.status === "known"
-                          ? `Abandono: ${{ low: "bajo", medium: "medio", high: "alto" }[row.risk.level] ?? "sin evaluación"}`
-                          : "Abandono: sin evaluación"}
-                      </span>
-                    </button>
-                  ))}
+                      Nuevo contacto
+                    </Button>
+                  )}
+                </InboxListControls>
+              )}
+              {inbox && list.error && (
+                <Notice error>
+                  No se pudo actualizar la bandeja. {list.error}{" "}
+                  <Button
+                    variant="quiet"
+                    onClick={() => {
+                      setOffset(0);
+                      setAnchor("");
+                      changed();
+                    }}
+                  >
+                    Reintentar listado
+                  </Button>
+                </Notice>
+              )}
+              {!list.value ? (
+                (!inbox || !list.error) && <Notice>Cargando listado…</Notice>
+              ) : (
+                <>
+                  <p
+                    className={inbox ? "inbox-results-count" : undefined}
+                    role={inbox ? "status" : undefined}
+                  >
+                    {inbox
+                      ? `${list.value.total} ${list.value.total === 1 ? "conversación" : "conversaciones"}`
+                      : `${list.value.total} resultados`}
+                  </p>
+                  {list.value.items.map((row) =>
+                    inbox ? (
+                      <ConversationRow
+                        key={row.conversationId}
+                        row={row}
+                        selected={selected === row.conversationId}
+                        timestamp={
+                          row.updatedAt ? (
+                            <DateText
+                              value={row.updatedAt}
+                              compactAt={list.loadedAt}
+                            />
+                          ) : undefined
+                        }
+                        onSelect={() => {
+                          setCreating(false);
+                          setSelected(row.conversationId);
+                        }}
+                      />
+                    ) : (
+                      <button
+                        className="p3-contact"
+                        key={row.conversationId}
+                        aria-pressed={selected === row.conversationId}
+                        onClick={() => {
+                          setCreating(false);
+                          setSelected(row.conversationId);
+                        }}
+                      >
+                        <strong>{row.name || row.phone}</strong>
+                        <span>
+                          {row.stage} · {row.assignee || "Sin asignar"}
+                          {row.unread ? " · No leída" : ""}
+                        </span>
+                        <span>
+                          {row.risk.status === "known"
+                            ? `Abandono: ${{ low: "bajo", medium: "medio", high: "alto" }[row.risk.level] ?? "sin evaluación"}`
+                            : "Abandono: sin evaluación"}
+                        </span>
+                      </button>
+                    ),
+                  )}
                   {!list.value.items.length && (
                     <Notice>Sin resultados para estos filtros.</Notice>
                   )}
@@ -677,15 +786,22 @@ function WorkspaceView({ page }: { page: string }) {
                 drafts={drafts}
                 messageDrafts={messages}
                 users={directory.value?.items ?? []}
+                onBack={inbox ? () => setSelected("") : undefined}
+                showContact={showContact}
+                toggleContact={() => setShowContact((visible) => !visible)}
               />
             ) : (
-              <section className="panel">
+              <section className={inbox ? "panel inbox-no-selection" : "panel"}>
                 <h2>
                   {page === "inbox"
                     ? "Selecciona una conversación"
                     : "Selecciona un contacto"}
                 </h2>
-                <p>La ficha se comparte entre CRM e Inbox.</p>
+                <p>
+                  {inbox
+                    ? "Abre un hilo para leer sus mensajes y revisar la ficha del contacto."
+                    : "La ficha se comparte entre CRM e Inbox."}
+                </p>
                 {!cfg.config.stages.some((s) => s.active !== false) && (
                   <a href="#/settings/crm">Configurar las etapas del CRM</a>
                 )}
@@ -864,6 +980,9 @@ function Person({
   drafts,
   messageDrafts,
   users,
+  onBack,
+  showContact,
+  toggleContact,
 }: {
   conversation: string;
   page: string;
@@ -873,8 +992,12 @@ function Person({
   drafts: Map<string, Client>;
   messageDrafts: Map<string, string>;
   users: { id: string; name: string }[];
+  onBack?: () => void;
+  showContact: boolean;
+  toggleContact: () => void;
 }) {
   const [activityOpened, setActivityOpened] = useState(false);
+  const contactPanelId = `inbox-contact-${conversation}`;
   const { session } = useInstitution();
   const detail = useRead<Detail>(
     page === "inbox"
@@ -884,12 +1007,26 @@ function Person({
   );
   if (!detail.value)
     return (
-      <Notice error={!!detail.error}>
-        {detail.error || "Cargando ficha…"}
-      </Notice>
+      <div>
+        {onBack && (
+          <Button
+            className="inbox-mobile-back"
+            variant="quiet"
+            onClick={onBack}
+          >
+            Volver a conversaciones
+          </Button>
+        )}
+        <Notice error={!!detail.error}>
+          {detail.error || "Cargando ficha…"}
+        </Notice>
+      </div>
     );
   return (
-    <div className={`p3-person ${page === "inbox" ? "p3-inbox-person" : ""}`}>
+    <div
+      className={`p3-person ${page === "inbox" ? "p3-inbox-person" : ""}`}
+      data-contact-hidden={(page === "inbox" && !showContact) || undefined}
+    >
       {detail.error && <Notice error>{detail.error}</Notice>}
       {page === "inbox" && (
         <Conversation
@@ -899,9 +1036,18 @@ function Person({
           changed={changed}
           drafts={messageDrafts}
           users={users}
+          contactPanelId={contactPanelId}
+          showContact={showContact}
+          toggleContact={toggleContact}
+          onBack={onBack}
         />
       )}
-      <div className="p3-ficha">
+      <div
+        className="p3-ficha"
+        id={page === "inbox" ? contactPanelId : undefined}
+        hidden={page === "inbox" && !showContact}
+      >
+        {page === "inbox" && <h2 className="inbox-crm-title">Ficha CRM</h2>}
         <RiskSummary risk={detail.value.risk} />
         {page === "inbox" && detail.value.agentOperations && (
           <section className="panel">
@@ -936,6 +1082,15 @@ function Person({
           conversation={conversation}
           users={users}
         />
+        {page === "inbox" && (
+          <details className="panel inbox-payment">
+            <summary>Pagos</summary>
+            <p>
+              Integración pendiente. Aquí podrás consultar el estado de cobros
+              al conectar una pasarela como Wompi o ePayco.
+            </p>
+          </details>
+        )}
         <MergePanel detail={detail.value} changed={changed} />
         <details
           className="panel"
@@ -961,6 +1116,10 @@ function Conversation({
   changed,
   drafts,
   users,
+  contactPanelId,
+  showContact,
+  toggleContact,
+  onBack,
 }: {
   conversation: string;
   detail: Detail;
@@ -968,16 +1127,24 @@ function Conversation({
   changed: () => void;
   drafts: Map<string, string>;
   users: { id: string; name: string }[];
+  contactPanelId: string;
+  showContact: boolean;
+  toggleContact: () => void;
+  onBack?: () => void;
 }) {
+  const input = useRef<HTMLTextAreaElement>(null);
+  const timeline = useRef<HTMLOListElement>(null);
   const { session } = useInstitution(),
     [before, setBefore] = useState(""),
+    [deliveryTick, setDeliveryTick] = useState(0),
+    [attachmentBusy, setAttachmentBusy] = useState(false),
     data = useRead<{
       items: Message[];
       before: string | null;
       hasMore: boolean;
     }>(
       `conversations/${conversation}/messages${before ? `?before=${before}` : ""}`,
-      refresh,
+      refresh + deliveryTick,
     ),
     [body, setBody] = useState(drafts.get(conversation) ?? ""),
     [attachment, setAttachment] = useState<Attachment | null>(null),
@@ -999,10 +1166,33 @@ function Conversation({
     ),
     command = useCommand(changed);
   const observed = useRef("0");
+  const nearLatest = useRef(true);
+  const channel = detail.channelAccounts?.[0]?.channel;
+  const canCaption =
+    !channel ||
+    (channel === "whatsapp" &&
+      attachment?.mime !== "image/webp" &&
+      ["image", "video", "document"].includes(attachment?.kind ?? ""));
   useEffect(() => {
     if (!before && data.value?.items.length)
       observed.current = data.value.items.at(-1)!.sequence;
   }, [before, data.value]);
+  const latest = data.value?.items.at(-1)?.sequence;
+  useLayoutEffect(() => {
+    if (timeline.current && !before && nearLatest.current)
+      timeline.current.scrollTop = timeline.current.scrollHeight;
+  }, [before, latest]);
+  useEffect(() => {
+    if (!channel || before) return;
+    const timer = window.setInterval(() => {
+      if (!document.hidden) setDeliveryTick((n) => n + 1);
+    }, 12000);
+    return () => window.clearInterval(timer);
+  }, [channel, before]);
+  const setMessage = (value: string) => {
+    setBody(value);
+    drafts.set(conversation, value);
+  };
   const update = (next: Record<string, unknown> = {}) =>
     command.save(`conversations/${conversation}`, "PUT", {
       revision: detail.revision,
@@ -1016,81 +1206,110 @@ function Conversation({
     });
   return (
     <section className="panel p3-thread" aria-label="Conversación seleccionada">
+      {onBack && (
+        <Button className="inbox-mobile-back" variant="quiet" onClick={onBack}>
+          Volver a conversaciones
+        </Button>
+      )}
       {(detail.inFlightOrUncertain ?? 0) > 0 && (
         <Notice>
           Hay envíos iniciados o de resultado pendiente. Revisa su estado antes
           de responder.
         </Notice>
       )}
-      <h2>Conversación</h2>
-      <p>
-        {detail.thread.ControlMode === "human"
-          ? "Control humano"
-          : "Control IA · automatización pendiente de habilitación"}
-      </p>
-      <fieldset
-        disabled={!session.actions.includes("inbox.write") || command.busy}
-      >
-        <div className="form-grid">
-          <SelectField
-            id="p3-state"
-            label="Estado"
-            value={state}
-            options={states}
-            onChange={(e) => setState(e.target.value)}
-          />
-          <SelectField
-            id="p3-priority"
-            label="Prioridad"
-            value={priority}
-            options={priorities}
-            onChange={(e) => setPriority(e.target.value)}
-          />
-          <AssigneePicker
-            id="p3-owner"
-            label="Responsable humano"
-            selectedName={
-              owner === detail.thread.UserId
-                ? (detail.thread.Assignee ?? undefined)
-                : undefined
-            }
-            value={owner}
-            onChange={setOwner}
-            users={users}
-            inbox
-          />
-          <SelectField
-            id="p3-control"
-            label="Control"
-            value={mode}
-            options={[
-              { value: "human", label: "Humano" },
-              { value: "ai", label: "IA" },
-            ]}
-            onChange={(e) => setMode(e.target.value)}
-          />
+      <header className="inbox-thread-heading">
+        <div>
+          <h2>{detail.client.name || detail.client.phone || "Conversación"}</h2>
+          <div className="inbox-row-meta">
+            {detail.channelAccounts?.length ? (
+              detail.channelAccounts.map((account) => (
+                <ChannelLabel key={account.id} channel={account.channel} />
+              ))
+            ) : (
+              <ChannelLabel channel="local" />
+            )}
+            <span>
+              {detail.thread.ControlMode === "human"
+                ? "Control humano"
+                : "Control IA"}
+            </span>
+          </div>
         </div>
-        <div className="p3-actions">
-          <Button onClick={() => void update()}>Guardar conversación</Button>
-          <Button
-            onClick={() => {
-              setMode("human");
-              setOwner(session.user.id);
-              void update({ mode: "human", userId: session.user.id });
-            }}
-          >
-            Tomar control humano
-          </Button>
-          <Button
-            variant="quiet"
-            onClick={() => void update({ unread: !detail.thread.Unread })}
-          >
-            {detail.thread.Unread
-              ? "Marcar como leída"
-              : "Marcar como no leída"}
-          </Button>
-        </div>
-      </fieldset>
+        <Button
+          variant="quiet"
+          aria-expanded={showContact}
+          aria-controls={contactPanelId}
+          onClick={toggleContact}
+        >
+          {showContact ? "Ocultar ficha CRM" : "Ver ficha CRM"}
+        </Button>
+      </header>
+      <details className="inbox-thread-options">
+        <summary>Gestión de conversación</summary>
+        <fieldset
+          disabled={!session.actions.includes("inbox.write") || command.busy}
+        >
+          <div className="form-grid">
+            <SelectField
+              id="p3-state"
+              label="Estado"
+              value={state}
+              options={states}
+              onChange={(e) => setState(e.target.value)}
+            />
+            <SelectField
+              id="p3-priority"
+              label="Prioridad"
+              value={priority}
+              options={priorities}
+              onChange={(e) => setPriority(e.target.value)}
+            />
+            <AssigneePicker
+              id="p3-owner"
+              label="Responsable humano"
+              selectedName={
+                owner === detail.thread.UserId
+                  ? (detail.thread.Assignee ?? undefined)
+                  : undefined
+              }
+              value={owner}
+              onChange={setOwner}
+              users={users}
+              inbox
+            />
+            <SelectField
+              id="p3-control"
+              label="Control"
+              value={mode}
+              options={[
+                { value: "human", label: "Humano" },
+                { value: "ai", label: "IA" },
+              ]}
+              onChange={(e) => setMode(e.target.value)}
+            />
+          </div>
+          <div className="p3-actions">
+            <Button onClick={() => void update()}>Guardar conversación</Button>
+            <Button
+              onClick={() => {
+                setMode("human");
+                setOwner(session.user.id);
+                void update({ mode: "human", userId: session.user.id });
+              }}
+            >
+              Tomar control humano
+            </Button>
+            <Button
+              variant="quiet"
+              onClick={() => void update({ unread: !detail.thread.Unread })}
+            >
+              {detail.thread.Unread
+                ? "Marcar como leída"
+                : "Marcar como no leída"}
+            </Button>
+          </div>
+        </fieldset>
+      </details>
       {data.error && <Notice error>{data.error}</Notice>}
       <div className="p3-actions">
         <Button
@@ -1108,35 +1327,36 @@ function Conversation({
           Más recientes
         </Button>
       </div>
-      <ol className="p3-messages" aria-label="Mensajes">
+      <ol
+        ref={timeline}
+        className="p3-messages"
+        aria-label="Mensajes"
+        onScroll={(event) => {
+          const list = event.currentTarget;
+          nearLatest.current =
+            list.scrollHeight - list.scrollTop - list.clientHeight < 100;
+        }}
+      >
         {data.value?.items.map((message) => (
           <li key={message.id} data-direction={message.direction}>
-            <small>
-              {message.direction === "incoming" ? "Recibido" : "Saliente"} ·{" "}
-              <DateText value={message.createdAt} />
-            </small>
-            <p>{message.body}</p>
+            {(!message.attachments?.length ||
+              !/^\[(Adjunto|image|audio|video|document|sticker)\]$/i.test(
+                message.body,
+              )) && <p>{message.body}</p>}
             {message.attachments?.map((item) => (
               <MediaDownload key={item.id} attachment={item} />
             ))}
-            {message.deliveryState && (
+            <footer className="inbox-bubble-footer">
               <small>
-                {message.channelAccount} ·{" "}
-                {(
-                  {
-                    queued: "En cola",
-                    sending: "Enviando",
-                    accepted: "Aceptado por el proveedor",
-                    sent: "Enviado",
-                    delivered: "Entregado",
-                    read: "Leído",
-                    uncertain: "Resultado incierto",
-                    failed: "Fallido",
-                    cancelled: "Cancelado",
-                  } as Record<string, string>
-                )[message.deliveryState] || message.deliveryState}
+                <DateText value={message.createdAt} />
               </small>
-            )}
+              {message.deliveryState && (
+                <MessageDelivery
+                  state={message.deliveryState}
+                  reason={message.deliveryError}
+                />
+              )}
+            </footer>
           </li>
         ))}
       </ol>
@@ -1145,19 +1365,26 @@ function Conversation({
         <p>Sin mensajes registrados.</p>
       )}
       <form
+        className="inbox-composer"
         onSubmit={(e) => {
           e.preventDefault();
+          if (attachmentBusy || command.busy || (!body.trim() && !attachment))
+            return;
+          const usedText = !attachment || canCaption;
           void command
             .save(`conversations/${conversation}/messages`, "POST", {
               revision: detail.revision,
-              body: body || (attachment ? "[Adjunto]" : ""),
+              body: usedText && body.trim() ? body : "[Adjunto]",
               ...(attachment ? { mediaId: attachment.id } : {}),
             })
             .then((result) => {
               if (result) {
-                setBody("");
+                if (usedText) {
+                  setBody("");
+                  drafts.delete(conversation);
+                }
                 setAttachment(null);
-                drafts.delete(conversation);
+                nearLatest.current = true;
                 setBefore("");
               }
             });
@@ -1171,28 +1398,42 @@ function Conversation({
             command.busy
           }
         >
-          <TextArea
-            id="p3-message"
-            label={detail.channelAccounts?.length ? "Mensaje" : "Mensaje local"}
-            value={body}
-            maxLength={4000}
-            onChange={(e) => {
-              setBody(e.target.value);
-              drafts.set(conversation, e.target.value);
-            }}
-          />
-          {detail.mediaAvailable && (
-            <MediaUpload
-              conversation={conversation}
-              value={attachment}
-              onChange={setAttachment}
+          <div className="inbox-composer-bar">
+            <EmojiPicker value={body} setValue={setMessage} input={input} />
+            {detail.mediaAvailable && (
+              <MediaUpload
+                conversation={conversation}
+                channel={channel}
+                value={attachment}
+                onChange={setAttachment}
+                onBusy={setAttachmentBusy}
+              />
+            )}
+            <textarea
+              ref={input}
+              id="p3-message"
+              aria-label={channel ? "Mensaje" : "Mensaje local"}
+              placeholder="Escribe un mensaje…"
+              value={body}
+              maxLength={4000}
+              rows={1}
+              onChange={(event) => setMessage(event.target.value)}
             />
+            <Button
+              type="submit"
+              className="inbox-send-button"
+              aria-label={channel ? "Enviar mensaje" : "Guardar mensaje local"}
+              title={channel ? "Enviar mensaje" : "Guardar mensaje local"}
+              disabled={attachmentBusy || (!body.trim() && !attachment)}
+            >
+              <Icon name="send" />
+            </Button>
+          </div>
+          {attachment && !canCaption && body.trim() && (
+            <p className="scope-text">
+              Se enviará el adjunto primero. El texto quedará como borrador.
+            </p>
           )}
-          <Button type="submit" disabled={!body.trim() && !attachment}>
-            {detail.channelAccounts?.length
-              ? "Enviar mensaje"
-              : "Guardar mensaje local"}
-          </Button>
         </fieldset>
       </form>
       <p className="scope-text">

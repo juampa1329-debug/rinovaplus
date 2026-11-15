@@ -4,6 +4,11 @@ const paths: Record<string, string> = {
     "M21 11l-9 9a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.8-2.8L15 6",
   microphone:
     "M9 5a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0z M5 10v2a7 7 0 0 0 14 0v-2 M12 19v3 M8 22h8",
+  smile: "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z M8 14a4.5 4.5 0 0 0 8 0 M9 9h.01 M15 9h.01",
+  send: "M22 2 7 17 M22 2l-5 20-5-10L2 7z",
+  check: "m5 12 4 4L19 6",
+  doubleCheck: "m3 12 4 4L17 6 M11 16 21 6",
+  warning: "M12 3 2 20h20L12 3z M12 9v4 M12 16h.01",
   admissions: "M4 4h16v16H4z M8 8h8 M8 12h5 M8 16h3",
   overview: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   clients:

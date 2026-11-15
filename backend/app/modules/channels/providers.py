@@ -11,6 +11,18 @@ class ProviderFailure(Exception):
         self.code, self.retry, self.uncertain = code, retry, uncertain
 
 
+def whatsapp_delivery_error(error):
+    if not isinstance(error, dict):
+        return None
+    return {
+        131042: "whatsapp_billing_issue",
+        131047: "whatsapp_reply_window_closed",
+        131026: "whatsapp_recipient_unreachable",
+        130429: "whatsapp_rate_limit",
+        131053: "whatsapp_media_upload_failed",
+    }.get(error["code"]) if type(error.get("code")) is int else None
+
+
 def graph_base(account):
     config = account["configuration"]
     host = (
@@ -75,6 +87,10 @@ def request(
                             if error.get("error_subcode") == 463
                             else "meta_access_token_invalid"
                         )
+                    if account["channel"] == "whatsapp" and method == "POST":
+                        reason = whatsapp_delivery_error(error)
+                        if reason:
+                            raise ProviderFailure(reason)
                 if response.status_code >= 300:
                     raise ProviderFailure(
                         "provider_permission_or_request_rejected"
@@ -352,6 +368,8 @@ def send(account, payload, media=None, before_send=None):
 
 
 def send_media(account, payload, media, before_send):
+    if media["mime"] == "image/webp" and account["channel"] != "whatsapp":
+        raise ProviderFailure("channel_sticker_not_supported")
     if account["channel"] == "tiktok":
         return send_tiktok_image(account, payload, media, before_send)
     variant = None
@@ -415,6 +433,7 @@ def send_meta_media(account, payload, media, before_send):
         return str(external)
     with media["path"].open("rb") as handle:
         if channel == "whatsapp":
+            kind = "sticker" if media["mime"] == "image/webp" else media["kind"]
             uploaded = request(
                 account,
                 "POST",
@@ -430,11 +449,12 @@ def send_meta_media(account, payload, media, before_send):
                     "provider_media_upload_not_confirmed", uncertain=True
                 )
             part = {"id": str(identifier)}
-            if media["kind"] == "document":
+            if kind == "document":
                 part["filename"] = media["name"]
-            if payload["body"] and (
-                media["kind"] in ("image", "document")
-                or (payload.get("origin") == "campaign" and media["kind"] == "video")
+            if kind == "audio" and media["name"] == "nota-de-voz.ogg":
+                part["voice"] = True
+            if payload["body"] and payload["body"] != "[Adjunto]" and kind in (
+                "image", "document", "video"
             ):
                 part["caption"] = payload["body"]
             before_send()
@@ -445,8 +465,8 @@ def send_meta_media(account, payload, media, before_send):
                 {
                     "messaging_product": "whatsapp",
                     "to": payload["target"],
-                    "type": media["kind"],
-                    media["kind"]: part,
+                    "type": kind,
+                    kind: part,
                 },
             )
             external = (result.get("messages") or [{}])[0].get("id")

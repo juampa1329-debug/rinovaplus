@@ -3,7 +3,9 @@
 import base64
 import hashlib
 import json
+import warnings
 from pathlib import Path
+from typing import Literal
 from uuid import uuid4
 
 from fastapi import HTTPException, Request
@@ -12,6 +14,7 @@ from pydantic import Field
 
 from app.institutional import postgres_queue
 from app.institutional.auth import authorize
+from app.institutional import campaign_media
 from app.institutional.channel_operations import account, configuration
 from app.institutional.channel_provider import provider_account
 from app.institutional.channel_text import sql_text
@@ -27,6 +30,55 @@ class Upload(Strict):
     conversation_id: str
     filename: str = Field(min_length=1, max_length=160)
     content_base64: str = Field(min_length=1, max_length=6_666_668)
+    kind: Literal["video"] | None = None
+
+
+STICKER_MAX = 100_000
+
+
+def inspect_sticker(identity, name):
+    from PIL import Image, UnidentifiedImageError
+
+    source, output = files.path(identity, ".part"), files.path(identity, ".checked")
+    if not files.INSPECTION_SLOTS.acquire(blocking=False):
+        raise HTTPException(429, "media_inspection_busy")
+    try:
+        raw = source.read_bytes()
+        if not 0 < len(raw) <= STICKER_MAX:
+            raise HTTPException(413, "media_sticker_limit")
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(source, formats=("WEBP",)) as image:
+                if image.size != (512, 512) or image.n_frames != 1:
+                    raise HTTPException(415, "media_sticker_invalid")
+                image.load()
+                image.convert("RGBA").save(output, format="WEBP", quality=78)
+        clean = output.read_bytes()
+        if len(clean) > STICKER_MAX:
+            raise HTTPException(413, "media_sticker_limit")
+        output.chmod(0o600)
+        output.replace(files.path(identity))
+        return {
+            "kind": "image", "mime": "image/webp", "size": len(clean),
+            "name": files.filename(Path(name).stem) + ".webp",
+            "hash": hashlib.sha256(clean).digest(),
+        }
+    except (OSError, ValueError, UnidentifiedImageError, Image.DecompressionBombError,
+            Image.DecompressionBombWarning):
+        raise HTTPException(415, "media_sticker_invalid") from None
+    finally:
+        source.unlink(missing_ok=True)
+        output.unlink(missing_ok=True)
+        files.INSPECTION_SLOTS.release()
+
+
+def inspect_attachment(identity, name, kind=None):
+    suffix = Path(name).suffix.lower()
+    if kind == "sticker" or suffix == ".webp":
+        return inspect_sticker(identity, name)
+    if kind == "video":
+        return campaign_media.inspect(identity, name, "video")
+    return files.inspect_file(identity, name)
 
 
 def quota(c, settings, conversation):
@@ -156,7 +208,7 @@ def register_incoming(c, settings, item, effect, linked, message):
         kind = provider.get("type")
         reference = (
             provider.get(kind)
-            if kind in {"image", "audio", "document", "video"}
+            if kind in {"image", "audio", "document", "video", "sticker"}
             else None
         )
     elif item["Channel"] in {"instagram", "messenger"}:
@@ -170,6 +222,7 @@ def register_incoming(c, settings, item, effect, linked, message):
         "audio",
         "document",
         "video",
+        "sticker",
     }:
         return
     quota(c, settings, str(linked["ConversationId"]))
@@ -186,7 +239,8 @@ def register_incoming(c, settings, item, effect, linked, message):
         linked["IdentityId"],
         linked["ConversationId"],
         message,
-        kind,
+        "image" if kind == "sticker" else kind,
+        "sticker.webp" if kind == "sticker" else
         sql_text(files.filename(reference.get("filename") or "adjunto"), 160),
         json.dumps(reference),
     )
@@ -221,6 +275,7 @@ class Media:
                     "conversation": conversation,
                     "name": body.filename,
                     "hash": hashlib.sha256(raw).hexdigest(),
+                    **({"kind": body.kind} if body.kind else {}),
                 }
                 digest, prior = replay(
                     c,
@@ -249,12 +304,13 @@ class Media:
                 )
                 with files.path(identity, ".part").open("xb") as handle:
                     handle.write(raw)
-                info = files.inspect_file(identity, body.filename)
+                info = inspect_attachment(identity, body.filename, body.kind)
                 mark_ready(c, self.settings, identity, info)
                 result = {
                     "id": identity,
                     "name": info["name"],
                     "kind": info["kind"],
+                    "mime": info["mime"],
                     "state": "ready",
                     "size": info["size"],
                 }
@@ -339,7 +395,7 @@ class MediaWorker:
                 json.loads(value["ProviderReference"]),
                 files.path(identity, ".part"),
             )
-            info = files.inspect_file(identity, value["FileName"])
+            info = inspect_attachment(identity, value["FileName"], value["Kind"])
             with transaction(self.settings, True, anonymous=True) as c:
                 mark_ready(c, self.settings, identity, info)
         except Exception:

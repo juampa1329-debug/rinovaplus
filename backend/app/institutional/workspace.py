@@ -324,7 +324,7 @@ def risk_projection(row, *, sequence, stage, state, now):
         return result
 
 
-def risk(c, contact):
+def risk(c, contact, conversation=None):
     ids = members(c, contact)
     canonical_stage = read_contact(c, ids[0])["stage"]
     slots = ",".join("?" for _ in ids)
@@ -339,8 +339,10 @@ def risk(c, contact):
             "ctId=v.ContactId WHERE v.ContactId IN ("
         )
         + slots
-        + ")",
+        + ")"
+        + (" AND v.ConversationId=?" if conversation else ""),
         *ids,
+        *([conversation] if conversation else []),
     )
     now = c.execute("SELECT SYSUTCDATETIME()").fetchval().replace(tzinfo=timezone.utc)
     assessments = []
@@ -555,6 +557,9 @@ class Workspace:
         anchor="",
         program="",
         program_id=None,
+        state="",
+        temperature="",
+        riskLevel="",
     ):
         with self.transaction() as c:
             if offset and not anchor:
@@ -643,7 +648,7 @@ class Workspace:
                         "utes,pending.startedAt)<SYSUTCDATETIME()"
                     )
                 )
-            elif queue == "churn":
+            if queue == "churn" or riskLevel:
                 where.append(
                     (
                         "EXISTS(SELECT 1 FROM crm_marketing.Churn"
@@ -653,7 +658,7 @@ class Workspace:
                         "ConversationId ORDER BY AsOfUtc DESC,Cre"
                         "atedAtUtc DESC,AssessmentId) AND v.State"
                         "<>'closed' AND x.Status='known' AND x.Ri"
-                        "skLevel='high' AND x.RiskScore BETWEEN 0"
+                        "skLevel=? AND x.RiskScore BETWEEN 0"
                         " AND 100 AND x.FormulaVersion='churn-rub"
                         "ric-v1' AND x.StageSnapshot COLLATE Lati"
                         "n1_General_100_BIN2=COALESCE((SELECT tar"
@@ -696,6 +701,16 @@ class Workspace:
                         "NVERT(uniqueidentifier,e.value))))"
                     )
                 )
+                params.append(riskLevel or "high")
+            if state:
+                where.append("v.State=?")
+                params.append(state)
+            if temperature:
+                where.append(
+                    "EXISTS(SELECT 1 FROM crm_channels.ConversationProfile manual"
+                    " WHERE manual.ConversationId=v.ConversationId AND manual.Temperature=?)"
+                )
+                params.append(temperature)
             if user:
                 where.append("a.UserId=?")
                 params.append(user)
@@ -785,6 +800,18 @@ class Workspace:
                             "RDER BY IdentityId),'local') AS channel"
                         )
                     )
+                    + (
+                        ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
+                        " WHERE m.ConversationId=v.ConversationId"
+                        " ORDER BY m.Sequence DESC) AS preview"
+                        ",(SELECT Temperature FROM crm_channels.ConversationProfile"
+                        " WHERE ConversationId=v.ConversationId) AS temperature"
+                        ",(SELECT LeadScore FROM crm_channels.ConversationProfile"
+                        " WHERE ConversationId=v.ConversationId) AS leadScore"
+                        ",p.Program AS program"
+                        if area == "inbox"
+                        else ""
+                    )
                     + BASE
                     + SLA
                     + predicate
@@ -798,7 +825,11 @@ class Workspace:
                 )
             )
             for item in items:
-                item["risk"] = risk(c, item["id"])
+                if area == "inbox" and channel:
+                    item["channel"] = channel
+                item["risk"] = risk(
+                    c, item["id"], item["conversationId"] if area == "inbox" else None
+                )
             return {
                 "items": items,
                 "total": total,
@@ -1502,8 +1533,11 @@ def install(app, settings, workspace=None):
         ] = "all",
         user: str = Query("", max_length=36),
         channel: Literal[
-            "", "local", "whatsapp", "messenger", "instagram", "tiktok"
+            "", "local", "whatsapp", "facebook", "messenger", "instagram", "tiktok"
         ] = "",
+        state: Literal["", "open", "waiting", "closed"] = "",
+        temperature: Literal["", "cold", "warm", "hot"] = "",
+        riskLevel: Literal["", "low", "medium", "high"] = "",
         offset: int = Query(0, ge=0, le=1000000),
         anchor: str = Query("", pattern=r"^([0-9]{1,19})?$"),
     ):
@@ -1516,6 +1550,9 @@ def install(app, settings, workspace=None):
             queue=queue,
             user=user,
             channel=channel,
+            state=state,
+            temperature=temperature,
+            riskLevel=riskLevel,
             offset=offset,
             anchor=anchor,
         )

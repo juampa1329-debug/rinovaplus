@@ -92,7 +92,7 @@ const capabilities: UiCapabilities = {
 
 export function InstitutionApp({
   core: CoreView = Core,
-}: { core?: ComponentType<{ page: string }> } = {}) {
+}: { core?: ComponentType<{ page: string; showComments?: boolean }> } = {}) {
   const [session, setSession] = useState<Session | null>(null),
     [initialized, setInitialized] = useState<boolean | null>(null),
     [error, setError] = useState("");
@@ -407,7 +407,11 @@ function AccessScreen({
     </AccessLayout>
   );
 }
-function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
+function Shell({
+  core: CoreView,
+}: {
+  core: ComponentType<{ page: string; showComments?: boolean }>;
+}) {
   const { session, call, expire } = useInstitution(),
     runtime = useResource<{
       channel_operations?: boolean;
@@ -559,11 +563,13 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
                 "RinovaPlus"
               }
               description={
-                location.page === "settings"
-                  ? "Configuración institucional y personalización de tu espacio de trabajo."
-                  : location.page === "channels"
-                    ? "Cuentas, credenciales y conexiones de mensajería."
-                    : "Tu espacio de trabajo institucional."
+                location.page === "inbox"
+                  ? ""
+                  : location.page === "settings"
+                    ? "Configuración institucional y personalización de tu espacio de trabajo."
+                    : location.page === "channels"
+                      ? "Cuentas, credenciales y conexiones de mensajería."
+                      : "Tu espacio de trabajo institucional."
               }
             />
             {task.notices}
@@ -685,7 +691,10 @@ function Shell({ core: CoreView }: { core: ComponentType<{ page: string }> }) {
                     <Denied />
                   )
                 ) : core ? (
-                  <CoreView page={location.page} />
+                  <CoreView
+                    page={location.page}
+                    showComments={!!runtime.value.channel_operations}
+                  />
                 ) : location.page === "channels" ? (
                   allowed("settings.channels.read") ? (
                     <Channels

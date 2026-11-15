@@ -42,6 +42,7 @@ def bounded_provider(value, depth=0):
         "to",
         "image",
         "audio",
+        "sticker",
         "document",
         "video",
         "button",
@@ -175,17 +176,26 @@ def normalize(provider, payload):
                         )
                     )
                 for status in value.get("statuses", [])[:100]:
-                    effects.append(
-                        event(
-                            "whatsapp",
-                            phone,
-                            "status",
-                            status.get("id", ""),
-                            "",
-                            status.get("status", ""),
-                            status,
-                        )
+                    effect = event(
+                        "whatsapp",
+                        phone,
+                        "status",
+                        status.get("id", ""),
+                        "",
+                        status.get("status", ""),
+                        status,
                     )
+                    if effect["text"] == "failed":
+                        from app.modules.channels.providers import whatsapp_delivery_error
+
+                        errors = status.get("errors")
+                        if isinstance(errors, list):
+                            effect["failure"] = next(
+                                (code for error in errors[:10]
+                                 if (code := whatsapp_delivery_error(error))),
+                                None,
+                            )
+                    effects.append(effect)
             elif field in {"comments", "live_comments"}:
                 effects.append(
                     event(
@@ -560,12 +570,20 @@ def project(c, settings, item, effect):
             effect["external"],
         )
         for job in jobs:
+            state = delivery(job["State"], effect["text"])
+            reason = None
+            if state == "failed" and effect["text"] == "failed":
+                reason = effect.get("failure")
+                if not reason and job["State"] != "failed":
+                    reason = "provider_delivery_failed"
             c.execute(
                 (
                     "UPDATE crm_channels2.SendJob SET State"
-                    "=? WHERE InstitutionId=? AND QueueId=?"
+                    "=?,LastErrorCode=COALESCE(?,LastErrorCode)"
+                    " WHERE InstitutionId=? AND QueueId=?"
                 ),
-                delivery(job["State"], effect["text"]),
+                state,
+                reason,
                 inst,
                 job["QueueId"],
             )

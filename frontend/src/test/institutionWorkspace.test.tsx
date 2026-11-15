@@ -8,6 +8,7 @@ import {
 import { beforeEach, expect, it, vi } from "vitest";
 import { WorkspaceSessionProvider } from "../shared/workspaceSession";
 import { WorkspaceP3, RiskSummary } from "../institution/Workspace";
+import { inboxProgramCode } from "../institution/InboxPresentation";
 import type { Risk } from "../institution/Workspace";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
@@ -74,6 +75,7 @@ const caps: UiCapabilities = {
 let failWrite = 0;
 let agentOperations = false;
 let serverRevision = "1";
+let failedDelivery = false;
 const calls: {
   path: string;
   method: string;
@@ -106,6 +108,7 @@ beforeEach(() => {
   failWrite = 0;
   agentOperations = false;
   serverRevision = "1";
+  failedDelivery = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
     config,
@@ -175,6 +178,19 @@ beforeEach(() => {
               createdAt: "2026-10-26T12:00:00Z",
               sequence: "1",
             },
+            ...(failedDelivery
+              ? [
+                  {
+                    id: "failed-message",
+                    body: "Estado de la solicitud",
+                    direction: "outgoing",
+                    createdAt: "2026-10-26T12:01:00Z",
+                    sequence: "2",
+                    deliveryState: "failed",
+                    deliveryError: "whatsapp_billing_issue",
+                  },
+                ]
+              : []),
           ],
           hasMore: false,
           before: null,
@@ -196,6 +212,7 @@ beforeEach(() => {
         const index = path.includes(conv[1]) ? 1 : 0;
         return response({
           agentOperations,
+          mediaAvailable: true,
           client: client(index),
           thread: {
             ConversationId: conv[index],
@@ -228,6 +245,11 @@ beforeEach(() => {
             mode: "human",
             unread: true,
             assignee: null,
+            channel: index ? "instagram" : "whatsapp",
+            preview: index ? "Consulta por Instagram" : "Hola desde WhatsApp",
+            program: index
+              ? "Desarrollo Multimedia y Comunicación Gráfica"
+              : "Cocina Nacional",
             risk,
           })),
           total: 2,
@@ -263,6 +285,86 @@ function open(page = "clients", actions = session.actions) {
     showWorkspace: (shownPage: string | null) => view.rerender(tree(shownPage)),
   };
 }
+it("combines Inbox filters on the server and explains a failed delivery in plain Spanish", async () => {
+  const dialog = HTMLDialogElement.prototype;
+  if (!dialog.showModal) {
+    dialog.showModal = function () {
+      this.open = true;
+    };
+    dialog.close = function () {
+      this.open = false;
+    };
+  }
+  failedDelivery = true;
+  open("inbox");
+  expect(await screen.findByText("Hola desde WhatsApp")).toBeVisible();
+  fireEvent.click(screen.getByText("Filtros", { exact: true }));
+  fireEvent.change(screen.getByLabelText("Canal", { exact: true }), {
+    target: { value: "whatsapp" },
+  });
+  fireEvent.change(screen.getByLabelText("Temperatura", { exact: true }), {
+    target: { value: "cold" },
+  });
+  fireEvent.change(screen.getByLabelText("Estado", { exact: true }), {
+    target: { value: "open" },
+  });
+  fireEvent.change(
+    screen.getByLabelText("Riesgo de abandono", { exact: true }),
+    { target: { value: "high" } },
+  );
+  await waitFor(() =>
+    expect(
+      calls.some(
+        ({ path }) =>
+          path.includes("channel=whatsapp") &&
+          path.includes("temperature=cold") &&
+          path.includes("state=open") &&
+          path.includes("riskLevel=high"),
+      ),
+    ).toBe(true),
+  );
+  await select();
+  fireEvent.click(await screen.findByRole("button", { name: "No enviado" }));
+  expect(await screen.findByRole("alertdialog")).toHaveTextContent(
+    "saldo insuficiente",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
+  fireEvent.click(screen.getByRole("button", { name: "Elegir emoji" }));
+  fireEvent.change(screen.getByRole("searchbox", { name: "Buscar emojis" }), {
+    target: { value: "sonrisa" },
+  });
+  fireEvent.click(
+    await screen.findByRole("button", { name: "cara sonriendo" }),
+  );
+  expect(screen.getByLabelText("Mensaje local")).toHaveValue("😀");
+  fireEvent.click(screen.getByRole("button", { name: "Adjuntar archivo" }));
+  expect(screen.getByRole("button", { name: "Sticker" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Video" })).toBeVisible();
+});
+
+it("keeps the CRM panel collapsed across threads and shows each program code", async () => {
+  open("inbox");
+  expect(await screen.findByText("CN")).toBeVisible();
+  expect(screen.getByText("DMC")).toBeVisible();
+  await select();
+  fireEvent.click(screen.getByRole("button", { name: "Ocultar ficha CRM" }));
+  expect(screen.getByLabelText("Nombre visible")).not.toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: /^Persona 1/ }));
+  const show = await screen.findByRole("button", { name: "Ver ficha CRM" });
+  expect(show).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(show);
+  expect(await screen.findByLabelText("Nombre visible")).toBeVisible();
+});
+
+it.each([
+  ["Cocina Nacional", "CN"],
+  ["Desarrollo Multimedia y Comunicación Gráfica", "DMC"],
+  ["Salud Oral", "SO"],
+  ["Servicios Hoteleros y Agencias Turísticas", "SHAT"],
+  ["Auxiliar de Enfermería", "AE"],
+])("uses the institution's initials for %s", (program, code) => {
+  expect(inboxProgramCode(program)).toBe(code);
+});
 async function select(index = 0) {
   fireEvent.click(
     await screen.findByRole("button", {
@@ -444,6 +546,7 @@ it("disables mutations for a read only human session", async () => {
   open("inbox", ["crm.read", "inbox.read", "settings.crm.read"]);
   await select();
   expect(screen.getByLabelText("Nombre visible")).toBeDisabled();
+  fireEvent.click(screen.getByText("Gestión de conversación"));
   expect(
     screen.getByRole("button", { name: "Tomar control humano" }),
   ).toBeDisabled();
@@ -455,6 +558,7 @@ it("marks read through the actual loaded message sequence", async () => {
   open("inbox");
   await select();
   await screen.findByText("Mensaje registrado");
+  fireEvent.click(screen.getByText("Gestión de conversación"));
   fireEvent.click(screen.getByRole("button", { name: "Marcar como leída" }));
   await waitFor(() =>
     expect(

@@ -19,6 +19,7 @@
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
+    "emojibase-data": "18.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -512,6 +512,8 @@ def run():
         sent.append(payload["body"])
         if payload["body"] == "incierto":
             raise ProviderFailure("fixture_uncertain", uncertain=True)
+        if payload["body"] == "facturación":
+            return "fixture_billing"
         return "fixture_sent_1"
 
     def downloader(adapter, reference, target):
@@ -574,6 +576,29 @@ def run():
                 lambda data: data["total"] == 1,
             )
             thread = inbox["items"][0]["conversationId"]
+            assert inbox["items"][0]["channel"] == "whatsapp"
+            assert inbox["items"][0]["preview"] == "Hola ensayo"
+            assert checked(api.get(WORKSPACE + "/inbox", params={
+                "q": "Hola ensayo", "channel": "whatsapp", "state": "open",
+            }))["total"] == 1
+            assert checked(api.get(WORKSPACE + "/inbox", params={"state": "closed"}))["total"] == 0
+            assert checked(api.get(WORKSPACE + "/inbox", params={"channel": "local"}))["total"] == 0
+            assert checked(api.get(WORKSPACE + "/inbox", params={"riskLevel": "high"}))["total"] == 0
+            assert checked(api.get(WORKSPACE + "/inbox", params={"temperature": "cold"}))["total"] == 0
+            with transaction(settings, True, anonymous=True) as c:
+                c.execute(
+                    "UPDATE crm.Contact SET Program=? WHERE ContactId=?",
+                    "Auxiliar de Enfermería", inbox["items"][0]["id"],
+                )
+                c.execute(
+                    "INSERT crm_channels.ConversationProfile(ConversationId,LeadScore,Temperature)"
+                    " VALUES(?,25,'cold')",
+                    thread,
+                )
+            cold = checked(api.get(WORKSPACE + "/inbox", params={"channel": "whatsapp", "temperature": "cold"}))
+            assert cold["total"] == 1
+            assert cold["items"][0]["leadScore"] == 25 and cold["items"][0]["temperature"] == "cold"
+            assert cold["items"][0]["program"] == "Auxiliar de Enfermería"
             assert checked(api.get(WORKSPACE + "/clients", params={"q": PHONE}))["total"] == 1
             for route in ("/directory", "/inbox/directory"):
                 directory = checked(api.get(WORKSPACE + route))
@@ -621,6 +646,15 @@ def run():
             assert [item["body"] for item in checked(api.get(path))["items"]] == [
                 "Hola ensayo", "respuesta", "incierto",
             ]
+            reply("facturación")
+            wait_for(lambda: queue("accepted"), lambda count: count == 1)
+            deliver({"statuses": [
+                {"id": "fixture_billing", "status": "failed",
+                 "errors": [{"code": 131042, "message": "untrusted provider details"}]}
+            ]})
+            wait_for(lambda: queue("failed"), lambda count: count == 1)
+            failed = next(item for item in checked(api.get(path))["items"] if item["body"] == "facturación")
+            assert failed["deliveryState"] == "failed" and failed["deliveryError"] == "whatsapp_billing_issue"
             deliver({"messages": [{"id": "fixture_received_media", "from": PHONE, "timestamp": str(int(time.time())),
                                    "type": "image", "image": {"id": "fixture_image_1", "mime_type": "image/png"}}]})
             operations = wait_for(

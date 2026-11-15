@@ -11,10 +11,15 @@ class Workspace(ChannelWorkspace):
     def listing(
         self, area, q="", stage="", tag="", city="", contactType="", queue="all",
         user="", channel="", offset=0, anchor="", program="", program_id=None,
+        state="", temperature="", riskLevel="",
     ):
-        if tag or city or contactType or user or channel or program or program_id is not None:
-            raise HTTPException(422, "rehearsal_filter_not_available")
-        if queue not in {"all", "unread", "open", "waiting", "closed", "human", "ai"}:
+        if area == "inbox":
+            return super().listing(
+                area, q=q, stage=stage, queue=queue, user=user, channel=channel,
+                offset=offset, anchor=anchor, state=state, temperature=temperature,
+                riskLevel=riskLevel,
+            )
+        if tag or city or contactType or program or program_id is not None:
             raise HTTPException(422, "rehearsal_filter_not_available")
         with self.transaction() as c:
             version = revision(c)
@@ -22,12 +27,8 @@ class Workspace(ChannelWorkspace):
                 raise HTTPException(422, "page_anchor_required")
             if anchor and anchor != version:
                 raise HTTPException(409, "page_changed")
-            if area == "clients":
-                read = self.contacts
-                filters = (q, stage)
-            else:
-                read = self.inbox
-                filters = (q, stage, queue)
+            read = self.contacts
+            filters = (q, stage)
             rows = read(c, *filters, offset)
             items = [
                 dict(zip((col[0] for col in c.description[:-1]), row[:-1], strict=True))
@@ -56,31 +57,6 @@ class Workspace(ChannelWorkspace):
                    AND (%s='' OR p.stage=%s)
                ORDER BY p.updatedat DESC,p.contactid LIMIT %s OFFSET %s""",
             query, query, query, stage, stage, PAGE, offset,
-        ).fetchall()
-
-    def inbox(self, c, query, stage, queue, offset):
-        return c.native(
-            """SELECT v.conversationid AS conversationId,p.contactid AS id,
-               p.name AS name,p.phone AS phone,p.city AS city,p.stage AS stage,p.tags AS tags,
-               v.state AS state,v.priority AS priority,v.controlmode AS mode,
-               v.unread AS unread,v.updatedat AS updatedAt,v.assignee AS assignee,
-               coalesce(route.channel,'local') AS channel,count(*) OVER() AS total
-               FROM rinovaplus_crm.crmconversacion v
-               JOIN rinovaplus_crm.crmcontacto p ON p.contactid=v.contactid
-               LEFT JOIN LATERAL (
-                 SELECT a.channel FROM rinovaplus_crm.crmcanalinstitucionalidentidadexterna i
-                 JOIN rinovaplus_crm.crmcanalinstitucionalintegracion a USING (institutionid,integrationid)
-                 WHERE i.institutionid=%s AND i.conversationid=v.conversationid
-                 ORDER BY i.identityid LIMIT 1
-               ) route ON true
-               WHERE (%s='' OR strpos(lower(p.name COLLATE "default"),lower(%s))>0
-                          OR strpos(p.phone COLLATE "C",%s)>0)
-                 AND (%s='' OR p.stage=%s)
-                 AND (%s='all' OR (%s='unread' AND v.unread=1)
-                      OR v.state=%s OR v.controlmode=%s)
-               ORDER BY v.updatedat DESC,v.conversationid LIMIT %s OFFSET %s""",
-            db.institution(self.profile), query, query, query, stage, stage,
-            queue, queue, queue, queue, PAGE, offset,
         ).fetchall()
 
     def messages(self, conversation, before=None):
