@@ -74,6 +74,21 @@ def test_legacy_sql_keeps_parameters_separate_from_literals():
     )
 
 
+def test_channel_save_translates_quoted_assignments_and_keeps_bindings():
+    query = (
+        "UPDATE crm_channels2.Integration SET [ParentExternalId]=?,[ExternalAccountId]=?,"
+        "UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND IntegrationId=? "
+        "AND RowVersion=? AND DisplayName<>' [ParentExternalId]=?'"
+    )
+    converted = postgres_sql(query, {"crm_channels2.Integration": "dbo.CRMCanalIntegracion"})
+    assert converted == (
+        'UPDATE rinovaplus_crm.crmcanalintegracion SET "parentexternalid"=%s,'
+        '"externalaccountid"=%s,UpdatedAt=(statement_timestamp() AT TIME ZONE \'UTC\') '
+        "WHERE InstitutionId=%s AND IntegrationId=%s AND RowVersion=%s "
+        "AND DisplayName<>' [ParentExternalId]=?'"
+    )
+
+
 def test_rate_limit_cleanup_is_bounded_and_local():
     converted = postgres_sql(
         "DELETE TOP(100) FROM crm_access.RateBucket WHERE InstitutionId=? "

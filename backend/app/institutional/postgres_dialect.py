@@ -140,6 +140,12 @@ def postgres_sql(statement, table_map):
             return "rinovaplus_crm." + name.split(".", 1)[1].lower()
 
         part = TABLE.sub(qualify, part)
+        # Channel settings build SET assignments with SQL Server's quoted column names.
+        part = re.sub(
+            r"(?<=[ ,])\[([A-Za-z_][A-Za-z_0-9]*)\](?=\s*=)",
+            lambda match: '"' + match[1].lower() + '"',
+            part,
+        )
         part = re.sub(r"\bISNULL\s*\(", "COALESCE(", part, flags=re.I)
         part = re.sub(r"\bCOUNT_BIG\s*\(", "COUNT(", part, flags=re.I)
         part = re.sub(r"\b([\w.]+)\s+LIKE\b", r'(\1 COLLATE "default") ILIKE', part, flags=re.I)

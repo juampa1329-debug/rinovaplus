@@ -53,6 +53,18 @@ type Catalog = {
   groups: { id: string; label: string; applies_to_channels: string[] }[];
   fields: ChannelField[];
 };
+const whatsappMetaFields: Partial<
+  Record<string, { label: string; hint: string }>
+> = {
+  "meta:whatsapp_business_account_id": {
+    label: "ID de la cuenta de WhatsApp (WABA ID)",
+    hint: "En la configuración de Meta Business, abre la cuenta de WhatsApp y copia el ID de esa cuenta.",
+  },
+  "meta:whatsapp_phone_number_id": {
+    label: "ID del número de teléfono en Meta",
+    hint: "En el Administrador de WhatsApp, copia el ID que Meta asigna al número que quieres conectar.",
+  },
+};
 export const channelNames: Record<string, string> = {
   whatsapp: "WhatsApp",
   instagram: "Instagram",
@@ -363,6 +375,7 @@ function ChannelEditor({
                     .map((field) => {
                       const id = `channel-${field.id}`,
                         current = values[field.id],
+                        metaField = whatsappMetaFields[field.id],
                         disabled =
                           !field.editable_in_p2 ||
                           field.requires_provider_action ||
@@ -411,7 +424,7 @@ function ChannelEditor({
                         <Field
                           key={id}
                           id={id}
-                          label={field.label}
+                          label={metaField?.label ?? field.label}
                           value={
                             Array.isArray(current)
                               ? current.join(", ")
@@ -429,6 +442,7 @@ function ChannelEditor({
                           autoComplete={
                             field.field_kind === "transient" ? "off" : undefined
                           }
+                          inputMode={metaField ? "numeric" : undefined}
                           min={field.range?.minimum}
                           max={field.range?.maximum}
                           maxLength={field.max_length}
@@ -436,7 +450,7 @@ function ChannelEditor({
                           hint={
                             field.requires_provider_action
                               ? "Disponible al conectar el proveedor."
-                              : undefined
+                              : metaField?.hint
                           }
                           onChange={(event) =>
                             change(

@@ -1,5 +1,11 @@
 # Informe de avance — 2026-10-19
 
+## Canales · guardado de identificadores de WhatsApp — 2026-11-15
+
+Los logs de Coolify registraron PostgreSQL `42601` al guardar una cuenta. En una base Docker desechable, el alta devolvió HTTP 200 y la edición que enviaba ambos identificadores devolvió HTTP 503. El adaptador de PostgreSQL ahora traduce los nombres de columna entre corchetes en las asignaciones y conserva los parámetros.
+
+El mismo flujo local comprobó el alta, la edición del WABA ID y del ID del número de teléfono, la lectura posterior, el reintento idempotente y el conflicto de revisión. La cuenta quedó pausada. El formulario muestra los dos identificadores por separado e indica dónde encontrarlos en Meta.
+
 ## RinovaPlus · identidad y revisión local — 2026-11-15
 
 La identidad se aplica al acceso, la navegación, los módulos, los metadatos de la API, la pantalla de retorno de Canales, los nuevos registros del autenticador y el nombre de las descargas de destinatarios. El acceso muestra el crédito a la Corporación Bolivariana del Norte.
