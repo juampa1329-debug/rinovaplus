@@ -70,6 +70,8 @@ def identifier(value):
 
 
 def installed(cursor):
+    if getattr(cursor, "dialect", None) == "postgresql":
+        return cursor.native("SELECT to_regclass(%s)", "rinovaplus_crm.crmagenteperfil").fetchval() is not None
     return (
         cursor.execute("SELECT OBJECT_ID(N'crm_agents.Profile')").fetchval() is not None
     )

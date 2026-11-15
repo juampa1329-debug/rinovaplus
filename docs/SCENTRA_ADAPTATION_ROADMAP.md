@@ -37,7 +37,7 @@ No reejecutar preparadores/seeds/calificadores en bases pobladas. El preparador 
 | P10 | 95,00% | 4/5 |
 | P11 | 72,50% | 2/4 |
 
-El 0,00% online corresponde al último cierre formal de P12. Al 14 de noviembre se completaron **4 de 8 hitos de la migración PostgreSQL (50,00 %)**. La copia de Oracle tiene 155 tablas tipadas y 48 filas conciliadas. La cobertura comprobada de lectura sigue en **119 de 155 tablas (76,77 %)**. En PostgreSQL 16 local se integraron cinco de ocho etapas de workers (62,50 % de las etapas) y se verificó el recorrido de recepción y respuesta del Inbox con un proveedor simulado. El avance de migración es auxiliar y el roadmap ponderado de criterios aceptados sigue en **93,62%**. Quedan por validar el resto de los flujos y la copia de Oracle antes del corte. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
+El 0,00% online corresponde al último cierre formal de P12. Al 14 de noviembre se completaron **5 de 8 hitos de la migración PostgreSQL (62,50 %)**. La copia de Oracle tiene 155 tablas tipadas y 48 filas conciliadas. La cobertura comprobada de lectura llegó a **155 de 155 tablas (100 %)**. En contenedores separados de Oracle pasaron el arranque de Coolify, el recorrido de Inbox y Canales con proveedor simulado, **ocho de ocho etapas de workers**, las lecturas de los módulos y la restauración conciliada de las 48 filas. El roadmap general ponderado sigue en **93,62 %**. Quedan las escrituras y recorridos completos de otros módulos, rendimiento comparativo y actualización final antes del corte. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
 
 ## Historia anterior a P11; prevalece el estado superior
 

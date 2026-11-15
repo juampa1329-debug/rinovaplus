@@ -626,13 +626,20 @@ def observe_contact(c, s, id):
 class Worker:
     def __init__(self, settings, gateway=None):
         self.settings = settings
-        self.request = gateway or providers.request
+        if getattr(settings, "postgres_profile", False):
+            from app.institutional.postgres_rehearsal import network_disabled
+
+            self.request = gateway or network_disabled
+            self.downloader = network_disabled
+        else:
+            self.request = gateway or providers.request
+            self.downloader = None
         self.controlled = gateway is not None
 
     def refresh(self):
         from app.institutional.campaign_assets import refresh as prepare_images
 
-        if prepare_images(self.settings):
+        if prepare_images(self.settings, self.downloader):
             return True
         selected = None
         with transaction(self.settings, anonymous=True) as c:

@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import secrets
+import subprocess
 import tempfile
 import time
 from contextlib import closing
@@ -13,19 +14,23 @@ from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 from uuid import uuid4
 
+import httpx2 as httpx
 import psycopg2
 from fastapi.testclient import TestClient
 from PIL import Image
+from psycopg2 import sql
 
 from app.institutional import operations_policy
 from app.institutional.api import create_app
 from app.institutional.channel_secrets import put
 from app.institutional.crypto import password_hash
+from app.institutional.policy import ACTIONS, MODULES
 from app.institutional.postgres_dialect import Cursor
 from app.institutional.postgres_rehearsal import DATABASE, load, transaction
 from app.modules.channels.providers import ProviderFailure
 from app.modules.crm_configuration.application.service import Configuration
 from tools.postgres_crm_schema import TABLE, build
+from tools.postgres_runtime_role import grants
 
 DIGEST = "a" * 64
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,44 +42,45 @@ FIXTURE_ROLE = "rinova_pg_fixture"
 PHONE = "15551231234"
 
 
-def seed_catalog(dsn):
+def seed_catalog(dsn, runtime_password, source_sha256=None):
     with closing(psycopg2.connect(dsn)) as conn:
         conn.autocommit = True
         with conn.cursor() as c:
             c.execute("SELECT current_database(),to_regnamespace('rinovaplus_crm')")
-            if c.fetchone() != (DATABASE, None):
+            database, schema = c.fetchone()
+            if database != DATABASE or bool(schema) != bool(source_sha256):
                 raise RuntimeError("Disposable database required")
+            if schema:
+                c.execute("SELECT tablename FROM pg_tables WHERE schemaname='rinovaplus_crm'")
+                for (table,) in c.fetchall():
+                    c.execute(sql.SQL("SELECT 1 FROM rinovaplus_crm.{} LIMIT 1").format(sql.Identifier(table)))
+                    if c.fetchone():
+                        raise RuntimeError("An empty schema-only copy is required")
             c.execute(
                 """CREATE SCHEMA rinova_migration;
                    CREATE TABLE rinova_migration.source_snapshot(archive_sha256 text PRIMARY KEY);
                    CREATE TABLE rinova_migration.source_row(source_table text,source_values json);
                 """
             )
-            c.execute("INSERT INTO rinova_migration.source_snapshot VALUES(%s)", (DIGEST,))
-            source = json.loads(
-                (operations_policy.parent.PACKAGE / "expected-model.json").read_text(encoding="utf-8")
-            )
-            model = {
-                section: [
-                    row for row in values
-                    if TABLE.fullmatch(row["schema"] + "." + row["name" if section == "tables" else "table"])
-                ]
-                for section, values in source.items()
-            }
-            c.execute(build(model, DIGEST))
-            c.execute((ROOT / "migrations/postgresql/001_copy_queries_and_queues.sql").read_text())
-            c.execute(
-                """
-                CREATE ROLE rinova_pg_fixture LOGIN;
-                REVOKE CREATE ON DATABASE rinovaplus_rehearsal FROM PUBLIC;
-                GRANT USAGE ON SCHEMA rinovaplus_crm,rinova_migration TO rinova_pg_fixture;
-                GRANT SELECT(archive_sha256) ON rinova_migration.source_snapshot TO rinova_pg_fixture;
-                GRANT SELECT,INSERT,UPDATE ON ALL TABLES IN SCHEMA rinovaplus_crm TO rinova_pg_fixture;
-                GRANT DELETE ON rinovaplus_crm.crmaccesolimiteacceso TO rinova_pg_fixture;
-                GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA rinovaplus_crm TO rinova_pg_fixture;
-                GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA rinovaplus_crm TO rinova_pg_fixture;
-                """
-            )
+            c.execute("INSERT INTO rinova_migration.source_snapshot VALUES(%s)", (source_sha256 or DIGEST,))
+            if not schema:
+                source = json.loads(
+                    (operations_policy.parent.PACKAGE / "expected-model.json").read_text(encoding="utf-8")
+                )
+                model = {
+                    section: [
+                        row for row in values
+                        if TABLE.fullmatch(row["schema"] + "." + row["name" if section == "tables" else "table"])
+                    ]
+                    for section, values in source.items()
+                }
+                c.execute(build(model, DIGEST))
+                c.execute((ROOT / "migrations/postgresql/001_copy_queries_and_queues.sql").read_text())
+            c.execute("CREATE ROLE rinova_pg_fixture LOGIN PASSWORD %s", (runtime_password,))
+            c.execute("REVOKE CREATE ON DATABASE rinovaplus_rehearsal FROM PUBLIC")
+            c.execute("\n".join(grants(FIXTURE_ROLE, DATABASE)))
+            c.execute("SELECT has_table_privilege(%s, 'rinova_migration.source_row', 'SELECT')", (FIXTURE_ROLE,))
+            assert c.fetchone() == (False,)
 
 
 def seed_institution(dsn, institution, password):
@@ -91,7 +97,7 @@ def seed_institution(dsn, institution, password):
         )
         c.execute(f"INSERT crm_access.Institution(InstitutionId,InitializedAt) VALUES(?,{now})", institution)
         for role, name, actions in (
-            ("owner", "Owner", ["users.manage", "crm.read", "crm.write", "inbox.read", "inbox.write"]),
+            ("owner", "Owner", list(ACTIONS)),
             ("agent", "Agent", ["inbox.read"]),
         ):
             c.execute(
@@ -109,7 +115,7 @@ def seed_institution(dsn, institution, password):
                 institution, identity, email, email, role, password_hash(password), role,
             )
         for section, document in (
-            ("modules", {"enabled": {"clients": True, "inbox": True, "channels": True}}),
+            ("modules", {"enabled": dict.fromkeys(MODULES, True)}),
             ("budgets", {"requests_per_minute": 120, "daily_messages": 20}),
         ):
             c.execute(
@@ -169,6 +175,56 @@ def checked(response, expected=200):
     return response.json()
 
 
+def seed_worker_recovery(settings, thread):
+    institution = settings.ticket["context"][0][1]
+    agent, request, enrollment, flow = (str(uuid4()) for _ in range(4))
+    with transaction(settings, True, anonymous=True) as c:
+        actor, session = c.execute(
+            "SELECT s.UserId,s.SessionId FROM crm_access.Session s JOIN crm_access.AccessUser u"
+            " ON u.InstitutionId=s.InstitutionId AND u.UserId=s.UserId WHERE u.Login=? AND s.RevokedAt IS NULL",
+            "owner@example.invalid",
+        ).fetchone()
+        identity, contact = c.execute(
+            "SELECT IdentityId,ContactId FROM crm_channels2.ExternalIdentity WHERE InstitutionId=? AND ConversationId=?",
+            institution, thread,
+        ).fetchone()
+        c.execute(
+            "INSERT crm_inbox.Agent(AgentId,Name,Description,Enabled) VALUES(?,'Agente sintético','',0)",
+            agent,
+        )
+        c.execute(
+            "INSERT crm_agents.Profile(AgentId,Level,Version,Document) VALUES(?,'guide',1,'{}')",
+            agent,
+        )
+        c.execute(
+            "INSERT crm_agents5.Request(InstitutionId,RequestId,AgentId,ActorId,SessionId,Kind,State,PayloadHash,LeaseId,LeaseUntil)"
+            " VALUES(?,?,?,?,?,'simulation','running',?,?,DATEADD(second,-1,SYSUTCDATETIME()))",
+            institution, request, agent, actor, session, bytes(32), str(uuid4()),
+        )
+        c.execute(
+            "INSERT crm_campaign8.Record(InstitutionId,RecordId,Kind,State,Name,Document,CurrentVersion,Epoch,Revision)"
+            " VALUES(?,?,'flow','paused','Flujo sintético','{}',1,1,1)", institution, flow,
+        )
+        c.execute(
+            "INSERT crm_campaign8.Version(InstitutionId,RecordId,VersionNo,Kind,Name,Document,Reason,ActorId,OperationId)"
+            " VALUES(?,?,1,'flow','Flujo sintético','{}','fixture',?,?)", institution, flow, actor, str(uuid4()),
+        )
+        c.execute(
+            "INSERT crm_campaign8.Enrollment(InstitutionId,EnrollmentId,FlowId,VersionNo,FlowEpoch,"
+            "IdentityId,ContactId,CanonicalContactId,ConversationId,EntryKey,Variant,State,Context,StepIndex,DueAt)"
+            " VALUES(?,?,?,1,1,?,?,?,?,?,'A','waiting','{}',0,SYSUTCDATETIME())",
+            institution, enrollment, flow, identity, contact, contact, thread, "e" * 64,
+        )
+    return request, enrollment
+
+
+def recovery_states(settings, request, enrollment):
+    with transaction(settings, anonymous=True) as c:
+        agent = c.execute("SELECT State,ErrorCode FROM crm_agents5.Request WHERE RequestId=?", request).fetchone()
+        campaign = c.execute("SELECT State,LastReason FROM crm_campaign8.Enrollment WHERE EnrollmentId=?", enrollment).fetchone()
+        return agent, campaign
+
+
 def wait_for(call, predicate):
     deadline = time.monotonic() + 24
     while time.monotonic() < deadline:
@@ -179,26 +235,58 @@ def wait_for(call, predicate):
     raise AssertionError("worker_wait_timeout")
 
 
+def verify_coolify_start(config, password):
+    entrypoint = subprocess.Popen(
+        ["/bin/bash", "/app/coolify-start.sh"],
+        env={**os.environ, **config},
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    try:
+        with httpx.Client(base_url="http://127.0.0.1:4178", trust_env=False, headers=LOCAL, timeout=4) as api:
+            def readiness():
+                if entrypoint.poll() is not None:
+                    raise AssertionError("coolify_entrypoint_exited")
+                try:
+                    return api.get("/health/ready").status_code
+                except httpx.ConnectError:
+                    return 0
+
+            wait_for(readiness, lambda code: code == 200)
+            login = checked(api.post(AUTH + "/login", json={"email": "owner@example.invalid", "password": password}))
+            assert checked(api.get(AUTH + "/me"))["user"]["role"] == "owner"
+            assert checked(api.get(WORKSPACE + "/clients"))["total"] == 1
+            checked(api.post(AUTH + "/logout", headers={"X-CSRF-Token": login["csrf_token"]}))
+    finally:
+        entrypoint.terminate()
+        entrypoint.wait(timeout=20)
+
+
 def run():
     admin = os.environ["PG_FIXTURE_ADMIN_DSN"]
     target = urlsplit(admin)
     if target.hostname != "pg-fixture" or target.path != "/" + DATABASE or target.username != "postgres":
         raise RuntimeError("Use the dedicated PostgreSQL fixture container")
-    seed_catalog(admin)
+    source_sha256 = os.environ.get("PG_FIXTURE_SOURCE_SHA256")
+    runtime_password = secrets.token_urlsafe(30)
+    seed_catalog(admin, runtime_password, source_sha256)
     institution = str(uuid4())
     password = secrets.token_urlsafe(30)
     stage, config_digest = seed_institution(admin, institution, password)
-    dsn = urlunsplit(("postgresql", FIXTURE_ROLE + "@pg-fixture:5432", target.path, "", ""))
+    dsn = urlunsplit(("postgresql", "pg-fixture:5432", target.path, "", ""))
     config = {
-        "CRM_POSTGRES_URL": dsn, "CRM_POSTGRES_SNAPSHOT_SHA256": DIGEST,
+        "CRM_POSTGRES_URL": dsn, "CRM_POSTGRES_SNAPSHOT_SHA256": source_sha256 or DIGEST,
+        "CRM_POSTGRES_USER": FIXTURE_ROLE, "CRM_POSTGRES_PASSWORD": runtime_password,
         "CRM_SECURITY_KEY": base64.b64encode(secrets.token_bytes(32)).decode(),
     }
     settings = load(config)
     endpoint, verify, signature = seed_channel(settings, stage, config_digest)
     sent = []
 
-    def transport(adapter, payload):
+    def transport(adapter, payload, *, media=None, before_send=None):
         assert adapter["channel"] == "whatsapp" and payload["target"] == PHONE
+        assert media is None
+        if before_send is not None:
+            before_send()
         sent.append(payload["body"])
         if payload["body"] == "incierto":
             raise ProviderFailure("fixture_uncertain", uncertain=True)
@@ -211,7 +299,10 @@ def run():
     with tempfile.TemporaryDirectory(prefix="rinova-pg-media-") as media:
         os.environ["CRM_AI_STATE_DIR"] = media
         app = create_app(settings, channel_transport=transport, media_downloader=downloader)
-        with TestClient(app, base_url="http://127.0.0.1:4178", client=("127.0.0.1", 40000), headers=LOCAL) as api:
+        with TestClient(
+            app, base_url="http://127.0.0.1:4178", client=("127.0.0.1", 40000),
+            headers=LOCAL, raise_server_exceptions=False,
+        ) as api:
             def post(path, **kwargs):
                 return api.post(path, **kwargs)
 
@@ -220,7 +311,14 @@ def run():
             login = checked(post(AUTH + "/login", json={"email": "owner@example.invalid", "password": password}))
             csrf = {"X-CSRF-Token": login["csrf_token"]}
             assert checked(api.get(AUTH + "/me"))["user"]["role"] == "owner"
-            checked(api.get(PREFIX + "/campaigns"), 404)
+            sections = (
+                "runtime", "settings/modules", "users", "roles", "sessions", "campaigns", "broadcasts",
+                "knowledge", "memory", "ads/accounts", "learning/packs",
+            )
+            observed = {section: api.get(PREFIX + "/" + section).status_code for section in sections}
+            assert all(status == 200 for status in observed.values()), observed
+            checked(api.get("/api/v1/agents/selection"))
+            checked(api.put(PREFIX + "/campaigns/" + str(uuid4()), headers=csrf, json={}), 404)
             wait_for(lambda: api.get("/health/ready").status_code, lambda code: code == 200)
 
             hooks = "/hooks/channels/" + endpoint
@@ -263,7 +361,17 @@ def run():
 
             reply("respuesta")
             wait_for(lambda: queue("accepted"), lambda count: count == 1)
-            deliver({"statuses": [{"id": "fixture_sent_1", "status": "delivered"}]})
+            deliver({"statuses": [{"id": "fixture_delayed_binding", "status": "delivered"}]})
+            wait_for(
+                lambda: checked(api.get(PREFIX + "/operations"))["queues"]["webhook_events"].get("quarantined"),
+                lambda count: count == 1,
+            )
+            with transaction(settings, True, anonymous=True) as c:
+                c.execute(
+                    "UPDATE crm_channels2.SendJob SET ExternalId=? WHERE ExternalId=? AND State='accepted'",
+                    "fixture_delayed_binding", "fixture_sent_1",
+                )
+                assert c.rowcount == 1
             wait_for(lambda: queue("delivered"), lambda count: count == 1)
             reply("incierto")
             wait_for(lambda: queue("uncertain"), lambda count: count == 1)
@@ -278,16 +386,33 @@ def run():
                 lambda state: state["queues"]["media"].get("ready") == 1,
             )
             assert operations["sql"]["tables"] == 155 and operations["workers"]["ready"]
+            assert {entry["stage"] for entry in operations["workers"]["stages"]} == {
+                "events", "projection", "media", "campaigns", "broadcasts", "dispatch", "maintenance", "agents",
+            }
             [attachment] = (Path(media) / "inbox-media").glob("*.bin")
             with Image.open(attachment) as image:
                 assert image.size == (2, 2)
+            response = api.get(PREFIX + "/media/" + attachment.stem)
+            assert response.status_code == 200 and response.content == attachment.read_bytes()
+            request, enrollment = seed_worker_recovery(settings, thread)
+            wait_for(
+                lambda: recovery_states(settings, request, enrollment),
+                lambda result: result == (
+                    ("uncertain", "agents_request_lease_expired"),
+                    ("cancelled", "campaign_version_or_pause_changed"),
+                ),
+            )
             checked(post(AUTH + "/logout", headers=csrf))
             checked(api.get(WORKSPACE + "/clients"), 401)
             checked(post(AUTH + "/login", json={"email": "agent@example.invalid", "password": password}))
             checked(api.get(WORKSPACE + "/clients"), 403)
             checked(api.get(PREFIX + "/operations"), 403)
+        if source_sha256:
+            verify_coolify_start(config, password)
     print(json.dumps({"postgres_backend_flows": "verified", "queue_states": ["accepted", "delivered", "uncertain"],
-                      "incoming_media": "verified"}))
+                      "incoming_media": "verified", "worker_stages": 8,
+                      "recovery": ["broadcast_delayed_receipt", "campaign_paused", "agent_lease_expired"],
+                      "coolify_entrypoint": "verified" if source_sha256 else "skipped"}))
 
 
 if __name__ == "__main__":

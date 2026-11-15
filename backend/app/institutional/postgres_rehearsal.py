@@ -16,13 +16,14 @@ from uuid import UUID
 from fastapi import HTTPException
 
 from app.institutional import operations_policy
+from app.institutional.operations import STAGES
 from app.institutional.policy import request_authority
 from app.institutional.postgres_dialect import Cursor
 
 
 DATABASE = "rinovaplus_rehearsal"
-PROFILE = "cbn-institutional-channels-p4-v1"
-WORKER_STAGES = ("events", "projection", "media", "dispatch", "maintenance")
+PROFILE = operations_policy.VERSION
+WORKER_STAGES = STAGES
 REHEARSAL_ROUTES = {
     "/api/institution/auth/status": {"get"},
     "/api/institution/auth/login": {"post"},
@@ -31,6 +32,19 @@ REHEARSAL_ROUTES = {
     "/api/institution/auth/logout": {"post"},
     "/api/institution/auth/confirm": {"post"},
     "/api/institution/operations": {"get"},
+    "/api/institution/runtime": {"get"},
+    "/api/institution/settings/{section}": {"get"},
+    "/api/institution/users": {"get"},
+    "/api/institution/roles": {"get"},
+    "/api/institution/sessions": {"get"},
+    "/api/institution/campaigns": {"get"},
+    "/api/institution/broadcasts": {"get"},
+    "/api/institution/knowledge": {"get"},
+    "/api/institution/memory": {"get"},
+    "/api/institution/ads/accounts": {"get"},
+    "/api/institution/learning/packs": {"get"},
+    "/api/v1/agents/selection": {"get"},
+    "/api/institution/media/{identity}": {"get"},
     "/api/institution/workspace/clients": {"get"},
     "/api/institution/workspace/clients/{contact_id}": {"post", "put"},
     "/api/institution/workspace/inbox": {"get"},
@@ -51,15 +65,30 @@ def open_connection(dsn):
 
 def load(env):
     from psycopg2 import Error
+    from psycopg2.extensions import make_dsn
 
     dsn = env.get("CRM_POSTGRES_URL", "")
-    url = urlsplit(dsn)
+    try:
+        url = urlsplit(dsn)
+    except ValueError:
+        raise ProfileError("postgres_url_invalid") from None
     if (
         url.scheme not in {"postgres", "postgresql"}
         or url.path != "/" + DATABASE or not url.hostname
         or url.query or url.fragment or env.get("CRM_SQL_URL")
     ):
         raise ProfileError("postgres_rehearsal_target_required")
+    user = env.get("CRM_POSTGRES_USER")
+    password = env.get("CRM_POSTGRES_PASSWORD")
+    if user is not None or password is not None:
+        if not user or not password or url.username is not None or url.password is not None:
+            raise ProfileError("postgres_credentials_invalid")
+        try:
+            dsn = make_dsn(dsn, user=user, password=password)
+        except (ValueError, Error):
+            raise ProfileError("postgres_credentials_invalid") from None
+    elif not url.username:
+        raise ProfileError("postgres_credentials_required")
     digest = env.get("CRM_POSTGRES_SNAPSHOT_SHA256", "")
     if not re.fullmatch(r"[0-9a-f]{64}", digest):
         raise ProfileError("postgres_snapshot_required")

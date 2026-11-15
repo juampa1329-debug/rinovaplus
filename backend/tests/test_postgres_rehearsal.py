@@ -23,6 +23,25 @@ def test_rehearsal_rejects_other_database_or_combined_profiles():
         })
 
 
+@pytest.mark.parametrize("credentials", [
+    {"CRM_POSTGRES_USER": "rinovaplus_app"},
+    {"CRM_POSTGRES_PASSWORD": "example"},
+    {"CRM_POSTGRES_USER": "rinovaplus_app", "CRM_POSTGRES_PASSWORD": ""},
+])
+def test_rehearsal_rejects_incomplete_separate_credentials(credentials):
+    with pytest.raises(ProfileError, match="postgres_credentials_invalid"):
+        load({"CRM_POSTGRES_URL": "postgresql://localhost/rinovaplus_rehearsal", **credentials})
+
+
+def test_rehearsal_rejects_mixed_url_and_separate_credentials():
+    with pytest.raises(ProfileError, match="postgres_credentials_invalid"):
+        load({
+            "CRM_POSTGRES_URL": "postgresql://legacy@localhost/rinovaplus_rehearsal",
+            "CRM_POSTGRES_USER": "rinovaplus_app",
+            "CRM_POSTGRES_PASSWORD": "example",
+        })
+
+
 def test_legacy_sql_keeps_parameters_separate_from_literals():
     query = "SELECT TOP(2) Name FROM crm.Contact WHERE Name<>N'crm.Contact?%' AND City=?"
     assert postgres_sql(query, MAP) == (
@@ -40,6 +59,20 @@ def test_rate_limit_cleanup_is_bounded_and_local():
     assert converted.startswith("DELETE FROM rinovaplus_crm.crmaccesolimiteacceso")
     assert converted.endswith("(-1) * INTERVAL '1 day') LIMIT 100)")
     assert converted.count("%s") == 1
+
+
+def test_postgres_worker_sql_keeps_outer_scope_and_query_binding():
+    query = "UPDATE c SET c.Name=? FROM crm.Contact c JOIN crm_access.RateBucket r ON c.Id=r.SubjectId WHERE r.Name=?"
+    assert postgres_sql(query, MAP) == (
+        "UPDATE rinovaplus_crm.crmcontacto AS c SET Name=%s "
+        "FROM rinovaplus_crm.crmaccesolimiteacceso AS r WHERE (c.Id=r.SubjectId) AND (r.Name=%s)"
+    )
+
+
+def test_postgres_worker_savepoints_are_bound_to_known_callsites():
+    assert postgres_sql("ROLLBACK TRANSACTION p8_prepare_step", MAP) == "ROLLBACK TO SAVEPOINT p8_prepare_step"
+    with pytest.raises(ValueError):
+        postgres_sql("ROLLBACK TRANSACTION unknown", MAP)
 
 
 @pytest.mark.parametrize("query", ["ALTER TABLE crm.Contact DROP COLUMN Name", "SELECT * FROM crm.Academic"])

@@ -58,7 +58,8 @@ def test_binary_and_bit_import_preserve_null_and_bits():
 
 
 def test_dba_script_lists_exactly_36_reviewed_crm_objects():
-    script = (BACKEND.parent / "docs/deployment/sql/readonly-crm-pending-36.sql").read_text()
+    directory = BACKEND.parent / "docs/deployment/sql"
+    script = (directory / "readonly-crm-pending-36.sql").read_text(encoding="utf-8")
     grants = re.findall(r"GRANT SELECT ON OBJECT::\[dbo\]\.\[(CRM\w+)\]", script)
     scope = re.findall(r"\(N'(CRM\w+)'\)", script)
     assert len(grants) == len(set(grants)) == 36
@@ -68,3 +69,8 @@ def test_dba_script_lists_exactly_36_reviewed_crm_objects():
     )
     assert "GRANT SELECT ON SCHEMA" not in script
     assert "EXECUTE AS USER" in script
+
+    existing = (directory / "RinovaPlus-36-SELECT-usuario-existente.sql").read_text(encoding="utf-8")
+    assert re.findall(r"\(N'(CRM\w+)'\)", existing) == scope
+    assert "GRANT SELECT ON OBJECT::[dbo]." in existing
+    assert "GRANT SELECT ON SCHEMA" not in existing
