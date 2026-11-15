@@ -1,0 +1,101 @@
+.operation-error-dialog {
+  box-sizing: border-box;
+  inline-size: min(31rem, calc(100% - 2rem));
+  max-block-size: calc(100% - 2rem);
+  max-block-size: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 4rem #00181d50;
+}
+
+.operation-error-dialog::backdrop {
+  background: #051b21a6;
+}
+
+.operation-error-content {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  overflow-wrap: anywhere;
+}
+
+.operation-error-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: 50%;
+  background: var(--error-soft);
+  color: var(--error);
+  font-size: 1.4rem;
+  font-weight: 750;
+}
+
+.operation-error-copy h2 {
+  margin: 0 0 0.4rem;
+  color: inherit;
+  font-size: clamp(1.125rem, 4vw, 1.375rem);
+  line-height: 1.22;
+  text-wrap: balance;
+}
+
+.operation-error-content p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.operation-error-next {
+  grid-column: 1 / -1;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  background: var(--notice-surface);
+}
+
+.operation-error-next h3 {
+  margin: 0 0 0.25rem;
+  color: var(--notice-ink);
+  font-size: 0.9rem;
+}
+
+.operation-error-content > button {
+  min-block-size: 44px;
+  grid-column: 1 / -1;
+  justify-self: end;
+}
+
+.operation-error-content > button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 30rem) {
+  .operation-error-content > button {
+    justify-self: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .operation-error-dialog[open] {
+    animation: operation-error-enter 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes operation-error-enter {
+    from {
+      opacity: 0;
+      transform: translateY(0.4rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

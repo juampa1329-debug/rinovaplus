@@ -31,17 +31,14 @@ def health(adapter, item):
         result = providers.discover(adapter)
         result["applicationValidated"] = False
         return result
+    input_token = adapter["secrets"]["accessToken"]
+    app_token = f"{item['ClientId']}|{adapter['secrets']['appSecret']}"
     value = (
         providers.request(
-            adapter,
+            {**adapter, "secrets": {"accessToken": app_token}},
             "GET",
             "debug_token",
-            params={
-                "input_token": adapter["secrets"]["accessToken"],
-                "access_token": item["ClientId"]
-                + "|"
-                + adapter["secrets"]["appSecret"],
-            },
+            params={"input_token": input_token},
         ).get("data")
         or {}
     )

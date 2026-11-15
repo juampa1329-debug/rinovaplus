@@ -11,6 +11,8 @@ import {
   institutionUnauthorized,
 } from "../shared/institutionSession";
 import { Button, Field, Notice } from "../shared/ui";
+import { ErrorFeedbackContext } from "./ErrorFeedback";
+import type { OperationFailure } from "./ErrorFeedback";
 
 export type User = {
   id: string;
@@ -203,6 +205,15 @@ export class ApiError extends Error {
     );
   }
 }
+
+export function operationFailure(
+  error: unknown,
+  fallback: string,
+): OperationFailure {
+  return error instanceof ApiError
+    ? { message: error.message, code: error.detail, status: error.status }
+    : { message: error instanceof Error ? error.message : fallback };
+}
 export async function send<T>(
   path: string,
   method = "GET",
@@ -391,6 +402,7 @@ export function useIntent() {
   };
 }
 export function useTask() {
+  const report = useContext(ErrorFeedbackContext);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [success, setSuccess] = useState("");
@@ -399,6 +411,7 @@ export function useTask() {
     message = "Cambios guardados.",
   ) => {
     if (busy) return;
+    const trigger = report ? document.activeElement : null;
     setBusy(true);
     setError("");
     setSuccess("");
@@ -406,11 +419,11 @@ export function useTask() {
       await work();
       setSuccess(message);
     } catch (failure) {
-      setError(
-        failure instanceof Error
-          ? failure.message
-          : "No se pudo completar la operación.",
+      const details = operationFailure(
+        failure,
+        "No se pudo completar la operación.",
       );
+      setError(report?.(details, trigger)?.detail ?? details.message);
     } finally {
       setBusy(false);
     }

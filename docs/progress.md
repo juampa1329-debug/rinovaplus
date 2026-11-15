@@ -1,5 +1,13 @@
 # Informe de avance — 2026-10-19
 
+## Canales · avisos de error y verificación de Meta — 2026-11-15
+
+Canales usa un diálogo de error con explicación y un siguiente paso. Cubre errores de carga, operaciones y rechazos del proveedor que llegan con HTTP 200. Conserva el borrador, devuelve el foco y respeta la preferencia de movimiento reducido. Los resultados inciertos indican revisar la actividad antes de reintentar.
+
+El depurador de Meta mostró un token válido para el App ID configurado. RinovaPlus pudo consultar los números de la WABA, pero su verificación de salud devolvió un rechazo. La llamada a `/debug_token` ahora presenta la credencial de la app en `Authorization` y pasa el token inspeccionado como `input_token`. La confirmación con la cuenta real queda pendiente del despliegue y una nueva verificación.
+
+Etapa propuesta para todo RinovaPlus: extender el mismo componente por módulo, definir la causa y la salida de cada error conocido y comprobar los recorridos en escritorio, móvil, teclado y movimiento reducido. El alcance inicial es Canales. La extensión general queda fuera del cálculo actual de P0–P11.
+
 ## Canales · guardado de identificadores de WhatsApp — 2026-11-15
 
 Los logs de Coolify registraron PostgreSQL `42601` al guardar una cuenta. En una base Docker desechable, el alta devolvió HTTP 200 y la edición que enviaba ambos identificadores devolvió HTTP 503. El adaptador de PostgreSQL ahora traduce los nombres de columna entre corchetes en las asignaciones y conserva los parámetros.

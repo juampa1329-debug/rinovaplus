@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
+import httpx2
 import pytest
 from cryptography.exceptions import InvalidTag
 from fastapi import HTTPException
@@ -13,7 +14,9 @@ from app.institutional.channel_oauth import authorization_url
 from app.institutional.channel_operations import capabilities
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
+from app.institutional.channel_tokens import health
 from app.institutional.crypto import seal, unseal
+from app.modules.channels import providers
 
 
 @pytest.mark.parametrize("raw", ['{"a":1,"a":2}', '{"a":NaN}', '{"a":Infinity}'])
@@ -46,6 +49,47 @@ def test_verify_is_not_a_meta_signature_secret():
     assert signature_valid("meta", "application-secret", headers, raw)
     assert not signature_valid("meta", "generated-verify-token", headers, raw)
     assert not signature_valid("meta", "application-secret", headers, raw + b" ")
+
+
+@pytest.mark.parametrize(
+    ("app_id", "valid"), [("12345", True), ("12345", False), ("67890", True)]
+)
+def test_meta_debug_token_authenticates_with_app_token(monkeypatch, app_id, valid):
+    adapter = {
+        "channel": "whatsapp",
+        "configuration": {"apiVersion": "v26.0"},
+        "secrets": {"accessToken": "system-user-token", "appSecret": "app-secret"},
+    }
+    item = {
+        "Provider": "meta",
+        "IssuerProfile": "meta_whatsapp",
+        "ClientId": "12345",
+    }
+
+    def respond(request):
+        assert request.method == "GET"
+        assert request.url.host == "graph.facebook.com"
+        assert request.url.path == "/v26.0/debug_token"
+        assert request.headers["Authorization"] == "Bearer 12345|app-secret"
+        assert dict(request.url.params) == {"input_token": "system-user-token"}
+        return httpx2.Response(
+            200, json={"data": {"app_id": app_id, "is_valid": valid}}
+        )
+
+    client = httpx2.Client
+    monkeypatch.setattr(
+        httpx2,
+        "Client",
+        lambda **kwargs: client(transport=httpx2.MockTransport(respond), **kwargs),
+    )
+    if valid and app_id == item["ClientId"]:
+        assert health(adapter, item)["applicationValidated"] is True
+        assert adapter["secrets"]["accessToken"] == "system-user-token"
+    else:
+        with pytest.raises(
+            providers.ProviderFailure, match="token_application_mismatch_or_invalid"
+        ):
+            health(adapter, item)
 
 
 @pytest.mark.parametrize(

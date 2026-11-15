@@ -3,7 +3,7 @@ import { Button, Field, Notice, SelectField } from "../shared/ui";
 import { OneTime } from "./Access";
 import type { Channel } from "./Channels";
 import { Credentials, ResourceState, useResource } from "./Settings";
-import { useInstitution, useIntent, useTask } from "./api";
+import { ApiError, useInstitution, useIntent, useTask } from "./api";
 import { useDraftGuard } from "./drafts";
 
 const scopes: Record<string, string[]> = {
@@ -31,8 +31,6 @@ const scopes: Record<string, string[]> = {
 };
 const stateLabels: Record<string, string> = {
   confirmed: "Confirmado por el proveedor",
-  failed: "Rechazado",
-  uncertain: "Resultado incierto: revisar antes de repetir",
   running: "En curso",
   pending: "Pendiente",
 };
@@ -83,15 +81,24 @@ export function ChannelOperations({
         operation_id: intent.get({ action, ...payload }),
       });
       setPin("");
-      setDiagnosis(stateLabels[result.status] || result.status);
       if (action === "numbers") setNumbers(result.result.numbers || []);
       if (
         ["verify", "health", "numbers"].includes(action) ||
         result.status === "failed"
       )
         intent.clear();
+      if (result.status === "failed" || result.status === "uncertain") {
+        setDiagnosis("");
+        throw new ApiError(
+          409,
+          result.status === "uncertain"
+            ? "provider_outcome_unknown"
+            : result.code || "provider_operation_failed",
+        );
+      }
+      setDiagnosis(stateLabels[result.status] || result.status);
       await done();
-    });
+    }, "");
   return (
     <section className="panel">
       <h3>Conexión de esta cuenta</h3>
@@ -350,7 +357,15 @@ export function ChannelOperations({
           <Button
             variant="secondary"
             onClick={() =>
-              void navigator.clipboard.writeText(ep.callback_url || ep.path)
+              void task.run(async () => {
+                try {
+                  await navigator.clipboard.writeText(
+                    ep.callback_url || ep.path,
+                  );
+                } catch {
+                  throw new ApiError(409, "callback_copy_failed");
+                }
+              }, "Callback copiado.")
             }
           >
             Copiar callback

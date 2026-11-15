@@ -6,6 +6,8 @@ import { Credentials, ResourceState, useResource } from "./Settings";
 import { OneTime } from "./Access";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { ChannelOperations } from "./ChannelOperations";
+import { ErrorFeedback } from "./ErrorFeedback";
+import { explainChannelError } from "./channelErrors";
 
 export type Channel = {
   id: string;
@@ -73,6 +75,14 @@ export const channelNames: Record<string, string> = {
   tiktok: "TikTok",
 };
 export function Channels({ openWebhooks }: { openWebhooks: () => void }) {
+  return (
+    <ErrorFeedback explain={explainChannelError}>
+      <ChannelAccounts openWebhooks={openWebhooks} />
+    </ErrorFeedback>
+  );
+}
+
+function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
   const data = useResource<{ items: Channel[] }>("channels"),
     catalog = useResource<Catalog>("channels/catalog"),
     { call, session } = useInstitution(),
