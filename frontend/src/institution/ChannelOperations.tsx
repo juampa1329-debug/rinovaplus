@@ -38,9 +38,11 @@ const stateLabels: Record<string, string> = {
 export function ChannelOperations({
   account,
   done,
+  returnedOAuth,
 }: {
   account: Channel;
   done: () => Promise<unknown>;
+  returnedOAuth?: string;
 }) {
   const { call, session } = useInstitution(),
     task = useTask(),
@@ -55,7 +57,7 @@ export function ChannelOperations({
     [numbers, setNumbers] = useState<
       { id: string; display_phone_number?: string; verified_name?: string }[]
     >([]),
-    [oauth, setOauth] = useState(""),
+    [oauth, setOauth] = useState(returnedOAuth || ""),
     [authUrl, setAuthUrl] = useState(""),
     [assets, setAssets] = useState<
       { id: string; name: string; external_id: string; kind: string }[]
@@ -76,17 +78,20 @@ export function ChannelOperations({
         ? "Instagram"
         : null;
   useEffect(() => {
-    if (!oauthProvider || !oauth || !authUrl) return;
+    if (!oauth) return;
+    const returned = oauth === returnedOAuth;
+    if (!returned && (!oauthProvider || !authUrl)) return;
     let active = true;
     let loading = false;
     const onReturn = async () => {
-      if (document.hidden || loading) return;
+      if (loading || (!returned && document.hidden)) return;
       loading = true;
       try {
         const result = await call<{ status: string; items: typeof assets }>(
           `channels/oauth/${oauth}/assets`,
         );
-        if (active && result.status === "assets_ready") {
+        if (!active) return;
+        if (result.status === "assets_ready") {
           setAssets(result.items);
           setAuthUrl("");
           setDiagnosis(
@@ -94,21 +99,35 @@ export function ChannelOperations({
               ? "Selecciona la página autorizada."
               : "Selecciona la cuenta autorizada.",
           );
+        } else if (returned) {
+          setDiagnosis(
+            result.status === "cancelled"
+              ? "Cancelaste el inicio de sesión. Puedes volver a conectar la cuenta."
+              : result.status === "completed"
+                ? "La autorización ya se aplicó a esta cuenta."
+                : "El proveedor no completó el inicio de sesión. Vuelve a conectar la cuenta.",
+          );
         }
       } catch {
-        // The explicit retry reports the failure and keeps the authorization link available.
+        if (active && returned)
+          setDiagnosis(
+            "No se pudo cargar la autorización. Consulta las cuentas autorizadas o vuelve a conectar.",
+          );
       } finally {
         loading = false;
       }
     };
-    window.addEventListener("focus", onReturn);
-    document.addEventListener("visibilitychange", onReturn);
+    if (returned) void onReturn();
+    else {
+      window.addEventListener("focus", onReturn);
+      document.addEventListener("visibilitychange", onReturn);
+    }
     return () => {
       active = false;
       window.removeEventListener("focus", onReturn);
       document.removeEventListener("visibilitychange", onReturn);
     };
-  }, [oauthProvider, pageOAuth, oauth, authUrl, call]);
+  }, [oauthProvider, pageOAuth, oauth, authUrl, call, returnedOAuth]);
   const perform = (action: string) =>
     void task.run(async () => {
       const payload = {
@@ -357,6 +376,7 @@ export function ChannelOperations({
                   });
                   setAssets([]);
                   setAuthUrl("");
+                  setOauth("");
                   setDiagnosis(
                     "Credencial guardada. Verifica la cuenta antes de conectarla.",
                   );

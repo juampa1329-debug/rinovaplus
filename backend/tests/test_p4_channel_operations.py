@@ -6,11 +6,12 @@ from uuid import uuid4
 import httpx2
 import pytest
 from cryptography.exceptions import InvalidTag
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
 from app.institutional.channel_ingress import signature_valid
-from app.institutional.channel_oauth import authorization_url, exchange
+from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
 from app.institutional.channels import (
     FACEBOOK_LOGIN_CONFIGURATION,
     contract,
@@ -312,6 +313,31 @@ def test_business_login_uses_the_saved_configuration_instead_of_url_scopes():
     assert params["response_type"] == ["code"]
     assert params["override_default_response_type"] == ["true"]
     assert "scope" not in params
+
+
+@pytest.mark.parametrize("needs_confirmation", [False, True])
+def test_oauth_callback_redirects_back_without_provider_credentials(monkeypatch, needs_confirmation):
+    account_id, oauth_id = str(uuid4()), str(uuid4())
+
+    def callback(_service, *_args, **_kwargs):
+        if needs_confirmation:
+            raise HTTPException(403, "password_confirmation_required")
+        return {"integration_id": account_id, "oauth_session_id": oauth_id}
+
+    monkeypatch.setattr(OAuth, "callback", callback)
+    app = FastAPI()
+    install(app, SimpleNamespace())
+    with TestClient(app) as client:
+        response = client.get(
+            "/hooks/oauth/app",
+            params={"state": "state-is-private", "code": "code-is-private"},
+            follow_redirects=False,
+        )
+    expected = "confirm" if needs_confirmation else f"{account_id}/{oauth_id}"
+    assert response.status_code == 303
+    assert response.headers["location"] == f"/#/channels/oauth/{expected}"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["referrer-policy"] == "no-referrer"
 
 
 def test_tiktok_like_and_private_reply_are_not_invented_capabilities():

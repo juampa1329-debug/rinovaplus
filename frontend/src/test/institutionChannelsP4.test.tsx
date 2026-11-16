@@ -143,6 +143,49 @@ it("opens Facebook authorization from the Messenger account and loads the select
   ).toBe(true);
 });
 
+it("loads the authorized Instagram account immediately after the OAuth redirect", async () => {
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (path) => {
+    if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+    if (String(path).endsWith("account-one/history"))
+      return ok({ queue: [], events: [], operations: [] });
+    expect(String(path)).toMatch(/oauth\/return-one\/assets$/);
+    return ok({
+      status: "assets_ready",
+      items: [
+        {
+          id: "shop",
+          name: "Tienda de prueba",
+          external_id: "321",
+          kind: "instagram_account",
+        },
+      ],
+    });
+  });
+  mount(
+    <ChannelOperations
+      account={{
+        id: "account-one",
+        application_id: "app-one",
+        channel: "instagram",
+        issuer_profile: "instagram_login",
+        display_name: "Instagram de prueba",
+        revision: 1,
+        row_version: "version",
+        application_version: "version",
+        verified_status: "unverified",
+        fields: {},
+      }}
+      returnedOAuth="return-one"
+      done={async () => {}}
+    />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] },
+  );
+  expect(await screen.findByText("Tienda de prueba · 321")).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "Usar esta cuenta" }),
+  ).toBeVisible();
+});
+
 it("shows new comments in the notification menu and links to the exact comment", async () => {
   const fetcher = vi
     .spyOn(globalThis, "fetch")

@@ -76,6 +76,19 @@ export const channelNames: Record<string, string> = {
   messenger: "Messenger",
   tiktok: "TikTok",
 };
+
+function oauthReturn() {
+  const [prefix, section, action, account, session, extra] =
+    window.location.hash.split("/");
+  const uuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+  if (prefix !== "#" || section !== "channels" || action !== "oauth")
+    return null;
+  if (account === "confirm" && !session) return { needsConfirmation: true };
+  if (!extra && uuid.test(account ?? "") && uuid.test(session ?? ""))
+    return { account, session };
+  return null;
+}
+
 export function Channels({ openWebhooks }: { openWebhooks: () => void }) {
   return (
     <ErrorFeedback explain={explainChannelError}>
@@ -90,7 +103,8 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
     { call, session } = useInstitution(),
     task = useTask(),
     intent = useIntent();
-  const [selected, setSelected] = useState(""),
+  const [returnContext] = useState(oauthReturn);
+  const [selected, setSelected] = useState(returnContext?.account ?? ""),
     [channel, setChannel] = useState("whatsapp"),
     [name, setName] = useState(""),
     [client, setClient] = useState(""),
@@ -105,6 +119,12 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
   const account = data.value.items.find((row) => row.id === selected);
   return (
     <>
+      {returnContext?.needsConfirmation && (
+        <Notice error>
+          La confirmación de identidad venció durante el inicio de sesión. Abre
+          la cuenta de canal y vuelve a conectarla para confirmar tu identidad.
+        </Notice>
+      )}
       {!catalog.value.provider_operations_available && (
         <Notice>
           Configura tus canales y administra varias cuentas de mensajería. Las
@@ -155,6 +175,11 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
               writable={writable}
               done={data.reload}
               openWebhooks={openWebhooks}
+              returnedOAuth={
+                returnContext?.account === account.id
+                  ? returnContext.session
+                  : undefined
+              }
             />
           ) : (
             <form
@@ -301,12 +326,14 @@ function ChannelEditor({
   writable,
   done,
   openWebhooks,
+  returnedOAuth,
 }: {
   account: Channel;
   catalog: Catalog;
   writable: boolean;
   done: () => Promise<unknown>;
   openWebhooks: () => void;
+  returnedOAuth?: string;
 }) {
   const { call, session } = useInstitution(),
     task = useTask(),
@@ -564,7 +591,11 @@ function ChannelEditor({
               : "Las acciones utilizan la configuración guardada de esta cuenta."}
           </Notice>
           <fieldset disabled={dirty || task.busy}>
-            <ChannelOperations account={account} done={done} />
+            <ChannelOperations
+              account={account}
+              done={done}
+              returnedOAuth={returnedOAuth}
+            />
           </fieldset>
         </>
       ) : (
