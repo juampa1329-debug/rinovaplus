@@ -430,6 +430,22 @@ it("shows the chat and CRM skeleton and switches ownership without submitting th
   expect(screen.getByLabelText("Mensaje local")).toBeEnabled();
 });
 
+it("opens the contact profile in a labeled dialog", async () => {
+  const dialog = HTMLDialogElement.prototype;
+  if (!dialog.showModal)
+    dialog.showModal = function () {
+      this.open = true;
+    };
+  open("inbox");
+  await select();
+  fireEvent.click(screen.getByRole("button", { name: "Ver perfil" }));
+  const profile = screen.getByRole("dialog", { name: "Persona 0" });
+  expect(within(profile).getByText("Nueva")).toBeVisible();
+  expect(
+    within(profile).getByRole("button", { name: "Cerrar perfil" }),
+  ).toBeVisible();
+});
+
 it.each([
   ["Cocina Nacional", "CN"],
   ["Desarrollo Multimedia y Comunicación Gráfica", "DMC"],

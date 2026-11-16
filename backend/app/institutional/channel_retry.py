@@ -58,7 +58,7 @@ def recover_send(c, settings, authority, actor, item, body):
         c.execute(
             (
                 "UPDATE crm_channels2.SendJob SET Paylo"
-                "ad=? WHERE InstitutionId=? AND QueueId"
+                "ad=?,DueAt=SYSUTCDATETIME(),LastErrorCode=NULL WHERE InstitutionId=? AND QueueId"
                 "=? AND State='queued' AND RowVersion=?"
             ),
             json.dumps(payload),
@@ -66,6 +66,8 @@ def recover_send(c, settings, authority, actor, item, body):
             value["QueueId"],
             bytes.fromhex(body.row_version),
         )
+        if c.rowcount != 1:
+            raise HTTPException(409, "send_recovery_unavailable")
         return uid(str(value["QueueId"]))
     operation = one(
         c,

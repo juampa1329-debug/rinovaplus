@@ -182,7 +182,11 @@ class Recoveries:
                 )
                 if hashlib.sha256(raw.encode()).digest() != bytes(value["Digest"]):
                     raise HTTPException(409, "receipt_integrity_rejected")
-                effects = normalize(value["Provider"], strict_json(raw))
+                stored_effect = json.loads(value["Payload"])
+                effects = normalize(
+                    value["Provider"], strict_json(raw),
+                    whatsapp_names=stored_effect.get("normalizer_version") == 2,
+                )
                 if (
                     not value["SubeventPath"].isascii()
                     or not value["SubeventPath"].isdigit()
@@ -195,7 +199,7 @@ class Recoveries:
                 if not effect.get("valid_source_ids", False):
                     raise HTTPException(409, "event_source_identity_invalid")
                 if (
-                    canonical(effect) != canonical(json.loads(value["Payload"]))
+                    canonical(effect) != canonical(stored_effect)
                     or effect["route"] != item["ExternalAccountId"]
                     or effect["channel"] != item["Channel"]
                 ):

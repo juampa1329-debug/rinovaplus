@@ -633,11 +633,12 @@ class Dispatcher:
                 c.execute(
                     (
                         "UPDATE crm_channels2.SendJob SET LastE"
-                        "rrorCode=?,DueAt=DATEADD(second,30,SYS"
+                        "rrorCode=?,DueAt=DATEADD(second,?,SYS"
                         "UTCDATETIME()) WHERE InstitutionId=? A"
                         "ND QueueId=?"
                     ),
                     str(error.detail)[:64],
+                    900 if error.detail == "queued_actor_authority_revoked" else 30,
                     inst,
                     job["QueueId"],
                 )

@@ -622,6 +622,42 @@
   margin-bottom: 0.3rem;
   overflow-wrap: anywhere;
 }
+.inbox-contact-profile-content {
+  display: grid;
+  gap: 0.875rem;
+  justify-items: center;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.inbox-contact-profile-avatar {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.4rem;
+  background: var(--inbox-selected);
+}
+.inbox-contact-profile-content h2,
+.inbox-contact-profile-content p,
+.inbox-contact-profile-content dl,
+.inbox-contact-profile-content dd {
+  margin: 0;
+}
+.inbox-contact-profile-content dl {
+  display: grid;
+  gap: 0.65rem;
+  width: 100%;
+  padding-block: 0.75rem;
+  border-block: 1px solid var(--inbox-edge);
+  text-align: start;
+}
+.inbox-contact-profile-content dl div {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.75rem;
+}
+.inbox-contact-profile-content dt {
+  color: var(--muted);
+}
 .inbox-crm-title {
   padding: 0.6rem 0.75rem;
   margin-bottom: 0.5rem;

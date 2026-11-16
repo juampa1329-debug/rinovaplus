@@ -87,6 +87,11 @@ const details: Record<string, [string, string, string]> = {
     "La institución alcanzó su tope interno de envíos.",
     "Espera al próximo período o consulta a un administrador para ajustar el límite.",
   ],
+  queued_actor_authority_revoked: [
+    "El envío requiere una autorización actual",
+    "La sesión que autorizó este mensaje ya no está vigente y el envío sigue pendiente.",
+    "En Canales, abre la cuenta, entra a Actividad y recuperación y autoriza el envío pendiente.",
+  ],
   account_paused_or_unverified: [
     "La cuenta del canal requiere revisión",
     "La cuenta de esta conversación está pausada o el proveedor todavía no la ha verificado.",
@@ -140,9 +145,11 @@ const statuses: Record<string, [string, string?]> = {
 export function MessageDelivery({
   state,
   reason,
+  readReceiptAt,
 }: {
   state: string;
   reason?: string;
+  readReceiptAt?: string | null;
 }) {
   const report = useContext(ErrorFeedbackContext);
   const blocked = state === "queued" && !!reason;
@@ -176,8 +183,12 @@ export function MessageDelivery({
   const [text, icon] = Object.hasOwn(statuses, state)
     ? statuses[state]
     : ["Pendiente de confirmar"];
+  const detail =
+    state === "read" && readReceiptAt
+      ? `Recibo de lectura del proveedor registrado ${new Date(readReceiptAt).toLocaleString("es-CO")}.`
+      : undefined;
   return (
-    <small className="inbox-delivery" data-state={state}>
+    <small className="inbox-delivery" data-state={state} title={detail}>
       {icon && <Icon name={icon} />}
       {text}
     </small>

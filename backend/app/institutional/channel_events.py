@@ -106,7 +106,26 @@ def event(channel, route, kind, external, author, text, payload):
     }
 
 
-def normalize(provider, payload):
+def whatsapp_profile_names(value):
+    contacts = value.get("contacts")
+    if not isinstance(contacts, list):
+        return {}
+    names = {}
+    for contact in contacts[:100]:
+        if not isinstance(contact, dict) or not valid_external(contact.get("wa_id")):
+            continue
+        profile = contact.get("profile")
+        if not isinstance(profile, dict):
+            continue
+        for field in ("name", "username"):
+            text = profile.get(field)
+            if isinstance(text, str) and text.strip():
+                names[contact["wa_id"]] = sql_text(" ".join(text.split()), 100)
+                break
+    return names
+
+
+def normalize(provider, payload, *, whatsapp_names=True):
     if provider == "tiktok":
         content = payload.get("content") or {}
         content = strict_json(content) if isinstance(content, str) else content
@@ -161,23 +180,20 @@ def normalize(provider, payload):
             field = change.get("field")
             if field == "messages" and value.get("messaging_product") == "whatsapp":
                 phone = str((value.get("metadata") or {}).get("phone_number_id", ""))
+                names = whatsapp_profile_names(value) if whatsapp_names else {}
                 for message in value.get("messages", [])[:100]:
                     text = (
                         (message.get("text") or {}).get("body")
                         or (message.get("button") or {}).get("text")
                         or "[" + str(message.get("type", "multimedia")) + "]"
                     )
-                    effects.append(
-                        event(
-                            "whatsapp",
-                            phone,
-                            "message",
-                            message.get("id", ""),
-                            message.get("from", ""),
-                            text,
-                            message,
-                        )
+                    effect = event(
+                        "whatsapp", phone, "message", message.get("id", ""),
+                        message.get("from", ""), text, message,
                     )
+                    if name := names.get(effect["author"]):
+                        effect.update(contact_name=name, normalizer_version=2)
+                    effects.append(effect)
                 for status in value.get("statuses", [])[:100]:
                     effect = event(
                         "whatsapp",
@@ -350,12 +366,13 @@ def incoming(c, settings, item, effect):
         effect["author"],
     )
     first_contact = linked is None
+    contact_name = effect.get("contact_name") if item["Channel"] == "whatsapp" else None
     if first_contact:
         contact, conversation = create_contact(
             c,
             settings,
             item,
-            effect["author"],
+            contact_name or effect["author"],
             phone=effect["author"] if item["Channel"] == "whatsapp" else "",
             control_mode="ai",
         )
@@ -386,6 +403,12 @@ def incoming(c, settings, item, effect):
     ).fetchone()
     if not valid:
         raise HTTPException(409, "identity_conversation_mismatch")
+    if contact_name and not first_contact:
+        c.execute(
+            "UPDATE crm.Contact SET Name=?,UpdatedAt=SYSUTCDATETIME() WHERE ContactId=? "
+            "AND (Name='' OR Name=?)",
+            contact_name, linked["ContactId"], effect["author"],
+        )
     raw_time = effect["provider"].get("timestamp")
     try:
         seconds = float(raw_time)

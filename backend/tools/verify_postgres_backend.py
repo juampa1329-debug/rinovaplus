@@ -256,6 +256,7 @@ def verify_writes(h):
     })
     found = h.call("workspace/clients?q=15551231300")["items"]
     assert edited["contactId"] == id and found[0]["name"] == "Contacto sintético corregido"
+    assert h.call("workspace/conversations/" + created["conversationId"])["thread"]["ControlMode"] == "ai"
 
 
 def verify_agents(h, gemini_calls):
@@ -320,8 +321,9 @@ def verify_whatsapp_gemini(h, integration, deliver):
     inference, sent = [], []
 
     def incoming(number, key):
-        deliver({"messages": [{"id": key, "from": number, "timestamp": str(int(time.time())),
-                              "type": "text", "text": {"body": "Hola, ¿qué horarios ofrecen?"}}]})
+        deliver({"contacts": [{"wa_id": number, "profile": {"name": "Perfil sintético de WhatsApp"}}],
+                 "messages": [{"id": key, "from": number, "timestamp": str(int(time.time())),
+                               "type": "text", "text": {"body": "Hola, ¿qué horarios ofrecen?"}}]})
         assert events.once() and events.project_once()
         [item] = h.call("workspace/inbox?q=" + number)["items"]
         return item["conversationId"]
@@ -329,9 +331,12 @@ def verify_whatsapp_gemini(h, integration, deliver):
     def take_over(conversation):
         path = "workspace/conversations/" + conversation
         detail = h.call(path)
+        unread = detail["thread"]["Unread"]
+        assert isinstance(unread, bool)
         h.call(path, "PUT", {
             "operationId": str(uuid4()), "revision": detail["revision"],
-            "state": "open", "priority": "normal", "mode": "human", "unread": True,
+            "state": "open", "priority": "normal", "mode": "human", "unread": unread,
+            "readThrough": "0",
         })
 
     def gemini(request):
@@ -357,6 +362,7 @@ def verify_whatsapp_gemini(h, integration, deliver):
     dispatcher = Dispatcher(h.settings, transport=send)
     with patch.dict(os.environ, {"RINOVA_GEMINI_WHATSAPP_INTEGRATION": integration}):
         thread = incoming("15551231361", "auto_first")
+        assert h.call("workspace/conversations/" + thread)["client"]["name"] == "Perfil sintético de WhatsApp"
         assert worker.once() and not worker.once() and len(inference) == 1, h.sql(
             "SELECT Status,ResultCode FROM crm_channels2.ProviderOperation WHERE Action='whatsapp_gemini_intro'"
         )
@@ -367,7 +373,11 @@ def verify_whatsapp_gemini(h, integration, deliver):
         deliver({"statuses": [{"id": "fixture_gemini_sent", "status": "delivered"}]})
         assert events.once() and events.project_once()
         messages = h.call("workspace/conversations/" + thread + "/messages")["items"]
-        assert messages[-1]["deliveryState"] == "delivered"
+        assert messages[-1]["deliveryState"] == "delivered" and messages[-1]["readReceiptAt"] is None
+        deliver({"statuses": [{"id": "fixture_gemini_sent", "status": "read"}]})
+        assert events.once() and events.project_once()
+        messages = h.call("workspace/conversations/" + thread + "/messages")["items"]
+        assert messages[-1]["deliveryState"] == "read" and messages[-1]["readReceiptAt"]
         assert incoming("15551231361", "auto_followup") == thread
         assert worker.once() and dispatcher.once()
         assert sent == [REPLIES["horarios"], FOLLOWUPS["horarios"]]

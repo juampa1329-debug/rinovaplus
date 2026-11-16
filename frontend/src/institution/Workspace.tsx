@@ -30,6 +30,7 @@ import {
   ConversationRow,
   InboxListControls,
   InboxIdle,
+  InboxContactProfile,
   initialInboxFilters,
 } from "./InboxPresentation";
 
@@ -106,6 +107,7 @@ type Message = {
   sequence: string;
   deliveryState?: string;
   deliveryError?: string;
+  readReceiptAt?: string | null;
   channelAccount?: string;
 };
 type Tasks = {
@@ -1215,7 +1217,7 @@ function Conversation({
       priority,
       userId: owner || null,
       mode: detail.thread.ControlMode,
-      unread: detail.thread.Unread,
+      unread: Boolean(detail.thread.Unread),
       readThrough: observed.current,
       ...next,
     });
@@ -1253,6 +1255,10 @@ function Conversation({
           </div>
         </div>
         <div className="inbox-header-actions">
+          <InboxContactProfile
+            client={detail.client}
+            accounts={detail.channelAccounts ?? []}
+          />
           <Button
             variant="quiet"
             role="switch"
@@ -1369,6 +1375,7 @@ function Conversation({
                 <MessageDelivery
                   state={message.deliveryState}
                   reason={message.deliveryError}
+                  readReceiptAt={message.readReceiptAt}
                 />
               )}
             </footer>

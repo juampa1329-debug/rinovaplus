@@ -248,8 +248,14 @@ class Workspace(Parent):
                 values = db.rows(
                     c,
                     (
-                        "SELECT q.MessageId,q.QueueId,q.State,q"
-                        ".LastErrorCode,i.DisplayName FROM crm_"
+                        "SELECT q.MessageId,q.QueueId,q.State,q.LastErrorCode,i.DisplayName,"
+                        "(SELECT TOP(1) e.CreatedAt FROM crm_channels2.WebhookEvent e "
+                        "WHERE q.State='read' AND e.InstitutionId=q.InstitutionId "
+                        "AND e.IntegrationId=q.IntegrationId "
+                        "AND e.ProviderEventId COLLATE Latin1_General_100_BIN2=q.ExternalId "
+                        "AND e.Kind='status' AND e.Status='processed' "
+                        "AND JSON_VALUE(e.Payload,'$.text')='read' "
+                        "ORDER BY e.CreatedAt DESC,e.EventId) AS readReceiptAt FROM crm_"
                         "channels2.SendJob q JOIN crm_channels2"
                         ".Integration i ON i.InstitutionId=q.In"
                         "stitutionId AND i.IntegrationId=q.Inte"
@@ -282,6 +288,7 @@ class Workspace(Parent):
                             queueId=str(value["QueueId"]).lower(),
                             deliveryError=(paused if value["State"] == "queued" and paused else value["LastErrorCode"]),
                             channelAccount=value["DisplayName"],
+                            readReceiptAt=db.utc(value["readReceiptAt"]),
                         )
                 media = db.rows(
                     c,

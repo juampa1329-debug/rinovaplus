@@ -1,4 +1,6 @@
+import { useId, useRef } from "react";
 import type { ReactNode } from "react";
+import type { Client } from "../shared/demo";
 import { Button, Field, SelectField } from "../shared/ui";
 import { Icon } from "../shared/Icon";
 import type { Risk } from "./Workspace";
@@ -84,6 +86,86 @@ export function ChannelLabel({ channel }: { channel?: string | null }) {
       <i aria-hidden="true" />
       {label || "Canal sin identificar"}
     </span>
+  );
+}
+
+export function InboxContactProfile({
+  client,
+  accounts,
+}: {
+  client: Client;
+  accounts: { id: string; name: string; channel: string }[];
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const title = useId();
+  const name = client.name?.trim();
+  const contactName = name || client.phone || "Contacto sin nombre";
+  const initials = name
+    ?.match(/\p{L}[\p{L}\p{M}]*/gu)
+    ?.slice(0, 2)
+    .map((part) => Array.from(part)[0].toLocaleUpperCase("es"))
+    .join("");
+  const fields = [
+    ["Teléfono", client.phone],
+    ["Ciudad", client.city],
+    ["Programa", client.program],
+    ["Etapa", client.stage],
+  ].filter(([, value]) => value?.trim());
+  return (
+    <>
+      <Button
+        variant="quiet"
+        aria-haspopup="dialog"
+        onClick={() => dialog.current?.showModal()}
+      >
+        Ver perfil
+      </Button>
+      <dialog
+        ref={dialog}
+        className="inbox-contact-profile"
+        aria-labelledby={title}
+      >
+        <div className="inbox-contact-profile-content">
+          <span
+            className="inbox-avatar inbox-contact-profile-avatar"
+            aria-hidden="true"
+          >
+            {initials || <Icon name="clients" />}
+          </span>
+          <h2 id={title}>{contactName}</h2>
+          <div className="inbox-row-meta">
+            {accounts.length ? (
+              accounts.map((account) => (
+                <ChannelLabel key={account.id} channel={account.channel} />
+              ))
+            ) : (
+              <ChannelLabel channel="local" />
+            )}
+          </div>
+          {fields.length > 0 && (
+            <dl>
+              {fields.map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {accounts.some(({ channel }) => channel === "whatsapp") && (
+            <p className="scope-text">
+              WhatsApp no comparte la foto de perfil del contacto con
+              RinovaPlus.
+            </p>
+          )}
+          <form method="dialog">
+            <Button type="submit" variant="secondary">
+              Cerrar perfil
+            </Button>
+          </form>
+        </div>
+      </dialog>
+    </>
   );
 }
 

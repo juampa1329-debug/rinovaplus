@@ -902,6 +902,8 @@ class Workspace:
                     k: (
                         db.utc(v)
                         if isinstance(v, datetime)
+                        else bool(v)
+                        if k == "Unread"
                         else db.uid(str(v))
                         if isinstance(v, UUID)
                         or k in {"ConversationId", "ContactId", "UserId"}
@@ -1251,7 +1253,7 @@ class Workspace:
                         "INSERT crm.Conversation(ConversationId,C"
                         "ontactId,State,Priority,Assignee,Control"
                         "Mode,Unread) VALUES(?,?,'open','normal',"
-                        "NULL,'human',0)"
+                        "NULL,'ai',0)"
                     ),
                     conversation,
                     resource,
