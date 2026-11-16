@@ -686,10 +686,16 @@ function ChannelWebhookChooser() {
         value={selected}
         options={[
           { value: "", label: "Selecciona una cuenta" },
-          ...accounts.map((row) => ({
-            value: row.id,
-            label: `${channelNames[row.channel]} · ${row.display_name}`,
-          })),
+          ...accounts.map((row) => {
+            const channel = channelNames[row.channel];
+            const name = row.display_name;
+            return {
+              value: row.id,
+              label: name.toLowerCase().startsWith(channel.toLowerCase())
+                ? name
+                : `${channel} · ${name}`,
+            };
+          }),
         ]}
         onChange={(e) => {
           if (allowNavigation()) setSelected(e.target.value);
