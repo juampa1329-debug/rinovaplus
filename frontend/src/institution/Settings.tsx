@@ -5,8 +5,20 @@ import { TypedFields } from "./Fields";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
+import {
+  LiveModelSelect,
+  catalogProviders,
+  providerLabel,
+} from "./LiveModelSelect";
 
 export const useResource = useAdsResource;
+const categoryLabels: Record<string, string> = {
+  text: "Texto",
+  vision: "Visión",
+  audio: "Audio",
+  voice: "Voz",
+  search: "Búsqueda",
+};
 export function ResourceState({ error }: { error: string }) {
   return <Notice error={!!error}>{error || "Cargando información…"}</Notice>;
 }
@@ -15,10 +27,12 @@ export function SettingPage({
   section,
   contract,
   onSaved,
+  liveModels = false,
 }: {
   section: string;
   contract: Contract;
   onSaved?: () => Promise<unknown>;
+  liveModels?: boolean;
 }) {
   const data = useResource<Setting>(`settings/${section}`);
   if (!data.value) return <ResourceState error={data.error} />;
@@ -37,6 +51,7 @@ export function SettingPage({
         contract={contract}
         reload={data.reload}
         onSaved={onSaved}
+        liveModels={liveModels}
       />
     </>
   );
@@ -47,12 +62,14 @@ function SettingEditor({
   contract,
   reload,
   onSaved,
+  liveModels,
 }: {
   initial: Setting;
   section: string;
   contract: Contract;
   reload: () => Promise<Setting>;
   onSaved?: () => Promise<unknown>;
+  liveModels: boolean;
 }) {
   const { session, call } = useInstitution(),
     task = useTask(),
@@ -161,9 +178,15 @@ function SettingEditor({
               contract={contract}
               value={draft}
               onChange={setDraft}
+              liveModels={liveModels}
             />
           )}
-          {section === "ai" && <Fallbacks value={draft} onChange={setDraft} />}
+          {section === "ai" &&
+            (liveModels ? (
+              <LiveFallbacks value={draft} onChange={setDraft} />
+            ) : (
+              <Fallbacks value={draft} onChange={setDraft} />
+            ))}
           {section === "modules" && (
             <section className="panel">
               <h3>Módulos de la institución</h3>
@@ -261,11 +284,18 @@ function ModelSelections({
   value,
   onChange,
   contract,
+  liveModels,
 }: {
   value: Document;
   onChange: (value: Document) => void;
   contract: Contract;
+  liveModels: boolean;
 }) {
+  const entries = Object.entries(contract.provider_categories);
+  const [providerFilter, setProviderFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const activeCategories = contract.provider_categories[providerFilter] ?? [];
+  const currentCategory = categoryFilter || activeCategories[0];
   const selections = value.selections as {
     provider: string;
     category: string;
@@ -303,88 +333,207 @@ function ModelSelections({
   };
   return (
     <>
-      <Notice>
-        Escribe el identificador del modelo del proveedor. Un identificador
-        guardado permanece disponible aunque el catálogo externo no esté
-        conectado. Guardar no verifica credenciales ni realiza llamadas
-        externas.
-      </Notice>
-      {Object.entries(contract.provider_categories).map(
-        ([provider, categories]) => (
+      {liveModels && entries.length > 0 && (
+        <SelectField
+          id="catalog-provider"
+          label="Proveedor del catálogo"
+          options={[
+            { value: "", label: "Selecciona un proveedor" },
+            ...entries.map(([provider]) => ({
+              value: provider,
+              label: providerLabel(provider),
+            })),
+          ]}
+          value={providerFilter}
+          onChange={(event) => {
+            setProviderFilter(event.target.value);
+            setCategoryFilter("");
+          }}
+        />
+      )}
+      {liveModels && activeCategories.length > 1 && (
+        <SelectField
+          id="catalog-category"
+          label="Tipo de modelo"
+          value={currentCategory}
+          options={activeCategories.map((category) => ({
+            value: category,
+            label: categoryLabels[category] ?? category,
+          }))}
+          onChange={(event) => setCategoryFilter(event.target.value)}
+        />
+      )}
+      {entries
+        .filter(([provider]) => !liveModels || provider === providerFilter)
+        .map(([provider, categories]) => (
           <section className="panel" key={provider}>
-            <h3>{provider}</h3>
-            {categories.map((category) => {
-              const current = selections.find(
-                (row) => row.provider === provider && row.category === category,
-              );
-              return (
-                <div className="institution-model-row" key={category}>
-                  <Badge>
-                    {
-                      (
-                        {
-                          text: "Texto",
-                          vision: "Visión",
-                          audio: "Audio",
-                          voice: "Voz",
-                          search: "Búsqueda",
-                        } as Record<string, string>
-                      )[category]
-                    }
-                  </Badge>
-                  <Field
-                    id={`model-${provider}-${category}`}
-                    label="Identificador del modelo"
-                    value={current?.selected_model ?? ""}
-                    maxLength={240}
-                    onChange={(event) =>
-                      change(
-                        provider,
-                        category,
-                        "selected_model",
-                        event.target.value,
-                      )
-                    }
-                  />
-                  <Field
-                    id={`label-${provider}-${category}`}
-                    label="Nombre visible"
-                    value={current?.display_name ?? provider}
-                    maxLength={120}
-                    onChange={(event) =>
-                      change(
-                        provider,
-                        category,
-                        "display_name",
-                        event.target.value,
-                      )
-                    }
-                  />
-                  {category === "voice" && (
+            <h3>{providerLabel(provider)}</h3>
+            {categories
+              .filter((category) => !liveModels || category === currentCategory)
+              .map((category) => {
+                const current = selections.find(
+                  (row) =>
+                    row.provider === provider && row.category === category,
+                );
+                return (
+                  <div className="institution-model-row" key={category}>
+                    <Badge>{categoryLabels[category] ?? category}</Badge>
+                    {liveModels && catalogProviders.has(provider) ? (
+                      <LiveModelSelect
+                        provider={provider}
+                        category={category}
+                        value={current?.selected_model ?? ""}
+                        onChange={(model) =>
+                          change(provider, category, "selected_model", model)
+                        }
+                      />
+                    ) : (
+                      <Field
+                        id={`model-${provider}-${category}`}
+                        label="Identificador del modelo"
+                        value={current?.selected_model ?? ""}
+                        maxLength={240}
+                        onChange={(event) =>
+                          change(
+                            provider,
+                            category,
+                            "selected_model",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    )}
                     <Field
-                      id={`voice-${provider}`}
-                      label="Identificador de voz"
-                      maxLength={200}
-                      value={current?.voice_id ?? ""}
+                      id={`label-${provider}-${category}`}
+                      label="Nombre visible"
+                      value={current?.display_name ?? provider}
+                      maxLength={120}
                       onChange={(event) =>
                         change(
                           provider,
                           category,
-                          "voice_id",
+                          "display_name",
                           event.target.value,
                         )
                       }
                     />
-                  )}
-                </div>
-              );
-            })}
+                    {category === "voice" && (
+                      <Field
+                        id={`voice-${provider}`}
+                        label="Identificador de voz"
+                        maxLength={200}
+                        value={current?.voice_id ?? ""}
+                        onChange={(event) =>
+                          change(
+                            provider,
+                            category,
+                            "voice_id",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })}
           </section>
-        ),
-      )}
+        ))}
     </>
   );
 }
+function LiveFallbacks({
+  value,
+  onChange,
+}: {
+  value: Document;
+  onChange: (value: Document) => void;
+}) {
+  const [provider, setProvider] = useState("");
+  const entries = (value.model_fallbacks_json ?? {}) as Record<
+    string,
+    string[]
+  >;
+  const selected = entries[provider] ?? [];
+  const save = (models: string[]) =>
+    onChange({
+      ...value,
+      model_fallbacks_json: { ...entries, [provider]: models },
+    });
+  const move = (index: number, step: number) => {
+    const next = [...selected];
+    [next[index], next[index + step]] = [next[index + step], next[index]];
+    save(next);
+  };
+  return (
+    <section className="panel">
+      <h3>Modelos de respaldo</h3>
+      <SelectField
+        id="fallback-provider"
+        label="Proveedor para el respaldo"
+        value={provider}
+        options={[
+          { value: "", label: "Selecciona un proveedor" },
+          ...[...catalogProviders].map((id) => ({
+            value: id,
+            label: providerLabel(id),
+          })),
+        ]}
+        onChange={(event) => setProvider(event.target.value)}
+      />
+      {provider && (
+        <>
+          <ol className="institution-fallback-list">
+            {selected.map((model, index) => (
+              <li key={model}>
+                <span>{model}</span>
+                <div className="institution-actions">
+                  <Button
+                    type="button"
+                    variant="quiet"
+                    aria-label={`Subir ${model}`}
+                    disabled={index === 0}
+                    onClick={() => move(index, -1)}
+                  >
+                    Subir
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="quiet"
+                    aria-label={`Bajar ${model}`}
+                    disabled={index === selected.length - 1}
+                    onClick={() => move(index, 1)}
+                  >
+                    Bajar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="quiet"
+                    aria-label={`Quitar ${model}`}
+                    onClick={() =>
+                      save(selected.filter((item) => item !== model))
+                    }
+                  >
+                    Quitar
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <LiveModelSelect
+            key={provider}
+            provider={provider}
+            category="text"
+            value=""
+            label="Añadir modelo de respaldo"
+            exclude={selected}
+            onChange={(model) => save([...selected, model])}
+          />
+        </>
+      )}
+    </section>
+  );
+}
+
 function Fallbacks({
   value,
   onChange,

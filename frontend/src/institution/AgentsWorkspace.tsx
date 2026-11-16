@@ -4,11 +4,19 @@ import { api, mutation, type Agent, type Catalog } from "../modules/agents/api";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { allowNavigation } from "./drafts";
 
-export function AgentsWorkspace() {
+export function AgentsWorkspace({
+  academicPrograms = false,
+}: {
+  academicPrograms?: boolean;
+}) {
   const [refresh, setRefresh] = useState(0);
   return (
     <>
-      <ProgramRegistry onSaved={() => setRefresh((v) => v + 1)} />
+      {academicPrograms ? (
+        <a href="#/academic">Administrar programas en Académico</a>
+      ) : (
+        <ProgramRegistry onSaved={() => setRefresh((v) => v + 1)} />
+      )}
       <VersionRestore
         onSaved={() => setRefresh((v) => v + 1)}
         refresh={refresh}

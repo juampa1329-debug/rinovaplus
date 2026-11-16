@@ -206,10 +206,12 @@ class ProviderGateway:
             except TimeoutError:
                 raise AiError("provider_response_timeout", 504) from None
 
-    async def models(self, provider: str, kind="text") -> list[ModelInfo]:
+    async def models(self, provider: str, kind="text", *, account_catalog=False) -> list[ModelInfo]:
         items = []
         token = ""
-        for page in range(3):
+        account_openrouter = provider == "openrouter" and account_catalog
+        pages = 10 if account_openrouter else 3
+        for page in range(pages):
             path = "models"
             if provider == "gemini":
                 path += "?" + urlencode(
@@ -219,6 +221,8 @@ class ProviderGateway:
                 path += "?" + urlencode(
                     {"limit": 1000, **({"after_id": token} if token else {})}
                 )
+            elif account_openrouter:
+                path = "models/user?" + urlencode({"limit": 100, "offset": len(items)})
             data = await self.request(provider, "GET", path)
             if not isinstance(data, dict):
                 raise AiError("provider_invalid_response", 502)
@@ -231,9 +235,11 @@ class ProviderGateway:
                 token = data.get("last_id", "")
                 if not token:
                     raise AiError("provider_invalid_response", 502)
+            if account_openrouter:
+                token = "more" if len(page_items) == 100 else ""
             if not isinstance(token, str):
                 raise AiError("provider_invalid_response", 502)
-            if len(items) > 3000 or len(token) > 2048 or (page == 2 and token):
+            if len(items) > 3000 or len(token) > 2048 or (page == pages - 1 and token):
                 raise AiError("model_catalog_too_large", 502)
             if not token:
                 break
@@ -257,6 +263,11 @@ class ProviderGateway:
                 not isinstance(methods, list) or "generateContent" not in methods
             ):
                 continue
+            if account_catalog and provider == "gemini":
+                if any(part in model_id for part in ("-tts", "-image", "-native-audio", "-live")):
+                    continue
+                if kind in {"audio", "vision"} and not model_id.startswith("gemini-"):
+                    continue
             if provider == "openrouter":
                 architecture = item.get("architecture", {})
                 if (
@@ -267,6 +278,10 @@ class ProviderGateway:
                     continue
                 params = item.get("supported_parameters", [])
                 if not isinstance(params, list) or "max_tokens" not in params:
+                    continue
+                if account_catalog and kind == "vision" and "image" not in (
+                    architecture.get("input_modalities") or []
+                ):
                     continue
                 top = item.get("top_provider")
                 limit = (

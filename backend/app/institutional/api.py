@@ -36,6 +36,8 @@ PUBLIC = {
 def core_permission(path, method):
     if path == "/api/institution/operations":
         return "users.manage", None
+    if path.startswith("/api/institution/provider-catalog/"):
+        return "settings.providers.read", "settings"
     if path.startswith('/api/institution/learning'):
         return 'agents.manage', 'intelligence'
     if path.startswith("/api/institution/ads"):
@@ -404,6 +406,11 @@ def create_app(
     @app.get("/api/institution/credentials/{scope}")
     def credentials(request: Request, scope: str):
         return configuration.credentials(request.state.authority, scope)
+
+    if getattr(settings, "ticket", {}).get("version") == "cbn-institutional-operations-p11-v1":
+        from app.institutional.provider_catalog import install as install_provider_catalog
+
+        install_provider_catalog(app, settings)
 
     @app.put("/api/institution/credentials")
     def secret(request: Request, body: models.SecretEdit):

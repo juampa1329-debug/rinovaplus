@@ -39,6 +39,10 @@ No reejecutar preparadores/seeds/calificadores en bases pobladas. El preparador 
 
 El 0,00 % online corresponde al último cierre formal de P12. La migración PostgreSQL registra **5 de 8 hitos completos (62,50 %) y tres parciales**. La copia de Oracle tiene 155 tablas tipadas y 48 filas conciliadas, con lectura comprobada de las **155 de 155 tablas (100 %)**. En una copia aislada pasaron **8 de 8 etapas de workers** y **5 de 5 recorridos del ensayo ampliado** de contactos, ajustes, agentes, campañas y masivos con proveedor simulado. El arranque de Coolify y la restauración conciliada pasaron en Oracle. Se verificó conectividad privada y se guardó la URL de PostgreSQL en Coolify. La sincronización se ensayó con datos sintéticos y la captura final está pendiente. Restan las escrituras de los demás módulos, adjuntos salientes, rendimiento comparativo y activación. El roadmap general ponderado sigue en **93,62 %**. [Migración PostgreSQL en Oracle](deployment/postgresql-migration.md)
 
+## P13 · Agentes de venta por programa — 2026-11-16
+
+Ficha por escuela, importación revisable desde una URL y selector de modelos implementados en local. P13 conserva **0 de 4 hitos aceptados** hasta probar y revisar el piloto. El plan vincula a Admisiones con especialistas en Auxiliar de Enfermería y un programa de software y concilia evidencia de Coolify, WhatsApp y Gemini con los hitos pendientes de P4, P7 y P11/P12. [Plan P13 y guía de actualización](adaptation/P13_PROGRAM_SALES_AGENTS.md)
+
 ## Historia anterior a P11; prevalece el estado superior
 
 ## Estado vigente P10-ES parcial — 2026-10-28

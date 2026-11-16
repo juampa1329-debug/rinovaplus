@@ -462,3 +462,89 @@
     scroll-behavior: auto;
   }
 }
+.program-workspace {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(0, 2.5fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.program-editor,
+.program-school,
+.institution-model-catalog {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.program-school {
+  margin-block-start: 1.25rem;
+}
+
+.program-school h3,
+.program-import-preview p {
+  margin-block: 0 0.5rem;
+}
+
+.program-school .button {
+  justify-content: flex-start;
+  text-align: start;
+}
+
+.program-school .button[aria-pressed="true"] {
+  border-color: var(--accent, currentColor);
+}
+
+.program-editor fieldset {
+  min-inline-size: 0;
+  padding-block: 0.8rem;
+}
+
+.program-editor fieldset legend {
+  font-weight: 700;
+}
+
+.program-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.program-import-preview {
+  margin-block-start: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border, currentColor);
+  border-radius: 0.85rem;
+}
+
+.program-import-preview dl {
+  display: grid;
+  gap: 0.5rem;
+  margin-block: 0.65rem;
+}
+
+.program-import-preview dt {
+  font-weight: 650;
+}
+
+.program-import-preview dd {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.institution-model-catalog > .button {
+  justify-self: start;
+}
+
+.institution-fallback-list li {
+  margin-block: 0.45rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 48rem) {
+  .program-workspace,
+  .program-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

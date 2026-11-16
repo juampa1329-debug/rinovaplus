@@ -172,6 +172,11 @@ const messages: Record<string, string> = {
   tiktok_accounts_authorization_profile_required:
     "La autorización de TikTok Accounts requiere configurar su aplicación y producto. Login Kit tiene permisos distintos.",
   invalid_credentials: "Correo o contraseña incorrectos.",
+  provider_key_missing: "Guarda una clave de este proveedor en Credenciales y vuelve a consultar el catálogo.",
+  provider_key_rejected: "El proveedor rechazó la clave guardada. Actualízala en Credenciales y vuelve a consultar.",
+  provider_endpoint_missing: "Configura la dirección del proveedor antes de consultar sus modelos.",
+  provider_rate_limited: "El proveedor limitó las consultas. Espera un momento y actualiza el catálogo.",
+  provider_catalog_timeout: "El catálogo tardó en responder. Actualízalo para volver a intentarlo.",
   confirmation_failed: "No se pudo confirmar tu identidad.",
   invalid_request: "Revisa los campos y sus límites antes de guardar.",
   revision_conflict:

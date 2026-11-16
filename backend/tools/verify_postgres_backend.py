@@ -259,6 +259,46 @@ def verify_writes(h):
     assert h.call("workspace/conversations/" + created["conversationId"])["thread"]["ControlMode"] == "ai"
 
 
+def verify_academic_profile(h):
+    from app.institutional.agent_catalog import Catalog
+    from app.modules.ai.domain.models import ModelInfo
+
+    path = "/api/v1/agents/programs"
+    body = {
+        "operation_id": str(uuid4()), "revision": 0, "name": "Auxiliar sintético",
+        "school": "Escuela de prueba", "schedule": "Nocturna",
+        "commercial": {
+            "duration": "Tres semestres", "price_cop": 250000,
+            "price_concept": "Matrícula", "price_valid_until": "2099-12-31",
+        },
+    }
+    first = checked(h.api.post(path, headers=h.csrf, json=body))
+    assert checked(h.api.post(path, headers=h.csrf, json=body)) == first
+    detail_path = f"{path}/{first['program_id']}"
+    detail = checked(h.api.get(detail_path))
+    assert detail["commercial"]["price_cop"] == 250000 and detail["program"]["School"] == body["school"]
+    updated = {
+        **body, "operation_id": str(uuid4()), "revision": first["revision"],
+        "commercial": {**body["commercial"], "price_valid_until": "2020-01-01"},
+    }
+    assert checked(h.api.put(detail_path, headers=h.csrf, json=updated))["revision"] == 2
+    checked(h.api.put(detail_path, headers=h.csrf, json={**body, "operation_id": str(uuid4())}), 409)
+    with transaction(h.settings, anonymous=True) as cursor:
+        context = Catalog(h.settings).read_context(cursor, "¿Cuánto dura?", first["program_id"])
+    material = context["material"]["selected"]["commercial"]
+    assert material["duration"] == "Tres semestres" and "price_cop" not in material
+    missing = h.call("provider-catalog/openrouter/text", expected=409)
+    assert missing["detail"] == "provider_key_missing"
+    with patch("app.institutional.provider_catalog.ProviderGateway.models", autospec=True) as models:
+        models.return_value = [ModelInfo(id="gemini-fixture-model", name="Modelo de ensayo")]
+        assert h.call("provider-catalog/gemini/text") == {
+            "items": [{"id": "gemini-fixture-model", "name": "Modelo de ensayo"}],
+        }
+        (gateway, provider, category), options = models.await_args
+        assert gateway.keys == {"gemini": "synthetic-gemini-key"}
+        assert (provider, category, options) == ("gemini", "text", {"account_catalog": True})
+
+
 def verify_agents(h, gemini_calls):
     id = str(uuid4())
     body = {
@@ -902,6 +942,7 @@ def run():
             verify_agents(journey, gemini_calls)
             verify_marketing(journey, integration, thread)
             if deployment:
+                verify_academic_profile(journey)
                 verify_whatsapp_gemini(journey, integration, deliver)
                 verify_comment_automation(journey, stage, config_digest)
                 verify_consecutive_messages(journey, thread)

@@ -27,6 +27,7 @@ import { CommentNotifications } from "./CommentNotifications";
 import { ChannelRuntime } from "./ChannelOperations";
 import { allowNavigation } from "./drafts";
 import { AgentsWorkspace } from "./AgentsWorkspace";
+import { AcademicPrograms } from "./AcademicPrograms";
 import { KnowledgeWorkspace } from "./KnowledgeWorkspace";
 import { CampaignWorkspace } from "./CampaignWorkspace";
 import { AdsWorkspace } from "./AdsWorkspace";
@@ -40,6 +41,7 @@ import { BrandMark } from "../shared/BrandMark";
 const sections = [
   ["overview", "Resumen"],
   ["admissions", "Admisiones"],
+  ["academic", "Académico"],
   ["inbox", "Inbox"],
   ["clients", "CRM"],
   ["channels", "Canales"],
@@ -480,10 +482,15 @@ function Shell({
           </a>
           <nav aria-label="Navegación principal">
             {sections
-              .filter(
-                ([id]) =>
-                  id !== "comments" || runtime.value?.channel_operations,
-              )
+              .filter(([id]) => {
+                if (id === "comments") return runtime.value?.channel_operations;
+                if (id === "academic")
+                  return (
+                    runtime.value?.institutional_operations &&
+                    allowed("agents.manage")
+                  );
+                return true;
+              })
               .map(([id, label]) => (
                 <a
                   key={id}
@@ -642,6 +649,13 @@ function Shell({
                         ))}
                     </div>
                   </section>
+                ) : location.page === "academic" &&
+                  runtime.value.institutional_operations ? (
+                  allowed("agents.manage") ? (
+                    <AcademicPrograms />
+                  ) : (
+                    <Denied />
+                  )
                 ) : location.page === "comments" &&
                   runtime.value.channel_operations ? (
                   allowed("inbox.read") ? (
@@ -699,7 +713,11 @@ function Shell({
                   runtime.value.agent_operations ? (
                   allowed("agents.manage") ? (
                     location.page === "agents" ? (
-                      <AgentsWorkspace />
+                      <AgentsWorkspace
+                        academicPrograms={
+                          runtime.value.institutional_operations
+                        }
+                      />
                     ) : (
                       <AgentAssistantChat active selectedOnly />
                     )
@@ -757,6 +775,7 @@ function Shell({
                         key={location.tab}
                         section={location.tab}
                         contract={contract.value}
+                        liveModels={runtime.value.institutional_operations}
                         onSaved={
                           location.tab === "modules"
                             ? runtime.reload

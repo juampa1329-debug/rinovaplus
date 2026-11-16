@@ -3,6 +3,7 @@
 from uuid import NAMESPACE_URL, uuid5
 
 from app.institutional.db import institution, rows, one
+from app.institutional.program_commercial import agent_facts, read_profile
 from app.modules.agents.domain import digest
 from app.modules.ai.infrastructure.providers import AiError
 
@@ -76,6 +77,9 @@ class Catalog:
             )
             if selected is None:
                 raise AiError("institutional_program_not_in_active_offer", 409)
+            commercial = agent_facts(read_profile(c, self.settings, program_id))
+            if commercial:
+                selected["commercial"] = commercial
         # Never infer assignment/program from the question, names or phone.
         sources = []
         if selected:
@@ -92,7 +96,7 @@ class Catalog:
                 {
                     "id": reference,
                     "title": "Programa declarado en CRM: " + selected["name"],
-                    "text": "Información declarada, sin verificación académica SIIE: "
+                    "text": "Información comercial revisada en el CRM; el expediente académico corresponde a SIIE: "
                     + str(selected),
                     "source_kind": "declared_CRM_catalog",
                     "revision": selected["revision"],

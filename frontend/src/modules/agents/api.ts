@@ -182,6 +182,22 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  program_import_not_configured:
+    "Falta configurar Firecrawl y el dominio oficial en el servidor. Puedes llenar la ficha manualmente.",
+  program_source_host_not_allowed:
+    "Usa un enlace HTTPS directo de un dominio oficial habilitado para importar programas.",
+  program_import_no_program:
+    "No se identificó un programa en la página. Verifica que el enlace corresponda a la ficha del programa.",
+  program_import_key_rejected:
+    "Firecrawl rechazó la credencial. Revisa la clave del servidor antes de volver a extraer.",
+  program_import_rate_limited:
+    "Firecrawl limitó las consultas. Revisa el cupo del servicio o reintenta más tarde.",
+  program_import_timeout:
+    "La página tardó en responder. Reintenta o completa los campos manualmente.",
+  program_import_invalid_response:
+    "La página devolvió datos que no se pudieron interpretar como una ficha. Revisa el enlace.",
+  program_import_failed:
+    "No se pudo leer la página con Firecrawl. Revisa que esté disponible y vuelve a intentarlo.",
   agents_execution_migration_required:
     "Falta habilitar el registro de ejecuciones de los agentes. Solicite completar la actualización de la aplicación.",
   agents_ab_version_unavailable:
