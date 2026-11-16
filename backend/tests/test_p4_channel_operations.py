@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 from app.institutional.channel_events import delivery, normalize
 from app.institutional.channel_ingress import signature_valid
-from app.institutional.channel_oauth import authorization_url
+from app.institutional.channel_oauth import authorization_url, exchange
 from app.institutional.channel_operations import capabilities
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
@@ -49,6 +49,39 @@ def test_verify_is_not_a_meta_signature_secret():
     assert signature_valid("meta", "application-secret", headers, raw)
     assert not signature_valid("meta", "generated-verify-token", headers, raw)
     assert not signature_valid("meta", "application-secret", headers, raw + b" ")
+
+
+@pytest.mark.parametrize("channel", ["facebook", "messenger"])
+def test_page_oauth_does_not_request_instagram_fields(monkeypatch, channel):
+    def request(method, url, **options):
+        if url.endswith("oauth/access_token"):
+            return {"access_token": "user-test-key"}
+        assert url.endswith("me/accounts")
+        assert options["params"]["fields"] == "id,name,access_token"
+        return {"data": [{"id": "12345", "name": "Página de prueba", "access_token": "page-test-key"}]}
+
+    monkeypatch.setattr("app.institutional.channel_oauth.http_json", request)
+    result = exchange(
+        {"IssuerProfile": "facebook_login", "ApiVersion": "v26.0", "ClientId": "123",
+         "Channel": channel}, "secret", "code", "https://example.invalid/return", None,
+    )
+    assert [(item["kind"], item["id"]) for item in result["assets"]] == [("facebook_page", "12345")]
+
+
+@pytest.mark.parametrize("channel", ["facebook", "messenger"])
+def test_page_subscription_preserves_comments_and_message_fields(monkeypatch, channel):
+    def request(account, method, path, body):
+        assert method == "POST" and path == "123/subscribed_apps"
+        assert set(body["subscribed_fields"].split(",")) == {
+            "feed", "messages", "messaging_postbacks", "message_deliveries", "message_reads",
+        }
+        return {"success": True}
+
+    monkeypatch.setattr(providers, "request", request)
+    assert providers.subscribe({
+        "channel": channel,
+        "configuration": {"pageId": "123", "sharedPageSubscription": True},
+    })["success"]
 
 
 @pytest.mark.parametrize(

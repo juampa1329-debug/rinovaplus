@@ -21,6 +21,8 @@ export type Channel = {
   fields: Document;
   provider_operations_available?: boolean;
   issuer_profile?: string;
+  oauth_callback?: string;
+  oauth_ready?: boolean;
   synthetic_demo?: boolean;
   initial_stage_key?: string;
   requested_status?: string;
@@ -226,7 +228,10 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                             : ["tiktok_business"]
                           : ["facebook_login"]
                   }
-                  onChange={(event) => setIssuer(event.target.value)}
+                  onChange={(event) => {
+                    setIssuer(event.target.value);
+                    setApp("");
+                  }}
                 />
                 <SelectField
                   id="channel-application"
@@ -237,7 +242,11 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                     ...Array.from(
                       new Map(
                         data.value.items
-                          .filter((row) => row.channel === channel)
+                          .filter((row) =>
+                            row.issuer_profile
+                              ? row.issuer_profile === issuer
+                              : row.channel === channel,
+                          )
                           .map((row) => [
                             row.application_id,
                             {

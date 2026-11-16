@@ -209,6 +209,8 @@ def subscribe(account):
             if channel == "facebook"
             else "messages,messaging_postbacks,message_deliveries,message_reads"
         )
+        if channel in {"facebook", "messenger"} and config.get("sharedPageSubscription"):
+            fields = "feed,messages,messaging_postbacks,message_deliveries,message_reads"
         result = request(
             account, "POST", asset + "/subscribed_apps", {"subscribed_fields": fields}
         )

@@ -2,7 +2,10 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { Comments } from "../institution/Comments";
 import { CommentNotifications } from "../institution/CommentNotifications";
-import { ChannelRuntime } from "../institution/ChannelOperations";
+import {
+  ChannelOperations,
+  ChannelRuntime,
+} from "../institution/ChannelOperations";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
 
@@ -52,6 +55,92 @@ function mount(children: React.ReactNode, session = base) {
 }
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+it("opens Facebook authorization from the Messenger account and loads the selected Page on return", async () => {
+  const authorization = "https://www.facebook.com/v26.0/dialog/oauth";
+  const open = vi.spyOn(window, "open").mockReturnValue(null);
+  vi.spyOn(document, "hidden", "get").mockReturnValue(false);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (path, init) => {
+      if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+      if (String(path).endsWith("account-one/history"))
+        return ok({ queue: [], events: [], operations: [] });
+      if (String(path).endsWith("account-one/oauth")) {
+        const body = JSON.parse(String(init?.body));
+        expect(body.scopes).toEqual([
+          "pages_show_list",
+          "pages_manage_metadata",
+          "pages_read_engagement",
+          "pages_manage_engagement",
+          "pages_messaging",
+        ]);
+        return ok({
+          authorization_url: authorization,
+          oauth_session_id: "oauth-one",
+        });
+      }
+      return ok({
+        status: "assets_ready",
+        items: [
+          {
+            id: "page-asset",
+            name: "Página de prueba",
+            external_id: "123",
+            kind: "facebook_page",
+          },
+        ],
+      });
+    });
+  mount(
+    <ChannelOperations
+      account={{
+        id: "account-one",
+        channel: "messenger",
+        issuer_profile: "facebook_login",
+        application_id: "app-one",
+        display_name: "Messenger de prueba",
+        oauth_ready: true,
+        oauth_callback: "https://example.invalid/hooks/oauth/app-one",
+        revision: 1,
+        row_version: "version",
+        application_version: "version",
+        verified_status: "unverified",
+        fields: {},
+      }}
+      done={async () => {}}
+    />,
+    {
+      ...base,
+      actions: [...base.actions, "settings.channels.write"],
+    },
+  );
+  expect(screen.getByLabelText("URL de retorno de OAuth")).toHaveValue(
+    "https://example.invalid/hooks/oauth/app-one",
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Conectar con Facebook" }),
+  );
+  await waitFor(() =>
+    expect(open).toHaveBeenCalledWith(
+      authorization,
+      "_blank",
+      "noopener,noreferrer",
+    ),
+  );
+  expect(
+    screen.getByRole("link", { name: "Abrir Facebook en otra pestaña" }),
+  ).toHaveAttribute("href", authorization);
+  fireEvent(window, new Event("focus"));
+  expect(
+    await screen.findByRole("button", { name: "Usar esta página" }),
+  ).toBeVisible();
+  expect(
+    fetcher.mock.calls.some(([path]) =>
+      String(path).endsWith("oauth-one/assets"),
+    ),
+  ).toBe(true);
 });
 
 it("shows new comments in the notification menu and links to the exact comment", async () => {

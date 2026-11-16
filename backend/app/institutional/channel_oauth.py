@@ -246,9 +246,9 @@ def exchange(item, secret, code, redirect, verifier):
             "GET",
             base + "me/accounts",
             params={
-                "fields": (
-                    "id,name,access_token,instagram_business_account{id,username}"
-                ),
+                "fields": "id,name,access_token,instagram_business_account{id,username}"
+                if item["Channel"] == "instagram"
+                else "id,name,access_token",
                 "limit": 100,
             },
             headers={"Authorization": "Bearer " + access},

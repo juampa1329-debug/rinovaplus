@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Field, Notice, SelectField } from "../shared/ui";
 import { OneTime } from "./Access";
 import type { Channel } from "./Channels";
@@ -66,6 +66,39 @@ export function ChannelOperations({
       !account.synthetic_demo,
     hookWritable = session.actions.includes("settings.webhooks.write");
   const ep = account.webhook;
+  const pageOAuth =
+    account.issuer_profile === "facebook_login" &&
+    ["facebook", "messenger"].includes(account.channel);
+  useEffect(() => {
+    if (!pageOAuth || !oauth || !authUrl) return;
+    let active = true;
+    let loading = false;
+    const onReturn = async () => {
+      if (document.hidden || loading) return;
+      loading = true;
+      try {
+        const result = await call<{ status: string; items: typeof assets }>(
+          `channels/oauth/${oauth}/assets`,
+        );
+        if (active && result.status === "assets_ready") {
+          setAssets(result.items);
+          setAuthUrl("");
+          setDiagnosis("Selecciona la página autorizada.");
+        }
+      } catch {
+        // The explicit retry reports the failure and keeps the authorization link available.
+      } finally {
+        loading = false;
+      }
+    };
+    window.addEventListener("focus", onReturn);
+    document.addEventListener("visibilitychange", onReturn);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", onReturn);
+      document.removeEventListener("visibilitychange", onReturn);
+    };
+  }, [pageOAuth, oauth, authUrl, call]);
   const perform = (action: string) =>
     void task.run(async () => {
       const payload = {
@@ -207,12 +240,22 @@ export function ChannelOperations({
           </Button>
         </details>
       )}
-      <details>
-        <summary>Conectar con OAuth</summary>
+      <details open={pageOAuth || undefined}>
+        <summary>
+          {pageOAuth ? "Inicio de sesión con Facebook" : "Conectar con OAuth"}
+        </summary>
         <p>
           La aplicación genera la dirección de retorno. Configura primero la URL
           pública HTTPS en Webhooks y las credenciales de esta aplicación.
         </p>
+        {account.oauth_ready && account.oauth_callback && (
+          <Field
+            id="channel-oauth-callback"
+            label="URL de retorno de OAuth"
+            value={account.oauth_callback}
+            readOnly
+          />
+        )}
         {account.issuer_profile === "tiktok_business" && (
           <Notice>
             TikTok Business requiere su aplicación y autorización de Accounts
@@ -225,7 +268,12 @@ export function ChannelOperations({
           }
           onClick={() =>
             void task.run(async () => {
-              const payload = { scopes: scopes[account.issuer_profile || ""] };
+              const allowed = scopes[account.issuer_profile || ""];
+              const payload = {
+                scopes: pageOAuth
+                  ? allowed.filter((scope) => scope.startsWith("pages_"))
+                  : allowed,
+              };
               const result = await call<{
                 authorization_url: string;
                 oauth_session_id: string;
@@ -236,15 +284,23 @@ export function ChannelOperations({
               setOauth(result.oauth_session_id);
               setAuthUrl(result.authorization_url);
               setAssets([]);
-            })
+              if (pageOAuth)
+                window.open(
+                  result.authorization_url,
+                  "_blank",
+                  "noopener,noreferrer",
+                );
+            }, "")
           }
         >
-          Preparar autorización
+          {pageOAuth ? "Conectar con Facebook" : "Preparar autorización"}
         </Button>
         {authUrl && (
           <p>
             <a href={authUrl} target="_blank" rel="noopener noreferrer">
-              Abrir autorización del proveedor
+              {pageOAuth
+                ? "Abrir Facebook en otra pestaña"
+                : "Abrir autorización del proveedor"}
             </a>
           </p>
         )}
@@ -267,7 +323,9 @@ export function ChannelOperations({
               })
             }
           >
-            Consultar cuentas autorizadas
+            {pageOAuth
+              ? "Cargar páginas autorizadas"
+              : "Consultar cuentas autorizadas"}
           </Button>
         )}
         {assets.map((asset) => (
@@ -292,7 +350,7 @@ export function ChannelOperations({
                 })
               }
             >
-              Usar esta cuenta
+              {pageOAuth ? "Usar esta página" : "Usar esta cuenta"}
             </Button>
           </div>
         ))}

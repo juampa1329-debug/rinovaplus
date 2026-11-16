@@ -241,6 +241,17 @@ class ProviderOperations:
             adapter, secret_version = provider_account(
                 c, self.settings, item, require_account=action != "numbers"
             )
+            if action == "subscribe" and item["Channel"] in {"facebook", "messenger"}:
+                companion = "messenger" if item["Channel"] == "facebook" else "facebook"
+                adapter["configuration"]["sharedPageSubscription"] = bool(c.execute(
+                    "SELECT 1 FROM crm_channels2.Integration "
+                    "WHERE InstitutionId=? AND ApplicationId=? AND ExternalAccountId=? "
+                    "AND Channel=? AND VerifiedStatus='verified'",
+                    institution(self.settings),
+                    item["ApplicationId"],
+                    item["ExternalAccountId"],
+                    companion,
+                ).fetchone())
             if (
                 action in {"verify", "health", "refresh"}
                 and item["Provider"] == "meta"
