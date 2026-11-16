@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import logging
 import time
 from uuid import uuid4
 
@@ -15,6 +16,8 @@ from app.institutional.channel_secrets import get
 from app.institutional.crypto import seal
 from app.institutional.db import institution, key, one
 from app.institutional.store import transaction
+
+WEBHOOK_LOG = logging.getLogger("uvicorn.error")
 
 
 def endpoint(c, settings, endpoint_key):
@@ -98,15 +101,23 @@ class Ingress:
             or len(challenge) > 2048
             or len(verify) > 256
         ):
+            WEBHOOK_LOG.info("meta_webhook_verification outcome=invalid_parameters")
             raise HTTPException(403, "webhook_challenge_rejected")
         with transaction(self.settings, True, anonymous=True) as c:
-            ep = endpoint(c, self.settings, endpoint_key)
-            if ep["Provider"] != "meta":
-                raise HTTPException(403, "webhook_challenge_rejected")
-            expected, _ = get(
-                c, self.settings, "endpoint", str(ep["EndpointId"]), "webhook_verify"
-            )
-            if not hmac.compare_digest(expected, verify):
+            try:
+                ep = endpoint(c, self.settings, endpoint_key)
+                if ep["Provider"] != "meta":
+                    raise HTTPException(403, "webhook_challenge_rejected")
+                expected, _ = get(
+                    c, self.settings, "endpoint", str(ep["EndpointId"]), "webhook_verify"
+                )
+            except HTTPException:
+                WEBHOOK_LOG.info(
+                    "meta_webhook_verification outcome=endpoint_or_token_unavailable"
+                )
+                raise
+            if not hmac.compare_digest(expected.encode("utf-8"), verify.encode("utf-8")):
+                WEBHOOK_LOG.info("meta_webhook_verification outcome=token_mismatch")
                 raise HTTPException(403, "webhook_challenge_rejected")
             c.execute(
                 (
@@ -117,6 +128,7 @@ class Ingress:
                 institution(self.settings),
                 ep["EndpointId"],
             )
+        WEBHOOK_LOG.info("meta_webhook_verification outcome=verified")
         return challenge
 
     def receive(self, endpoint_key, headers, raw):
@@ -217,6 +229,8 @@ def install(app, settings):
             len(fields.getlist(k)) != 1
             for k in ["hub.mode", "hub.verify_token", "hub.challenge"]
         ):
+            if any(key.startswith("hub.") for key in fields):
+                WEBHOOK_LOG.info("meta_webhook_verification outcome=invalid_query")
             raise HTTPException(403, "webhook_challenge_rejected")
         return PlainTextResponse(
             service.challenge(

@@ -1,4 +1,5 @@
 import hmac
+from contextlib import nullcontext
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
@@ -10,6 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
+from app.institutional import channel_ingress
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
 from app.institutional.channels import (
@@ -31,6 +33,25 @@ def test_strict_provider_json_rejects_ambiguous_input(raw):
 
     with pytest.raises((ValueError, HTTPException)):
         strict_json(raw)
+
+
+def test_meta_verification_logs_a_rejection_without_logging_the_token(monkeypatch, caplog):
+    ingress = channel_ingress.Ingress(SimpleNamespace())
+    monkeypatch.setattr(
+        channel_ingress, "transaction", lambda *_args, **_kwargs: nullcontext(object())
+    )
+    monkeypatch.setattr(
+        channel_ingress,
+        "endpoint",
+        lambda *_args: {"EndpointId": "endpoint", "Provider": "meta"},
+    )
+    monkeypatch.setattr(channel_ingress, "get", lambda *_args: ("correct-private", {}))
+    with caplog.at_level("INFO", logger="uvicorn.error"), pytest.raises(HTTPException) as error:
+        ingress.challenge("endpoint", "subscribe", "incorrecto-privadó", "123")
+    assert error.value.status_code == 403
+    assert "outcome=token_mismatch" in caplog.text
+    assert "correct-private" not in caplog.text
+    assert "incorrecto-privadó" not in caplog.text
 
 
 def test_provider_payload_is_bounded_and_identity_is_never_truncated_to_valid():
