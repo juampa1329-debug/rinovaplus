@@ -105,13 +105,14 @@ it("keeps extracted facts in a draft until the editor applies, reviews and saves
   }
 });
 
-it("queries the chosen provider and filters available OpenRouter models by family", async () => {
+it("queries OpenRouter and groups models by company with a family filter", async () => {
   const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
     response({
       items: [
         { id: "google/gemma-fixture", name: "Gemma" },
         { id: "google/gemini-fixture", name: "Gemini" },
         { id: "anthropic/claude-fixture", name: "Claude" },
+        { id: "openai/chatgpt-fixture", name: "ChatGPT" },
       ],
     }),
   );
@@ -128,12 +129,20 @@ it("queries the chosen provider and filters available OpenRouter models by famil
   }
   try {
     mount(<Picker />);
+    const companies = await screen.findByLabelText("Empresa del modelo");
     const families = await screen.findByLabelText("Familia de modelos");
     expect(fetcher.mock.calls[0][0]).toBe(
       "/api/institution/provider-catalog/openrouter/text",
     );
-    fireEvent.change(families, { target: { value: "Gemma" } });
     const picker = screen.getByLabelText("Seleccionar modelo");
+    expect(
+      within(picker).getByRole("group", { name: "Anthropic" }),
+    ).toHaveTextContent("claude-fixture");
+    expect(
+      within(picker).getByRole("group", { name: "OpenAI" }),
+    ).toHaveTextContent("chatgpt-fixture");
+    fireEvent.change(companies, { target: { value: "Google" } });
+    fireEvent.change(families, { target: { value: "Gemma" } });
     expect(
       within(picker).queryByText(/google\/gemini-fixture/),
     ).not.toBeInTheDocument();

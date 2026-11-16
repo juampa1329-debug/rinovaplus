@@ -26,6 +26,9 @@ const brands: Record<string, string> = {
   anthropic: "Anthropic",
   meta: "Meta",
   "meta-llama": "Meta",
+  "deepseek-ai": "DeepSeek",
+  deepseek: "DeepSeek",
+  qwen: "Qwen",
   mistral: "Mistral",
   mistralai: "Mistral",
   nvidia: "NVIDIA",
@@ -39,12 +42,20 @@ const brands: Record<string, string> = {
 export const providerLabel = (id: string) =>
   brands[id] ?? id.charAt(0).toUpperCase() + id.slice(1);
 
-function modelGroup(provider: string, model: Model) {
-  if (/\bgemma(?:[-\d]|\b)/i.test(model.id.split("/").at(-1) ?? ""))
-    return "Gemma";
-  return provider === "openrouter" && model.id.includes("/")
-    ? providerLabel(model.id.split("/")[0])
-    : providerLabel(provider);
+function publisher(provider: string, model: Model) {
+  if (model.id.includes("/")) return providerLabel(model.id.split("/")[0]);
+  return providerLabel(provider === "gemini" ? "google" : provider);
+}
+
+function modelFamily(provider: string, model: Model) {
+  const slug = (model.id.split("/").at(-1) ?? "").toLowerCase();
+  if (/^gemma(?:[-\d]|$)/.test(slug)) return "Gemma";
+  if (/^gemini(?:[-\d]|$)/.test(slug)) return "Gemini";
+  if (slug.startsWith("claude")) return "Claude";
+  if (/^(?:chatgpt|gpt)(?:[-\d]|$)/.test(slug)) return "GPT y ChatGPT";
+  if (publisher(provider, model) === "OpenAI" && /^o\d/.test(slug))
+    return "Serie o";
+  return publisher(provider, model);
 }
 
 export function LiveModelSelect({
@@ -68,16 +79,23 @@ export function LiveModelSelect({
   );
   const models = data.value?.items ?? null;
   const loading = task.busy || (!models && !data.error);
+  const [company, setCompany] = useState("");
   const [family, setFamily] = useState("");
   const [query, setQuery] = useState("");
   const id = `model-${provider}-${category}`;
-  const families = [
-    ...new Set(models?.map((model) => modelGroup(provider, model))),
+  const companies = [
+    ...new Set(models?.map((model) => publisher(provider, model))),
   ].sort();
-  const filtered = (models ?? []).filter(
+  const companyModels = (models ?? []).filter(
+    (model) => !company || publisher(provider, model) === company,
+  );
+  const families = [
+    ...new Set(companyModels.map((model) => modelFamily(provider, model))),
+  ].sort();
+  const filtered = companyModels.filter(
     (model) =>
       !exclude.includes(model.id) &&
-      (!family || modelGroup(provider, model) === family) &&
+      (!family || modelFamily(provider, model) === family) &&
       `${model.name} ${model.id}`
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
@@ -104,6 +122,24 @@ export function LiveModelSelect({
       </Button>
       {task.notices}
       {data.error && !task.error && <Notice error>{data.error}</Notice>}
+      {models && companies.length > 1 && (
+        <div className="field">
+          <label htmlFor={`${id}-company`}>Empresa del modelo</label>
+          <select
+            id={`${id}-company`}
+            value={company}
+            onChange={(event) => {
+              setCompany(event.target.value);
+              setFamily("");
+            }}
+          >
+            <option value="">Todas las empresas</option>
+            {companies.map((name) => (
+              <option key={name}>{name}</option>
+            ))}
+          </select>
+        </div>
+      )}
       {models && families.length > 1 && (
         <div className="field">
           <label htmlFor={`${id}-family`}>Familia de modelos</label>
@@ -149,9 +185,9 @@ export function LiveModelSelect({
                 : "guardado"}
             </option>
           )}
-          {families.map((group) => {
+          {companies.map((group) => {
             const items = filtered.filter(
-              (model) => modelGroup(provider, model) === group,
+              (model) => publisher(provider, model) === group,
             );
             return (
               items.length > 0 && (
