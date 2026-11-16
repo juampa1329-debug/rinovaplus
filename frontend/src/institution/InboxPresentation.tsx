@@ -87,7 +87,13 @@ export function ChannelLabel({ channel }: { channel?: string | null }) {
   );
 }
 
-export function InboxIdle({ showContact }: { showContact: boolean }) {
+export function InboxIdle({
+  showContact,
+  empty,
+}: {
+  showContact: boolean;
+  empty: boolean;
+}) {
   return (
     <section
       className="p3-person p3-inbox-person inbox-idle"
@@ -109,8 +115,12 @@ export function InboxIdle({ showContact }: { showContact: boolean }) {
           </div>
           <div className="inbox-idle-message">
             <Icon name="inbox" />
-            <h2>Selecciona una conversación</h2>
-            <p>Abre un hilo de la bandeja para atenderlo.</p>
+            <h2>
+              {empty
+                ? "Aún no hay conversaciones"
+                : "Selecciona una conversación"}
+            </h2>
+            {!empty && <p>Abre un hilo de la bandeja para atenderlo.</p>}
           </div>
         </div>
         <div className="inbox-idle-composer" aria-hidden="true">

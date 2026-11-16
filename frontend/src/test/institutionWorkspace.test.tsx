@@ -77,6 +77,7 @@ let agentOperations = false;
 let serverRevision = "1";
 let failedDelivery = false;
 let threadMode = "human";
+let emptyInbox = false;
 const calls: {
   path: string;
   method: string;
@@ -111,6 +112,7 @@ beforeEach(() => {
   serverRevision = "1";
   failedDelivery = false;
   threadMode = "human";
+  emptyInbox = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
     config,
@@ -234,6 +236,8 @@ beforeEach(() => {
           revision: serverRevision,
         });
       }
+      if (emptyInbox && path.includes("/workspace/inbox?"))
+        return response({ items: [], total: 0, hasMore: false, revision: "1" });
       if (
         path.includes("/workspace/clients?") ||
         path.includes("/workspace/inbox?")
@@ -358,6 +362,46 @@ it("keeps the CRM panel collapsed across threads and shows each program code", a
   expect(show).toHaveAttribute("aria-expanded", "false");
   fireEvent.click(show);
   expect(await screen.findByLabelText("Nombre visible")).toBeVisible();
+});
+
+it("explains an empty Inbox without offering unavailable pages", async () => {
+  emptyInbox = true;
+  open("inbox");
+  expect(await screen.findByText("Aún no hay conversaciones")).toBeVisible();
+  expect(
+    screen.getByText("Aquí aparecerán las conversaciones de tus canales."),
+  ).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Siguiente" })).toBeNull();
+});
+
+it("sends with Enter and the button, inserts a line at the caret with Alt+Enter", async () => {
+  open("inbox");
+  await select();
+  const editor = screen.getByLabelText<HTMLTextAreaElement>("Mensaje local");
+  const sent = () =>
+    calls.filter(
+      ({ method, path }) => method === "POST" && path.endsWith("/messages"),
+    );
+  fireEvent.keyDown(editor, { key: "Enter" });
+  expect(sent()).toHaveLength(0);
+  fireEvent.change(editor, { target: { value: "Hola mundo" } });
+  editor.setSelectionRange(4, 5);
+  fireEvent.keyDown(editor, { key: "Enter", altKey: true });
+  expect(editor).toHaveValue("Hola\nmundo");
+  expect(editor.selectionStart).toBe(5);
+  fireEvent.keyDown(editor, { key: "Enter", isComposing: true });
+  expect(sent()).toHaveLength(0);
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(editor).toHaveValue(""));
+  expect(sent()).toHaveLength(1);
+  expect(sent()[0].body?.body).toBe("Hola\nmundo");
+  fireEvent.change(editor, { target: { value: "Con el botón" } });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar mensaje local" }),
+  );
+  await waitFor(() => expect(editor).toHaveValue(""));
+  expect(sent()).toHaveLength(2);
+  expect(sent()[1].body?.body).toBe("Con el botón");
 });
 
 it("shows the chat and CRM skeleton and switches ownership without submitting the priority draft", async () => {

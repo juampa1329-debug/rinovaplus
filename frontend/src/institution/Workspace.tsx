@@ -424,6 +424,7 @@ function WorkspaceView({
   const inbox = page === "inbox";
   const gridRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
+    if (inbox) return;
     const grid = gridRef.current;
     if (!grid) return;
     const resize = () => {
@@ -440,7 +441,7 @@ function WorkspaceView({
       observer?.disconnect();
       window.removeEventListener("resize", resize);
     };
-  }, [page]);
+  }, [inbox, page]);
   const cfg = useCrmConfiguration(),
     { session } = useInstitution();
   const [selected, setSelected] = useState(() => {
@@ -480,6 +481,12 @@ function WorkspaceView({
     refresh,
     page !== "settings",
   );
+  const { queue, ...filters } = inboxFilters;
+  const emptyInbox =
+    inbox &&
+    list.value?.total === 0 &&
+    queue === "all" &&
+    !Object.values(filters).some(Boolean);
   const directory = { value: { items: [] as { id: string; name: string }[] } };
   const filterKey = JSON.stringify([
     page,
@@ -740,29 +747,35 @@ function WorkspaceView({
                     ),
                   )}
                   {!list.value.items.length && (
-                    <Notice>Sin resultados para estos filtros.</Notice>
+                    <Notice>
+                      {emptyInbox
+                        ? "Aquí aparecerán las conversaciones de tus canales."
+                        : "Sin resultados para estos filtros."}
+                    </Notice>
                   )}
-                  <div className="p3-actions">
-                    <Button
-                      variant="quiet"
-                      disabled={offset === 0}
-                      onClick={() => setOffset((n) => Math.max(0, n - 25))}
-                    >
-                      Anterior
-                    </Button>
-                    <span>Página {Math.floor(offset / 25) + 1}</span>
-                    <Button
-                      variant="quiet"
-                      disabled={!list.value.hasMore}
-                      onClick={() => {
-                        if (offset === 0 && list.value)
-                          setAnchor(list.value.revision);
-                        setOffset((n) => n + 25);
-                      }}
-                    >
-                      Siguiente
-                    </Button>
-                  </div>
+                  {(!inbox || offset > 0 || list.value.hasMore) && (
+                    <div className="p3-actions">
+                      <Button
+                        variant="quiet"
+                        disabled={offset === 0}
+                        onClick={() => setOffset((n) => Math.max(0, n - 25))}
+                      >
+                        Anterior
+                      </Button>
+                      <span>Página {Math.floor(offset / 25) + 1}</span>
+                      <Button
+                        variant="quiet"
+                        disabled={!list.value.hasMore}
+                        onClick={() => {
+                          if (offset === 0 && list.value)
+                            setAnchor(list.value.revision);
+                          setOffset((n) => n + 25);
+                        }}
+                      >
+                        Siguiente
+                      </Button>
+                    </div>
+                  )}
                 </>
               )}
             </aside>
@@ -792,7 +805,7 @@ function WorkspaceView({
                 toggleContact={() => setShowContact((visible) => !visible)}
               />
             ) : inbox ? (
-              <InboxIdle showContact={showContact} />
+              <InboxIdle showContact={showContact} empty={emptyInbox} />
             ) : (
               <section className="panel">
                 <h2>Selecciona un contacto</h2>
@@ -1380,6 +1393,7 @@ function Conversation({
           )
             return;
           const usedText = !attachment || canCaption;
+          const fromEditor = document.activeElement === input.current;
           void command
             .save(`conversations/${conversation}/messages`, "POST", {
               revision: detail.revision,
@@ -1395,6 +1409,11 @@ function Conversation({
                 setAttachment(null);
                 nearLatest.current = true;
                 setBefore("");
+                if (fromEditor)
+                  requestAnimationFrame(() => {
+                    if (document.activeElement === document.body)
+                      input.current?.focus();
+                  });
               }
             });
         }}
@@ -1426,7 +1445,38 @@ function Conversation({
               value={body}
               maxLength={4000}
               rows={1}
+              title="Enter envía. Alt + Enter inserta un salto de línea."
               onChange={(event) => setMessage(event.target.value)}
+              onKeyDown={(event) => {
+                if (
+                  event.key !== "Enter" ||
+                  event.nativeEvent.isComposing ||
+                  event.keyCode === 229 ||
+                  event.ctrlKey ||
+                  event.metaKey ||
+                  event.shiftKey
+                )
+                  return;
+                event.preventDefault();
+                const editor = event.currentTarget;
+                if (event.altKey) {
+                  const { selectionStart, selectionEnd, value } = editor;
+                  if (
+                    value.length - (selectionEnd - selectionStart) >=
+                    editor.maxLength
+                  )
+                    return;
+                  editor.setRangeText(
+                    "\n",
+                    selectionStart,
+                    selectionEnd,
+                    "end",
+                  );
+                  setMessage(editor.value);
+                } else if (!event.repeat) {
+                  editor.form?.requestSubmit();
+                }
+              }}
             />
             <Button
               type="submit"
