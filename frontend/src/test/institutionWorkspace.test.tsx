@@ -77,6 +77,7 @@ let agentOperations = false;
 let serverRevision = "1";
 let failedDelivery = false;
 let threadMode = "human";
+let controlEpoch: string | undefined;
 let emptyInbox = false;
 const calls: {
   path: string;
@@ -112,6 +113,7 @@ beforeEach(() => {
   serverRevision = "1";
   failedDelivery = false;
   threadMode = "human";
+  controlEpoch = undefined;
   emptyInbox = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
@@ -218,6 +220,7 @@ beforeEach(() => {
         const index = path.includes(conv[1]) ? 1 : 0;
         return response({
           agentOperations,
+          controlEpoch,
           mediaAvailable: true,
           client: client(index),
           thread: {
@@ -428,6 +431,26 @@ it("shows the chat and CRM skeleton and switches ownership without submitting th
   );
   expect(screen.getByLabelText("Prioridad")).toHaveValue("urgent");
   expect(screen.getByLabelText("Mensaje local")).toBeEnabled();
+});
+
+it("sends only the expected control epoch and mode when the chat advertises scoped control", async () => {
+  controlEpoch = "7";
+  open("inbox");
+  await select();
+  const toggle = screen.getByRole("switch", { name: "Control humano" });
+  expect(toggle).toHaveAttribute("aria-checked", "true");
+  serverRevision = "13";
+  fireEvent.click(toggle);
+  await waitFor(() => expect(toggle).toHaveAttribute("aria-checked", "false"));
+  const command = calls.find((call) => call.method === "PUT");
+  expect(command?.path).toBe(
+    `/api/institution/workspace/conversations/${conv[0]}/control`,
+  );
+  expect(command?.body).toEqual({
+    expectedEpoch: "7",
+    mode: "ai",
+    operationId: expect.any(String),
+  });
 });
 
 it("opens the contact profile in a labeled dialog", async () => {

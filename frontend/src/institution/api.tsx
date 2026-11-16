@@ -181,6 +181,10 @@ const messages: Record<string, string> = {
   invalid_request: "Revisa los campos y sus límites antes de guardar.",
   revision_conflict:
     "Hay una versión más reciente. Tu borrador se conserva; consulta la versión guardada antes de volver a editar.",
+  conversation_control_changed:
+    "Otra operación cambió el modo de atención de este chat. Revisa la posición actual del interruptor antes de volver a cambiarla.",
+  conversation_closed:
+    "El chat está cerrado. Ábrelo antes de cambiar el modo de atención.",
   permission_denied: "Tu rol no permite esta operación.",
   session_required: "Tu sesión terminó. Inicia sesión de nuevo.",
   module_disabled: "Este módulo está deshabilitado por la institución.",

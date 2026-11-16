@@ -74,6 +74,7 @@ type Page = {
   unreadByChannel?: Record<string, number>;
 };
 type Detail = {
+  controlEpoch?: string;
   agentOperations?: boolean;
   knowledgeOperations?: boolean;
   mediaAvailable?: boolean;
@@ -351,9 +352,13 @@ function useCommand(onSaved: () => void) {
       if (
         failure instanceof ApiError &&
         failure.status === 409 &&
-        failure.detail === "revision_conflict"
-      )
+        ["revision_conflict", "conversation_control_changed"].includes(
+          failure.detail,
+        )
+      ) {
         cache.delete(key);
+        if (failure.detail === "conversation_control_changed") onSaved();
+      }
       const info = operationFailure(
         failure,
         "No se pudo guardar. Tu borrador se conserva.",
@@ -1229,13 +1234,22 @@ function Conversation({
       readThrough: observed.current,
       ...next,
     });
-  const changeMode = () =>
+  const changeMode = () => {
+    const mode = human ? "ai" : "human";
+    if (detail.controlEpoch !== undefined) {
+      void command.save(`conversations/${conversation}/control`, "PUT", {
+        expectedEpoch: detail.controlEpoch,
+        mode,
+      });
+      return;
+    }
     void update({
       state: detail.thread.State,
       priority: detail.thread.Priority,
       userId: detail.thread.UserId,
-      mode: human ? "ai" : "human",
+      mode,
     });
+  };
   return (
     <section className="panel p3-thread" aria-label="Conversación seleccionada">
       {onBack && (

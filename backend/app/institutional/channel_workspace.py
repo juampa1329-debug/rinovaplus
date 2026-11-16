@@ -17,7 +17,7 @@ class Workspace(Parent):
     operational_channels = True
 
     def apply(self, c, action, resource, body, actor):
-        previous = self.exists(c, resource) if action == "conversation" else None
+        previous = self.exists(c, resource) if action in {"conversation", "control"} else None
         if action == "message":
             from app.institutional.channel_media import attach
 
@@ -140,7 +140,8 @@ class Workspace(Parent):
                 return {"conversationId": resource}
         result = super().apply(c, action, resource, body, actor)
         if previous and (
-            previous[2] != body.mode or (previous[1] != "closed" and body.state == "closed")
+            previous[2] != body.mode
+            or (action == "conversation" and previous[1] != "closed" and body.state == "closed")
         ):
             from app.institutional.agents_policy import VERSION as P5
 

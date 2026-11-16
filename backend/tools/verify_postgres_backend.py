@@ -526,7 +526,8 @@ def verify_consecutive_messages(h, thread):
         "operationId": str(uuid4()), "revision": detail["revision"],
         "state": "open", "priority": "normal", "mode": "human", "unread": True,
     })
-    revision = h.call(path)["revision"]
+    initial = h.call(path)
+    revision = initial["revision"]
     first = {"operationId": str(uuid4()), "revision": revision, "body": "Primer envío consecutivo"}
     second = {"operationId": str(uuid4()), "revision": revision, "body": "Segundo envío consecutivo"}
     saved = h.call(path + "/messages", "POST", first)
@@ -534,6 +535,22 @@ def verify_consecutive_messages(h, thread):
     assert h.call(path + "/messages", "POST", first) == saved
     assert [item["body"] for item in h.call(path + "/messages")["items"][-2:]] == [first["body"], second["body"]]
     assert h.call("workspace/inbox?channel=facebook")["unreadByChannel"]["whatsapp"] >= 1
+    newer = h.call(path)
+    assert newer["revision"] != revision and newer["controlEpoch"] == initial["controlEpoch"]
+    takeover = {
+        "operationId": str(uuid4()), "expectedEpoch": initial["controlEpoch"], "mode": "ai",
+    }
+    checked(h.api.put(PREFIX + "/" + path + "/control", json=takeover), 403)
+    switched = h.call(path + "/control", "PUT", takeover)
+    assert h.call(path + "/control", "PUT", takeover) == switched
+    after = h.call(path)
+    assert after["thread"]["ControlMode"] == "ai"
+    assert after["thread"]["Priority"] == newer["thread"]["Priority"]
+    assert after["thread"]["Unread"] == newer["thread"]["Unread"]
+    assert int(after["controlEpoch"]) == int(newer["controlEpoch"]) + 1
+    assert h.call(path + "/control", "PUT", {
+        **takeover, "operationId": str(uuid4()), "mode": "human",
+    }, expected=409)["detail"] == "conversation_control_changed"
 
 
 def verify_marketing(h, integration, thread):

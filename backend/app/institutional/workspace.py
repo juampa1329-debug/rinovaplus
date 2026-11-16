@@ -85,6 +85,12 @@ class ConversationWrite(Command):
         return self
 
 
+class ControlWrite(Strict):
+    operationId: Identifier
+    expectedEpoch: Annotated[str, Field(pattern=r"^(0|[1-9][0-9]{0,18})$")]
+    mode: Literal["human", "ai"]
+
+
 class MessageWrite(Command):
     body: Annotated[str, Field(min_length=1, max_length=4000)]
     mediaId: Identifier | None = None
@@ -851,7 +857,8 @@ class Workspace:
                     "SELECT v.ConversationId,v.ContactId,v.St"
                     "ate,v.Priority,v.ControlMode,v.Unread,v."
                     "UpdatedAt,a.UserId,u.DisplayName AS Assi"
-                    "gnee"
+                    "gnee,(SELECT x.Epoch FROM crm_channels.ConversationControl x "
+                    "WHERE x.ConversationId=v.ConversationId) AS ControlEpoch"
                 )
                 + BASE
                 + " WHERE v.ConversationId=?",
@@ -859,6 +866,7 @@ class Workspace:
             )
             if not thread:
                 raise HTTPException(404, "conversation_not_found")
+            control_epoch = str(thread.pop("ControlEpoch") or 0)
             original = db.uid(str(thread["ContactId"]))
             canonical = primary(c, original)
             ids = members(c, canonical)
@@ -930,6 +938,7 @@ class Workspace:
                 "notes": notes[:50],
                 "notesHasMore": len(notes) > 50,
                 "revision": revision(c),
+                "controlEpoch": control_epoch,
                 "academicAuthority": "SIIE",
                 "academicBinding": "not_bound",
             }
@@ -1136,7 +1145,7 @@ class Workspace:
             "settings.crm.write"
             if action == "policy"
             else "inbox.write"
-            if action in {"conversation", "message"}
+            if action in {"conversation", "control", "message"}
             else "crm.write"
         )
         with transaction(
@@ -1158,9 +1167,8 @@ class Workspace:
             )
             if prior is not None:
                 return prior
-            # Appending a message uses its own idempotency key and validates the
-            # current thread state in apply. Unrelated writes cannot stale it.
-            if action != "message" and body.revision != revision(c):
+            # Messages and control changes validate the current thread in apply.
+            if action not in {"message", "control"} and body.revision != revision(c):
                 raise HTTPException(409, "revision_conflict")
             if self.profile.ticket.get('version') in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'} and action in {'create','contact'}:
                 from app.institutional.campaign_runtime import observe_contact
@@ -1289,9 +1297,26 @@ class Workspace:
                     ).fetchval()
                 ).lower()
             return {"contactId": resource, "conversationId": conversation}
-        if action in {"conversation", "message", "manual"}:
+        if action in {"conversation", "control", "message", "manual"}:
             original = self.exists(c, resource)
-            if action == "conversation":
+            if action == "control":
+                if original[1] == "closed":
+                    raise HTTPException(409, "conversation_closed")
+                epoch = c.execute(
+                    "SELECT Epoch FROM crm_channels.ConversationControl WHERE ConversationId=?",
+                    resource,
+                ).fetchval()
+                if str(epoch or 0) != body.expectedEpoch:
+                    raise HTTPException(409, "conversation_control_changed")
+                if original[2] != body.mode:
+                    change_control(c, resource, original[2], body.mode)
+                    c.execute(
+                        "UPDATE crm.Conversation SET ControlMode=?,UpdatedAt=SYSUTCDATETIME() "
+                        "WHERE ConversationId=?",
+                        body.mode,
+                        resource,
+                    )
+            elif action == "conversation":
                 active_user(c, self.profile, body.userId)
                 change_control(c, resource, original[2], body.mode)
                 unread = (
@@ -1626,6 +1651,10 @@ def install(app, settings, workspace=None):
     @app.put(prefix + "/conversations/{conversation_id}")
     def conversation(conversation_id: Identifier, body: ConversationWrite):
         return workspace.write("conversation", conversation_id, body)
+
+    @app.put(prefix + "/conversations/{conversation_id}/control")
+    def set_control(conversation_id: Identifier, body: ControlWrite):
+        return workspace.write("control", conversation_id, body)
 
     @app.post(prefix + "/conversations/{conversation_id}/messages")
     def message(conversation_id: Identifier, body: MessageWrite):
