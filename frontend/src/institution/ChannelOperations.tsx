@@ -69,8 +69,14 @@ export function ChannelOperations({
   const pageOAuth =
     account.issuer_profile === "facebook_login" &&
     ["facebook", "messenger"].includes(account.channel);
+  const oauthProvider =
+    account.issuer_profile === "facebook_login"
+      ? "Facebook"
+      : account.issuer_profile === "instagram_login"
+        ? "Instagram"
+        : null;
   useEffect(() => {
-    if (!pageOAuth || !oauth || !authUrl) return;
+    if (!oauthProvider || !oauth || !authUrl) return;
     let active = true;
     let loading = false;
     const onReturn = async () => {
@@ -83,7 +89,11 @@ export function ChannelOperations({
         if (active && result.status === "assets_ready") {
           setAssets(result.items);
           setAuthUrl("");
-          setDiagnosis("Selecciona la página autorizada.");
+          setDiagnosis(
+            pageOAuth
+              ? "Selecciona la página autorizada."
+              : "Selecciona la cuenta autorizada.",
+          );
         }
       } catch {
         // The explicit retry reports the failure and keeps the authorization link available.
@@ -98,7 +108,7 @@ export function ChannelOperations({
       window.removeEventListener("focus", onReturn);
       document.removeEventListener("visibilitychange", onReturn);
     };
-  }, [pageOAuth, oauth, authUrl, call]);
+  }, [oauthProvider, pageOAuth, oauth, authUrl, call]);
   const perform = (action: string) =>
     void task.run(async () => {
       const payload = {
@@ -240,9 +250,11 @@ export function ChannelOperations({
           </Button>
         </details>
       )}
-      <details open={pageOAuth || undefined}>
+      <details open={oauthProvider ? true : undefined}>
         <summary>
-          {pageOAuth ? "Inicio de sesión con Facebook" : "Conectar con OAuth"}
+          {oauthProvider
+            ? `Inicio de sesión con ${oauthProvider}`
+            : "Conectar con OAuth"}
         </summary>
         <p>
           La aplicación genera la dirección de retorno. Configura primero la URL
@@ -284,7 +296,7 @@ export function ChannelOperations({
               setOauth(result.oauth_session_id);
               setAuthUrl(result.authorization_url);
               setAssets([]);
-              if (pageOAuth)
+              if (oauthProvider)
                 window.open(
                   result.authorization_url,
                   "_blank",
@@ -293,13 +305,15 @@ export function ChannelOperations({
             }, "")
           }
         >
-          {pageOAuth ? "Conectar con Facebook" : "Preparar autorización"}
+          {oauthProvider
+            ? `Conectar con ${oauthProvider}`
+            : "Preparar autorización"}
         </Button>
         {authUrl && (
           <p>
             <a href={authUrl} target="_blank" rel="noopener noreferrer">
-              {pageOAuth
-                ? "Abrir Facebook en otra pestaña"
+              {oauthProvider
+                ? `Abrir ${oauthProvider} en otra pestaña`
                 : "Abrir autorización del proveedor"}
             </a>
           </p>

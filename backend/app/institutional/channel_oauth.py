@@ -20,6 +20,7 @@ from app.institutional.auth import authorize, cookie_name
 from app.institutional.channel_operations import account, app_secret_kind, configuration
 from app.institutional.channel_secrets import get, put
 from app.institutional.channel_text import sql_text
+from app.institutional.channels import FACEBOOK_LOGIN_CONFIGURATION
 from app.institutional.crypto import token, token_hash
 from app.institutional.db import bound_hash, institution, one, rows, uid
 from app.institutional.models import Strict
@@ -77,7 +78,9 @@ class SelectAsset(Strict):
     asset_id: str
 
 
-def authorization_url(item, state, redirect, scopes, verifier):
+def authorization_url(
+    item, state, redirect, scopes, verifier, *, configuration_id=None
+):
     issuer = item["IssuerProfile"]
     params = {
         "redirect_uri": redirect,
@@ -95,6 +98,10 @@ def authorization_url(item, state, redirect, scopes, verifier):
         return "https://www.instagram.com/oauth/authorize?" + urlencode(params)
     if not re.fullmatch(r"v[0-9]{1,2}\.[0-9]{1,2}", item["ApiVersion"] or ""):
         raise HTTPException(409, "api_version_required")
+    if issuer == "facebook_login" and configuration_id:
+        params.pop("scope")
+        params["config_id"] = configuration_id
+        params["override_default_response_type"] = "true"
     return (
         "https://www.facebook.com/"
         + item["ApiVersion"]
@@ -354,7 +361,21 @@ class OAuth:
             )
             redirect = origin + "/hooks/oauth/" + str(item["ApplicationId"]).lower()
             state, oauth_id = token(), str(uuid4())
-            url = authorization_url(item, state, redirect, body.scopes, None)
+            configuration_id = None
+            if item["IssuerProfile"] == "facebook_login":
+                document = c.execute(
+                    "SELECT Document FROM crm_access.ChannelSetting "
+                    "WHERE InstitutionId=? AND IntegrationId=?",
+                    institution(self.settings),
+                    item["IntegrationId"],
+                ).fetchval()
+                if document:
+                    configuration_id = json.loads(document).get(
+                        FACEBOOK_LOGIN_CONFIGURATION
+                    )
+            url = authorization_url(
+                item, state, redirect, body.scopes, None, configuration_id=configuration_id
+            )
             # Exact application version, session and secret version survive the browser
             # redirect.
             c.execute(

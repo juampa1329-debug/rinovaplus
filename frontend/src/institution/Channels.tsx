@@ -94,10 +94,11 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
     [channel, setChannel] = useState("whatsapp"),
     [name, setName] = useState(""),
     [client, setClient] = useState(""),
+    [graphVersion, setGraphVersion] = useState(""),
     [issuer, setIssuer] = useState("meta_whatsapp"),
     [app, setApp] = useState("");
   const [once, setOnce] = useState<string[]>([]);
-  useDraftGuard(!!name || !!client);
+  useDraftGuard(!!name || !!client || !!graphVersion);
   const writable = session.actions.includes("settings.channels.write");
   if (!data.value || !catalog.value)
     return <ResourceState error={data.error || catalog.error} />;
@@ -165,6 +166,9 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                     channel,
                     display_name: name,
                     issuer_profile: issuer,
+                    ...(channel !== "tiktok" && graphVersion
+                      ? { api_version: graphVersion }
+                      : {}),
                     ...(app ? { application_id: app } : { client_id: client }),
                   };
                   const result = await call<Channel>("channels", "POST", {
@@ -173,6 +177,7 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                   });
                   setName("");
                   setClient("");
+                  setGraphVersion("");
                   if (result.verify_token) setOnce([result.verify_token]);
                   await data.reload();
                   setSelected(result.id);
@@ -269,6 +274,18 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                     onChange={(event) => setClient(event.target.value)}
                   />
                 )}
+                {channel !== "tiktok" && (
+                  <Field
+                    id="channel-graph-version"
+                    label="Versión de Graph API"
+                    placeholder="v25.0"
+                    hint="Consulta la versión en Meta, en Configuración de la app → Avanzada."
+                    pattern="v[0-9]{1,2}[.][0-9]{1,2}"
+                    maxLength={6}
+                    value={graphVersion}
+                    onChange={(event) => setGraphVersion(event.target.value)}
+                  />
+                )}
                 <Button type="submit">Crear cuenta</Button>
               </fieldset>
             </form>
@@ -360,7 +377,10 @@ function ChannelEditor({
               values: Object.fromEntries(
                 editable
                   .filter(
-                    (f) => values[f.id] !== undefined && values[f.id] !== null,
+                    (f) =>
+                      values[f.id] !== undefined &&
+                      values[f.id] !== null &&
+                      !Object.is(values[f.id], base.fields[f.id]),
                   )
                   .map((f) => [f.id, values[f.id]]),
               ),
@@ -469,7 +489,10 @@ function ChannelEditor({
                           hint={
                             field.requires_provider_action
                               ? "Disponible al conectar el proveedor."
-                              : metaField?.hint
+                              : field.id ===
+                                  "meta:facebook_login_configuration_id"
+                                ? "Cópialo de Inicio de sesión con Facebook para empresas → Configuraciones en Meta."
+                                : metaField?.hint
                           }
                           onChange={(event) =>
                             change(

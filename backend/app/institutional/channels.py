@@ -19,6 +19,7 @@ from tools.foundation_snapshot import quote_name
 CATALOG = (
     Path(__file__).resolve().parents[3] / "docs/adaptation/sql/p2-channel-fields.json"
 )
+FACEBOOK_LOGIN_CONFIGURATION = "meta:facebook_login_configuration_id"
 
 
 def contract():
@@ -89,6 +90,10 @@ def validate_field(field, value):
             raise ValueError("invalid_field_value")
         if field.get("enum") and value not in field["enum"]:
             raise ValueError("invalid_field_option")
+        if field.get("id") == FACEBOOK_LOGIN_CONFIGURATION and value and (
+            not value.isascii() or not value.isdecimal()
+        ):
+            raise ValueError("invalid_field_value")
         if field.get("config_key", "").endswith("base_url"):
             public_url(value)
     elif kind == "string_array":
@@ -125,6 +130,9 @@ class Channels:
     def edited(self, cursor, identity):
         pass
 
+    def _fields(self, data):
+        return data["fields"]
+
     def catalog(self, authority):
         with transaction(self.settings, anonymous=True) as c:
             authorize(c, self.settings, authority, "settings.channels.read")
@@ -151,7 +159,7 @@ class Channels:
                         "requires_provider_action",
                     )
                 }
-                for f in data["fields"]
+                for f in self._fields(data)
             ],
             "provider_operations_available": False,
         }
@@ -183,13 +191,14 @@ class Channels:
             uid(identity),
         )
         document = json.loads(configured["Document"]) if configured else {}
+        data = contract()
         groups = {
             g["id"]
-            for g in contract()["groups"]
+            for g in data["groups"]
             if value["Channel"] in g["applies_to_channels"]
         }
         fields = {}
-        for field in contract()["fields"]:
+        for field in self._fields(data):
             if field["group"] == "webhooks":
                 continue
             if field["group"] not in groups or field["field_kind"] in {
@@ -344,7 +353,17 @@ class Channels:
                 body.channel,
                 body.display_name,
                 body.api_version,
-                "meta_cloud" if provider == "meta" else "tiktok_oauth",
+                {
+                    "facebook": "facebook_graph",
+                    "messenger": "facebook_graph",
+                    "instagram": (
+                        "instagram_login"
+                        if app["IssuerProfile"] == "instagram_login"
+                        else "instagram_graph"
+                    ),
+                    "whatsapp": "meta_cloud",
+                    "tiktok": "tiktok_oauth",
+                }[body.channel],
                 namespace(provider, app["ClientId"], app["IssuerProfile"]),
             )
             result = self._item(c, identity)
@@ -386,14 +405,15 @@ class Channels:
                 body.application_version,
             ):
                 raise HTTPException(409, "revision_conflict")
+            data = contract()
             groups = {
                 g["id"]
-                for g in contract()["groups"]
+                for g in data["groups"]
                 if item["channel"] in g["applies_to_channels"]
             }
             allowed = {
                 f["id"]: f
-                for f in contract()["fields"]
+                for f in self._fields(data)
                 if f["group"] in groups
                 and f.get("p2_write_allowed")
                 and f["field_kind"] == "input"

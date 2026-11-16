@@ -8,7 +8,7 @@ from pydantic import Field
 
 from app.institutional.auth import authorize
 from app.institutional.channel_secrets import get, put
-from app.institutional.channels import Channels
+from app.institutional.channels import FACEBOOK_LOGIN_CONFIGURATION, Channels
 from app.institutional.crypto import token
 from app.institutional.db import (
     audit,
@@ -205,6 +205,27 @@ def sync_route(c, settings, item, endpoint_id):
 
 
 class OperationalChannels(Channels):
+    def _fields(self, data):
+        return [
+            *super()._fields(data),
+            {
+                "id": FACEBOOK_LOGIN_CONFIGURATION,
+                "group": "facebook",
+                "label": "ID de configuración de Facebook Login",
+                "config_key": "facebook_login_configuration_id",
+                "input_type": "text",
+                "field_kind": "input",
+                "value_type": "string",
+                "max_length": 32,
+                "editable_in_p2": True,
+                "p2_write_allowed": True,
+                "p2_mapping": {
+                    "destination": "ChannelSetting JSON",
+                    "p2_flat_json_key": FACEBOOK_LOGIN_CONFIGURATION,
+                },
+            },
+        ]
+
     def catalog(self, authority):
         return {**super().catalog(authority), "provider_operations_available": True}
 

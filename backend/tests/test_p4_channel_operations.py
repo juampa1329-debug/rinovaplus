@@ -11,7 +11,12 @@ from fastapi import HTTPException
 from app.institutional.channel_events import delivery, normalize
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import authorization_url, exchange
-from app.institutional.channel_operations import capabilities
+from app.institutional.channels import (
+    FACEBOOK_LOGIN_CONFIGURATION,
+    contract,
+    validate_field,
+)
+from app.institutional.channel_operations import OperationalChannels, capabilities
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
 from app.institutional.channel_tokens import health
@@ -283,6 +288,30 @@ def test_oauth_version_cannot_inject_an_endpoint():
             ["pages_show_list"],
             None,
         )
+
+
+def test_business_login_uses_the_saved_configuration_instead_of_url_scopes():
+    field = next(
+        field
+        for field in OperationalChannels(None)._fields(contract())
+        if field["id"] == FACEBOOK_LOGIN_CONFIGURATION
+    )
+    configuration = validate_field(field, " 123456789 ")
+    with pytest.raises(ValueError):
+        validate_field(field, "123&scope=other")
+    url = authorization_url(
+        {"IssuerProfile": "facebook_login", "ClientId": "123", "ApiVersion": "v25.0"},
+        "state",
+        "https://crm.example.test/hooks/oauth/id",
+        ["pages_show_list"],
+        None,
+        configuration_id=configuration,
+    )
+    params = parse_qs(urlsplit(url).query)
+    assert params["config_id"] == ["123456789"]
+    assert params["response_type"] == ["code"]
+    assert params["override_default_response_type"] == ["true"]
+    assert "scope" not in params
 
 
 def test_tiktok_like_and_private_reply_are_not_invented_capabilities():
