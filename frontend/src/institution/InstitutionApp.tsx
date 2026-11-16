@@ -21,7 +21,7 @@ import {
   useResource,
 } from "./Settings";
 import { Audit, Profile, Roles, Security, Users } from "./Access";
-import { Channels, Webhooks } from "./Channels";
+import { Channels, ChannelWebhooks, Webhooks } from "./Channels";
 import { Comments } from "./Comments";
 import { CommentNotifications } from "./CommentNotifications";
 import { ChannelRuntime } from "./ChannelOperations";
@@ -765,7 +765,10 @@ function Shell({
                     />
                   ) : location.tab === "webhooks" ? (
                     runtime.value.channel_operations ? (
-                      <ChannelRuntime />
+                      <>
+                        <ChannelWebhooks />
+                        <ChannelRuntime />
+                      </>
                     ) : (
                       <Webhooks />
                     )

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button, Field, Notice, SelectField } from "../shared/ui";
-import { OneTime } from "./Access";
 import type { Channel } from "./Channels";
 import { Credentials, ResourceState, useResource } from "./Settings";
 import { ApiError, useInstitution, useIntent, useTask } from "./api";
@@ -39,10 +38,12 @@ export function ChannelOperations({
   account,
   done,
   returnedOAuth,
+  initialWebhook,
 }: {
   account: Channel;
   done: () => Promise<unknown>;
   returnedOAuth?: string;
+  initialWebhook?: IssuedWebhook;
 }) {
   const { call, session } = useInstitution(),
     task = useTask(),
@@ -52,7 +53,6 @@ export function ChannelOperations({
   );
   const [pin, setPin] = useState(""),
     [stage, setStage] = useState(account.initial_stage_key || ""),
-    [once, setOnce] = useState<string[]>([]),
     [diagnosis, setDiagnosis] = useState(""),
     [numbers, setNumbers] = useState<
       { id: string; display_phone_number?: string; verified_name?: string }[]
@@ -66,8 +66,7 @@ export function ChannelOperations({
   const writable =
       session.actions.includes("settings.channels.write") &&
       !account.synthetic_demo,
-    hookWritable = session.actions.includes("settings.webhooks.write");
-  const ep = account.webhook;
+    hookReadable = session.actions.includes("settings.webhooks.read");
   const pageOAuth =
     account.issuer_profile === "facebook_login" &&
     ["facebook", "messenger"].includes(account.channel);
@@ -437,87 +436,12 @@ export function ChannelOperations({
           Pausar cuenta
         </Button>
       </div>
-      {ep && (
-        <div>
-          <h4>Webhook de esta cuenta</h4>
-          <Field
-            id="channel-callback"
-            label={ep.callback_url ? "URL de callback" : "Ruta de callback"}
-            value={ep.callback_url || ep.path}
-            readOnly
-          />
-          <Button
-            variant="secondary"
-            onClick={() =>
-              void task.run(async () => {
-                try {
-                  await navigator.clipboard.writeText(
-                    ep.callback_url || ep.path,
-                  );
-                } catch {
-                  throw new ApiError(409, "callback_copy_failed");
-                }
-              }, "Callback copiado.")
-            }
-          >
-            Copiar callback
-          </Button>
-          {ep.public_origin_required && (
-            <p>Falta configurar la URL pública HTTPS de la institución.</p>
-          )}
-          <p>
-            Recepción: {ep.active ? "habilitada" : "pausada"}. Verificación:{" "}
-            {ep.challenge_verified_at ? "confirmada" : "pendiente"}.
-          </p>
-          <Button
-            variant="secondary"
-            disabled={!hookWritable || task.busy}
-            onClick={() =>
-              void task.run(async () => {
-                await call(`channels/${account.id}/webhook`, "POST", {
-                  operation_id: crypto.randomUUID(),
-                  row_version: ep.row_version,
-                  active: !ep.active,
-                });
-                await done();
-              })
-            }
-          >
-            {ep.active ? "Pausar recepción" : "Habilitar recepción firmada"}
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={!hookWritable || task.busy}
-            onClick={() =>
-              void task.run(async () => {
-                const result = await call<{ verify_token?: string }>(
-                  `channels/${account.id}/webhook/rotate`,
-                  "POST",
-                  {
-                    operation_id: crypto.randomUUID(),
-                    row_version: ep.row_version,
-                  },
-                );
-                if (result.verify_token) setOnce([result.verify_token]);
-                await done();
-              })
-            }
-          >
-            Generar nuevo verify token
-          </Button>
-          {account.channel === "tiktok" && (
-            <Credentials
-              scope="webhook"
-              owner={`endpoint:${ep.id}`}
-              kinds={[
-                { id: "webhook_secret", label: "Secreto de firma de TikTok" },
-              ]}
-            />
-          )}
-        </div>
-      )}
-      {once.length > 0 && (
-        <OneTime title="Verify token" values={once} clear={() => setOnce([])} />
+      {(hookReadable || account.webhook || initialWebhook) && (
+        <ChannelWebhook
+          account={account}
+          done={done}
+          initial={initialWebhook}
+        />
       )}
       {session.actions.includes("settings.ai.write") && (
         <CommentAiPricing identity={account.id} />
@@ -550,6 +474,192 @@ export function ChannelOperations({
           : "Retirar cuenta"}
       </Button>
     </section>
+  );
+}
+
+export type IssuedWebhook = {
+  webhook: NonNullable<Channel["webhook"]>;
+  verify_token: string;
+};
+
+export function ChannelWebhook({
+  account,
+  done,
+  initial,
+}: {
+  account: Channel;
+  done: () => Promise<unknown>;
+  initial?: IssuedWebhook;
+}) {
+  const { call, session } = useInstitution();
+  const task = useTask();
+  const intent = useIntent();
+  const [issued, setIssued] = useState(initial);
+  useDraftGuard(!!issued);
+  const ep = account.webhook ?? issued?.webhook;
+  const values = issued?.webhook.id === ep?.id ? issued : undefined;
+  const writable =
+    session.actions.includes("settings.webhooks.write") &&
+    !account.synthetic_demo;
+  const isMeta = account.channel !== "tiktok";
+  const copy = (value: string, token = false) =>
+    void task.run(
+      async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          throw new ApiError(
+            409,
+            token ? "webhook_token_copy_failed" : "callback_copy_failed",
+          );
+        }
+      },
+      token ? "Token de verificación copiado." : "URL de callback copiada.",
+    );
+
+  return (
+    <div className="institution-webhook">
+      <h4>Webhook de esta cuenta</h4>
+      {task.notices}
+      <p>
+        {isMeta
+          ? "La firma de eventos se valida con el App Secret de Meta."
+          : "La firma de eventos se valida con el secreto de firma de TikTok."}
+      </p>
+      {(account.channel === "facebook" || account.channel === "messenger") && (
+        <p>
+          Facebook y Messenger comparten estos valores cuando usan la misma app
+          de Meta.
+        </p>
+      )}
+      {ep?.public_origin_required && (
+        <p>Configura la URL pública HTTPS de la institución.</p>
+      )}
+      {ep && (
+        <p>
+          Recepción: {ep.active ? "habilitada" : "pausada"}.
+          {isMeta &&
+            ` Verificación: ${ep.challenge_verified_at ? "confirmada" : "pendiente"}.`}
+        </p>
+      )}
+      <div className="institution-actions">
+        {isMeta && (
+          <Button
+            variant="primary"
+            disabled={!writable || task.busy || ep?.public_origin_required}
+            onClick={() => {
+              if (
+                ep?.challenge_verified_at &&
+                !window.confirm(
+                  "Se emitirá un token nuevo para esta URL. Deberás guardarlo en Meta y confirmar el webhook otra vez. ¿Continuar?",
+                )
+              )
+                return;
+              void task.run(async () => {
+                const body = { row_version: ep?.row_version ?? null };
+                const result = await call<Partial<IssuedWebhook>>(
+                  `channels/${account.id}/webhook/rotate`,
+                  "POST",
+                  { ...body, operation_id: intent.get(body) },
+                );
+                intent.clear();
+                setIssued(
+                  result.webhook && result.verify_token
+                    ? {
+                        webhook: result.webhook,
+                        verify_token: result.verify_token,
+                      }
+                    : undefined,
+                );
+                await done();
+                if (!result.verify_token)
+                  throw new ApiError(409, "webhook_values_already_issued");
+              }, "");
+            }}
+          >
+            Generar webhook
+          </Button>
+        )}
+        {ep && (
+          <Button
+            variant="secondary"
+            disabled={!writable || task.busy}
+            onClick={() =>
+              void task.run(async () => {
+                await call(`channels/${account.id}/webhook`, "POST", {
+                  operation_id: crypto.randomUUID(),
+                  row_version: ep.row_version,
+                  active: !ep.active,
+                });
+                await done();
+              })
+            }
+          >
+            {ep.active ? "Pausar recepción" : "Habilitar recepción firmada"}
+          </Button>
+        )}
+      </div>
+      {ep && (
+        <div className="panel institution-webhook">
+          {values && (
+            <>
+              <h4>Valores para Meta</h4>
+              <p>
+                Reemplaza ambos campos en Meta y pulsa «Verificar y guardar». El
+                token se muestra una sola vez.
+              </p>
+            </>
+          )}
+          <Field
+            id={`channel-callback-${account.id}`}
+            label={ep.callback_url ? "URL de callback" : "Ruta de callback"}
+            value={values?.webhook.callback_url || ep.callback_url || ep.path}
+            readOnly
+          />
+          <Button
+            variant="secondary"
+            onClick={() =>
+              copy(values?.webhook.callback_url || ep.callback_url || ep.path)
+            }
+          >
+            Copiar URL de callback
+          </Button>
+          {values && (
+            <>
+              <Field
+                id={`channel-verify-token-${account.id}`}
+                label="Token de verificación"
+                value={values.verify_token}
+                readOnly
+                autoComplete="off"
+                spellCheck={false}
+                onFocus={(event) => event.currentTarget.select()}
+              />
+              <div className="institution-actions">
+                <Button
+                  variant="secondary"
+                  onClick={() => copy(values.verify_token, true)}
+                >
+                  Copiar token de verificación
+                </Button>
+                <Button variant="quiet" onClick={() => setIssued(undefined)}>
+                  Ocultar token
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      {ep && !isMeta && (
+        <Credentials
+          scope="webhook"
+          owner={`endpoint:${ep.id}`}
+          kinds={[
+            { id: "webhook_secret", label: "Secreto de firma de TikTok" },
+          ]}
+        />
+      )}
+    </div>
   );
 }
 
@@ -885,7 +995,6 @@ function RuntimeEditor({
         Las cuentas mantienen sus propios permisos, pausas y límites. Una
         respuesta aceptada por el proveedor aún no acredita entrega.
       </p>
-      <a href="#/channels">Administrar webhooks por canal</a>
     </form>
   );
 }

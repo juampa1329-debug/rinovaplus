@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { Comments } from "../institution/Comments";
 import { CommentNotifications } from "../institution/CommentNotifications";
+import { ChannelWebhooks } from "../institution/Channels";
 import {
   ChannelOperations,
   ChannelRuntime,
@@ -55,6 +56,88 @@ function mount(children: React.ReactNode, session = base) {
 }
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+it("issues and copies the callback and token together for the chosen account", async () => {
+  const endpoint = {
+    id: "endpoint-one",
+    path: "/hooks/channels/ep_test",
+    callback_url: "https://crm.example.test/hooks/channels/ep_test",
+    public_origin_required: false,
+    active: false,
+    row_version: "0000000000000001",
+    challenge_verified_at: null,
+    last_seen_at: null,
+  };
+  const clipboard = vi.fn().mockResolvedValue(undefined);
+  const originalClipboard = Object.getOwnPropertyDescriptor(
+    navigator,
+    "clipboard",
+  );
+  Object.defineProperty(navigator, "clipboard", {
+    value: { writeText: clipboard },
+    configurable: true,
+  });
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (path, init) => {
+    if (String(path).endsWith("messenger-one/webhook/rotate")) {
+      expect(JSON.parse(String(init?.body)).row_version).toBe(
+        endpoint.row_version,
+      );
+      return ok({ webhook: endpoint, verify_token: "issued-only-once" });
+    }
+    return ok({
+      items: [
+        {
+          id: "messenger-one",
+          channel: "messenger",
+          display_name: "Página de prueba",
+          verified_status: "verified",
+          webhook: endpoint,
+        },
+      ],
+    });
+  });
+  try {
+    mount(<ChannelWebhooks />, {
+      ...base,
+      actions: [...base.actions, "settings.channels.read"],
+    });
+    fireEvent.change(await screen.findByLabelText("Cuenta para el webhook"), {
+      target: { value: "messenger-one" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Generar webhook" }));
+    expect(
+      await screen.findByRole("heading", { name: "Valores para Meta" }),
+    ).toBeVisible();
+    expect(screen.getByLabelText("URL de callback")).toHaveValue(
+      endpoint.callback_url,
+    );
+    expect(screen.getByLabelText("Token de verificación")).toHaveValue(
+      "issued-only-once",
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Copiar URL de callback" }),
+    );
+    expect(await screen.findByText("URL de callback copiada.")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Copiar token de verificación" }),
+    );
+    expect(
+      await screen.findByText("Token de verificación copiado."),
+    ).toBeVisible();
+    expect(clipboard.mock.calls).toEqual([
+      [endpoint.callback_url],
+      ["issued-only-once"],
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: "Ocultar token" }));
+    expect(
+      screen.queryByLabelText("Token de verificación"),
+    ).not.toBeInTheDocument();
+  } finally {
+    if (originalClipboard)
+      Object.defineProperty(navigator, "clipboard", originalClipboard);
+    else Reflect.deleteProperty(navigator, "clipboard");
+  }
 });
 
 it("opens Facebook authorization from the Messenger account and loads the selected Page on return", async () => {

@@ -5,7 +5,8 @@ import type { Document } from "./api";
 import { Credentials, ResourceState, useResource } from "./Settings";
 import { OneTime } from "./Access";
 import { allowNavigation, useDraftGuard } from "./drafts";
-import { ChannelOperations } from "./ChannelOperations";
+import { ChannelOperations, ChannelWebhook } from "./ChannelOperations";
+import type { IssuedWebhook } from "./ChannelOperations";
 import { ErrorFeedback } from "./ErrorFeedback";
 import { explainChannelError } from "./channelErrors";
 
@@ -111,7 +112,12 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
     [graphVersion, setGraphVersion] = useState(""),
     [issuer, setIssuer] = useState("meta_whatsapp"),
     [app, setApp] = useState("");
-  const [once, setOnce] = useState<string[]>([]);
+  const [initialWebhook, setInitialWebhook] = useState<IssuedWebhook>();
+  const selectAccount = (id: string) => {
+    if (!allowNavigation()) return;
+    if (id !== selected) setInitialWebhook(undefined);
+    setSelected(id);
+  };
   useDraftGuard(!!name || !!client || !!graphVersion);
   const writable = session.actions.includes("settings.channels.write");
   if (!data.value || !catalog.value)
@@ -133,13 +139,6 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
           configuración guardada aún no acredita conexión con el proveedor.
         </Notice>
       )}
-      {once.length > 0 && (
-        <OneTime
-          title="Token de verificación del canal"
-          values={once}
-          clear={() => setOnce([])}
-        />
-      )}
       {task.notices}
       <div className="institution-channel-layout">
         <aside className="panel">
@@ -148,21 +147,14 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
             <Button
               key={row.id}
               variant={row.id === selected ? "primary" : "quiet"}
-              onClick={() => {
-                if (allowNavigation()) setSelected(row.id);
-              }}
+              onClick={() => selectAccount(row.id)}
             >
               {row.display_name}
               <small>{channelNames[row.channel]}</small>
             </Button>
           ))}
           {!data.value.items.length && <p>No hay cuentas configuradas.</p>}
-          <Button
-            variant="secondary"
-            onClick={() => {
-              if (allowNavigation()) setSelected("");
-            }}
-          >
+          <Button variant="secondary" onClick={() => selectAccount("")}>
             Nueva cuenta
           </Button>
         </aside>
@@ -175,6 +167,7 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
               writable={writable}
               done={data.reload}
               openWebhooks={openWebhooks}
+              initialWebhook={initialWebhook}
               returnedOAuth={
                 returnContext?.account === account.id
                   ? returnContext.session
@@ -203,7 +196,16 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
                   setName("");
                   setClient("");
                   setGraphVersion("");
-                  if (result.verify_token) setOnce([result.verify_token]);
+                  if (
+                    result.verify_token &&
+                    result.webhook &&
+                    channel !== "tiktok"
+                  ) {
+                    setInitialWebhook({
+                      webhook: result.webhook,
+                      verify_token: result.verify_token,
+                    });
+                  }
                   await data.reload();
                   setSelected(result.id);
                 });
@@ -327,6 +329,7 @@ function ChannelEditor({
   done,
   openWebhooks,
   returnedOAuth,
+  initialWebhook,
 }: {
   account: Channel;
   catalog: Catalog;
@@ -334,6 +337,7 @@ function ChannelEditor({
   done: () => Promise<unknown>;
   openWebhooks: () => void;
   returnedOAuth?: string;
+  initialWebhook?: IssuedWebhook;
 }) {
   const { call, session } = useInstitution(),
     task = useTask(),
@@ -595,6 +599,7 @@ function ChannelEditor({
               account={account}
               done={done}
               returnedOAuth={returnedOAuth}
+              initialWebhook={initialWebhook}
             />
           </fieldset>
         </>
@@ -652,6 +657,52 @@ type Endpoint = {
   actual_active: boolean;
   integration_ids: string[];
 };
+
+export function ChannelWebhooks() {
+  const { session } = useInstitution();
+  if (!session.actions.includes("settings.channels.read"))
+    return <Notice>Para generar un webhook necesitas acceso a Canales.</Notice>;
+  return (
+    <ErrorFeedback explain={explainChannelError}>
+      <ChannelWebhookChooser />
+    </ErrorFeedback>
+  );
+}
+
+function ChannelWebhookChooser() {
+  const data = useResource<{ items: Channel[] }>("channels");
+  const [selected, setSelected] = useState("");
+  if (!data.value) return <ResourceState error={data.error} />;
+  const accounts = data.value.items.filter(
+    (row) => row.verified_status !== "retired" && !row.synthetic_demo,
+  );
+  const account = accounts.find((row) => row.id === selected);
+  return (
+    <section className="panel institution-webhook">
+      <h3>Webhooks por cuenta</h3>
+      <SelectField
+        id="webhook-channel-account"
+        label="Cuenta para el webhook"
+        value={selected}
+        options={[
+          { value: "", label: "Selecciona una cuenta" },
+          ...accounts.map((row) => ({
+            value: row.id,
+            label: `${channelNames[row.channel]} · ${row.display_name}`,
+          })),
+        ]}
+        onChange={(e) => {
+          if (allowNavigation()) setSelected(e.target.value);
+        }}
+      />
+      {data.error && <Notice error>{data.error}</Notice>}
+      {account && (
+        <ChannelWebhook key={account.id} account={account} done={data.reload} />
+      )}
+    </section>
+  );
+}
+
 export function Webhooks() {
   const { session, call } = useInstitution(),
     data = useResource<{ items: Endpoint[]; revision: number }>("webhooks"),

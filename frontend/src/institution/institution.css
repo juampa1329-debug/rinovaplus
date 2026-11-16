@@ -135,6 +135,17 @@
 .institution-fields textarea {
   width: 100%;
 }
+.institution-webhook {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+}
+.institution-webhook > :is(h3, h4, p, .institution-actions) {
+  margin: 0;
+}
+.institution-webhook > button {
+  justify-self: start;
+}
 .institution-check {
   display: flex;
   gap: 0.65rem;

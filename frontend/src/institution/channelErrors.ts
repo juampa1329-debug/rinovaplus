@@ -116,6 +116,23 @@ const cases = new Map<string, ErrorGuidance>([
         "Selecciona y copia manualmente el valor del campo de callback.",
     },
   ],
+  [
+    "webhook_token_copy_failed",
+    {
+      title: "No se pudo copiar el token",
+      detail: "El navegador no permitió usar el portapapeles.",
+      nextStep:
+        "Selecciona el valor en «Token de verificación» y cópialo manualmente.",
+    },
+  ],
+  [
+    "webhook_values_already_issued",
+    {
+      title: "El webhook ya se generó",
+      detail: "El token se entrega una sola vez y esta solicitud ya se aplicó.",
+      nextStep: "Pulsa «Generar webhook» otra vez si necesitas un token nuevo.",
+    },
+  ],
 ]);
 
 export function explainChannelError(failure: OperationFailure): ErrorGuidance {

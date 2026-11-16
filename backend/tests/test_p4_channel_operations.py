@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
-from app.institutional import channel_ingress
+from app.institutional import channel_ingress, channel_operations
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
 from app.institutional.channels import (
@@ -52,6 +52,45 @@ def test_meta_verification_logs_a_rejection_without_logging_the_token(monkeypatc
     assert "outcome=token_mismatch" in caplog.text
     assert "correct-private" not in caplog.text
     assert "incorrecto-privadó" not in caplog.text
+
+
+def test_webhook_creation_issues_the_canonical_url_and_token_together(monkeypatch):
+    service = channel_operations.Operations(SimpleNamespace())
+    endpoint = {
+        "id": "page-endpoint",
+        "callback_url": "https://crm.example.test/hooks/channels/ep_example",
+        "row_version": "0000000000000001",
+    }
+    state = {}
+
+    def get_endpoint(*_args, create=False):
+        if create:
+            state["endpoint"] = endpoint
+            return endpoint, {"verify_token": "private-test-token"}
+        return state.get("endpoint"), {}
+
+    def record(*args):
+        state["receipt"] = args[-1]
+
+    monkeypatch.setattr(
+        channel_operations, "transaction", lambda *_args, **_kwargs: nullcontext(object())
+    )
+    monkeypatch.setattr(
+        channel_operations, "authorize", lambda *_args, **_kwargs: {"UserId": "owner"}
+    )
+    monkeypatch.setattr(channel_operations, "account", lambda *_args: {})
+    monkeypatch.setattr(channel_operations, "endpoint", get_endpoint)
+    monkeypatch.setattr(channel_operations, "replay", lambda *_args: ("digest", state.get("receipt")))
+    monkeypatch.setattr(channel_operations, "record_operation", record)
+    body = channel_operations.EndpointIssue(operation_id=str(uuid4()))
+    assert service.webhook({}, "messenger", body, rotate=True) == {
+        "webhook": endpoint,
+        "verify_token": "private-test-token",
+    }
+    assert service.webhook({}, "messenger", body, rotate=True) == {
+        "webhook": endpoint,
+        "secrets_already_issued": True,
+    }
 
 
 def test_provider_payload_is_bounded_and_identity_is_never_truncated_to_valid():

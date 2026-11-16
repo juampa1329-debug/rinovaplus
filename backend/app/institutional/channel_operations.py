@@ -312,6 +312,12 @@ class EndpointAction(Strict):
     active: bool = False
 
 
+class EndpointIssue(Strict):
+    operation_id: str
+    row_version: str | None = Field(default=None, pattern=r"^[0-9a-f]{16}$")
+    active: bool = False
+
+
 class RoutingEdit(Strict):
     operation_id: str
     row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
@@ -582,7 +588,7 @@ class Operations:
                 c, self.settings, authority, "settings.webhooks.write", recent=True
             )
             item = account(c, self.settings, identity)
-            ep, issued = endpoint(c, self.settings, item, create=True)
+            ep, _ = endpoint(c, self.settings, item)
             digest, prior = replay(
                 c,
                 self.settings,
@@ -594,9 +600,12 @@ class Operations:
             )
             if prior:
                 return {**prior, "secrets_already_issued": True}
-            if ep["row_version"] != body.row_version:
+            if (ep["row_version"] if ep else None) != body.row_version:
                 raise HTTPException(409, "revision_conflict")
-            if rotate:
+            issued = {}
+            if rotate and ep is None:
+                ep, issued = endpoint(c, self.settings, item, create=True)
+            elif rotate:
                 verify = token()
                 put(c, self.settings, "endpoint", ep["id"], "webhook_verify", verify)
                 issued["verify_token"] = verify
@@ -604,11 +613,14 @@ class Operations:
                     (
                         "UPDATE crm_channels2.WebhookEndpoint SET ChallengeVerifiedAt"
                         "=NULL,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND E"
-                        "ndpointId=?"
+                        "ndpointId=? AND RowVersion=?"
                     ),
                     institution(self.settings),
                     ep["id"],
+                    bytes.fromhex(ep["row_version"]),
                 )
+                if c.rowcount != 1:
+                    raise HTTPException(409, "revision_conflict")
             else:
                 if body.active:
                     if item["Provider"] == "meta":
@@ -912,5 +924,5 @@ def install(app, settings):
         return operations.webhook(request.state.authority, identity, body)
 
     @app.post("/api/institution/channels/{identity}/webhook/rotate")
-    def rotate(request: Request, identity: str, body: EndpointAction):
+    def rotate(request: Request, identity: str, body: EndpointIssue):
         return operations.webhook(request.state.authority, identity, body, rotate=True)
