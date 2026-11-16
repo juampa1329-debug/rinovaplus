@@ -23,6 +23,7 @@ import {
 import { Audit, Profile, Roles, Security, Users } from "./Access";
 import { Channels, Webhooks } from "./Channels";
 import { Comments } from "./Comments";
+import { CommentNotifications } from "./CommentNotifications";
 import { ChannelRuntime } from "./ChannelOperations";
 import { allowNavigation } from "./drafts";
 import { AgentsWorkspace } from "./AgentsWorkspace";
@@ -540,21 +541,27 @@ function Shell({
               Corporación Bolivariana del Norte
             </span>
             <span className="institution-mobile-brand">RinovaPlus</span>
-            <SelectField
-              id="workspace-theme"
-              label="Apariencia"
-              value={theme.preference}
-              options={[
-                { value: "system", label: "Sistema" },
-                { value: "dark", label: "Oscura" },
-                { value: "light", label: "Clara" },
-              ]}
-              onChange={(event) =>
-                theme.chooseTheme(
-                  event.target.value as "dark" | "light" | "system",
-                )
-              }
-            />
+            <div className="institution-topbar-controls">
+              {runtime.value?.channel_operations &&
+                allowed("inbox.read") &&
+                runtime.value.modules.find((module) => module.id === "inbox")
+                  ?.enabled && <CommentNotifications />}
+              <SelectField
+                id="workspace-theme"
+                label="Apariencia"
+                value={theme.preference}
+                options={[
+                  { value: "system", label: "Sistema" },
+                  { value: "dark", label: "Oscura" },
+                  { value: "light", label: "Clara" },
+                ]}
+                onChange={(event) =>
+                  theme.chooseTheme(
+                    event.target.value as "dark" | "light" | "system",
+                  )
+                }
+              />
+            </div>
           </header>
           <div className="institution-content">
             <PageHeading
@@ -638,7 +645,16 @@ function Shell({
                 ) : location.page === "comments" &&
                   runtime.value.channel_operations ? (
                   allowed("inbox.read") ? (
-                    <Comments />
+                    <Comments
+                      key={location.tab}
+                      initialComment={
+                        /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(
+                          location.tab,
+                        )
+                          ? location.tab
+                          : ""
+                      }
+                    />
                   ) : (
                     <Denied />
                   )

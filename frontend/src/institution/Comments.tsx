@@ -44,20 +44,30 @@ const labels: Record<string, string> = {
   cancelled: "Cancelado",
 };
 
-export function Comments() {
+export function Comments({
+  initialComment = "",
+}: { initialComment?: string } = {}) {
   const [channel, setChannel] = useState(""),
     [state, setState] = useState("all"),
     [q, setQ] = useState(""),
     [query, setQuery] = useState(""),
     [offset, setOffset] = useState(0),
-    [selected, setSelected] = useState("");
+    [selected, setSelected] = useState(initialComment);
   const data = useResource<{
     items: Comment[];
     total: number;
     has_more: boolean;
   }>(
     "comments?" +
-      new URLSearchParams({ channel, state, q: query, offset: String(offset) }),
+      new URLSearchParams({
+        channel,
+        state,
+        q: query,
+        offset: String(offset),
+        ...(initialComment && selected === initialComment
+          ? { comment_id: initialComment }
+          : {}),
+      }),
   );
   const comment = data.value?.items.find((v) => v.id === selected);
   const change = (fn: () => void) => {
@@ -90,6 +100,9 @@ export function Comments() {
               Actualizar
             </Button>
           </div>
+          {initialComment && selected === initialComment && (
+            <a href="#/comments">Ver todos los comentarios</a>
+          )}
           <Field
             id="comment-search"
             label="Buscar comentarios"

@@ -89,6 +89,43 @@ export function ChannelLabel({ channel }: { channel?: string | null }) {
   );
 }
 
+export function InboxUnread({ counts }: { counts: Record<string, number> }) {
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  return (
+    <span className="inbox-unread-summary">
+      <span>{total} sin leer</span>
+      {total > 0 && (
+        <span
+          className="inbox-unread-channels"
+          role="group"
+          aria-label="Sin leer por canal"
+        >
+          {Object.entries(channels)
+            .filter(([channel]) => counts[channel] > 0)
+            .map(([channel, label]) => (
+              <span
+                className="inbox-channel-label"
+                data-channel={channel}
+                key={channel}
+                title={label}
+              >
+                <Icon
+                  name={
+                    channel === "local"
+                      ? "monitor"
+                      : "channel" + channel[0].toUpperCase() + channel.slice(1)
+                  }
+                />
+                <span className="sr-only">{label} </span>
+                {counts[channel]}
+              </span>
+            ))}
+        </span>
+      )}
+    </span>
+  );
+}
+
 export function InboxContactProfile({
   client,
   accounts,

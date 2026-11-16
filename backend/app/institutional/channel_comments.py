@@ -73,11 +73,15 @@ class Comments:
         self.settings = settings
 
     def read(
-        self, authority, *, integration="", channel="", state="all", q="", offset=0
+        self, authority, *, integration="", channel="", state="all", q="", offset=0,
+        comment_id="",
     ):
         with transaction(self.settings, anonymous=True) as c:
             authorize(c, self.settings, authority, "inbox.read")
             where, params = ["s.InstitutionId=?"], [institution(self.settings)]
+            if comment_id:
+                where.append("s.CommentId=?")
+                params.append(uid(comment_id))
             if integration:
                 where.append("s.IntegrationId=?")
                 params.append(uid(integration))
@@ -333,6 +337,7 @@ def install(app, settings):
     def comments(
         request: Request,
         integration: str = "",
+        comment_id: str = "",
         channel: Literal["", "facebook", "instagram", "tiktok"] = "",
         state: Literal["all", "new", "read", "archived", "deleted"] = "all",
         q: str = Query("", max_length=200),
@@ -345,6 +350,7 @@ def install(app, settings):
             state=state,
             q=q,
             offset=offset,
+            comment_id=comment_id,
         )
 
     @app.post("/api/institution/comments/{identity}")

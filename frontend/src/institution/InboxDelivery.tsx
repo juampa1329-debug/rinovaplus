@@ -185,7 +185,7 @@ export function MessageDelivery({
     : ["Pendiente de confirmar"];
   const detail =
     state === "read" && readReceiptAt
-      ? `Recibo de lectura del proveedor registrado ${new Date(readReceiptAt).toLocaleString("es-CO")}.`
+      ? `Recibo de lectura del proveedor registrado ${new Date(readReceiptAt).toLocaleString("es-CO")}`
       : undefined;
   return (
     <small className="inbox-delivery" data-state={state} title={detail}>

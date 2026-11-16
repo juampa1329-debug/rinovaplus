@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { Comments } from "../institution/Comments";
+import { CommentNotifications } from "../institution/CommentNotifications";
 import { ChannelRuntime } from "../institution/ChannelOperations";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
@@ -51,6 +52,25 @@ function mount(children: React.ReactNode, session = base) {
 }
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+it("shows new comments in the notification menu and links to the exact comment", async () => {
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async () => ok({ total: 3, items: [comment] }));
+  mount(<CommentNotifications />);
+  fireEvent.click(
+    await screen.findByLabelText("Notificaciones de comentarios, 3 nuevos"),
+  );
+  const link = await screen.findByRole("link", {
+    name: /Consulta sobre admisiones/,
+  });
+  expect(link).toHaveAttribute("href", "#/comments/comment-one");
+  expect(
+    fetcher.mock.calls.every(([url]) =>
+      String(url).endsWith("/comments?state=new"),
+    ),
+  ).toBe(true);
 });
 
 it("labels persisted examples and disables external effects without disabling CRM review", async () => {

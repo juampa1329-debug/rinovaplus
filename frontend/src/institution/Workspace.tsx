@@ -31,6 +31,7 @@ import {
   InboxListControls,
   InboxIdle,
   InboxContactProfile,
+  InboxUnread,
   initialInboxFilters,
 } from "./InboxPresentation";
 
@@ -70,6 +71,7 @@ type Page = {
   limit: number;
   hasMore: boolean;
   revision: string;
+  unreadByChannel?: Record<string, number>;
 };
 type Detail = {
   agentOperations?: boolean;
@@ -252,7 +254,7 @@ function useEntity(key: string) {
   };
 }
 
-function useRead<T>(path: string, refresh = 0, enabled = true) {
+function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
       path: string;
@@ -265,30 +267,47 @@ function useRead<T>(path: string, refresh = 0, enabled = true) {
   useEffect(() => {
     if (!enabled) return;
     let active = true;
-    const timer = setTimeout(() => {
-      void call<T>(prefix + path)
-        .then((value) => {
-          if (active) {
-            setData({ path, value, loadedAt: Date.now() });
-            setError(null);
-          }
-        })
-        .catch((failure: unknown) => {
-          if (active)
-            setError({
-              path,
-              message:
-                failure instanceof Error
-                  ? failure.message
-                  : "No se pudo consultar.",
-            });
-        });
-    }, 180);
+    let running = false;
+    let timer: ReturnType<typeof setTimeout>;
+    async function load(initial = false) {
+      if (!active || running) return;
+      if (!initial && document.hidden) return;
+      running = true;
+      try {
+        const value = await call<T>(prefix + path);
+        if (active) {
+          setData({ path, value, loadedAt: Date.now() });
+          setError(null);
+        }
+      } catch (failure) {
+        if (active)
+          setError({
+            path,
+            message:
+              failure instanceof Error
+                ? failure.message
+                : "No se pudo consultar.",
+          });
+      } finally {
+        running = false;
+        if (active && pollMs && !document.hidden)
+          timer = setTimeout(() => void load(), pollMs);
+      }
+    }
+    const visible = () => {
+      if (!document.hidden) {
+        clearTimeout(timer);
+        void load();
+      }
+    };
+    timer = setTimeout(() => void load(true), 180);
+    if (pollMs) document.addEventListener("visibilitychange", visible);
     return () => {
       active = false;
       clearTimeout(timer);
+      if (pollMs) document.removeEventListener("visibilitychange", visible);
     };
-  }, [path, refresh, enabled, call]);
+  }, [path, refresh, enabled, call, pollMs]);
   return {
     value: enabled && data?.path === path ? data.value : null,
     loadedAt: enabled && data?.path === path ? data.loadedAt : undefined,
@@ -482,6 +501,7 @@ function WorkspaceView({
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
     refresh,
     page !== "settings",
+    inbox && offset === 0 ? 12000 : 0,
   );
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =
@@ -705,6 +725,9 @@ function WorkspaceView({
                     {inbox
                       ? `${list.value.total} ${list.value.total === 1 ? "conversación" : "conversaciones"}`
                       : `${list.value.total} resultados`}
+                    {inbox && list.value.unreadByChannel && (
+                      <InboxUnread counts={list.value.unreadByChannel} />
+                    )}
                   </p>
                   {list.value.items.map((row) =>
                     inbox ? (
@@ -1144,9 +1167,9 @@ function Conversation({
 }) {
   const input = useRef<HTMLTextAreaElement>(null);
   const timeline = useRef<HTMLOListElement>(null);
+  const channel = detail.channelAccounts?.[0]?.channel;
   const { session } = useInstitution(),
     [before, setBefore] = useState(""),
-    [deliveryTick, setDeliveryTick] = useState(0),
     [attachmentBusy, setAttachmentBusy] = useState(false),
     data = useRead<{
       items: Message[];
@@ -1154,7 +1177,9 @@ function Conversation({
       hasMore: boolean;
     }>(
       `conversations/${conversation}/messages${before ? `?before=${before}` : ""}`,
-      refresh + deliveryTick,
+      refresh,
+      true,
+      channel && !before ? 1500 : 0,
     ),
     [body, setBody] = useState(drafts.get(conversation) ?? ""),
     [attachment, setAttachment] = useState<Attachment | null>(null),
@@ -1173,15 +1198,8 @@ function Conversation({
     command = useCommand(changed);
   const observed = useRef("0");
   const nearLatest = useRef(true);
-  const channel = detail.channelAccounts?.[0]?.channel;
   const human = detail.thread.ControlMode === "human";
   const canWrite = session.actions.includes("inbox.write");
-  const sendingRecently = data.value?.items.some(
-    (message) =>
-      ["queued", "sending", "accepted"].includes(message.deliveryState ?? "") &&
-      !message.deliveryError &&
-      (data.loadedAt ?? 0) - Date.parse(message.createdAt) < 90_000,
-  );
   const canCaption =
     !channel ||
     (channel === "whatsapp" &&
@@ -1196,16 +1214,6 @@ function Conversation({
     if (timeline.current && !before && nearLatest.current)
       timeline.current.scrollTop = timeline.current.scrollHeight;
   }, [before, latest]);
-  useEffect(() => {
-    if (!channel || before) return;
-    const timer = window.setInterval(
-      () => {
-        if (!document.hidden) setDeliveryTick((n) => n + 1);
-      },
-      sendingRecently ? 3000 : 12000,
-    );
-    return () => window.clearInterval(timer);
-  }, [channel, before, sendingRecently]);
   const setMessage = (value: string) => {
     setBody(value);
     drafts.set(conversation, value);

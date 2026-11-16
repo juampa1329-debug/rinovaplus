@@ -14,6 +14,10 @@ class Workers:
     def __init__(self, settings, *, transport=None, media_downloader=None):
         self.settings = settings
         self.stop_event = threading.Event()
+        self.ingress_wake = threading.Event()
+        self.dispatch_wake = threading.Event()
+        self.fast_queues = getattr(settings, "postgres_deployment", False)
+        self.queue_threads = ()
         self.thread = None
         self.gemini_thread = None
         from app.institutional.operations import Pulse
@@ -36,6 +40,13 @@ class Workers:
             target=self.run, name="cbn-c10-channels", daemon=True
         )
         self.thread.start()
+        if self.fast_queues:
+            self.queue_threads = (
+                threading.Thread(target=self.run_ingress, name="rinova-c10-ingress", daemon=True),
+                threading.Thread(target=self.run_dispatch, name="rinova-c10-dispatch", daemon=True),
+            )
+            for thread in self.queue_threads:
+                thread.start()
         from app.institutional.comment_automation import available
         from app.institutional.whatsapp_gemini import configured_account
 
@@ -47,10 +58,40 @@ class Workers:
 
     def stop(self):
         self.stop_event.set()
+        self.ingress_wake.set()
+        self.dispatch_wake.set()
         if self.thread:
             self.thread.join(timeout=45)
         if self.gemini_thread:
             self.gemini_thread.join(timeout=45)
+        for thread in self.queue_threads:
+            thread.join(timeout=45)
+
+    def run_queue(self, wake, consume):
+        while not self.stop_event.is_set():
+            wake.clear()
+            try:
+                if consume():
+                    continue
+                delay = 3
+            except Exception:
+                logger.warning("channel_queue_worker_retry_required")
+                delay = 5
+            wake.wait(delay)
+
+    def run_ingress(self):
+        events = EventWorker(self.settings)
+
+        def consume():
+            accepted = self.pulse.observe("events", events.once)
+            projected = self.pulse.observe("projection", events.project_once)
+            return accepted or projected
+
+        self.run_queue(self.ingress_wake, consume)
+
+    def run_dispatch(self):
+        dispatcher = Dispatcher(self.settings, self.transport)
+        self.run_queue(self.dispatch_wake, lambda: self.pulse.observe("dispatch", dispatcher.once))
 
     def run_gemini(self):
         from app.institutional.comment_automation import Worker as CommentWorker
@@ -61,7 +102,8 @@ class Workers:
             delay = 3
             for worker in workers:
                 try:
-                    worker.once()
+                    if worker.once():
+                        self.dispatch_wake.set()
                 except Exception:
                     logger.warning("channel_gemini_worker_retry_required")
                     delay = 10
@@ -77,8 +119,9 @@ class Workers:
         failures = 0
         while not self.stop_event.is_set():
             try:
-                self.pulse.observe("events", events.once)
-                self.pulse.observe("projection", events.project_once)
+                if not self.fast_queues:
+                    self.pulse.observe("events", events.once)
+                    self.pulse.observe("projection", events.project_once)
                 self.pulse.observe("media", media.once)
                 if (
                     self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
@@ -109,7 +152,8 @@ class Workers:
                         Worker(self.settings).once()
 
                     self.pulse.observe("broadcasts", run_broadcast)
-                self.pulse.observe("dispatch", dispatcher.once)
+                if not self.fast_queues:
+                    self.pulse.observe("dispatch", dispatcher.once)
                 self.pulse.observe("maintenance", lambda: maintenance(self.settings))
                 if self.settings.ticket.get("version") in {
                     "cbn-institutional-agents-p5-v1",

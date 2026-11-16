@@ -140,3 +140,108 @@
     display: none;
   }
 }
+.institution-topbar-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+.comment-notifications {
+  position: relative;
+  flex: none;
+  color: var(--ink);
+}
+.comment-notifications > summary {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  list-style: none;
+  cursor: pointer;
+}
+.comment-notifications > summary::-webkit-details-marker {
+  display: none;
+}
+.comment-notification-count {
+  position: absolute;
+  inset: 0 auto auto 62%;
+  min-width: 1.1rem;
+  padding: 0 0.15rem;
+  border-radius: 1rem;
+  background: var(--accent);
+  color: var(--rinova-petrol);
+  font-size: 0.7rem;
+  font-weight: 750;
+  text-align: center;
+}
+.comment-notification-panel {
+  position: absolute;
+  z-index: 25;
+  inset: calc(100% + 0.5rem) 0 auto auto;
+  display: grid;
+  gap: 0.65rem;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(30rem, 72dvh);
+  padding: 0.875rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 0.75rem 2rem #00181d47;
+}
+.comment-notification-panel header,
+.comment-notification-panel li a > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.comment-notification-panel :is(h2, p, ul) {
+  margin: 0;
+}
+.comment-notification-panel h2 {
+  font-size: 1rem;
+}
+.comment-notification-panel ul {
+  list-style: none;
+  padding: 0;
+}
+.comment-notification-panel li {
+  border-block-start: 1px solid var(--border);
+}
+.comment-notification-panel li a {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.65rem 0.4rem;
+  color: var(--ink);
+  border-radius: var(--radius-control);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.comment-notification-panel li a:hover {
+  background: var(--active);
+}
+.comment-notification-panel time {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.comment-notification-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (max-width: 540px) {
+  .institution-topbar-controls .field {
+    min-width: 0;
+  }
+  .institution-topbar-controls select {
+    max-width: 6rem;
+  }
+  .comment-notification-panel {
+    position: fixed;
+    inset: 5rem 1rem auto auto;
+  }
+}

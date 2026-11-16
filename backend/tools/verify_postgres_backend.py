@@ -471,11 +471,29 @@ def verify_comment_automation(h, stage, config_digest):
     post_comment("claimed_by_human")
     claimed = next(comment for comment in h.call("comments?channel=facebook")["items"]
                    if comment["external_id"] == "claimed_by_human")
+    assert [item["id"] for item in h.call("comments?comment_id=" + claimed["id"])["items"]] == [claimed["id"]]
     assert claimed["control_mode"] == "ai"
     assert h.call("comments/" + claimed["id"], "POST", {
         "operation_id": str(uuid4()), "row_version": claimed["row_version"], "action": "takeover",
     })["control_mode"] == "human"
     assert worker.once() and len(inferred) == 2 and not dispatcher.once()
+
+
+def verify_consecutive_messages(h, thread):
+    path = "workspace/conversations/" + thread
+    detail = h.call(path)
+    h.call(path, "PUT", {
+        "operationId": str(uuid4()), "revision": detail["revision"],
+        "state": "open", "priority": "normal", "mode": "human", "unread": True,
+    })
+    revision = h.call(path)["revision"]
+    first = {"operationId": str(uuid4()), "revision": revision, "body": "Primer envío consecutivo"}
+    second = {"operationId": str(uuid4()), "revision": revision, "body": "Segundo envío consecutivo"}
+    saved = h.call(path + "/messages", "POST", first)
+    h.call(path + "/messages", "POST", second)
+    assert h.call(path + "/messages", "POST", first) == saved
+    assert [item["body"] for item in h.call(path + "/messages")["items"][-2:]] == [first["body"], second["body"]]
+    assert h.call("workspace/inbox?channel=facebook")["unreadByChannel"]["whatsapp"] >= 1
 
 
 def verify_marketing(h, integration, thread):
@@ -886,6 +904,7 @@ def run():
             if deployment:
                 verify_whatsapp_gemini(journey, integration, deliver)
                 verify_comment_automation(journey, stage, config_digest)
+                verify_consecutive_messages(journey, thread)
             checked(post(AUTH + "/logout", headers=csrf))
             checked(api.get(WORKSPACE + "/clients"), 401)
             checked(post(AUTH + "/login", json={"email": "agent@example.invalid", "password": password}))

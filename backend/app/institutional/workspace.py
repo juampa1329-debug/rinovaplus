@@ -485,6 +485,21 @@ class Workspace:
     foundation = True
     operational_channels = False
 
+    def inbox_channel_expression(self):
+        legacy = (
+            "(SELECT TOP(1) Channel FROM crm_channels.ExternalIdentity "
+            "WHERE ConversationId=v.ConversationId ORDER BY IdentityId)"
+        )
+        if not self.operational_channels:
+            return f"COALESCE({legacy},'local')"
+        connected = (
+            "(SELECT TOP(1) ca.Channel FROM crm_channels2.ExternalIdentity ci "
+            "JOIN crm_channels2.Integration ca ON ca.InstitutionId=ci.InstitutionId "
+            "AND ca.IntegrationId=ci.IntegrationId WHERE ci.ConversationId=v.ConversationId "
+            "ORDER BY ci.IdentityId)"
+        )
+        return f"COALESCE({connected},{legacy},'local')"
+
     def __init__(self, settings):
         self.profile = settings
 
@@ -767,6 +782,7 @@ class Workspace:
             total = c.execute(
                 "SELECT COUNT(*)" + BASE + SLA + predicate, *params
             ).fetchval()
+            channel_expression = self.inbox_channel_expression()
             items = rows(
                 c.execute(
                     (
@@ -780,26 +796,7 @@ class Workspace:
                         "AS userId,"
                     )
                     + SLA_STATUS
-                    + (
-                        (
-                            " AS slaStatus,COALESCE((SELECT TOP(1) ca.Chann"
-                            "el FROM crm_channels2.ExternalIdentity ci JOIN"
-                            " crm_channels2.Integration ca ON ca.Institutio"
-                            "nId=ci.InstitutionId AND ca.IntegrationId=ci.I"
-                            "ntegrationId WHERE ci.ConversationId=v.Convers"
-                            "ationId ORDER BY ci.IdentityId),(SELECT TOP(1)"
-                            " Channel FROM crm_channels.ExternalIdentity WH"
-                            "ERE ConversationId=v.ConversationId ORDER BY I"
-                            "dentityId),'local') AS channel"
-                        )
-                        if self.operational_channels
-                        else (
-                            " AS slaStatus,COALESCE((SELECT TOP(1) Ch"
-                            "annel FROM crm_channels.ExternalIdentity"
-                            " WHERE ConversationId=v.ConversationId O"
-                            "RDER BY IdentityId),'local') AS channel"
-                        )
-                    )
+                    + f" AS slaStatus,{channel_expression} AS channel"
                     + (
                         ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
                         " WHERE m.ConversationId=v.ConversationId"
@@ -830,7 +827,7 @@ class Workspace:
                 item["risk"] = risk(
                     c, item["id"], item["conversationId"] if area == "inbox" else None
                 )
-            return {
+            response = {
                 "items": items,
                 "total": total,
                 "offset": offset,
@@ -838,6 +835,13 @@ class Workspace:
                 "hasMore": offset + len(items) < total,
                 "revision": revision(c),
             }
+            if area == "inbox":
+                response["unreadByChannel"] = dict(c.execute(
+                    "SELECT sources.Channel,COUNT(*) FROM "
+                    f"(SELECT {channel_expression} AS Channel "
+                    "FROM crm.Conversation v WHERE v.Unread=1) sources GROUP BY sources.Channel"
+                ).fetchall())
+            return response
 
     def detail(self, conversation):
         with self.transaction() as c:
@@ -1154,7 +1158,9 @@ class Workspace:
             )
             if prior is not None:
                 return prior
-            if body.revision != revision(c):
+            # Appending a message uses its own idempotency key and validates the
+            # current thread state in apply. Unrelated writes cannot stale it.
+            if action != "message" and body.revision != revision(c):
                 raise HTTPException(409, "revision_conflict")
             if self.profile.ticket.get('version') in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'} and action in {'create','contact'}:
                 from app.institutional.campaign_runtime import observe_contact
@@ -1623,7 +1629,11 @@ def install(app, settings, workspace=None):
 
     @app.post(prefix + "/conversations/{conversation_id}/messages")
     def message(conversation_id: Identifier, body: MessageWrite):
-        return workspace.write("message", conversation_id, body)
+        result = workspace.write("message", conversation_id, body)
+        worker = getattr(app.state, "channel_workers", None)
+        if worker is not None:
+            worker.dispatch_wake.set()
+        return result
 
     @app.put(prefix + "/conversations/{conversation_id}/manual")
     def manual(conversation_id: Identifier, body: ManualWrite):

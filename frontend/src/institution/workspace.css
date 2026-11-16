@@ -265,6 +265,28 @@
   color: var(--muted);
   font-size: 0.8rem;
 }
+.institutional-inbox .inbox-results-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+}
+.inbox-unread-summary,
+.inbox-unread-channels {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.inbox-unread-summary > span:first-child {
+  font-weight: 700;
+  color: var(--ink);
+}
+.inbox-unread-channels .ui-icon {
+  color: var(--channel-dot);
+  width: 0.95rem;
+  height: 0.95rem;
+}
 .inbox-conversation {
   appearance: none;
   display: grid;

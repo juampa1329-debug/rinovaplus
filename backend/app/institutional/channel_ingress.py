@@ -239,6 +239,10 @@ def install(app, settings):
             body.extend(chunk)
             if len(body) > 1_000_000:
                 raise HTTPException(413, "webhook_too_large")
-        return await asyncio.to_thread(
+        result = await asyncio.to_thread(
             service.receive, endpoint_key, request.headers, bytes(body)
         )
+        worker = getattr(app.state, "channel_workers", None)
+        if worker is not None and not result["duplicate"]:
+            worker.ingress_wake.set()
+        return result
