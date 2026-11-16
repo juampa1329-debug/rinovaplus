@@ -563,7 +563,7 @@ function Shell({
                 "RinovaPlus"
               }
               description={
-                location.page === "inbox"
+                location.page === "inbox" || location.page === "comments"
                   ? ""
                   : location.page === "settings"
                     ? "Configuración institucional y personalización de tu espacio de trabajo."

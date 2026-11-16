@@ -134,6 +134,13 @@ class Settings:
             current = setting(c, self.settings, section)
             if current["revision"] != body.revision:
                 raise HTTPException(409, "revision_conflict")
+            if section == "ai" and document["comment_mode"] == "auto" and document["comment_auto_reply"].strip():
+                changed_policy = any(
+                    document[field] != current["document"].get(field)
+                    for field in ("comment_mode", "comment_prompt", "comment_auto_reply")
+                )
+                if changed_policy:
+                    authorize(c, self.settings, authority, action, recent=True)
             validate_links(c, self.settings, section, document)
             linked = None
             spanish = self.settings.ticket.get("version") in {

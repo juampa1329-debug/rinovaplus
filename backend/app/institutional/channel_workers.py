@@ -15,6 +15,7 @@ class Workers:
         self.settings = settings
         self.stop_event = threading.Event()
         self.thread = None
+        self.gemini_thread = None
         from app.institutional.operations import Pulse
 
         if getattr(settings, "postgres_profile", False) and not getattr(settings, "postgres_deployment", False):
@@ -35,11 +36,36 @@ class Workers:
             target=self.run, name="cbn-c10-channels", daemon=True
         )
         self.thread.start()
+        from app.institutional.comment_automation import available
+        from app.institutional.whatsapp_gemini import configured_account
+
+        if configured_account(self.settings) or available(self.settings):
+            self.gemini_thread = threading.Thread(
+                target=self.run_gemini, name="rinova-whatsapp-gemini", daemon=True
+            )
+            self.gemini_thread.start()
 
     def stop(self):
         self.stop_event.set()
         if self.thread:
             self.thread.join(timeout=45)
+        if self.gemini_thread:
+            self.gemini_thread.join(timeout=45)
+
+    def run_gemini(self):
+        from app.institutional.comment_automation import Worker as CommentWorker
+        from app.institutional.whatsapp_gemini import Worker
+
+        workers = (Worker(self.settings), CommentWorker(self.settings))
+        while not self.stop_event.is_set():
+            delay = 3
+            for worker in workers:
+                try:
+                    worker.once()
+                except Exception:
+                    logger.warning("channel_gemini_worker_retry_required")
+                    delay = 10
+            self.stop_event.wait(delay)
 
     def run(self):
         from app.institutional.channel_media import MediaWorker

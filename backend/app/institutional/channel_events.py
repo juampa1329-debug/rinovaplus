@@ -61,6 +61,9 @@ def bounded_provider(value, depth=0):
         "media_id",
         "comment_id",
         "parent_id",
+        "parent_comment_id",
+        "reply_to_comment_id",
+        "self_ig_scoped_id",
         "post_id",
         "verb",
         "unique_identifier",
@@ -346,7 +349,8 @@ def incoming(c, settings, item, effect):
         integration,
         effect["author"],
     )
-    if not linked:
+    first_contact = linked is None
+    if first_contact:
         contact, conversation = create_contact(
             c,
             settings,
@@ -454,6 +458,10 @@ def incoming(c, settings, item, effect):
     from app.institutional.channel_media import register_incoming
 
     register_incoming(c, settings, item, effect, linked, message)
+    if item["Channel"] == "whatsapp" and effect["provider"].get("type") == "text":
+        from app.institutional.whatsapp_gemini import schedule
+
+        schedule(c, settings, item, linked, message)
     if settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}:
         from app.institutional.campaign_runtime import observe_identity
 
@@ -525,6 +533,7 @@ def project(c, settings, item, effect):
         else:
             if not valid_external(effect["author"]):
                 raise HTTPException(422, "provider_author_missing")
+            comment_id = str(uuid4())
             c.execute(
                 (
                     "INSERT crm_channels2.SocialComment(Ins"
@@ -534,13 +543,16 @@ def project(c, settings, item, effect):
                     "CDATETIME())"
                 ),
                 inst,
-                str(uuid4()),
+                comment_id,
                 item["IntegrationId"],
                 effect["external"],
                 effect["author"] or None,
                 effect["text"],
                 value,
             )
+            from app.institutional.comment_automation import schedule
+
+            schedule(c, settings, item, effect, comment_id)
         if state["state"] == "deleted":
             c.execute(
                 (

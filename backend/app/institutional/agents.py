@@ -51,6 +51,18 @@ def invalidate(c, conversation=None):
         *((conversation,) if conversation else ()),
     )
     if conversation:
+        from app.institutional.whatsapp_gemini import ACTOR
+
+        c.execute(
+            "UPDATE crm_channels2.ProviderOperation SET Status='abandoned',"
+            "ResultCode='agents_context_changed',CompletedAt=SYSUTCDATETIME() "
+            "WHERE ActorRef=? AND Status='pending' AND OperationId IN ("
+            "SELECT q.OperationId FROM crm_channels2.SendJob q "
+            "JOIN crm.Message m ON m.MessageId=q.MessageId "
+            "WHERE m.ConversationId=? AND q.State='queued')",
+            ACTOR,
+            conversation,
+        )
         c.execute(
             (
                 "UPDATE q SET State='cancelled',LastErr"

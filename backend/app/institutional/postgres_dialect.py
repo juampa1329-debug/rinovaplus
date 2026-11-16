@@ -9,7 +9,7 @@ TABLE = re.compile(r"(?<![\w.])\b(crm(?:_[a-z0-9]+)?)\.([A-Za-z_]\w*)\b")
 BOUND_TOP = re.compile(r"^SELECT\s+TOP\s*\(\?\)", re.I)
 TOP = re.compile(r"^SELECT\s+TOP\s*\((\d+|%s)\)\s+", re.I)
 BOUNDED_WRITE = re.compile(r"^(DELETE|UPDATE)\s+TOP\s*\((\d+)\)\s+(\S+)\s+(.+)$", re.I)
-SAVEPOINT = re.compile(r"(SAVE|ROLLBACK) TRANSACTION (event_projection|p8_next_part|p8_prepare_step)\Z")
+SAVEPOINT = re.compile(r"(SAVE|ROLLBACK) TRANSACTION (event_projection|p8_next_part|p8_prepare_step|whatsapp_gemini|comment_auto)\Z")
 JSON_SCALAR = re.compile(r"\bJSON_VALUE\(\s*([\w.]+)\s*,\s*N?'\$((?:\.[A-Za-z0-9_]+)+)'\s*\)", re.I)
 JSON_CAST = re.compile(
     r"\bTRY_CONVERT\(\s*(uniqueidentifier|bigint|int)\s*,\s*(" + JSON_SCALAR.pattern + r")\s*\)", re.I

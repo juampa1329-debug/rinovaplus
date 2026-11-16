@@ -296,8 +296,14 @@ class Drafts:
                 output_tokens=min(max(ai["output_tokens"], 200), 1000),
                 temperature=ai["temperature"],
             )
-            text = comment["Body"][:2000]
-            prompt = SYSTEM + "\nEstilo institucional: " + ai["system_prompt"][:2000]
+            preview = json.loads(comment["Payload"]).get("_crm", {}).get("preview") or {}
+            text = json.dumps({
+                "comentario": comment["Body"][:2000],
+                "publicacion": str(preview.get("caption", ""))[:1200],
+            }, ensure_ascii=False)
+            prompt = SYSTEM + "\nEstilo institucional: " + (
+                ai.get("comment_prompt") or ai["system_prompt"]
+            )[:1600]
             input_tokens = len((prompt + text).encode()) + 2048
             output_tokens = min(ai_settings.max_tokens, ai_settings.output_tokens)
             ceiling_tokens = input_tokens + output_tokens

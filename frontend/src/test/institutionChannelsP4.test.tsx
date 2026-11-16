@@ -54,21 +54,19 @@ beforeEach(() => {
 });
 
 it("labels persisted examples and disables external effects without disabling CRM review", async () => {
-  const fetcher = vi
-    .spyOn(globalThis, "fetch")
-    .mockResolvedValue(
-      ok({
-        items: [
-          {
-            ...comment,
-            synthetic_demo: true,
-            capabilities: { public_comment_reply: false, comment_like: false },
-          },
-        ],
-        total: 1,
-        has_more: false,
-      }),
-    );
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    ok({
+      items: [
+        {
+          ...comment,
+          synthetic_demo: true,
+          capabilities: { public_comment_reply: false, comment_like: false },
+        },
+      ],
+      total: 1,
+      has_more: false,
+    }),
+  );
   mount(<Comments />);
   fireEvent.click(
     await screen.findByRole("button", { name: /Cuenta CBN · Nuevo/ }),
@@ -123,6 +121,72 @@ it("a read-only viewer cannot start effects", async () => {
   expect(
     screen.getByRole("button", { name: "Crear contacto en CRM" }),
   ).toBeDisabled();
+});
+
+it("shows source and channel, keeps the suggestion separate, and saves comment instructions", async () => {
+  const saved = {
+    revision: 3,
+    document: { enabled: true, comment_prompt: "Cálido" },
+  };
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (path) => {
+      if (String(path).endsWith("/settings/ai")) return ok(saved);
+      if (String(path).endsWith("/suggest"))
+        return ok({ status: "confirmed", draft: "Gracias por escribirnos." });
+      return ok({
+        items: [
+          {
+            ...comment,
+            preview: {
+              caption: "Inscripciones abiertas",
+              permalink: "https://www.facebook.com/example",
+            },
+          },
+        ],
+        total: 1,
+        has_more: false,
+      });
+    });
+  mount(<Comments />, {
+    ...base,
+    actions: [...base.actions, "settings.ai.read", "settings.ai.write"],
+  });
+  const row = await screen.findByRole("button", { name: /Cuenta CBN · Nuevo/ });
+  expect(row.querySelector("[data-channel='facebook']")).toHaveTextContent(
+    "Facebook",
+  );
+  fireEvent.click(row);
+  expect(screen.getByText("Inscripciones abiertas")).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Abrir publicación original" }),
+  ).toHaveAttribute("href", "https://www.facebook.com/example");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Sugerir respuesta con IA" }),
+  );
+  const apply = await screen.findByRole("button", { name: "Usar sugerencia" });
+  expect(screen.getByLabelText("Respuesta pública")).toHaveValue("");
+  fireEvent.click(apply);
+  expect(screen.getByLabelText("Respuesta pública")).toHaveValue(
+    "Gracias por escribirnos.",
+  );
+  fireEvent.change(await screen.findByLabelText("Instrucciones de respuesta"), {
+    target: { value: "Breve y amable" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar instrucciones" }),
+  );
+  await waitFor(() =>
+    expect(
+      fetcher.mock.calls.some(
+        ([path, request]) =>
+          String(path).endsWith("/settings/ai") &&
+          request?.method === "PUT" &&
+          JSON.parse(String(request.body)).document.comment_prompt ===
+            "Breve y amable",
+      ),
+    ).toBe(true),
+  );
 });
 
 it("saves the trusted callback origin with revision and a fresh operation id", async () => {

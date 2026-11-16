@@ -28,6 +28,17 @@ def enqueue(
     identity=None,
     message=None,
 ):
+    from app.institutional import comment_automation
+    from app.institutional.whatsapp_gemini import ACTOR, ORIGIN
+
+    actor_ref = str(actor["UserId"]).lower() if actor is not None else None
+    if actor_ref is None:
+        if payload.get("origin") == ORIGIN and identity and message and not comment:
+            actor_ref = ACTOR
+        elif payload.get("origin") == comment_automation.ORIGIN and comment and not (identity or message):
+            actor_ref = comment_automation.ACTOR
+        else:
+            raise HTTPException(403, "outbox_actor_required")
     if not configuration(c, settings)["ModuleEnabled"]:
         raise HTTPException(403, "module_disabled")
     kind = "comment_reply" if comment else "chat"
@@ -103,11 +114,9 @@ def enqueue(
         ).fetchone()
     ):
         raise HTTPException(409, "comment_account_mismatch")
-    intent = {
-        **payload,
-        "actorSessionId": str(actor["SessionId"]).lower(),
-        "actorId": str(actor["UserId"]).lower(),
-    }
+    intent = dict(payload)
+    if actor is not None:
+        intent.update(actorSessionId=str(actor["SessionId"]).lower(), actorId=actor_ref)
     from app.institutional.agents_policy import VERSION as P5
 
     if identity and settings.ticket.get("version") == P5:
@@ -137,7 +146,7 @@ def enqueue(
         operation,
         item["ApplicationId"],
         item["IntegrationId"],
-        str(actor["UserId"]).lower(),
+        actor_ref,
         kind,
         digest,
         digest,
@@ -207,6 +216,9 @@ def actor_allowed(c, settings, payload):
 
 
 def ready(c, settings, job, *, controlled=False):
+    from app.institutional import comment_automation
+    from app.institutional.whatsapp_gemini import ORIGIN, dispatch_authorized
+
     item = account(c, settings, str(job["IntegrationId"]))
     payload = json.loads(job["Payload"])
     config = configuration(c, settings)
@@ -218,7 +230,12 @@ def ready(c, settings, job, *, controlled=False):
         or item["ApplicationState"] == "retired"
     ):
         raise HTTPException(409, "account_paused_or_unverified")
-    if not actor_allowed(c, settings, payload):
+    automated = payload.get("origin") == ORIGIN
+    if automated:
+        dispatch_authorized(c, settings, job, payload)
+    elif payload.get("origin") == comment_automation.ORIGIN:
+        comment_automation.authorize_send(c, settings, job, payload)
+    elif not actor_allowed(c, settings, payload):
         raise HTTPException(403, "queued_actor_authority_revoked")
     bulk = False
     if settings.ticket.get("version") in {
@@ -290,14 +307,15 @@ def ready(c, settings, job, *, controlled=False):
                 "Id=m.MessageId WHERE i.InstitutionId=?"
                 " AND i.IntegrationId=? AND i.IdentityI"
                 "d=? AND m.MessageId=? AND r.QueueId=? "
-                "AND v.State<>'closed' AND v.ControlMod"
-                "e='human'"
+                "AND v.State<>'closed' AND v.ControlMode=?"
+                + (" AND r.ActorKind='bot'" if automated else "")
             ),
             institution(settings),
             item["IntegrationId"],
             job["IdentityId"],
             job["MessageId"],
             job["QueueId"],
+            "ai" if automated else "human",
         )
         if not identity:
             raise HTTPException(409, "message_identity_account_mismatch")
@@ -592,6 +610,25 @@ class Dispatcher:
                 )
                 reservation = reserve(c, self.settings, job)
             except HTTPException as error:
+                origin = json.loads(job["Payload"]).get("origin")
+                discarded = (
+                    origin == "gemini_whatsapp" and (
+                        str(error.detail).startswith(("gemini_whatsapp_", "agents_"))
+                        or error.detail == "messaging_response_window_closed"
+                    ) or origin == "gemini_comment" and str(error.detail).startswith("comment_auto_")
+                )
+                if discarded:
+                    c.execute(
+                        "UPDATE crm_channels2.SendJob SET State='cancelled',LastErrorCode=?,"
+                        "CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND QueueId=? AND State='queued'",
+                        str(error.detail)[:64], inst, job["QueueId"],
+                    )
+                    c.execute(
+                        "UPDATE crm_channels2.ProviderOperation SET Status='abandoned',ResultCode=?,"
+                        "CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND OperationId=? AND Status='pending'",
+                        str(error.detail)[:64], inst, job["OperationId"],
+                    )
+                    return True
                 # Pauses and budgets retain queued work, with a bounded next inspection.
                 c.execute(
                     (

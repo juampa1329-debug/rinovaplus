@@ -16,6 +16,20 @@ La rama `deploy/coolify-rinovaplus` admite un despliegue de RinovaPlus en Postgr
 
 Conservar el volumen de adjuntos y verificar que las escrituras CRM estén pausadas durante la sincronización final. Usar el [procedimiento de migración](postgresql-migration.md) para leer únicamente las tablas CRM de SQL Server y verificar la carga. Mantener la copia PostgreSQL anterior con otro nombre. Al desplegar, verificar `/health/ready` con `scope=postgres_deployment`. Una reversión después de nuevas escrituras en PostgreSQL exige conciliarlas antes de reabrir SQL Server.
 
+### Atención automática de WhatsApp
+
+En PostgreSQL, las cuentas verificadas pueden atender con Gemini cuando sus agentes y el envío estén habilitados. Para limitar una prueba a una cuenta, guardar en las variables de ejecución del backend `RINOVA_GEMINI_WHATSAPP_INTEGRATION` con el UUID interno del canal. El WABA ID y el Phone Number ID se conservan en la configuración de Meta del canal.
+
+La cuenta debe estar conectada y verificada, con el webhook y los envíos de WhatsApp habilitados. La IA debe estar activa, con una clave de Gemini guardada y un agente activo para WhatsApp que tenga permiso para responder, modelo Gemini y tarifas registradas. Aplican los presupuestos vigentes de mensajes, tokens y costo. Antes de habilitar los envíos generales, revisar los mensajes ya pendientes en la cola.
+
+Enviar texto desde un número de prueba sin conversación en esa cuenta. Los hilos nuevos comienzan en **IA**. Gemini clasifica la consulta y RinovaPlus envía saludos o preguntas breves de orientación por la cola existente. Las consultas específicas o que pidan un asesor pasan a control humano. Confirmar el estado de entrega en Inbox y en el teléfono. Repetir y probar el interruptor a **Humano** mientras se prepara una respuesta. Un mensaje entrante posterior descarta una respuesta pendiente que ya quedó desactualizada.
+
+### Respuestas públicas en Comentarios
+
+En el panel **IA para comentarios**, guardar las instrucciones y generar una sugerencia en un comentario. La sugerencia se copia al editor con **Usar sugerencia**. Para una prueba de publicación automática en PostgreSQL, seleccionar el modo automático y guardar el texto público aprobado. Gemini decide si procede publicar ese texto o si el caso debe quedar para revisión.
+
+Las cuentas deben estar verificadas, con webhook, permiso de respuesta pública, acceso de envío y una política de precios de IA vigente en Canales. El modo automático procesa comentarios nuevos de primer nivel, respeta los límites de mensajería e IA y usa la cola existente. Verificar primero el estado de un comentario nuevo en una publicación de prueba, y confirmar que archivar el comentario o volver a **Sugerencias con revisión** impide una respuesta pendiente.
+
 ## Conexión SQL Server
 
 En Coolify, seleccionar el repositorio privado, la rama `deploy/coolify-rinovaplus` y el método **Dockerfile**. Usar `/` como contexto, `/docker/Dockerfile.coolify` como ruta y `4178` como puerto del servicio. El proxy de Coolify termina HTTPS. Configurar `https://app.rinovaplus.com` como dominio del servicio y conservar un solo origen para interfaz, API y webhooks. Montar un volumen persistente en `/var/lib/crm-ai` para adjuntos de Inbox y campañas, con acceso de escritura para el UID `10001`.

@@ -30,7 +30,7 @@ from app.modules.inbox.application.service import pattern
 class CommentAction(Strict):
     operation_id: str
     row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
-    action: Literal["read", "archive", "reopen", "convert", "reply"]
+    action: Literal["read", "archive", "reopen", "convert", "reply", "takeover", "release"]
     body: str = Field(default="", max_length=4000)
     display_name: str = Field(default="", max_length=180)
 
@@ -49,6 +49,7 @@ def public_comment(value):
         "received_at": utc(value["ReceivedAt"]),
         "row_version": bytes(value["RowVersion"]).hex(),
         "state": state.get("state", "new"),
+        "control_mode": state.get("control_mode", "ai"),
         "contact_id": state.get("contact_id"),
         "conversation_id": state.get("conversation_id"),
         "last_queue_id": state.get("last_queue_id"),
@@ -264,6 +265,29 @@ class Comments:
                 state["last_queue_id"] = str(queue).lower()
                 result["queue_id"] = state["last_queue_id"]
                 result["reply_state"] = "queued"
+            elif body.action in {"takeover", "release"}:
+                state["control_mode"] = "human" if body.action == "takeover" else "ai"
+                result["control_mode"] = state["control_mode"]
+                if body.action == "takeover":
+                    from app.institutional.comment_automation import ACTOR
+
+                    inst = institution(self.settings)
+                    c.execute(
+                        "UPDATE crm_channels2.ProviderOperation SET Status='abandoned',"
+                        "ResultCode='comment_auto_human_control',CompletedAt=SYSUTCDATETIME() "
+                        "WHERE InstitutionId=? AND ActorRef=? AND Status='pending' AND OperationId IN ("
+                        "SELECT OperationId FROM crm_channels2.SendJob WHERE InstitutionId=? "
+                        "AND CommentId=? AND State='queued')",
+                        inst, ACTOR, inst, identity,
+                    )
+                    c.execute(
+                        "UPDATE crm_channels2.SendJob SET State='cancelled',"
+                        "LastErrorCode='comment_auto_human_control',CompletedAt=SYSUTCDATETIME() "
+                        "WHERE InstitutionId=? AND CommentId=? AND State='queued' AND OperationId IN ("
+                        "SELECT OperationId FROM crm_channels2.ProviderOperation WHERE InstitutionId=? "
+                        "AND ActorRef=?)",
+                        inst, identity, inst, ACTOR,
+                    )
             else:
                 state["state"] = {
                     "read": "read",

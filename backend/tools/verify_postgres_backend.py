@@ -130,9 +130,9 @@ def seed_institution(dsn, institution, password):
         for section, document in (
             ("modules", {"enabled": dict.fromkeys(MODULES, True)}),
             ("budgets", {"requests_per_minute": 1000, "daily_messages": 20}),
-            ("ai", SECTIONS["ai"](provider_models={"gemini": "fixture-model"}).model_dump(mode="json")),
+            ("ai", SECTIONS["ai"](provider_models={"gemini": "gemini-fixture-model"}).model_dump(mode="json")),
             ("models", {"selections": [
-                {"provider": "gemini", "category": "text", "selected_model": "fixture-model", "display_name": "Fixture"},
+                {"provider": "gemini", "category": "text", "selected_model": "gemini-fixture-model", "display_name": "Fixture"},
             ]}),
             ("institution", SECTIONS["institution"](name="Institución sintética").model_dump(mode="json")),
         ):
@@ -150,41 +150,44 @@ def seed_institution(dsn, institution, password):
     return stage, hashlib.sha256(config.model_dump_json().encode()).digest()
 
 
-def seed_channel(settings, stage, config_digest):
+def seed_channel(settings, stage, config_digest, *, channel="whatsapp"):
     institution = settings.ticket["context"][0][1]
     app, integration, endpoint = (str(uuid4()) for _ in range(3))
     verify, signature_secret, access_secret = (secrets.token_urlsafe(32) for _ in range(3))
     key = "ep_" + secrets.token_urlsafe(32)
+    whatsapp = channel == "whatsapp"
+    asset = "7733" if whatsapp else "8811"
     with transaction(settings, True, anonymous=True) as c:
         c.execute(
             "INSERT crm_channels2.Application(InstitutionId,ApplicationId,ClientId,Provider,ApiVersion,"
             "IssuerProfile,RedirectUri,EgressProfile,State,CreatedAt,UpdatedAt)"
-            " VALUES(?,?,'3357','meta','v20.0','meta_whatsapp','https://example.invalid',"
+            " VALUES(?,?,'3357','meta','v20.0',?,'https://example.invalid',"
             "'pinned','enabled',SYSUTCDATETIME(),SYSUTCDATETIME())",
-            institution, app,
+            institution, app, "meta_whatsapp" if whatsapp else "facebook_login",
         )
         c.execute(
             "INSERT crm_channels2.Integration(InstitutionId,IntegrationId,ApplicationId,Channel,Provider,"
             "ApiVersion,DispatchMode,DisplayName,ExternalNamespace,ExternalAccountId,ParentExternalId,RequestedStatus,"
             "VerifiedStatus,InitialStageKey,InitialStageConfigHash,CreatedAt,UpdatedAt)"
-            " VALUES(?,?,?,'whatsapp','meta','v20.0','live','Fixture',?,'7733','1777000','connected','verified',"
+            " VALUES(?,?,?,?,'meta','v20.0','live','Fixture',?,?,?,'connected','verified',"
             "?,?,SYSUTCDATETIME(),SYSUTCDATETIME())",
-            institution, integration, app, bytes.fromhex("8a" * 32), stage.key, config_digest,
+            institution, integration, app, channel, bytes.fromhex(("8a" if whatsapp else "8b") * 32),
+            asset, "1777000" if whatsapp else None, stage.key, config_digest,
         )
         c.execute(
             "INSERT crm_channels2.WebhookEndpoint(InstitutionId,EndpointId,ApplicationId,Provider,"
             "ChannelSelector,EndpointKey,SignatureProfile,SignatureRequired,IsActive,CreatedAt,UpdatedAt)"
-            " VALUES(?,?,?,'meta','whatsapp',?,'meta_sha256',1,1,SYSUTCDATETIME(),SYSUTCDATETIME())",
-            institution, endpoint, app, key,
+            " VALUES(?,?,?,'meta',?,?,'meta_sha256',1,1,SYSUTCDATETIME(),SYSUTCDATETIME())",
+            institution, endpoint, app, channel, key,
         )
         c.execute(
             "INSERT crm_channels2.EndpointIntegration(InstitutionId,EndpointId,IntegrationId,ApplicationId,"
-            "RouteKind,ExternalId,IsActive,CreatedAt) VALUES(?,?,?,?,'configured_whatsapp','7733',1,SYSUTCDATETIME())",
-            institution, endpoint, integration, app,
+            "RouteKind,ExternalId,IsActive,CreatedAt) VALUES(?,?,?,?,?,?,1,SYSUTCDATETIME())",
+            institution, endpoint, integration, app, "configured_" + channel, asset,
         )
         put(c, settings, "endpoint", endpoint, "webhook_verify", verify)
-        put(c, settings, "application", app, "meta_app_secret", signature_secret)
-        put(c, settings, "integration", integration, "meta_permanent_access", access_secret)
+        put(c, settings, "application", app, "meta_app_secret" if whatsapp else "facebook_app_secret", signature_secret)
+        put(c, settings, "integration", integration, "meta_permanent_access" if whatsapp else "facebook_page_access", access_secret)
     return key, verify, signature_secret, integration
 
 
@@ -260,8 +263,9 @@ def verify_agents(h, gemini_calls):
     body = {
         "operation_id": str(uuid4()), "revision": 0, "name": "Orientador sintético",
         "level": "guide", "configuration": AgentConfiguration(
-            provider="gemini", primary_model="fixture-model", channels=["local"],
+            provider="gemini", primary_model="gemini-fixture-model", channels=["local", "whatsapp"],
             instructions="Usa solo fuentes autorizadas.", monthly_token_limit=250000,
+            allow_reply=True, capabilities=["conversation.reply"],
             input_usd_per_million=0.20, output_usd_per_million=0.50,
         ).model_dump(mode="json"),
     }
@@ -278,7 +282,7 @@ def verify_agents(h, gemini_calls):
     ai = h.call("settings/ai")
     h.call("settings/ai", "PUT", {
         "operation_id": str(uuid4()), "revision": ai["revision"],
-        "document": {**ai["document"], "enabled": True, "model": "fixture-model"},
+        "document": {**ai["document"], "enabled": True, "model": "gemini-fixture-model"},
     })
     budget = h.call("settings/budgets")
     h.call("settings/budgets", "PUT", {
@@ -297,7 +301,7 @@ def verify_agents(h, gemini_calls):
     assert denied["code"] == "agents_consumption_confirmation_required" and gemini_calls == []
     command = {**simulation, "request_id": str(uuid4()), "acknowledge_consumption": True}
     response = checked(h.api.post("/api/v1/agents/simulate", headers=h.csrf, json=command))
-    assert response["provider"] == "gemini" and response["model"] == "fixture-model"
+    assert response["provider"] == "gemini" and response["model"] == "gemini-fixture-model"
     assert response["network_called"] and not response["delivered"] and not response["crm_written"]
     assert response["text"] == "Puedo orientarte si me cuentas qué quieres consultar."
     assert response["usage"] == {"prompt_tokens": 30, "completion_tokens": 10}
@@ -306,6 +310,162 @@ def verify_agents(h, gemini_calls):
     console = checked(h.api.get(path + "/console"))
     assert console["metrics"]["tokens_reported"] == 40
     assert console["runs"][0]["state"] == "completed"
+
+
+def verify_whatsapp_gemini(h, integration, deliver):
+    from app.institutional.channel_events import EventWorker
+    from app.institutional.whatsapp_gemini import FOLLOWUPS, REPLIES, Worker
+
+    events = EventWorker(h.settings)
+    inference, sent = [], []
+
+    def incoming(number, key):
+        deliver({"messages": [{"id": key, "from": number, "timestamp": str(int(time.time())),
+                              "type": "text", "text": {"body": "Hola, ¿qué horarios ofrecen?"}}]})
+        assert events.once() and events.project_once()
+        [item] = h.call("workspace/inbox?q=" + number)["items"]
+        return item["conversationId"]
+
+    def take_over(conversation):
+        path = "workspace/conversations/" + conversation
+        detail = h.call(path)
+        h.call(path, "PUT", {
+            "operationId": str(uuid4()), "revision": detail["revision"],
+            "state": "open", "priority": "normal", "mode": "human", "unread": True,
+        })
+
+    def gemini(request):
+        assert request.url.host == "generativelanguage.googleapis.com"
+        assert request.headers["x-goog-api-key"] == "synthetic-gemini-key"
+        assert request.url.path == "/v1beta/models/gemini-fixture-model:generateContent"
+        assert "155512313" not in request.content.decode()
+        inference.append(request.url.path)
+        if len(inference) == 3:
+            take_over(taken)
+        intent = "asesor" if len(inference) == 4 else "horarios"
+        return httpx.Response(200, json={"candidates": [
+            {"finishReason": "STOP", "content": {"parts": [{"text": json.dumps({"intent": intent})}]}},
+        ]})
+
+    def send(_adapter, payload, *, media=None, before_send=None):
+        before_send()
+        assert payload["target"] == "15551231361" and media is None
+        sent.append(payload["body"])
+        return "fixture_gemini_sent" if len(sent) == 1 else "fixture_gemini_followup_sent"
+
+    worker = Worker(h.settings, lambda keys: DraftGateway(keys, httpx.MockTransport(gemini)))
+    dispatcher = Dispatcher(h.settings, transport=send)
+    with patch.dict(os.environ, {"RINOVA_GEMINI_WHATSAPP_INTEGRATION": integration}):
+        thread = incoming("15551231361", "auto_first")
+        assert worker.once() and not worker.once() and len(inference) == 1, h.sql(
+            "SELECT Status,ResultCode FROM crm_channels2.ProviderOperation WHERE Action='whatsapp_gemini_intro'"
+        )
+        assert dispatcher.once() and sent == [REPLIES["horarios"]], h.sql(
+            "SELECT State,LastErrorCode FROM crm_channels2.SendJob WHERE MessageId IN "
+            "(SELECT MessageId FROM crm.Message WHERE ConversationId=?)", thread,
+        )
+        deliver({"statuses": [{"id": "fixture_gemini_sent", "status": "delivered"}]})
+        assert events.once() and events.project_once()
+        messages = h.call("workspace/conversations/" + thread + "/messages")["items"]
+        assert messages[-1]["deliveryState"] == "delivered"
+        assert incoming("15551231361", "auto_followup") == thread
+        assert worker.once() and dispatcher.once()
+        assert sent == [REPLIES["horarios"], FOLLOWUPS["horarios"]]
+        taken = incoming("15551231362", "auto_takeover")
+        assert worker.once() and len(inference) == 3
+        assert h.call("workspace/conversations/" + taken)["thread"]["ControlMode"] == "human"
+        assert len(h.call("workspace/conversations/" + taken + "/messages")["items"]) == 1
+        assert incoming("15551231362", "auto_human_reply") == taken and not worker.once()
+        handed_off = incoming("15551231363", "auto_handoff")
+        assert worker.once() and len(inference) == 4
+        assert h.call("workspace/conversations/" + handed_off)["thread"]["ControlMode"] == "human"
+        assert len(h.call("workspace/conversations/" + handed_off + "/messages")["items"]) == 1
+        waiting = incoming("15551231364", "auto_before_dispatch")
+        assert worker.once() and len(inference) == 5
+        take_over(waiting)
+        messages = h.call("workspace/conversations/" + waiting + "/messages")["items"]
+        assert messages[-1]["deliveryState"] == "cancelled"
+        [(operation_state,)] = h.sql(
+            "SELECT o.Status FROM crm_channels2.ProviderOperation o "
+            "JOIN crm_channels2.SendJob q ON q.OperationId=o.OperationId WHERE q.QueueId=?",
+            messages[-1]["queueId"],
+        )
+        assert operation_state == "abandoned"
+        assert not dispatcher.once()
+        assert len(sent) == 2
+
+
+def verify_comment_automation(h, stage, config_digest):
+    from app.institutional.channel_events import EventWorker
+    from app.institutional.comment_automation import Worker
+
+    endpoint, _, signature, integration = seed_channel(h.settings, stage, config_digest, channel="facebook")
+    h.call(f"channels/{integration}/comment-ai-policy", "PUT", {
+        "operation_id": str(uuid4()), "input_micros_per_million": 200000,
+        "output_micros_per_million": 500000,
+        "source_url": "https://example.invalid/fixture-rates", "daily_requests": 8,
+    })
+    ai, reply = h.call("settings/ai"), "Gracias por escribirnos. El equipo de admisiones puede orientarte."
+    h.call("settings/ai", "PUT", {
+        "operation_id": str(uuid4()), "revision": ai["revision"], "document": {
+            **ai["document"], "comment_mode": "auto", "comment_auto_reply": reply,
+            "comment_prompt": "Tono cercano y conciso.",
+        },
+    })
+    events = EventWorker(h.settings)
+    sent, inferred = [], []
+
+    def post_comment(identity, author="2311", parent="8811_post"):
+        value = {"item": "comment", "verb": "add", "comment_id": identity,
+                 "post_id": "8811_post", "parent_id": parent, "from": {"id": author},
+                 "message": "Hola, ¿pueden orientarme sobre admisiones?"}
+        raw = json.dumps({"object": "page", "entry": [{"id": "8811", "changes": [
+            {"field": "feed", "value": value},
+        ]}]}).encode()
+        digest = "sha256=" + hmac.digest(signature.encode(), raw, "sha256").hex()
+        headers = {"x-hub-signature-256": digest}
+        path = "/hooks/channels/" + endpoint
+        assert not checked(h.api.post(path, content=raw, headers=headers))["duplicate"]
+        assert checked(h.api.post(path, content=raw, headers=headers))["duplicate"]
+        assert events.once() and events.project_once()
+
+    def choose(request):
+        payload = json.loads(request.content)
+        assert "Tono cercano" in json.dumps(payload["systemInstruction"], ensure_ascii=False)
+        inferred.append(payload)
+        decision = "publicar" if len(inferred) == 1 else "revisar"
+        return httpx.Response(200, json={"candidates": [{"finishReason": "STOP", "content": {
+            "parts": [{"text": json.dumps({"decision": decision})}],
+        }}]})
+
+    def send(adapter, payload, *, media=None, before_send=None):
+        before_send()
+        assert adapter["channel"] == "facebook" and media is None
+        sent.append((payload["target"], payload["body"]))
+        return "fixture_public_reply"
+
+    worker = Worker(h.settings, lambda keys: DraftGateway(keys, httpx.MockTransport(choose)))
+    dispatcher = Dispatcher(h.settings, transport=send)
+    post_comment("post_response")
+    assert worker.once() and not worker.once() and len(inferred) == 1, h.sql(
+        "SELECT Status,ResultCode FROM crm_channels2.ProviderOperation WHERE Action='comment_auto_gemini'"
+    )
+    assert dispatcher.once() and sent == [("post_response", reply)], h.sql(
+        "SELECT State,LastErrorCode FROM crm_channels2.SendJob WHERE CommentId IS NOT NULL"
+    )
+    post_comment("review_response")
+    assert worker.once() and len(inferred) == 2 and not dispatcher.once()
+    post_comment("self_reply", author="8811")
+    post_comment("nested_reply", parent="post_response")
+    assert not worker.once() and len(sent) == 1
+    post_comment("claimed_by_human")
+    claimed = next(comment for comment in h.call("comments?channel=facebook")["items"]
+                   if comment["external_id"] == "claimed_by_human")
+    assert claimed["control_mode"] == "ai"
+    assert h.call("comments/" + claimed["id"], "POST", {
+        "operation_id": str(uuid4()), "row_version": claimed["row_version"], "action": "takeover",
+    })["control_mode"] == "human"
+    assert worker.once() and len(inferred) == 2 and not dispatcher.once()
 
 
 def verify_marketing(h, integration, thread):
@@ -481,7 +641,7 @@ def run():
     def gemini_response(request):
         assert request.method == "POST"
         assert request.url.host == "generativelanguage.googleapis.com"
-        assert request.url.path == "/v1beta/models/fixture-model:generateContent"
+        assert request.url.path == "/v1beta/models/gemini-fixture-model:generateContent"
         assert request.headers["x-goog-api-key"] == "synthetic-gemini-key"
         assert json.loads(request.content)["generationConfig"]["responseMimeType"] == "application/json"
         gemini_calls.append(request.url.path)
@@ -713,6 +873,9 @@ def run():
             verify_writes(journey)
             verify_agents(journey, gemini_calls)
             verify_marketing(journey, integration, thread)
+            if deployment:
+                verify_whatsapp_gemini(journey, integration, deliver)
+                verify_comment_automation(journey, stage, config_digest)
             checked(post(AUTH + "/logout", headers=csrf))
             checked(api.get(WORKSPACE + "/clients"), 401)
             checked(post(AUTH + "/login", json={"email": "agent@example.invalid", "password": password}))
@@ -723,6 +886,8 @@ def run():
     print(json.dumps({"postgres_backend_flows": "verified", "queue_states": ["accepted", "delivered", "uncertain"],
                       "incoming_media": "verified", "worker_stages": 8,
                       "business_writes": ["settings", "contact_create_edit", "agent_save_simulate", "broadcast", "campaign"],
+                      "whatsapp_gemini": "verified_with_mock_providers" if deployment else "skipped",
+                      "comment_automation": "verified_with_mock_providers" if deployment else "skipped",
                       "recovery": ["broadcast_delayed_receipt", "campaign_paused", "agent_lease_expired"],
                       "coolify_entrypoint": "verified" if verify_entrypoint else "skipped"}))
 
