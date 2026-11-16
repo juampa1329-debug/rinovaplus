@@ -274,7 +274,7 @@ def stage(c, item):
     return selected.label
 
 
-def create_contact(c, settings, item, name, *, phone=""):
+def create_contact(c, settings, item, name, *, phone="", control_mode="human"):
     contact, conversation = str(uuid4()), str(uuid4())
     label = stage(c, item)
     value = Contact(
@@ -310,11 +310,11 @@ def create_contact(c, settings, item, name, *, phone=""):
         (
             "INSERT crm.Conversation(ConversationId"
             ",ContactId,State,Priority,ControlMode,"
-            "Unread) VALUES(?,?,'open','normal','hu"
-            "man',0)"
+            "Unread) VALUES(?,?,'open','normal',?,0)"
         ),
         conversation,
         contact,
+        control_mode,
     )
     control(c, conversation)
     return contact, conversation
@@ -353,6 +353,7 @@ def incoming(c, settings, item, effect):
             item,
             effect["author"],
             phone=effect["author"] if item["Channel"] == "whatsapp" else "",
+            control_mode="ai",
         )
         linked = {
             "IdentityId": str(uuid4()),

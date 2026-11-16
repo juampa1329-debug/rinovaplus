@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Button, Field, SelectField } from "../shared/ui";
+import { Icon } from "../shared/Icon";
 import type { Risk } from "./Workspace";
 
 const channels = {
@@ -83,6 +84,62 @@ export function ChannelLabel({ channel }: { channel?: string | null }) {
       <i aria-hidden="true" />
       {label || "Canal sin identificar"}
     </span>
+  );
+}
+
+export function InboxIdle({ showContact }: { showContact: boolean }) {
+  return (
+    <section
+      className="p3-person p3-inbox-person inbox-idle"
+      data-contact-hidden={!showContact || undefined}
+    >
+      <section
+        className="panel p3-thread inbox-idle-thread"
+        aria-label="Espacio de conversación"
+      >
+        <div className="inbox-idle-header" aria-hidden="true">
+          <i className="inbox-idle-avatar" />
+          <i className="inbox-idle-line" />
+        </div>
+        <div className="inbox-idle-chat">
+          <div className="inbox-idle-bubbles" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+          <div className="inbox-idle-message">
+            <Icon name="inbox" />
+            <h2>Selecciona una conversación</h2>
+            <p>Abre un hilo de la bandeja para atenderlo.</p>
+          </div>
+        </div>
+        <div className="inbox-idle-composer" aria-hidden="true">
+          <i />
+          <i />
+          <i className="inbox-idle-line" />
+        </div>
+      </section>
+      {showContact && (
+        <aside
+          className="panel p3-ficha inbox-idle-ficha"
+          aria-label="Ficha CRM"
+        >
+          <h2 className="inbox-crm-title">Ficha CRM</h2>
+          <div className="inbox-idle-profile" aria-hidden="true">
+            <i className="inbox-idle-avatar" />
+            <div>
+              <i className="inbox-idle-line" />
+              <i className="inbox-idle-line" />
+            </div>
+          </div>
+          <div className="inbox-idle-fields" aria-hidden="true">
+            <i className="inbox-idle-line" />
+            <i className="inbox-idle-line" />
+            <i className="inbox-idle-line" />
+          </div>
+        </aside>
+      )}
+    </section>
   );
 }
 

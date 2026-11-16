@@ -49,10 +49,10 @@ def change_control(cursor, conversation_id, previous, current):
         cursor.agent_invalidate(cursor, conversation_id)
         return
     cursor.execute(
-        "UPDATE q SET State='failed',LastError='control_epoch_obsolete',LeaseId=NULL "
-        "FROM crm_channels.outbound_queue q JOIN crm_channels.MessageRoute r ON r.QueueId=q.QueueId "
-        "JOIN crm.Message m ON m.MessageId=r.MessageId WHERE m.ConversationId=? "
-        "AND r.ActorKind='bot' AND r.StartedAt IS NULL AND q.State IN('queued','sending')",
+        "UPDATE crm_channels.outbound_queue SET State='failed',LastError='control_epoch_obsolete',LeaseId=NULL "
+        "WHERE State IN('queued','sending') AND QueueId IN("
+        "SELECT r.QueueId FROM crm_channels.MessageRoute r JOIN crm.Message m ON m.MessageId=r.MessageId "
+        "WHERE m.ConversationId=? AND r.ActorKind='bot' AND r.StartedAt IS NULL)",
         conversation_id,
     )
 

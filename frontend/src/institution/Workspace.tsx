@@ -29,6 +29,7 @@ import {
   ChannelLabel,
   ConversationRow,
   InboxListControls,
+  InboxIdle,
   initialInboxFilters,
 } from "./InboxPresentation";
 
@@ -790,18 +791,12 @@ function WorkspaceView({
                 showContact={showContact}
                 toggleContact={() => setShowContact((visible) => !visible)}
               />
+            ) : inbox ? (
+              <InboxIdle showContact={showContact} />
             ) : (
-              <section className={inbox ? "panel inbox-no-selection" : "panel"}>
-                <h2>
-                  {page === "inbox"
-                    ? "Selecciona una conversación"
-                    : "Selecciona un contacto"}
-                </h2>
-                <p>
-                  {inbox
-                    ? "Abre un hilo para leer sus mensajes y revisar la ficha del contacto."
-                    : "La ficha se comparte entre CRM e Inbox."}
-                </p>
+              <section className="panel">
+                <h2>Selecciona un contacto</h2>
+                <p>La ficha se comparte entre CRM e Inbox.</p>
                 {!cfg.config.stages.some((s) => s.active !== false) && (
                   <a href="#/settings/crm">Configurar las etapas del CRM</a>
                 )}
@@ -1160,14 +1155,18 @@ function Conversation({
       `conversation:${conversation}:owner`,
       detail.thread.UserId ?? "",
     ),
-    [mode, setMode] = useCachedDraft(
-      `conversation:${conversation}:mode`,
-      detail.thread.ControlMode,
-    ),
     command = useCommand(changed);
   const observed = useRef("0");
   const nearLatest = useRef(true);
   const channel = detail.channelAccounts?.[0]?.channel;
+  const human = detail.thread.ControlMode === "human";
+  const canWrite = session.actions.includes("inbox.write");
+  const sendingRecently = data.value?.items.some(
+    (message) =>
+      ["queued", "sending", "accepted"].includes(message.deliveryState ?? "") &&
+      !message.deliveryError &&
+      (data.loadedAt ?? 0) - Date.parse(message.createdAt) < 90_000,
+  );
   const canCaption =
     !channel ||
     (channel === "whatsapp" &&
@@ -1184,11 +1183,14 @@ function Conversation({
   }, [before, latest]);
   useEffect(() => {
     if (!channel || before) return;
-    const timer = window.setInterval(() => {
-      if (!document.hidden) setDeliveryTick((n) => n + 1);
-    }, 12000);
+    const timer = window.setInterval(
+      () => {
+        if (!document.hidden) setDeliveryTick((n) => n + 1);
+      },
+      sendingRecently ? 3000 : 12000,
+    );
     return () => window.clearInterval(timer);
-  }, [channel, before]);
+  }, [channel, before, sendingRecently]);
   const setMessage = (value: string) => {
     setBody(value);
     drafts.set(conversation, value);
@@ -1199,10 +1201,17 @@ function Conversation({
       state,
       priority,
       userId: owner || null,
-      mode,
+      mode: detail.thread.ControlMode,
       unread: detail.thread.Unread,
       readThrough: observed.current,
       ...next,
+    });
+  const changeMode = () =>
+    void update({
+      state: detail.thread.State,
+      priority: detail.thread.Priority,
+      userId: detail.thread.UserId,
+      mode: human ? "ai" : "human",
     });
   return (
     <section className="panel p3-thread" aria-label="Conversación seleccionada">
@@ -1228,21 +1237,33 @@ function Conversation({
             ) : (
               <ChannelLabel channel="local" />
             )}
-            <span>
-              {detail.thread.ControlMode === "human"
-                ? "Control humano"
-                : "Control IA"}
-            </span>
           </div>
         </div>
-        <Button
-          variant="quiet"
-          aria-expanded={showContact}
-          aria-controls={contactPanelId}
-          onClick={toggleContact}
-        >
-          {showContact ? "Ocultar ficha CRM" : "Ver ficha CRM"}
-        </Button>
+        <div className="inbox-header-actions">
+          <Button
+            variant="quiet"
+            role="switch"
+            className="inbox-control-switch"
+            aria-label="Control humano"
+            aria-checked={human}
+            disabled={
+              !canWrite || command.busy || detail.thread.State === "closed"
+            }
+            onClick={changeMode}
+          >
+            <span aria-hidden="true">IA</span>
+            <i aria-hidden="true" />
+            <span aria-hidden="true">Humano</span>
+          </Button>
+          <Button
+            variant="quiet"
+            aria-expanded={showContact}
+            aria-controls={contactPanelId}
+            onClick={toggleContact}
+          >
+            {showContact ? "Ocultar ficha CRM" : "Ver ficha CRM"}
+          </Button>
+        </div>
       </header>
       <details className="inbox-thread-options">
         <summary>Gestión de conversación</summary>
@@ -1277,28 +1298,9 @@ function Conversation({
               users={users}
               inbox
             />
-            <SelectField
-              id="p3-control"
-              label="Control"
-              value={mode}
-              options={[
-                { value: "human", label: "Humano" },
-                { value: "ai", label: "IA" },
-              ]}
-              onChange={(e) => setMode(e.target.value)}
-            />
           </div>
           <div className="p3-actions">
             <Button onClick={() => void update()}>Guardar conversación</Button>
-            <Button
-              onClick={() => {
-                setMode("human");
-                setOwner(session.user.id);
-                void update({ mode: "human", userId: session.user.id });
-              }}
-            >
-              Tomar control humano
-            </Button>
             <Button
               variant="quiet"
               onClick={() => void update({ unread: !detail.thread.Unread })}
@@ -1368,7 +1370,14 @@ function Conversation({
         className="inbox-composer"
         onSubmit={(e) => {
           e.preventDefault();
-          if (attachmentBusy || command.busy || (!body.trim() && !attachment))
+          if (
+            !human ||
+            !canWrite ||
+            detail.thread.State === "closed" ||
+            attachmentBusy ||
+            command.busy ||
+            (!body.trim() && !attachment)
+          )
             return;
           const usedText = !attachment || canCaption;
           void command
@@ -1437,9 +1446,11 @@ function Conversation({
         </fieldset>
       </form>
       <p className="scope-text">
-        {detail.channelAccounts?.length
-          ? "La respuesta se guarda en la cola de esta cuenta. Su estado indica si fue aceptada, enviada o entregada."
-          : "Este mensaje se registra en la conversación local. La entrega por proveedores requiere habilitar el canal."}
+        {!human
+          ? "Activa Humano en la cabecera para escribir en este hilo."
+          : detail.channelAccounts?.length
+            ? "La respuesta se guarda en la cola de esta cuenta. Su estado indica si fue aceptada, enviada o entregada."
+            : "Este mensaje se registra en la conversación local. La entrega por proveedores requiere habilitar el canal."}
       </p>
       {command.error && <Notice error>{command.error}</Notice>}
     </section>

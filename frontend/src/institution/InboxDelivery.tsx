@@ -70,7 +70,12 @@ const details: Record<string, [string, string, string]> = {
   outbound_paused: [
     "El envío del canal está pausado",
     "RinovaPlus detuvo los envíos de esta cuenta.",
-    "Pide a un administrador que revise si la salida está habilitada en Ajustes → Canales.",
+    "En Ajustes → Webhooks, revisa Permitir salida de cuentas verificadas.",
+  ],
+  outbound_setup_required: [
+    "El mensaje espera la habilitación de los envíos",
+    "La salida de cuentas verificadas está pausada y el cupo diario de mensajes está en cero. RinovaPlus conserva el mensaje en cola.",
+    "Revisa Mensajes al día en Ajustes → Límites técnicos y Permitir salida de cuentas verificadas en Ajustes → Webhooks.",
   ],
   outbound_budget_disabled: [
     "El límite diario de mensajes está en cero",
@@ -140,7 +145,8 @@ export function MessageDelivery({
   reason?: string;
 }) {
   const report = useContext(ErrorFeedbackContext);
-  if (state === "failed" || state === "uncertain") {
+  const blocked = state === "queued" && !!reason;
+  if (blocked || state === "failed" || state === "uncertain") {
     return (
       <button
         type="button"
@@ -159,7 +165,11 @@ export function MessageDelivery({
         }
       >
         <Icon name="warning" />
-        {state === "failed" ? "No enviado" : "Sin confirmar"}
+        {blocked
+          ? "En cola · ver motivo"
+          : state === "failed"
+            ? "No enviado"
+            : "Sin confirmar"}
       </button>
     );
   }

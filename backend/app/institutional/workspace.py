@@ -1306,22 +1306,18 @@ class Workspace:
                     resource,
                 )
                 c.execute(
-                    (
-                        "IF NOT EXISTS(SELECT 1 FROM crm_workspac"
-                        "e.Assignment WHERE ConversationId=?) INS"
-                        "ERT crm_workspace.Assignment(Conversatio"
-                        "nId,InstitutionId,UserId) VALUES(?,?,?) "
-                        "ELSE UPDATE crm_workspace.Assignment SET"
-                        " UserId=?,UpdatedAt=SYSUTCDATETIME() WHE"
-                        "RE ConversationId=?"
-                    ),
-                    resource,
-                    resource,
-                    db.institution(self.profile),
-                    body.userId,
+                    "UPDATE crm_workspace.Assignment SET UserId=?,UpdatedAt=SYSUTCDATETIME() "
+                    "WHERE ConversationId=?",
                     body.userId,
                     resource,
                 )
+                if c.rowcount == 0:
+                    c.execute(
+                        "INSERT crm_workspace.Assignment(ConversationId,InstitutionId,UserId) VALUES(?,?,?)",
+                        resource,
+                        db.institution(self.profile),
+                        body.userId,
+                    )
             elif action == "manual":
                 save_assessment(c, resource, body.score, body.temperature)
             else:

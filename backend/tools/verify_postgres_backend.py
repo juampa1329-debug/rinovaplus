@@ -578,6 +578,7 @@ def run():
             thread = inbox["items"][0]["conversationId"]
             assert inbox["items"][0]["channel"] == "whatsapp"
             assert inbox["items"][0]["preview"] == "Hola ensayo"
+            assert inbox["items"][0]["mode"] == "ai"
             assert checked(api.get(WORKSPACE + "/inbox", params={
                 "q": "Hola ensayo", "channel": "whatsapp", "state": "open",
             }))["total"] == 1
@@ -611,10 +612,25 @@ def run():
             assert empty_page["items"] == [] and empty_page["total"] == 1
             path = WORKSPACE + "/conversations/" + thread + "/messages"
             assert [item["body"] for item in checked(api.get(path))["items"]] == ["Hola ensayo"]
+            conversation_path = WORKSPACE + "/conversations/" + thread
             if deployment:
-                checked(api.get(WORKSPACE + "/conversations/" + thread))
+                current = checked(api.get(conversation_path))
+                assert current["thread"]["ControlMode"] == "ai"
+                checked(post(path, headers=csrf, json={
+                    "operationId": str(uuid4()), "revision": current["revision"], "body": "no se debe enviar",
+                }), 409)
                 assert checked(api.get(WORKSPACE + "/inbox", params={"channel": "whatsapp"}))["total"] == 1
                 assert checked(api.get(WORKSPACE + "/inbox", params={"queue": "churn"}))["total"] == 0
+                for mode in ("human", "ai", "human"):
+                    current = checked(api.get(conversation_path))
+                    checked(api.put(conversation_path, headers=csrf, json={
+                        "operationId": str(uuid4()), "revision": current["revision"],
+                        "state": "open", "priority": "normal", "mode": mode, "unread": True,
+                    }))
+                    assert checked(api.get(conversation_path))["thread"]["ControlMode"] == mode
+            else:
+                with transaction(settings, True, anonymous=True) as c:
+                    c.execute("UPDATE crm.Conversation SET ControlMode='human' WHERE ConversationId=?", thread)
 
             def reply(text):
                 current = checked(api.get(path))
@@ -626,7 +642,21 @@ def run():
             def queue(state):
                 return checked(api.get(PREFIX + "/operations"))["queues"]["outbound"].get(state, 0)
 
+            if deployment:
+                with transaction(settings, True, anonymous=True) as c:
+                    c.execute("UPDATE crm_channels4.Configuration SET OutboundEnabled=0")
             reply("respuesta")
+            if deployment:
+                queued = checked(api.get(path))["items"][-1]
+                assert queued["deliveryState"] == "queued" and queued["deliveryError"] == "outbound_paused"
+                current = checked(api.get(conversation_path))
+                checked(api.put(conversation_path, headers=csrf, json={
+                    "operationId": str(uuid4()), "revision": current["revision"],
+                    "state": "open", "priority": "high", "mode": "human", "unread": True,
+                }))
+                assert queue("queued") == 1 and not sent
+                with transaction(settings, True, anonymous=True) as c:
+                    c.execute("UPDATE crm_channels4.Configuration SET OutboundEnabled=1")
             wait_for(lambda: queue("accepted"), lambda count: count == 1)
             deliver({"statuses": [{"id": "fixture_delayed_binding", "status": "delivered"}]})
             wait_for(

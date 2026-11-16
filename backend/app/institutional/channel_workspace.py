@@ -6,9 +6,10 @@ from fastapi import HTTPException
 
 from app.institutional import db
 from app.institutional.auth import authorize
-from app.institutional.channel_operations import account
+from app.institutional.channel_operations import account, configuration
 from app.institutional.channel_outbox import enqueue
 from app.institutional.policy import request_authority
+from app.institutional.settings import setting
 from app.institutional.workspace import Workspace as Parent
 
 
@@ -16,6 +17,7 @@ class Workspace(Parent):
     operational_channels = True
 
     def apply(self, c, action, resource, body, actor):
+        previous = self.exists(c, resource) if action == "conversation" else None
         if action == "message":
             from app.institutional.channel_media import attach
 
@@ -137,7 +139,9 @@ class Workspace(Parent):
                 )
                 return {"conversationId": resource}
         result = super().apply(c, action, resource, body, actor)
-        if action == "conversation":
+        if previous and (
+            previous[2] != body.mode or (previous[1] != "closed" and body.state == "closed")
+        ):
             from app.institutional.agents_policy import VERSION as P5
 
             if self.profile.ticket.get("version") in {
@@ -148,6 +152,13 @@ class Workspace(Parent):
                 from app.institutional.agents import invalidate
 
                 invalidate(c, resource)
+                if previous[2] == "human" and body.mode == "ai":
+                    c.execute(
+                        "UPDATE crm_agents.Assignment SET Mode='automatic',Revision=Revision+1,"
+                        "Reason=? WHERE ConversationId=? AND Mode='human'",
+                        "Se devolvió la atención a la IA desde el Inbox.",
+                        resource,
+                    )
             c.execute(
                 (
                     "UPDATE ctrl SET Epoch=Epoch+1,UpdatedA"
@@ -160,17 +171,14 @@ class Workspace(Parent):
             )
             c.execute(
                 (
-                    "UPDATE q SET State='cancelled',LastErr"
-                    "orCode='human_control_changed',Complet"
-                    "edAt=SYSUTCDATETIME() FROM crm_channel"
-                    "s2.SendJob q JOIN crm_channels2.Messag"
-                    "eRoute r ON r.InstitutionId=q.Institut"
-                    "ionId AND r.QueueId=q.QueueId JOIN crm"
-                    ".Message m ON m.MessageId=r.MessageId "
-                    "WHERE q.InstitutionId=? AND m.Conversa"
-                    "tionId=? AND r.ActorKind='human' AND q"
-                    ".State='queued'"
+                    "UPDATE crm_channels2.SendJob SET State='cancelled',"
+                    "LastErrorCode='human_control_changed',CompletedAt=SYSUTCDATETIME() "
+                    "WHERE InstitutionId=? AND State='queued' AND QueueId IN("
+                    "SELECT r.QueueId FROM crm_channels2.MessageRoute r "
+                    "JOIN crm.Message m ON m.MessageId=r.MessageId "
+                    "WHERE r.InstitutionId=? AND m.ConversationId=? AND r.ActorKind='human')"
                 ),
+                db.institution(self.profile),
                 db.institution(self.profile),
                 resource,
             )
@@ -257,13 +265,22 @@ class Workspace(Parent):
                     *ids,
                 )
                 by_id = {str(v["MessageId"]).lower(): v for v in values}
+                paused = None
+                if any(value["State"] == "queued" for value in values):
+                    channel_config = configuration(c, self.profile)
+                    outbound = channel_config["ModuleEnabled"] and channel_config["OutboundEnabled"]
+                    budget = setting(c, self.profile, "budgets")["document"]["daily_messages"]
+                    if not outbound:
+                        paused = "outbound_paused" if budget else "outbound_setup_required"
+                    elif not budget:
+                        paused = "outbound_budget_disabled"
                 for message in result["items"]:
                     value = by_id.get(message["id"])
                     if value:
                         message.update(
                             deliveryState=value["State"],
                             queueId=str(value["QueueId"]).lower(),
-                            deliveryError=value["LastErrorCode"],
+                            deliveryError=(paused if value["State"] == "queued" and paused else value["LastErrorCode"]),
                             channelAccount=value["DisplayName"],
                         )
                 media = db.rows(

@@ -76,6 +76,7 @@ let failWrite = 0;
 let agentOperations = false;
 let serverRevision = "1";
 let failedDelivery = false;
+let threadMode = "human";
 const calls: {
   path: string;
   method: string;
@@ -109,6 +110,7 @@ beforeEach(() => {
   agentOperations = false;
   serverRevision = "1";
   failedDelivery = false;
+  threadMode = "human";
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
     config,
@@ -145,6 +147,8 @@ beforeEach(() => {
           selection: null,
           blocked: "agents_human_control",
         });
+      if (method === "PUT" && !failWrite && body?.mode)
+        threadMode = String(body.mode);
       if (method !== "GET")
         return failWrite
           ? response(
@@ -219,7 +223,7 @@ beforeEach(() => {
             ContactId: ids[index],
             State: "open",
             Priority: "normal",
-            ControlMode: "human",
+            ControlMode: threadMode,
             Unread: true,
             UserId: null,
           },
@@ -354,6 +358,32 @@ it("keeps the CRM panel collapsed across threads and shows each program code", a
   expect(show).toHaveAttribute("aria-expanded", "false");
   fireEvent.click(show);
   expect(await screen.findByLabelText("Nombre visible")).toBeVisible();
+});
+
+it("shows the chat and CRM skeleton and switches ownership without submitting the priority draft", async () => {
+  threadMode = "ai";
+  open("inbox");
+  expect(
+    screen.getByRole("region", { name: "Espacio de conversación" }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("complementary", { name: "Ficha CRM" }),
+  ).toBeVisible();
+  await select();
+  const toggle = screen.getByRole("switch", { name: "Control humano" });
+  expect(toggle).toHaveAttribute("aria-checked", "false");
+  expect(screen.getByLabelText("Mensaje local")).toBeDisabled();
+  fireEvent.click(screen.getByText("Gestión de conversación"));
+  fireEvent.change(screen.getByLabelText("Prioridad"), {
+    target: { value: "urgent" },
+  });
+  fireEvent.click(toggle);
+  await waitFor(() => expect(toggle).toHaveAttribute("aria-checked", "true"));
+  expect(calls.find((call) => call.method === "PUT")?.body?.priority).toBe(
+    "normal",
+  );
+  expect(screen.getByLabelText("Prioridad")).toHaveValue("urgent");
+  expect(screen.getByLabelText("Mensaje local")).toBeEnabled();
 });
 
 it.each([
@@ -547,9 +577,7 @@ it("disables mutations for a read only human session", async () => {
   await select();
   expect(screen.getByLabelText("Nombre visible")).toBeDisabled();
   fireEvent.click(screen.getByText("Gestión de conversación"));
-  expect(
-    screen.getByRole("button", { name: "Tomar control humano" }),
-  ).toBeDisabled();
+  expect(screen.getByRole("switch", { name: "Control humano" })).toBeDisabled();
   expect(
     screen.getByRole("button", { name: "Guardar mensaje local" }),
   ).toBeDisabled();
