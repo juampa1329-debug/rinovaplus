@@ -195,6 +195,7 @@ const messages: Record<string, string> = {
   session_required: "Tu sesión terminó. Inicia sesión de nuevo.",
   module_disabled: "Este módulo está deshabilitado por la institución.",
   rate_limit: "Alcanzaste el límite temporal. Espera antes de reintentar.",
+  rate_limited: "RinovaPlus alcanzó el límite temporal de solicitudes.",
   last_active_owner: "Debe quedar al menos un propietario activo con acceso.",
   last_active_admin: "Debe quedar al menos un administrador activo.",
   email_already_registered: "Este correo ya tiene una cuenta.",
@@ -205,6 +206,7 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     public detail: string,
+    public retryAfterSeconds?: number,
   ) {
     super(
       messages[detail] ??
@@ -251,7 +253,12 @@ export async function send<T>(
   if (!response.ok) {
     if (response.status === 401 && result.detail === "session_required")
       institutionUnauthorized(401);
-    throw new ApiError(response.status, result.detail ?? "request_failed");
+    const retryAfter = Number(response.headers.get("Retry-After"));
+    throw new ApiError(
+      response.status,
+      result.detail ?? "request_failed",
+      retryAfter > 0 ? retryAfter : undefined,
+    );
   }
   return result as T;
 }

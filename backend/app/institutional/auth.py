@@ -150,6 +150,16 @@ def user(cursor, settings, identity):
     )
 
 
+def api_request_limit(limit, authority):
+    if authority.get("method") == "GET" and authority.get("resource") in {
+        "/api/institution/workspace/inbox",
+        "/api/institution/workspace/conversations/{conversation_id}/messages",
+    }:
+        # The same bucket still caps all requests. Leave room for user actions.
+        return limit - max(2, limit // 5)
+    return limit
+
+
 def rate(cursor, settings, reference, limit, window):
     cursor.execute(
         (
@@ -531,7 +541,7 @@ class Identity:
                 c,
                 self.settings,
                 "api:" + value["UserId"],
-                json.loads(configured)["requests_per_minute"],
+                api_request_limit(json.loads(configured)["requests_per_minute"], authority),
                 60,
             )
             if not allowed:
@@ -543,7 +553,7 @@ class Identity:
                     outcome="denied",
                 )
         if not allowed:
-            raise HTTPException(429, "rate_limited")
+            raise HTTPException(429, "rate_limited", headers={"Retry-After": "60"})
         return value
 
     def me(self, authority):

@@ -107,6 +107,11 @@ const details: Record<string, [string, string, string]> = {
     "El formato solicitado no está disponible para esta conexión.",
     "Elige un tipo de archivo compatible o envía un mensaje de texto.",
   ],
+  rate_limited: [
+    "Límite temporal de solicitudes",
+    "RinovaPlus recibió demasiadas solicitudes en poco tiempo.",
+    "Espera hasta un minuto y pulsa Enviar de nuevo. Puedes seguir editando el borrador.",
+  ],
 };
 details.messaging_response_window_closed = details.whatsapp_reply_window_closed;
 details.provider_outcome_unknown = details.delivery_uncertain;

@@ -16,7 +16,10 @@ class Workers:
         self.stop_event = threading.Event()
         self.ingress_wake = threading.Event()
         self.dispatch_wake = threading.Event()
-        self.fast_queues = getattr(settings, "postgres_deployment", False)
+        self.fast_queues = bool(
+            getattr(settings, "postgres_deployment", False)
+            or getattr(settings, "public_origin", None)
+        )
         self.queue_threads = ()
         self.thread = None
         self.gemini_thread = None

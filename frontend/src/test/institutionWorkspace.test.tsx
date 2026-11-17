@@ -9,6 +9,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { WorkspaceSessionProvider } from "../shared/workspaceSession";
 import { WorkspaceP3, RiskSummary } from "../institution/Workspace";
 import { inboxProgramCode } from "../institution/InboxPresentation";
+import { explainInboxError } from "../institution/InboxDelivery";
 import type { Risk } from "../institution/Workspace";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
@@ -545,6 +546,12 @@ it("shows unknown safely and identifies a current rule without probability", () 
   expect(screen.getByText("Rúbrica de seguimiento")).toBeInTheDocument();
   expect(screen.getByRole("meter", { name: "Puntaje de abandono" })).toHaveAttribute("value", "80");
   expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+});
+
+it("explains RinovaPlus request throttling without blaming the channel", () => {
+  const guidance = explainInboxError({ code: "rate_limited", status: 429, message: "" });
+  expect(guidance.title).toBe("Límite temporal de solicitudes");
+  expect(guidance.nextStep).toMatch(/pulsa Enviar de nuevo/);
 });
 it("sends filters to the paginated API and never loads the old workspace snapshot", async () => {
   open();

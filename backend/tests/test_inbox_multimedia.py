@@ -61,8 +61,10 @@ def test_inbox_inspects_real_audio_and_video(tmp_path, monkeypatch, kind, source
     assert result["kind"] == kind and result["mime"] == mime
     assert 0 < result["duration"] <= 2
     if kind == "audio":
-        stream = files.audio_probe(files.path(identity))["streams"][0]
+        audio = files.audio_probe(files.path(identity))
+        stream = audio["streams"][0]
         assert stream["codec_name"] == "opus" and stream["channels"] == 1
+        assert float(audio["format"]["start_time"]) == 0
 
 
 @pytest.mark.parametrize(("media", "payload", "expected"), [

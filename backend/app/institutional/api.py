@@ -275,7 +275,9 @@ def create_app(
                 request.state.authority = authority
             response = await call_next(request)
         except HTTPException as error:
-            response = JSONResponse({"detail": error.detail}, error.status_code)
+            response = JSONResponse(
+                {"detail": error.detail}, error.status_code, headers=error.headers,
+            )
         finally:
             if context is not None:
                 request_authority.reset(context)

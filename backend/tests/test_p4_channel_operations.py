@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
 from app.institutional import channel_events, channel_ingress, channel_operations
+from app.institutional.auth import api_request_limit
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
 from app.institutional.channels import (
@@ -24,8 +25,27 @@ from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
 from app.institutional.channel_tokens import health
 from app.institutional.channel_workspace import social_avatar_url
+from app.institutional.channel_workers import Workers
 from app.institutional.crypto import seal, unseal
 from app.modules.channels import providers
+
+
+@pytest.mark.parametrize("path", [
+    "/api/institution/workspace/inbox",
+    "/api/institution/workspace/conversations/{conversation_id}/messages",
+])
+def test_inbox_reads_leave_room_for_user_actions_in_same_limit(path):
+    assert api_request_limit(120, {"method": "GET", "resource": path}) == 96
+    assert api_request_limit(10, {"method": "GET", "resource": path}) == 8
+    assert api_request_limit(120, {"method": "POST", "resource": path}) == 120
+
+
+def test_public_sql_deployment_has_wakeable_inbound_and_outbound_queues():
+    production = Workers(SimpleNamespace(public_origin="https://crm.example"))
+    local = Workers(SimpleNamespace(public_origin=None))
+
+    assert production.fast_queues
+    assert not local.fast_queues
 
 
 def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):

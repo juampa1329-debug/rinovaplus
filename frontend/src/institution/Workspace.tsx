@@ -261,7 +261,7 @@ function useEntity(key: string) {
   };
 }
 
-function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0, checkRevision = false) {
+function useRead<T>(path: string, refresh: number | string = 0, enabled = true, pollMs = 0, checkRevision = false) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
       path: string;
@@ -277,10 +277,15 @@ function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0, check
     let running = false;
     let lastRevision = "";
     let lastFullRead = 0;
+    let retryAt = 0;
     let timer: ReturnType<typeof setTimeout>;
     async function load(initial = false) {
       if (!active || running) return;
       if (!initial && document.hidden) return;
+      if (retryAt > Date.now()) {
+        timer = setTimeout(() => void load(), retryAt - Date.now());
+        return;
+      }
       running = true;
       try {
         const conditional = checkRevision && lastRevision && Date.now() - lastFullRead < 60_000;
@@ -296,7 +301,10 @@ function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0, check
           setError(null);
         }
       } catch (failure) {
-        if (active)
+        const limited = failure instanceof ApiError && failure.status === 429;
+        if (limited && pollMs)
+          retryAt = Date.now() + (failure.retryAfterSeconds ?? 60) * 1000;
+        if (active && !(limited && !initial && lastFullRead))
           setError({
             path,
             message:
@@ -307,7 +315,7 @@ function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0, check
       } finally {
         running = false;
         if (active && pollMs && !document.hidden)
-          timer = setTimeout(() => void load(), pollMs);
+          timer = setTimeout(() => void load(), Math.max(pollMs, retryAt - Date.now()));
       }
     }
     const visible = () => {
@@ -860,6 +868,7 @@ function WorkspaceView({
                 conversation={selected}
                 page={page}
                 refresh={refresh}
+                liveRevision={inbox && offset === 0 ? list.value?.revision : undefined}
                 changed={changed}
                 config={cfg.config}
                 drafts={drafts}
@@ -1048,6 +1057,7 @@ function Person({
   conversation,
   page,
   refresh,
+  liveRevision,
   changed,
   config,
   drafts,
@@ -1061,6 +1071,7 @@ function Person({
   conversation: string;
   page: string;
   refresh: number;
+  liveRevision?: string;
   changed: () => void;
   config: CrmConfig;
   drafts: Map<string, Client>;
@@ -1109,6 +1120,7 @@ function Person({
           socialProfile={socialProfile}
           detail={detail.value}
           refresh={refresh}
+          liveRevision={liveRevision}
           changed={changed}
           drafts={messageDrafts}
           users={users}
@@ -1189,6 +1201,7 @@ function Conversation({
   conversation,
   detail,
   refresh,
+  liveRevision,
   changed,
   drafts,
   users,
@@ -1201,6 +1214,7 @@ function Conversation({
   conversation: string;
   detail: Detail;
   refresh: number;
+  liveRevision?: string;
   changed: () => void;
   drafts: Map<string, string>;
   users: { id: string; name: string }[];
@@ -1222,9 +1236,9 @@ function Conversation({
       hasMore: boolean;
     }>(
       `conversations/${conversation}/messages${before ? `?before=${before}` : ""}`,
-      refresh,
+      `${refresh}:${before ? "" : liveRevision ?? ""}`,
       true,
-      channel && !before ? 1500 : 0,
+      channel && !before && liveRevision === undefined ? 4000 : 0,
     ),
     [body, setBody] = useState(drafts.get(conversation) ?? ""),
     [attachment, setAttachment] = useState<Attachment | null>(null),
