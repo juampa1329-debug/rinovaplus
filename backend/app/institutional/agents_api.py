@@ -17,6 +17,7 @@ from typing import Literal
 from app.modules.agents.router import install_agents
 from app.modules.agents.service import load
 from app.modules.ai.infrastructure.providers import AiError
+from app.institutional.siie_catalog import SiieImport, preview as siie_preview
 
 
 class ProgramWrite(Mutation):
@@ -89,6 +90,13 @@ def install(app, settings, gateway_factory=None):
         with service.transaction():
             pass
         return import_program(body.url)
+
+    @app.post("/api/v1/agents/programs/import-siie")
+    def extract_siie(body: SiieImport):
+        # Existing agents.manage authority and SQL checks precede outbound IO.
+        with service.transaction():
+            pass
+        return siie_preview(body.offer_id)
 
     @app.post("/api/v1/agents/programs")
     def create_program(body: ProgramWrite):

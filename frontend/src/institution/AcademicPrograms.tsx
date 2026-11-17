@@ -5,6 +5,27 @@ import { useIntent, useTask } from "./api";
 import { allowNavigation, useDraftGuard } from "./drafts";
 
 type Commercial = {
+  price_valid_from?: string | null;
+  full_cost_cash_cop?: number | null;
+  cost_inclusions?: string;
+  cost_exclusions?: string;
+  siie_offer_id?: string;
+  siie_program_id?: string;
+  siie_period_id?: string;
+  siie_campus_id?: string;
+  siie_shift_id?: string;
+  siie_source_revision?: string;
+  financial_plans?: {
+    external_id: string;
+    name: string;
+    valid_from: string;
+    valid_until: string;
+    initial_payment_cop: number;
+    initial_payment_due_date: string;
+    total_cost_cop: number;
+    installments: { number: number; amount_cop: number; due_date: string }[];
+    conditions: string;
+  }[];
   aliases: string;
   duration: string;
   modality: string;
@@ -82,6 +103,24 @@ function mergeImport(draft: Draft, result: Draft): Draft {
     commercial.price_concept = result.commercial.price_concept;
     commercial.price_valid_until = result.commercial.price_valid_until;
   }
+  if (result.commercial.siie_offer_id) {
+    Object.assign(commercial, {
+      price_cop: result.commercial.price_cop,
+      price_concept: result.commercial.price_concept,
+      price_valid_until: result.commercial.price_valid_until,
+      price_valid_from: result.commercial.price_valid_from,
+      full_cost_cash_cop: result.commercial.full_cost_cash_cop,
+      financial_plans: result.commercial.financial_plans,
+      cost_inclusions: result.commercial.cost_inclusions,
+      cost_exclusions: result.commercial.cost_exclusions,
+      siie_offer_id: result.commercial.siie_offer_id,
+      siie_program_id: result.commercial.siie_program_id,
+      siie_period_id: result.commercial.siie_period_id,
+      siie_campus_id: result.commercial.siie_campus_id,
+      siie_shift_id: result.commercial.siie_shift_id,
+      siie_source_revision: result.commercial.siie_source_revision,
+    });
+  }
   return {
     name: result.name || draft.name,
     school: result.school || draft.school,
@@ -110,6 +149,26 @@ function importChanges(draft: Draft, result: Draft) {
     ],
     ["Materias o módulos", before.syllabus, after.syllabus],
     ["Requisitos", before.requirements, after.requirements],
+    [
+      "Costo total de contado",
+      before.full_cost_cash_cop ?? null,
+      after.full_cost_cash_cop ?? null,
+    ],
+    ["Oferta SIIE", before.siie_offer_id ?? null, after.siie_offer_id ?? null],
+    [
+      "Revisión SIIE",
+      before.siie_source_revision ?? null,
+      after.siie_source_revision ?? null,
+    ],
+    [
+      "Planes financiados",
+      before.financial_plans
+        ?.map((v) => `${v.name}: ${v.total_cost_cop} COP`)
+        .join("; ") ?? null,
+      after.financial_plans
+        ?.map((v) => `${v.name}: ${v.total_cost_cop} COP`)
+        .join("; ") ?? null,
+    ],
   ];
   return values.filter(([, oldValue, value]) => oldValue !== value);
 }
@@ -125,6 +184,7 @@ export function AcademicPrograms() {
   const [draft, setDraft] = useState(empty);
   const [saved, setSaved] = useState(empty);
   const [url, setUrl] = useState("");
+  const [siieOffer, setSiieOffer] = useState("");
   const [extracted, setExtracted] = useState<Draft | null>(null);
   useDraftGuard(JSON.stringify(draft) !== JSON.stringify(saved));
 
@@ -260,9 +320,44 @@ export function AcademicPrograms() {
           >
             Extraer con IA
           </Button>
+          <details>
+            <summary>Consultar catálogo comercial de SIIE</summary>
+            <p>
+              Consulta de sólo lectura por oferta: programa, sede, jornada y
+              período. Requiere que el equipo de SIIE entregue la API y se
+              configure en el servidor. La consulta no matricula, no cobra y no
+              guarda datos automáticamente.
+            </p>
+            <Field
+              id="program-siie-offer"
+              label="ID de oferta en SIIE"
+              value={siieOffer}
+              maxLength={80}
+              onChange={(event) => setSiieOffer(event.target.value)}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!/^[A-Za-z0-9_-]{1,80}$/.test(siieOffer)}
+              onClick={() => {
+                setExtracted(null);
+                void task.run(async () => {
+                  const result = await api<{ draft: Draft }>(
+                    "/programs/import-siie",
+                    "POST",
+                    { offer_id: siieOffer },
+                  );
+                  setExtracted(result.draft);
+                }, "Datos de SIIE listos para revisar. No se han guardado.");
+              }}
+            >
+              Consultar SIIE
+            </Button>
+          </details>
           {extracted && (
             <div className="program-import-preview">
               <strong>Cambios propuestos</strong>
+              <FinancialSummary commercial={extracted.commercial} />
               {changes.length ? (
                 <dl>
                   {changes.map(([label, oldValue, value]) => (
@@ -293,6 +388,7 @@ export function AcademicPrograms() {
             </div>
           )}
         </fieldset>
+        <FinancialSummary commercial={commercial} />
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -481,5 +577,78 @@ export function AcademicPrograms() {
         </form>
       </section>
     </div>
+  );
+}
+
+function FinancialSummary({ commercial }: { commercial: Commercial }) {
+  if (!commercial.siie_offer_id) return null;
+  const money = (value: number) =>
+    new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      maximumFractionDigits: 0,
+    }).format(value);
+  return (
+    <section aria-label="Información financiera de SIIE">
+      <h3>Información financiera importada de SIIE</h3>
+      <p>
+        Oferta {commercial.siie_offer_id} · Revisión{" "}
+        {commercial.siie_source_revision}
+      </p>
+      <p>
+        Período {commercial.siie_period_id} · Sede {commercial.siie_campus_id} ·
+        Jornada {commercial.siie_shift_id}
+      </p>
+      {commercial.full_cost_cash_cop != null && (
+        <p>
+          Costo total de contado:{" "}
+          <strong>{money(commercial.full_cost_cash_cop)}</strong>
+        </p>
+      )}
+      {commercial.cost_inclusions && (
+        <p>Incluye: {commercial.cost_inclusions}</p>
+      )}
+      {commercial.cost_exclusions && (
+        <p>No incluye: {commercial.cost_exclusions}</p>
+      )}
+      {commercial.financial_plans?.map((plan) => (
+        <details key={plan.external_id}>
+          <summary>
+            {plan.name} · Total {money(plan.total_cost_cop)}
+          </summary>
+          <p>
+            Vigencia: {plan.valid_from} a {plan.valid_until}
+          </p>
+          <p>
+            Abono inicial: {money(plan.initial_payment_cop)} · Fecha:{" "}
+            {plan.initial_payment_due_date}
+          </p>
+          <table>
+            <caption>Cuotas y fechas del plan {plan.name}</caption>
+            <thead>
+              <tr>
+                <th>Cuota</th>
+                <th>Valor</th>
+                <th>Vencimiento</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.installments.map((part) => (
+                <tr key={part.number}>
+                  <td>{part.number}</td>
+                  <td>{money(part.amount_cop)}</td>
+                  <td>{part.due_date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {plan.conditions && <p>{plan.conditions}</p>}
+        </details>
+      ))}
+      <p className="scope-text">
+        Revisa el costo completo y sus condiciones antes de guardar. Una tarifa
+        vencida no se utiliza en respuestas de IA.
+      </p>
+    </section>
   );
 }

@@ -12,7 +12,8 @@
   "P13": {"accepted":0,"total":4,"implementation":"partial","pilot":"pending_human_acceptance"},
   "P14": {"status":"planning_pending_after_P4_P7_P13"},
   "verified_production": ["whatsapp_text_and_voice","whatsapp_image_in_and_out","whatsapp_animated_sticker_in","messenger_in_and_delivered_reply","instagram_in_and_accepted_reply","instagram_public_reply_observed_by_webhook","social_names","post_carousel_preview","collapsible_sidebar"],
-  "personalized_ai": {"status":"implemented_local_validation","production_test":"pending","new_public_test_required":true,"program_catalog":"empty_in_production_ui","required_content":"official_software_url_and_reviewed_profile"},
+  "personalized_ai": {"status":"deployed_10b9004","production_context":"verified_empty_catalog_and_sources","real_simulator":"personalized_response_verified_without_invented_prices","production_message_test":"awaiting_new_messages","new_public_test_required":true,"required_content":"SIIE_API_and_reviewed_offers"},
+  "siie_api": {"status":"base_implemented_and_locally_validated","backend_tests":193,"frontend_tests":19,"read_only":true,"automatic_sync":false,"connection":"not_configured","required":["HTTPS_base_URL","read_only_credential","offer_IDs","official_program_and_finance_contract"],"contract":"docs/contracts/SIIE_COMMERCIAL_API.md"},
   "next": ["personalized_ai_production_and_suggestions","complete_P4_channel_matrix","P7_hello_world_and_receipts","P13_two_reviewed_programs"],
   "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md"
 }

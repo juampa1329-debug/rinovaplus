@@ -8,10 +8,49 @@ from urllib.parse import urlsplit
 
 import httpx2 as httpx
 from fastapi import HTTPException
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.institutional.db import institution, one
 from app.institutional.models import Strict
+
+
+class FinancialInstallment(Strict):
+    number: int = Field(strict=True, ge=1, le=120)
+    amount_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
+    due_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+
+    @field_validator("due_date")
+    @classmethod
+    def valid_date(cls, value):
+        date.fromisoformat(value)
+        return value
+
+
+class FinancialPlan(Strict):
+    external_id: str = Field(min_length=1, max_length=80)
+    name: str = Field(min_length=1, max_length=160)
+    valid_from: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    valid_until: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    initial_payment_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
+    initial_payment_due_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    total_cost_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
+    installments: list[FinancialInstallment] = Field(min_length=1, max_length=120)
+    conditions: str = Field(default="", max_length=2000)
+
+    @model_validator(mode="after")
+    def reconcile(self):
+        for value in (self.valid_from, self.valid_until, self.initial_payment_due_date):
+            date.fromisoformat(value)
+        if self.valid_from > self.valid_until:
+            raise ValueError("financial_validity_invalid")
+        if self.initial_payment_cop + sum(v.amount_cop for v in self.installments) != self.total_cost_cop:
+            raise ValueError("financial_schedule_total_mismatch")
+        if [v.number for v in self.installments] != list(range(1, len(self.installments) + 1)):
+            raise ValueError("financial_installment_order_invalid")
+        dates = [self.initial_payment_due_date, *[v.due_date for v in self.installments]]
+        if dates != sorted(dates):
+            raise ValueError("financial_dates_invalid")
+        return self
 
 
 class CommercialProfile(Strict):
@@ -23,10 +62,21 @@ class CommercialProfile(Strict):
     price_cop: int | None = Field(default=None, ge=0, le=1_000_000_000)
     price_concept: str = Field(default="", max_length=150)
     price_valid_until: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    price_valid_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    full_cost_cash_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
+    financial_plans: list[FinancialPlan] = Field(default_factory=list, max_length=12)
+    cost_inclusions: str = Field(default="", max_length=2000)
+    cost_exclusions: str = Field(default="", max_length=2000)
+    siie_offer_id: str = Field(default="", max_length=80)
+    siie_program_id: str = Field(default="", max_length=80)
+    siie_period_id: str = Field(default="", max_length=80)
+    siie_campus_id: str = Field(default="", max_length=80)
+    siie_shift_id: str = Field(default="", max_length=80)
+    siie_source_revision: str = Field(default="", max_length=120)
     source_url: str = Field(default="", max_length=1000)
     source_checked_at: str = Field(default="", max_length=35)
 
-    @field_validator("price_valid_until")
+    @field_validator("price_valid_until", "price_valid_from")
     @classmethod
     def valid_date(cls, value):
         if value is not None:
@@ -85,9 +135,12 @@ def agent_facts(profile):
         return {}
     today = datetime.now(timezone(timedelta(hours=-5))).date().isoformat()
     facts = {k: v for k, v in profile.items() if v is not None and v != "" and k != "aliases"}
-    if not facts.get("price_concept") or facts.get("price_valid_until", "") < today:
-        for field in ("price_cop", "price_concept", "price_valid_until"):
+    if not facts.get("price_concept") or facts.get("price_valid_until", "") < today or facts.get("price_valid_from", "") > today:
+        for field in ("price_cop", "price_concept", "price_valid_until", "price_valid_from", "full_cost_cash_cop"):
             facts.pop(field, None)
+    facts["financial_plans"] = [v for v in facts.get("financial_plans", []) if v["valid_from"] <= today <= v["valid_until"]]
+    if not facts["financial_plans"]:
+        facts.pop("financial_plans", None)
     return facts
 
 

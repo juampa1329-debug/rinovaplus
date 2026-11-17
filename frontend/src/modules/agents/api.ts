@@ -182,6 +182,20 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  siie_catalog_not_configured:
+    "La API de SIIE aún no está configurada. Solicita la URL HTTPS, una credencial de consulta y el ID de la oferta. Guarda la credencial sólo en Coolify.",
+  siie_catalog_endpoint_invalid:
+    "La dirección de la API de SIIE no coincide con el dominio autorizado del servidor. Revisa la configuración de la integración.",
+  siie_catalog_access_rejected:
+    "SIIE rechazó el acceso. Revisa que la credencial tenga permiso de consulta del catálogo comercial.",
+  siie_offer_not_found:
+    "No se encontró esa oferta en SIIE. Verifica programa, sede, jornada y período con el equipo académico.",
+  siie_catalog_stale_or_mismatched:
+    "SIIE devolvió una oferta inactiva, distinta o sin información reciente. Solicita una respuesta actualizada antes de aplicar precios.",
+  siie_catalog_invalid_response:
+    "La respuesta de SIIE no cumple el contrato o sus cuotas no coinciden con el costo total. Solicita revisar los datos; no se guardó nada.",
+  siie_catalog_unavailable:
+    "La API de SIIE no está disponible. El catálogo guardado se conserva. Reintenta cuando el servicio esté disponible.",
   program_import_not_configured:
     "Falta configurar Firecrawl y el dominio oficial en el servidor. Puedes llenar la ficha manualmente.",
   program_source_host_not_allowed:
