@@ -517,7 +517,12 @@ def incoming(c, settings, item, effect):
     from app.institutional.channel_media import register_incoming
 
     register_incoming(c, settings, item, effect, linked, message)
-    if item["Channel"] == "whatsapp" and effect["provider"].get("type") == "text":
+    if (
+        item["Channel"] == "whatsapp" and effect["provider"].get("type") == "text"
+        or item["Channel"] in {"messenger", "instagram"}
+        and isinstance((effect["provider"].get("message") or {}).get("text"), str)
+        and (effect["provider"]["message"]["text"]).strip()
+    ):
         from app.institutional.whatsapp_gemini import schedule
 
         schedule(c, settings, item, linked, message)

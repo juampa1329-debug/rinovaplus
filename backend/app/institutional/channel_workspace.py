@@ -142,14 +142,27 @@ class Workspace(Parent):
         try:
             result = providers.request(adapter, "GET", sender, params={"fields": fields})
         except providers.ProviderFailure:
-            return {"profile": None}
+            if channel != "messenger":
+                return {"profile": None}
+            try:
+                threads = providers.request(
+                    adapter, "GET", item["ExternalAccountId"] + "/conversations",
+                    params={"fields": "participants", "user_id": sender, "limit": 1},
+                )
+            except providers.ProviderFailure:
+                return {"profile": None}
+            result = next((
+                person for thread in threads.get("data", [])[:1]
+                for person in (thread.get("participants") or {}).get("data", [])[:20]
+                if str(person.get("id")) == sender
+            ), {})
         name = result.get("name")
         if channel == "messenger":
             name = " ".join(
                 result[field].strip()
                 for field in ("first_name", "last_name")
                 if isinstance(result.get(field), str) and result[field].strip()
-            )
+            ) or name
         photo = result.get("profile_pic")
         if channel == "facebook":
             picture = result.get("picture")

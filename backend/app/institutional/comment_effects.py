@@ -38,13 +38,41 @@ def call_provider(adapter, action, comment):
     if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,200}", post):
         raise providers.ProviderFailure("comment_post_reference_missing")
     fields = (
-        "id,caption,permalink,media_type"
+        "id,caption,permalink,media_type,media_url,thumbnail_url,"
+        "children{id,media_type,media_url,thumbnail_url}"
         if adapter["channel"] == "instagram"
-        else "id,message,permalink_url,created_time"
+        else "id,message,permalink_url,created_time,full_picture,"
+        "attachments{media,type,url,subattachments{media,type,url}}"
     )
     value = providers.request(adapter, "GET", post, params={"fields": fields})
     if str(value.get("id")) != post:
         raise providers.ProviderFailure("comment_post_mismatch")
+    media = []
+    if adapter["channel"] == "instagram":
+        children = (value.get("children") or {}).get("data") or [value]
+        for child in children[:10]:
+            source = child.get("media_url")
+            if source:
+                media.append({
+                    "type": "video" if child.get("media_type") == "VIDEO" else "image",
+                    "url": str(source)[:8192],
+                    "poster": str(child.get("thumbnail_url") or "")[:8192],
+                })
+    else:
+        for attachment in (value.get("attachments") or {}).get("data", [])[:10]:
+            children = (attachment.get("subattachments") or {}).get("data") or [attachment]
+            for child in children[:10]:
+                content = child.get("media") or {}
+                image = (content.get("image") or {}).get("src")
+                source = content.get("source") or image
+                if source and len(media) < 10:
+                    media.append({
+                        "type": "video" if content.get("source") else "image",
+                        "url": str(source)[:8192],
+                        "poster": str(image or "")[:8192],
+                    })
+        if not media and value.get("full_picture"):
+            media.append({"type": "image", "url": str(value["full_picture"])[:8192]})
     return {
         "preview": {
             "id": post,
@@ -52,6 +80,7 @@ def call_provider(adapter, action, comment):
             "permalink": str(
                 value.get("permalink") or value.get("permalink_url") or ""
             )[:2048],
+            "media": media,
         }
     }
 
@@ -60,6 +89,27 @@ class Effects:
     def __init__(self, settings, transport=None):
         self.settings = settings
         self.transport = transport or call_provider
+
+    def preview(self, authority, identity):
+        with transaction(self.settings, anonymous=True) as c:
+            authorize(c, self.settings, authority, "inbox.read")
+            if not configuration(c, self.settings)["ModuleEnabled"]:
+                raise HTTPException(403, "module_disabled")
+            comment = one(
+                c,
+                "SELECT * FROM crm_channels2.SocialComment WHERE InstitutionId=? AND CommentId=?",
+                institution(self.settings), uid(identity),
+            )
+            if not comment:
+                raise HTTPException(404, "comment_not_found")
+            item = account(c, self.settings, str(comment["IntegrationId"]))
+            if item["Channel"] not in {"facebook", "instagram"}:
+                raise HTTPException(409, "comment_effect_unsupported_by_provider")
+            adapter, _ = provider_account(c, self.settings, item)
+        try:
+            return self.transport(adapter, "preview", comment)["preview"]
+        except (providers.ProviderFailure, KeyError):
+            raise HTTPException(409, "comment_preview_unavailable") from None
 
     def perform(self, authority, identity, action, body):
         if action not in {"like", "unlike", "preview"}:
@@ -239,6 +289,10 @@ class Effects:
 
 def install(app, settings):
     service = Effects(settings)
+
+    @app.get("/api/institution/comments/{identity}/preview")
+    def preview(request: Request, identity: str):
+        return service.preview(request.state.authority, identity)
 
     @app.post("/api/institution/comments/{identity}/effects/{action}")
     def effect(request: Request, identity: str, action: str, body: Effect):

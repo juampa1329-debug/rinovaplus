@@ -497,6 +497,30 @@ it("a read-only viewer cannot start effects", async () => {
   ).toBeDisabled();
 });
 
+it("automatically loads a publication preview without changing the comment or requiring write access", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (path) => {
+    if (String(path).endsWith("/preview")) return ok({
+      caption: "Conoce nuestros programas", permalink: "https://www.instagram.com/p/test/",
+      media: [
+        { type: "image", url: "https://scontent.cdninstagram.com/test.jpg" },
+        { type: "image", url: "https://untrusted.example/image.jpg" },
+      ],
+    });
+    return ok({ items: [{ ...comment, channel: "instagram" }], total: 1, has_more: false });
+  });
+  mount(<Comments />, { ...base, actions: ["inbox.read"] });
+  fireEvent.click(await screen.findByRole("button", { name: /Cuenta CBN · Nuevo/ }));
+  expect(await screen.findByText("Conoce nuestros programas")).toBeVisible();
+  expect(screen.getByRole("img", { name: "Imagen 1 de la publicación" })).toHaveAttribute(
+    "src", "https://scontent.cdninstagram.com/test.jpg",
+  );
+  expect(screen.getAllByRole("img")).toHaveLength(1);
+  expect(screen.getByRole("link", { name: "Abrir publicación original" })).toHaveAttribute(
+    "href", "https://www.instagram.com/p/test/",
+  );
+  expect(fetcher.mock.calls.some(([, init]) => init?.method && init.method !== "GET")).toBe(false);
+});
+
 it("shows source and channel, keeps the suggestion separate, and saves comment instructions", async () => {
   const saved = {
     revision: 3,

@@ -1,4 +1,14 @@
 const paths: Record<string, string> = {
+  panelCollapse: "M3 4h18v16H3z M9 4v16 m7-11-3 3 3 3",
+  panelExpand: "M3 4h18v16H3z M9 4v16 m4-11 3 3-3 3",
+  academic: "m2 9 10-5 10 5-10 5-10-5 M6 11v6c4 3 8 3 12 0v-6 M22 9v7",
+  channels: "M9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M21 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M9 19a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M9 6l6 4 M9 18l6-4",
+  comments: "M4 3h16v13H9l-5 5V3 M8 7h8 M8 11h5",
+  broadcasts: "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M5 5a10 10 0 0 0 0 14 M19 5a10 10 0 0 1 0 14 M8 8a6 6 0 0 0 0 8 M16 8a6 6 0 0 1 0 8",
+  ads: "M3 10v5h4l12 5V5L7 10H3 M7 15l2 6h3 M22 9v7",
+  intelligence: "M12 4c-3-4-8-1-7 3-4 1-4 7-1 8-1 4 4 7 8 4 4 3 9 0 8-4 3-1 3-7-1-8 1-4-4-7-7-3 M12 4v15 M8 8l4 3 4-3 M7 15l5-2 5 2",
+  user: "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2",
+  logout: "M9 4H3v16h6 M9 12h12 m-5-5 5 5-5 5",
   menu: "M4 6h16 M4 12h16 M4 18h16",
   bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0",
   channelWhatsapp:

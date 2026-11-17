@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "../shared/Icon";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
@@ -8,6 +8,12 @@ import { ResourceState, useResource } from "./Settings";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { ChannelLabel } from "./InboxPresentation";
 import "./comments.css";
+
+type PostPreview = {
+  caption?: string;
+  permalink?: string;
+  media?: { type: "image" | "video"; url: string; poster?: string }[];
+};
 
 type Comment = {
   id: string;
@@ -26,7 +32,7 @@ type Comment = {
   reply_state?: string;
   liked?: boolean;
   synthetic_demo?: boolean;
-  preview?: { caption?: string; permalink?: string };
+  preview?: PostPreview;
   capabilities: { public_comment_reply: boolean; comment_like: boolean };
 };
 const labels: Record<string, string> = {
@@ -330,35 +336,7 @@ function CommentDetail({
           </Notice>
         )}
         {task.notices}
-        <div className="comments-post">
-          <strong>{comment.account}</strong>
-          <p>
-            {comment.preview?.caption ||
-              "Todavía no tenemos el texto de la publicación."}
-          </p>
-          {safePostUrl(comment.preview?.permalink) && (
-            <a
-              href={safePostUrl(comment.preview?.permalink)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Abrir publicación original
-            </a>
-          )}
-          <Button
-            variant="secondary"
-            disabled={
-              !writable ||
-              !active ||
-              task.busy ||
-              comment.channel === "tiktok" ||
-              comment.synthetic_demo
-            }
-            onClick={() => effect("preview")}
-          >
-            Actualizar publicación
-          </Button>
-        </div>
+        <CommentPost comment={comment} />
         <div className="comments-original">
           <div className="comments-heading">
             <strong>{comment.author || "Autor sin identificar"}</strong>
@@ -509,6 +487,87 @@ function safePostUrl(value?: string) {
   } catch {
     return undefined;
   }
+}
+
+function safePostMediaUrl(value?: string) {
+  const safe = safePostUrl(value);
+  if (!safe) return undefined;
+  const host = new URL(safe).hostname;
+  return ["fbcdn.net", "cdninstagram.com", "fbsbx.com", "facebook.com", "instagram.com"].some(
+    (domain) => host === domain || host.endsWith("." + domain),
+  ) ? safe : undefined;
+}
+
+function CommentPost({ comment }: { comment: Comment }) {
+  const { call } = useInstitution();
+  const [preview, setPreview] = useState<PostPreview>(),
+    [loading, setLoading] = useState(false),
+    [error, setError] = useState(""),
+    [revision, setRevision] = useState(0);
+  const enabled = !comment.synthetic_demo && ["facebook", "instagram"].includes(comment.channel);
+  useEffect(() => {
+    if (!enabled) return;
+    let active = true;
+    setLoading(true);
+    setError("");
+    void call<PostPreview>(`comments/${comment.id}/preview`).then((value) => {
+      if (active && (typeof value.caption === "string" || Array.isArray(value.media)))
+        setPreview(value);
+    }).catch((failure: unknown) => {
+      if (active) setError(failure instanceof Error ? failure.message : "No se pudo cargar la publicación.");
+    }).finally(() => {
+      if (active) setLoading(false);
+    });
+    return () => { active = false; };
+  }, [call, comment.id, enabled, revision]);
+  const current = preview ?? comment.preview;
+  const media = (current?.media ?? []).filter((item) => safePostMediaUrl(item.url));
+  return (
+    <div className="comments-post" aria-label="Vista previa de la publicación" aria-busy={loading}>
+      <strong>{comment.account}</strong>
+      {media.length > 0 && (
+        <div className="comments-post-media" aria-label="Contenido de la publicación">
+          {media.map((item, index) => (
+            <PostMedia key={`${item.url}:${revision}`} item={item} index={index} />
+          ))}
+        </div>
+      )}
+      {current?.caption && <p>{current.caption}</p>}
+      {loading && !current && <p role="status">Cargando publicación…</p>}
+      {!loading && !current?.caption && media.length === 0 && !error && (
+        <p>El proveedor todavía no devuelve contenido de esta publicación.</p>
+      )}
+      {error && <Notice error>{error}</Notice>}
+      {safePostUrl(current?.permalink) && (
+        <a href={safePostUrl(current?.permalink)} target="_blank" rel="noreferrer">
+          Abrir publicación original
+        </a>
+      )}
+        <Button variant="secondary" disabled={!enabled || loading} onClick={() => setRevision((v) => v + 1)}>
+          Actualizar publicación
+        </Button>
+    </div>
+  );
+}
+
+function PostMedia({ item, index }: {
+  item: NonNullable<PostPreview["media"]>[number];
+  index: number;
+}) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <figure>
+      {failed ? <figcaption>Este archivo no está disponible. Actualiza la publicación para volver a consultarlo.</figcaption>
+        : item.type === "video" ? (
+          <video controls playsInline preload="metadata"
+            src={safePostMediaUrl(item.url)} poster={safePostMediaUrl(item.poster)}
+            aria-label={`Video ${index + 1} de la publicación`} onError={() => setFailed(true)} />
+        ) : (
+          <img src={safePostMediaUrl(item.url)} alt={`Imagen ${index + 1} de la publicación`}
+            loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
+        )}
+    </figure>
+  );
 }
 
 function CommentAI({ children }: { children?: ReactNode }) {

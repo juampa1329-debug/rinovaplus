@@ -64,6 +64,78 @@
   display: grid;
   gap: 0.2rem;
 }
+.institution-sidebar-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+.institution-sidebar-heading .institution-brand {
+  min-width: 0;
+  gap: 0.55rem;
+}
+.institution-sidebar-heading .institution-brand strong {
+  font-size: 1.2rem;
+}
+.institution-sidebar-heading .institution-brand small {
+  font-size: 0.72rem;
+}
+.institution-shell .institution-collapse {
+  flex: none;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.35rem;
+  color: var(--rinova-paper);
+  border-radius: 0.5rem;
+}
+.institution-shell .sidebar nav a,
+.institution-account > .button {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-block-size: 2.65rem;
+}
+.institution-shell .sidebar .ui-icon {
+  flex: none;
+}
+.institution-nav-tooltip {
+  position: fixed;
+  z-index: 100;
+  transform: translateY(-50%);
+  max-width: 15rem;
+  padding: 0.55rem 0.8rem;
+  color: var(--rinova-paper);
+  background: var(--rinova-petrol);
+  border: 1px solid var(--rinova-lime);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1.5rem #00181d35;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+@media (min-width: 901px) {
+  .institution-shell[data-nav-collapsed] {
+    --sidebar-width: 6rem;
+  }
+  .institution-shell[data-nav-collapsed] .sidebar {
+    padding: 0.875rem 0.5rem;
+  }
+  .institution-shell[data-nav-collapsed] .institution-sidebar-heading {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .institution-shell[data-nav-collapsed] .institution-brand {
+    padding: 0.35rem 0;
+  }
+  .institution-shell[data-nav-collapsed] :is(.institution-brand > span, .institution-nav-label, .institution-account-name, .institution-account-role) {
+    display: none;
+  }
+  .institution-shell[data-nav-collapsed] .sidebar nav a,
+  .institution-shell[data-nav-collapsed] .institution-account > .button {
+    justify-content: center;
+    padding: 0.6rem 0.35rem;
+  }
+}
 .institution-shell nav a {
   color: var(--ink);
   text-decoration: none;
@@ -429,6 +501,9 @@
   display: none;
 }
 @media (max-width: 900px) {
+  .institution-collapse {
+    display: none !important;
+  }
   .institution-shell {
     display: block;
   }

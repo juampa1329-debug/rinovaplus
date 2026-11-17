@@ -153,6 +153,8 @@ const messages: Record<string, string> = {
     "Guarda el ID de la cuenta de WhatsApp Business (WABA) de la institución y abre Meta de nuevo.",
   oauth_session_expired:
     "La autorización venció. Inicia una conexión nueva con Meta.",
+  comment_preview_unavailable:
+    "Meta no permitió consultar esta publicación. Revisa los permisos de lectura de la cuenta en Canales y vuelve a actualizar la publicación.",
   credential_required:
     "Falta una credencial para esta cuenta. Guárdala antes de verificarla.",
   provider_verification_required:

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ComponentType, ReactNode } from "react";
 import { Button, Field, Notice, PageHeading, SelectField } from "../shared/ui";
 import { useTheme } from "../shared/theme";
@@ -37,6 +38,7 @@ import { BroadcastWorkspace } from "./BroadcastWorkspace";
 import "./knowledge.css";
 import { AssistantChat as AgentAssistantChat } from "../modules/ai/pages/AgentAssistantChat";
 import { BrandMark } from "../shared/BrandMark";
+import { Icon } from "../shared/Icon";
 
 const sections = [
   ["overview", "Resumen"],
@@ -437,6 +439,16 @@ function Shell({
     theme = useTheme();
   const [location, setLocation] = useState(route),
     [menu, setMenu] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem("rinovaplus.sidebar.collapsed") === "true"; }
+    catch { return false; }
+  });
+  const [tooltip, setTooltip] = useState<{ label: string; left: number; top: number } | null>(null);
+  const showTooltip = (element: HTMLElement, label: string) => {
+    if (!collapsed || !window.matchMedia("(min-width: 901px)").matches) return;
+    const rect = element.getBoundingClientRect();
+    setTooltip({ label, left: rect.right + 12, top: Math.min(rect.top + rect.height / 2, window.innerHeight - 24) });
+  };
   const routeBeforeChange = useRef(location);
   useEffect(() => {
     const change = () => {
@@ -452,6 +464,7 @@ function Shell({
       routeBeforeChange.current = route();
       setLocation(route());
       setMenu(false);
+      setTooltip(null);
     };
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
@@ -475,12 +488,27 @@ function Shell({
         actions: session.actions,
       }}
     >
-      <div className="app-shell pilot-shell institution-shell">
+      <div className="app-shell pilot-shell institution-shell" data-nav-collapsed={collapsed || undefined}>
         <aside className={`sidebar ${menu ? "is-open" : ""}`}>
-          <a className="institution-brand" href="#/overview">
+          <div className="institution-sidebar-heading">
+          <a className="institution-brand" href="#/overview" aria-label="RinovaPlus, inicio">
             <ProductBrand />
           </a>
-          <nav aria-label="Navegación principal">
+          <Button className="institution-collapse" variant="quiet"
+            aria-label={collapsed ? "Expandir menú" : "Plegar menú"}
+            title={collapsed ? "Expandir menú" : "Plegar menú"}
+            aria-expanded={!collapsed} aria-controls="institution-navigation"
+            onClick={() => {
+              const next = !collapsed;
+              setCollapsed(next);
+              setTooltip(null);
+              try { localStorage.setItem("rinovaplus.sidebar.collapsed", String(next)); }
+              catch { /* The current preference remains usable without storage. */ }
+            }}>
+            <Icon name={collapsed ? "panelExpand" : "panelCollapse"} />
+          </Button>
+          </div>
+          <nav id="institution-navigation" aria-label="Navegación principal" onScroll={() => setTooltip(null)}>
             {sections
               .filter(([id]) => {
                 if (id === "comments") return runtime.value?.channel_operations;
@@ -495,15 +523,22 @@ function Shell({
                 <a
                   key={id}
                   href={`#/${id}`}
+                  aria-label={label}
                   aria-current={location.page === id ? "page" : undefined}
+                  aria-describedby={tooltip?.label === label ? "institution-nav-tooltip" : undefined}
+                  onMouseEnter={(event) => showTooltip(event.currentTarget, label)}
+                  onMouseLeave={() => setTooltip(null)}
+                  onFocus={(event) => showTooltip(event.currentTarget, label)}
+                  onBlur={() => setTooltip(null)}
                 >
-                  {label}
+                  <Icon name={id} />
+                  <span className="institution-nav-label">{label}</span>
                 </a>
               ))}
           </nav>
           <div className="institution-account">
-            <strong>{session.user.full_name}</strong>
-            <small>
+            <strong className="institution-account-name">{session.user.full_name}</strong>
+            <small className="institution-account-role">
               {(
                 {
                   owner: "Propietario",
@@ -516,12 +551,17 @@ function Shell({
             </small>
             <Button
               variant="secondary"
+              aria-label="Mi perfil"
+              title={collapsed ? "Mi perfil" : undefined}
               onClick={() => navigate("settings", "profile")}
             >
-              Mi perfil
+              <Icon name="user" />
+              <span className="institution-nav-label">Mi perfil</span>
             </Button>
             <Button
               variant="quiet"
+              aria-label="Cerrar sesión"
+              title={collapsed ? "Cerrar sesión" : undefined}
               disabled={task.busy}
               onClick={() =>
                 void task.run(async () => {
@@ -530,10 +570,17 @@ function Shell({
                 })
               }
             >
-              Cerrar sesión
+              <Icon name="logout" />
+              <span className="institution-nav-label">Cerrar sesión</span>
             </Button>
           </div>
         </aside>
+        {tooltip && createPortal(
+          <div id="institution-nav-tooltip" role="tooltip" className="institution-nav-tooltip"
+            style={{ left: tooltip.left, top: tooltip.top }}>
+            {tooltip.label}
+          </div>, document.body,
+        )}
         <main className="institution-main">
           <header className="institution-topbar">
             <Button

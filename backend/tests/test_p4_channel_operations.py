@@ -13,6 +13,8 @@ from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
 from app.institutional import channel_events, channel_ingress, channel_operations
+from app.institutional import whatsapp_gemini, channel_workspace
+from app.institutional.comment_effects import call_provider as comment_provider
 from app.institutional.auth import api_request_limit
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
@@ -49,6 +51,63 @@ def test_public_sql_deployment_has_wakeable_inbound_and_outbound_queues():
 
     assert production.fast_queues
     assert not local.fast_queues
+
+
+@pytest.mark.parametrize("channel", ["messenger", "instagram"])
+def test_gemini_supports_social_channels_on_production_with_whatsapp_pin(monkeypatch, channel):
+    settings = SimpleNamespace(
+        ticket={"version": "cbn-institutional-operations-p11-v1"},
+        postgres_deployment=True,
+    )
+    monkeypatch.setenv("RINOVA_GEMINI_WHATSAPP_INTEGRATION", str(uuid4()))
+    assert whatsapp_gemini.available(settings, str(uuid4()), channel)
+    settings.postgres_deployment = False
+    assert not whatsapp_gemini.available(settings, str(uuid4()), channel)
+
+
+@pytest.mark.parametrize(("channel", "expected"), [
+    ("messenger", "facebook"), ("instagram", "instagram"), (None, "whatsapp"),
+])
+def test_gemini_resolves_the_agent_for_the_actual_channel(monkeypatch, channel, expected):
+    def resolve(_c, conversation, actual_channel):
+        assert actual_channel == expected
+        return {
+            "agent_id": "test-agent", "binding": "test-binding",
+            "configuration": {
+                "provider": "gemini", "allow_reply": True,
+                "capabilities": ["conversation.reply"], "primary_model": "gemini-test",
+                "input_usd_per_million": 0.25, "output_usd_per_million": 1.5,
+            },
+        }
+    monkeypatch.setattr(whatsapp_gemini, "resolve_conversation", resolve)
+    monkeypatch.setattr(whatsapp_gemini, "setting", lambda *_: {"document": {"enabled": True}})
+    monkeypatch.setattr(whatsapp_gemini, "one", lambda *_: {"SecretId": str(uuid4())})
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    data = {"conversation": str(uuid4()), **({"channel": channel} if channel else {})}
+    assert whatsapp_gemini.model_config(None, settings, data)[2]["model"] == "gemini-test"
+
+
+def test_instagram_preview_includes_carousel_images_and_video(monkeypatch):
+    def request(_adapter, method, target, params):
+        assert (method, target) == ("GET", "123")
+        assert "children" in params["fields"] and "media_url" in params["fields"]
+        return {
+            "id": "123", "caption": "Oferta institucional",
+            "permalink": "https://www.instagram.com/p/example/",
+            "children": {"data": [
+                {"media_type": "IMAGE", "media_url": "https://scontent.cdninstagram.com/image.jpg"},
+                {"media_type": "VIDEO", "media_url": "https://video.cdninstagram.com/clip.mp4",
+                 "thumbnail_url": "https://scontent.cdninstagram.com/poster.jpg"},
+            ]},
+        }
+    monkeypatch.setattr(providers, "request", request)
+    result = comment_provider(
+        {"channel": "instagram"}, "preview",
+        {"ExternalId": "456", "Payload": '{"provider":{"media":{"id":"123"}}}'},
+    )["preview"]
+    assert result["caption"] == "Oferta institucional"
+    assert [item["type"] for item in result["media"]] == ["image", "video"]
+    assert result["media"][1]["poster"].endswith("/poster.jpg")
 
 
 @pytest.mark.parametrize(("hours", "expected"), [(1, (10, "low")), (72, (50, "medium")), (168, (75, "high"))])
@@ -191,6 +250,32 @@ def test_social_avatars_only_accept_https_meta_media_hosts():
     assert social_avatar_url("https://notfbcdn.net/profile.jpg") == ""
     assert social_avatar_url("https://scontent.xx.fbcdn.net@other.test/profile.jpg") == ""
     assert social_avatar_url("http://scontent.xx.fbcdn.net/profile.jpg") == ""
+
+
+@pytest.mark.parametrize("participant_id", ["123", "999"])
+def test_messenger_profile_falls_back_only_to_the_matching_conversation_participant(monkeypatch, participant_id):
+    profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    service = SimpleNamespace(profile=profile, transaction=lambda: nullcontext(None))
+    monkeypatch.setattr(channel_workspace.db, "one", lambda *_: {
+        "ExternalId": "123", "IntegrationId": str(uuid4()),
+    })
+    monkeypatch.setattr(channel_workspace, "account", lambda *_: {
+        "Channel": "messenger", "ExternalAccountId": "456",
+    })
+    monkeypatch.setattr(channel_workspace, "provider_account", lambda *_: ({}, None))
+    def request(_adapter, _method, path, params):
+        if path == "123":
+            raise providers.ProviderFailure("provider_permission_or_request_rejected")
+        assert path == "456/conversations"
+        assert params["user_id"] == "123"
+        return {"data": [{"participants": {"data": [
+            {"id": participant_id, "name": "Nombre autorizado"},
+        ]}}]}
+    monkeypatch.setattr(providers, "request", request)
+    result = channel_workspace.Workspace.social_profile(service, str(uuid4()))["profile"]
+    assert (result["name"] if result else None) == (
+        "Nombre autorizado" if participant_id == "123" else None
+    )
 
 
 @pytest.mark.parametrize("raw", ['{"a":1,"a":2}', '{"a":NaN}', '{"a":Infinity}'])

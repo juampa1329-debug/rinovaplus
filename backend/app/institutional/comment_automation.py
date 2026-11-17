@@ -71,6 +71,12 @@ def schedule(c, settings, item, effect, comment):
         )
     ):
         return
+    if c.execute(
+        "SELECT 1 FROM crm_channels2.ProviderOperation WITH(UPDLOCK,HOLDLOCK) "
+        "WHERE InstitutionId=? AND OperationId=?",
+        institution(settings), comment,
+    ).fetchone():
+        return
     version = c.execute(
         "SELECT RowVersion FROM crm_channels2.SocialComment WHERE InstitutionId=? "
         "AND CommentId=?",
