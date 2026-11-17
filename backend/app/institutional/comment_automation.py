@@ -128,7 +128,7 @@ def current(c, settings, integration, data, queue=None):
         raise HTTPException(409, "account_paused_or_unverified")
     value = one(
         c,
-        "SELECT Body,RowVersion,Payload FROM crm_channels2.SocialComment "
+        "SELECT Body,RowVersion,Payload,ExternalId FROM crm_channels2.SocialComment "
         "WHERE InstitutionId=? AND IntegrationId=? AND CommentId=? "
         "AND ReceivedAt>=DATEADD(hour,-24,SYSUTCDATETIME())",
         inst,
@@ -143,6 +143,14 @@ def current(c, settings, integration, data, queue=None):
         or crm.get("control_mode", "ai") != "ai"
     ):
         raise HTTPException(409, "comment_auto_source_changed")
+    if c.execute(
+        "SELECT 1 FROM crm_channels2.SocialComment response "
+        "WHERE response.InstitutionId=? AND response.IntegrationId=? "
+        "AND response.AuthorExternalId=? "
+        "AND JSON_VALUE(response.Payload,'$.provider.parent_id')=?",
+        inst, integration, item["ExternalAccountId"], value["ExternalId"],
+    ).fetchone():
+        raise HTTPException(409, "comment_auto_already_answered")
     if c.execute(
         "SELECT 1 FROM crm_channels2.SendJob WHERE InstitutionId=? AND CommentId=? "
         "AND State NOT IN('failed','cancelled','retried')"

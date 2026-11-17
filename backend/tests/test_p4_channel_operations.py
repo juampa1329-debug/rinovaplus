@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
 from app.institutional import channel_events, channel_ingress, channel_operations
-from app.institutional import whatsapp_gemini, channel_workspace
+from app.institutional import whatsapp_gemini, channel_workspace, comment_automation
 from app.institutional.comment_effects import call_provider as comment_provider
 from app.institutional.auth import api_request_limit
 from app.institutional.channel_ingress import signature_valid
@@ -108,6 +108,36 @@ def test_instagram_preview_includes_carousel_images_and_video(monkeypatch):
     assert result["caption"] == "Oferta institucional"
     assert [item["type"] for item in result["media"]] == ["image", "video"]
     assert result["media"][1]["poster"].endswith("/poster.jpg")
+
+
+def test_comment_automation_does_not_duplicate_an_existing_account_reply(monkeypatch):
+    profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    integration, comment = str(uuid4()), str(uuid4())
+    monkeypatch.setattr(comment_automation, "available", lambda *_: True)
+    monkeypatch.setattr(comment_automation, "configuration", lambda *_: {
+        "OutboundEnabled": True, "ModuleEnabled": True,
+    })
+    monkeypatch.setattr(comment_automation, "setting", lambda *_: {"document": {
+        "enabled": True, "provider": "gemini", "model": "gemini-test",
+        "comment_mode": "auto", "comment_auto_reply": "Respuesta de prueba",
+    }})
+    monkeypatch.setattr(comment_automation, "account", lambda *_: {
+        "RequestedStatus": "connected", "VerifiedStatus": "verified",
+        "ApplicationState": "draft", "ExternalAccountId": "owned-account",
+    })
+    monkeypatch.setattr(comment_automation, "one", lambda *_: {
+        "Body": "Hola", "RowVersion": b"version", "Payload": '{"_crm":{"state":"new"}}',
+        "ExternalId": "original-comment",
+    })
+    class Cursor:
+        def execute(self, query, *params):
+            assert "JSON_VALUE" in query
+            assert params[-2:] == ("owned-account", "original-comment")
+            return SimpleNamespace(fetchone=lambda: (1,))
+    with pytest.raises(HTTPException, match="comment_auto_already_answered"):
+        comment_automation.current(Cursor(), profile, integration, {
+            "comment": comment, "version": b"version".hex(),
+        })
 
 
 @pytest.mark.parametrize(("hours", "expected"), [(1, (10, "low")), (72, (50, "medium")), (168, (75, "high"))])
