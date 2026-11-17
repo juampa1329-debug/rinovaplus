@@ -579,24 +579,33 @@ function WorkspaceView({
   const [socialProfiles, setSocialProfiles] = useState<
     Record<string, SocialProfile>
   >({});
+  const [profileAttempts, setProfileAttempts] = useState<Record<string, boolean>>({});
   const selectedChannel = list.value?.items.find(
     (row) => row.conversationId === selected,
   )?.channel;
+  const needsProfile = (identity: string, channel?: string) =>
+    !!identity && !socialProfiles[identity] && !profileAttempts[identity] &&
+    (!channel || ["facebook", "messenger", "instagram"].includes(channel));
+  const profileTarget = needsProfile(selected, selectedChannel)
+    ? selected
+    : list.value?.items.find((row) =>
+        ["facebook", "messenger", "instagram"].includes(row.channel ?? "") &&
+        needsProfile(row.conversationId, row.channel),
+      )?.conversationId ?? "";
   const profile = useRead<{ profile: SocialProfile | null }>(
-    `conversations/${selected}/social-profile`,
+    `conversations/${profileTarget}/social-profile`,
     0,
     inbox &&
       !!list.value?.socialProfiles &&
-      !!selected &&
-      !socialProfiles[selected] &&
-      (!selectedChannel ||
-        ["facebook", "messenger", "instagram"].includes(selectedChannel)),
+      !!profileTarget,
   );
   useEffect(() => {
-    const current = profile.value?.profile;
+    if (!profile.value || !profileTarget) return;
+    const current = profile.value.profile;
     if (current)
-      setSocialProfiles((values) => ({ ...values, [selected]: current }));
-  }, [profile.value, selected]);
+      setSocialProfiles((values) => ({ ...values, [profileTarget]: current }));
+    setProfileAttempts((values) => ({ ...values, [profileTarget]: true }));
+  }, [profile.value, profileTarget]);
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =
     inbox &&
