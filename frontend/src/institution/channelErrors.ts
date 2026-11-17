@@ -2,6 +2,14 @@ import type { ErrorGuidance, OperationFailure } from "./ErrorFeedback";
 
 const cases = new Map<string, ErrorGuidance>([
   [
+    "saved_app_secret_incompatible",
+    {
+      title: "Esta clave no corresponde a la aplicación",
+      detail: "La clave elegida debe pertenecer al mismo App ID y al mismo tipo de inicio de sesión.",
+      nextStep: "Actualiza las credenciales y selecciona una clave vigente de esta aplicación.",
+    },
+  ],
+  [
     "oauth_account_mismatch",
     {
       title: "El número o la cuenta no corresponde a este canal",

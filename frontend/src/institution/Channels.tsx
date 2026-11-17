@@ -15,6 +15,7 @@ export type Channel = {
   application_id: string;
   display_name: string;
   channel: string;
+  provider?: string;
   revision: number;
   row_version: string;
   application_version: string;
@@ -569,6 +570,15 @@ function ChannelEditor({
       <Credentials
         scope="channel"
         owner={`application:${account.application_id}`}
+        application={account.provider === "meta" && account.issuer_profile
+          ? {
+              clientId: String(account.fields[
+                `meta:${account.channel === "messenger" ? "facebook" : account.channel}_app_id`
+              ] ?? ""),
+              issuerProfile: account.issuer_profile,
+              provider: "meta",
+            }
+          : undefined}
         onChanged={done}
         kinds={[
           {

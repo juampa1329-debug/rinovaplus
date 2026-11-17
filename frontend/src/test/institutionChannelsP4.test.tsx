@@ -8,6 +8,7 @@ import {
   ChannelRuntime,
 } from "../institution/ChannelOperations";
 import { SessionBoundary } from "../institution/api";
+import { Credentials } from "../institution/Settings";
 import type { Session } from "../institution/api";
 
 const base: Session = {
@@ -61,6 +62,36 @@ beforeEach(() => {
     dialog.showModal = function () { this.open = true; };
     dialog.close = function () { this.open = false; };
   }
+});
+
+it("reuses a saved App Secret by reference and lists only compatible applications", async () => {
+  const sourceId = "11223344-0000-4000-8000-000000000001";
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (_path, init) => {
+    if (init?.method === "PUT") return ok({ configured: true, version: 1 });
+    return ok({ items: [
+      { id: sourceId, owner: "application:other", kind: "app_secret", version: 2,
+        configured: true, verified: false, application: { name: "CBN", client_id: "123",
+          provider: "meta", issuer_profile: "meta_whatsapp" } },
+      { id: "different-app", owner: "application:unrelated", kind: "app_secret", version: 1,
+        application: { name: "Otra app", client_id: "999", provider: "meta", issuer_profile: "facebook_login" } },
+      { id: "different-login", owner: "application:instagram", kind: "app_secret", version: 1,
+        application: { name: "Instagram independiente", client_id: "123", provider: "meta", issuer_profile: "instagram_login" } },
+    ] });
+  });
+  mount(<Credentials scope="channel" owner="application:target"
+    application={{ clientId: "123", provider: "meta", issuerProfile: "facebook_login" }}
+    kinds={[{ id: "app_secret", label: "App Secret" }]} />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] });
+  const select = await screen.findByRole("combobox", { name: "App Secret guardado" });
+  expect(within(select).getAllByRole("option")).toHaveLength(2);
+  fireEvent.change(select, { target: { value: sourceId } });
+  fireEvent.click(screen.getByRole("button", { name: "Usar App Secret guardado" }));
+  await screen.findByText("App Secret guardado reutilizado en esta aplicación.");
+  const request = fetcher.mock.calls.find(([, init]) => init?.method === "PUT");
+  const body = JSON.parse(String(request?.[1]?.body));
+  expect(body.source_secret_id).toBe(sourceId);
+  expect(body.owner).toBe("application:target");
+  expect(body).not.toHaveProperty("value");
 });
 
 it("issues and copies the callback and token together for the chosen account", async () => {

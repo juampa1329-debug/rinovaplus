@@ -22,6 +22,8 @@ from app.institutional.channels import (
     validate_field,
 )
 from app.institutional.channel_operations import OperationalChannels, capabilities
+from app.institutional.channel_operations import compatible_app_secret, reuse_app_secret
+from app.institutional.models import SecretEdit
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
 from app.institutional.channel_tokens import health
@@ -438,6 +440,71 @@ def test_secret_kind_cannot_cross_owner_type():
             1,
             str(uuid4()),
         )
+
+
+@pytest.mark.parametrize(("source_issuer", "target_issuer", "source_client", "expected"), [
+    ("meta_whatsapp", "facebook_login", "123", True),
+    ("facebook_login", "meta_whatsapp", "123", True),
+    ("instagram_login", "facebook_login", "123", False),
+    ("meta_whatsapp", "facebook_login", "999", False),
+])
+def test_saved_app_secrets_require_matching_identity_and_login_family(
+    source_issuer, target_issuer, source_client, expected
+):
+    source = {"IssuerProfile": source_issuer, "Provider": "meta", "ClientId": source_client}
+    target = {"IssuerProfile": target_issuer, "Provider": "meta", "ClientId": "123"}
+    assert compatible_app_secret(source, target) is expected
+    assert not compatible_app_secret({**source, "Provider": "tiktok"}, target)
+
+
+def test_saved_app_secret_reference_cannot_be_combined_with_raw_value():
+    from pydantic import ValidationError
+    values = {
+        "operation_id": str(uuid4()), "scope": "channel", "owner": "application:" + str(uuid4()),
+        "kind": "app_secret", "source_secret_id": str(uuid4()),
+    }
+    assert SecretEdit(**values).source_secret_id == values["source_secret_id"]
+    for override in [
+        {"value": "synthetic-secret"},
+        {"kind": "access_token"},
+        {"scope": "provider"},
+        {"source_secret_id": "not-an-id"},
+    ]:
+        with pytest.raises(ValidationError):
+            SecretEdit(**{**values, **override})
+
+
+def test_saved_app_secret_is_reencrypted_for_the_destination(monkeypatch):
+    source_id, source_app, target_app = [str(uuid4()) for _ in range(3)]
+    values = iter([
+        {"Provider": "meta", "ClientId": "123", "IssuerProfile": "facebook_login", "State": "draft"},
+        {"Provider": "meta", "ClientId": "123", "IssuerProfile": "meta_whatsapp",
+         "ApplicationId": source_app, "Kind": "meta_app_secret"},
+    ])
+    monkeypatch.setattr(channel_operations, "one", lambda *_args: next(values))
+    monkeypatch.setattr(channel_operations, "get", lambda *_args, **kwargs: (
+        "synthetic-secret", {"ExpiresAt": None},
+    ) if kwargs["identity"] == source_id else None)
+    captured = []
+    monkeypatch.setattr(channel_operations, "put", lambda *args, **kwargs: (
+        captured.append((args, kwargs)) or {"configured": True, "version": 1}
+    ))
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    assert reuse_app_secret(None, settings, source_id, target_app)["configured"]
+    assert captured[0][0][2:] == ("application", target_app, "facebook_app_secret", "synthetic-secret")
+
+
+def test_saved_app_secret_cannot_copy_another_application(monkeypatch):
+    values = iter([
+        {"Provider": "meta", "ClientId": "123", "IssuerProfile": "facebook_login", "State": "draft"},
+        {"Provider": "meta", "ClientId": "456", "IssuerProfile": "meta_whatsapp",
+         "ApplicationId": str(uuid4()), "Kind": "meta_app_secret"},
+    ])
+    monkeypatch.setattr(channel_operations, "one", lambda *_args: next(values))
+    monkeypatch.setattr(channel_operations, "get", lambda *_args, **_kwargs: pytest.fail("must not decrypt"))
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    with pytest.raises(HTTPException, match="saved_app_secret_incompatible"):
+        reuse_app_secret(None, settings, str(uuid4()), str(uuid4()))
 
 
 def test_comment_delete_is_normalized_and_never_promotes_provider_crm_state():

@@ -595,23 +595,32 @@ type Credential = {
   configured: boolean;
   hint: string;
   verified: boolean;
+  application?: {
+    name: string;
+    client_id: string;
+    provider: string;
+    issuer_profile: string;
+  } | null;
 };
 export function Credentials({
   scope,
   owner,
   kinds,
   onChanged,
+  application,
 }: {
   scope: "provider" | "channel" | "webhook";
   owner: string;
   kinds: { id: string; label: string }[];
   onChanged?: () => Promise<unknown>;
+  application?: { clientId: string; issuerProfile: string; provider: string };
 }) {
   const { call, session } = useInstitution(),
     data = useResource<{ items: Credential[] }>(`credentials/${scope}`),
     task = useTask(),
     intent = useIntent();
   const [values, setValues] = useState<Record<string, string>>({});
+  const [savedSecret, setSavedSecret] = useState("");
   useDraftGuard(Object.values(values).some(Boolean));
   const writable = session.actions.includes(
     `settings.${scope === "provider" ? "providers" : scope === "channel" ? "channels" : "webhooks"}.write`,
@@ -629,8 +638,58 @@ export function Credentials({
         const current = data.value?.items.find(
           (row) => row.owner === owner && row.kind === kind.id,
         );
+        const saved = application && kind.id === "app_secret"
+          ? (data.value?.items ?? []).filter((row) =>
+              row.kind === "app_secret" &&
+              row.owner !== owner &&
+              row.application?.client_id === application.clientId &&
+              row.application.provider === application.provider &&
+              (row.application.issuer_profile === application.issuerProfile ||
+                (["meta_whatsapp", "facebook_login"].includes(application.issuerProfile) &&
+                  ["meta_whatsapp", "facebook_login"].includes(row.application.issuer_profile))),
+            )
+          : [];
         return (
-          <div key={kind.id} className="institution-secret-row">
+          <div key={kind.id}>
+            {saved.length > 0 && (
+              <div className="institution-secret-row">
+                <SelectField
+                  id={`saved-${owner}-${kind.id}`}
+                  label="App Secret guardado"
+                  value={saved.some((row) => row.id === savedSecret) ? savedSecret : ""}
+                  disabled={!writable || task.busy || !!values[kind.id]}
+                  options={[
+                    { value: "", label: "Selecciona una clave de esta app" },
+                    ...saved.map((row) => ({
+                      value: row.id,
+                      label: `${row.application!.name} · App ID ${row.application!.client_id} · versión ${row.version}`,
+                    })),
+                  ]}
+                  onChange={(event) => setSavedSecret(event.target.value)}
+                />
+                <Button
+                  variant="secondary"
+                  disabled={!writable || task.busy || !!values[kind.id] || !saved.some((row) => row.id === savedSecret)}
+                  onClick={() => void task.run(async () => {
+                    const body = { scope, owner, kind: kind.id, source_secret_id: savedSecret };
+                    await call("credentials", "PUT", {
+                      ...body,
+                      operation_id: intent.get(body),
+                    });
+                    setSavedSecret("");
+                    intent.clear();
+                    await data.reload();
+                    await onChanged?.();
+                  }, "App Secret guardado reutilizado en esta aplicación.")}
+                >
+                  Usar App Secret guardado
+                </Button>
+              </div>
+            )}
+            {current?.application && kind.id === "app_secret" && (
+              <p>Usando App Secret de {current.application.name} · App ID {current.application.client_id}.</p>
+            )}
+          <div className="institution-secret-row">
             <Field
               id={`secret-${owner}-${kind.id}`}
               label={kind.label}
@@ -696,6 +755,7 @@ export function Credentials({
             >
               Revocar
             </Button>
+          </div>
           </div>
         );
       })}

@@ -749,14 +749,69 @@ def credential_owner(c, settings, body):
     return prefix, identity, kind
 
 
+def compatible_app_secret(source, target):
+    meta_login = {"meta_whatsapp", "facebook_login"}
+    return (
+        source["Provider"] == target["Provider"]
+        and source["ClientId"] == target["ClientId"]
+        and (
+            source["IssuerProfile"] == target["IssuerProfile"]
+            or {source["IssuerProfile"], target["IssuerProfile"]} <= meta_login
+        )
+    )
+
+
+def reuse_app_secret(c, settings, source_id, target_id):
+    target = one(
+        c,
+        "SELECT Provider,ClientId,IssuerProfile,State FROM crm_channels2.Application "
+        "WHERE InstitutionId=? AND ApplicationId=?",
+        institution(settings), target_id,
+    )
+    source = one(
+        c,
+        "SELECT a.Provider,a.ClientId,a.IssuerProfile,a.ApplicationId,s.Kind "
+        "FROM crm_channels2.SecretVersion s WITH(UPDLOCK,HOLDLOCK) "
+        "JOIN crm_channels2.Application a ON a.InstitutionId=s.InstitutionId "
+        "AND a.ApplicationId=s.ApplicationId "
+        "WHERE s.InstitutionId=? AND s.SecretId=? AND s.State='active' "
+        "AND (s.ExpiresAt IS NULL OR s.ExpiresAt>SYSUTCDATETIME()) AND a.State<>'retired'",
+        institution(settings), uid(source_id),
+    )
+    if (
+        not source or not target or target["State"] == "retired"
+        or not compatible_app_secret(source, target)
+        or source["Kind"] != app_secret_kind(source)
+    ):
+        raise HTTPException(409, "saved_app_secret_incompatible")
+    if str(source["ApplicationId"]).lower() == uid(target_id):
+        return {"unchanged": True}
+    raw, metadata = get(
+        c, settings, "application", str(source["ApplicationId"]), source["Kind"],
+        identity=source_id,
+    )
+    return put(
+        c, settings, "application", target_id, app_secret_kind(target), raw,
+        expires=metadata["ExpiresAt"],
+    )
+
+
 def save_credential(settings, authority, body, remove):
     permission = (
         "settings." + ("channels" if body.scope == "channel" else "webhooks") + ".write"
     )
     raw = body.value.get_secret_value() if body.value else None
+    source = getattr(body, "source_secret_id", None)
+    if source and (remove or body.scope != "channel" or body.kind not in {"app_secret", "client_secret"}):
+        raise HTTPException(422, "saved_app_secret_only")
     with transaction(settings, True, anonymous=True) as c:
         actor = authorize(c, settings, authority, permission, recent=True)
         owner_type, identity, kind = credential_owner(c, settings, body)
+        payload = {"kind": kind, "value": raw, "remove": remove}
+        if source:
+            if owner_type != "application":
+                raise HTTPException(422, "saved_app_secret_only")
+            payload["source_secret_id"] = uid(source)
         digest, prior = replay(
             c,
             settings,
@@ -764,11 +819,13 @@ def save_credential(settings, authority, body, remove):
             body.operation_id,
             permission,
             body.owner,
-            {"kind": kind, "value": raw, "remove": remove},
+            payload,
         )
         if prior:
             return prior
-        if remove:
+        if source:
+            result = reuse_app_secret(c, settings, source, identity)
+        elif remove:
             from app.institutional.channel_secrets import OWNERS
 
             c.execute(
@@ -789,7 +846,7 @@ def save_credential(settings, authority, body, remove):
                 if raw
                 else {"unchanged": True}
             )
-        if owner_type in {"application", "integration"}:
+        if owner_type in {"application", "integration"} and not result.get("unchanged"):
             column = "ApplicationId" if owner_type == "application" else "IntegrationId"
             c.execute(
                 (
@@ -827,17 +884,23 @@ def credentials(settings, authority, scope):
         items = rows(
             c,
             (
-                "SELECT SecretId,ApplicationId,IntegrationId,EndpointId,Kind,"
-                "VersionNo,Hint,State,CreatedAt FROM crm_channels2.SecretVers"
-                "ion WHERE InstitutionId=? AND State IN('active','staged') AN"
-                "D "
+                "SELECT s.SecretId,s.ApplicationId,s.IntegrationId,s.EndpointId,s.Kind,"
+                "s.VersionNo,s.Hint,s.State,s.CreatedAt,a.Provider,a.ClientId,a.IssuerProfile,"
+                "(SELECT MIN(i.DisplayName) FROM crm_channels2.Integration i "
+                "WHERE i.InstitutionId=a.InstitutionId AND i.ApplicationId=a.ApplicationId) "
+                "AS ApplicationName FROM crm_channels2.SecretVersion s LEFT JOIN "
+                "crm_channels2.Application a ON a.InstitutionId=s.InstitutionId "
+                "AND a.ApplicationId=s.ApplicationId "
+                "WHERE s.InstitutionId=? AND s.State IN('active','staged') "
+                "AND (s.ExpiresAt IS NULL OR s.ExpiresAt>SYSUTCDATETIME()) "
+                "AND (a.State IS NULL OR a.State<>'retired') AND "
             )
             + (
-                "(ApplicationId IS NOT NULL OR IntegrationId IS NOT NULL)"
+                "(s.ApplicationId IS NOT NULL OR s.IntegrationId IS NOT NULL)"
                 if scope == "channel"
-                else "EndpointId IS NOT NULL"
+                else "s.EndpointId IS NOT NULL"
             )
-            + " ORDER BY CreatedAt",
+            + " ORDER BY s.CreatedAt",
             institution(settings),
         )
         result = []
@@ -885,7 +948,13 @@ def credentials(settings, authority, scope):
                     ),
                     "kind": public_kind,
                     "version": value["VersionNo"],
-                    "hint": value["Hint"],
+                    "hint": "" if prefix == "application" else value["Hint"],
+                    "application": {
+                        "name": value["ApplicationName"] or value["ClientId"],
+                        "client_id": value["ClientId"],
+                        "provider": value["Provider"],
+                        "issuer_profile": value["IssuerProfile"],
+                    } if prefix == "application" else None,
                     "state": value["State"],
                     "configured": True,
                     "verified": False,

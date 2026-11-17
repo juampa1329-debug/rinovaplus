@@ -394,6 +394,17 @@ class SecretEdit(Strict):
         "webhook_secret",
     ]
     value: SecretStr | None = Field(default=None, min_length=0, max_length=12000)
+    source_secret_id: str | None = Field(default=None, min_length=36, max_length=36)
+
+    @model_validator(mode="after")
+    def validate_saved_app_secret(self):
+        if self.source_secret_id is not None:
+            if self.scope != "channel" or self.kind not in {"app_secret", "client_secret"}:
+                raise ValueError("saved_app_secret_only")
+            if self.value:
+                raise ValueError("credential_value_and_source_conflict")
+            UUID(self.source_secret_id)
+        return self
 
 
 class PasswordChange(Reauthenticate):

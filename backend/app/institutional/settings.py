@@ -493,6 +493,8 @@ class Settings:
             "webhook": "webhooks",
         }
         action = "settings." + permissions[body.scope] + ".write"
+        if body.source_secret_id:
+            raise HTTPException(409, "saved_app_secret_unavailable")
         raw = body.value.get_secret_value() if body.value else None
         if (
             not remove
