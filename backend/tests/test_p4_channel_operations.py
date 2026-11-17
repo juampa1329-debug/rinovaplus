@@ -119,6 +119,32 @@ def test_whatsapp_oauth_uses_configuration_selected_by_meta():
     assert "scope" not in query
 
 
+@pytest.mark.parametrize(("message", "expected"), [
+    ("Error validating client secret.", "meta_app_secret_rejected"),
+    ("Error validating verification code.", "oauth_code_exchange_rejected"),
+])
+def test_meta_oauth_classifies_exchange_rejection_without_exposing_details(
+    monkeypatch, message, expected
+):
+    client = httpx2.Client
+
+    def reject(request):
+        assert request.url.path == "/v27.0/oauth/access_token"
+        return httpx2.Response(400, json={"error": {"code": 1, "message": message}})
+
+    monkeypatch.setattr(
+        "app.institutional.channel_oauth.httpx.Client",
+        lambda **kwargs: client(transport=httpx2.MockTransport(reject), **kwargs),
+    )
+    with pytest.raises(providers.ProviderFailure) as failure:
+        exchange(
+            {"IssuerProfile": "meta_whatsapp", "ApiVersion": "v27.0", "ClientId": "999"},
+            "synthetic-secret", "code", "https://crm.example/hooks/oauth/fixture", None,
+        )
+    assert failure.value.code == expected
+    assert not failure.value.uncertain
+
+
 def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):
     selected = SimpleNamespace(key="new", active=True, label="Nuevo")
     monkeypatch.setattr(

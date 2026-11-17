@@ -151,6 +151,8 @@ const messages: Record<string, string> = {
     "Introduce el App ID o Client Key de tu aplicación del proveedor.",
   configured_waba_required:
     "Guarda el ID de la cuenta de WhatsApp Business (WABA) de la institución y abre Meta de nuevo.",
+  oauth_session_expired:
+    "La autorización venció. Inicia una conexión nueva con Meta.",
   credential_required:
     "Falta una credencial para esta cuenta. Guárdala antes de verificarla.",
   provider_verification_required:

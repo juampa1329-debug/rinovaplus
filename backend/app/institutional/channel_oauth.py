@@ -46,6 +46,19 @@ SCOPES = {
     },
     "tiktok_login_kit": {"user.info.basic", "user.info.profile", "user.info.stats"},
 }
+OAUTH_FAILURE_CODES = {
+    "configured_waba_required",
+    "meta_app_secret_rejected",
+    "oauth_asset_missing",
+    "oauth_assets_missing",
+    "oauth_code_exchange_rejected",
+    "oauth_invalid_assets",
+    "oauth_provider_rejected",
+    "oauth_response_too_large",
+    "oauth_result_unknown",
+    "oauth_token_missing",
+    "token_application_mismatch_or_invalid",
+}
 
 
 class Start(Strict):
@@ -90,6 +103,20 @@ def authorization_url(
     )
 
 
+def meta_exchange_failure(body):
+    try:
+        value = json.loads(body)
+    except ValueError:
+        return "oauth_code_exchange_rejected"
+    error = value.get("error") if isinstance(value, dict) else None
+    message = str(error.get("message", "")).lower() if isinstance(error, dict) else ""
+    if re.search(r"\b(?:client|app|application) secret\b", message) and any(
+        word in message for word in ("validating", "invalid", "mismatch")
+    ):
+        return "meta_app_secret_rejected"
+    return "oauth_code_exchange_rejected"
+
+
 def http_json(method, url, *, params=None, data=None, headers=None):
     # Every URL here is constructed from fixed provider hosts and validated paths.
     try:
@@ -107,6 +134,10 @@ def http_json(method, url, *, params=None, data=None, headers=None):
                             "oauth_response_too_large", uncertain=True
                         )
                 if response.status_code >= 300:
+                    if response.status_code in (400, 401) and re.fullmatch(
+                        r"https://graph\.facebook\.com/v[0-9]{1,2}\.[0-9]{1,2}/oauth/access_token", url
+                    ):
+                        raise ProviderFailure(meta_exchange_failure(body))
                     raise ProviderFailure(
                         "oauth_provider_rejected", uncertain=response.status_code >= 500
                     )
@@ -546,6 +577,7 @@ class OAuth:
                 institution(self.settings),
                 session["OAuthSessionId"],
             )
+        failure = None
         try:
             result = self.transport(item, secret, code, session["RedirectUri"], None)
             if (
@@ -557,18 +589,22 @@ class OAuth:
             status = "assets_ready"
         except ProviderFailure as error:
             status, result = "uncertain" if error.uncertain else "failed", None
+            failure = error.code if error.code in OAUTH_FAILURE_CODES else "oauth_result_unknown"
         except Exception:
             status, result = "uncertain", None
+            failure = "oauth_result_unknown"
         with transaction(self.settings, True, anonymous=True) as c:
             current = account(c, self.settings, str(item["IntegrationId"]))
             current_session = c.execute(
                 (
-                    "SELECT Status FROM crm_channels2.OAuthSession WHERE Institut"
+                    "SELECT Status FROM crm_channels2.OAuthSession WITH(UPDLOCK,HOLDLOCK) WHERE Institut"
                     "ionId=? AND OAuthSessionId=?"
                 ),
                 institution(self.settings),
                 session["OAuthSessionId"],
             ).fetchval()
+            if current_session != "exchanging":
+                return {"status": current_session or "uncertain", **return_context}
             try:
                 authorize(
                     c, self.settings, authority, "settings.channels.write", recent=True
@@ -587,10 +623,28 @@ class OAuth:
                 unchanged = False
             if (
                 not unchanged
-                or current_session != "exchanging"
                 or current["VerifiedStatus"] == "retired"
             ):
                 status, result = "uncertain", None
+                failure = "oauth_authority_or_configuration_changed"
+            operation = str(session["OperationId"])
+            c.execute(
+                (
+                    "INSERT crm_channels2.ProviderOperation(InstitutionId,OperationId,"
+                    "ApplicationId,IntegrationId,ActorRef,Action,RequestDigest,Status,"
+                    "ResultCode,ResultMetadata,EffectKey,CreatedAt,CompletedAt) "
+                    "VALUES(?,?,?,?,?,'oauth_discovery',?,?,?,'{}',?,SYSUTCDATETIME(),SYSUTCDATETIME())"
+                ),
+                institution(self.settings),
+                operation,
+                item["ApplicationId"],
+                item["IntegrationId"],
+                session["ActorRef"],
+                session["StateHash"],
+                "confirmed" if result else status,
+                failure,
+                session["StateHash"],
+            )
             if result:
                 oauth_id = str(session["OAuthSessionId"])
                 put(
@@ -614,23 +668,6 @@ class OAuth:
                         state="staged",
                         expires=session["ExpiresAt"],
                     )
-                operation = str(session["OperationId"])
-                c.execute(
-                    (
-                        "INSERT crm_channels2.ProviderOperation(InstitutionId,Operati"
-                        "onId,ApplicationId,IntegrationId,ActorRef,Action,RequestDige"
-                        "st,Status,ResultMetadata,EffectKey,CreatedAt,CompletedAt) VA"
-                        "LUES(?,?,?,?,?,'oauth_discovery',?,'confirmed','{}',?,SYSUTC"
-                        "DATETIME(),SYSUTCDATETIME())"
-                    ),
-                    institution(self.settings),
-                    operation,
-                    item["ApplicationId"],
-                    item["IntegrationId"],
-                    session["ActorRef"],
-                    session["StateHash"],
-                    session["StateHash"],
-                )
                 for asset in result["assets"]:
                     external = str(asset.get("id", ""))
                     if not re.fullmatch(
@@ -708,8 +745,9 @@ class OAuth:
             session = one(
                 c,
                 (
-                    "SELECT * FROM crm_channels2.OAuthSession WHERE InstitutionId"
-                    "=? AND OAuthSessionId=? AND ExpiresAt>SYSUTCDATETIME()"
+                    "SELECT *,CASE WHEN ExpiresAt<=SYSUTCDATETIME() "
+                    "THEN 1 ELSE 0 END AS Expired FROM crm_channels2.OAuthSession "
+                    "WHERE InstitutionId=? AND OAuthSessionId=?"
                 ),
                 institution(self.settings),
                 uid(session_id),
@@ -723,18 +761,29 @@ class OAuth:
                 )
             ):
                 raise HTTPException(404, "oauth_session_not_found")
-            if not body:
-                values = rows(
-                    c,
-                    (
-                        "SELECT AssetId,Kind,ExternalId,Name FROM crm_channels2.Provi"
-                        "derAsset WHERE InstitutionId=? AND OAuthSessionId=?"
-                    ),
-                    institution(self.settings),
-                    session["OAuthSessionId"],
-                )
+            if session["Expired"]:
+                if body is not None:
+                    raise HTTPException(409, "oauth_session_expired")
+                if session["Status"] in {"pending", "exchanging", "assets_ready"}:
+                    return {"status": "expired", "code": None, "items": []}
+            if body is None:
+                values = []
+                if session["Status"] == "assets_ready":
+                    values = rows(
+                        c,
+                        "SELECT AssetId,Kind,ExternalId,Name FROM crm_channels2.ProviderAsset "
+                        "WHERE InstitutionId=? AND OAuthSessionId=?",
+                        institution(self.settings),
+                        session["OAuthSessionId"],
+                    )
                 return {
                     "status": session["Status"],
+                    "code": c.execute(
+                        "SELECT ResultCode FROM crm_channels2.ProviderOperation "
+                        "WHERE InstitutionId=? AND OperationId=? AND IntegrationId=? "
+                        "AND Action='oauth_discovery'",
+                        institution(self.settings), session["OperationId"], session["IntegrationId"],
+                    ).fetchval(),
                     "items": [
                         {
                             "id": uid(str(v["AssetId"])),

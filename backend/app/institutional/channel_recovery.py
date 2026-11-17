@@ -85,7 +85,22 @@ class Recoveries:
                 institution(self.settings),
                 item["IntegrationId"],
             )
+            oauth = one(
+                c,
+                "SELECT TOP(1) s.Status,s.CreatedAt,p.ResultCode "
+                "FROM crm_channels2.OAuthSession s LEFT JOIN crm_channels2.ProviderOperation p "
+                "ON p.InstitutionId=s.InstitutionId AND p.IntegrationId=s.IntegrationId "
+                "AND p.OperationId=s.OperationId AND p.Action='oauth_discovery' "
+                "WHERE s.InstitutionId=? AND s.IntegrationId=? AND s.ActorRef=? "
+                "ORDER BY s.CreatedAt DESC,s.OAuthSessionId",
+                institution(self.settings), item["IntegrationId"], str(actor["UserId"]).lower(),
+            )
             return {
+                "oauth": {
+                    "status": oauth["Status"],
+                    "code": oauth["ResultCode"],
+                    "started_at": utc(oauth["CreatedAt"]),
+                } if oauth else None,
                 "queue": [
                     {
                         "id": uid(str(v["QueueId"])),

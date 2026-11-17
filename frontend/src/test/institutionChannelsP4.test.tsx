@@ -269,6 +269,37 @@ it("loads the authorized Instagram account immediately after the OAuth redirect"
   ).toBeVisible();
 });
 
+it("explains a Meta App Secret rejection after returning from WhatsApp OAuth", async () => {
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (path) => {
+    if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+    if (String(path).endsWith("account-one/history"))
+      return ok({ queue: [], events: [], operations: [] });
+    expect(String(path)).toMatch(/oauth\/return-one\/assets$/);
+    return ok({ status: "failed", code: "meta_app_secret_rejected", items: [] });
+  });
+  mount(
+    <ChannelOperations
+      account={{
+        id: "account-one",
+        application_id: "app-one",
+        channel: "whatsapp",
+        issuer_profile: "meta_whatsapp",
+        display_name: "WhatsApp de prueba",
+        revision: 1,
+        row_version: "version",
+        application_version: "version",
+        verified_status: "unverified",
+        fields: {},
+      }}
+      returnedOAuth="return-one"
+      done={async () => {}}
+    />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] },
+  );
+  expect(await screen.findByText(/Meta rechazó el App Secret/)).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Usar este número" })).toBeNull();
+});
+
 it("shows new comments in the notification menu and links to the exact comment", async () => {
   const fetcher = vi
     .spyOn(globalThis, "fetch")

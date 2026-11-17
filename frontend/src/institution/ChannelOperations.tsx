@@ -34,6 +34,34 @@ const stateLabels: Record<string, string> = {
   pending: "Pendiente",
 };
 
+type OAuthStatus = { status: string; code?: string | null };
+
+function oauthMessage(result: OAuthStatus, assetPrompt: string) {
+  if (result.status === "assets_ready") return assetPrompt;
+  if (result.status === "completed") return "La autorización ya se aplicó a esta cuenta.";
+  if (result.status === "pending")
+    return "Completa el inicio de sesión en la otra pestaña. RinovaPlus está esperando la autorización.";
+  if (result.status === "exchanging")
+    return "RinovaPlus recibió la autorización y está consultando las cuentas.";
+  if (result.status === "cancelled")
+    return "El inicio de sesión terminó sin conceder acceso. Vuelve a conectar la cuenta.";
+  if (result.status === "expired")
+    return "La autorización venció. Inicia una conexión nueva.";
+  if (result.code === "meta_app_secret_rejected")
+    return "Meta rechazó el App Secret. En Meta Developers, copia el secreto vigente de esta app y guárdalo en Credenciales. Después vuelve a conectar la cuenta.";
+  if (result.code === "oauth_code_exchange_rejected")
+    return "Meta rechazó el código de autorización. Revisa que la URL de retorno de OAuth coincida con la registrada en la app de Meta y vuelve a conectar.";
+  if (result.code === "oauth_assets_missing")
+    return "El proveedor no devolvió cuentas autorizadas. Revisa que el perfil de inicio de sesión tenga acceso a la cuenta que quieres conectar y vuelve a conectar.";
+  if (result.code === "oauth_provider_rejected")
+    return "El proveedor rechazó la consulta de OAuth. Revisa los permisos de la app antes de volver a conectar.";
+  if (result.code === "token_application_mismatch_or_invalid")
+    return "Meta no pudo validar el token para esta app. Revisa el App ID y usa el perfil autorizado.";
+  if (result.code === "oauth_authority_or_configuration_changed")
+    return "Cambió tu sesión o la configuración de la app durante la autorización. Confirma tu identidad e inicia una conexión nueva.";
+  return "RinovaPlus no pudo completar la autorización. Vuelve a conectar la cuenta.";
+}
+
 export function ChannelOperations({
   account,
   done,
@@ -93,23 +121,14 @@ export function ChannelOperations({
       if (loading || (!returned && document.hidden)) return;
       loading = true;
       try {
-        const result = await call<{ status: string; items: typeof assets }>(
+        const result = await call<OAuthStatus & { items: typeof assets }>(
           `channels/oauth/${oauth}/assets`,
         );
         if (!active) return;
-        if (result.status === "assets_ready") {
-          setAssets(result.items);
+        if (!["pending", "exchanging"].includes(result.status))
           setAuthUrl("");
-          setDiagnosis(assetPrompt);
-        } else if (returned) {
-          setDiagnosis(
-            result.status === "cancelled"
-              ? "Cancelaste el inicio de sesión. Puedes volver a conectar la cuenta."
-              : result.status === "completed"
-                ? "La autorización ya se aplicó a esta cuenta."
-                : "El proveedor no completó el inicio de sesión. Vuelve a conectar la cuenta.",
-          );
-        }
+        setAssets(result.items);
+        setDiagnosis(oauthMessage(result, assetPrompt));
       } catch {
         if (active && returned)
           setDiagnosis(
@@ -331,6 +350,7 @@ export function ChannelOperations({
               setOauth(result.oauth_session_id);
               setAuthUrl(result.authorization_url);
               setAssets([]);
+              setDiagnosis(oauthMessage({ status: "pending" }, assetPrompt));
               if (oauthProvider)
                 window.open(
                   result.authorization_url,
@@ -359,16 +379,13 @@ export function ChannelOperations({
             disabled={task.busy}
             onClick={() =>
               void task.run(async () => {
-                const result = await call<{
-                  status: string;
+                const result = await call<OAuthStatus & {
                   items: typeof assets;
                 }>(`channels/oauth/${oauth}/assets`);
+                if (!["pending", "exchanging"].includes(result.status))
+                  setAuthUrl("");
                 setAssets(result.items);
-                setDiagnosis(
-                  result.status === "assets_ready"
-                    ? assetPrompt
-                    : "La autorización aún no está lista.",
-                );
+                setDiagnosis(oauthMessage(result, assetPrompt));
               })
             }
           >
@@ -778,6 +795,7 @@ function CommentAiPricing({ identity }: { identity: string }) {
 
 function ChannelHistory({ identity }: { identity: string }) {
   const data = useResource<{
+      oauth?: (OAuthStatus & { started_at: string }) | null;
       queue: {
         id: string;
         state: string;
@@ -813,6 +831,18 @@ function ChannelHistory({ identity }: { identity: string }) {
       {data.error && <Notice error>{data.error}</Notice>}
       {data.value && (
         <>
+          {data.value.oauth && (
+            <p>
+              <strong>Último intento de OAuth</strong>{" · "}
+              <time dateTime={data.value.oauth.started_at}>
+                {new Date(data.value.oauth.started_at).toLocaleString("es-CO")}
+              </time>{" · "}
+              {oauthMessage(
+                data.value.oauth,
+                "El proveedor devolvió cuentas. Puedes elegir una desde el resultado de esa autorización.",
+              )}
+            </p>
+          )}
           <p>
             {data.value.queue.length} envíos recientes ·{" "}
             {data.value.events.length} eventos que requieren revisión.
