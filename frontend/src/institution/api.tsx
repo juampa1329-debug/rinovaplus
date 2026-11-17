@@ -153,6 +153,12 @@ const messages: Record<string, string> = {
     "Falta una credencial para esta cuenta. Guárdala antes de verificarla.",
   provider_verification_required:
     "Verifica el token y la identidad de la cuenta antes de conectarla.",
+  whatsapp_webhook_setup_required:
+    "Habilita la recepción firmada de esta cuenta y configura una URL pública HTTPS en Ajustes → Webhooks.",
+  whatsapp_webhook_route_unavailable:
+    "Meta no devolvió la ruta del número. Revisa el identificador del número y los permisos del token.",
+  whatsapp_phone_webhook_override_conflict:
+    "Meta tiene una URL alternativa en este número que prevalece sobre la de la cuenta. Revisa el webhook del número en Meta.",
   api_version_required: "Indica la versión de la API del proveedor.",
   comment_ai_not_configured:
     "Configura y habilita el modelo de texto para solicitar un borrador.",

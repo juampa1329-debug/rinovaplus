@@ -197,6 +197,42 @@ def test_page_subscription_preserves_comments_and_message_fields(monkeypatch, ch
     })["success"]
 
 
+@pytest.mark.parametrize("phone_override", [None, "https://other.example/webhook"])
+def test_whatsapp_subscription_checks_precedence_and_verifies_the_waba_override(
+    monkeypatch, phone_override,
+):
+    callback = "https://crm.example/hooks/channels/ep_fixture"
+    account = {"channel": "whatsapp", "configuration": {
+        "phoneNumberId": "456", "wabaId": "123",
+    }}
+    routing = {"application": "https://scentra.example/webhook"}
+    if phone_override:
+        routing["phone_number"] = phone_override
+    calls = []
+
+    def request(_account, method, path, body=None, *, params=None):
+        calls.append((method, path))
+        if method == "GET":
+            assert path == "456" and params == {"fields": "webhook_configuration"}
+            return {"id": "456", "webhook_configuration": routing.copy()}
+        assert path == "123/subscribed_apps"
+        assert body == {"override_callback_uri": callback, "verify_token": "synthetic-verify"}
+        routing["whatsapp_business_account"] = callback
+        return {"success": True}
+
+    monkeypatch.setattr(providers, "request", request)
+    if phone_override:
+        with pytest.raises(providers.ProviderFailure, match="whatsapp_phone_webhook_override_conflict"):
+            providers.subscribe_whatsapp_callback(account, callback, "synthetic-verify")
+        assert calls == [("GET", "456")]
+    else:
+        assert providers.subscribe_whatsapp_callback(account, callback, "synthetic-verify")["success"]
+        assert calls == [("GET", "456"), ("POST", "123/subscribed_apps"), ("GET", "456")]
+        assert providers.subscribe_whatsapp_callback(account, callback, "synthetic-verify")["success"]
+        assert calls[-1:] == [("GET", "456")] and len(calls) == 4
+        assert routing["application"] == "https://scentra.example/webhook"
+
+
 @pytest.mark.parametrize(
     ("app_id", "valid"), [("12345", True), ("12345", False), ("67890", True)]
 )

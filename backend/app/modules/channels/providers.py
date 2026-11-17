@@ -201,6 +201,40 @@ def discover(account):
     return result
 
 
+def whatsapp_webhook_configuration(account):
+    phone = account["configuration"]["phoneNumberId"]
+    value = request(account, "GET", phone, params={"fields": "webhook_configuration"})
+    routing = value.get("webhook_configuration")
+    if str(value.get("id")) != phone or not isinstance(routing, dict):
+        raise ProviderFailure("whatsapp_webhook_route_unavailable")
+    return routing
+
+
+def subscribe_whatsapp_callback(account, callback_url, verify_token):
+    routing = whatsapp_webhook_configuration(account)
+    phone_route = routing.get("phone_number")
+    if phone_route and phone_route != callback_url:
+        raise ProviderFailure("whatsapp_phone_webhook_override_conflict")
+    if routing.get("whatsapp_business_account") == callback_url:
+        return {"success": True}
+    result = request(
+        account, "POST", account["configuration"]["wabaId"] + "/subscribed_apps",
+        {"override_callback_uri": callback_url, "verify_token": verify_token},
+    )
+    if result.get("success") is not True:
+        raise ProviderFailure("subscription_not_confirmed")
+    try:
+        routing = whatsapp_webhook_configuration(account)
+    except ProviderFailure:
+        raise ProviderFailure("whatsapp_webhook_route_unavailable", uncertain=True) from None
+    if (
+        routing.get("whatsapp_business_account") != callback_url
+        or routing.get("phone_number") not in {None, "", callback_url}
+    ):
+        raise ProviderFailure("whatsapp_webhook_route_not_confirmed", uncertain=True)
+    return result
+
+
 def subscribe(account):
     config = account["configuration"]
     channel = account["channel"]

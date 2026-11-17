@@ -147,6 +147,11 @@ def call_provider(adapter, action, item, pin=None):
             value["apiAssetValidated"] = True
         return value
     if action == "subscribe":
+        if item["Channel"] == "whatsapp":
+            return providers.subscribe_whatsapp_callback(
+                adapter, adapter["configuration"]["callbackUrl"],
+                adapter["secrets"]["webhookVerifyToken"],
+            )
         return providers.subscribe(adapter)
     if action == "register":
         if (
@@ -241,6 +246,22 @@ class ProviderOperations:
             adapter, secret_version = provider_account(
                 c, self.settings, item, require_account=action != "numbers"
             )
+            whatsapp_callback = action == "subscribe" and item["Channel"] == "whatsapp"
+            if whatsapp_callback:
+                authorize(c, self.settings, authority, "settings.webhooks.write", recent=True)
+                ep, _ = endpoint(c, self.settings, item)
+                if item["VerifiedStatus"] != "verified" or not item["ParentExternalId"]:
+                    raise HTTPException(409, "provider_verification_required")
+                if not ep or not ep["active"] or not 0 < len(ep["callback_url"]) <= 200:
+                    raise HTTPException(409, "whatsapp_webhook_setup_required")
+                verify_token, verify_version = get(
+                    c, self.settings, "endpoint", ep["id"], "webhook_verify",
+                )
+                adapter["configuration"]["callbackUrl"] = ep["callback_url"]
+                adapter["secrets"]["webhookVerifyToken"] = verify_token
+                # The provider operation reads the live route before writing it,
+                # so a deliberate reconciliation can run again after drift.
+                effect_key = bound_hash(self.settings, operation, "whatsapp-callback-intent")
             if action == "subscribe" and item["Channel"] in {"facebook", "messenger"}:
                 companion = "messenger" if item["Channel"] == "facebook" else "facebook"
                 adapter["configuration"]["sharedPageSubscription"] = bool(c.execute(
@@ -345,6 +366,16 @@ class ProviderOperations:
                 authorize(
                     c, self.settings, authority, "settings.channels.write", recent=True
                 )
+                if whatsapp_callback:
+                    authorize(c, self.settings, authority, "settings.webhooks.write", recent=True)
+                    current_ep, _ = endpoint(c, self.settings, current)
+                    changed = changed or not current_ep or any(
+                        current_ep[k] != ep[k] for k in ("id", "active", "callback_url")
+                    )
+                    _, current_verify = get(
+                        c, self.settings, "endpoint", ep["id"], "webhook_verify",
+                    )
+                    changed = changed or current_verify["SecretId"] != verify_version["SecretId"]
             except HTTPException:
                 changed = True
             if changed:

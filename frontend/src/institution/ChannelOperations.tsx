@@ -145,6 +145,7 @@ export function ChannelOperations({
       if (action === "numbers") setNumbers(result.result.numbers || []);
       if (
         ["verify", "health", "numbers"].includes(action) ||
+        (action === "subscribe" && account.channel === "whatsapp" && result.status === "confirmed") ||
         result.status === "failed"
       )
         intent.clear();
@@ -157,7 +158,11 @@ export function ChannelOperations({
             : result.code || "provider_operation_failed",
         );
       }
-      setDiagnosis(stateLabels[result.status] || result.status);
+      setDiagnosis(
+        action === "subscribe" && account.channel === "whatsapp" && result.status === "confirmed"
+          ? "Meta confirmó la URL de RinovaPlus para los mensajes de esta cuenta."
+          : stateLabels[result.status] || result.status,
+      );
       await done();
     }, "");
   return (
@@ -208,10 +213,13 @@ export function ChannelOperations({
         </Button>
         <Button
           variant="secondary"
-          disabled={!writable || task.busy}
+          disabled={
+            !writable || task.busy ||
+            (account.channel === "whatsapp" && !session.actions.includes("settings.webhooks.write"))
+          }
           onClick={() => perform("subscribe")}
         >
-          Sincronizar suscripción
+          {account.channel === "whatsapp" ? "Configurar recepción en Meta" : "Sincronizar suscripción"}
         </Button>
         <Button
           variant="secondary"
@@ -526,6 +534,16 @@ export function ChannelWebhook({
           ? "La firma de eventos se valida con el App Secret de Meta."
           : "La firma de eventos se valida con el secreto de firma de TikTok."}
       </p>
+      {ep && (
+        <p>
+          Último evento recibido{" "}
+          {ep.last_seen_at ? (
+            <time dateTime={ep.last_seen_at}>
+              {new Date(ep.last_seen_at).toLocaleString("es-CO")}
+            </time>
+          ) : "sin eventos registrados"}
+        </p>
+      )}
       {(account.channel === "facebook" || account.channel === "messenger") && (
         <p>
           Facebook y Messenger comparten estos valores cuando usan la misma app
