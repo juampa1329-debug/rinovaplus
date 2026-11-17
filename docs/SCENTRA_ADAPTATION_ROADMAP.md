@@ -1,4 +1,8 @@
-## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
+## Corte de producción RinovaPlus — 2026-11-17
+
+Consultar el [estado actualizado por fase y pruebas pendientes](adaptation/RINOVAPLUS_LIVE_STATUS.md). Incluye WhatsApp, Messenger, Instagram, comentarios y las mejoras publicadas de Inbox, navegación y publicaciones; distingue la nueva generación personalizada de la bienvenida fija anterior. El checkpoint canónico conserva **93,62%** hasta aceptar sus 18 hitos pendientes completos. P13 y P14 se siguen sin alterar ese denominador. La app online existe: el 0% formal de P12 expresa aceptación institucional pendiente, no ausencia de despliegue.
+
+## Checkpoint histórico P11-ES local — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.
 

@@ -4,7 +4,6 @@ import asyncio
 import json
 import math
 import os
-import re
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -16,6 +15,7 @@ from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.settings import setting
 from app.institutional.store import transaction
+from app.institutional import grounded_replies
 from app.modules.agents.service import resolve_conversation
 from app.modules.ai.infrastructure.providers import AiError
 
@@ -241,8 +241,8 @@ def dispatch_authorized(c, settings, job, payload):
     if (
         data.get("reply") != uid(str(job["MessageId"]))
         or data.get("identity") != uid(str(job["IdentityId"]))
-        or (FOLLOWUPS if data.get("continued") else REPLIES).get(data.get("intent"))
-        != payload.get("body")
+        or (data.get("generated_text") if data.get("generation") == "grounded-v1" else
+            (FOLLOWUPS if data.get("continued") else REPLIES).get(data.get("intent"))) != payload.get("body")
     ):
         raise HTTPException(409, "gemini_whatsapp_intent_mismatch")
     source(c, settings, job["IntegrationId"], data)
@@ -252,6 +252,17 @@ def dispatch_authorized(c, settings, job, payload):
         raise HTTPException(409, error.code) from None
     if binding != data["modelBinding"]:
         raise HTTPException(409, "gemini_whatsapp_model_changed")
+    if data.get("generation") == "grounded-v1":
+        _, current, _ = source(c, settings, job["IntegrationId"], data)
+        if reply_context(c, settings, data, current)["fingerprint"] != data["contextBinding"]:
+            raise HTTPException(409, "gemini_reply_context_changed")
+
+
+def reply_context(c, settings, data, source_value):
+    channel = data.get("channel", "whatsapp")
+    selected = resolve_conversation(c, data["conversation"], "facebook" if channel == "messenger" else channel)
+    return grounded_replies.context(c, settings, source_value["Body"], selection=selected,
+                                    conversation=data["conversation"], sequence=source_value["Sequence"])
 
 
 def finish(c, settings, operation, state, code, data, lease=None):
@@ -299,23 +310,7 @@ class Worker:
                 item, context, budget = source(c, settings, integration, data)
                 provider_account(c, settings, item)
                 config, secret, binding = model_config(c, settings, data)
-                previous = c.execute(
-                    "SELECT TOP(1) m.Body FROM crm.Message m "
-                    "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId "
-                    "JOIN crm_channels2.SendJob q ON q.QueueId=r.QueueId "
-                    "WHERE m.ConversationId=? AND r.ActorKind='bot' "
-                    "AND q.State IN('accepted','sent','delivered','read') "
-                    "AND m.Sequence<? ORDER BY m.Sequence DESC",
-                    data["conversation"],
-                    context["Sequence"],
-                ).fetchval()
-                if previous:
-                    data["continued"] = True
-                question = re.sub(
-                    r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|\+?\d[\d\s().-]{6,}\d",
-                    "[dato omitido]",
-                    context["Body"][:2000],
-                )
+                grounded = reply_context(c, settings, data, context)
                 secret_value = unseal(
                     key(settings),
                     {
@@ -329,14 +324,8 @@ class Worker:
                     secret["Nonce"],
                     secret["Ciphertext"],
                 )
-                prompt = SYSTEM
-                if previous:
-                    prompt += (
-                        " Si el contacto ya dio los datos que pedimos, usa asesor. "
-                        "Última pregunta del asistente: " + previous
-                    )
-                input_tokens = len((prompt + question).encode()) + 512
-                output_tokens = min(512, config["max_tokens"])
+                input_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
+                output_tokens = min(2000, config["max_tokens"])
                 cost_micros = max(
                     1,
                     math.ceil(
@@ -380,7 +369,7 @@ class Worker:
             )
             if c.rowcount != 1:
                 raise HTTPException(409, "gemini_whatsapp_claim_changed")
-        state, code, intent = "confirmed", None, None
+        state, code, generated = "confirmed", None, None
 
         def before_attempt():
             with transaction(settings, anonymous=True) as c:
@@ -394,43 +383,21 @@ class Worker:
                 ).fetchone()
                 if not active:
                     raise HTTPException(409, "gemini_whatsapp_claim_changed")
-                source(c, settings, integration, data)
+                _, latest_context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
                     raise HTTPException(409, "gemini_whatsapp_model_changed")
+                if reply_context(c, settings, data, latest_context)["fingerprint"] != grounded["fingerprint"]:
+                    raise HTTPException(409, "gemini_reply_context_changed")
 
         try:
             result = asyncio.run(
                 self.gateway_factory({"gemini": secret_value}).gemini_generation(
                     binding["model"],
-                    {
-                        "systemInstruction": {"parts": [{"text": prompt}]},
-                        "contents": [{"role": "user", "parts": [{"text": question}]}],
-                        "generationConfig": {
-                            "maxOutputTokens": output_tokens,
-                            "temperature": 0,
-                            "responseMimeType": "application/json",
-                            "responseSchema": {
-                                "type": "OBJECT",
-                                "required": ["intent"],
-                                "properties": {
-                                    "intent": {
-                                        "type": "STRING",
-                                        "enum": [*REPLIES, "asesor"],
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
                     before_attempt=before_attempt,
                 )
             )
-            candidate = result["candidates"][0]
-            intent = json.loads(candidate["content"]["parts"][0]["text"])["intent"]
-            if candidate.get("finishReason") != "STOP" or intent not in {
-                *REPLIES,
-                "asesor",
-            }:
-                raise ValueError("invalid_gemini_intent")
+            generated = grounded_replies.parse(result)
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
         except HTTPException as error:
@@ -447,6 +414,8 @@ class Worker:
                 item, context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
                     raise HTTPException(409, "gemini_whatsapp_model_changed")
+                if reply_context(c, settings, data, context)["fingerprint"] != grounded["fingerprint"]:
+                    raise HTTPException(409, "gemini_reply_context_changed")
             except (HTTPException, AiError) as error:
                 finish(
                     c,
@@ -458,14 +427,15 @@ class Worker:
                     lease,
                 )
                 return True
-            reply = None if intent == "asesor" else str(uuid4())
+            reply = str(uuid4()) if generated else None
             if not finish(
                 c,
                 settings,
                 operation,
                 "confirmed",
                 "gemini_handoff" if not reply else None,
-                {**data, "reply": reply, "intent": intent, "modelBinding": binding},
+                {**data, "reply": reply, "generation": "grounded-v1", "generated_text": generated,
+                 "modelBinding": binding, "contextBinding": grounded["fingerprint"]},
                 lease,
             ):
                 return True
@@ -481,7 +451,7 @@ class Worker:
             else:
                 from app.institutional.channel_outbox import enqueue
 
-                body = (FOLLOWUPS if data.get("continued") else REPLIES)[intent]
+                body = generated
                 c.execute(
                     "INSERT crm.Message(MessageId,ConversationId,Body,Direction) "
                     "VALUES(?,?,?,'outgoing')",

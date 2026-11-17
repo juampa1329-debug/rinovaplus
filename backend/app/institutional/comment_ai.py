@@ -13,12 +13,15 @@ from pydantic import Field
 from app.branding import PRODUCT_NAME
 from app.institutional.auth import authorize
 from app.institutional.channel_operations import account, configuration
-from app.institutional.comment_effects import Effect
+from app.institutional.comment_effects import Effect, call_provider
+from app.institutional.channel_provider import provider_account
+from app.modules.channels.providers import ProviderFailure
 from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.models import Strict, public_url
 from app.institutional.settings import setting
 from app.institutional.store import transaction
+from app.institutional import grounded_replies
 from app.modules.ai.domain.models import AiSettings
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
@@ -297,13 +300,9 @@ class Drafts:
                 temperature=ai["temperature"],
             )
             preview = json.loads(comment["Payload"]).get("_crm", {}).get("preview") or {}
-            text = json.dumps({
-                "comentario": comment["Body"][:2000],
-                "publicacion": str(preview.get("caption", ""))[:1200],
-            }, ensure_ascii=False)
-            prompt = SYSTEM + "\nEstilo institucional: " + (
-                ai.get("comment_prompt") or ai["system_prompt"]
-            )[:1600]
+            grounded = grounded_replies.context(c, self.settings, comment["Body"], public=True,
+                                               post=str(preview.get("caption", "")), structured=False)
+            text, prompt = grounded["query"], grounded["system"]
             input_tokens = len((prompt + text).encode()) + 2048
             output_tokens = min(ai_settings.max_tokens, ai_settings.output_tokens)
             ceiling_tokens = input_tokens + output_tokens
@@ -347,6 +346,28 @@ class Drafts:
             )
         gateway = self.gateway or DraftGateway({ai["provider"]: secret})
         try:
+            with transaction(self.settings, anonymous=True) as c:
+                authorize(c, self.settings, authority, "inbox.write")
+                adapter, _ = provider_account(c, self.settings, item)
+            try:
+                preview = call_provider(adapter, "preview", comment)["preview"]
+            except ProviderFailure:
+                pass
+            with transaction(self.settings, True, anonymous=True) as c:
+                authorize(c, self.settings, authority, "inbox.write")
+                if setting(c, self.settings, "ai")["revision"] != configured["revision"]:
+                    raise HTTPException(409, "comment_or_ai_authority_changed")
+                grounded = grounded_replies.context(c, self.settings, comment["Body"], public=True,
+                    post=str(preview.get("caption", "")), structured=False)
+                text, prompt = grounded["query"], grounded["system"]
+                actual_tokens = len((prompt + text).encode()) + 2048
+                if actual_tokens > input_tokens:
+                    extra = actual_tokens - input_tokens
+                    reserve_budget(c, self.settings, "tokens", extra, budget["daily_tokens"])
+                    extra_micros = math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000)
+                    reserve_budget(c, self.settings, "usd", extra_micros / 1_000_000, budget["daily_usd_micros"] / 1_000_000)
+                    ceiling_tokens += extra
+                    ceiling_usd += extra_micros
             draft = asyncio.run(
                 gateway.generate(
                     ai["provider"],
@@ -359,6 +380,8 @@ class Drafts:
             if not isinstance(draft, str) or not draft.strip() or len(draft) > 4000:
                 raise AiError("comment_ai_invalid_draft", 502)
             status, code = "confirmed", None
+        except HTTPException as error:
+            status, code, draft = "failed", error.detail, ""
         except AiError as error:
             status, code, draft = (
                 "uncertain" if error.status in {502, 503, 504} else "failed",
@@ -397,6 +420,8 @@ class Drafts:
                 or setting(c, self.settings, "ai")["revision"] != configured["revision"]
                 or not allowed
                 or not active_intent
+                or grounded_replies.context(c, self.settings, comment["Body"], public=True,
+                    post=str(preview.get("caption", "")), structured=False)["fingerprint"] != grounded["fingerprint"]
             ):
                 status, code, draft = "uncertain", "comment_or_ai_authority_changed", ""
             result = {

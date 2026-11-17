@@ -1196,6 +1196,18 @@
 .inbox-attachment img.inbox-sticker {
   max-height: 6rem;
 }
+.inbox-ai-suggestion {
+  min-width: 0;
+  max-height: 14rem;
+  overflow-y: auto;
+  border-block-start: 1px solid var(--border);
+  padding-block: 0.35rem;
+}
+.inbox-ai-suggestion small {
+  display: block;
+  color: var(--muted);
+  margin-block-start: 0.35rem;
+}
 .inbox-attachment .button {
   min-height: 1.8rem;
   padding: 0.25rem;

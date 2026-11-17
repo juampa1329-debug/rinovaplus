@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-17",
+  "current_url": "https://app.rinovaplus.com",
+  "canonical_percent": "93.62%",
+  "canonical_milestones_done": 261,
+  "canonical_milestones_total": 279,
+  "canonical_criteria_accepted": 45,
+  "canonical_criteria_total": 56,
+  "canonical_weight_changed": false,
+  "phase_percentages": {"P0":"100.00%","P1":"100.00%","P2":"100.00%","P3":"100.00%","P4":"82.29%","P5":"100.00%","P6":"100.00%","P7":"82.29%","P8":"95.00%","P9":"93.75%","P10":"95.00%","P11":"72.50%"},
+  "P12": {"formal_acceptance_percent":"0.00%","online_runtime":"verified_in_prior_deployments","equivalence_to_original_sql_commissioning":"pending"},
+  "P13": {"accepted":0,"total":4,"implementation":"partial","pilot":"pending_human_acceptance"},
+  "P14": {"status":"planning_pending_after_P4_P7_P13"},
+  "verified_production": ["whatsapp_text_and_voice","whatsapp_image_in_and_out","whatsapp_animated_sticker_in","messenger_in_and_delivered_reply","instagram_in_and_accepted_reply","instagram_public_reply_observed_by_webhook","social_names","post_carousel_preview","collapsible_sidebar"],
+  "personalized_ai": {"status":"implemented_local_validation","production_test":"pending","new_public_test_required":true,"program_catalog":"empty_in_production_ui","required_content":"official_software_url_and_reviewed_profile"},
+  "next": ["personalized_ai_production_and_suggestions","complete_P4_channel_matrix","P7_hello_world_and_receipts","P13_two_reviewed_programs"],
+  "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md"
+}

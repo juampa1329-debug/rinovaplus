@@ -1,5 +1,7 @@
 # P13 · Agentes de venta por programa
 
+Actualización del 17 de noviembre: la ampliación actual permite consulta informativa de programas por nombre/alias y contexto de historial, sin asignar ni confirmar programa académico. Gemini genera mensajes y comentarios desde prompts y hechos vigentes; las sugerencias usan el mismo catálogo. Esto implementa parte del contexto comercial de P13.3, pero no acredita todavía enrutamiento automático a un especialista ni el piloto de dos programas. Ver [estado actualizado y pendientes por fase](RINOVAPLUS_LIVE_STATUS.md).
+
 Plan del 16 de noviembre de 2026. La ficha y la importación se desarrollaron en local. P13 conserva **0 de 4 hitos aceptados** hasta aprobar la ficha piloto, probar la URL real, activar el enrutamiento con el especialista y verificar ambos recorridos en WhatsApp. El piloto empieza con Auxiliar de Enfermería y valida la réplica con un segundo programa de software cuyo nombre oficial confirmará Admisiones.
 
 ## Recorrido del aspirante

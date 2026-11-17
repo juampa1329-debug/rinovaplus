@@ -1,4 +1,8 @@
-## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
+## Corte de producción RinovaPlus — 2026-11-17
+
+El [estado vigente de producción y pendientes por fase](adaptation/RINOVAPLUS_LIVE_STATUS.md) registra los avances reales de canales, Inbox, comentarios, Gemini, Académico y despliegues. El [registro de seguimiento](../tasks/rinovaplus-live-progress.json) separa implementación, pruebas de producción y aceptación canónica. Total formal conservado: **93,62%, 18 hitos originales pendientes**. La ampliación de respuestas personalizadas y sugerencias está en validación; P13 mantiene cuatro aceptaciones pendientes. Ver allí el orden de cierre y los pendientes concretos, en lugar de interpretar el checkpoint siguiente como estado actual de la web.
+
+## Checkpoint histórico P11-ES local — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.
 

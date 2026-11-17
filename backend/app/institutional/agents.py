@@ -11,7 +11,7 @@ from app.institutional.agent_ai import AgentAI
 from app.institutional.agent_catalog import Catalog
 from app.institutional.auth import authorize
 from app.institutional.comment_ai import reserve_budget
-from app.institutional.db import bound_hash, institution, one, uid
+from app.institutional.db import bound_hash, institution, one, rows, uid
 from app.institutional.policy import request_authority
 from app.institutional.settings import setting
 from app.institutional.store import transaction
@@ -236,9 +236,13 @@ class Agents(AgentsService):
                     selected.get("stage_id"),
                     config["document_ids"],
                 )
-                c.agent_composition = lambda selection, program, stage: enrich(
-                    c, self.profile, selection, program, stage
-                )
+                def compose(selection, program, stage):
+                    enrich(c, self.profile, selection, program, stage)
+                    configured = setting(c, self.profile, "ai")
+                    selection["configuration"] = {**selection["configuration"], "instructions":
+                        configured["document"].get("system_prompt", "") + "\n" + selection["configuration"]["instructions"]}
+                    selection["binding"] = digest([selection["binding"], configured["revision"]])
+                c.agent_composition = compose
                 c.agent_memory = lambda selection, conversation: effective(
                     c, self.profile, selection, conversation or c.agent_conversation
                 )
@@ -275,7 +279,7 @@ class Agents(AgentsService):
 
     async def draft_conversation(self, conversation, body):
         with self.transaction() as c:
-            selected = resolve_conversation(c, conversation, body.channel)
+            selected = resolve_conversation(c, conversation, body.channel, for_draft=True)
             state = self.conversation_state(c, conversation)
             if selected["assignment"]["revision"] != body.revision:
                 raise AiError("agents_revision_conflict", 409)
@@ -286,6 +290,9 @@ class Agents(AgentsService):
                 program_id=context.get("program_id"),
                 stage_id=context.get("stage_id"),
                 question=body.question,
+                history=[{"role": "user" if v["Direction"] == "incoming" else "assistant", "content": v["Body"][:1600]}
+                    for v in reversed(rows(c,
+                        "SELECT TOP(12) Direction,Body FROM crm.Message WHERE ConversationId=? ORDER BY Sequence DESC", conversation))],
                 channel=body.channel,
                 request_id=body.request_id,
                 call_provider=body.call_provider,

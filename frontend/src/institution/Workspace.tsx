@@ -25,6 +25,8 @@ import { Icon } from "../shared/Icon";
 import { ErrorFeedback, ErrorFeedbackContext } from "./ErrorFeedback";
 import { explainInboxError, MessageDelivery } from "./InboxDelivery";
 import { EmojiPicker } from "./InboxComposer";
+import { InboxSuggestion } from "./InboxSuggestion";
+import { MetaAutomationHelp } from "./MetaAutomationHelp";
 import {
   ChannelLabel,
   ConversationRow,
@@ -1460,6 +1462,7 @@ function Conversation({
       </header>
       <details className="inbox-thread-options">
         <summary>Gestión de conversación</summary>
+        {(channel === "messenger" || channel === "instagram" || channel === "facebook") && <MetaAutomationHelp />}
         <fieldset
           disabled={!session.actions.includes("inbox.write") || command.busy}
         >
@@ -1567,6 +1570,15 @@ function Conversation({
       {!data.value && !data.error && <p>Cargando mensajes…</p>}
       {data.value && data.value.items.length === 0 && (
         <p>Sin mensajes registrados.</p>
+      )}
+      {detail.agentOperations && canWrite && detail.thread.State !== "closed" && (
+        <InboxSuggestion
+          conversation={conversation}
+          channel={channel}
+          question={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.body ?? ""}
+          incoming={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.id ?? ""}
+          onUseReply={setMessage}
+        />
       )}
       <form
         className="inbox-composer"

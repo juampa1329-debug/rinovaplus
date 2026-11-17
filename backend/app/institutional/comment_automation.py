@@ -3,7 +3,6 @@
 import asyncio
 import json
 import math
-import re
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -16,6 +15,7 @@ from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.settings import setting
 from app.institutional.store import transaction
 from app.institutional.whatsapp_gemini import finish
+from app.institutional import grounded_replies
 from app.modules.ai.infrastructure.providers import AiError
 
 ACTION = "comment_auto_gemini"
@@ -67,7 +67,6 @@ def schedule(c, settings, item, effect, comment):
             ai["enabled"],
             ai.get("comment_mode", "auto") == "auto",
             ai["provider"] == "gemini",
-            (ai.get("comment_auto_reply") or "").strip(),
         )
     ):
         return
@@ -115,7 +114,6 @@ def current(c, settings, integration, data, queue=None):
             document.get("comment_mode", "auto") == "auto",
             document["provider"] == "gemini",
             document["model"].startswith("gemini-"),
-            reply,
         )
     ):
         raise HTTPException(409, "comment_auto_disabled")
@@ -143,14 +141,8 @@ def current(c, settings, integration, data, queue=None):
         or crm.get("control_mode", "ai") != "ai"
     ):
         raise HTTPException(409, "comment_auto_source_changed")
-    if c.execute(
-        "SELECT 1 FROM crm_channels2.SocialComment response "
-        "WHERE response.InstitutionId=? AND response.IntegrationId=? "
-        "AND response.AuthorExternalId=? "
-        "AND JSON_VALUE(response.Payload,'$.provider.parent_id')=?",
-        inst, integration, item["ExternalAccountId"], value["ExternalId"],
-    ).fetchone():
-        raise HTTPException(409, "comment_auto_already_answered")
+    # Only an actual CRM send is our idempotency evidence. Meta native auto-replies
+    # have no CRM SendJob and must not silence the configured Gemini assistant.
     if c.execute(
         "SELECT 1 FROM crm_channels2.SendJob WHERE InstitutionId=? AND CommentId=? "
         "AND State NOT IN('failed','cancelled','retried')"
@@ -178,11 +170,25 @@ def authorize_send(c, settings, job, payload):
     if not row:
         raise HTTPException(409, "comment_auto_intent_required")
     data = json.loads(row["ResultMetadata"])
-    _, ai, _, reply = current(c, settings, job["IntegrationId"], data, job["QueueId"])
+    _, ai, text, reply = current(c, settings, job["IntegrationId"], data, job["QueueId"])
+    if data.get("generation") == "grounded-v1":
+        reply = data.get("generated_text")
+        if comment_context(c, settings, data, text)["fingerprint"] != data["contextBinding"]:
+            raise HTTPException(409, "comment_auto_policy_changed")
     if data.get("operation") != uid(str(job["OperationId"])) or (
         data.get("revision") != ai["revision"] or reply != payload.get("body")
     ):
         raise HTTPException(409, "comment_auto_policy_changed")
+
+
+def comment_context(c, settings, data, text):
+    value = one(c, "SELECT Payload FROM crm_channels2.SocialComment WHERE InstitutionId=? AND CommentId=?",
+                institution(settings), data["comment"])
+    payload = json.loads(value["Payload"])
+    preview = payload.get("_crm", {}).get("preview") or {}
+    provider = payload.get("provider") or {}
+    post = data.get("post_caption") or preview.get("caption") or (provider.get("media") or {}).get("caption") or ""
+    return grounded_replies.context(c, settings, text, public=True, post=post)
 
 
 class Worker:
@@ -210,7 +216,7 @@ class Worker:
             c.execute("SAVE TRANSACTION comment_auto")
             try:
                 item, ai, text, reply = current(c, settings, integration, data)
-                provider_account(c, settings, item)
+                adapter, _ = provider_account(c, settings, item)
                 document = ai["document"]
                 pricing = policy(c, settings, integration, document)
                 spent = c.execute(
@@ -246,23 +252,9 @@ class Worker:
                     credential["Nonce"],
                     credential["Ciphertext"],
                 )
-                text = re.sub(
-                    r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|\+?\d[\d\s().-]{6,}\d",
-                    "[dato omitido]",
-                    text[:1500],
-                )
-                # Structured output chooses whether to use approved public text.
-                prompt = (
-                    RULE
-                    + "\nInstrucciones de la institución: "
-                    + document.get("comment_prompt", "")
-                )
-                query = json.dumps(
-                    {"comentario": text, "respuesta_aprobada": reply},
-                    ensure_ascii=False,
-                )
-                tokens = len((prompt + query).encode()) + 512
-                out = 512
+                grounded = comment_context(c, settings, data, text)
+                tokens = len((grounded["system"] + grounded["query"]).encode()) + 8192
+                out = min(2000, max(512, document["max_tokens"]))
                 micro = max(
                     1,
                     math.ceil(
@@ -319,37 +311,40 @@ class Worker:
                     != ai["revision"]
                 ):
                     raise HTTPException(409, "comment_auto_policy_changed")
+                if comment_context(c, settings, data, text)["fingerprint"] != grounded["fingerprint"]:
+                    raise HTTPException(409, "comment_auto_policy_changed")
 
         state, code, publish = "confirmed", None, False
         try:
+            # Read the publication outside the SQL transaction. A missing preview
+            # never becomes fabricated context; explicit program questions still work.
+            from app.institutional.comment_effects import call_provider
+            from app.modules.channels.providers import ProviderFailure
+            with transaction(settings, anonymous=True) as c:
+                original = one(c, "SELECT ExternalId,Payload FROM crm_channels2.SocialComment "
+                               "WHERE InstitutionId=? AND CommentId=?", inst, data["comment"])
+            try:
+                data["post_caption"] = call_provider(adapter, "preview", original)["preview"]["caption"][:1600]
+            except ProviderFailure:
+                data["post_caption"] = ""
+            with transaction(settings, True, anonymous=True) as c:
+                current(c, settings, integration, data)
+                grounded = comment_context(c, settings, data, text)
+                actual_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
+                if actual_tokens > tokens:
+                    extra = actual_tokens - tokens
+                    reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
+                    reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
+                                   budget["daily_usd_micros"] / 1_000_000)
             result = asyncio.run(
                 self.gateway_factory({"gemini": secret}).gemini_generation(
                     document["model"],
-                    {
-                        "systemInstruction": {"parts": [{"text": prompt}]},
-                        "contents": [{"role": "user", "parts": [{"text": query}]}],
-                        "generationConfig": {
-                            "maxOutputTokens": out,
-                            "temperature": 0,
-                            "responseMimeType": "application/json",
-                            "responseSchema": {
-                                "type": "OBJECT",
-                                "required": ["decision"],
-                                "properties": {
-                                    "decision": {
-                                        "type": "STRING",
-                                        "enum": ["publicar", "revisar"],
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    grounded_replies.request_body(grounded, out, document.get("temperature", 0.3)),
                     before_attempt=assert_current,
                 )
             )
-            candidate = result["candidates"][0]
-            choice = json.loads(candidate["content"]["parts"][0]["text"])["decision"]
-            publish = candidate.get("finishReason") == "STOP" and choice == "publicar"
+            reply = grounded_replies.parse(result, public=True)
+            publish = bool(reply)
             code = None if publish else "comment_auto_review_required"
         except HTTPException as error:
             state, code = "abandoned", error.detail
@@ -357,6 +352,8 @@ class Worker:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
         except (KeyError, IndexError, ValueError, TypeError):
             state, code = "failed", "comment_ai_invalid_draft"
+        except Exception:
+            state, code = "uncertain", "comment_ai_result_unknown"
         with transaction(settings, True, anonymous=True) as c:
             outgoing = None
             if publish:
@@ -364,8 +361,11 @@ class Worker:
                     item, recent, _, _ = current(c, settings, integration, data)
                     if recent["revision"] != ai["revision"]:
                         raise HTTPException(409, "comment_auto_policy_changed")
+                    if comment_context(c, settings, data, text)["fingerprint"] != grounded["fingerprint"]:
+                        raise HTTPException(409, "comment_auto_policy_changed")
                     outgoing = str(uuid4())
-                    data.update(operation=outgoing, revision=ai["revision"])
+                    data.update(operation=outgoing, revision=ai["revision"], generation="grounded-v1",
+                                generated_text=reply, contextBinding=grounded["fingerprint"])
                 except HTTPException as error:
                     state, code = "abandoned", error.detail
             if finish(c, settings, operation, state, code, data, lease) and outgoing:

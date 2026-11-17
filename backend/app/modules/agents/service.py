@@ -493,7 +493,7 @@ def context_row(cursor, conversation_id, context_id):
     return item
 
 
-def resolve_conversation(cursor, conversation_id, channel):
+def resolve_conversation(cursor, conversation_id, channel, *, for_draft=False):
     agents, stages = load(cursor)
     conversation = cursor.execute(
         "SELECT ControlMode,State FROM crm.Conversation WHERE ConversationId=?",
@@ -525,7 +525,12 @@ def resolve_conversation(cursor, conversation_id, channel):
         "human_employee_id": row[5] if row else None,
     }
     context = context_row(cursor, conversation_id, assignment["context_id"])
-    resolution = resolve(agents, stages, assignment, context, channel, conversation[0])
+    draft_assignment = assignment
+    if for_draft and assignment["mode"] == "human":
+        draft_assignment = {**assignment, "mode": "automatic"}
+    # Only the explicit draft endpoint may resolve under human control. It has
+    # no send path and binds the result to the real, unchanged control epoch.
+    resolution = resolve(agents, stages, draft_assignment, context, channel, "ai" if for_draft else conversation[0])
     selected = agents[resolution["agent_id"]]
     check = preflight(cursor, selected, agents, stages)
     if not check["ready"]:
@@ -576,7 +581,7 @@ def runtime_context(cursor, conversation_id, question, channel):
 
 
 def public_sources(cursor, question, program_id, stage_id, config):
-    institutional = read_context(cursor, question if program_id else "", program_id)
+    institutional = read_context(cursor, question if program_id or getattr(cursor, "agent_catalog", None) else "", program_id)
     documents = (
         scoped_sources(
             cursor, question, {"program_id": program_id, "stage_id": stage_id}, config
@@ -1495,7 +1500,8 @@ class AgentsService:
             check_program(cursor, request.program_id)
             institutional, sources = public_sources(
                 cursor,
-                request.question,
+                request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
+                    if getattr(cursor, "agent_catalog", None) else ""),
                 request.program_id,
                 identifier(request.stage_id),
                 selection["configuration"],

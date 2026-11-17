@@ -6,6 +6,7 @@ import { useInstitution, useIntent, useTask } from "./api";
 import type { Setting } from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { allowNavigation, useDraftGuard } from "./drafts";
+import { MetaAutomationHelp } from "./MetaAutomationHelp";
 import { ChannelLabel } from "./InboxPresentation";
 import "./comments.css";
 
@@ -575,6 +576,7 @@ function CommentAI({ children }: { children?: ReactNode }) {
   return (
     <aside className="panel comments-ai" aria-label="IA para comentarios">
       <h2>IA para comentarios</h2>
+      <MetaAutomationHelp />
       {children}
       {session.actions.includes("settings.ai.read") && <CommentAISettings />}
     </aside>
@@ -668,7 +670,7 @@ function CommentAIEditor({
         <>
           <TextArea
             id="comments-auto-reply"
-            label="Respuesta pública aprobada"
+            label="Ejemplo de bienvenida (opcional)"
             value={reply}
             maxLength={400}
             rows={3}
@@ -677,9 +679,9 @@ function CommentAIEditor({
             aria-describedby="comments-auto-description"
           />
           <p className="scope-text" id="comments-auto-description">
-            {reply.trim()
-              ? "Gemini decide si este texto aplica a un comentario nuevo. Los demás quedan para revisión."
-              : "Escribe el texto autorizado para que Gemini pueda publicar respuestas automáticas."}
+            Gemini redacta una respuesta personalizada con estas instrucciones y la
+            información vigente de Académico y Conocimiento. Este ejemplo no es una
+            respuesta fija. Las consultas que requieren un asesor quedan para revisión.
           </p>
         </>
       )}

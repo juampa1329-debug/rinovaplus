@@ -110,7 +110,7 @@ def test_instagram_preview_includes_carousel_images_and_video(monkeypatch):
     assert result["media"][1]["poster"].endswith("/poster.jpg")
 
 
-def test_comment_automation_does_not_duplicate_an_existing_account_reply(monkeypatch):
+def test_comment_automation_does_not_duplicate_an_existing_crm_send(monkeypatch):
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     integration, comment = str(uuid4()), str(uuid4())
     monkeypatch.setattr(comment_automation, "available", lambda *_: True)
@@ -131,8 +131,8 @@ def test_comment_automation_does_not_duplicate_an_existing_account_reply(monkeyp
     })
     class Cursor:
         def execute(self, query, *params):
-            assert "JSON_VALUE" in query
-            assert params[-2:] == ("owned-account", "original-comment")
+            assert "crm_channels2.SendJob" in query
+            assert params[-1] == comment
             return SimpleNamespace(fetchone=lambda: (1,))
     with pytest.raises(HTTPException, match="comment_auto_already_answered"):
         comment_automation.current(Cursor(), profile, integration, {

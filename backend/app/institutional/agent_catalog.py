@@ -1,11 +1,32 @@
 """Declared CRM program catalog; never impersonates an official SIIE record."""
 
 from uuid import NAMESPACE_URL, uuid5
+import json
+import re
+import unicodedata
 
 from app.institutional.db import institution, rows, one
 from app.institutional.program_commercial import agent_facts, read_profile
 from app.modules.agents.domain import digest
 from app.modules.ai.infrastructure.providers import AiError
+
+
+def normalized(value):
+    return "".join(c for c in unicodedata.normalize("NFKD", value.lower()) if not unicodedata.combining(c))
+
+
+def relevant_programs(items, profiles, question):
+    words = set(re.findall(r"[a-z0-9]+", normalized(question))) - {
+        "programa", "programas", "tecnico", "tecnica", "laboral", "auxiliar", "de", "en", "y", "el", "la", "del", "los",
+    }
+    ranked = []
+    for item in items:
+        profile = profiles.get(item["program_id"], {})
+        names = normalized(item["name"] + " " + profile.get("aliases", ""))
+        score = len(words & set(re.findall(r"[a-z0-9]+", names)))
+        if score:
+            ranked.append((score, item))
+    return [item for _, item in sorted(ranked, key=lambda pair: (-pair[0], pair[1]["program_id"]))[:6]]
 
 
 class Catalog:
@@ -55,6 +76,19 @@ class Catalog:
 
     def read_context(self, c, question, program_id=None, semester=None):
         catalog = self.programs(c, 0, 300)
+        if getattr(self.settings, "postgres_deployment", False):
+            catalog["items"] = [v for v in catalog["items"] if v["authority"] != "synthetic_demo"]
+        profiles = rows(c, "SELECT Section,Document FROM crm_access.Setting "
+                        "WHERE InstitutionId=? AND Section LIKE 'program-commercial-%'", institution(self.settings))
+        commercial_profiles = {
+            int(v["Section"].removeprefix("program-commercial-")): json.loads(v["Document"])
+            for v in profiles if v["Section"].removeprefix("program-commercial-").isdigit()
+        }
+        informational = []
+        for value in relevant_programs(catalog["items"], commercial_profiles, question):
+            if getattr(self.settings, "postgres_deployment", False) and value["authority"] == "synthetic_demo":
+                continue
+            informational.append({**value, "commercial": agent_facts(commercial_profiles.get(value["program_id"]))})
         selected = None
         if program_id is not None:
             row = one(
@@ -103,15 +137,28 @@ class Catalog:
                     "synthetic_demo": selected["authority"] == "synthetic_demo",
                 }
             )
+        for value in informational:
+            if selected and value["program_id"] == selected["program_id"]:
+                continue
+            sources.append({
+                "id": str(uuid5(NAMESPACE_URL, "cbn-declared-program:" + institution(self.settings) + ":" + str(value["program_id"]))),
+                "title": "Consulta informativa de programa CRM: " + value["name"],
+                "text": json.dumps(value, ensure_ascii=False),
+                "source_kind": "declared_CRM_catalog", "revision": value["revision"],
+                "synthetic_demo": value["authority"] == "synthetic_demo",
+            })
         return {
             "material": {
                 "period": None,
                 "selected": selected,
                 "program_catalog": catalog["items"],
+                "queried_programs": informational,
+                "query_does_not_confirm_assignment": True,
+                "catalog_has_more": catalog["has_more"],
                 "authority": catalog["authority"],
                 "academic_writes_allowed": False,
             },
             "sources": sources,
-            "fingerprint": digest([catalog, selected]),
+            "fingerprint": digest([catalog, selected, informational]),
             "authority": catalog["authority"],
         }
