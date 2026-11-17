@@ -392,16 +392,13 @@ def preview(c, s, campaign, *, controlled=False):
 def cancel(c, s, key, reason):
     c.execute(
         (
-            "UPDATE q SET State='cancelled',LastErr"
-            "orCode=?,CompletedAt=SYSUTCDATETIME() "
-            "FROM crm_channels2.SendJob q JOIN crm_"
-            "broadcast7.Attempt a ON a.InstitutionI"
-            "d=q.InstitutionId AND a.QueueId=q.Queu"
-            "eId JOIN crm_broadcast7.Recipient r ON"
-            " r.InstitutionId=a.InstitutionId AND r"
-            ".RecipientId=a.RecipientId WHERE r.Ins"
-            "titutionId=? AND r.CampaignId=? AND q."
-            "State='queued'"
+            "UPDATE q SET State='cancelled',LastErrorCode=?,"
+            "CompletedAt=SYSUTCDATETIME() FROM crm_channels2.SendJob q "
+            "WHERE q.InstitutionId=? AND q.State='queued' AND EXISTS("
+            "SELECT 1 FROM crm_broadcast7.Attempt a "
+            "JOIN crm_broadcast7.Recipient r ON r.InstitutionId=a.InstitutionId "
+            "AND r.RecipientId=a.RecipientId WHERE a.InstitutionId=q.InstitutionId "
+            "AND a.QueueId=q.QueueId AND r.CampaignId=?)"
         ),
         reason,
         institution(s),

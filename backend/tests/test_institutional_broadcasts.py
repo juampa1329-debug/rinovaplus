@@ -1,6 +1,7 @@
 """P7 command, template protocol and capability boundaries without SQL IO."""
 
 import json
+import sqlite3
 from datetime import datetime
 from uuid import uuid4
 
@@ -25,6 +26,50 @@ from app.institutional.broadcast_templates import (
     send,
 )
 from app.modules.channels import providers
+
+
+def test_campaign_cancel_preserves_other_accounts_campaigns_and_started_sends(monkeypatch):
+    from app.institutional import broadcasts
+    from app.institutional.postgres_dialect import NOW, postgres_sql
+
+    connection = sqlite3.connect(":memory:")
+    connection.execute("ATTACH DATABASE ':memory:' AS rinovaplus_crm")
+    tables = {
+        "crm_channels2.SendJob": "dbo.jobs",
+        "crm_broadcast7.Attempt": "dbo.attempts",
+        "crm_broadcast7.Recipient": "dbo.recipients",
+    }
+    connection.execute("CREATE TABLE rinovaplus_crm.jobs(InstitutionId,QueueId,State,LastErrorCode,CompletedAt)")
+    connection.execute("CREATE TABLE rinovaplus_crm.attempts(InstitutionId,QueueId,RecipientId)")
+    connection.execute("CREATE TABLE rinovaplus_crm.recipients(InstitutionId,RecipientId,CampaignId,State,LastError,UpdatedAt)")
+    connection.executemany("INSERT INTO rinovaplus_crm.jobs VALUES(?,?,?,NULL,NULL)", [
+        ("one", 1, "queued"), ("one", 2, "sending"), ("one", 3, "queued"),
+        ("two", 4, "queued"), ("one", 5, "queued"),
+    ])
+    connection.executemany("INSERT INTO rinovaplus_crm.recipients VALUES(?,?,?,'prepared',NULL,NULL)", [
+        ("one", 1, "selected"), ("one", 2, "selected"), ("one", 3, "other"),
+        ("two", 4, "selected"), ("two", 5, "selected"),
+    ])
+    connection.executemany("INSERT INTO rinovaplus_crm.attempts VALUES(?,?,?)", [
+        ("one", 1, 1), ("one", 2, 2), ("one", 3, 3), ("two", 4, 4),
+        ("two", 5, 5),
+    ])
+
+    class Cursor:
+        def execute(self, sql, *parameters):
+            converted = postgres_sql(sql, tables).replace(NOW, "'2026-11-17'")
+            return connection.execute(converted.replace("%s", "?"), parameters)
+
+    monkeypatch.setattr(broadcasts, "institution", lambda _: "one")
+    try:
+        broadcasts.cancel(Cursor(), None, "selected", "edited")
+        assert connection.execute("SELECT QueueId,State,LastErrorCode FROM rinovaplus_crm.jobs ORDER BY QueueId").fetchall() == [
+            (1, "cancelled", "edited"), (2, "sending", None), (3, "queued", None),
+            (4, "queued", None), (5, "queued", None),
+        ]
+        assert connection.execute("SELECT InstitutionId,RecipientId FROM rinovaplus_crm.recipients WHERE State='cancelled' ORDER BY RecipientId").fetchall() == [("one", 1), ("one", 2)]
+    finally:
+        connection.close()
 
 
 def command(**extra):

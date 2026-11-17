@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-17",
+  "sender": "+1 555 162-0221",
+  "sender_type": "Meta test phone number, explicitly identified by API testing UI",
+  "phone_number_id": "1434267716436006",
+  "messaging_account_id": "1449606369839864",
+  "app_id": "1688152039579779",
+  "recipient": "owner test phone ending in 44; verified in Meta using the owner-supplied code",
+  "template": "hello_world",
+  "language": "en_US",
+  "send_interface": "Meta Developers, WhatsApp, Step 1 API testing",
+  "result": "Meta reported Message sent; owner confirmed receipt on handset",
+  "meta_webhook_events_visible": 3,
+  "broadcast_worker_acceptance": false,
+  "rinovaplus_channel": "WhatsApp · Pruebas Meta",
+  "channel_authorization": "OAuth with existing RinovaPlus application and permissions",
+  "institutional_channel_replaced": false,
+  "pending": [
+    "Verify callback route after first-configuration backend fix",
+    "Receive a reply in the test channel to establish its identity",
+    "Authorize only the short test audience and cadence in RinovaPlus",
+    "Send from RinovaPlus Mensajeria masiva and observe its provider receipts"
+  ],
+  "campaign_edit_fix": "Use a correlated EXISTS for cancellation of queued work; preserve institution, campaign, queue and started-send boundaries across SQL Server/PostgreSQL",
+  "validation": {"channel_and_broadcast_tests":112,"ruff_F":"passed","data_IO":"tests use fixtures and an in-memory database; no production writes"}
+}
