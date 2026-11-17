@@ -482,9 +482,12 @@ def test_saved_app_secret_is_reencrypted_for_the_destination(monkeypatch):
          "ApplicationId": source_app, "Kind": "meta_app_secret"},
     ])
     monkeypatch.setattr(channel_operations, "one", lambda *_args: next(values))
-    monkeypatch.setattr(channel_operations, "get", lambda *_args, **kwargs: (
-        "synthetic-secret", {"ExpiresAt": None},
-    ) if kwargs["identity"] == source_id else None)
+    def secret(*_args, **kwargs):
+        if kwargs.get("identity") == source_id:
+            return "synthetic-secret", {"ExpiresAt": None}
+        raise HTTPException(409, "credential_required")
+
+    monkeypatch.setattr(channel_operations, "get", secret)
     captured = []
     monkeypatch.setattr(channel_operations, "put", lambda *args, **kwargs: (
         captured.append((args, kwargs)) or {"configured": True, "version": 1}
@@ -492,6 +495,23 @@ def test_saved_app_secret_is_reencrypted_for_the_destination(monkeypatch):
     settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     assert reuse_app_secret(None, settings, source_id, target_app)["configured"]
     assert captured[0][0][2:] == ("application", target_app, "facebook_app_secret", "synthetic-secret")
+
+
+def test_reusing_the_same_app_secret_preserves_the_current_version(monkeypatch):
+    values = iter([
+        {"Provider": "meta", "ClientId": "123", "IssuerProfile": "facebook_login", "State": "draft"},
+        {"Provider": "meta", "ClientId": "123", "IssuerProfile": "meta_whatsapp",
+         "ApplicationId": str(uuid4()), "Kind": "meta_app_secret"},
+    ])
+    monkeypatch.setattr(channel_operations, "one", lambda *_args: next(values))
+    monkeypatch.setattr(channel_operations, "get", lambda *_args, **_kwargs: (
+        "synthetic-secret", {"ExpiresAt": None},
+    ))
+    monkeypatch.setattr(channel_operations, "put", lambda *_args, **_kwargs: pytest.fail("must preserve version"))
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    assert reuse_app_secret(None, settings, str(uuid4()), str(uuid4())) == {
+        "unchanged": True, "configured": True,
+    }
 
 
 def test_saved_app_secret_cannot_copy_another_application(monkeypatch):

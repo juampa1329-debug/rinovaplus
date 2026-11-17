@@ -1,5 +1,6 @@
 """Institution-bound channel operations, generated callbacks and C10 credentials."""
 
+import hmac
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -790,6 +791,14 @@ def reuse_app_secret(c, settings, source_id, target_id):
         c, settings, "application", str(source["ApplicationId"]), source["Kind"],
         identity=source_id,
     )
+    try:
+        current, _ = get(c, settings, "application", target_id, app_secret_kind(target))
+    except HTTPException as error:
+        if error.detail != "credential_required":
+            raise
+    else:
+        if hmac.compare_digest(raw, current):
+            return {"unchanged": True, "configured": True}
     return put(
         c, settings, "application", target_id, app_secret_kind(target), raw,
         expires=metadata["ExpiresAt"],
