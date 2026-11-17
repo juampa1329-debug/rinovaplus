@@ -24,3 +24,9 @@ Cabeceras multimedia mantienen el contrato de la referencia: requieren el handle
 124 pruebas backend en Canales, broadcasting y constructor; diez frontend del módulo; TypeScript, lint de archivos afectados y build aprobados. Los primeros intentos del arnés detectaron referencias ausentes de emojis/fixture y un formulario de prueba incompleto; se corrigió el arnés sin debilitar validaciones. No se crearon contenedores, no se ejecutaron migraciones ni se modificaron bases para estas pruebas. El build conserva su aviso previo de bundle superior a 500 kB.
 
 El webhook de test fue verificado en Meta y RinovaPlus; la respuesta real «Prueba de broadcasting rinovaplus» entró en el canal gratuito y Gemini respondió con el chat en IA. Esto no acredita por sí solo la publicación de una plantilla nueva ni los recibos de una campaña masiva. Ambos recorridos deben registrarse por separado tras el despliegue.
+
+## Resultado en producción
+
+Coolify desplegó `fcf5f28` en backend y frontend. Desde el editor publicado se guardó `cbn_informacion_programas_20261117`, con primer nombre y programa, ejemplos ficticios, cabecera, pie y respuesta rápida. Meta recibió la solicitud: primero devolvió **PENDING / En revisión de Meta** y en una sincronización posterior **APPROVED / Aprobada por Meta**. La aprobación procede del catálogo real; no se envió esa plantilla nueva.
+
+La campaña separada `Prueba P7 gratuita · hello_world · 44` envió desde RinovaPlus al único destinatario autorizado del número gratuito. Se observaron aceptado, enviado, entregado y leído con un intento. Al terminar se revocó el consentimiento temporal y se desactivó la cadencia de esa cuenta. [Evidencia y límites](../../artifacts/live/p7-broadcasting-20261117.json). Falta la respuesta citada atribuida y un fallo real controlado; no cierra P7 completo.

@@ -2,7 +2,8 @@
   "date": "2026-11-17",
   "current_url": "https://app.rinovaplus.com",
   "broadcasting_editor": {
-    "status": "implemented_local_checks_passed_pending_production_review",
+    "status": "deployed_real_template_submission_and_broadcast_receipts_verified",
+    "deployed_code": "fcf5f2843bb4725f6005a85047822e4848bc58b2",
     "reference": "Scentra BroadcastPanel.jsx and broadcasts/router.py",
     "crm_fields": "standard_and_active_custom_fields",
     "provider_examples": "explicit_synthetic_samples",
@@ -12,8 +13,12 @@
     "types_lint_build": "passed",
     "test_webhook": "confirmed_in_Meta_and_RinovaPlus",
     "test_inbound": "observed_with_Gemini_reply_in_AI_mode",
-    "new_template_provider_submission": "pending",
-    "broadcast_receipts": "pending",
+    "new_template_provider_submission": "Meta_received_PENDING_then_APPROVED_after_catalog_sync",
+    "broadcast_receipts": "one_attempt_accepted_sent_delivered_read",
+    "quoted_campaign_reply": "not_observed_yet",
+    "temporary_test_consent": "revoked",
+    "test_cadence": "disabled_after_single_recipient_test",
+    "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
   "canonical_percent": "93.88%",
@@ -105,7 +110,7 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
-    "P7_hello_world_and_receipts",
+    "P7_quoted_reply_controlled_failure_and_remaining_receipt_matrix",
     "complete_P4_channel_matrix",
     "P13_two_reviewed_programs_without_SIIE"
   ],
@@ -120,7 +125,7 @@
     "status": "real_approved_catalog_verified",
     "milestone": "P7.1.m5",
     "evidence": "artifacts/live/p7-catalog-20261117.json",
-    "broadcast_send": "pending",
+    "broadcast_send": "free_test_hello_world_accepted_sent_delivered_read_one_attempt",
     "historical_checker": "blocked_by_20_absent_historical_artifacts"
   }
 }

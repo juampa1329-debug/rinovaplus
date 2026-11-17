@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-17",
+  "scope": "Production UI observations; additional evidence, not a completed canonical criterion",
+  "deployed_code": "fcf5f2843bb4725f6005a85047822e4848bc58b2",
+  "deployment": {
+    "backend": "Coolify zxpznk47y1xmu5trzvhdy6do: new container healthy, rolling update completed",
+    "frontend": "Coolify Success, 00m 37s"
+  },
+  "test_account": {
+    "name": "WhatsApp · Pruebas Meta",
+    "integration_id": "9b1c8209-e664-497d-baa6-db3869d78124",
+    "phone_number_id": "1434267716436006",
+    "waba_id": "1449606369839864",
+    "recipient": "owner-authorized test phone ending in 44",
+    "institutional_account_replaced": false,
+    "callback": "Owner-generated verify token saved in Meta; verification confirmed in Meta and RinovaPlus",
+    "inbound": "Prueba de broadcasting rinovaplus observed in Inbox; chat in AI, Gemini reply observed"
+  },
+  "broadcast": {
+    "name": "Prueba P7 gratuita · hello_world · 44",
+    "interface": "RinovaPlus Mensajería masiva, not Meta testing console",
+    "template": "hello_world",
+    "language": "en_US",
+    "audience_preview": {"eligible": 1, "total": 1, "excluded": 0},
+    "attempts": 1,
+    "latest_status": "read",
+    "timestamps_observed_America_Bogota": {
+      "prepared": "2026-11-17T18:17:36-05:00",
+      "queued": "2026-11-17T18:19:42-05:00",
+      "accepted": "2026-11-17T18:19:45-05:00",
+      "sent": "2026-11-17T18:19:46-05:00",
+      "delivered": "2026-11-17T18:19:47-05:00",
+      "read": "2026-11-17T18:19:55-05:00"
+    },
+    "attributed_replies": 0,
+    "reply_test": "Owner asked to quote-reply to the second hello_world; not yet observed",
+    "controlled_failure": "not_executed",
+    "end_state": "Test-only consent revoked; account campaign cadence disabled. Original real-number draft never activated."
+  },
+  "template_builder": {
+    "name": "cbn_informacion_programas_20261117",
+    "language": "es",
+    "category": "MARKETING",
+    "fields": ["customer_first_name", "program"],
+    "examples": "Fictional Laura and Software; no contact data submitted as examples",
+    "components": ["text header", "body", "footer", "quick reply button"],
+    "workflow": "Saved draft, explicitly submitted from RinovaPlus, then synchronized with Meta",
+    "provider_status_history": ["PENDING", "APPROVED"],
+    "provider_status_after_sync": "APPROVED",
+    "approved": true,
+    "messages_sent_with_new_template": 0
+  },
+  "validation": {
+    "backend_tests": 124,
+    "frontend_tests": 10,
+    "types_lint_build": "passed",
+    "new_containers": 0,
+    "test_database_changes": "No production SQL from automated tests; live test actions recorded above"
+  },
+  "limits": [
+    "Positive receipt path does not prove controlled failures, duplicate or out-of-order reconciliation",
+    "Campaign report required its explicit refresh button; this is not realtime report acceptance",
+    "Media sample headers still require a Meta upload handle; no direct upload in the new form",
+    "Generic builder covers marketing and utility, not OTP creation",
+    "Canonical roadmap remains 93.88 percent, P7 85.14 percent; no additional milestone accepted in this evidence"
+  ]
+}
