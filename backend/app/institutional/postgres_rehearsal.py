@@ -64,6 +64,8 @@ REHEARSAL_ROUTES = {
     "/api/institution/workspace/clients/{contact_id}": {"post", "put"},
     "/api/institution/workspace/inbox": {"get"},
     "/api/institution/workspace/conversations/{conversation_id}/messages": {"get", "post"},
+    "/api/institution/workspace/conversations/{conversation_id}/read": {"put"},
+    "/api/institution/workspace/conversations/{conversation_id}/social-profile": {"get"},
 }
 LOG = logging.getLogger(__name__)
 

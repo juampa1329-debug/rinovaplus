@@ -23,8 +23,17 @@ from app.institutional.channel_operations import OperationalChannels, capabiliti
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
 from app.institutional.channel_tokens import health
+from app.institutional.channel_workspace import social_avatar_url
 from app.institutional.crypto import seal, unseal
 from app.modules.channels import providers
+
+
+def test_social_avatars_only_accept_https_meta_media_hosts():
+    official = "https://scontent.xx.fbcdn.net/profile.jpg"
+    assert social_avatar_url(official) == official
+    assert social_avatar_url("https://notfbcdn.net/profile.jpg") == ""
+    assert social_avatar_url("https://scontent.xx.fbcdn.net@other.test/profile.jpg") == ""
+    assert social_avatar_url("http://scontent.xx.fbcdn.net/profile.jpg") == ""
 
 
 @pytest.mark.parametrize("raw", ['{"a":1,"a":2}', '{"a":NaN}', '{"a":Infinity}'])

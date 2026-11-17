@@ -126,23 +126,70 @@ export function InboxUnread({ counts }: { counts: Record<string, number> }) {
   );
 }
 
+export type SocialProfile = {
+  name: string;
+  username: string;
+  avatarUrl: string;
+};
+
+export function inboxDisplayName(
+  name: string,
+  phone: string,
+  channel?: string,
+  profile?: SocialProfile,
+) {
+  if (
+    (channel === "facebook" || channel === "messenger" || channel === "instagram") &&
+    (!name || /^\d+$/.test(name))
+  ) {
+    return (
+      profile?.name ||
+      (profile?.username && `@${profile.username}`) ||
+      `Contacto de ${channels[channel]}`
+    );
+  }
+  return name || phone || "Contacto sin nombre";
+}
+
+function SocialAvatar({ src }: { src: string }) {
+  return src ? (
+    <img
+      src={src}
+      alt=""
+      referrerPolicy="no-referrer"
+      onError={(event) => {
+        event.currentTarget.hidden = true;
+      }}
+    />
+  ) : null;
+}
+
 export function InboxContactProfile({
   client,
   accounts,
+  profile,
 }: {
   client: Client;
   accounts: { id: string; name: string; channel: string }[];
+  profile?: SocialProfile;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const title = useId();
   const name = client.name?.trim();
-  const contactName = name || client.phone || "Contacto sin nombre";
+  const contactName = inboxDisplayName(
+    name,
+    client.phone,
+    accounts[0]?.channel,
+    profile,
+  );
   const initials = name
     ?.match(/\p{L}[\p{L}\p{M}]*/gu)
     ?.slice(0, 2)
     .map((part) => Array.from(part)[0].toLocaleUpperCase("es"))
     .join("");
   const fields = [
+    ["Nombre del perfil", profile?.name === contactName ? "" : profile?.name],
+    ["Usuario", profile?.username ? `@${profile.username}` : ""],
     ["Teléfono", client.phone],
     ["Ciudad", client.city],
     ["Programa", client.program],
@@ -168,6 +215,7 @@ export function InboxContactProfile({
             aria-hidden="true"
           >
             {initials || <Icon name="clients" />}
+            {profile && <SocialAvatar src={profile.avatarUrl} />}
           </span>
           <h2 id={title}>{contactName}</h2>
           <div className="inbox-row-meta">
@@ -424,6 +472,7 @@ export function ConversationRow({
   selected,
   onSelect,
   timestamp,
+  profile,
 }: {
   row: {
     name: string;
@@ -442,9 +491,10 @@ export function ConversationRow({
   selected: boolean;
   onSelect: () => void;
   timestamp?: ReactNode;
+  profile?: SocialProfile;
 }) {
-  const name = row.name || row.phone || "Contacto sin nombre";
-  const initials = row.name
+  const name = inboxDisplayName(row.name, row.phone, row.channel, profile);
+  const initials = name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
@@ -468,6 +518,7 @@ export function ConversationRow({
     >
       <span className="inbox-avatar" aria-hidden="true">
         {initials || "•"}
+        {profile && <SocialAvatar src={profile.avatarUrl} />}
       </span>
       <span className="inbox-conversation-body">
         <span className="inbox-row-heading">

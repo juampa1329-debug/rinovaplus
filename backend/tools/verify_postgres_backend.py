@@ -945,6 +945,16 @@ def run():
                 assert image.size == (2, 2)
             response = api.get(PREFIX + "/media/" + attachment.stem)
             assert response.status_code == 200 and response.content == attachment.read_bytes()
+            history = checked(api.get(path))["items"]
+            read_path = conversation_path + "/read"
+            read_body = {"operationId": str(uuid4()), "readThrough": history[0]["sequence"]}
+            checked(api.put(read_path, json=read_body), 403)
+            assert checked(api.put(read_path, headers=csrf, json=read_body))["unread"] is True
+            read_body = {"operationId": str(uuid4()), "readThrough": history[-1]["sequence"]}
+            receipt = checked(api.put(read_path, headers=csrf, json=read_body))
+            assert receipt["unread"] is False
+            assert checked(api.put(read_path, headers=csrf, json=read_body)) == receipt
+            assert checked(api.get(WORKSPACE + "/inbox"))["unreadByChannel"].get("whatsapp", 0) == 0
             request, enrollment = seed_worker_recovery(settings, thread)
             wait_for(
                 lambda: recovery_states(settings, request, enrollment),

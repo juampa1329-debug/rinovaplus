@@ -91,6 +91,11 @@ class ControlWrite(Strict):
     mode: Literal["human", "ai"]
 
 
+class ConversationRead(Strict):
+    operationId: Identifier
+    readThrough: Annotated[str, Field(pattern=r"^(0|[1-9][0-9]{0,18})$")]
+
+
 class MessageWrite(Command):
     body: Annotated[str, Field(min_length=1, max_length=4000)]
     mediaId: Identifier | None = None
@@ -842,6 +847,7 @@ class Workspace:
                 "revision": revision(c),
             }
             if area == "inbox":
+                response["socialProfiles"] = bool(getattr(self, "operational_channels", False))
                 response["unreadByChannel"] = dict(c.execute(
                     "SELECT sources.Channel,COUNT(*) FROM "
                     f"(SELECT {channel_expression} AS Channel "
@@ -939,6 +945,7 @@ class Workspace:
                 "notesHasMore": len(notes) > 50,
                 "revision": revision(c),
                 "controlEpoch": control_epoch,
+                "readOnOpen": True,
                 "academicAuthority": "SIIE",
                 "academicBinding": "not_bound",
             }
@@ -1145,7 +1152,7 @@ class Workspace:
             "settings.crm.write"
             if action == "policy"
             else "inbox.write"
-            if action in {"conversation", "control", "message"}
+            if action in {"conversation", "control", "message", "read"}
             else "crm.write"
         )
         with transaction(
@@ -1167,8 +1174,8 @@ class Workspace:
             )
             if prior is not None:
                 return prior
-            # Messages and control changes validate the current thread in apply.
-            if action not in {"message", "control"} and body.revision != revision(c):
+            # Scoped commands validate the current thread in apply.
+            if action not in {"message", "control", "read"} and body.revision != revision(c):
                 raise HTTPException(409, "revision_conflict")
             if self.profile.ticket.get('version') in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'} and action in {'create','contact'}:
                 from app.institutional.campaign_runtime import observe_contact
@@ -1201,6 +1208,15 @@ class Workspace:
             return result
 
     def apply(self, c, action, resource, body, actor):
+        if action == "read":
+            self.exists(c, resource)
+            unread = mark_read(c, resource, body.readThrough)
+            c.execute(
+                "UPDATE crm.Conversation SET Unread=? WHERE ConversationId=?",
+                unread,
+                resource,
+            )
+            return {"conversationId": resource, "unread": unread}
         if action == "message" and body.mediaId:
             raise HTTPException(409, "media_transport_unavailable")
         if action == "policy":
@@ -1613,6 +1629,11 @@ def install(app, settings, workspace=None):
     ):
         return workspace.messages(conversation_id, before)
 
+    if getattr(workspace, "operational_channels", False):
+        @app.get(prefix + "/conversations/{conversation_id}/social-profile")
+        def social_profile(conversation_id: Identifier):
+            return workspace.social_profile(conversation_id)
+
     @app.get(prefix + "/tasks")
     def tasks(
         status: Literal["", "pending", "completed", "cancelled"] = "pending",
@@ -1655,6 +1676,10 @@ def install(app, settings, workspace=None):
     @app.put(prefix + "/conversations/{conversation_id}/control")
     def set_control(conversation_id: Identifier, body: ControlWrite):
         return workspace.write("control", conversation_id, body)
+
+    @app.put(prefix + "/conversations/{conversation_id}/read")
+    def read_conversation(conversation_id: Identifier, body: ConversationRead):
+        return workspace.write("read", conversation_id, body)
 
     @app.post(prefix + "/conversations/{conversation_id}/messages")
     def message(conversation_id: Identifier, body: MessageWrite):

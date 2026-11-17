@@ -32,8 +32,10 @@ import {
   InboxIdle,
   InboxContactProfile,
   InboxUnread,
+  inboxDisplayName,
   initialInboxFilters,
 } from "./InboxPresentation";
+import type { SocialProfile } from "./InboxPresentation";
 
 export type Risk = {
   status: string;
@@ -72,9 +74,11 @@ type Page = {
   hasMore: boolean;
   revision: string;
   unreadByChannel?: Record<string, number>;
+  socialProfiles?: boolean;
 };
 type Detail = {
   controlEpoch?: string;
+  readOnOpen?: boolean;
   agentOperations?: boolean;
   knowledgeOperations?: boolean;
   mediaAvailable?: boolean;
@@ -494,7 +498,11 @@ function WorkspaceView({
   const [workspaceSession] = useWorkspaceState("institutional");
   const drafts = workspaceSession.contacts,
     messages = workspaceSession.messages;
-  const changed = () => setRefresh((n) => n + 1);
+  const changed = () => {
+    setOffset(0);
+    setAnchor("");
+    setRefresh((n) => n + 1);
+  };
   const params = new URLSearchParams({
     offset: String(offset),
     anchor: offset ? anchor : "",
@@ -508,6 +516,27 @@ function WorkspaceView({
     page !== "settings",
     inbox && offset === 0 ? 12000 : 0,
   );
+  const [socialProfiles, setSocialProfiles] = useState<
+    Record<string, SocialProfile>
+  >({});
+  const selectedChannel = list.value?.items.find(
+    (row) => row.conversationId === selected,
+  )?.channel;
+  const profile = useRead<{ profile: SocialProfile | null }>(
+    `conversations/${selected}/social-profile`,
+    0,
+    inbox &&
+      !!list.value?.socialProfiles &&
+      !!selected &&
+      !socialProfiles[selected] &&
+      (!selectedChannel ||
+        ["facebook", "messenger", "instagram"].includes(selectedChannel)),
+  );
+  useEffect(() => {
+    const current = profile.value?.profile;
+    if (current)
+      setSocialProfiles((values) => ({ ...values, [selected]: current }));
+  }, [profile.value, selected]);
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =
     inbox &&
@@ -737,6 +766,7 @@ function WorkspaceView({
                   {list.value.items.map((row) =>
                     inbox ? (
                       <ConversationRow
+                        profile={socialProfiles[row.conversationId]}
                         key={row.conversationId}
                         row={row}
                         selected={selected === row.conversationId}
@@ -822,6 +852,7 @@ function WorkspaceView({
             ) : selected ? (
               <Person
                 key={selected}
+                socialProfile={socialProfiles[selected]}
                 conversation={selected}
                 page={page}
                 refresh={refresh}
@@ -1021,6 +1052,7 @@ function Person({
   onBack,
   showContact,
   toggleContact,
+  socialProfile,
 }: {
   conversation: string;
   page: string;
@@ -1033,6 +1065,7 @@ function Person({
   onBack?: () => void;
   showContact: boolean;
   toggleContact: () => void;
+  socialProfile?: SocialProfile;
 }) {
   const [activityOpened, setActivityOpened] = useState(false);
   const contactPanelId = `inbox-contact-${conversation}`;
@@ -1069,6 +1102,7 @@ function Person({
       {page === "inbox" && (
         <Conversation
           conversation={conversation}
+          socialProfile={socialProfile}
           detail={detail.value}
           refresh={refresh}
           changed={changed}
@@ -1158,6 +1192,7 @@ function Conversation({
   showContact,
   toggleContact,
   onBack,
+  socialProfile,
 }: {
   conversation: string;
   detail: Detail;
@@ -1169,6 +1204,7 @@ function Conversation({
   showContact: boolean;
   toggleContact: () => void;
   onBack?: () => void;
+  socialProfile?: SocialProfile;
 }) {
   const input = useRef<HTMLTextAreaElement>(null);
   const timeline = useRef<HTMLOListElement>(null);
@@ -1200,8 +1236,10 @@ function Conversation({
       `conversation:${conversation}:owner`,
       detail.thread.UserId ?? "",
     ),
-    command = useCommand(changed);
+    command = useCommand(changed),
+    read = useCommand(changed);
   const observed = useRef("0");
+  const opened = useRef(false);
   const nearLatest = useRef(true);
   const human = detail.thread.ControlMode === "human";
   const canWrite = session.actions.includes("inbox.write");
@@ -1215,6 +1253,34 @@ function Conversation({
       observed.current = data.value.items.at(-1)!.sequence;
   }, [before, data.value]);
   const latest = data.value?.items.at(-1)?.sequence;
+  const { save: saveRead } = read;
+  useEffect(() => {
+    if (!detail.readOnOpen || before || latest === undefined || opened.current)
+      return;
+    function acknowledge() {
+      if (document.hidden || opened.current) return;
+      opened.current = true;
+      if (canWrite && detail.thread.Unread) {
+        void saveRead(`conversations/${conversation}/read`, "PUT", {
+          readThrough: latest,
+        });
+      }
+    }
+    acknowledge();
+    if (!opened.current) {
+      document.addEventListener("visibilitychange", acknowledge);
+      return () =>
+        document.removeEventListener("visibilitychange", acknowledge);
+    }
+  }, [
+    before,
+    canWrite,
+    conversation,
+    detail.readOnOpen,
+    detail.thread.Unread,
+    latest,
+    saveRead,
+  ]);
   useLayoutEffect(() => {
     if (timeline.current && !before && nearLatest.current)
       timeline.current.scrollTop = timeline.current.scrollHeight;
@@ -1265,7 +1331,14 @@ function Conversation({
       )}
       <header className="inbox-thread-heading">
         <div>
-          <h2>{detail.client.name || detail.client.phone || "Conversación"}</h2>
+          <h2>
+            {inboxDisplayName(
+              detail.client.name,
+              detail.client.phone,
+              channel,
+              socialProfile,
+            )}
+          </h2>
           <div className="inbox-row-meta">
             {detail.channelAccounts?.length ? (
               detail.channelAccounts.map((account) => (
@@ -1280,6 +1353,7 @@ function Conversation({
           <InboxContactProfile
             client={detail.client}
             accounts={detail.channelAccounts ?? []}
+            profile={socialProfile}
           />
           <Button
             variant="quiet"
@@ -1344,7 +1418,14 @@ function Conversation({
             <Button onClick={() => void update()}>Guardar conversación</Button>
             <Button
               variant="quiet"
-              onClick={() => void update({ unread: !detail.thread.Unread })}
+              disabled={read.busy}
+              onClick={() =>
+                detail.thread.Unread && detail.readOnOpen
+                  ? void saveRead(`conversations/${conversation}/read`, "PUT", {
+                      readThrough: observed.current,
+                    })
+                  : void update({ unread: !detail.thread.Unread })
+              }
             >
               {detail.thread.Unread
                 ? "Marcar como leída"
@@ -1353,6 +1434,7 @@ function Conversation({
           </div>
         </fieldset>
       </details>
+      {read.error && <Notice error>{read.error}</Notice>}
       {data.error && <Notice error>{data.error}</Notice>}
       <div className="p3-actions">
         <Button

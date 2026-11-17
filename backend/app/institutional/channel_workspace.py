@@ -1,5 +1,7 @@
 """P4 transport extension of the accepted P3 human workspace."""
 
+import re
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -8,13 +10,82 @@ from app.institutional import db
 from app.institutional.auth import authorize
 from app.institutional.channel_operations import account, configuration
 from app.institutional.channel_outbox import enqueue
+from app.institutional.channel_provider import provider_account
+from app.institutional.channel_text import sql_text
 from app.institutional.policy import request_authority
 from app.institutional.settings import setting
 from app.institutional.workspace import Workspace as Parent
+from app.modules.channels import providers
+
+
+def social_avatar_url(value):
+    if not isinstance(value, str) or len(value) > 2048:
+        return ""
+    try:
+        uri = urlsplit(value)
+    except ValueError:
+        return ""
+    if (
+        uri.scheme == "https"
+        and uri.netloc == uri.hostname
+        and uri.hostname
+        and uri.hostname.endswith((".fbcdn.net", ".cdninstagram.com", ".fbsbx.com"))
+    ):
+        return value
+    return ""
 
 
 class Workspace(Parent):
     operational_channels = True
+
+    def social_profile(self, conversation):
+        with self.transaction() as c:
+            identity = db.one(
+                c,
+                "SELECT TOP(1) i.ExternalId,i.IntegrationId FROM crm_channels2.ExternalIdentity i "
+                "JOIN crm_channels2.Integration a ON a.InstitutionId=i.InstitutionId "
+                "AND a.IntegrationId=i.IntegrationId WHERE i.InstitutionId=? "
+                "AND i.ConversationId=? AND a.Channel IN('facebook','messenger','instagram') "
+                "AND a.VerifiedStatus='verified' ORDER BY i.LastIncomingAt DESC,i.IdentityId",
+                db.institution(self.profile),
+                conversation,
+            )
+            if not identity or not re.fullmatch(r"[0-9]{1,40}", identity["ExternalId"]):
+                return {"profile": None}
+            item = account(c, self.profile, str(identity["IntegrationId"]))
+            try:
+                adapter, _ = provider_account(c, self.profile, item)
+            except HTTPException:
+                return {"profile": None}
+        channel, sender = item["Channel"], identity["ExternalId"]
+        fields = {
+            "messenger": "first_name,last_name,profile_pic",
+            "facebook": "name,picture",
+            "instagram": "name,username,profile_pic",
+        }[channel]
+        try:
+            result = providers.request(adapter, "GET", sender, params={"fields": fields})
+        except providers.ProviderFailure:
+            return {"profile": None}
+        name = result.get("name")
+        if channel == "messenger":
+            name = " ".join(
+                result[field].strip()
+                for field in ("first_name", "last_name")
+                if isinstance(result.get(field), str) and result[field].strip()
+            )
+        photo = result.get("profile_pic")
+        if channel == "facebook":
+            picture = result.get("picture")
+            data = picture.get("data") if isinstance(picture, dict) else None
+            photo = data.get("url") if isinstance(data, dict) and not data.get("is_silhouette") else None
+        username = result.get("username") if channel == "instagram" else None
+        profile = {
+            "name": sql_text(name.strip(), 100) if isinstance(name, str) else "",
+            "username": sql_text(username.strip(), 100) if isinstance(username, str) else "",
+            "avatarUrl": social_avatar_url(photo),
+        }
+        return {"profile": profile if any(profile.values()) else None}
 
     def apply(self, c, action, resource, body, actor):
         previous = self.exists(c, resource) if action in {"conversation", "control"} else None
@@ -240,6 +311,7 @@ class Workspace(Parent):
                 conversation,
             ).fetchval()
         return result
+
 
     def messages(self, conversation, before=None):
         result = super().messages(conversation, before)

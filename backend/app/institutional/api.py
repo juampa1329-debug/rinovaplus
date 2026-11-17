@@ -70,7 +70,7 @@ def core_permission(path, method):
             ), "settings"
         inbox = local.startswith("inbox") or (
             local.startswith("conversations/")
-            and (local.endswith("/messages") or method != "GET")
+            and (local.endswith(("/messages", "/social-profile")) or method != "GET")
             and not local.endswith("/manual")
         )
         return ("inbox." if inbox else "crm.") + (

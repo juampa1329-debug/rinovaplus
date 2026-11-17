@@ -79,6 +79,9 @@ let failedDelivery = false;
 let threadMode = "human";
 let controlEpoch: string | undefined;
 let emptyInbox = false;
+let readOnOpen = false;
+let firstUnread = true;
+let socialProfileEnabled = false;
 const calls: {
   path: string;
   method: string;
@@ -87,7 +90,7 @@ const calls: {
 function client(index: number) {
   return {
     id: ids[index],
-    name: "Persona " + index,
+    name: socialProfileEnabled && !index ? "123456789" : "Persona " + index,
     phone: "",
     city: "",
     programId: null,
@@ -115,6 +118,9 @@ beforeEach(() => {
   threadMode = "human";
   controlEpoch = undefined;
   emptyInbox = false;
+  readOnOpen = false;
+  firstUnread = true;
+  socialProfileEnabled = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
     config,
@@ -153,6 +159,8 @@ beforeEach(() => {
         });
       if (method === "PUT" && !failWrite && body?.mode)
         threadMode = String(body.mode);
+      if (method === "PUT" && path.endsWith(`${conv[0]}/read`) && !failWrite)
+        firstUnread = false;
       if (method !== "GET")
         return failWrite
           ? response(
@@ -216,12 +224,24 @@ beforeEach(() => {
         path.includes("/notes?")
       )
         return response({ items: [], hasMore: false });
+      if (path.endsWith("/social-profile"))
+        return response({
+          profile: {
+            name: "Ana de Messenger",
+            username: "",
+            avatarUrl: "https://scontent.example.fbcdn.net/avatar.jpg",
+          },
+        });
       if (path.includes("/conversations/") || path.includes("/detail")) {
         const index = path.includes(conv[1]) ? 1 : 0;
         return response({
           agentOperations,
           controlEpoch,
+          readOnOpen,
           mediaAvailable: true,
+          channelAccounts: socialProfileEnabled
+            ? [{ id: "page", name: "Página de prueba", channel: "messenger" }]
+            : undefined,
           client: client(index),
           thread: {
             ConversationId: conv[index],
@@ -229,7 +249,7 @@ beforeEach(() => {
             State: "open",
             Priority: "normal",
             ControlMode: threadMode,
-            Unread: true,
+            Unread: index ? true : firstUnread,
             UserId: null,
           },
           risk,
@@ -249,14 +269,18 @@ beforeEach(() => {
           items: ids.map((id, index) => ({
             id,
             conversationId: conv[index],
-            name: "Persona " + index,
+            name: client(index).name,
             phone: "",
             stage: "Nueva",
             state: "open",
             mode: "human",
-            unread: true,
+            unread: index ? true : firstUnread,
             assignee: null,
-            channel: index ? "instagram" : "whatsapp",
+            channel: index
+              ? "instagram"
+              : socialProfileEnabled
+                ? "messenger"
+                : "whatsapp",
             preview: index ? "Consulta por Instagram" : "Hola desde WhatsApp",
             program: index
               ? "Desarrollo Multimedia y Comunicación Gráfica"
@@ -268,6 +292,8 @@ beforeEach(() => {
           limit: 25,
           hasMore: false,
           revision: serverRevision,
+          unreadByChannel: { whatsapp: Number(firstUnread), instagram: 1 },
+          socialProfiles: socialProfileEnabled,
         });
       return response({ detail: "unexpected_test_request" }, 404);
     }),
@@ -680,6 +706,41 @@ it("marks read through the actual loaded message sequence", async () => {
           call.body?.unread === false,
       ),
     ).toBe(true),
+  );
+});
+it("clears the selected conversation and unread counter when its messages load", async () => {
+  readOnOpen = true;
+  open("inbox");
+  expect(await screen.findByText("2 sin leer")).toBeVisible();
+  const row = await screen.findByRole("button", { name: /^Persona 0/ });
+  expect(row).toHaveAttribute("data-unread");
+  fireEvent.click(row);
+  await screen.findByText("Mensaje registrado");
+  expect(await screen.findByText("1 sin leer")).toBeVisible();
+  expect(row).not.toHaveAttribute("data-unread");
+  expect(row).not.toHaveTextContent("Sin leer");
+  expect(screen.getByRole("button", { name: /^Persona 1/ })).toHaveAttribute(
+    "data-unread",
+  );
+  const writes = calls.filter((call) => call.method === "PUT");
+  expect(writes).toHaveLength(1);
+  expect(writes[0].path).toMatch(/\/read$/);
+  expect(writes[0].body).toEqual({
+    operationId: expect.any(String),
+    readThrough: "1",
+  });
+});
+it("shows the Meta profile in an opened conversation and its Inbox row", async () => {
+  socialProfileEnabled = true;
+  open("inbox");
+  fireEvent.click(
+    await screen.findByRole("button", { name: /^Contacto de Messenger/ }),
+  );
+  await screen.findByRole("heading", { name: "Ana de Messenger" });
+  const row = screen.getByRole("button", { name: /^Ana de Messenger/ });
+  expect(row.querySelector("img")).toHaveAttribute(
+    "src",
+    "https://scontent.example.fbcdn.net/avatar.jpg",
   );
 });
 it("shows one editable ficha without a duplicated read only contact block", async () => {

@@ -71,6 +71,7 @@ def bounded_provider(value, depth=0):
         "comment_action",
         "mid",
         "username",
+        "name",
         "media",
         "context",
     }

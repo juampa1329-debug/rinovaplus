@@ -36,7 +36,17 @@ class CommentAction(Strict):
 
 
 def public_comment(value):
-    state = json.loads(value["Payload"]).get("_crm", {})
+    payload = json.loads(value["Payload"])
+    state = payload.get("_crm", {})
+    provider = payload.get("provider")
+    actor = provider.get("from") if isinstance(provider, dict) else None
+    display_name = ""
+    if isinstance(actor, dict) and actor.get("id") == value["AuthorExternalId"]:
+        display_name = next(
+            (actor[field].strip()[:100] for field in ("name", "username")
+             if isinstance(actor.get(field), str) and actor[field].strip()),
+            "",
+        )
     synthetic = bool(state.get("synthetic_demo"))
     return {
         "id": uid(str(value["CommentId"])),
@@ -44,7 +54,7 @@ def public_comment(value):
         "channel": value["Channel"],
         "account": value["DisplayName"],
         "external_id": value["ExternalId"],
-        "author": value["AuthorExternalId"],
+        "author": display_name or value["AuthorExternalId"],
         "body": value["Body"],
         "received_at": utc(value["ReceivedAt"]),
         "row_version": bytes(value["RowVersion"]).hex(),
