@@ -36,11 +36,13 @@ def social_avatar_url(value):
     return ""
 
 
-def followup_risk(c, institution, conversation, risk):
-    """Read-only fallback for a routed chat without a current assessment."""
-    evidence = db.one(
+def followup_evidence(c, institution, conversations):
+    placeholders = ",".join("?" for _ in conversations)
+    items = db.rows(
         c,
-        "SELECT TOP(1) m.CreatedAt AS IncomingAt,SYSUTCDATETIME() AS AsOfUtc,"
+        "SELECT v.ConversationId,evidence.IncomingAt,evidence.ReplyAt,SYSUTCDATETIME() AS AsOfUtc "
+        "FROM crm.Conversation v OUTER APPLY("
+        "SELECT TOP(1) m.CreatedAt AS IncomingAt,"
         "(SELECT TOP(1) q.CompletedAt FROM crm_channels2.SendJob q "
         "JOIN crm.Message reply ON reply.MessageId=q.MessageId "
         "WHERE q.InstitutionId=r.InstitutionId AND q.IntegrationId=r.IntegrationId "
@@ -51,11 +53,17 @@ def followup_risk(c, institution, conversation, risk):
         "FROM crm.Message m JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId "
         "JOIN crm_channels2.ExternalMessage x ON x.InstitutionId=r.InstitutionId "
         "AND x.IntegrationId=r.IntegrationId AND x.MessageId=r.MessageId "
-        "WHERE r.InstitutionId=? AND m.ConversationId=? AND m.Direction='incoming' "
-        "AND r.ActorKind='external' ORDER BY m.Sequence DESC",
+        "WHERE r.InstitutionId=? AND m.ConversationId=v.ConversationId AND m.Direction='incoming' "
+        "AND r.ActorKind='external' ORDER BY m.Sequence DESC) evidence "
+        f"WHERE v.ConversationId IN ({placeholders}) AND evidence.IncomingAt IS NOT NULL",
         institution,
-        conversation,
+        *conversations,
     )
+    return {str(item["ConversationId"]).lower(): item for item in items}
+
+
+def followup_risk(evidence, risk):
+    """Read-only fallback for a routed chat without a current assessment."""
     if not evidence:
         return risk
     at = evidence["AsOfUtc"].replace(tzinfo=timezone.utc)
@@ -86,6 +94,25 @@ def followup_risk(c, institution, conversation, risk):
 
 class Workspace(Parent):
     operational_channels = True
+
+    def conversation_risk(self, c, contact, conversation):
+        current = super().conversation_risk(c, contact, conversation)
+        if current["status"] != "unknown":
+            return current
+        key = str(conversation).lower()
+        evidence = followup_evidence(c, db.institution(self.profile), [key])
+        return followup_risk(evidence.get(key), current)
+
+    def populate_inbox_risk(self, c, items):
+        super().populate_inbox_risk(c, items)
+        candidates = {
+            str(row["conversationId"]).lower(): row
+            for row in items if row["risk"]["status"] == "unknown" and row["channel"] != "local"
+        }
+        if candidates:
+            evidence = followup_evidence(c, db.institution(self.profile), list(candidates))
+            for key, row in candidates.items():
+                row["risk"] = followup_risk(evidence.get(key), row["risk"])
 
     def social_profile(self, conversation):
         with self.transaction() as c:
@@ -348,10 +375,6 @@ class Workspace(Parent):
                 }
                 for v in links
             ]
-            if links and result["risk"]["status"] == "unknown":
-                result["risk"] = followup_risk(
-                    c, db.institution(self.profile), conversation, result["risk"],
-                )
             result["inFlightOrUncertain"] += c.execute(
                 (
                     "SELECT COUNT(*) FROM crm_channels2.Sen"

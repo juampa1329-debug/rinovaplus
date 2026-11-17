@@ -1,5 +1,6 @@
 import hmac
 from contextlib import nullcontext
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
@@ -24,7 +25,7 @@ from app.institutional.channel_operations import OperationalChannels, capabiliti
 from app.institutional.channel_provider import ProviderAction, provider_account
 from app.institutional.channel_secrets import binding
 from app.institutional.channel_tokens import health
-from app.institutional.channel_workspace import social_avatar_url
+from app.institutional.channel_workspace import followup_risk, social_avatar_url
 from app.institutional.channel_workers import Workers
 from app.institutional.crypto import seal, unseal
 from app.modules.channels import providers
@@ -46,6 +47,40 @@ def test_public_sql_deployment_has_wakeable_inbound_and_outbound_queues():
 
     assert production.fast_queues
     assert not local.fast_queues
+
+
+@pytest.mark.parametrize(("hours", "expected"), [(1, (10, "low")), (72, (50, "medium")), (168, (75, "high"))])
+def test_followup_risk_uses_the_same_confirmed_activity(hours, expected):
+    now = datetime(2026, 11, 17, 15, tzinfo=timezone.utc)
+    incoming, reply = now - timedelta(hours=hours + 1), now - timedelta(hours=hours)
+    risk = {"status": "unknown", "score": None, "fresh": False}
+    evidence = {"IncomingAt": incoming, "ReplyAt": reply, "AsOfUtc": now}
+    scored = followup_risk(evidence, risk)
+    assert (scored["score"], scored["level"]) == expected
+    assert scored["source"] == "channel_activity"
+    evidence["ReplyAt"] = None
+    assert followup_risk(evidence, risk)["status"] == "unknown"
+
+
+def test_whatsapp_oauth_discovers_numbers_from_configured_waba(monkeypatch):
+    def request(method, url, *, params=None, headers=None):
+        assert method == "GET"
+        if url.endswith("/oauth/access_token"):
+            return {"access_token": "synthetic-access"}
+        assert url == "https://graph.facebook.com/v25.0/890/phone_numbers"
+        assert headers == {"Authorization": "Bearer synthetic-access"}
+        assert params["fields"] == "id,display_phone_number"
+        return {"data": [{"id": "123", "display_phone_number": "+15555550100"}]}
+
+    monkeypatch.setattr("app.institutional.channel_oauth.http_json", request)
+    result = exchange(
+        {"IssuerProfile": "meta_whatsapp", "ApiVersion": "v25.0", "ClientId": "999",
+         "Channel": "whatsapp", "ParentExternalId": "890"},
+        "synthetic-secret", "code", "https://crm.example/hooks/oauth/fixture", None,
+    )
+    assert [(v["kind"], v["parent"], v["id"]) for v in result["assets"]] == [
+        ("whatsapp_phone", "890", "123"),
+    ]
 
 
 def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):

@@ -215,6 +215,7 @@ def exchange(item, secret, code, redirect, verifier):
         data = http_json(
             "GET",
             base + parent + "/phone_numbers",
+            params={"fields": "id,display_phone_number", "limit": 100},
             headers={"Authorization": "Bearer " + access},
         ).get("data", [])
         assets = [
@@ -225,7 +226,7 @@ def exchange(item, secret, code, redirect, verifier):
                 "name": v.get("display_phone_number", "WhatsApp"),
                 "token": access,
             }
-            for v in data
+            for v in data[:100]
             if v.get("id")
         ]
     else:
@@ -299,6 +300,10 @@ class OAuth:
                 raise HTTPException(
                     409, "tiktok_accounts_authorization_profile_required"
                 )
+            if item["IssuerProfile"] == "meta_whatsapp" and not re.fullmatch(
+                r"[0-9]+", item["ParentExternalId"] or ""
+            ):
+                raise HTTPException(409, "configured_waba_required")
             if (
                 len(set(body.scopes)) != len(body.scopes)
                 or not set(body.scopes) <= SCOPES[item["IssuerProfile"]]
@@ -699,6 +704,11 @@ class OAuth:
                 not asset
                 or item["ExternalAccountId"]
                 and item["ExternalAccountId"] != asset["ExternalId"]
+                or item["IssuerProfile"] == "meta_whatsapp"
+                and (
+                    asset["Kind"] != "whatsapp_phone"
+                    or asset["ParentExternalId"] != item["ParentExternalId"]
+                )
             ):
                 raise HTTPException(409, "oauth_account_mismatch")
             from app.institutional.channel_provider import access_kind

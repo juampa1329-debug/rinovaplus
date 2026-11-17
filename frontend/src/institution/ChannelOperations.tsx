@@ -75,7 +75,14 @@ export function ChannelOperations({
       ? "Facebook"
       : account.issuer_profile === "instagram_login"
         ? "Instagram"
-        : null;
+        : account.issuer_profile === "meta_whatsapp"
+          ? "Meta"
+          : null;
+  const assetPrompt = pageOAuth
+    ? "Selecciona la página autorizada."
+    : account.channel === "whatsapp"
+      ? "Selecciona el número institucional autorizado."
+      : "Selecciona la cuenta autorizada.";
   useEffect(() => {
     if (!oauth) return;
     const returned = oauth === returnedOAuth;
@@ -93,11 +100,7 @@ export function ChannelOperations({
         if (result.status === "assets_ready") {
           setAssets(result.items);
           setAuthUrl("");
-          setDiagnosis(
-            pageOAuth
-              ? "Selecciona la página autorizada."
-              : "Selecciona la cuenta autorizada.",
-          );
+          setDiagnosis(assetPrompt);
         } else if (returned) {
           setDiagnosis(
             result.status === "cancelled"
@@ -126,7 +129,7 @@ export function ChannelOperations({
       window.removeEventListener("focus", onReturn);
       document.removeEventListener("visibilitychange", onReturn);
     };
-  }, [oauthProvider, pageOAuth, oauth, authUrl, call, returnedOAuth]);
+  }, [oauthProvider, assetPrompt, oauth, authUrl, call, returnedOAuth]);
   const perform = (action: string) =>
     void task.run(async () => {
       const payload = {
@@ -286,6 +289,12 @@ export function ChannelOperations({
           La aplicación genera la dirección de retorno. Configura primero la URL
           pública HTTPS en Webhooks y las credenciales de esta aplicación.
         </p>
+        {account.channel === "whatsapp" && (
+          <p>
+            Guarda el ID de la cuenta de WhatsApp Business (WABA) en Canales.
+            Meta te permitirá autorizar y elegir un número de esa cuenta.
+          </p>
+        )}
         {account.oauth_ready && account.oauth_callback && (
           <Field
             id="channel-oauth-callback"
@@ -357,7 +366,7 @@ export function ChannelOperations({
                 setAssets(result.items);
                 setDiagnosis(
                   result.status === "assets_ready"
-                    ? "Selecciona la cuenta autorizada."
+                    ? assetPrompt
                     : "La autorización aún no está lista.",
                 );
               })
@@ -391,7 +400,7 @@ export function ChannelOperations({
                 })
               }
             >
-              {pageOAuth ? "Usar esta página" : "Usar esta cuenta"}
+              {pageOAuth ? "Usar esta página" : account.channel === "whatsapp" ? "Usar este número" : "Usar esta cuenta"}
             </Button>
           </div>
         ))}

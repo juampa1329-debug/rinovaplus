@@ -149,6 +149,8 @@ const messages: Record<string, string> = {
     "Configura primero la URL pública HTTPS en Ajustes → Webhooks.",
   application_client_id_required:
     "Introduce el App ID o Client Key de tu aplicación del proveedor.",
+  configured_waba_required:
+    "Guarda el ID de la cuenta de WhatsApp Business (WABA) de la institución y abre Meta de nuevo.",
   credential_required:
     "Falta una credencial para esta cuenta. Guárdala antes de verificarla.",
   provider_verification_required:

@@ -32,6 +32,7 @@ import {
   InboxIdle,
   InboxContactProfile,
   InboxUnread,
+  RiskBadge,
   inboxDisplayName,
   initialInboxFilters,
 } from "./InboxPresentation";
@@ -66,7 +67,14 @@ type Row = {
   temperature?: string | null;
   leadScore?: number | null;
   program?: string | null;
+  slaStatus?: string;
   risk: Risk;
+};
+type Sla = {
+  status: "not_configured" | "disabled" | "closed" | "no_incoming" | "on_time" | "overdue";
+  startedAt: string | null;
+  dueAt: string | null;
+  thresholdMinutes: number | null;
 };
 type Page = {
   items: Row[];
@@ -97,6 +105,7 @@ type Detail = {
     Assignee?: string | null;
   };
   risk: Risk;
+  sla?: Sla;
   manual: {
     score: number | null;
     temperature: string | null;
@@ -397,9 +406,6 @@ function useCommand(onSaved: () => void) {
 }
 export function RiskSummary({ risk }: { risk: Risk }) {
   const known = risk.status === "known" && risk.fresh;
-  const label = known
-    ? ({ low: "Bajo", medium: "Medio", high: "Alto" }[risk.level] ?? "Sin evaluación")
-    : risk.status === "not_applicable" ? "No aplica" : "Sin evaluación";
   const source = risk.source === "channel_activity"
     ? "Actividad del canal"
     : "Rúbrica de seguimiento";
@@ -407,7 +413,7 @@ export function RiskSummary({ risk }: { risk: Risk }) {
     <section className="p3-risk" data-level={known ? risk.level : undefined} aria-label="Riesgo de abandono">
       <div className="inbox-risk-heading">
         <h3>Riesgo de abandono</h3>
-        <span>{label}</span>
+        <RiskBadge risk={risk} />
       </div>
       {known && risk.score !== null && (
         <div className="inbox-risk-score">
@@ -426,6 +432,48 @@ export function RiskSummary({ risk }: { risk: Risk }) {
         </ul>
         {risk.asOf && <small>Evaluado <DateText value={risk.asOf} /></small>}
       </details>
+    </section>
+  );
+}
+
+const slaLabels = {
+  not_configured: "Sin configurar",
+  disabled: "Desactivado",
+  closed: "Chat cerrado",
+  no_incoming: "Sin respuesta pendiente",
+  on_time: "En plazo",
+  overdue: "Vencido",
+};
+
+export function SlaSummary({ sla, canConfigure }: { sla: Sla; canConfigure: boolean }) {
+  const [now, setNow] = useState(Date.now);
+  const due = sla.dueAt ? Date.parse(sla.dueAt) : NaN;
+  useEffect(() => {
+    if (!Number.isFinite(due)) return;
+    const update = () => setNow(Date.now());
+    update();
+    const interval = window.setInterval(update, 15_000);
+    return () => window.clearInterval(interval);
+  }, [due]);
+  const status = sla.status === "on_time" && due <= now ? "overdue" : sla.status;
+  const minutes = Math.ceil(Math.abs(due - now) / 60_000);
+  const hours = Math.floor(minutes / 60);
+  const duration = hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
+  return (
+    <section className="p3-risk inbox-sla" aria-label="Tiempo de respuesta (SLA)">
+      <div className="inbox-risk-heading">
+        <h3>Tiempo de respuesta (SLA)</h3>
+        <span className="inbox-signal" data-sla={status}>{slaLabels[status]}</span>
+      </div>
+      {sla.dueAt && Number.isFinite(due) && (
+        <dl>
+          {sla.startedAt && <div><dt>En espera desde</dt><dd><DateText value={sla.startedAt} /></dd></div>}
+          <div><dt>{status === "overdue" ? "Venció" : "Vence"}</dt><dd><DateText value={sla.dueAt} /></dd></div>
+          <div><dt>{status === "overdue" ? "Tiempo de atraso" : "Tiempo restante"}</dt><dd>{duration}</dd></div>
+        </dl>
+      )}
+      {sla.thresholdMinutes != null && <small>Plazo institucional de {sla.thresholdMinutes} min</small>}
+      {canConfigure && <a href="#/settings/crm">Configurar plazo institucional</a>}
     </section>
   );
 }
@@ -1089,7 +1137,7 @@ function Person({
     page === "inbox"
       ? `inbox/${conversation}/detail`
       : `conversations/${conversation}`,
-    refresh,
+    `${refresh}:${liveRevision ?? ""}`,
   );
   if (!detail.value)
     return (
@@ -1136,6 +1184,9 @@ function Person({
         hidden={page === "inbox" && !showContact}
       >
         {page === "inbox" && <h2 className="inbox-crm-title">Ficha CRM</h2>}
+        {page === "inbox" && detail.value.sla && (
+          <SlaSummary sla={detail.value.sla} canConfigure={session.actions.includes("settings.crm.write")} />
+        )}
         <RiskSummary risk={detail.value.risk} />
         {page === "inbox" && detail.value.agentOperations && (
           <section className="panel">

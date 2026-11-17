@@ -33,6 +33,17 @@ const programJoiners = new Set([
   "y",
 ]);
 
+export function RiskBadge({ risk, inList = false }: { risk: Risk; inList?: boolean }) {
+  const level = risk.status === "known" && risk.fresh ? labelFor(riskLevels, risk.level) : "";
+  const label = level || (risk.status === "not_applicable" ? "No aplica" : "Sin evaluación");
+  return (
+    <span className="inbox-signal" data-risk={level ? risk.level : undefined}>
+      {inList ? `Abandono ${label.toLowerCase()}` : label}
+      {inList && level && risk.score != null && ` · ${risk.score}/100`}
+    </span>
+  );
+}
+
 export function inboxProgramCode(name: string) {
   const words =
     name
@@ -489,6 +500,7 @@ export function ConversationRow({
     temperature?: string | null;
     leadScore?: number | null;
     program?: string | null;
+    slaStatus?: string;
     risk: Risk;
   };
   selected: boolean;
@@ -507,10 +519,6 @@ export function ConversationRow({
   const temperature = labelFor(temperatures, row.temperature);
   const program = row.program?.trim();
   const programCode = program ? inboxProgramCode(program) : "";
-  const risk =
-    row.risk.fresh && row.risk.status === "known"
-      ? labelFor(riskLevels, row.risk.level)
-      : "";
   return (
     <button
       type="button"
@@ -548,16 +556,16 @@ export function ConversationRow({
               {row.leadScore != null ? ` · ${row.leadScore}` : ""}
             </span>
           )}
-          <span data-risk={risk ? row.risk.level : undefined}>
-            {risk
-              ? `Abandono: ${risk.toLowerCase()}`
-              : row.risk.status === "not_applicable"
-                ? "Abandono: no aplica"
-                : "Abandono: sin evaluación"}
-          </span>
+          <RiskBadge risk={row.risk} inList />
+          {row.slaStatus === "overdue" && (
+            <span className="inbox-signal" data-sla="overdue">SLA vencido</span>
+          )}
+          {row.slaStatus === "on_time" && (
+            <span className="inbox-signal" data-sla="on_time">SLA en plazo</span>
+          )}
         </span>
         <span className="inbox-row-owner">
-          {[row.stage, row.assignee || "Sin asignar"]
+          {[row.stage, row.assignee || "Responsable sin asignar"]
             .filter(Boolean)
             .join(" · ")}
         </span>

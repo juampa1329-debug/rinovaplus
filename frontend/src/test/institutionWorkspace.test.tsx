@@ -83,6 +83,11 @@ let emptyInbox = false;
 let readOnOpen = false;
 let firstUnread = true;
 let socialProfileEnabled = false;
+let followupSignals = false;
+const assessedRisk: Risk = {
+  ...risk, status: "known", level: "medium", score: 50,
+  source: "channel_activity", fresh: true,
+};
 const calls: {
   path: string;
   method: string;
@@ -122,6 +127,7 @@ beforeEach(() => {
   readOnOpen = false;
   firstUnread = true;
   socialProfileEnabled = false;
+  followupSignals = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
     config,
@@ -253,7 +259,13 @@ beforeEach(() => {
             Unread: index ? true : firstUnread,
             UserId: null,
           },
-          risk,
+          risk: followupSignals ? assessedRisk : risk,
+          sla: followupSignals ? {
+            status: "overdue",
+            startedAt: "2026-10-26T12:00:00Z",
+            dueAt: "2026-10-26T12:30:00Z",
+            thresholdMinutes: 30,
+          } : undefined,
           manual: null,
           members: [client(index)],
           notes: [],
@@ -286,7 +298,8 @@ beforeEach(() => {
             program: index
               ? "Desarrollo Multimedia y Comunicación Gráfica"
               : "Cocina Nacional",
-            risk,
+            risk: followupSignals && !index ? assessedRisk : risk,
+            slaStatus: followupSignals && !index ? "overdue" : undefined,
           })),
           total: 2,
           offset: 0,
@@ -513,6 +526,19 @@ async function select(index = 0) {
   );
   await screen.findByLabelText("Nombre visible");
 }
+
+it("shows the same measured risk beside the chat and the SLA in its CRM panel", async () => {
+  followupSignals = true;
+  open("inbox");
+  expect(await screen.findByText("Abandono medio · 50/100")).toHaveAttribute("data-risk", "medium");
+  expect(screen.getByText("SLA vencido")).toBeInTheDocument();
+  await select();
+  const sla = within(screen.getByRole("region", { name: "Tiempo de respuesta (SLA)" }));
+  expect(sla.getByText("Vencido")).toHaveAttribute("data-sla", "overdue");
+  expect(sla.getByText("Plazo institucional de 30 min")).toBeInTheDocument();
+  expect(sla.getByRole("link", { name: "Configurar plazo institucional" })).toHaveAttribute("href", "#/settings/crm");
+  expect(screen.getByRole("meter", { name: "Puntaje de abandono" })).toHaveAttribute("value", "50");
+});
 
 it("mounts the P5 agent selector in the actual institutional Inbox", async () => {
   agentOperations = true;

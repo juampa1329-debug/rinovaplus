@@ -94,6 +94,75 @@
 
 .inbox-risk-score meter {
   width: 100%;
+  height: 0.65rem;
+  appearance: none;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--inbox-hover);
+}
+
+.inbox-risk-score meter::-webkit-meter-bar {
+  background: var(--inbox-hover);
+  border: 0;
+}
+
+.inbox-risk-score meter::-webkit-meter-optimum-value {
+  background: var(--signal-accent);
+}
+
+.inbox-risk-score meter::-moz-meter-bar {
+  background: var(--signal-accent);
+}
+
+[data-risk="low"], .p3-risk[data-level="low"], [data-sla="on_time"] {
+  --signal-accent: #249467;
+}
+
+[data-risk="medium"], .p3-risk[data-level="medium"] {
+  --signal-accent: #c68719;
+}
+
+[data-risk="high"], .p3-risk[data-level="high"], [data-sla="overdue"] {
+  --signal-accent: #d24b64;
+}
+
+.inbox-signal {
+  border: 1px solid color-mix(in srgb, var(--signal-accent, var(--muted)) 40%, transparent);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--signal-accent, var(--muted)) 14%, var(--surface));
+  color: var(--ink);
+  font-weight: 650;
+  padding: 0.1rem 0.35rem;
+}
+
+.inbox-sla dl {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.7rem 0;
+  font-size: 0.85rem;
+}
+
+.inbox-sla dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.55rem;
+  justify-content: space-between;
+}
+
+.inbox-sla dt,
+.inbox-sla small {
+  color: var(--muted);
+}
+
+.inbox-sla dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.inbox-sla > a {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
 }
 
 .inbox-preview-microphone {
@@ -483,18 +552,15 @@
   color: var(--ink);
   font-weight: 700;
 }
-.inbox-row-signals [data-risk],
 .inbox-row-signals [data-temperature] {
   color: var(--ink);
   border-radius: 0.3rem;
   padding-inline: 0.3rem;
   background: var(--inbox-hover);
 }
-.inbox-row-signals [data-risk="high"],
 .inbox-row-signals [data-temperature="hot"] {
   background: color-mix(in srgb, #df574a 15%, var(--surface));
 }
-.inbox-row-signals [data-risk="medium"],
 .inbox-row-signals [data-temperature="warm"] {
   background: color-mix(in srgb, #e2a223 18%, var(--surface));
 }

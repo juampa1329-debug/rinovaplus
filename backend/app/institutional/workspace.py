@@ -458,33 +458,42 @@ BASE = (
     "ccess.AccessUser u ON u.UserId=a.UserId "
     "AND u.InstitutionId=a.InstitutionId "
 )
-SLA = (
-    " LEFT JOIN crm_inbox.SlaPolicy sp ON sp."
-    "PolicyId=1 AND sp.Enabled=1 OUTER APPLY("
-    "SELECT MAX(m.Sequence) AS seq FROM crm.M"
-    "essage m WHERE m.ConversationId=v.Conver"
-    "sationId AND m.Direction='outgoing' AND "
-    "(NOT EXISTS(SELECT 1 FROM crm_channels.E"
-    "xternalIdentity WHERE ConversationId=v.C"
-    "onversationId) OR EXISTS(SELECT 1 FROM c"
-    "rm_channels.outbound_queue q WHERE q.Mes"
-    "sageId=m.MessageId AND q.State IN('sent'"
-    ",'delivered','read')))) replied OUTER AP"
-    "PLY(SELECT MIN(m.CreatedAt) AS startedAt"
-    " FROM crm.Message m WHERE m.Conversation"
-    "Id=v.ConversationId AND m.Direction='inc"
-    "oming' AND m.Sequence>COALESCE(replied.s"
-    "eq,0)) pending "
-)
+SLA_DEADLINE = "DATEADD(minute,sp.ThresholdMinutes,pending.startedAt)"
 SLA_STATUS = (
-    "CASE WHEN sp.PolicyId IS NULL THEN 'not_"
-    "configured' WHEN v.State='closed' THEN '"
-    "closed' WHEN pending.startedAt IS NULL T"
-    "HEN 'no_incoming' WHEN DATEADD(minute,sp"
-    ".ThresholdMinutes,pending.startedAt)<SYS"
-    "UTCDATETIME() THEN 'overdue' ELSE 'on_ti"
-    "me' END"
+    "CASE WHEN sp.PolicyId IS NULL THEN 'not_configured' "
+    "WHEN sp.Enabled=0 THEN 'disabled' WHEN v.State='closed' THEN 'closed' "
+    "WHEN pending.startedAt IS NULL THEN 'no_incoming' "
+    f"WHEN {SLA_DEADLINE}<=SYSUTCDATETIME() THEN 'overdue' ELSE 'on_time' END"
 )
+
+
+def sla_join(operational):
+    local = "NOT EXISTS(SELECT 1 FROM crm_channels.ExternalIdentity WHERE ConversationId=v.ConversationId)"
+    confirmed = (
+        "EXISTS(SELECT 1 FROM crm_channels.outbound_queue q "
+        "WHERE q.MessageId=m.MessageId AND q.State IN('sent','delivered','read'))"
+    )
+    if operational:
+        local += " AND NOT EXISTS(SELECT 1 FROM crm_channels2.ExternalIdentity WHERE ConversationId=v.ConversationId)"
+        confirmed += (
+            " OR EXISTS(SELECT 1 FROM crm_channels2.MessageRoute route "
+            "JOIN crm_channels2.SendJob job ON job.InstitutionId=route.InstitutionId "
+            "AND job.IntegrationId=route.IntegrationId AND job.QueueId=route.QueueId "
+            "AND job.MessageId=route.MessageId AND job.IdentityId=route.IdentityId "
+            "WHERE route.MessageId=m.MessageId AND job.ExternalId IS NOT NULL "
+            "AND job.State IN('sent','delivered','read'))"
+        )
+    return (
+        " LEFT JOIN crm_inbox.SlaPolicy sp ON sp.PolicyId=1 "
+        "OUTER APPLY(SELECT MAX(m.Sequence) AS seq FROM crm.Message m "
+        "WHERE sp.Enabled=1 AND m.ConversationId=v.ConversationId AND m.Direction='outgoing' "
+        f"AND (({local}) OR {confirmed})) replied "
+        "OUTER APPLY(SELECT MIN(m.CreatedAt) AS startedAt FROM crm.Message m "
+        "WHERE sp.Enabled=1 AND m.ConversationId=v.ConversationId AND m.Direction='incoming' "
+        "AND m.Sequence>COALESCE(replied.seq,0)) pending "
+    )
+
+
 ALIASES = (
     "NOT EXISTS(SELECT 1 FROM crm_workspace.M"
     "erge hidden WHERE hidden.SourceContactId"
@@ -495,6 +504,13 @@ ALIASES = (
 class Workspace:
     foundation = True
     operational_channels = False
+
+    def conversation_risk(self, c, contact, conversation):
+        return risk(c, contact, conversation)
+
+    def populate_inbox_risk(self, c, items):
+        for row in items:
+            row["risk"] = risk(c, row["id"], row["conversationId"])
 
     def inbox_channel_expression(self):
         legacy = (
@@ -671,13 +687,7 @@ class Workspace:
                     )
                 )
             elif queue == "sla":
-                where.append(
-                    (
-                        "sp.PolicyId IS NOT NULL AND v.State<>'cl"
-                        "osed' AND DATEADD(minute,sp.ThresholdMin"
-                        "utes,pending.startedAt)<SYSUTCDATETIME()"
-                    )
-                )
+                where.append(f"({SLA_STATUS})='overdue'")
             if queue == "churn" or riskLevel:
                 where.append(
                     (
@@ -794,8 +804,9 @@ class Workspace:
                     )
                     params.append(channel)
             predicate = " WHERE " + " AND ".join(where)
+            sla = sla_join(self.operational_channels)
             total = c.execute(
-                "SELECT COUNT(*)" + BASE + SLA + predicate, *params
+                "SELECT COUNT(*)" + BASE + (sla if queue == "sla" else "") + predicate, *params
             ).fetchval()
             channel_expression = self.inbox_channel_expression()
             items = rows(
@@ -837,7 +848,7 @@ class Workspace:
                         if area == "inbox" and self.operational_channels else ""
                     )
                     + BASE
-                    + SLA
+                    + sla
                     + predicate
                     + (
                         " ORDER BY v.UpdatedAt DESC,v.Conversatio"
@@ -851,9 +862,10 @@ class Workspace:
             for item in items:
                 if area == "inbox" and channel:
                     item["channel"] = channel
-                item["risk"] = risk(
-                    c, item["id"], item["conversationId"] if area == "inbox" else None
-                )
+                if area != "inbox":
+                    item["risk"] = risk(c, item["id"])
+            if area == "inbox":
+                self.populate_inbox_risk(c, items)
             response = {
                 "items": items,
                 "total": total,
@@ -880,15 +892,26 @@ class Workspace:
                     "ate,v.Priority,v.ControlMode,v.Unread,v."
                     "UpdatedAt,a.UserId,u.DisplayName AS Assi"
                     "gnee,(SELECT x.Epoch FROM crm_channels.ConversationControl x "
-                    "WHERE x.ConversationId=v.ConversationId) AS ControlEpoch"
+                    "WHERE x.ConversationId=v.ConversationId) AS ControlEpoch,"
+                    + SLA_STATUS + " AS SlaStatus,"
+                    "CASE WHEN sp.Enabled=1 AND v.State<>'closed' THEN pending.startedAt END AS SlaStartedAt,"
+                    f"CASE WHEN sp.Enabled=1 AND v.State<>'closed' THEN {SLA_DEADLINE} END AS SlaDueAt,"
+                    "sp.ThresholdMinutes AS SlaThresholdMinutes"
                 )
                 + BASE
+                + sla_join(self.operational_channels)
                 + " WHERE v.ConversationId=?",
                 conversation,
             )
             if not thread:
                 raise HTTPException(404, "conversation_not_found")
             control_epoch = str(thread.pop("ControlEpoch") or 0)
+            sla = {
+                "status": thread.pop("SlaStatus"),
+                "startedAt": db.utc(thread.pop("SlaStartedAt")),
+                "dueAt": db.utc(thread.pop("SlaDueAt")),
+                "thresholdMinutes": thread.pop("SlaThresholdMinutes"),
+            }
             original = db.uid(str(thread["ContactId"]))
             canonical = primary(c, original)
             ids = members(c, canonical)
@@ -946,7 +969,8 @@ class Workspace:
                     )
                     for k, v in thread.items()
                 },
-                "risk": risk(c, canonical, conversation),
+                "risk": self.conversation_risk(c, canonical, conversation),
+                "sla": sla,
                 "inFlightOrUncertain": in_flight,
                 "manual": {
                     "score": profile["LeadScore"],
