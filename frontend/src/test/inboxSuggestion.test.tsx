@@ -8,6 +8,38 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+it("retains the same paid operation when recovering an unknown response", async () => {
+  vi.mocked(api)
+    .mockResolvedValueOnce({ revision: 1, selection: { version: 2 } })
+    .mockRejectedValueOnce(new Error("La respuesta se interrumpió"))
+    .mockResolvedValueOnce({ revision: 1, selection: { version: 2 } })
+    .mockResolvedValueOnce({ text: "Resultado ya preparado" });
+  render(
+    <InboxSuggestion
+      conversation="own"
+      question="Software"
+      incoming="one"
+      epoch="1"
+      onUseReply={() => {}}
+    />,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Sugerir respuesta con IA" }),
+  );
+  await screen.findByText("La respuesta se interrumpió");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Sugerir respuesta con IA" }),
+  );
+  await screen.findByText("Resultado ya preparado");
+  const attempts = vi
+    .mocked(api)
+    .mock.calls.filter((call) => call[0]?.endsWith("/draft"));
+  expect(attempts).toHaveLength(2);
+  expect((attempts[0][2] as { request_id: string }).request_id).toBe(
+    (attempts[1][2] as { request_id: string }).request_id,
+  );
+});
+
 it("generates with the actual social channel and keeps the text as a reviewed draft", async () => {
   vi.mocked(api)
     .mockResolvedValueOnce({ revision: 3 })

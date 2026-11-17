@@ -13,7 +13,7 @@ export function MetaAutomationHelp() {
         coincidan en Messenger, Instagram y comentarios.
       </p>
       <a
-        href="https://business.facebook.com/latest/inbox"
+        href="https://business.facebook.com/latest/inbox/automated_responses"
         target="_blank"
         rel="noopener noreferrer"
       >

@@ -1575,6 +1575,7 @@ function Conversation({
         <InboxSuggestion
           conversation={conversation}
           channel={channel}
+          epoch={detail.controlEpoch}
           question={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.body ?? ""}
           incoming={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.id ?? ""}
           onUseReply={setMessage}

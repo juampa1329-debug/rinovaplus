@@ -6,13 +6,14 @@ type Props = {
   conversation: string;
   question: string;
   incoming: string;
+  epoch?: string;
   channel?: string;
   onUseReply: (text: string) => void;
 };
 export function InboxSuggestion(props: Props) {
   return (
     <SuggestionDraft
-      key={`${props.conversation}:${props.incoming}`}
+      key={`${props.conversation}:${props.incoming}:${props.epoch ?? ""}`}
       {...props}
     />
   );
@@ -27,6 +28,7 @@ function SuggestionDraft({
   const [text, setText] = useState("");
   const [error, setError] = useState("");
   const generation = useRef(0);
+  const requests = useRef(new Map<string, string>());
   const lifetime = useRef({ active: true });
   useEffect(() => {
     const current = lifetime.current;
@@ -41,15 +43,24 @@ function SuggestionDraft({
     setError("");
     setText("");
     try {
-      const selection = await api<{ revision: number }>(
-        `/conversations/${conversation}`,
-      );
+      const selection = await api<{
+        revision: number;
+        selection?: { version: number } | null;
+      }>(`/conversations/${conversation}`);
       if (!lifetime.current.active || version !== generation.current) return;
+      const signature = JSON.stringify([
+        selection.revision,
+        selection.selection?.version,
+        question,
+        channel,
+      ]);
+      const requestId = requests.current.get(signature) ?? crypto.randomUUID();
+      requests.current.set(signature, requestId);
       const result = await api<{ text?: string; handoff?: boolean }>(
         `/conversations/${conversation}/draft`,
         "POST",
         {
-          request_id: crypto.randomUUID(),
+          request_id: requestId,
           revision: selection.revision,
           question: question.slice(0, 2000),
           channel: channel === "messenger" ? "facebook" : (channel ?? "local"),
