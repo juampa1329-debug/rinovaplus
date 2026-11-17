@@ -11,6 +11,7 @@ from uuid import uuid4
 from fastapi import HTTPException
 
 from app.institutional import broadcast_templates as templates
+from app.institutional import broadcast_variables
 from app.institutional.auth import authorize
 from app.institutional.broadcast_models import scheduled
 from app.institutional.channel_operations import account, configuration
@@ -218,6 +219,12 @@ def candidate_rows(c, s, document):
 
 def audience(c, s, campaign, *, controlled=False):
     document = json.loads(campaign["Document"])
+    allowed_custom_fields = set()
+    if any(v.get("source") == "custom_field" for v in document.get("variables", {}).values()):
+        from app.modules.crm_configuration.application.service import read_configuration
+
+        crm_config, _ = read_configuration(c, foundation=True)
+        allowed_custom_fields = {f.key for f in crm_config.fields if f.active}
     item = account(c, s, str(campaign["IntegrationId"]))
     template = None
     global_reasons = []
@@ -312,7 +319,8 @@ def audience(c, s, campaign, *, controlled=False):
         if template:
             try:
                 rendered, text = templates.parameters(
-                    template, document, person, campaign["Name"]
+                    template, document, person, campaign["Name"],
+                    allowed_custom_fields=allowed_custom_fields,
                 )
             except HTTPException as e:
                 reasons.append(e.detail)
@@ -469,6 +477,7 @@ class Broadcasts:
                 "templates": [public_template(v) for v in catalog(c, self.settings)],
                 "programs": Catalog(self.settings).programs(c, 0, 300)["items"],
                 "stages": [v.label for v in config.stages if v.active],
+                "variables": broadcast_variables.catalog(config.fields),
                 "outbound_enabled": bool(
                     configuration(c, self.settings)["OutboundEnabled"]
                 ),
@@ -1253,6 +1262,13 @@ class Broadcasts:
             )
             if prior:
                 return prior
+            from app.modules.crm_configuration.application.service import read_configuration
+
+            crm_config, _ = read_configuration(c, foundation=True)
+            default_bindings = broadcast_variables.bindings([
+                {"type": "BODY", "text": body.body_text},
+                {"type": "HEADER", "text": body.header_text if body.header_type == "TEXT" else ""},
+            ], broadcast_variables.catalog(crm_config.fields), templates.TOKEN)
             item = account(c, self.settings, integration)
             if item["Channel"] != "whatsapp":
                 raise HTTPException(422, "broadcast_whatsapp_required")
@@ -1296,6 +1312,7 @@ class Broadcasts:
                     "status": "LOCAL_DRAFT",
                     "components": components,
                     "allow_category_change": body.allow_category_change,
+                    "variable_bindings": default_bindings,
                 },
                 None,
                 "operator",

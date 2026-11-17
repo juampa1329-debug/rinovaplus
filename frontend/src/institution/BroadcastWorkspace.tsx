@@ -1,4 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import {
+  metaExamples,
+  qualityLabel,
+  rejectionReason,
+  standardVariables,
+  TemplateChatPreview,
+  TemplateVariableFields,
+  templateStatus,
+} from "./BroadcastTemplateTools";
+import type { CrmVariable, VariableBinding } from "./BroadcastTemplateTools";
 import {
   Badge,
   Button,
@@ -29,9 +39,13 @@ type Template = {
   origin: string;
   paused: boolean;
   components: Component[];
-  metadata?: { quality_score?: string; rejection_reason?: string };
+  metadata?: {
+    quality_score?: string;
+    rejection_reason?: string;
+    variable_bindings?: Record<string, VariableBinding>;
+  };
 };
-type Binding = { source: string; value?: string };
+type Binding = VariableBinding;
 type Document = {
   name: string;
   integration_id: string;
@@ -63,6 +77,7 @@ type Options = {
   programs: { program_id: number; name: string }[];
   stages: string[];
   outbound_enabled: boolean;
+  variables?: CrmVariable[];
 };
 type Preview = {
   counts: { matched: number; eligible: number; excluded: number };
@@ -336,6 +351,7 @@ export function BroadcastWorkspace() {
         <TemplatePanel
           key={account}
           account={account}
+          variables={options.value.variables || standardVariables}
           templates={options.value.templates.filter(
             (t) => t.integration_id === account,
           )}
@@ -472,7 +488,10 @@ function CampaignEditor({
                 variables: Object.fromEntries(
                   variableKeys(t).map((k) => [
                     k,
-                    { source: "literal", value: "" },
+                    t?.metadata?.variable_bindings?.[k] || {
+                      source: "literal",
+                      value: "",
+                    },
                   ]),
                 ),
               });
@@ -516,16 +535,33 @@ function CampaignEditor({
               <SelectField
                 id={`variable-${k}`}
                 label={`Variable ${k}`}
-                value={doc.variables[k]?.source || "literal"}
-                options={sources.map((s, i) => ({
-                  value: s,
-                  label: sourceLabels[i],
-                }))}
+                value={
+                  doc.variables[k]?.source === "custom_field"
+                    ? `crm.${doc.variables[k]?.field_key}`
+                    : doc.variables[k]?.source || "literal"
+                }
+                options={[
+                  ...sources.map((s, i) => ({
+                    value: s,
+                    label: sourceLabels[i],
+                  })),
+                  ...(options.variables || [])
+                    .filter((v) => v.source === "custom_field")
+                    .map((v) => ({
+                      value: v.token,
+                      label: `Campo CRM · ${v.label}`,
+                    })),
+                ]}
                 onChange={(e) =>
                   update({
                     variables: {
                       ...doc.variables,
-                      [k]: { source: e.target.value, value: "" },
+                      [k]: e.target.value.startsWith("crm.")
+                        ? {
+                            source: "custom_field",
+                            field_key: e.target.value.slice(4),
+                          }
+                        : { source: e.target.value, value: "" },
                     },
                   })
                 }
@@ -1016,16 +1052,18 @@ function TemplatePanel({
   account,
   templates,
   reload,
+  variables,
 }: {
   account: string;
   templates: Template[];
   reload: () => Promise<void>;
+  variables: CrmVariable[];
 }) {
   const { call } = useInstitution(),
     task = useTask(),
     intent = useIntent();
   const [creating, setCreating] = useState(false),
-    [reviewed, setReviewed] = useState(false);
+    [reviewed, setReviewed] = useState("");
   const command = (revision = 0, extra = {}) => {
     const value = {
       revision,
@@ -1059,13 +1097,19 @@ function TemplatePanel({
         >
           Sincronizar con Meta
         </Button>
-        <Button variant="secondary" onClick={() => setCreating(!creating)}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            if (allowNavigation()) setCreating(!creating);
+          }}
+        >
           Crear plantilla
         </Button>
       </div>
       {creating && (
         <TemplateForm
           account={account}
+          variables={variables}
           saved={async () => {
             setCreating(false);
             await reload();
@@ -1078,14 +1122,6 @@ function TemplatePanel({
           borrador.
         </Notice>
       )}
-      <label className="broadcast-check">
-        <input
-          type="checkbox"
-          checked={reviewed}
-          onChange={(e) => setReviewed(e.target.checked)}
-        />
-        Confirmo el envío de la plantilla a revisión de Meta.
-      </label>
       {templates.map((t) => (
         <article className="broadcast-message" key={t.id}>
           <h3>
@@ -1098,42 +1134,63 @@ function TemplatePanel({
               : t.origin === "controlled"
                 ? "Proveedor de prueba controlado"
                 : "Catálogo de Meta"}{" "}
-            · {t.status} {t.paused && "· Pausada en CRM"}
+            ·{" "}
+            <span
+              className={`broadcast-template-status status-${t.status.toLowerCase()}`}
+            >
+              {templateStatus(t.status)}
+            </span>{" "}
+            {t.paused && "· Pausada en CRM"}
           </p>
           {t.metadata?.quality_score && (
-            <p>Calidad informada por Meta: {t.metadata.quality_score}</p>
+            <p>
+              Calidad informada por Meta:{" "}
+              {qualityLabel(t.metadata.quality_score)}
+            </p>
           )}
-          {t.metadata?.rejection_reason && (
-            <Notice error>
-              Motivo de rechazo de Meta: {t.metadata.rejection_reason}
-            </Notice>
-          )}
+          {t.status === "REJECTED" &&
+            rejectionReason(t.metadata?.rejection_reason) && (
+              <Notice error>
+                Motivo de rechazo de Meta:{" "}
+                {rejectionReason(t.metadata?.rejection_reason)}
+              </Notice>
+            )}
           {t.components
             .filter((c) => c.text)
             .map((c, i) => (
               <p key={i}>{c.text}</p>
             ))}
           {t.origin === "operator" && (
-            <Button
-              disabled={!reviewed || task.busy}
-              onClick={() =>
-                void task.run(async () => {
-                  const r = await call<{ status: string }>(
-                    `broadcasts/templates/${t.id}/submit`,
-                    "POST",
-                    command(t.version, { confirmed: true }),
-                  );
-                  intent.clear();
-                  await reload();
-                  if (r.status !== "confirmed")
-                    throw Error(
-                      "La solicitud no quedó confirmada. Consulta su estado antes de repetirla.",
+            <div>
+              <label className="broadcast-check">
+                <input
+                  type="checkbox"
+                  checked={reviewed === t.id}
+                  onChange={(e) => setReviewed(e.target.checked ? t.id : "")}
+                />
+                Confirmo enviar «{t.name}» a revisión de Meta.
+              </label>
+              <Button
+                disabled={reviewed !== t.id || task.busy}
+                onClick={() =>
+                  void task.run(async () => {
+                    const r = await call<{ status: string }>(
+                      `broadcasts/templates/${t.id}/submit`,
+                      "POST",
+                      command(t.version, { confirmed: true }),
                     );
-                }, "Plantilla enviada a revisión. Sincroniza para consultar su aprobación.")
-              }
-            >
-              Enviar a revisión de Meta
-            </Button>
+                    intent.clear();
+                    await reload();
+                    if (r.status !== "confirmed")
+                      throw Error(
+                        "La solicitud no quedó confirmada. Consulta su estado antes de repetirla.",
+                      );
+                  }, "Plantilla enviada a revisión. Sincroniza para consultar su aprobación.")
+                }
+              >
+                Enviar a revisión de Meta
+              </Button>
+            </div>
           )}
           <Button
             variant="quiet"
@@ -1161,9 +1218,11 @@ function TemplatePanel({
 function TemplateForm({
   account,
   saved,
+  variables,
 }: {
   account: string;
   saved: () => Promise<void>;
+  variables: CrmVariable[];
 }) {
   const { call } = useInstitution(),
     task = useTask(),
@@ -1185,196 +1244,286 @@ function TemplateForm({
       phone_number: string;
     }[],
     allow_category_change: true,
+    examples: {} as Record<string, string>,
   };
   const [doc, setDoc] = useState(initial),
     [clean, setClean] = useState(false);
   useDraftGuard(!clean && JSON.stringify(doc) !== JSON.stringify(initial));
   const change = (value: Partial<typeof doc>) => setDoc({ ...doc, ...value });
+  const bodySelection = useRef({ start: 0, end: 0 });
+  const insertBody = (token: string) => {
+    const { start, end } = bodySelection.current;
+    const inserted = `{{${token}}}`;
+    change({
+      body_text:
+        doc.body_text.slice(0, start) + inserted + doc.body_text.slice(end),
+    });
+    bodySelection.current = {
+      start: start + inserted.length,
+      end: start + inserted.length,
+    };
+    requestAnimationFrame(() => {
+      const field = document.getElementById(
+        "template-body",
+      ) as HTMLTextAreaElement | null;
+      field?.focus();
+      field?.setSelectionRange(
+        start + inserted.length,
+        start + inserted.length,
+      );
+    });
+  };
   return (
-    <form
-      className="broadcast-message"
-      onSubmit={(e) => {
-        e.preventDefault();
-        void task.run(async () => {
-          const body = {
-            ...doc,
-            revision: 0,
-            reason: "Borrador de plantilla institucional",
-          };
-          await call(`broadcasts/accounts/${account}/templates/${key}`, "PUT", {
-            ...body,
-            operation_id: intent.get(body),
+    <div className="broadcast-template-editor">
+      <form
+        className="broadcast-message"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void task.run(async () => {
+            const body = {
+              ...doc,
+              examples: metaExamples(doc, variables),
+              revision: 0,
+              reason: "Borrador de plantilla institucional",
+            };
+            await call(
+              `broadcasts/accounts/${account}/templates/${key}`,
+              "PUT",
+              {
+                ...body,
+                operation_id: intent.get(body),
+              },
+            );
+            setClean(true);
+            await saved();
           });
-          setClean(true);
-          await saved();
-        });
-      }}
-    >
-      {task.notices}
-      <fieldset disabled={task.busy}>
-        <h3>Nueva plantilla</h3>
-        <Field
-          id="template-name"
-          label="Nombre de plantilla"
-          pattern="[a-z][a-z0-9_]*"
-          maxLength={128}
-          required
-          value={doc.name}
-          onChange={(e) => change({ name: e.target.value })}
-        />
-        <Field
-          id="template-language"
-          label="Idioma"
-          required
-          value={doc.language}
-          onChange={(e) => change({ language: e.target.value })}
-        />
-        <SelectField
-          id="template-category"
-          label="Categoría"
-          value={doc.category}
-          options={["MARKETING", "UTILITY", "AUTHENTICATION"]}
-          onChange={(e) => change({ category: e.target.value })}
-        />
-        <TextArea
-          id="template-body"
-          label="Cuerpo del mensaje"
-          required
-          maxLength={1024}
-          value={doc.body_text}
-          onChange={(e) => change({ body_text: e.target.value })}
-        />
-        <SelectField
-          id="template-header"
-          label="Tipo de cabecera"
-          value={doc.header_type}
-          options={[
-            { value: "", label: "Sin cabecera" },
-            "TEXT",
-            "IMAGE",
-            "VIDEO",
-            "DOCUMENT",
-          ]}
-          onChange={(e) => change({ header_type: e.target.value })}
-        />
-        {doc.header_type === "TEXT" ? (
+        }}
+      >
+        {task.notices}
+        <fieldset disabled={task.busy}>
+          <h3>Nueva plantilla</h3>
           <Field
-            id="template-header-text"
-            label="Texto de cabecera"
+            id="template-name"
+            label="Nombre de plantilla"
+            pattern="[a-z][a-z0-9_]*"
+            maxLength={128}
             required
-            maxLength={60}
-            value={doc.header_text}
-            onChange={(e) => change({ header_text: e.target.value })}
+            value={doc.name}
+            onChange={(e) => change({ name: e.target.value })}
           />
-        ) : (
-          doc.header_type && (
-            <Field
-              id="template-header-example"
-              label="Identificador de archivo de ejemplo de Meta"
-              required
-              value={doc.header_media_handle}
-              onChange={(e) => change({ header_media_handle: e.target.value })}
-            />
-          )
-        )}
-        <Field
-          id="template-footer"
-          label="Pie del mensaje"
-          maxLength={60}
-          value={doc.footer_text}
-          onChange={(e) => change({ footer_text: e.target.value })}
-        />
-        {doc.buttons.map((b, i) => (
-          <div key={i} className="broadcast-message">
-            <SelectField
-              id={`button-type-${i}`}
-              label={`Tipo de botón ${i + 1}`}
-              value={b.type}
-              options={["QUICK_REPLY", "URL", "PHONE_NUMBER"]}
-              onChange={(e) =>
-                change({
-                  buttons: doc.buttons.map((v, j) =>
-                    j === i ? { ...v, type: e.target.value } : v,
-                  ),
-                })
-              }
-            />
-            <Field
-              id={`button-text-${i}`}
-              label={`Texto de botón ${i + 1}`}
-              required
-              maxLength={25}
-              value={b.text}
-              onChange={(e) =>
-                change({
-                  buttons: doc.buttons.map((v, j) =>
-                    j === i ? { ...v, text: e.target.value } : v,
-                  ),
-                })
-              }
-            />
-            {b.type !== "QUICK_REPLY" && (
+          <p className="broadcast-help">
+            Usa minúsculas, números y guion bajo. Por ejemplo:
+            informacion_programas_cbn.
+          </p>
+          <SelectField
+            id="template-language"
+            label="Idioma"
+            required
+            value={doc.language}
+            options={[
+              { value: "es", label: "Español" },
+              { value: "en_US", label: "Inglés · Estados Unidos" },
+              { value: "pt_BR", label: "Portugués · Brasil" },
+            ]}
+            onChange={(e) => change({ language: e.target.value })}
+          />
+          <SelectField
+            id="template-category"
+            label="Categoría"
+            value={doc.category}
+            options={[
+              {
+                value: "MARKETING",
+                label: "Marketing · información y promociones",
+              },
+              {
+                value: "UTILITY",
+                label: "Utilidad · solicitudes y actualizaciones",
+              },
+            ]}
+            onChange={(e) => change({ category: e.target.value })}
+          />
+          <TextArea
+            id="template-body"
+            label="Cuerpo del mensaje"
+            required
+            maxLength={1024}
+            value={doc.body_text}
+            onChange={(e) => change({ body_text: e.target.value })}
+            onSelect={(e) => {
+              bodySelection.current = {
+                start: e.currentTarget.selectionStart,
+                end: e.currentTarget.selectionEnd,
+              };
+            }}
+          />
+          <p className="broadcast-help">
+            {doc.body_text.length}/1024 caracteres. Inserta los campos del CRM
+            para personalizar cada envío.
+          </p>
+          <TemplateVariableFields
+            group="body"
+            text={doc.body_text}
+            samples={doc.examples}
+            variables={variables}
+            insert={insertBody}
+            change={(key, value) =>
+              change({ examples: { ...doc.examples, [key]: value } })
+            }
+          />
+          <SelectField
+            id="template-header"
+            label="Tipo de cabecera"
+            value={doc.header_type}
+            options={[
+              { value: "", label: "Sin cabecera" },
+              { value: "TEXT", label: "Texto" },
+              { value: "IMAGE", label: "Imagen" },
+              { value: "VIDEO", label: "Video" },
+              { value: "DOCUMENT", label: "Documento" },
+            ]}
+            onChange={(e) => change({ header_type: e.target.value })}
+          />
+          {doc.header_type === "TEXT" ? (
+            <>
               <Field
-                id={`button-target-${i}`}
-                label={
-                  b.type === "URL"
-                    ? "URL HTTPS del botón"
-                    : "Teléfono con prefijo internacional"
-                }
+                id="template-header-text"
+                label="Texto de cabecera"
                 required
-                value={b.type === "URL" ? b.url : b.phone_number}
+                maxLength={60}
+                value={doc.header_text}
+                onChange={(e) => change({ header_text: e.target.value })}
+              />
+              <TemplateVariableFields
+                group="header"
+                text={doc.header_text}
+                samples={doc.examples}
+                variables={variables}
+                insert={(token) =>
+                  change({ header_text: `${doc.header_text}{{${token}}}` })
+                }
+                change={(key, value) =>
+                  change({ examples: { ...doc.examples, [key]: value } })
+                }
+              />
+            </>
+          ) : (
+            doc.header_type && (
+              <Field
+                id="template-header-example"
+                label="Identificador de archivo de ejemplo de Meta"
+                required
+                value={doc.header_media_handle}
+                onChange={(e) =>
+                  change({ header_media_handle: e.target.value })
+                }
+              />
+            )
+          )}
+          <Field
+            id="template-footer"
+            label="Pie del mensaje"
+            maxLength={60}
+            value={doc.footer_text}
+            onChange={(e) => change({ footer_text: e.target.value })}
+          />
+          {doc.buttons.map((b, i) => (
+            <div key={i} className="broadcast-message">
+              <SelectField
+                id={`button-type-${i}`}
+                label={`Tipo de botón ${i + 1}`}
+                value={b.type}
+                options={[
+                  { value: "QUICK_REPLY", label: "Respuesta rápida" },
+                  { value: "URL", label: "Abrir enlace" },
+                  { value: "PHONE_NUMBER", label: "Llamar por teléfono" },
+                ]}
                 onChange={(e) =>
                   change({
                     buttons: doc.buttons.map((v, j) =>
-                      j === i
-                        ? {
-                            ...v,
-                            [b.type === "URL" ? "url" : "phone_number"]:
-                              e.target.value,
-                          }
-                        : v,
+                      j === i ? { ...v, type: e.target.value } : v,
                     ),
                   })
                 }
               />
-            )}
-            <Button
-              variant="quiet"
-              onClick={() =>
-                change({ buttons: doc.buttons.filter((_, j) => j !== i) })
-              }
-            >
-              Quitar botón {i + 1}
-            </Button>
-          </div>
-        ))}
-        <Button
-          variant="secondary"
-          disabled={doc.buttons.length >= 3}
-          onClick={() =>
-            change({
-              buttons: [
-                ...doc.buttons,
-                { type: "QUICK_REPLY", text: "", url: "", phone_number: "" },
-              ],
-            })
-          }
-        >
-          Agregar botón
-        </Button>
-        <label className="broadcast-check">
-          <input
-            type="checkbox"
-            checked={doc.allow_category_change}
-            onChange={(e) =>
-              change({ allow_category_change: e.target.checked })
+              <Field
+                id={`button-text-${i}`}
+                label={`Texto de botón ${i + 1}`}
+                required
+                maxLength={25}
+                value={b.text}
+                onChange={(e) =>
+                  change({
+                    buttons: doc.buttons.map((v, j) =>
+                      j === i ? { ...v, text: e.target.value } : v,
+                    ),
+                  })
+                }
+              />
+              {b.type !== "QUICK_REPLY" && (
+                <Field
+                  id={`button-target-${i}`}
+                  label={
+                    b.type === "URL"
+                      ? "URL HTTPS del botón"
+                      : "Teléfono con prefijo internacional"
+                  }
+                  required
+                  value={b.type === "URL" ? b.url : b.phone_number}
+                  onChange={(e) =>
+                    change({
+                      buttons: doc.buttons.map((v, j) =>
+                        j === i
+                          ? {
+                              ...v,
+                              [b.type === "URL" ? "url" : "phone_number"]:
+                                e.target.value,
+                            }
+                          : v,
+                      ),
+                    })
+                  }
+                />
+              )}
+              <Button
+                variant="quiet"
+                onClick={() =>
+                  change({ buttons: doc.buttons.filter((_, j) => j !== i) })
+                }
+              >
+                Quitar botón {i + 1}
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="secondary"
+            disabled={doc.buttons.length >= 3}
+            onClick={() =>
+              change({
+                buttons: [
+                  ...doc.buttons,
+                  { type: "QUICK_REPLY", text: "", url: "", phone_number: "" },
+                ],
+              })
             }
-          />
-          Permitir que Meta ajuste la categoría
-        </label>
-        <Button type="submit">Guardar borrador de plantilla</Button>
-      </fieldset>
-    </form>
+          >
+            Agregar botón
+          </Button>
+          <label className="broadcast-check">
+            <input
+              type="checkbox"
+              checked={doc.allow_category_change}
+              onChange={(e) =>
+                change({ allow_category_change: e.target.checked })
+              }
+            />
+            Permitir que Meta ajuste la categoría
+          </label>
+          <Button type="submit">Guardar borrador de plantilla</Button>
+        </fieldset>
+      </form>
+      <TemplateChatPreview doc={doc} variables={variables} />
+    </div>
   );
 }
 

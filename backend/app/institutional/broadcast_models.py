@@ -1,5 +1,6 @@
 """Closed institutional broadcast commands; provider approval is never client input."""
 
+import re
 from datetime import datetime, timezone
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -46,6 +47,19 @@ class TemplateWrite(Command):
     footer_text: str = Field(default="", max_length=60)
     buttons: list[Button] = Field(default_factory=list, max_length=3)
     allow_category_change: bool = True
+    examples: dict[str, str] = Field(default_factory=dict, max_length=50)
+
+    @field_validator("examples")
+    @classmethod
+    def sample_values(cls, value):
+        if any(
+            not re.fullmatch(r"(?:body|header)\.[1-9][0-9]*", key)
+            or not sample.strip() or "\x00" in sample
+            or len(sample.encode("utf-16-le")) > 2000
+            for key, sample in value.items()
+        ):
+            raise ValueError("template_example_invalid")
+        return value
 
 
 class TemplatePause(Command):
@@ -64,8 +78,16 @@ class Variable(Strict):
         "stage",
         "schedule",
         "campaign_name",
+        "custom_field",
     ] = "literal"
     value: str = Field(default="", max_length=1000)
+    field_key: str = Field(default="", pattern=r"^$|^[a-z][a-z0-9_]{0,39}$")
+
+    @model_validator(mode="after")
+    def custom_binding(self):
+        if (self.source == "custom_field") != bool(self.field_key):
+            raise ValueError("broadcast_custom_field_required")
+        return self
 
 
 class Filters(Strict):

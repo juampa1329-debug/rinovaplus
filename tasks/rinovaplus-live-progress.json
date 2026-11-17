@@ -1,6 +1,21 @@
 {
   "date": "2026-11-17",
   "current_url": "https://app.rinovaplus.com",
+  "broadcasting_editor": {
+    "status": "implemented_local_checks_passed_pending_production_review",
+    "reference": "Scentra BroadcastPanel.jsx and broadcasts/router.py",
+    "crm_fields": "standard_and_active_custom_fields",
+    "provider_examples": "explicit_synthetic_samples",
+    "approval": "Meta_only",
+    "backend_tests": 124,
+    "frontend_tests": 10,
+    "types_lint_build": "passed",
+    "test_webhook": "confirmed_in_Meta_and_RinovaPlus",
+    "test_inbound": "observed_with_Gemini_reply_in_AI_mode",
+    "new_template_provider_submission": "pending",
+    "broadcast_receipts": "pending",
+    "details": "docs/design/broadcasting-scentra-adaptation.md"
+  },
   "canonical_percent": "93.88%",
   "canonical_milestones_done": 262,
   "canonical_milestones_total": 279,

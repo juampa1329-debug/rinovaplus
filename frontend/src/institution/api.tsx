@@ -116,6 +116,18 @@ const messages: Record<string, string> = {
 
   broadcast_provider_approved_template_required:
     "Sincroniza una plantilla aprobada de Meta para esta cuenta. Un borrador local no permite enviar.",
+  broadcast_crm_variable_unknown:
+    "Hay una variable que no pertenece al CRM. Insértala desde el selector de campos o usa una variable numérica y asígnala al preparar la campaña.",
+  broadcast_crm_field_unavailable:
+    "Un campo personalizado está inactivo o dejó de existir. Revisa la asignación de variables de la campaña antes de enviar.",
+  broadcast_variable_value_missing:
+    "Falta un dato del contacto para completar esta plantilla. Completa su ficha del CRM o exclúyelo de este envío.",
+  template_header_one_variable:
+    "La cabecera de texto admite una variable. Conserva un solo campo del CRM en la cabecera.",
+  template_footer_variables_unsupported:
+    "El pie de la plantilla debe ser texto fijo. Coloca los campos del CRM en el cuerpo o en la cabecera.",
+  template_example_unused:
+    "Los ejemplos ya no coinciden con las variables. Revisa los campos del mensaje y guarda el borrador de nuevo.",
   broadcast_template_refresh_required:
     "Sincroniza el catálogo de Meta y revisa otra vez los destinatarios.",
   broadcast_no_eligible_recipients:

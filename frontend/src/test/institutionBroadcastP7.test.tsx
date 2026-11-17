@@ -147,6 +147,137 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("composes CRM variables with synthetic examples and previews them without sending", async () => {
+  const f = setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Plantillas WhatsApp" }),
+  );
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
+    target: { value: "a" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Crear plantilla" }));
+  fireEvent.change(screen.getByLabelText("Nombre de plantilla"), {
+    target: { value: "informacion_cbn" },
+  });
+  const text = screen.getByLabelText(
+    "Cuerpo del mensaje",
+  ) as HTMLTextAreaElement;
+  fireEvent.change(text, {
+    target: { value: "Hola , conoce nuestros programas." },
+  });
+  text.setSelectionRange(5, 5);
+  fireEvent.select(text);
+  fireEvent.click(screen.getByRole("button", { name: "Insertar en cuerpo" }));
+  expect(text).toHaveValue(
+    "Hola {{customer_name}}, conoce nuestros programas.",
+  );
+  expect(screen.getByLabelText("Vista previa de WhatsApp")).toHaveTextContent(
+    "Hola Laura Gómez, conoce nuestros programas.",
+  );
+  fireEvent.change(
+    screen.getByLabelText("Ejemplo: Nombre completo (cuerpo 1)"),
+    { target: { value: "Persona de ejemplo" } },
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar borrador de plantilla" }),
+  );
+  await waitFor(() =>
+    expect(f.mock.calls.some(([, i]) => i?.method === "PUT")).toBe(true),
+  );
+  const body = JSON.parse(
+    String(f.mock.calls.find(([, i]) => i?.method === "PUT")?.[1]?.body),
+  );
+  expect(body.examples).toEqual({ "body.1": "Persona de ejemplo" });
+  expect(body.body_text).toContain("{{customer_name}}");
+  expect(
+    f.mock.calls.some(
+      ([u]) => String(u).endsWith("/submit") || String(u).endsWith("/activate"),
+    ),
+  ).toBe(false);
+});
+it("explains actual Meta quality without displaying NONE as a rejection", async () => {
+  setup((path) =>
+    path.endsWith("options")
+      ? ok({
+          ...options,
+          templates: [
+            {
+              ...template,
+              metadata: {
+                quality_score: "{'score': 'UNKNOWN', 'date': 123}",
+                rejection_reason: "NONE",
+              },
+            },
+          ],
+        })
+      : undefined,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Plantillas WhatsApp" }),
+  );
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
+    target: { value: "a" },
+  });
+  expect(screen.getByText("Aprobada por Meta")).toBeInTheDocument();
+  expect(screen.getByText(/Todavía sin calificar/)).toBeInTheDocument();
+  expect(screen.queryByText(/Motivo de rechazo/)).not.toBeInTheDocument();
+});
+it("reuses the approved template CRM mapping and preserves custom field keys in campaigns", async () => {
+  const f = setup((path) =>
+    path.endsWith("options")
+      ? ok({
+          ...options,
+          variables: [
+            {
+              token: "crm.sede",
+              source: "custom_field",
+              field_key: "sede",
+              label: "Sede",
+              example: "Principal",
+            },
+          ],
+          templates: [
+            {
+              ...template,
+              metadata: {
+                variable_bindings: {
+                  "body.1": { source: "custom_field", field_key: "sede" },
+                },
+              },
+            },
+          ],
+        })
+      : undefined,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Nueva campaña" }));
+  fireEvent.change(screen.getByLabelText("Nombre de campaña"), {
+    target: { value: "Piloto" },
+  });
+  fireEvent.change(screen.getByLabelText("Cuenta de envío"), {
+    target: { value: "a" },
+  });
+  fireEvent.change(screen.getByLabelText("Plantilla e idioma"), {
+    target: { value: "t" },
+  });
+  expect(screen.getByLabelText("Variable body.1")).toHaveValue("crm.sede");
+  fireEvent.change(screen.getByLabelText("Texto de header.1"), {
+    target: { value: "Sede de ejemplo" },
+  });
+  fireEvent.change(screen.getByLabelText("Texto de button.0.1"), {
+    target: { value: "programas" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Guardar campaña" }));
+  await waitFor(() =>
+    expect(f.mock.calls.some(([, i]) => i?.method === "PUT")).toBe(true),
+  );
+  const body = JSON.parse(
+    String(f.mock.calls.find(([, i]) => i?.method === "PUT")?.[1]?.body),
+  );
+  expect(body.variables["body.1"]).toEqual({
+    source: "custom_field",
+    field_key: "sede",
+  });
+});
 it("extracts body, header and dynamic URL bindings without alias collisions", () => {
   expect(variableKeys(template)).toEqual(["body.1", "header.1", "button.0.1"]);
 });

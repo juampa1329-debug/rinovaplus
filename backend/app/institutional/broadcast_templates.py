@@ -40,19 +40,23 @@ def normalize(text):
 
 def definition(body):
     text, names = normalize(body.body_text)
+    used_examples = {f"body.{n + 1}" for n in range(len(names))}
     result = [{"type": "BODY", "text": text}]
     if names:
         result[0]["example"] = {
-            "body_text": [["Ejemplo " + str(n + 1) for n in range(len(names))]]
+            "body_text": [[body.examples.get(f"body.{n + 1}", "Ejemplo " + str(n + 1)) for n in range(len(names))]]
         }
     if body.header_type == "TEXT":
         if not body.header_text.strip():
             raise HTTPException(422, "template_header_required")
         value, names = normalize(body.header_text)
+        used_examples.update(f"header.{n + 1}" for n in range(len(names)))
+        if len(names) > 1:
+            raise HTTPException(422, "template_header_one_variable")
         header = {"type": "HEADER", "format": "TEXT", "text": value}
         if names:
             header["example"] = {
-                "header_text": ["Ejemplo " + str(n + 1) for n in range(len(names))]
+                "header_text": [body.examples.get(f"header.{n + 1}", "Ejemplo " + str(n + 1)) for n in range(len(names))]
             }
         result.append(header)
     elif body.header_type:
@@ -66,6 +70,8 @@ def definition(body):
             }
         )
     if body.footer_text:
+        if TOKEN.search(body.footer_text):
+            raise HTTPException(422, "template_footer_variables_unsupported")
         result.append({"type": "FOOTER", "text": body.footer_text})
     buttons = []
     for item in body.buttons:
@@ -80,6 +86,8 @@ def definition(body):
         buttons.append(value)
     if buttons:
         result.append({"type": "BUTTONS", "buttons": buttons})
+    if not set(body.examples) <= used_examples:
+        raise HTTPException(422, "template_example_unused")
     return result
 
 
@@ -166,13 +174,24 @@ def append(
     epoch = previous.get("material_revision", 0) + (
         previous.get("material_fingerprint") != fingerprint(material)
     )
+    quality = raw.get("quality_score", "")
+    if isinstance(quality, dict):
+        quality = quality.get("score", "")
+    rejection = raw.get("rejected_reason", raw.get("rejection_reason", ""))
+    rejection = "" if str(rejection).strip().upper() in {"", "NONE", "NULL", "N/A"} else str(rejection)[:1000]
+    default_bindings = raw.get("variable_bindings", {})
+    if "variable_bindings" not in raw and old:
+        old_components = json.loads(old["Definition"])
+        def content(items):
+            return [{k: v for k, v in item.items() if k != "example"} for item in items]
+        if content(old_components) == content(components):
+            default_bindings = previous.get("variable_bindings", {})
     metadata = {
         "material_revision": epoch,
         "material_fingerprint": fingerprint(material),
-        "quality_score": str(raw.get("quality_score", ""))[:80],
-        "rejection_reason": str(
-            raw.get("rejected_reason", raw.get("rejection_reason", ""))
-        )[:1000],
+        "quality_score": str(quality)[:80],
+        "rejection_reason": rejection,
+        "variable_bindings": default_bindings,
     }
     metadata["allow_category_change"] = raw.get("allow_category_change", True)
     c.execute(
@@ -244,7 +263,7 @@ def same_id(a, b):
     return str(a).lower() == str(b).lower()
 
 
-def parameters(template, document, person, campaign_name):
+def parameters(template, document, person, campaign_name, *, allowed_custom_fields=()):
     definition = json.loads(template["Definition"])
     bindings = document.get("variables", {})
     used = set()
@@ -280,6 +299,15 @@ def parameters(template, document, person, campaign_name):
                 if mapping.get("source") == "literal"
                 else values.get(mapping.get("source"), "")
             )
+            if mapping.get("source") == "custom_field":
+                field = mapping.get("field_key", "")
+                if field not in allowed_custom_fields:
+                    raise HTTPException(409, "broadcast_crm_field_unavailable")
+                value = json.loads(person["CustomValues"]).get(field, "")
+                if isinstance(value, bool):
+                    value = "Sí" if value else "No"
+                elif isinstance(value, (int, float)):
+                    value = str(value)
             if (
                 not isinstance(value, str)
                 or not value.strip()
