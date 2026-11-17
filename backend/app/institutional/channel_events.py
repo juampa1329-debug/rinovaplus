@@ -15,6 +15,7 @@ from app.institutional.channel_text import sql_text
 from app.institutional.crypto import canonical, unseal
 from app.institutional.db import institution, key, one, rows
 from app.institutional.store import transaction
+from app.modules.channels.providers import whatsapp_user_id
 from app.modules.crm_configuration.application.service import (
     read_configuration,
     validate_contact,
@@ -109,26 +110,29 @@ def event(channel, route, kind, external, author, text, payload):
     }
 
 
-def whatsapp_profile_names(value):
+def whatsapp_profile_names(value, *, identifiers=False):
     contacts = value.get("contacts")
     if not isinstance(contacts, list):
         return {}
     names = {}
     for contact in contacts[:100]:
-        if not isinstance(contact, dict) or not valid_external(contact.get("wa_id")):
+        if not isinstance(contact, dict):
             continue
+        keys = [contact["wa_id"]] if valid_external(contact.get("wa_id")) else []
+        if identifiers and whatsapp_user_id(contact.get("user_id")):
+            keys.append(contact["user_id"])
         profile = contact.get("profile")
         if not isinstance(profile, dict):
             continue
         for field in ("name", "username"):
             text = profile.get(field)
             if isinstance(text, str) and text.strip():
-                names[contact["wa_id"]] = sql_text(" ".join(text.split()), 100)
+                names.update((key, sql_text(" ".join(text.split()), 100)) for key in keys)
                 break
     return names
 
 
-def normalize(provider, payload, *, whatsapp_names=True):
+def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=True):
     if provider == "tiktok":
         content = payload.get("content") or {}
         content = strict_json(content) if isinstance(content, str) else content
@@ -183,8 +187,11 @@ def normalize(provider, payload, *, whatsapp_names=True):
             field = change.get("field")
             if field == "messages" and value.get("messaging_product") == "whatsapp":
                 phone = str((value.get("metadata") or {}).get("phone_number_id", ""))
-                names = whatsapp_profile_names(value) if whatsapp_names else {}
+                names = whatsapp_profile_names(value, identifiers=whatsapp_identifiers) if whatsapp_names else {}
                 for message in value.get("messages", [])[:100]:
+                    sender = message.get("from", "")
+                    user_id = message.get("from_user_id")
+                    use_user_id = whatsapp_identifiers and whatsapp_user_id(user_id)
                     text = (
                         (message.get("text") or {}).get("body")
                         or (message.get("button") or {}).get("text")
@@ -192,10 +199,13 @@ def normalize(provider, payload, *, whatsapp_names=True):
                     )
                     effect = event(
                         "whatsapp", phone, "message", message.get("id", ""),
-                        message.get("from", ""), text, message,
+                        sender if valid_external(sender) or not use_user_id else user_id,
+                        text, message,
                     )
-                    if name := names.get(effect["author"]):
+                    if name := names.get(effect["author"]) or (names.get(user_id) if use_user_id else None):
                         effect.update(contact_name=name, normalizer_version=2)
+                    if use_user_id:
+                        effect.update(whatsapp_user_id=user_id, normalizer_version=3)
                     effects.append(effect)
                 for status in value.get("statuses", [])[:100]:
                     effect = event(
@@ -369,6 +379,27 @@ def incoming(c, settings, item, effect):
         integration,
         effect["author"],
     )
+    user_id = effect.get("whatsapp_user_id")
+    author = effect["author"]
+    phone = author if item["Channel"] == "whatsapp" and author.isascii() and author.isdigit() else ""
+    if user_id:
+        aliases = rows(
+            c,
+            "SELECT TOP(2) i.* FROM crm_channels2.ExternalIdentity i "
+            "WHERE i.InstitutionId=? AND i.IntegrationId=? AND "
+            "(i.ExternalId IN(?,?) OR EXISTS(SELECT 1 FROM crm_channels2.MessageRoute r "
+            "JOIN crm_channels2.ExternalMessage x ON x.InstitutionId=r.InstitutionId "
+            "AND x.IntegrationId=r.IntegrationId AND x.MessageId=r.MessageId "
+            "WHERE r.InstitutionId=i.InstitutionId AND r.IntegrationId=i.IntegrationId "
+            "AND r.IdentityId=i.IdentityId AND "
+            "(JSON_VALUE(x.Payload,'$.whatsappUserId')=? "
+            "OR JSON_VALUE(x.Payload,'$.whatsappPhone')=?)))",
+            inst, integration, author, user_id, user_id, phone or None,
+        )
+        if len(aliases) > 1:
+            raise HTTPException(409, "provider_whatsapp_identity_conflict")
+        if aliases:
+            linked = aliases[0]
     first_contact = linked is None
     contact_name = effect.get("contact_name") if item["Channel"] == "whatsapp" else None
     if first_contact:
@@ -377,7 +408,7 @@ def incoming(c, settings, item, effect):
             settings,
             item,
             contact_name or effect["author"],
-            phone=effect["author"] if item["Channel"] == "whatsapp" else "",
+            phone=phone,
             control_mode="ai",
         )
         linked = {
@@ -411,7 +442,7 @@ def incoming(c, settings, item, effect):
         c.execute(
             "UPDATE crm.Contact SET Name=?,UpdatedAt=SYSUTCDATETIME() WHERE ContactId=? "
             "AND (Name='' OR Name=?)",
-            contact_name, linked["ContactId"], effect["author"],
+            contact_name, linked["ContactId"], linked["ExternalId"],
         )
     raw_time = effect["provider"].get("timestamp")
     try:
@@ -440,7 +471,7 @@ def incoming(c, settings, item, effect):
             "INSERT crm_channels2.ExternalMessage(I"
             "nstitutionId,ExternalMessageId,Integra"
             "tionId,ExternalId,MessageId,Payload,Cr"
-            "eatedAt) VALUES(?,?,?,?,?,'{}',SYSUTCD"
+            "eatedAt) VALUES(?,?,?,?,?,?,SYSUTCD"
             "ATETIME())"
         ),
         inst,
@@ -448,6 +479,7 @@ def incoming(c, settings, item, effect):
         integration,
         effect["external"],
         message,
+        json.dumps({"whatsappUserId": user_id, "whatsappPhone": phone or None}) if user_id else "{}",
     )
     c.execute(
         (

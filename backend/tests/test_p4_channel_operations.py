@@ -42,6 +42,30 @@ def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):
     assert error.value.detail == "initial_stage_review_required"
 
 
+def test_whatsapp_business_scoped_sender_without_phone():
+    user_id = "CO.13491208655302741918"
+    message = {"id": "wamid.example", "from_user_id": user_id, "type": "text",
+               "text": {"body": "Hola"}}
+    payload = {"entry": [{"id": "777", "changes": [{"field": "messages", "value": {
+        "messaging_product": "whatsapp",
+        "metadata": {"phone_number_id": "1234"},
+        "contacts": [{"user_id": user_id, "profile": {"name": "Contacto de prueba"}}],
+        "messages": [message],
+    }}]}]}
+    current, = normalize("meta", payload)
+    old, = normalize("meta", payload, whatsapp_identifiers=False)
+    assert (current["author"], current["contact_name"], current["normalizer_version"]) == (
+        user_id, "Contacto de prueba", 3,
+    )
+    assert old["author"] == "" and old["normalizer_version"] == 1
+    assert providers.whatsapp_recipient(current["author"]) == {"recipient": user_id}
+    message["from"] = "573000000000"
+    current, = normalize("meta", payload)
+    assert current["author"] == "573000000000"
+    assert current["whatsapp_user_id"] == user_id
+    assert providers.whatsapp_recipient(current["author"]) == {"to": "573000000000"}
+
+
 def test_social_avatars_only_accept_https_meta_media_hosts():
     official = "https://scontent.xx.fbcdn.net/profile.jpg"
     assert social_avatar_url(official) == official

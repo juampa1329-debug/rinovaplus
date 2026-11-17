@@ -182,10 +182,13 @@ class Recoveries:
                 )
                 if hashlib.sha256(raw.encode()).digest() != bytes(value["Digest"]):
                     raise HTTPException(409, "receipt_integrity_rejected")
+                document = strict_json(raw)
                 stored_effect = json.loads(value["Payload"])
+                version = stored_effect.get("normalizer_version")
                 effects = normalize(
-                    value["Provider"], strict_json(raw),
-                    whatsapp_names=stored_effect.get("normalizer_version") == 2,
+                    value["Provider"], document,
+                    whatsapp_names=version in (2, 3),
+                    whatsapp_identifiers=version == 3,
                 )
                 if (
                     not value["SubeventPath"].isascii()
@@ -219,6 +222,15 @@ class Recoveries:
                 ).fetchone()
                 if not route:
                     raise HTTPException(409, "event_route_not_configured")
+                if (
+                    effect["channel"] == "whatsapp"
+                    and effect["kind"] == "message"
+                    and not effect["author"]
+                    and value["LastErrorCode"] == "provider_author_missing"
+                ):
+                    revised = normalize(value["Provider"], document)[index]
+                    if revised.get("whatsapp_user_id") and revised["author"] == revised["whatsapp_user_id"]:
+                        effect = revised
                 duplicate = c.execute(
                     (
                         "SELECT 1 FROM crm_channels2.WebhookEvent WHERE InstitutionId"
@@ -234,10 +246,11 @@ class Recoveries:
                 c.execute(
                     (
                         "UPDATE crm_channels2.WebhookEvent SET IntegrationId=?,Status"
-                        "='queued',LastErrorCode=NULL WHERE InstitutionId=? AND Event"
+                        "='queued',LastErrorCode=NULL,Payload=? WHERE InstitutionId=? AND Event"
                         "Id=? AND RowVersion=?"
                     ),
                     item["IntegrationId"],
+                    json.dumps(effect, ensure_ascii=False),
                     institution(self.settings),
                     resource,
                     bytes.fromhex(body.row_version),

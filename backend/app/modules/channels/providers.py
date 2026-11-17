@@ -11,6 +11,14 @@ class ProviderFailure(Exception):
         self.code, self.retry, self.uncertain = code, retry, uncertain
 
 
+def whatsapp_user_id(value):
+    return isinstance(value, str) and re.fullmatch(r"[A-Z]{2}\.(?:ENT\.)?[A-Za-z0-9]{1,128}", value) is not None
+
+
+def whatsapp_recipient(target):
+    return {"recipient" if whatsapp_user_id(target) else "to": target}
+
+
 def whatsapp_delivery_error(error):
     if not isinstance(error, dict):
         return None
@@ -344,7 +352,7 @@ def send(account, payload, media=None, before_send=None):
             config["phoneNumberId"] + "/messages",
             {
                 "messaging_product": "whatsapp",
-                "to": payload["target"],
+                **whatsapp_recipient(payload["target"]),
                 "type": "text",
                 "text": {"body": text},
             },
@@ -470,7 +478,7 @@ def send_meta_media(account, payload, media, before_send):
                 config["phoneNumberId"] + "/messages",
                 {
                     "messaging_product": "whatsapp",
-                    "to": payload["target"],
+                    **whatsapp_recipient(payload["target"]),
                     "type": kind,
                     kind: part,
                 },
