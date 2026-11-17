@@ -70,6 +70,7 @@ const whatsappMetaFields: Partial<
     hint: "En el Administrador de WhatsApp, copia el ID que Meta asigna al número que quieres conectar.",
   },
 };
+const facebookLoginConfiguration = "meta:facebook_login_configuration_id";
 export const channelNames: Record<string, string> = {
   whatsapp: "WhatsApp",
   instagram: "Instagram",
@@ -369,12 +370,15 @@ function ChannelEditor({
   const groups = catalog.groups.filter((g) =>
     g.applies_to_channels.includes(account.channel),
   );
-  const editable = catalog.fields.filter(
+  const channelFields = catalog.fields.filter(
     (f) =>
       groups.some((g) => g.id === f.group) &&
       f.group !== "webhooks" &&
-      f.field_kind === "input" &&
-      f.editable_in_p2,
+      (f.id !== facebookLoginConfiguration ||
+        account.issuer_profile === "facebook_login"),
+  );
+  const editable = channelFields.filter(
+    (f) => f.field_kind === "input" && f.editable_in_p2,
   );
   return (
     <>
@@ -455,7 +459,7 @@ function ChannelEditor({
               <section className="panel" key={group.id}>
                 <h3>{group.label}</h3>
                 <div className="institution-fields">
-                  {catalog.fields
+                  {channelFields
                     .filter(
                       (f) => f.group === group.id && f.field_kind !== "secret",
                     )

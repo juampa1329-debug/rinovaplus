@@ -229,6 +229,7 @@ class OperationalChannels(Channels):
             }
             for group, field_id in (
                 ("facebook", FACEBOOK_LOGIN_CONFIGURATION),
+                ("instagram", FACEBOOK_LOGIN_CONFIGURATION),
                 ("whatsapp", WHATSAPP_LOGIN_CONFIGURATION),
             )
         ]

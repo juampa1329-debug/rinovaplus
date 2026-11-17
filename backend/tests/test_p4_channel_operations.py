@@ -552,21 +552,23 @@ def test_oauth_version_cannot_inject_an_endpoint():
 
 
 def test_business_login_uses_the_saved_configuration_instead_of_url_scopes():
-    field = next(
-        field
-        for field in OperationalChannels(None)._fields(contract())
+    fields = [
+        field for field in OperationalChannels(None)._fields(contract())
         if field["id"] == FACEBOOK_LOGIN_CONFIGURATION
-    )
-    configuration = validate_field(field, " 123456789 ")
-    with pytest.raises(ValueError):
-        validate_field(field, "123&scope=other")
+    ]
+    assert {field["group"] for field in fields} == {"facebook", "instagram"}
+    for field in fields:
+        assert field["p2_mapping"]["p2_flat_json_key"] == FACEBOOK_LOGIN_CONFIGURATION
+        assert validate_field(field, " 123456789 ") == "123456789"
+        with pytest.raises(ValueError):
+            validate_field(field, "123&scope=other")
     url = authorization_url(
         {"IssuerProfile": "facebook_login", "ClientId": "123", "ApiVersion": "v25.0"},
         "state",
         "https://crm.example.test/hooks/oauth/id",
         ["pages_show_list"],
         None,
-        configuration_id=configuration,
+        configuration_id="123456789",
     )
     params = parse_qs(urlsplit(url).query)
     assert params["config_id"] == ["123456789"]
