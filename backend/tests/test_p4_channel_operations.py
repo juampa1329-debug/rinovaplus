@@ -467,6 +467,47 @@ def test_whatsapp_subscription_checks_precedence_and_verifies_the_waba_override(
         assert routing["application"] == "https://scentra.example/webhook"
 
 
+@pytest.mark.parametrize("confirmed", [True, False])
+def test_whatsapp_initial_route_omission_requires_positive_post_write_confirmation(
+    monkeypatch, confirmed,
+):
+    callback = "https://crm.example/hooks/channels/ep_fixture"
+    account = {"channel": "whatsapp", "configuration": {
+        "phoneNumberId": "456", "wabaId": "123",
+    }}
+    calls = []
+
+    def request(_account, method, path, body=None, *, params=None):
+        calls.append((method, path))
+        if method == "POST":
+            assert path == "123/subscribed_apps"
+            assert body == {"override_callback_uri": callback, "verify_token": "synthetic-verify"}
+            return {"success": True}
+        assert path == "456" and params == {"fields": "webhook_configuration"}
+        if len(calls) == 3 and confirmed:
+            return {"id": "456", "webhook_configuration": {
+                "whatsapp_business_account": callback,
+            }}
+        return {"id": "456"}
+
+    monkeypatch.setattr(providers, "request", request)
+    if confirmed:
+        assert providers.subscribe_whatsapp_callback(account, callback, "synthetic-verify")["success"]
+    else:
+        with pytest.raises(providers.ProviderFailure, match="whatsapp_webhook_route_unavailable") as error:
+            providers.subscribe_whatsapp_callback(account, callback, "synthetic-verify")
+        assert error.value.uncertain
+    assert calls == [("GET", "456"), ("POST", "123/subscribed_apps"), ("GET", "456")]
+
+
+@pytest.mark.parametrize("response", [{"id": "other"}, {"id": "456", "webhook_configuration": None}])
+def test_whatsapp_initial_route_rejects_wrong_number_and_malformed_configuration(monkeypatch, response):
+    monkeypatch.setattr(providers, "request", lambda *args, **kwargs: response)
+    account = {"configuration": {"phoneNumberId": "456"}}
+    with pytest.raises(providers.ProviderFailure, match="whatsapp_webhook_route_unavailable"):
+        providers.whatsapp_webhook_configuration(account, allow_unconfigured=True)
+
+
 @pytest.mark.parametrize(
     ("app_id", "valid"), [("12345", True), ("12345", False), ("67890", True)]
 )

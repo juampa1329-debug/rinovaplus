@@ -201,17 +201,21 @@ def discover(account):
     return result
 
 
-def whatsapp_webhook_configuration(account):
+def whatsapp_webhook_configuration(account, *, allow_unconfigured=False):
     phone = account["configuration"]["phoneNumberId"]
     value = request(account, "GET", phone, params={"fields": "webhook_configuration"})
+    # Meta omits this field for a number without a configured route. Permit
+    # initial setup, but never treat that omission as post-write confirmation.
     routing = value.get("webhook_configuration")
+    if allow_unconfigured and "webhook_configuration" not in value:
+        routing = {}
     if str(value.get("id")) != phone or not isinstance(routing, dict):
         raise ProviderFailure("whatsapp_webhook_route_unavailable")
     return routing
 
 
 def subscribe_whatsapp_callback(account, callback_url, verify_token):
-    routing = whatsapp_webhook_configuration(account)
+    routing = whatsapp_webhook_configuration(account, allow_unconfigured=True)
     phone_route = routing.get("phone_number")
     if phone_route and phone_route != callback_url:
         raise ProviderFailure("whatsapp_phone_webhook_override_conflict")

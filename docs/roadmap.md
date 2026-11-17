@@ -1,6 +1,6 @@
 ## Corte de producción RinovaPlus — 2026-11-17
 
-El [estado vigente de producción y pendientes por fase](adaptation/RINOVAPLUS_LIVE_STATUS.md) registra los avances reales de canales, Inbox, comentarios, Gemini, Académico y despliegues. El [registro de seguimiento](../tasks/rinovaplus-live-progress.json) separa implementación, pruebas de producción y aceptación canónica. Total formal conservado: **93,62%, 18 hitos originales pendientes**. La ampliación de respuestas personalizadas y sugerencias está en validación; P13 mantiene cuatro aceptaciones pendientes. Ver allí el orden de cierre y los pendientes concretos, en lugar de interpretar el checkpoint siguiente como estado actual de la web.
+El [estado vigente de producción y pendientes por fase](adaptation/RINOVAPLUS_LIVE_STATUS.md) registra canales, Inbox, Gemini, Académico y despliegues. El [registro de seguimiento](../tasks/rinovaplus-live-progress.json) separa implementación y aceptación. Total técnico: **93,88%, 262/279 hitos, 45/56 criterios aceptados**; quedan 17 hitos. P7 avanza a **85,14%** por el catálogo Meta aprobado real, sin acreditar aún envío masivo ni recibos. La definición y los pesos originales se conservan; el replay completo sigue limitado por artefactos históricos ausentes. Respuestas personalizadas y silencio Humano confirmados en Messenger/Instagram; comentario publicado observado. P13 mantiene cuatro aceptaciones pendientes: **SIIE pasa a P15, diferida**, y no bloquea fichas revisadas manualmente.
 
 ## Checkpoint histórico P11-ES local — 2026-10-28
 

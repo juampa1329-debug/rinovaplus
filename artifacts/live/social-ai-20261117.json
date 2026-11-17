@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-17",
+  "environment": "https://app.rinovaplus.com",
+  "backend_code": "a333463",
+  "frontend_code": "bdaba31",
+  "scope": "real_personalized_social_replies_and_human_control",
+  "test_question": "Que duración y formas de pago tiene cada programa?",
+  "messenger": {
+    "provider_operation": "confirmed",
+    "model_attempts": 1,
+    "reply": "Para brindarte información precisa sobre la duración y las formas de pago, por favor indícame el programa académico de tu interés y el período en el que deseas iniciar. Con estos datos, podré detallarte las condiciones específicas o indicarte cómo contactar a un asesor para profundizar en los detalles financieros.",
+    "provider_delivery": "delivered",
+    "human_followup_received_utc": "2026-11-17T22:09:36.215Z",
+    "human_control_epoch": 1,
+    "model_operations_for_human_followup": 0,
+    "bot_messages_after_human_followup": 0
+  },
+  "instagram_dm": {
+    "provider_operation": "confirmed",
+    "model_attempts": 1,
+    "reply": "Para brindarte información precisa sobre la duración y las formas de pago, por favor indícame el programa de tu interés y el período académico al que deseas postularte. Con estos datos, podré detallarte la información disponible o indicarte cómo contactar a un asesor para resolver tus dudas específicas.",
+    "provider_delivery": "accepted",
+    "human_followup_received_utc": "2026-11-17T22:09:50.945Z",
+    "human_control_epoch": 1,
+    "model_operations_for_human_followup": 0,
+    "bot_messages_after_human_followup": 0
+  },
+  "instagram_comment": {
+    "provider_operation": "confirmed",
+    "model_attempts": 1,
+    "reply": "¡Hola! En la Corporación Bolivariana del Norte (CBN) contamos con diversos programas técnicos. Para brindarte información precisa sobre la duración y las formas de pago de cada uno, por favor indícame cuál es el programa de tu interés. Ten en cuenta que los detalles específicos sobre costos y planes de financiación deben ser validados directamente con nuestro departamento de admisiones. ¡Quedo atento a tu respuesta para orientarte mejor!",
+    "provider_delivery": "accepted",
+    "provider_reply_id_matched_inbound_webhook": true,
+    "final_control_mode": "human",
+    "fresh_current_version_guard": "comment_auto_source_changed",
+    "guard_did_not_call_provider": true
+  },
+  "boundaries": [
+    "No approved program prices were supplied or invented.",
+    "Human followups repeated the duration/payment question; they did not use the proposed silence-marker text.",
+    "Instagram accepted is not upgraded to delivered or read without provider evidence.",
+    "The comment human test verifies persisted mode and the current-version dispatch guard, not a newly scheduled public reply under human mode.",
+    "The observation window proves these real followups; future behavior also depends on the unchanged control guard.",
+    "Native Meta automations remain separate."
+  ],
+  "siie_scope": "P15_deferred_by_owner_not_a_mandatory_P13_dependency"
+}

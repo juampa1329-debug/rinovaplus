@@ -1,6 +1,6 @@
 {
   "schema_version": "technical-work-milestones-v1",
-  "date": "2026-10-28",
+  "date": "2026-11-17",
   "status": "current_evidence_based_partial_work_and_separate_acceptance",
   "authorized_change": "La petición humana nueva autoriza cuantificar trabajo parcial. La regla histórica partial_credit=0 queda intacta para aceptación y no rige esta nueva columna de avance técnico.",
   "scope": "Current assessment of implementation/contract/test/integration/acceptance work; legacy and current evidence scopes are explicit. Not hours, deployment readiness or exact percentage of features.",
@@ -772,6 +772,12 @@
       "source_location": "$.criteria",
       "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE",
       "source_sha256_at_review": "28445fa948e87e62fb9f5964f1549cf2bdfc8bc5b5772e0227fdf791f8f9256d"
+    },
+    "P7_Meta_catalog_live_20261117": {
+      "file": "artifacts/live/p7-catalog-20261117.json",
+      "source_location": "$.template",
+      "scope": "Catálogo Meta positivo real, aprobado y ligado a credencial; no acredita envío ni recibos masivos.",
+      "source_sha256_at_review": "29ff11f0129a0eadecefeabb617f60831f66511b87f2fcb46de3f213314b24c6"
     }
   },
   "phases": [
@@ -5543,15 +5549,17 @@
             {
               "id": "P7.1.m5",
               "description": "Aceptar catálogo Meta positivo con credencial/plantilla aprobada sin fabricar datos.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "test",
               "evidence_level": "SQL",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 7
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P7_Meta_catalog_live_20261117"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L256"
@@ -5595,13 +5603,13 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 5,
+            "done_milestones": 6,
             "total_milestones": 7,
             "criterion_equivalent": {
-              "numerator": 5,
+              "numerator": 6,
               "denominator": 7
             },
-            "percent_display": "71.43%",
+            "percent_display": "85.71%",
             "acceptance_pending": true
           },
           "proposed_criterion_accepted": false,
@@ -6150,15 +6158,15 @@
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 144,
+          "numerator": 149,
           "denominator": 35
         },
         "criterion_denominator": 5,
         "fraction": {
-          "numerator": 144,
+          "numerator": 149,
           "denominator": 175
         },
-        "percent_display": "82.29%",
+        "percent_display": "85.14%",
         "phase_accepted": false
       },
       "historical_closure": {
@@ -8517,15 +8525,15 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 367,
-      "denominator": 392
+      "numerator": 46,
+      "denominator": 49
     },
-    "overall_technical_percent_display": "93.62%",
+    "overall_technical_percent_display": "93.88%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 261,
-    "pending_milestones": 18,
+    "done_milestones": 262,
+    "pending_milestones": 17,
     "accepted_criteria": 45,
     "milestone_counts_are_not_weights": true,
     "phases": [
@@ -8645,14 +8653,14 @@
         "id": "P7",
         "criterion_denominator": 5,
         "criterion_equivalents_completed": {
-          "numerator": 144,
+          "numerator": 149,
           "denominator": 35
         },
         "work_fraction": {
-          "numerator": 144,
+          "numerator": 149,
           "denominator": 175
         },
-        "work_percent_display": "82.29%",
+        "work_percent_display": "85.14%",
         "accepted_criteria": 2,
         "acceptance_percent_display": "40.00%",
         "phase_accepted": false

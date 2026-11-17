@@ -1,6 +1,6 @@
 ## Corte de producción RinovaPlus — 2026-11-17
 
-Consultar el [estado actualizado por fase y pruebas pendientes](adaptation/RINOVAPLUS_LIVE_STATUS.md). Incluye WhatsApp, Messenger, Instagram, comentarios y las mejoras publicadas de Inbox, navegación y publicaciones; distingue la nueva generación personalizada de la bienvenida fija anterior. El checkpoint canónico conserva **93,62%** hasta aceptar sus 18 hitos pendientes completos. P13 y P14 se siguen sin alterar ese denominador. La app online existe: el 0% formal de P12 expresa aceptación institucional pendiente, no ausencia de despliegue.
+Consultar el [estado actualizado por fase](adaptation/RINOVAPLUS_LIVE_STATUS.md): respuestas personalizadas y silencio Humano verificados, comentario publicado observado y catálogo Meta aprobado real. Total técnico **93,88%, 262/279 hitos y 45/56 criterios aceptados**; P7 **85,14%**, pendiente envío y recibos de Mensajería masiva. Se conservan pesos y definición; el replay histórico completo está limitado por artefactos ausentes. P13–P15 no alteran ese denominador. **SIIE pasa a P15, diferida**, y deja de ser condición obligatoria de P13. La app online existe: el 0% formal de P12 expresa aceptación institucional pendiente.
 
 ## Checkpoint histórico P11-ES local — 2026-10-28
 

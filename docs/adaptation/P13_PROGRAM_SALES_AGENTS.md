@@ -2,7 +2,7 @@
 
 Actualización del 17 de noviembre: la ampliación actual permite consulta informativa de programas por nombre/alias y contexto de historial, sin asignar ni confirmar programa académico. Gemini genera mensajes y comentarios desde prompts y hechos vigentes; las sugerencias usan el mismo catálogo. Esto implementa parte del contexto comercial de P13.3, pero no acredita todavía enrutamiento automático a un especialista ni el piloto de dos programas. Ver [estado actualizado y pendientes por fase](RINOVAPLUS_LIVE_STATUS.md).
 
-**Prioridad de fuente actualizada por el propietario:** catálogo académico y financiero mediante API de SIIE sobre DBSIIE. P13.2 pasa a validar esa importación oficial por oferta, con contado, costo completo, abono, cuotas, fechas y revisión humana. Firecrawl/URL permanece como fuente complementaria de contenidos; no sustituye precios oficiales. Hay modelos, adaptador desactivado y preview revisable; faltan URL, credencial y contrato real. [Datos que debe entregar SIIE y pasos de conexión](../contracts/SIIE_COMMERCIAL_API.md). Esta adaptación de P13 no cambia los 56 criterios/279 hitos originales.
+**Decisión vigente del propietario:** la API académica/financiera SIIE se separa en [P15, diferida](P15_SIIE_INTEGRATION.md). No bloquea P13: las fichas y agentes se pueden aceptar con información revisada manualmente o publicada por la institución. Sin precio vigente revisado, el agente informa que falta confirmarlo. La base SIIE existente se conserva desactivada. Esta separación no cambia los 56 criterios/279 hitos originales.
 
 Plan del 16 de noviembre de 2026. La ficha y la importación se desarrollaron en local. P13 conserva **0 de 4 hitos aceptados** hasta aprobar la ficha piloto, probar la URL real, activar el enrutamiento con el especialista y verificar ambos recorridos en WhatsApp. El piloto empieza con Auxiliar de Enfermería y valida la réplica con un segundo programa de software cuyo nombre oficial confirmará Admisiones.
 
@@ -17,7 +17,7 @@ Ejemplo de prueba. «¿Cuánto cuesta enfermería y cuánto dura?» debe llegar 
 ## Punto de partida en RinovaPlus
 
 - P5 ya ofrece agentes por programa y etapa, prevalidación, simulación y asignación por contexto confirmado. P6 ya publica conocimiento por ámbito y vigencia con fuentes revisadas.
-- WhatsApp ya recibe mensajes reales y el flujo Gemini elige la configuración del agente mediante el selector existente. Hoy clasifica la intención y usa respuestas predefinidas. Hay que conectar la respuesta con el catálogo y las fuentes vigentes.
+- WhatsApp, Messenger e Instagram reciben mensajes reales. Gemini ya redacta texto personalizado con instrucciones, catálogo y fuentes; la prueba del 17 de noviembre confirmó respuestas sobre duración y formas de pago en ambos canales sociales y en un comentario público. El piloto P13 todavía requiere fichas revisadas de dos programas y especialistas/enrutamiento.
 - El interés detectado pertenece al CRM comercial. La postulación y los datos académicos conservan sus validaciones. El piloto reutiliza el selector, el control Humano y la cola actual de WhatsApp.
 
 ## Mini roadmap
@@ -25,7 +25,7 @@ Ejemplo de prueba. «¿Cuánto cuesta enfermería y cuánto dura?» debe llegar 
 | Hito | Entregable | Se acepta cuando |
 |---|---|---|
 | **P13.1 · Ficha comercial** | Una ficha por programa del catálogo con nombre oficial, alias, sede, jornada, modalidad, duración, materias o módulos, requisitos y enlace de inscripción. Registrar precio en COP, concepto, vigencia, fuente y responsable de aprobación. | Admisiones revisa la ficha piloto. Una tarifa vencida o sin aprobación queda fuera de la respuesta del agente. |
-| **P13.2 · Importar datos oficiales** | Consultar API SIIE por oferta (programa, sede, jornada, período), recuperar ficha y planes financieros completos y mostrar un borrador revisable. URL/Firecrawl queda como apoyo documental. | Contrato real probado con dos ofertas; origen/revisión/vigencia conservados, totales y fechas de cuotas conciliados, diferencias revisadas antes de guardar. SIIE permanece en sólo lectura. |
+| **P13.2 · Fuentes institucionales revisadas** | Incorporar información manual aprobada o extraída de páginas/documentos institucionales; revisar diferencias antes de guardar. API SIIE queda en P15. | Dos fichas con procedencia, revisión y vigencia; consultas de datos presentes y ausentes correctas, sin inventar importes ni activar escrituras académicas. |
 | **P13.3 · Enrutamiento y venta** | Vincular un especialista activo al programa. Detectar alias, resolver dudas con una pregunta breve y reutilizar el contexto comercial entre mensajes. Configurar un guion de diagnóstico, objeciones y siguiente paso. | El simulador verifica alias y errores de escritura, dos programas compatibles, cambio de interés, ausencia de tarifa, solicitud de asesor y cambio a Humano mientras hay una respuesta pendiente. |
 | **P13.4 · Piloto real** | Probar Auxiliar de Enfermería y un programa de software en WhatsApp. Activar por programa y registrar programa detectado, agente y versión, fuente y resultado. | Ambos recorridos se verifican de extremo a extremo. Las respuestas citan datos vigentes, el chat queda en el mismo hilo y la toma de control humano funciona. Admisiones aprueba el resultado y prueba cómo pausar cada agente. |
 

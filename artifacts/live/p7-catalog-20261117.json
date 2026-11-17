@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-17",
+  "environment": "production",
+  "source": "RinovaPlus UI synchronization with Meta, followed by read-only backend SQL observation",
+  "account_display_name": "Whatsapp",
+  "template": {
+    "name": "hello_world",
+    "language": "en_US",
+    "category": "UTILITY",
+    "provider_status": "APPROVED",
+    "origin": "provider",
+    "observed_at_utc": "2026-11-17T22:11:46.726163Z",
+    "version": 2,
+    "credential_bound": true,
+    "provider_id_present": true
+  },
+  "milestone": "P7.1.m5",
+  "scope": "Positive real approved Meta template catalog bound to the saved credential. No fixture and no locally fabricated approval.",
+  "not_accepted": ["P7.1.m7", "P7.4.m4", "P7.4.m5", "P7.close.m5"],
+  "campaign": {
+    "name": "Prueba P7 · hello_world · solo teléfono 44",
+    "state": "draft",
+    "send_attempts": 0,
+    "consent_granted_in_this_test": false,
+    "last_save": "generic_access_validation_error_after_correcting_contact_filter; not confirmed persisted"
+  },
+  "payment": {
+    "method_present": "not_verified; owner reports no card",
+    "account_is_meta_test_resource": "not_verified",
+    "send_without_payment_method": "not_accepted",
+    "official_pricing": "https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing/",
+    "official_test_resources": "https://developers.facebook.com/documentation/business-messaging/whatsapp/about-the-platform/"
+  },
+  "verification_limit": "Full historical progress checker cannot replay in this checkout because 20 referenced historical artifacts are absent. No historical artifacts or checkers were recreated or weakened. This evidence only supports the specified milestone."
+}
