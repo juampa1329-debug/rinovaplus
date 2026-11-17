@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Field, Notice, SelectField } from "../shared/ui";
 import type { Channel } from "./Channels";
 import { Credentials, ResourceState, useResource } from "./Settings";
 import { ApiError, useInstitution, useIntent, useTask } from "./api";
 import { useDraftGuard } from "./drafts";
+import { OperationDialog } from "./ErrorFeedback";
 
 const scopes: Record<string, string[]> = {
   meta_whatsapp: [
@@ -35,6 +36,15 @@ const stateLabels: Record<string, string> = {
 };
 
 type OAuthStatus = { status: string; code?: string | null };
+type OAuthAsset = { id: string; name: string; external_id: string; kind: string };
+type OAuthResult = OAuthStatus & { items: OAuthAsset[] };
+type OAuthNotice = {
+  title: string;
+  detail: string;
+  nextStep?: string;
+  success?: boolean;
+  showChoices?: boolean;
+};
 
 function oauthMessage(result: OAuthStatus, assetPrompt: string) {
   if (result.status === "assets_ready") return assetPrompt;
@@ -47,6 +57,8 @@ function oauthMessage(result: OAuthStatus, assetPrompt: string) {
     return "El inicio de sesión terminó sin conceder acceso. Vuelve a conectar la cuenta.";
   if (result.status === "expired")
     return "La autorización venció. Inicia una conexión nueva.";
+  if (result.status === "uncertain" && result.code !== "oauth_authority_or_configuration_changed")
+    return "RinovaPlus no pudo confirmar el resultado de la consulta. Revisa Actividad y recuperación y vuelve a conectar si el intento sigue sin confirmarse.";
   if (result.code === "meta_app_secret_rejected")
     return "Meta rechazó el App Secret. En Meta Developers, copia el secreto vigente de esta app y guárdalo en Credenciales. Después vuelve a conectar la cuenta.";
   if (result.code === "oauth_code_exchange_rejected")
@@ -82,14 +94,18 @@ export function ChannelOperations({
   const [pin, setPin] = useState(""),
     [stage, setStage] = useState(account.initial_stage_key || ""),
     [diagnosis, setDiagnosis] = useState(""),
-    [numbers, setNumbers] = useState<
-      { id: string; display_phone_number?: string; verified_name?: string }[]
-    >([]),
+    [synced, setSynced] = useState<{
+      wabaId: unknown;
+      numbers: { id: string; display_phone_number?: string; verified_name?: string }[];
+      hasMoreNumbers?: boolean;
+    } | null>(null),
     [oauth, setOauth] = useState(returnedOAuth || ""),
     [authUrl, setAuthUrl] = useState(""),
-    [assets, setAssets] = useState<
-      { id: string; name: string; external_id: string; kind: string }[]
-    >([]);
+    [assets, setAssets] = useState<OAuthAsset[]>([]),
+    [oauthNotice, setOAuthNotice] = useState<OAuthNotice | null>(null);
+  const lastNotice = useRef("");
+  const choices = useRef<HTMLDivElement>(null);
+  const oauthSection = useRef<HTMLDetailsElement>(null);
   useDraftGuard(!!pin || stage !== (account.initial_stage_key || ""));
   const writable =
       session.actions.includes("settings.channels.write") &&
@@ -111,6 +127,53 @@ export function ChannelOperations({
     : account.channel === "whatsapp"
       ? "Selecciona el número institucional autorizado."
       : "Selecciona la cuenta autorizada.";
+  const whatsapp = account.channel === "whatsapp";
+  const wabaId = account.fields["meta:whatsapp_business_account_id"];
+  const phoneId = account.fields["meta:whatsapp_phone_number_id"];
+  const syncResult = synced && synced.wabaId === wabaId ? synced : null;
+  const confirmSaved = (name: string) => {
+    setOAuthNotice({
+      title: whatsapp ? "Número agregado a RinovaPlus" : "Cuenta agregada a RinovaPlus",
+      detail: `Canal ${account.display_name} actualizado con ${name}.`,
+      nextStep: "Pulsa «Verificar token y cuenta» para comprobar la conexión con el proveedor.",
+      success: true,
+    });
+  };
+  const applyOAuthResult = useCallback((result: OAuthResult) => {
+    setAssets(result.items);
+    const detail = oauthMessage(result, assetPrompt);
+    setDiagnosis(detail);
+    if (["pending", "exchanging"].includes(result.status)) return;
+    setAuthUrl("");
+    const key = `${oauth}:${result.status}:${result.code ?? ""}`;
+    if (lastNotice.current === key) return;
+    lastNotice.current = key;
+    if (result.status === "assets_ready") {
+      setOAuthNotice({
+        title: whatsapp ? "Números de WhatsApp disponibles" : "Autorización completada",
+        detail: "El proveedor autorizó el acceso. Elige qué quieres agregar a este canal.",
+        nextStep: whatsapp
+          ? "Pulsa «Usar este número» junto al número que quieres guardar."
+          : pageOAuth
+            ? "Pulsa «Usar esta página» junto a la página que quieres guardar."
+            : "Pulsa «Usar esta cuenta» junto a la cuenta que quieres guardar.",
+        success: true,
+        showChoices: true,
+      });
+    } else {
+      setOAuthNotice({
+        title: result.status === "completed"
+          ? "Autorización guardada"
+          : result.status === "cancelled"
+            ? "Autorización cancelada"
+            : result.status === "expired"
+              ? "Autorización vencida"
+              : "No se pudo completar la autorización",
+        detail,
+        success: result.status === "completed",
+      });
+    }
+  }, [assetPrompt, oauth, pageOAuth, whatsapp]);
   useEffect(() => {
     if (!oauth) return;
     const returned = oauth === returnedOAuth;
@@ -121,19 +184,20 @@ export function ChannelOperations({
       if (loading || (!returned && document.hidden)) return;
       loading = true;
       try {
-        const result = await call<OAuthStatus & { items: typeof assets }>(
+        const result = await call<OAuthResult>(
           `channels/oauth/${oauth}/assets`,
         );
         if (!active) return;
-        if (!["pending", "exchanging"].includes(result.status))
-          setAuthUrl("");
-        setAssets(result.items);
-        setDiagnosis(oauthMessage(result, assetPrompt));
+        applyOAuthResult(result);
       } catch {
-        if (active && returned)
-          setDiagnosis(
-            "No se pudo cargar la autorización. Consulta las cuentas autorizadas o vuelve a conectar.",
-          );
+        if (active && returned && lastNotice.current !== `${oauth}:load-error`) {
+          lastNotice.current = `${oauth}:load-error`;
+          setOAuthNotice({
+            title: "No se pudo consultar la autorización",
+            detail: "RinovaPlus no pudo leer el resultado del inicio de sesión.",
+            nextStep: "Pulsa «Consultar cuentas autorizadas» o inicia una conexión nueva.",
+          });
+        }
       } finally {
         loading = false;
       }
@@ -148,9 +212,10 @@ export function ChannelOperations({
       window.removeEventListener("focus", onReturn);
       document.removeEventListener("visibilitychange", onReturn);
     };
-  }, [oauthProvider, assetPrompt, oauth, authUrl, call, returnedOAuth]);
+  }, [applyOAuthResult, oauthProvider, oauth, authUrl, call, returnedOAuth]);
   const perform = (action: string) =>
     void task.run(async () => {
+      if (action === "numbers") setSynced(null);
       const payload = {
         row_version: account.row_version,
         ...(action === "register" ? { pin } : {}),
@@ -158,13 +223,15 @@ export function ChannelOperations({
       const result = await call<{
         status: string;
         code?: string;
-        result: { numbers?: typeof numbers };
+        result: {
+          numbers?: NonNullable<typeof synced>["numbers"];
+          hasMoreNumbers?: boolean;
+        };
       }>(`channels/${account.id}/actions/${action}`, "POST", {
         ...payload,
         operation_id: intent.get({ action, ...payload }),
       });
       setPin("");
-      if (action === "numbers") setNumbers(result.result.numbers || []);
       if (
         ["verify", "health", "numbers"].includes(action) ||
         (action === "subscribe" && account.channel === "whatsapp" && result.status === "confirmed") ||
@@ -180,6 +247,23 @@ export function ChannelOperations({
             : result.code || "provider_operation_failed",
         );
       }
+      if (action === "numbers" && result.status === "confirmed") {
+        setDiagnosis("");
+        setSynced({
+          wabaId,
+          numbers: result.result.numbers || [],
+          hasMoreNumbers: result.result.hasMoreNumbers,
+        });
+        return;
+      }
+      if (action === "register" && result.status === "confirmed") {
+        setOAuthNotice({
+          title: "Número registrado en WhatsApp",
+          detail: "Meta confirmó el registro del número en WhatsApp Cloud API.",
+          nextStep: "Pulsa «Verificar token y cuenta» para comprobar el canal.",
+          success: true,
+        });
+      }
       setDiagnosis(
         action === "subscribe" && account.channel === "whatsapp" && result.status === "confirmed"
           ? "Meta confirmó la URL de RinovaPlus para los mensajes de esta cuenta."
@@ -190,42 +274,24 @@ export function ChannelOperations({
   return (
     <section className="panel">
       <h3>Conexión de esta cuenta</h3>
+      {oauthNotice && (
+        <OperationDialog
+          guidance={oauthNotice}
+          success={oauthNotice.success}
+          dismissLabel={oauthNotice.showChoices
+            ? whatsapp ? "Ver números" : "Ver opciones"
+            : undefined}
+          dismiss={() => {
+            setOAuthNotice(null);
+            if (!oauthNotice.showChoices) return;
+            if (oauthSection.current) oauthSection.current.open = true;
+            const choice = choices.current?.querySelector<HTMLButtonElement>("button:not(:disabled)");
+            (choice ?? oauthSection.current?.querySelector("summary"))?.focus();
+          }}
+        />
+      )}
       {task.notices}
       {diagnosis && <Notice>{diagnosis}</Notice>}
-      {numbers.length > 0 && (
-        <div aria-label="Números de WhatsApp autorizados">
-          {numbers.map((number) => (
-            <div key={number.id}>
-              <span>
-                {number.display_phone_number || number.id} ·{" "}
-                {number.verified_name || "Sin nombre verificado"}
-              </span>
-              <Button
-                variant="secondary"
-                disabled={
-                  !writable ||
-                  task.busy ||
-                  !!account.fields["meta:whatsapp_phone_number_id"]
-                }
-                onClick={() =>
-                  void task.run(async () => {
-                    await call(`channels/${account.id}`, "PUT", {
-                      operation_id: crypto.randomUUID(),
-                      revision: account.revision,
-                      row_version: account.row_version,
-                      application_version: account.application_version,
-                      values: { "meta:whatsapp_phone_number_id": number.id },
-                    });
-                    await done();
-                  })
-                }
-              >
-                Usar este número
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
       <div className="institution-actions">
         <Button
           disabled={!writable || task.busy}
@@ -263,42 +329,8 @@ export function ChannelOperations({
             Renovar token
           </Button>
         )}
-        {account.channel === "whatsapp" && (
-          <Button
-            variant="secondary"
-            disabled={!writable || task.busy}
-            onClick={() => perform("numbers")}
-          >
-            Consultar números de WhatsApp
-          </Button>
-        )}
       </div>
-      {account.channel === "whatsapp" && (
-        <details>
-          <summary>Registrar número en WhatsApp</summary>
-          <p>
-            Usa el PIN de seis dígitos de verificación en dos pasos. No es un
-            código SMS.
-          </p>
-          <Field
-            id="channel-registration-pin"
-            label="PIN de seis dígitos"
-            type="password"
-            inputMode="numeric"
-            maxLength={6}
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            autoComplete="off"
-          />
-          <Button
-            disabled={!writable || task.busy || !/^\d{6}$/.test(pin)}
-            onClick={() => perform("register")}
-          >
-            Registrar número
-          </Button>
-        </details>
-      )}
-      <details open={oauthProvider ? true : undefined}>
+      <details ref={oauthSection} open={oauthProvider ? true : undefined}>
         <summary>
           {oauthProvider
             ? `Inicio de sesión con ${oauthProvider}`
@@ -379,14 +411,8 @@ export function ChannelOperations({
             disabled={task.busy}
             onClick={() =>
               void task.run(async () => {
-                const result = await call<OAuthStatus & {
-                  items: typeof assets;
-                }>(`channels/oauth/${oauth}/assets`);
-                if (!["pending", "exchanging"].includes(result.status))
-                  setAuthUrl("");
-                setAssets(result.items);
-                setDiagnosis(oauthMessage(result, assetPrompt));
-              })
+                applyOAuthResult(await call<OAuthResult>(`channels/oauth/${oauth}/assets`));
+              }, "")
             }
           >
             {pageOAuth
@@ -394,10 +420,12 @@ export function ChannelOperations({
               : "Consultar cuentas autorizadas"}
           </Button>
         )}
+        <div className="channel-number-list" ref={choices}>
         {assets.map((asset) => (
-          <div key={asset.id}>
+          <div className="channel-number-row" key={asset.id}>
             <span>
-              {asset.name} · {asset.external_id}
+              <strong>{asset.name}</strong>
+              <small>ID {asset.external_id}</small>
             </span>
             <Button
               disabled={!writable || task.busy}
@@ -410,18 +438,111 @@ export function ChannelOperations({
                   setAssets([]);
                   setAuthUrl("");
                   setOauth("");
+                  confirmSaved(asset.name);
                   setDiagnosis(
-                    "Credencial guardada. Verifica la cuenta antes de conectarla.",
+                    "Cuenta guardada. Verifica la conexión con el proveedor.",
                   );
                   await done();
-                })
+                }, "")
               }
             >
               {pageOAuth ? "Usar esta página" : account.channel === "whatsapp" ? "Usar este número" : "Usar esta cuenta"}
             </Button>
           </div>
         ))}
+        </div>
       </details>
+      {whatsapp && (
+        <section aria-label="Números de WhatsApp">
+          <h4>Números de WhatsApp</h4>
+          <p>
+            Usa «Conectar con Meta» para encontrar tus cuentas y guardar su WABA ID y el ID
+            del número. Para configurarlo manualmente, busca el WABA ID en Meta Business →
+            Configuración → Cuentas de WhatsApp. En Administrador de WhatsApp → Números de
+            teléfono, encontrarás el ID del número.
+          </p>
+          <p>
+            La sincronización consulta los números de la cuenta guardada en este canal.
+            Para agregar otro número, crea un canal de WhatsApp para ese número.
+          </p>
+          {!wabaId && (
+            <p>Guarda un WABA ID o elige un número desde el inicio de sesión con Meta para poder sincronizar.</p>
+          )}
+          <Button
+            variant="secondary"
+            disabled={!writable || task.busy || !wabaId}
+            onClick={() => perform("numbers")}
+          >
+            Sincronizar números de WhatsApp
+          </Button>
+          {syncResult && (
+            <>
+              <Notice>
+                {syncResult.numbers.length === 0
+                  ? "Meta no devolvió números para esta cuenta. Revisa el WABA ID y el acceso del token en Meta."
+                  : `Meta devolvió ${syncResult.numbers.length} ${syncResult.numbers.length === 1 ? "número" : "números"} para esta cuenta.`}
+                {syncResult.hasMoreNumbers && " Meta tiene más números para esta cuenta."}
+              </Notice>
+              <div className="channel-number-list">
+                {syncResult.numbers.map((number) => (
+                  <div className="channel-number-row" key={number.id}>
+                    <span>
+                      <strong>{number.display_phone_number || number.id}</strong>
+                      <small>{number.verified_name || "Sin nombre verificado"} · ID {number.id}</small>
+                    </span>
+                    {number.id === phoneId ? <span>Guardado en este canal</span> : (
+                      <Button
+                        variant="secondary"
+                        disabled={!writable || task.busy || !!phoneId}
+                        onClick={() =>
+                          void task.run(async () => {
+                            await call(`channels/${account.id}`, "PUT", {
+                              operation_id: crypto.randomUUID(),
+                              revision: account.revision,
+                              row_version: account.row_version,
+                              application_version: account.application_version,
+                              values: { "meta:whatsapp_phone_number_id": number.id },
+                            });
+                            confirmSaved(number.display_phone_number || number.id);
+                            await done();
+                          }, "")
+                        }
+                      >
+                        Usar este número
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          <details>
+            <summary>Registrar número en WhatsApp Cloud API</summary>
+            <p>
+              Registra el número solo si Meta indica que el registro está pendiente. Primero
+              guárdalo en este canal. Usa el PIN de seis dígitos de verificación en dos pasos
+              de WhatsApp Business, distinto del código de verificación por SMS.
+            </p>
+            <Field
+              id="channel-registration-pin"
+              label="PIN de seis dígitos"
+              type="password"
+              inputMode="numeric"
+              maxLength={6}
+              value={pin}
+              disabled={!phoneId || !wabaId}
+              onChange={(e) => setPin(e.target.value)}
+              autoComplete="off"
+            />
+            <Button
+              disabled={!writable || task.busy || !phoneId || !wabaId || !/^\d{6}$/.test(pin)}
+              onClick={() => perform("register")}
+            >
+              Registrar número
+            </Button>
+          </details>
+        </section>
+      )}
       <div className="institution-fields">
         <SelectField
           id="channel-initial-stage"

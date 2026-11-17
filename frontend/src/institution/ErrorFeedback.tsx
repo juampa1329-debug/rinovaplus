@@ -47,7 +47,7 @@ export function ErrorFeedback({
     <ErrorFeedbackContext.Provider value={report}>
       {children}
       {current && (
-        <ErrorDialog
+        <OperationDialog
           guidance={current.guidance}
           trigger={current.trigger}
           dismiss={() => setCurrent(null)}
@@ -57,14 +57,18 @@ export function ErrorFeedback({
   );
 }
 
-function ErrorDialog({
+export function OperationDialog({
   guidance,
   trigger,
   dismiss,
+  success = false,
+  dismissLabel = "Cerrar aviso",
 }: {
-  guidance: ErrorGuidance;
-  trigger: Element | null;
+  guidance: Omit<ErrorGuidance, "nextStep"> & { nextStep?: string };
+  trigger?: Element | null;
   dismiss: () => void;
+  success?: boolean;
+  dismissLabel?: string;
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -88,10 +92,10 @@ function ErrorDialog({
   return (
     <dialog
       ref={dialog}
-      className="operation-error-dialog"
-      role="alertdialog"
+      className={`operation-error-dialog${success ? " operation-success-dialog" : ""}`}
+      role={success ? "dialog" : "alertdialog"}
       aria-labelledby={`${id}-title`}
-      aria-describedby={`${id}-detail ${id}-next-step`}
+      aria-describedby={`${id}-detail${guidance.nextStep ? ` ${id}-next-step` : ""}`}
       onCancel={(event) => {
         event.preventDefault();
         close();
@@ -99,17 +103,19 @@ function ErrorDialog({
     >
       <div className="operation-error-content">
         <span className="operation-error-icon" aria-hidden="true">
-          !
+          {success ? "✓" : "!"}
         </span>
         <div className="operation-error-copy">
           <h2 id={`${id}-title`}>{guidance.title}</h2>
           <p id={`${id}-detail`}>{guidance.detail}</p>
         </div>
-        <div className="operation-error-next" id={`${id}-next-step`}>
-          <h3>Cómo resolverlo</h3>
-          <p>{guidance.nextStep}</p>
-        </div>
-        <Button onClick={close}>Cerrar aviso</Button>
+        {guidance.nextStep && (
+          <div className="operation-error-next" id={`${id}-next-step`}>
+            <h3>{success ? "Siguiente paso" : "Cómo resolverlo"}</h3>
+            <p>{guidance.nextStep}</p>
+          </div>
+        )}
+        <Button onClick={close}>{dismissLabel}</Button>
       </div>
     </dialog>
   );

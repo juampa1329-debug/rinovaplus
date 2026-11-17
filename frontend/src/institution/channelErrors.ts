@@ -2,6 +2,30 @@ import type { ErrorGuidance, OperationFailure } from "./ErrorFeedback";
 
 const cases = new Map<string, ErrorGuidance>([
   [
+    "oauth_account_mismatch",
+    {
+      title: "El número o la cuenta no corresponde a este canal",
+      detail: "RinovaPlus conserva la cuenta que ya estaba configurada.",
+      nextStep: "Elige la cuenta que corresponde al canal. Para agregar otra, crea un canal separado.",
+    },
+  ],
+  [
+    "oauth_session_expired",
+    {
+      title: "La autorización venció",
+      detail: "Se agotó el tiempo para guardar la selección.",
+      nextStep: "Vuelve a iniciar sesión con el proveedor y selecciona el número, página o cuenta de nuevo.",
+    },
+  ],
+  [
+    "whatsapp_business_account_id_required",
+    {
+      title: "Falta la cuenta de WhatsApp",
+      detail: "RinovaPlus necesita el WABA ID para sincronizar sus números.",
+      nextStep: "Conecta la cuenta con Meta o guarda el WABA ID desde el Administrador de WhatsApp.",
+    },
+  ],
+  [
     "api_version_required",
     {
       title: "Falta la versión de Graph API",

@@ -321,6 +321,33 @@
 .institution-user fieldset {
   padding: 1rem 0.5rem;
 }
+.channel-number-list:not(:empty) {
+  display: grid;
+  gap: 0.5rem;
+  margin-block-start: 0.75rem;
+}
+
+.channel-number-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.channel-number-row > span {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.channel-number-row small {
+  display: block;
+  color: var(--muted);
+}
+
 .institution-channel-layout {
   display: grid;
   grid-template-columns: 14rem minmax(0, 1fr);

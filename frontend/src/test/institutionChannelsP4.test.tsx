@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { Comments } from "../institution/Comments";
 import { CommentNotifications } from "../institution/CommentNotifications";
@@ -56,6 +56,11 @@ function mount(children: React.ReactNode, session = base) {
 }
 beforeEach(() => {
   vi.restoreAllMocks();
+  const dialog = HTMLDialogElement.prototype;
+  if (!dialog.showModal) {
+    dialog.showModal = function () { this.open = true; };
+    dialog.close = function () { this.open = false; };
+  }
 });
 
 it("issues and copies the callback and token together for the chosen account", async () => {
@@ -263,7 +268,9 @@ it("loads the authorized Instagram account immediately after the OAuth redirect"
     />,
     { ...base, actions: [...base.actions, "settings.channels.write"] },
   );
-  expect(await screen.findByText("Tienda de prueba · 321")).toBeVisible();
+  const result = await screen.findByRole("dialog", { name: "Autorización completada" });
+  fireEvent.click(within(result).getByRole("button", { name: "Ver opciones" }));
+  expect(await screen.findByText("Tienda de prueba")).toBeVisible();
   expect(
     screen.getByRole("button", { name: "Usar esta cuenta" }),
   ).toBeVisible();
@@ -296,8 +303,78 @@ it("explains a Meta App Secret rejection after returning from WhatsApp OAuth", a
     />,
     { ...base, actions: [...base.actions, "settings.channels.write"] },
   );
-  expect(await screen.findByText(/Meta rechazó el App Secret/)).toBeVisible();
+  const result = await screen.findByRole("alertdialog", { name: "No se pudo completar la autorización" });
+  expect(within(result).getByText(/Meta rechazó el App Secret/)).toBeVisible();
   expect(screen.queryByRole("button", { name: "Usar este número" })).toBeNull();
+});
+
+it("confirms WhatsApp discovery and confirms the saved number only after selection", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (path) => {
+    if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+    if (String(path).endsWith("account-one/history"))
+      return ok({ queue: [], events: [], operations: [] });
+    if (String(path).endsWith("/select")) return ok({ status: "completed" });
+    expect(String(path)).toMatch(/oauth\/return-one\/assets$/);
+    return ok({
+      status: "assets_ready",
+      items: [{ id: "phone", name: "CBN · +15555550100", external_id: "321", kind: "whatsapp_phone" }],
+    });
+  });
+  mount(
+    <ChannelOperations account={{
+      id: "account-one", application_id: "app-one", channel: "whatsapp",
+      issuer_profile: "meta_whatsapp", display_name: "WhatsApp de prueba",
+      revision: 1, row_version: "version", application_version: "version",
+      verified_status: "unverified", fields: {},
+    }} returnedOAuth="return-one" done={async () => {}} />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] },
+  );
+  expect(screen.getByRole("button", { name: "Sincronizar números de WhatsApp" })).toBeDisabled();
+  const discovery = await screen.findByRole("dialog", { name: "Números de WhatsApp disponibles" });
+  expect(fetcher.mock.calls.some(([url]) => String(url).endsWith("/select"))).toBe(false);
+  fireEvent.click(within(discovery).getByRole("button", { name: "Ver números" }));
+  const choose = screen.getByRole("button", { name: "Usar este número" });
+  expect(choose).toHaveFocus();
+  fireEvent.click(choose);
+  const saved = await screen.findByRole("dialog", { name: "Número agregado a RinovaPlus" });
+  expect(within(saved).getByText(/CBN · \+15555550100/)).toBeVisible();
+  expect(within(saved).getByText(/Verificar token y cuenta/)).toBeVisible();
+});
+
+it("syncs the saved WhatsApp account and registers its selected number only on request", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (path, init) => {
+    if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+    if (String(path).endsWith("account-one/history"))
+      return ok({ queue: [], events: [], operations: [] });
+    if (String(path).endsWith("/register")) {
+      expect(JSON.parse(String(init?.body)).pin).toBe("123456");
+      return ok({ status: "confirmed", result: { confirmed: true } });
+    }
+    expect(String(path)).toMatch(/account-one\/actions\/numbers$/);
+    return ok({ status: "confirmed", result: { numbers: [
+      { id: "321", display_phone_number: "+15555550100", verified_name: "CBN" },
+      { id: "222", display_phone_number: "+15555550101", verified_name: "CBN Dos" },
+    ] } });
+  });
+  mount(
+    <ChannelOperations account={{
+      id: "account-one", application_id: "app-one", channel: "whatsapp",
+      issuer_profile: "meta_whatsapp", display_name: "WhatsApp de prueba",
+      revision: 1, row_version: "version", application_version: "version",
+      verified_status: "unverified",
+      fields: { "meta:whatsapp_phone_number_id": "321", "meta:whatsapp_business_account_id": "123" },
+    }} done={async () => {}} />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] },
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Sincronizar números de WhatsApp" }));
+  expect(await screen.findByText("Meta devolvió 2 números para esta cuenta.")).toBeVisible();
+  expect(screen.getByText("Guardado en este canal")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Usar este número" })).toBeDisabled();
+  expect(fetcher.mock.calls.some(([url]) => String(url).endsWith("/register"))).toBe(false);
+  fireEvent.click(screen.getByText("Registrar número en WhatsApp Cloud API"));
+  fireEvent.change(screen.getByLabelText("PIN de seis dígitos"), { target: { value: "123456" } });
+  fireEvent.click(screen.getByRole("button", { name: /^Registrar número$/ }));
+  expect(await screen.findByRole("dialog", { name: "Número registrado en WhatsApp" })).toBeVisible();
 });
 
 it("shows new comments in the notification menu and links to the exact comment", async () => {

@@ -575,13 +575,18 @@ def test_business_login_uses_the_saved_configuration_instead_of_url_scopes():
     assert "scope" not in params
 
 
-@pytest.mark.parametrize("needs_confirmation", [False, True])
-def test_oauth_callback_redirects_back_without_provider_credentials(monkeypatch, needs_confirmation):
+@pytest.mark.parametrize(("failure", "return_reason"), [
+    (None, None),
+    ("password_confirmation_required", "confirm"),
+    ("oauth_state_rejected", "invalid-attempt"),
+    ("oauth_credential_changed", "configuration-changed"),
+])
+def test_oauth_callback_redirects_back_without_provider_credentials(monkeypatch, failure, return_reason):
     account_id, oauth_id = str(uuid4()), str(uuid4())
 
     def callback(_service, *_args, **_kwargs):
-        if needs_confirmation:
-            raise HTTPException(403, "password_confirmation_required")
+        if failure:
+            raise HTTPException(403, failure)
         return {"integration_id": account_id, "oauth_session_id": oauth_id}
 
     monkeypatch.setattr(OAuth, "callback", callback)
@@ -593,7 +598,7 @@ def test_oauth_callback_redirects_back_without_provider_credentials(monkeypatch,
             params={"state": "state-is-private", "code": "code-is-private"},
             follow_redirects=False,
         )
-    expected = "confirm" if needs_confirmation else f"{account_id}/{oauth_id}"
+    expected = return_reason or f"{account_id}/{oauth_id}"
     assert response.status_code == 303
     assert response.headers["location"] == f"/#/channels/oauth/{expected}"
     assert response.headers["cache-control"] == "no-store"

@@ -8,7 +8,7 @@ import type { Session } from "../institution/api";
 const session: Session = {
   session_id: "session",
   csrf_token: "csrf",
-  actions: ["settings.channels.read", "settings.channels.write"],
+  actions: ["settings.channels.read", "settings.channels.write", "settings.webhooks.write"],
   user: {
     id: "owner",
     email: "owner@example.test",
@@ -156,7 +156,7 @@ it("gives safe guidance for uncertain effects", async () => {
   const user = userEvent.setup();
   await user.click(await screen.findByRole("button", { name: /Cuenta de prueba/ }));
   await user.click(
-    screen.getByRole("button", { name: "Sincronizar suscripción" }),
+    screen.getByRole("button", { name: "Configurar recepción en Meta" }),
   );
   const uncertain = await screen.findByRole("alertdialog", {
     name: "Resultado sin confirmar",
@@ -164,4 +164,20 @@ it("gives safe guidance for uncertain effects", async () => {
   expect(uncertain).toHaveAccessibleDescription(
     /antes de repetir la operación/,
   );
+});
+
+it("shows a recovery modal on return when the OAuth attempt has expired or been used", async () => {
+  const previousUrl = window.location.href;
+  window.history.replaceState(null, "", "#/channels/oauth/invalid-attempt");
+  try {
+    openChannels();
+    const dialog = await screen.findByRole("alertdialog", {
+      name: "La autorización ya no está disponible",
+    });
+    expect(dialog).toHaveAccessibleDescription(/inicia una conexión nueva/);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cerrar aviso" }));
+    expect(dialog).not.toBeInTheDocument();
+  } finally {
+    window.history.replaceState(null, "", previousUrl);
+  }
 });

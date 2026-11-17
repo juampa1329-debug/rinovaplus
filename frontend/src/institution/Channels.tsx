@@ -7,7 +7,7 @@ import { OneTime } from "./Access";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { ChannelOperations, ChannelWebhook } from "./ChannelOperations";
 import type { IssuedWebhook } from "./ChannelOperations";
-import { ErrorFeedback } from "./ErrorFeedback";
+import { ErrorFeedback, OperationDialog } from "./ErrorFeedback";
 import { explainChannelError } from "./channelErrors";
 
 export type Channel = {
@@ -78,13 +78,32 @@ export const channelNames: Record<string, string> = {
   tiktok: "TikTok",
 };
 
+const oauthReturnErrors = {
+  confirm: {
+    title: "Vuelve a confirmar tu identidad",
+    detail: "La sesión o la confirmación de identidad venció durante la autorización.",
+    nextStep: "Abre el canal, vuelve a conectar la cuenta y confirma tu identidad cuando se solicite.",
+  },
+  "invalid-attempt": {
+    title: "La autorización ya no está disponible",
+    detail: "El intento de conexión venció, ya se usó o pertenece a otra sesión.",
+    nextStep: "Abre el canal e inicia una conexión nueva en la misma sesión de RinovaPlus.",
+  },
+  "configuration-changed": {
+    title: "Cambió la configuración del inicio de sesión",
+    detail: "La aplicación o su credencial cambió durante la autorización.",
+    nextStep: "Abre el canal e inicia una conexión nueva con la configuración guardada.",
+  },
+};
+
 function oauthReturn() {
   const [prefix, section, action, account, session, extra] =
     window.location.hash.split("/");
   const uuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
   if (prefix !== "#" || section !== "channels" || action !== "oauth")
     return null;
-  if (account === "confirm" && !session) return { needsConfirmation: true };
+  if (!session && Object.hasOwn(oauthReturnErrors, account))
+    return { error: oauthReturnErrors[account as keyof typeof oauthReturnErrors] };
   if (!extra && uuid.test(account ?? "") && uuid.test(session ?? ""))
     return { account, session };
   return null;
@@ -105,6 +124,7 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
     task = useTask(),
     intent = useIntent();
   const [returnContext] = useState(oauthReturn);
+  const [returnError, setReturnError] = useState(returnContext?.error);
   const [selected, setSelected] = useState(returnContext?.account ?? ""),
     [channel, setChannel] = useState("whatsapp"),
     [name, setName] = useState(""),
@@ -125,11 +145,8 @@ function ChannelAccounts({ openWebhooks }: { openWebhooks: () => void }) {
   const account = data.value.items.find((row) => row.id === selected);
   return (
     <>
-      {returnContext?.needsConfirmation && (
-        <Notice error>
-          La confirmación de identidad venció durante el inicio de sesión. Abre
-          la cuenta de canal y vuelve a conectarla para confirmar tu identidad.
-        </Notice>
+      {returnError && (
+        <OperationDialog guidance={returnError} dismiss={() => setReturnError(undefined)} />
       )}
       {!catalog.value.provider_operations_available && (
         <Notice>

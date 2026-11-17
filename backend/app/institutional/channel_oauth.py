@@ -949,9 +949,16 @@ def install(app, settings):
             )
             path = f"/#/channels/oauth/{result['integration_id']}/{result['oauth_session_id']}"
         except HTTPException as error:
-            if error.detail != "password_confirmation_required":
+            reason = {
+                "password_confirmation_required": "confirm",
+                "session_required": "confirm",
+                "oauth_state_rejected": "invalid-attempt",
+                "oauth_application_changed": "configuration-changed",
+                "oauth_credential_changed": "configuration-changed",
+            }.get(str(error.detail))
+            if not reason:
                 raise
-            path = "/#/channels/oauth/confirm"
+            path = f"/#/channels/oauth/{reason}"
         return RedirectResponse(
             path,
             status_code=303,

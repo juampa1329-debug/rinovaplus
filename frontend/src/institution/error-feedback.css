@@ -48,6 +48,11 @@
   text-wrap: balance;
 }
 
+.operation-success-dialog .operation-error-icon {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
 .operation-error-content p {
   margin: 0;
   color: var(--ink);
