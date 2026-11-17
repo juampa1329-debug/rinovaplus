@@ -586,18 +586,22 @@ class Workspace:
         state="",
         temperature="",
         riskLevel="",
+        after_revision="",
     ):
         with self.transaction() as c:
             if offset and not anchor:
                 raise HTTPException(422, "page_anchor_required")
-            if anchor and anchor != revision(c):
-                raise HTTPException(409, "page_changed")
             actor = authorize(
                 c,
                 self.profile,
                 request_authority.get(),
                 "inbox.read" if area == "inbox" else "crm.read",
             )
+            current_revision = revision(c)
+            if anchor and anchor != current_revision:
+                raise HTTPException(409, "page_changed")
+            if area == "inbox" and not offset and after_revision == current_revision:
+                return {"revision": current_revision, "unchanged": True}
             where = ["1=1"]
             params = []
             if area == "clients":
@@ -820,6 +824,18 @@ class Workspace:
                         if area == "inbox"
                         else ""
                     )
+                    + (
+                        ",(SELECT TOP(1) asset.Kind FROM crm_channels4.MediaAsset asset "
+                        "WHERE asset.MessageId=(SELECT TOP(1) lastMessage.MessageId FROM "
+                        "crm.Message lastMessage WHERE lastMessage.ConversationId=v.ConversationId "
+                        "ORDER BY lastMessage.Sequence DESC) ORDER BY asset.MediaId) AS previewKind"
+                        ",(SELECT TOP(1) JSON_VALUE(asset.ProviderReference,'$.durationSeconds') "
+                        "FROM crm_channels4.MediaAsset asset WHERE asset.MessageId=(SELECT TOP(1) "
+                        "lastMessage.MessageId FROM crm.Message lastMessage "
+                        "WHERE lastMessage.ConversationId=v.ConversationId ORDER BY lastMessage.Sequence DESC) "
+                        "ORDER BY asset.MediaId) AS previewDuration"
+                        if area == "inbox" and self.operational_channels else ""
+                    )
                     + BASE
                     + SLA
                     + predicate
@@ -844,7 +860,7 @@ class Workspace:
                 "offset": offset,
                 "limit": PAGE,
                 "hasMore": offset + len(items) < total,
-                "revision": revision(c),
+                "revision": current_revision,
             }
             if area == "inbox":
                 response["socialProfiles"] = bool(getattr(self, "operational_channels", False))
@@ -930,7 +946,7 @@ class Workspace:
                     )
                     for k, v in thread.items()
                 },
-                "risk": risk(c, canonical),
+                "risk": risk(c, canonical, conversation),
                 "inFlightOrUncertain": in_flight,
                 "manual": {
                     "score": profile["LeadScore"],
@@ -1585,6 +1601,7 @@ def install(app, settings, workspace=None):
         riskLevel: Literal["", "low", "medium", "high"] = "",
         offset: int = Query(0, ge=0, le=1000000),
         anchor: str = Query("", pattern=r"^([0-9]{1,19})?$"),
+        afterRevision: str = Query("", pattern=r"^([0-9]{1,20})?$"),
     ):
         if user:
             db.uid(user)
@@ -1598,6 +1615,7 @@ def install(app, settings, workspace=None):
             state=state,
             temperature=temperature,
             riskLevel=riskLevel,
+            after_revision=afterRevision,
             offset=offset,
             anchor=anchor,
         )

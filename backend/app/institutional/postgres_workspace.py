@@ -11,13 +11,13 @@ class Workspace(ChannelWorkspace):
     def listing(
         self, area, q="", stage="", tag="", city="", contactType="", queue="all",
         user="", channel="", offset=0, anchor="", program="", program_id=None,
-        state="", temperature="", riskLevel="",
+        state="", temperature="", riskLevel="", after_revision="",
     ):
         if area == "inbox":
             return super().listing(
                 area, q=q, stage=stage, queue=queue, user=user, channel=channel,
                 offset=offset, anchor=anchor, state=state, temperature=temperature,
-                riskLevel=riskLevel,
+                riskLevel=riskLevel, after_revision=after_revision,
             )
         if tag or city or contactType or program or program_id is not None:
             raise HTTPException(422, "rehearsal_filter_not_available")

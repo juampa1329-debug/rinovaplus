@@ -1,6 +1,7 @@
 """P4 transport extension of the accepted P3 human workspace."""
 
 import re
+from datetime import timezone
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -33,6 +34,54 @@ def social_avatar_url(value):
     ):
         return value
     return ""
+
+
+def followup_risk(c, institution, conversation, risk):
+    """Read-only fallback for a routed chat without a current assessment."""
+    evidence = db.one(
+        c,
+        "SELECT TOP(1) m.CreatedAt AS IncomingAt,SYSUTCDATETIME() AS AsOfUtc,"
+        "(SELECT TOP(1) q.CompletedAt FROM crm_channels2.SendJob q "
+        "JOIN crm.Message reply ON reply.MessageId=q.MessageId "
+        "WHERE q.InstitutionId=r.InstitutionId AND q.IntegrationId=r.IntegrationId "
+        "AND q.IdentityId=r.IdentityId AND q.ExternalId IS NOT NULL "
+        "AND q.State IN('sent','delivered','read') AND reply.Direction='outgoing' "
+        "AND q.CompletedAt IS NOT NULL AND reply.ConversationId=m.ConversationId "
+        "AND reply.Sequence>m.Sequence ORDER BY reply.Sequence DESC) AS ReplyAt "
+        "FROM crm.Message m JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId "
+        "JOIN crm_channels2.ExternalMessage x ON x.InstitutionId=r.InstitutionId "
+        "AND x.IntegrationId=r.IntegrationId AND x.MessageId=r.MessageId "
+        "WHERE r.InstitutionId=? AND m.ConversationId=? AND m.Direction='incoming' "
+        "AND r.ActorKind='external' ORDER BY m.Sequence DESC",
+        institution,
+        conversation,
+    )
+    if not evidence:
+        return risk
+    at = evidence["AsOfUtc"].replace(tzinfo=timezone.utc)
+    incoming = evidence["IncomingAt"].replace(tzinfo=timezone.utc)
+    if not evidence["ReplyAt"]:
+        return dict(
+            risk, reasons=["Hay un mensaje entrante sin respuesta confirmada por el canal."],
+            nextAction="Revisa el último mensaje y responde al contacto.",
+        )
+    reply = evidence["ReplyAt"].replace(tzinfo=timezone.utc)
+    hours = max(0, (at - max(incoming, reply)).total_seconds() / 3600)
+    score = 75 if hours >= 168 else 50 if hours >= 72 else 25 if hours >= 24 else 10
+    level = "high" if score >= 70 else "medium" if score >= 40 else "low"
+    return dict(
+        risk,
+        status="known", level=level, score=score, source="channel_activity",
+        asOf=db.utc(at), fresh=True,
+        reasons=[
+            "El canal confirmó una respuesta después del último mensaje del contacto.",
+            "El puntaje aumenta después de 24 horas, 72 horas y 7 días desde la última respuesta confirmada.",
+        ],
+        nextAction=(
+            "Revisa el historial y prioriza el seguimiento."
+            if level == "high" else "Revisa el siguiente paso acordado con el contacto."
+        ),
+    )
 
 
 class Workspace(Parent):
@@ -299,6 +348,10 @@ class Workspace(Parent):
                 }
                 for v in links
             ]
+            if links and result["risk"]["status"] == "unknown":
+                result["risk"] = followup_risk(
+                    c, db.institution(self.profile), conversation, result["risk"],
+                )
             result["inFlightOrUncertain"] += c.execute(
                 (
                     "SELECT COUNT(*) FROM crm_channels2.Sen"

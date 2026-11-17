@@ -4,6 +4,7 @@ import type { Client } from "../shared/demo";
 import { Button, Field, SelectField } from "../shared/ui";
 import { Icon } from "../shared/Icon";
 import type { Risk } from "./Workspace";
+import { clockTime } from "./VoiceNote";
 
 const channels = {
   local: "Web",
@@ -347,7 +348,7 @@ export function InboxListControls({
     <div className="inbox-list-controls">
       <div className="inbox-list-heading">
         <h2>Conversaciones</h2>
-        <Button variant="quiet" onClick={refresh}>
+        <Button variant="quiet" onClick={refresh} aria-label="Actualizar bandeja manualmente">
           Actualizar
         </Button>
       </div>
@@ -483,6 +484,8 @@ export function ConversationRow({
     assignee: string | null;
     channel?: string;
     preview?: string | null;
+    previewKind?: string | null;
+    previewDuration?: string | null;
     temperature?: string | null;
     leadScore?: number | null;
     program?: string | null;
@@ -531,7 +534,12 @@ export function ConversationRow({
           <span>{labelFor(states, row.state)}</span>
         </span>
         <span className="inbox-row-preview">
-          {row.preview?.trim() || "Sin mensajes"}
+          {row.previewKind === "audio" || row.preview === "[audio]" ? (
+            <>
+              <Icon name="microphone" className="inbox-preview-microphone" />
+              {row.previewDuration ? clockTime(Number(row.previewDuration)) : "Audio"}
+            </>
+          ) : row.preview?.trim() || "Sin mensajes"}
         </span>
         <span className="inbox-row-meta inbox-row-signals">
           {temperature && (

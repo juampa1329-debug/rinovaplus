@@ -436,13 +436,17 @@ def send_meta_media(account, payload, media, before_send):
     with media["path"].open("rb") as handle:
         if channel == "whatsapp":
             kind = "sticker" if media["mime"] == "image/webp" else media["kind"]
+            mime = (
+                "audio/ogg; codecs=opus" if media["mime"] == "audio/ogg"
+                else media["mime"]
+            )
             uploaded = request(
                 account,
                 "POST",
                 config["phoneNumberId"] + "/media",
                 files={
                     "messaging_product": (None, "whatsapp"),
-                    "file": (media["name"], handle, media["mime"]),
+                    "file": (media["name"], handle, mime),
                 },
             )
             identifier = uploaded.get("id")

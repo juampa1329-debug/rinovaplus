@@ -28,9 +28,25 @@ def test_sticker_is_sanitized_and_keeps_the_private_image_schema(tmp_path, monke
     assert error.value.detail == "media_sticker_invalid"
 
 
+def test_incoming_sticker_preserves_animation(tmp_path, monkeypatch):
+    monkeypatch.setenv("CRM_AI_STATE_DIR", str(tmp_path))
+    identity = uuid4()
+    frames = [Image.new("RGB", (512, 512), color) for color in ("red", "blue")]
+    frames[0].save(files.path(identity, ".part"), "WEBP", save_all=True,
+                   append_images=frames[1:], duration=[100, 250], loop=0)
+    raw = files.path(identity, ".part").read_bytes()
+    result = inspect_attachment(identity, "sticker.webp", incoming=True)
+    assert result["mime"] == "image/webp"
+    assert files.path(identity).read_bytes() == raw
+    with Image.open(files.path(identity)) as sticker:
+        assert sticker.n_frames == 2
+        sticker.seek(1)
+        sticker.load()
+
+
 @pytest.mark.skipif(not shutil.which("ffmpeg") or not shutil.which("ffprobe"), reason="FFmpeg unavailable")
 @pytest.mark.parametrize(("kind", "source", "suffix", "mime"), [
-    ("audio", "sine=frequency=440:duration=1", "wav", "audio/ogg"),
+    ("audio", "sine=frequency=440:duration=1", "webm", "audio/ogg"),
     ("video", "color=c=green:s=320x180:d=1", "mp4", "video/mp4"),
 ])
 def test_inbox_inspects_real_audio_and_video(tmp_path, monkeypatch, kind, source, suffix, mime):
@@ -44,6 +60,9 @@ def test_inbox_inspects_real_audio_and_video(tmp_path, monkeypatch, kind, source
     result = inspect_attachment(identity, f"prueba.{suffix}", kind)
     assert result["kind"] == kind and result["mime"] == mime
     assert 0 < result["duration"] <= 2
+    if kind == "audio":
+        stream = files.audio_probe(files.path(identity))["streams"][0]
+        assert stream["codec_name"] == "opus" and stream["channels"] == 1
 
 
 @pytest.mark.parametrize(("media", "payload", "expected"), [
@@ -62,7 +81,8 @@ def test_whatsapp_inbox_uses_native_media_payload(tmp_path, monkeypatch, media, 
     def fake_request(account, method, path, body=None, *, files=None):
         calls.append((path, body))
         if files:
-            assert files["file"][2] == media["mime"]
+            expected_mime = "audio/ogg; codecs=opus" if media["mime"] == "audio/ogg" else media["mime"]
+            assert files["file"][2] == expected_mime
             return {"id": "asset"}
         return {"messages": [{"id": "synthetic-message"}]}
 

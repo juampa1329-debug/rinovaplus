@@ -234,7 +234,7 @@ def audio_probe(source):
             "-format_whitelist",
             "mp3,ogg,wav,matroska,webm,mov,flac,aac,amr",
             "-show_entries",
-            "stream=codec_name,codec_type:format=format_name,duration",
+            "stream=codec_name,codec_type,channels:format=format_name,duration",
             "-of",
             "json",
             str(source),

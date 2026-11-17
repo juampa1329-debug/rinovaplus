@@ -61,6 +61,8 @@ type Row = {
   channel?: string;
   updatedAt?: string;
   preview?: string | null;
+  previewKind?: string | null;
+  previewDuration?: string | null;
   temperature?: string | null;
   leadScore?: number | null;
   program?: string | null;
@@ -259,7 +261,7 @@ function useEntity(key: string) {
   };
 }
 
-function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0) {
+function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0, checkRevision = false) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
       path: string;
@@ -273,15 +275,24 @@ function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0) {
     if (!enabled) return;
     let active = true;
     let running = false;
+    let lastRevision = "";
+    let lastFullRead = 0;
     let timer: ReturnType<typeof setTimeout>;
     async function load(initial = false) {
       if (!active || running) return;
       if (!initial && document.hidden) return;
       running = true;
       try {
-        const value = await call<T>(prefix + path);
+        const conditional = checkRevision && lastRevision && Date.now() - lastFullRead < 60_000;
+        const value = await call<T & { revision?: string; unchanged?: boolean }>(
+          prefix + path + (conditional ? `&afterRevision=${lastRevision}` : ""),
+        );
         if (active) {
-          setData({ path, value, loadedAt: Date.now() });
+          if (!value.unchanged) {
+            lastRevision = value.revision ?? "";
+            lastFullRead = Date.now();
+            setData({ path, value, loadedAt: lastFullRead });
+          }
           setError(null);
         }
       } catch (failure) {
@@ -312,7 +323,7 @@ function useRead<T>(path: string, refresh = 0, enabled = true, pollMs = 0) {
       clearTimeout(timer);
       if (pollMs) document.removeEventListener("visibilitychange", visible);
     };
-  }, [path, refresh, enabled, call, pollMs]);
+  }, [path, refresh, enabled, call, pollMs, checkRevision]);
   return {
     value: enabled && data?.path === path ? data.value : null,
     loadedAt: enabled && data?.path === path ? data.loadedAt : undefined,
@@ -378,28 +389,25 @@ function useCommand(onSaved: () => void) {
 }
 export function RiskSummary({ risk }: { risk: Risk }) {
   const known = risk.status === "known" && risk.fresh;
+  const label = known
+    ? ({ low: "Bajo", medium: "Medio", high: "Alto" }[risk.level] ?? "Sin evaluación")
+    : risk.status === "not_applicable" ? "No aplica" : "Sin evaluación";
+  const source = risk.source === "channel_activity"
+    ? "Actividad del canal"
+    : "Rúbrica de seguimiento";
   return (
-    <section className="p3-risk" aria-label="Riesgo de abandono">
-      <h3>Riesgo de abandono</h3>
-      <strong>
-        {known
-          ? ({ low: "Bajo", medium: "Medio", high: "Alto" }[risk.level] ??
-            "Sin evaluación")
-          : risk.status === "not_applicable"
-            ? "No aplica"
-            : "Sin evaluación"}
-      </strong>
-      <p>
-        {known
-          ? "Rúbrica de seguimiento · no es una probabilidad"
-          : "Evidencia insuficiente o pendiente de actualizar"}
-        {risk.asOf && (
-          <>
-            {" "}
-            · <DateText value={risk.asOf} />
-          </>
-        )}
-      </p>
+    <section className="p3-risk" data-level={known ? risk.level : undefined} aria-label="Riesgo de abandono">
+      <div className="inbox-risk-heading">
+        <h3>Riesgo de abandono</h3>
+        <span>{label}</span>
+      </div>
+      {known && risk.score !== null && (
+        <div className="inbox-risk-score">
+          <strong>{risk.score}<small> / 100</small></strong>
+          <meter aria-label="Puntaje de abandono" min={0} max={100} value={risk.score} />
+          <span>{source}</span>
+        </div>
+      )}
       <p>{risk.nextAction}</p>
       <details>
         <summary>Origen y razones</summary>
@@ -408,12 +416,7 @@ export function RiskSummary({ risk }: { risk: Risk }) {
             <li key={index}>{reason}</li>
           ))}
         </ul>
-        <p>
-          {known
-            ? "Origen: reglas con evidencia registrada."
-            : "Origen: sin evaluación válida."}{" "}
-          La predicción entrenada aún no está disponible.
-        </p>
+        {risk.asOf && <small>Evaluado <DateText value={risk.asOf} /></small>}
       </details>
     </section>
   );
@@ -514,7 +517,8 @@ function WorkspaceView({
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
     refresh,
     page !== "settings",
-    inbox && offset === 0 ? 12000 : 0,
+    inbox && offset === 0 ? 2000 : 0,
+    inbox && offset === 0,
   );
   const [socialProfiles, setSocialProfiles] = useState<
     Record<string, SocialProfile>

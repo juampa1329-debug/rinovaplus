@@ -542,9 +542,9 @@ it("shows unknown safely and identifies a current rule without probability", () 
     />,
   );
   expect(screen.getByText("Alto")).toBeInTheDocument();
-  expect(
-    screen.getByText(/Rúbrica de seguimiento · no es una probabilidad/),
-  ).toBeInTheDocument();
+  expect(screen.getByText("Rúbrica de seguimiento")).toBeInTheDocument();
+  expect(screen.getByRole("meter", { name: "Puntaje de abandono" })).toHaveAttribute("value", "80");
+  expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
 });
 it("sends filters to the paginated API and never loads the old workspace snapshot", async () => {
   open();

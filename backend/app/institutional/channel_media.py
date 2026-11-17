@@ -34,9 +34,10 @@ class Upload(Strict):
 
 
 STICKER_MAX = 100_000
+ANIMATED_STICKER_MAX = 500_000
 
 
-def inspect_sticker(identity, name):
+def inspect_sticker(identity, name, *, incoming=False):
     from PIL import Image, UnidentifiedImageError
 
     source, output = files.path(identity, ".part"), files.path(identity, ".checked")
@@ -44,17 +45,26 @@ def inspect_sticker(identity, name):
         raise HTTPException(429, "media_inspection_busy")
     try:
         raw = source.read_bytes()
-        if not 0 < len(raw) <= STICKER_MAX:
+        limit = ANIMATED_STICKER_MAX if incoming else STICKER_MAX
+        if not 0 < len(raw) <= limit:
             raise HTTPException(413, "media_sticker_limit")
         with warnings.catch_warnings():
             warnings.simplefilter("error", Image.DecompressionBombWarning)
             with Image.open(source, formats=("WEBP",)) as image:
-                if image.size != (512, 512) or image.n_frames != 1:
+                if image.size != (512, 512) or (image.is_animated and not incoming):
                     raise HTTPException(415, "media_sticker_invalid")
-                image.load()
-                image.convert("RGBA").save(output, format="WEBP", quality=78)
+                if image.is_animated:
+                    if image.n_frames > 600:
+                        raise HTTPException(415, "media_sticker_invalid")
+                    for frame in range(image.n_frames):
+                        image.seek(frame)
+                        image.load()
+                    output.write_bytes(raw)
+                else:
+                    image.load()
+                    image.convert("RGBA").save(output, format="WEBP", quality=78)
         clean = output.read_bytes()
-        if len(clean) > STICKER_MAX:
+        if len(clean) > limit:
             raise HTTPException(413, "media_sticker_limit")
         output.chmod(0o600)
         output.replace(files.path(identity))
@@ -72,10 +82,10 @@ def inspect_sticker(identity, name):
         files.INSPECTION_SLOTS.release()
 
 
-def inspect_attachment(identity, name, kind=None):
+def inspect_attachment(identity, name, kind=None, *, incoming=False):
     suffix = Path(name).suffix.lower()
     if kind == "sticker" or suffix == ".webp":
-        return inspect_sticker(identity, name)
+        return inspect_sticker(identity, name, incoming=incoming)
     if kind == "video":
         return campaign_media.inspect(identity, name, "video")
     return files.inspect_file(identity, name)
@@ -99,14 +109,18 @@ def quota(c, settings, conversation):
         raise HTTPException(413, "media_storage_quota")
 
 
-def mark_ready(c, settings, identity, info):
+def mark_ready(c, settings, identity, info, reference=None):
     info["name"] = (
         sql_text(Path(info["name"]).stem, 140) + Path(info["name"]).suffix[:10]
     )
+    reference = dict(reference or {})
+    if info["kind"] == "audio":
+        reference["durationSeconds"] = max(1, round(info["duration"]))
     c.execute(
         (
             "UPDATE crm_channels4.MediaAsset SET State='ready',Kind=?,Act"
             "ualMime=?,FileName=?,StorageKey=?,ByteLength=?,ContentHash=?"
+            ",ProviderReference=?"
             ",LastErrorCode=NULL,UpdatedAt=SYSUTCDATETIME() WHERE Institu"
             "tionId=? AND MediaId=?"
         ),
@@ -116,6 +130,7 @@ def mark_ready(c, settings, identity, info):
         files.path(identity).name,
         info["size"],
         info["hash"],
+        json.dumps(reference),
         institution(settings),
         identity,
     )
@@ -225,13 +240,19 @@ def register_incoming(c, settings, item, effect, linked, message):
         "sticker",
     }:
         return
-    quota(c, settings, str(linked["ConversationId"]))
+    error = None
+    try:
+        quota(c, settings, str(linked["ConversationId"]))
+    except HTTPException as failure:
+        if failure.detail != "media_storage_quota":
+            raise
+        error = failure.detail
     c.execute(
         (
             "INSERT crm_channels4.MediaAsset(MediaId,InstitutionId,Integr"
             "ationId,IdentityId,ConversationId,MessageId,SourceKind,State"
-            ",Kind,FileName,ProviderReference) VALUES(?,?,?,?,?,?,'provid"
-            "er','pending',?,?,?)"
+            ",Kind,FileName,ProviderReference,LastErrorCode) "
+            "VALUES(?,?,?,?,?,?,'provider',?,?,?,?,?)"
         ),
         str(uuid4()),
         institution(settings),
@@ -239,10 +260,13 @@ def register_incoming(c, settings, item, effect, linked, message):
         linked["IdentityId"],
         linked["ConversationId"],
         message,
+        "failed" if error else "pending",
         "image" if kind == "sticker" else kind,
         "sticker.webp" if kind == "sticker" else
+        "nota-de-voz.ogg" if kind == "audio" and reference.get("voice") is True else
         sql_text(files.filename(reference.get("filename") or "adjunto"), 160),
         json.dumps(reference),
+        error,
     )
 
 
@@ -390,14 +414,18 @@ class MediaWorker:
             )
         identity = str(value["MediaId"])
         try:
+            reference = json.loads(value["ProviderReference"])
             self.downloader(
                 adapter,
-                json.loads(value["ProviderReference"]),
+                reference,
                 files.path(identity, ".part"),
             )
-            info = inspect_attachment(identity, value["FileName"], value["Kind"])
+            info = inspect_attachment(
+                identity, value["FileName"], value["Kind"], incoming=True,
+            )
             with transaction(self.settings, True, anonymous=True) as c:
-                mark_ready(c, self.settings, identity, info)
+                mark_ready(c, self.settings, identity, info, reference)
+                c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
         except Exception:
             for suffix in [".part", ".checked", ".bin"]:
                 files.path(identity, suffix).unlink(missing_ok=True)

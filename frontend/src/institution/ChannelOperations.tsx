@@ -758,7 +758,7 @@ function ChannelHistory({ identity }: { identity: string }) {
         row_version: string;
         body_preview?: string;
       }[];
-      events: { id: string; state: string; row_version: string }[];
+      events: { id: string; state: string; code?: string | null; row_version: string }[];
       operations: { id: string; action: string; status: string }[];
     }>(`channels/${identity}/history`),
     { call, session } = useInstitution(),
@@ -865,7 +865,14 @@ function ChannelHistory({ identity }: { identity: string }) {
           ))}
           {data.value.events.map((item) => (
             <div key={item.id}>
-              <span>Evento pendiente de revisión</span>
+              <span>
+                {item.code === "initial_stage_review_required"
+                  ? "El chat nuevo necesita una etapa inicial activa. Selecciona la etapa, guarda el enrutamiento y reprocesa el evento."
+                  : item.code === "provider_author_missing"
+                    ? "Meta envió el evento sin un remitente que se pueda identificar."
+                    : "Evento pendiente de revisión"}
+              </span>
+              {item.code && <small>{item.code}</small>}
               <Button
                 variant="secondary"
                 disabled={

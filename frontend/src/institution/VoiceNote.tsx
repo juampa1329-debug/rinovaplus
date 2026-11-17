@@ -193,7 +193,7 @@ export function useVoiceRecording(
     };
     try {
       current.stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+      audio: { channelCount: { ideal: 1 } },
       });
       if (current.cancelled) return release();
       const format = [

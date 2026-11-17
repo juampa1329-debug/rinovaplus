@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from app.institutional.channel_events import delivery, normalize
-from app.institutional import channel_ingress, channel_operations
+from app.institutional import channel_events, channel_ingress, channel_operations
 from app.institutional.channel_ingress import signature_valid
 from app.institutional.channel_oauth import OAuth, authorization_url, exchange, install
 from app.institutional.channels import (
@@ -26,6 +26,20 @@ from app.institutional.channel_tokens import health
 from app.institutional.channel_workspace import social_avatar_url
 from app.institutional.crypto import seal, unseal
 from app.modules.channels import providers
+
+
+def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):
+    selected = SimpleNamespace(key="new", active=True, label="Nuevo")
+    monkeypatch.setattr(
+        channel_events, "read_configuration",
+        lambda *_args, **_kwargs: (SimpleNamespace(stages=[selected]), None),
+    )
+    item = {"InitialStageKey": "new", "InitialStageConfigHash": b"prior approval"}
+    assert channel_events.stage(None, item) == "Nuevo"
+    selected.active = False
+    with pytest.raises(HTTPException) as error:
+        channel_events.stage(None, item)
+    assert error.value.detail == "initial_stage_review_required"
 
 
 def test_social_avatars_only_accept_https_meta_media_hosts():

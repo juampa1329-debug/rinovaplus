@@ -50,6 +50,8 @@ def bounded_provider(value, depth=0):
         "filename",
         "mime_type",
         "sha256",
+        "animated",
+        "voice",
         "url",
         "message",
         "attachments",
@@ -284,12 +286,13 @@ def normalize(provider, payload, *, whatsapp_names=True):
 
 def stage(c, item):
     config, _ = read_configuration(c, foundation=True)
-    digest = hashlib.sha256(config.model_dump_json().encode()).digest()
     selected = next(
         (s for s in config.stages if s.key == item["InitialStageKey"] and s.active),
         None,
     )
-    if not selected or bytes(item["InitialStageConfigHash"] or b"") != digest:
+    # Routing authorizes the stage key. Unrelated CRM configuration edits
+    # must not stop first contact while that stage remains active.
+    if not selected or not item["InitialStageConfigHash"]:
         raise HTTPException(409, "initial_stage_review_required")
     return selected.label
 

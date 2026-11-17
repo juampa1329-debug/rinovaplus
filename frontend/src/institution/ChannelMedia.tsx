@@ -300,6 +300,7 @@ export function MediaDownload({ attachment }: { attachment: Attachment }) {
   const [preview, setPreview] = useState<{ url: string; blob: Blob } | null>(
     null,
   );
+  const [previewFailed, setPreviewFailed] = useState(false);
   const mediaId = attachment.id;
   const canPreview =
     attachment.state === "ready" &&
@@ -318,7 +319,9 @@ export function MediaDownload({ attachment }: { attachment: Attachment }) {
             setPreview({ url, blob });
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (!controller.signal.aborted) setPreviewFailed(true);
+        });
     };
     if (typeof IntersectionObserver !== "undefined") {
       observer = new IntersectionObserver((entries) => {
@@ -344,6 +347,7 @@ export function MediaDownload({ attachment }: { attachment: Attachment }) {
   return (
     <div className="inbox-attachment" ref={region}>
       {task.notices}
+      {previewFailed && <small>No se pudo cargar la vista previa. Intenta descargar el archivo.</small>}
       {preview && attachment.kind === "image" && (
         <img
           className={preview.blob.type === "image/webp" ? "inbox-sticker" : ""}

@@ -61,6 +61,47 @@
 .p3-risk p {
   font-size: 0.875rem;
 }
+
+.inbox-risk-heading,
+.inbox-risk-score {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.inbox-risk-heading {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+}
+
+.inbox-risk-heading h3 {
+  margin: 0;
+}
+
+.inbox-risk-heading > span,
+.inbox-risk-score > span,
+.inbox-risk-score small {
+  font-size: 0.8rem;
+}
+
+.inbox-risk-score {
+  margin-top: 0.5rem;
+}
+
+.inbox-risk-score strong {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.inbox-risk-score meter {
+  width: 100%;
+}
+
+.inbox-preview-microphone {
+  width: 0.9em;
+  height: 0.9em;
+  margin-inline-end: 0.3em;
+  vertical-align: -0.1em;
+}
 .p3-actions {
   display: flex;
   flex-wrap: wrap;
