@@ -8,7 +8,11 @@ from pydantic import Field
 
 from app.institutional.auth import authorize
 from app.institutional.channel_secrets import get, put
-from app.institutional.channels import FACEBOOK_LOGIN_CONFIGURATION, Channels
+from app.institutional.channels import (
+    FACEBOOK_LOGIN_CONFIGURATION,
+    WHATSAPP_LOGIN_CONFIGURATION,
+    Channels,
+)
 from app.institutional.crypto import token
 from app.institutional.db import (
     audit,
@@ -206,13 +210,12 @@ def sync_route(c, settings, item, endpoint_id):
 
 class OperationalChannels(Channels):
     def _fields(self, data):
-        return [
-            *super()._fields(data),
+        return super()._fields(data) + [
             {
-                "id": FACEBOOK_LOGIN_CONFIGURATION,
-                "group": "facebook",
+                "id": field_id,
+                "group": group,
                 "label": "ID de configuración de Facebook Login",
-                "config_key": "facebook_login_configuration_id",
+                "config_key": field_id.split(":", 1)[1],
                 "input_type": "text",
                 "field_kind": "input",
                 "value_type": "string",
@@ -221,9 +224,13 @@ class OperationalChannels(Channels):
                 "p2_write_allowed": True,
                 "p2_mapping": {
                     "destination": "ChannelSetting JSON",
-                    "p2_flat_json_key": FACEBOOK_LOGIN_CONFIGURATION,
+                    "p2_flat_json_key": field_id,
                 },
-            },
+            }
+            for group, field_id in (
+                ("facebook", FACEBOOK_LOGIN_CONFIGURATION),
+                ("whatsapp", WHATSAPP_LOGIN_CONFIGURATION),
+            )
         ]
 
     def catalog(self, authority):

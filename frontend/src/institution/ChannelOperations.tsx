@@ -291,8 +291,8 @@ export function ChannelOperations({
         </p>
         {account.channel === "whatsapp" && (
           <p>
-            Guarda el ID de la cuenta de WhatsApp Business (WABA) en Canales.
-            Meta te permitirá autorizar y elegir un número de esa cuenta.
+            Inicia sesión con Facebook y elige un número de WhatsApp de las
+            cuentas que autorices en Meta.
           </p>
         )}
         {account.oauth_ready && account.oauth_callback && (

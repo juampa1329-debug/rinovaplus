@@ -20,6 +20,7 @@ CATALOG = (
     Path(__file__).resolve().parents[3] / "docs/adaptation/sql/p2-channel-fields.json"
 )
 FACEBOOK_LOGIN_CONFIGURATION = "meta:facebook_login_configuration_id"
+WHATSAPP_LOGIN_CONFIGURATION = "meta:whatsapp_login_configuration_id"
 
 
 def contract():
@@ -90,7 +91,7 @@ def validate_field(field, value):
             raise ValueError("invalid_field_value")
         if field.get("enum") and value not in field["enum"]:
             raise ValueError("invalid_field_option")
-        if field.get("id") == FACEBOOK_LOGIN_CONFIGURATION and value and (
+        if field.get("id") in {FACEBOOK_LOGIN_CONFIGURATION, WHATSAPP_LOGIN_CONFIGURATION} and value and (
             not value.isascii() or not value.isdecimal()
         ):
             raise ValueError("invalid_field_value")

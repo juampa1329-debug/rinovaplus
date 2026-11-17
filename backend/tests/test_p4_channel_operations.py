@@ -69,7 +69,7 @@ def test_whatsapp_oauth_discovers_numbers_from_configured_waba(monkeypatch):
             return {"access_token": "synthetic-access"}
         assert url == "https://graph.facebook.com/v25.0/890/phone_numbers"
         assert headers == {"Authorization": "Bearer synthetic-access"}
-        assert params["fields"] == "id,display_phone_number"
+        assert params["fields"] == "id,display_phone_number,verified_name"
         return {"data": [{"id": "123", "display_phone_number": "+15555550100"}]}
 
     monkeypatch.setattr("app.institutional.channel_oauth.http_json", request)
@@ -81,6 +81,42 @@ def test_whatsapp_oauth_discovers_numbers_from_configured_waba(monkeypatch):
     assert [(v["kind"], v["parent"], v["id"]) for v in result["assets"]] == [
         ("whatsapp_phone", "890", "123"),
     ]
+
+
+def test_whatsapp_oauth_lists_business_numbers_without_entering_a_waba(monkeypatch):
+    def request(method, url, *, params=None, headers=None):
+        assert method == "GET"
+        if url.endswith("/oauth/access_token"):
+            return {"access_token": "synthetic-access"}
+        assert url == "https://graph.facebook.com/v25.0/me/businesses"
+        assert headers == {"Authorization": "Bearer synthetic-access"}
+        assert "owned_whatsapp_business_accounts" in params["fields"]
+        assert "client_whatsapp_business_accounts" in params["fields"]
+        waba = {"id": "890", "name": "CBN", "phone_numbers": {
+            "data": [{"id": "123", "display_phone_number": "+15555550100"}],
+        }}
+        return {"data": [{"id": "889", "owned_whatsapp_business_accounts": {"data": [waba]}}]}
+
+    monkeypatch.setattr("app.institutional.channel_oauth.http_json", request)
+    result = exchange(
+        {"IssuerProfile": "meta_whatsapp", "ApiVersion": "v25.0", "ClientId": "999",
+         "Channel": "whatsapp", "ParentExternalId": None},
+        "synthetic-secret", "code", "https://crm.example/hooks/oauth/fixture", None,
+    )
+    assert [(v["parent"], v["id"], v["name"]) for v in result["assets"]] == [
+        ("890", "123", "CBN · +15555550100"),
+    ]
+
+
+def test_whatsapp_oauth_uses_configuration_selected_by_meta():
+    url = authorization_url(
+        {"IssuerProfile": "meta_whatsapp", "ApiVersion": "v25.0", "ClientId": "999"},
+        "state", "https://crm.example/hooks/oauth/fixture",
+        ["whatsapp_business_management"], None, configuration_id="234",
+    )
+    query = parse_qs(urlsplit(url).query)
+    assert query["config_id"] == ["234"]
+    assert "scope" not in query
 
 
 def test_new_contact_routing_survives_unrelated_crm_changes(monkeypatch):

@@ -16,7 +16,7 @@ from app.institutional.auth import authorize, cookie_name
 from app.institutional.channel_operations import account, app_secret_kind, configuration
 from app.institutional.channel_secrets import get, put
 from app.institutional.channel_text import sql_text
-from app.institutional.channels import FACEBOOK_LOGIN_CONFIGURATION
+from app.institutional.channels import FACEBOOK_LOGIN_CONFIGURATION, WHATSAPP_LOGIN_CONFIGURATION
 from app.institutional.crypto import token, token_hash
 from app.institutional.db import bound_hash, institution, one, rows, uid
 from app.institutional.models import Strict
@@ -78,7 +78,7 @@ def authorization_url(
         return "https://www.instagram.com/oauth/authorize?" + urlencode(params)
     if not re.fullmatch(r"v[0-9]{1,2}\.[0-9]{1,2}", item["ApiVersion"] or ""):
         raise HTTPException(409, "api_version_required")
-    if issuer == "facebook_login" and configuration_id:
+    if issuer in {"facebook_login", "meta_whatsapp"} and configuration_id:
         params.pop("scope")
         params["config_id"] = configuration_id
         params["override_default_response_type"] = "true"
@@ -123,6 +123,96 @@ def http_json(method, url, *, params=None, data=None, headers=None):
         raise
     except Exception:
         raise ProviderFailure("oauth_result_unknown", uncertain=True) from None
+
+
+WHATSAPP_PHONE_FIELDS = "id,display_phone_number,verified_name"
+
+
+def graph_items(value, limit=100):
+    data = value.get("data") if isinstance(value, dict) else None
+    return [row for row in data[:limit] if isinstance(row, dict)] if isinstance(data, list) else []
+
+
+def graph_id(value):
+    identifier = str(value) if isinstance(value, (int, str)) else ""
+    return identifier if re.fullmatch(r"[0-9]{1,32}", identifier) else ""
+
+
+def whatsapp_assets(base, item, secret, access):
+    headers = {"Authorization": "Bearer " + access}
+    parent = item["ParentExternalId"]
+    if parent:
+        parent = graph_id(parent)
+        if not parent:
+            raise ProviderFailure("configured_waba_required")
+        accounts = [{
+            "id": parent,
+            "phone_numbers": http_json(
+                "GET", base + parent + "/phone_numbers",
+                params={"fields": WHATSAPP_PHONE_FIELDS, "limit": 100},
+                headers=headers,
+            ),
+        }]
+    else:
+        phone_edge = "phone_numbers.limit(25){" + WHATSAPP_PHONE_FIELDS + "}"
+        account_fields = "{id,name," + phone_edge + "}"
+        edges = ("owned_whatsapp_business_accounts", "client_whatsapp_business_accounts")
+        fields = "id," + ",".join(edge + ".limit(25)" + account_fields for edge in edges)
+        accounts = []
+        try:
+            businesses = graph_items(http_json(
+                "GET", base + "me/businesses",
+                params={"fields": fields, "limit": 25}, headers=headers,
+            ), 25)
+            accounts = [waba for business in businesses for edge in edges
+                        for waba in graph_items(business.get(edge), 25)]
+        except ProviderFailure as error:
+            if error.uncertain:
+                raise
+
+        if not any(graph_items(waba.get("phone_numbers")) for waba in accounts):
+            debug = http_json(
+                "GET", base + "debug_token",
+                params={"input_token": access},
+                headers={"Authorization": f"Bearer {item['ClientId']}|{secret}"},
+            ).get("data") or {}
+            if debug.get("is_valid") is not True or str(debug.get("app_id")) != item["ClientId"]:
+                raise ProviderFailure("token_application_mismatch_or_invalid")
+            targets = dict.fromkeys(
+                identifier
+                for scope in debug.get("granular_scopes", [])
+                if isinstance(scope, dict) and scope.get("scope") == "whatsapp_business_management"
+                for target in scope.get("target_ids", [])
+                if (identifier := graph_id(target))
+            )
+            if targets:
+                selected = http_json(
+                    "GET", base, params={
+                        "ids": ",".join(list(targets)[:25]), "fields": "id,name," + phone_edge,
+                    }, headers=headers,
+                )
+                accounts = [
+                    value for key, value in selected.items()
+                    if key in targets and isinstance(value, dict) and graph_id(value.get("id")) == key
+                ]
+    assets = {}
+    for account in accounts:
+        waba = graph_id(account.get("id"))
+        if not waba:
+            continue
+        for phone in graph_items(account.get("phone_numbers")):
+            identifier = graph_id(phone.get("id"))
+            if not identifier or identifier in assets:
+                continue
+            label = phone.get("display_phone_number") or phone.get("verified_name") or "WhatsApp"
+            assets[identifier] = {
+                "kind": "whatsapp_phone", "id": identifier, "parent": waba,
+                "name": f"{account['name']} · {label}" if account.get("name") else label,
+                "token": access,
+            }
+            if len(assets) == 100:
+                return list(assets.values())
+    return list(assets.values())
 
 
 def exchange(item, secret, code, redirect, verifier):
@@ -208,27 +298,7 @@ def exchange(item, secret, code, redirect, verifier):
         raise ProviderFailure("oauth_token_missing")
     assets = []
     if issuer == "meta_whatsapp":
-        # Discover only the operator's configured WABA; no arbitrary tenant selection.
-        parent = item["ParentExternalId"]
-        if not parent or not re.fullmatch(r"[0-9]+", parent):
-            raise ProviderFailure("configured_waba_required")
-        data = http_json(
-            "GET",
-            base + parent + "/phone_numbers",
-            params={"fields": "id,display_phone_number", "limit": 100},
-            headers={"Authorization": "Bearer " + access},
-        ).get("data", [])
-        assets = [
-            {
-                "kind": "whatsapp_phone",
-                "id": str(v["id"]),
-                "parent": parent,
-                "name": v.get("display_phone_number", "WhatsApp"),
-                "token": access,
-            }
-            for v in data[:100]
-            if v.get("id")
-        ]
+        assets = whatsapp_assets(base, item, secret, access)
     else:
         data = http_json(
             "GET",
@@ -300,10 +370,6 @@ class OAuth:
                 raise HTTPException(
                     409, "tiktok_accounts_authorization_profile_required"
                 )
-            if item["IssuerProfile"] == "meta_whatsapp" and not re.fullmatch(
-                r"[0-9]+", item["ParentExternalId"] or ""
-            ):
-                raise HTTPException(409, "configured_waba_required")
             if (
                 len(set(body.scopes)) != len(body.scopes)
                 or not set(body.scopes) <= SCOPES[item["IssuerProfile"]]
@@ -347,7 +413,7 @@ class OAuth:
             redirect = origin + "/hooks/oauth/" + str(item["ApplicationId"]).lower()
             state, oauth_id = token(), str(uuid4())
             configuration_id = None
-            if item["IssuerProfile"] == "facebook_login":
+            if item["IssuerProfile"] in {"facebook_login", "meta_whatsapp"}:
                 document = c.execute(
                     "SELECT Document FROM crm_access.ChannelSetting "
                     "WHERE InstitutionId=? AND IntegrationId=?",
@@ -356,7 +422,8 @@ class OAuth:
                 ).fetchval()
                 if document:
                     configuration_id = json.loads(document).get(
-                        FACEBOOK_LOGIN_CONFIGURATION
+                        FACEBOOK_LOGIN_CONFIGURATION if item["IssuerProfile"] == "facebook_login"
+                        else WHATSAPP_LOGIN_CONFIGURATION
                     )
             url = authorization_url(
                 item, state, redirect, body.scopes, None, configuration_id=configuration_id
@@ -707,7 +774,9 @@ class OAuth:
                 or item["IssuerProfile"] == "meta_whatsapp"
                 and (
                     asset["Kind"] != "whatsapp_phone"
-                    or asset["ParentExternalId"] != item["ParentExternalId"]
+                    or not graph_id(asset["ParentExternalId"])
+                    or item["ParentExternalId"]
+                    and asset["ParentExternalId"] != item["ParentExternalId"]
                 )
             ):
                 raise HTTPException(409, "oauth_account_mismatch")

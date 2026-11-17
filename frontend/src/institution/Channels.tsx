@@ -520,8 +520,7 @@ function ChannelEditor({
                           hint={
                             field.requires_provider_action
                               ? "Disponible al conectar el proveedor."
-                              : field.id ===
-                                  "meta:facebook_login_configuration_id"
+                              : field.id.endsWith("_login_configuration_id")
                                 ? "Cópialo de Inicio de sesión con Facebook para empresas → Configuraciones en Meta."
                                 : metaField?.hint
                           }
