@@ -15,6 +15,13 @@
   "rinovaplus_channel": "WhatsApp · Pruebas Meta",
   "channel_authorization": "OAuth with existing RinovaPlus application and permissions",
   "institutional_channel_replaced": false,
+  "deployment": {
+    "backend_code": "f847192",
+    "backend_coolify": "Success, 04m 17s",
+    "frontend_code": "f847192",
+    "frontend_coolify": "Success, 00m 23s"
+  },
+  "callback_status": "Meta rejected automatic WABA override after initial-route setup was allowed. Application WhatsApp callback is empty; URL prepared for owner to verify its generated token directly in Meta. Not accepted yet.",
   "pending": [
     "Verify callback route after first-configuration backend fix",
     "Receive a reply in the test channel to establish its identity",
