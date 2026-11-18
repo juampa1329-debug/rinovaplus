@@ -1,3 +1,9 @@
+## Ensayo de reversión frontend P11 — 2026-11-18
+
+Con autorización específica del propietario, Coolify desplegó `19866a7` y devolvió el frontend a `9d8d608`; ambas imágenes saludables, ambas interfaces abiertas con la misma sesión. Se conservaron ocho procesos frescos, recibo de 19 archivos, totales de salida y tres inferencias inciertas sin reintento. Backend/base/volumen intactos durante el ensayo. La revisión automática inicial quedó resuelta por la autorización humana; evidencia `artifacts/live/p11-postgres-review-20261118.json` y manual `docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md`.
+
+La aceptación institucional final sigue pendiente de revisión del alcance PostgreSQL y los riesgos entregados: copias locales, destino externo/custodia de clave aún no validados y sin RPO/RTO institucional fijado. **General 98,04%; P0–P10 100% cada una; P11 72,50%; P12 0% formal; P13 parcial 0/4; P14 plan; P15 0/7; P16/P17 diferidas 0/5 cada una; P18 planificada 0/8.** No se añade crédito por repetir una prueba de reversión ya acreditada históricamente ni se acepta la puesta en servicio de forma implícita. Los cortes inferiores se conservan como historia.
+
 ## Revisión operativa P11 en PostgreSQL — 2026-11-18
 
 **General 98,04%; P11 72,50% y 2/4 criterios aceptados.** El propietario aceptó PostgreSQL como destino definitivo; la aceptación institucional final sigue pendiente. El backend/frontend `9d8d608` muestran motor 16.16, ocho procesos y recibo de recuperación verificado. Restauración aislada: 157 tablas y 19 archivos coincidentes; secretos autenticados sin exposición. Usuario de ensayo desactivado, cero sesiones/desafíos elegibles. Copias DB/volumen programadas 03:00/03:05 Bogotá con primeras ejecuciones Success; todavía son locales al servidor, sin destino externo ni custodia de clave validados.

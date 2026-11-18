@@ -134,14 +134,41 @@
   "reversal": {
     "current_frontend": "9d8d608fa69efe526b1016f893c4f753ec812f97",
     "previous_frontend_available": "19866a7a66ae033bf25437f1228ee14bafa1f276",
-    "live_test": "pending_specific_owner_authorization",
-    "automatic_review": "rejected_live_image_change_without_explicit_temporary_production_rollback_authorization",
-    "image_change_executed": false,
-    "database_or_media_rollback": false
+    "live_test": "passed_old_frontend_opened_and_return_to_9d8d608_verified",
+    "automatic_review": "initial_rejection_preserved_then_specific_owner_authorization_received",
+    "image_change_executed": true,
+    "database_or_media_rollback": false,
+    "before_test_frontend": "b4e214a5f6471d2d97710ccf5993e28dc4bcca63",
+    "before_test_note": "Documentation-only successor of 9d8d608; application code unchanged",
+    "owner_authorization": "Sí, realizar esa reversión y regresar a la imagen actual",
+    "rollback_deployment": "qsy9yk8kvugbmcxdeaa3kiok",
+    "rollback_image": "19866a7a66ae033bf25437f1228ee14bafa1f276",
+    "rollback_started_utc": "2026-11-18T19:52:29Z",
+    "rollback_completed_utc": "2026-11-18T19:52:51Z",
+    "return_deployment": "ehqqzus5tfota7uibk1ssgxh",
+    "return_image": "9d8d608fa69efe526b1016f893c4f753ec812f97",
+    "return_started_utc": "2026-11-18T19:53:54Z",
+    "return_completed_utc": "2026-11-18T19:54:15Z",
+    "both_custom_healthchecks": "healthy",
+    "old_and_returned_frontend_opened": true,
+    "same_authenticated_session": true,
+    "returned_database_display": "PostgreSQL 16.16 · 155 tablas verificadas.",
+    "returned_fresh_workers": 8,
+    "recovery_receipt_retained": "verified_19_files",
+    "send_job_totals_before_and_after": {
+      "delivered": 11,
+      "retried": 1,
+      "failed": 1,
+      "read": 36,
+      "accepted": 19
+    },
+    "uncertain_operations_before_and_after": 3,
+    "backend_database_or_media_modified_by_reversal": false,
+    "limit": "Frontend compatibility rollback only; no production database promotion or disaster RTO claim"
   },
   "preserved_failures": [
     "First psql script lost backslash commands and failed before dump/database creation; private directory p11-ops-20261118-a preserved; corrected -b run passed",
-    "Automatic browser review rejected frontend rollback; no image change performed"
+    "Initial automatic browser rejection preserved; specific owner authorization later received and frontend rollback/return passed"
   ],
   "residual_limits": [
     "Backups currently share the production server; total server loss is not covered by these copies alone",
@@ -153,6 +180,12 @@
     "No full cybersecurity certification; P18 is planned",
     "Email delivery/preferences remain P15; SIIE P16 and TikTok P17 deferred"
   ],
-  "pending_canonical_milestones": ["P11.3.m2", "P11.3.m4", "P11.3.m5", "P11.close.m1", "P11.close.m4"],
+  "pending_canonical_milestones": [
+    "P11.3.m2",
+    "P11.3.m4",
+    "P11.3.m5",
+    "P11.close.m1",
+    "P11.close.m4"
+  ],
   "runbook": "docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md"
 }

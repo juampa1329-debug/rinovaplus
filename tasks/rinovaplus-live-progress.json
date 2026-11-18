@@ -191,7 +191,7 @@
     "eligible_activation_challenges": 0,
     "scheduled_database_and_volume_backups": "configured_local_and_initial_runs_Success",
     "offsite_backup_validated": false,
-    "frontend_reversal": "pending_specific_owner_authorization_after_automatic_review_rejection",
+    "frontend_reversal": "owner_authorized_real_19866a7_and_return_9d8d608_passed",
     "canonical_acceptance_changed": false
   },
   "P18": {
