@@ -62,7 +62,7 @@ class Recoveries:
                 c,
                 (
                     "SELECT TOP(25) e.EventId,e.Status,e.LastErrorCode,e.RowVersi"
-                    "on FROM crm_channels2.WebhookEvent e WHERE e.InstitutionId=?"
+                    "on,e.Kind,e.CreatedAt,e.Payload FROM crm_channels2.WebhookEvent e WHERE e.InstitutionId=?"
                     " AND e.ApplicationId=? AND (e.IntegrationId=? OR (e.Integrat"
                     "ionId IS NULL AND e.RouteKind=? AND e.RouteExternalId=?)) AN"
                     "D e.Status IN('quarantined','failed') ORDER BY e.CreatedAt D"
@@ -121,6 +121,10 @@ class Recoveries:
                         "state": v["Status"],
                         "code": v["LastErrorCode"],
                         "row_version": bytes(v["RowVersion"]).hex(),
+                        "kind": v["Kind"],
+                        "created_at": utc(v["CreatedAt"]),
+                        "body_preview": str(json.loads(v["Payload"]).get("text", ""))[:500]
+                        if can_read else None,
                     }
                     for v in events
                 ],

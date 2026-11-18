@@ -924,7 +924,15 @@ function ChannelHistory({ identity }: { identity: string }) {
         row_version: string;
         body_preview?: string;
       }[];
-      events: { id: string; state: string; code?: string | null; row_version: string }[];
+      events: {
+        id: string;
+        state: string;
+        code?: string | null;
+        row_version: string;
+        kind?: string;
+        created_at?: string;
+        body_preview?: string | null;
+      }[];
       operations: { id: string; action: string; status: string }[];
     }>(`channels/${identity}/history`),
     { call, session } = useInstitution(),
@@ -1042,7 +1050,32 @@ function ChannelHistory({ identity }: { identity: string }) {
             </div>
           ))}
           {data.value.events.map((item) => (
-            <div key={item.id}>
+            <div key={item.id} role="group" aria-label={`Evento ${item.id}`}>
+              <p>
+                <strong>
+                  {(
+                    {
+                      message: "Mensaje",
+                      comment: "Comentario",
+                      comment_deleted: "Comentario eliminado",
+                      status: "Recibo de estado",
+                    } as Record<string, string>
+                  )[item.kind || ""] || "Evento"}
+                </strong>
+                {" · "}
+                <code>{item.id}</code>
+                {item.created_at && (
+                  <>
+                    {" · "}
+                    <time dateTime={item.created_at}>
+                      {new Date(item.created_at).toLocaleString("es-CO")}
+                    </time>
+                  </>
+                )}
+              </p>
+              {item.body_preview && (
+                <blockquote>{item.body_preview}</blockquote>
+              )}
               <span>
                 {item.code === "initial_stage_review_required"
                   ? "El chat nuevo necesita una etapa inicial activa. Selecciona la etapa, guarda el enrutamiento y reprocesa el evento."

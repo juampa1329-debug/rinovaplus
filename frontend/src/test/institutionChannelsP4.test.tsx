@@ -64,6 +64,86 @@ beforeEach(() => {
   }
 });
 
+it("recovers only the chosen identified event when multiple events need review", async () => {
+  const events = [
+    {
+      id: "event-message",
+      state: "quarantined",
+      row_version: "0000000000000001",
+      kind: "message",
+      created_at: "2026-11-17T12:00:00Z",
+      body_preview: "Prueba de recuperación DM",
+    },
+    {
+      id: "event-comment",
+      state: "quarantined",
+      row_version: "0000000000000002",
+      kind: "comment",
+      created_at: "2026-11-17T12:01:00Z",
+      body_preview: "Prueba de recuperación comentario",
+    },
+  ];
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (path, init) => {
+      if (String(path).endsWith("routing-options")) return ok({ stages: [] });
+      if (String(path).endsWith("account-one/history"))
+        return ok({ queue: [], events, operations: [] });
+      if (init?.method === "POST")
+        return ok({ saved: true, provider_resend: false });
+      return ok({});
+    });
+  mount(
+    <ChannelOperations
+      account={{
+        id: "account-one",
+        application_id: "app-one",
+        channel: "instagram",
+        issuer_profile: "instagram_login",
+        display_name: "Instagram de prueba",
+        revision: 1,
+        row_version: "version",
+        application_version: "version",
+        verified_status: "verified",
+        fields: {},
+      }}
+      done={async () => {}}
+    />,
+    { ...base, actions: [...base.actions, "settings.channels.write"] },
+  );
+  fireEvent.click(screen.getByText("Actividad y recuperación"));
+  const commentEvent = await screen.findByRole("group", {
+    name: "Evento event-comment",
+  });
+  expect(
+    within(commentEvent).getByText("Prueba de recuperación comentario"),
+  ).toBeVisible();
+  expect(within(commentEvent).getByText("Comentario")).toBeVisible();
+  expect(within(commentEvent).getByText("event-comment")).toBeVisible();
+  expect(
+    screen.getByRole("group", { name: "Evento event-message" }),
+  ).toHaveTextContent("Prueba de recuperación DM");
+  fireEvent.click(
+    within(commentEvent).getByRole("button", {
+      name: "Reprocesar con la configuración actual",
+    }),
+  );
+  await waitFor(() =>
+    expect(fetcher.mock.calls.some(([, init]) => init?.method === "POST")).toBe(
+      true,
+    ),
+  );
+  const writes = fetcher.mock.calls.filter(
+    ([, init]) => init?.method === "POST",
+  );
+  expect(writes).toHaveLength(1);
+  expect(JSON.parse(String(writes[0][1]?.body))).toMatchObject({
+    resource_id: "event-comment",
+    row_version: "0000000000000002",
+    action: "reprocess_event",
+  });
+});
+
 it("reuses a saved App Secret by reference and lists only compatible applications", async () => {
   const sourceId = "11223344-0000-4000-8000-000000000001";
   const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (_path, init) => {
