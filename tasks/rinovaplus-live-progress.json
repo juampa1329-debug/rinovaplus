@@ -21,10 +21,10 @@
     "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
-  "canonical_percent": "97.14%",
-  "canonical_milestones_done": 272,
+  "canonical_percent": "97.59%",
+  "canonical_milestones_done": 273,
   "canonical_milestones_total": 279,
-  "canonical_criteria_accepted": 52,
+  "canonical_criteria_accepted": 53,
   "canonical_criteria_total": 56,
   "canonical_weight_changed": false,
   "phase_percentages": {
@@ -37,7 +37,7 @@
     "P6": "100.00%",
     "P7": "100.00%",
     "P8": "100.00%",
-    "P9": "93.75%",
+    "P9": "100.00%",
     "P10": "95.00%",
     "P11": "72.50%"
   },
@@ -110,7 +110,6 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
-    "P9_separate_closure_review",
     "P13_two_reviewed_programs_without_SIIE",
     "P10_dependency_review",
     "P11_P12_institutional_commissioning"
@@ -147,10 +146,15 @@
   },
   "P9_meta_ads_manager": {
     "date": "2026-11-18",
-    "scope": "Real Meta reads and local reviewed creation/edit drafts, as requested by owner",
-    "status": "deployed_oauth_discovery_verified_account_choice_pending",
-    "evidence": "artifacts/live/p9-meta-manager-20261118.json",
-    "acceptance_pending": "Choose account, verify real campaigns/Insights/creative and live local draft persistence; P4 dependency is already accepted.",
+    "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification",
+    "status": "accepted",
+    "evidence": "artifacts/live/p9-meta-acceptance-20261118.json",
     "provider_advertising_writes": 0
+  },
+  "P9": {
+    "status": "accepted_Meta_reads_local_drafts",
+    "accepted": 4,
+    "total": 4,
+    "evidence": "artifacts/live/p9-meta-acceptance-20261118.json"
   }
 }

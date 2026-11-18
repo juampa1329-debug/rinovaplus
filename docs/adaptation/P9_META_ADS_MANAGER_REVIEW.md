@@ -1,3 +1,27 @@
+# P9 — cierre aceptado de consulta Meta y borradores locales
+
+Corte vigente: 18 de noviembre de 2026. **P9 100%, 4/4 criterios; general 97,59%, 273/279 hitos y 53/56 criterios.** Los apartados inferiores conservan las etapas previas, sus fallos y condiciones pendientes de entonces; prevalece este cierre. Evidencia detallada: [aceptación](../../artifacts/live/p9-meta-acceptance-20261118.json) y [cálculo sin cambiar definiciones](../../artifacts/live/p9-progress-validation-20261118.json).
+
+## Resultado comprobado
+
+Cbneistas Bienestar (52067617), elegida por el propietario, está conectada con ads_read y sin ads_management. La consulta completa conserva 375 campañas, 420 conjuntos y 526 anuncios. El período cerrado 1–17 de noviembre tiene 17 puntos diarios. Gasto, impresiones, alcance, clics y leads coinciden con una consulta independiente a Meta del mismo período; el gasto diario suma el total. Se conserva un hash del informe, sin publicar importes ni datos financieros privados en el repositorio. El inventario es actual y las métricas corresponden al período; ambos se identifican en pantalla.
+
+El gráfico cambia de métrica con animación y mantiene los KPIs. La interfaz respeta movimiento reducido. El detalle abre un modal accesible con retorno del foco; se verificó una creatividad real cargada desde Meta. La imagen disponible es una miniatura de 64 píxeles, no una promesa de resolución alta ni de reproducción exacta de cada ubicación.
+
+Se crearon dos propuestas ficticias locales marcadas NO PUBLICAR: una campaña nueva con revisiones 1 y 2 y una edición de una campaña real. Guardar, recargar y revisar funcionan; una nueva versión o consulta invalida revisiones antiguas. La propuesta de edición conserva el identificador y presupuesto disponible. La campaña real mantiene nombre, estado, objetivo y presupuestos sin cambios. No existe publicación de anuncios en esta entrega; revisión local no significa aprobación de Meta.
+
+La importación manual repetida del mismo lead ficticio produjo exactamente un lead, un contacto y una conversación en Humano, con cero mensajes y sin consentimiento comercial. Es una prueba de captación manual e idempotencia; no se presenta como un envío real de formulario Lead Ads. Pausar la cuenta local deshabilitó la sincronización manteniendo informes/borradores/IDs; se restauró a Disponible/conectada. El período inválido mayor de 93 días produjo un modal con causa y solución antes de llamar a Meta; volver al período válido recuperó la consulta guardada.
+
+## Validación y límites
+
+Pasan 129 pruebas backend y 24 frontend seleccionadas, tipos, lint de archivos modificados y build de `vite.workspace.config.ts`. El build mantiene la advertencia de bundle grande; las suites se solapan con comprobaciones previas y no se suman como pruebas únicas. Coolify confirmó backend d40d3f1 saludable y frontend cf09994 Success. Las pruebas de navegador y el contraste autenticado son evidencia separada de los tests locales.
+
+La consulta está acotada a 1000 objetos por nivel, páginas de 250, 93 días y límites de tiempo/tamaño sobre host Graph fijo. Un exceso falla completo sin persistir cifras parciales. Se conservaron el fallo inicial por 526 anuncios y el modal oculto en details; ambos fueron corregidos y repetidos satisfactoriamente. No se realizó reversión de imagen esta vez: la prueba live de reversión es la pausa/reactivación local conservando estado, junto con regresiones controladas.
+
+La evidencia corresponde a PostgreSQL en producción. No revalida SQL2019, SIIE ni aceptación institucional y no reconstruye veinte artefactos históricos ausentes. No se afirma prueba móvil real ni auditoría formal de accesibilidad. Textos, pesos, denominadores, releases, checkers y grafos congelados permanecen intactos. Se acepta exclusivamente P9.close/P9.close.m4; P10 mantiene 95% pendiente de revisión propia y P11 72,50%.
+
+## Etapas históricas conservadas
+
 # P9 — administrador de publicidad Meta
 
 Corte: 18 de noviembre de 2026. Alcance ampliado por el propietario: consultar datos reales y preparar creación/edición en borradores locales con revisión antes de publicar. La referencia histórica de Scentra sólo acreditaba registros locales de captación; esta ampliación añade Marketing API y no reinterpreta aquel recibo como prueba externa.

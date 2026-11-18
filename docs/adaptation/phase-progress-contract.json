@@ -3,7 +3,7 @@
   "defined_in_unit": "SQL-C12",
   "date": "2026-11-18",
   "timezone": "America/Bogota",
-  "status": "P8_Meta_closed_P9_P10_P11_still_partial",
+  "status": "P9_Meta_reads_local_drafts_closed_P10_P11_partial",
   "measurement_label": "Porcentaje de criterios canónicos aceptados por fase",
   "meaning": "Cuenta criterios cerrados con evidencia en su alcance declarado. No mide horas, esfuerzo, porcentaje de funcionalidad real, calidad, entrega de proveedores ni preparación institucional. Un0% puede coexistir con subconjuntos funcionales probados.",
   "human_request": "El propietario pidió porcentajes por fase; este contrato sustituye la anterior omisión de porcentajes sólo para el reporte, sin cambiar los criterios de cierre.",
@@ -1698,8 +1698,8 @@
           "kind": "phase_closure",
           "requirement": "**Cierre:** lead repetido no duplica persona/conversación; cuenta/período/origen se preservan; reportes identifican fecha y fuente; ninguna lectura modifica campañas o gasto. **Reversión:** pausar sincronización/acciones, conservar IDs externos y registros; no borrar ni alterar anuncios reales para revertir una pantalla.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P9",
@@ -1707,45 +1707,49 @@
             "line_at_assessment": 251,
             "canonical_text_sha256": "44ab0888bbe77824dde7212a0b2b29eeda44d9f63668c607fba2cb5c521867b6"
           },
-          "remaining_scope": "Choose account, verify real campaigns/Insights/creative and live local draft persistence; P4 dependency is already accepted.",
+          "remaining_scope": "Accepted in the owner-authorized Meta read/local-draft scope. Advertising publication is outside this delivery.",
           "evidence": [
             {
               "file": "artifacts/p9-es/acceptance-review.json",
               "source_location": "$.criteria.P9.close",
               "scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+            },
+            {
+              "file": "artifacts/live/p9-meta-acceptance-20261118.json",
+              "source_location": "$.criteria.P9.close",
+              "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
         }
       ],
       "completion": {
-        "accepted": 3,
+        "accepted": 4,
         "total": 4,
-        "partial": 1,
+        "partial": 0,
         "pending": 0,
         "fraction": {
-          "numerator": 3,
+          "numerator": 4,
           "denominator": 4
         },
         "reduced_fraction": {
-          "numerator": 3,
-          "denominator": 4
-        },
-        "percent_exact": {
-          "numerator": 75,
+          "numerator": 1,
           "denominator": 1
         },
-        "percent_display": "75.00%",
-        "phase_accepted": false
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "reporting_finding_id": "phase_progress_p9",
       "graph_node_id": "phase_criteria_p9",
       "live_scope_review": {
         "date": "2026-11-18",
-        "scope": "Real Meta reads and local reviewed creation/edit drafts, as requested by owner",
-        "status": "deployed_oauth_discovery_verified_account_choice_pending",
-        "evidence": "artifacts/live/p9-meta-manager-20261118.json",
-        "acceptance_pending": "Choose account, verify real campaigns/Insights/creative and live local draft persistence; P4 dependency is already accepted.",
+        "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification",
+        "status": "accepted",
+        "evidence": "artifacts/live/p9-meta-acceptance-20261118.json",
         "provider_advertising_writes": 0
       }
     },
@@ -1869,7 +1873,7 @@
             "line_at_assessment": 260,
             "canonical_text_sha256": "dcc9891413655b3d8127aa12fe53993058d4213a702479cd278d70b2ad6f85a3"
           },
-          "remaining_scope": "Full P8/P9 dependency closure remains pending; no real external domain/apps yet.",
+          "remaining_scope": "P8 and P9 now accepted in bounded Meta scope; separate P10.close review still required. No automatic acceptance.",
           "evidence": [
             {
               "file": "artifacts/p10-es/acceptance-review.json",
@@ -2041,12 +2045,12 @@
     }
   ],
   "summary": {
-    "accepted_criteria": 52,
+    "accepted_criteria": 53,
     "total_criteria": 56,
-    "partial_criteria": 4,
+    "partial_criteria": 3,
     "scope": "Totales de criterios únicamente; se omite porcentaje global porque el pedido es por fase.",
-    "as_of_accepted_checkpoint": "P8-Meta-live-20261118",
-    "active_unit_not_yet_accepted": "P9/P10 separate closure reviews; P11 institutional commissioning remains partial."
+    "as_of_accepted_checkpoint": "P9-Meta-live-20261118",
+    "active_unit_not_yet_accepted": "P10 separate closure review and P11 institutional commissioning remain partial."
   },
   "current_unit_evidence_policy": {
     "unit": "P1-ES",
@@ -2542,6 +2546,13 @@
       "prior_accepted_criteria": 51,
       "accepted_criteria": 52,
       "scope": "P8 closure after accepted P5/P6/P7: owner-authorized single free Meta template, persisted wait across redeploy, pause/resume, version restoration to draft, Human cancellation and cleanup. Controlled regressions and historical SQL checkpoint limits explicitly separated."
+    },
+    {
+      "checkpoint": "P9-Meta-live-20261118",
+      "preserved_file": "artifacts/live/history/p9-meta-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 52,
+      "accepted_criteria": 53,
+      "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
     }
   ]
 }

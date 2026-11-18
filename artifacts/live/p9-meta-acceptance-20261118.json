@@ -1,0 +1,162 @@
+{
+  "schema_version": "p9-live-acceptance-v1",
+  "date": "2026-11-18",
+  "status": "accepted_bounded_Meta_reads_and_local_drafts",
+  "authorization": {
+    "account_selected_by_owner": "Cbneistas Bienestar · 52067617",
+    "scope": "Real data and preparation of reviewed local create/edit drafts",
+    "ads_read": true,
+    "ads_management": false,
+    "provider_advertising_writes": 0
+  },
+  "criteria": {
+    "P9.close": {
+      "state": "accepted",
+      "milestone": "P9.close.m4",
+      "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification",
+      "dependencies": [
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "evidence_sections": [
+        "real_read",
+        "drafts",
+        "duplicate_capture",
+        "pause_reversal",
+        "error_recovery",
+        "verification"
+      ]
+    }
+  },
+  "real_read": {
+    "account_id": "52067617",
+    "local_account_id": "b8bb070e-6c12-5de9-8598-84a6f97dd2ba",
+    "currency": "COP",
+    "timezone": "America/Bogota",
+    "closed_period": {
+      "start": "2026-11-01",
+      "end": "2026-11-17"
+    },
+    "inventory": {
+      "campaigns": 375,
+      "adsets": 420,
+      "ads": 526,
+      "daily_points": 17
+    },
+    "direct_Meta_matches": {
+      "spend": true,
+      "impressions": true,
+      "reach": true,
+      "clicks": true,
+      "leads": true
+    },
+    "daily_spend_matches_total": true,
+    "snapshot_sha256": "bb6e6fe7641d2f63c914f85ab18239603ffe7a6ca5ec04321c728400bcb2d9bd",
+    "provider_configuration_unchanged_between_snapshots": true,
+    "financial_figures": "Omitted from repository; compared in authenticated runtime only",
+    "creative": {
+      "real_ad_id": "52563298024451",
+      "image_loaded": true,
+      "thumbnail_dimensions": [
+        64,
+        64
+      ],
+      "scope": "Provider thumbnail; not full placement fidelity or high resolution"
+    },
+    "chart": {
+      "metric_switch_verified": "spend_to_leads",
+      "computed_animation": "meta-line",
+      "reduced_motion_guard": "implemented; not a formal accessibility audit"
+    }
+  },
+  "drafts": {
+    "create_id": "74066d35-082c-4bc7-87c6-89f0b5af681c",
+    "create_revisions": [
+      1,
+      2
+    ],
+    "edit_id": "53deb3b1-e13e-436f-a6a2-1ffdfd6123b7",
+    "edit_revision": 1,
+    "source_campaign_id": "52561594469651",
+    "all_marked_no_publish": true,
+    "reloaded_from_persistence": true,
+    "review_invalidated_by_new_revision": true,
+    "review_invalidated_by_new_snapshot": true,
+    "edit_review_current": true,
+    "provider_campaign_unchanged_after_edit_proposal": true,
+    "journal_versions": 3,
+    "provider_writes": false
+  },
+  "duplicate_capture": {
+    "external_id": "P9-FICTICIO-20261118-BIENESTAR",
+    "kind": "manual operator import; fictional no-contact record",
+    "same_record_imported_twice": true,
+    "intakes": 1,
+    "contacts": 1,
+    "conversations": 1,
+    "messages": 0,
+    "origin": "operator",
+    "state": "converted",
+    "conversation_control": "human",
+    "same_conversation_id": true,
+    "commercial_consent_granted": false,
+    "scope": "Does not claim an actual Meta Lead Ads form submission or leads_retrieval"
+  },
+  "pause_reversal": {
+    "local_pause_saved": true,
+    "sync_disabled_while_paused": true,
+    "cached_report_readable": true,
+    "snapshots_drafts_and_ids_retained": true,
+    "restored_account_state": "connected",
+    "provider_campaign_status_changed": false
+  },
+  "error_recovery": {
+    "invalid_period_over_93_days": "Rejected before provider IO; actionable shared error modal observed",
+    "previous_data_and_drafts_retained": true,
+    "valid_period_reloaded": true
+  },
+  "observed_failures_and_fixes": [
+    "Initial success modal hidden inside collapsed details blocked controls; moved outside, regression and live retest passed.",
+    "Actual 526 ads exceeded initial 500-object limit; no partial report persisted. Limit raised to 1000/level with 250-page size; complete real inventory retested.",
+    "Ad details below 50-row table obscured creative; accessible dialog with focus restoration now verified.",
+    "Shared error feedback absent on Ads workspace; wrapper and actionable real invalid-period modal verified."
+  ],
+  "verification": {
+    "backend_tests": 129,
+    "frontend_tests": 24,
+    "types": "passed",
+    "lint_changed_files": "passed",
+    "workspace_build": "passed_with_existing_large_chunk_warning",
+    "browser_tests": "Authenticated live production actions and read-only diagnostics; separate from unit-test counts",
+    "backend_deployed_commit": "d40d3f12267859cbb1cbbc8277355cd35eec3dcc",
+    "backend_deployment": "ejivcllwlw5mtgor7maetupr",
+    "frontend_deployed_commit": "cf09994e3adafac4253ad8c65a292bb49dc21489",
+    "frontend_deployment": "9nqfjfgdajj19bwp24shxpoh",
+    "Coolify_backend": "healthy rolling update completed",
+    "Coolify_frontend": "Success",
+    "suites": [
+      "backend/tests/test_institutional.py",
+      "backend/tests/test_institutional_workspace.py",
+      "backend/tests/test_ads_meta_marketing.py",
+      "backend/tests/test_institutional_ads.py",
+      "backend/tests/test_institutional_http.py",
+      "frontend/src/test/metaAdsManager.test.tsx",
+      "frontend/src/test/institutionAdsP9.test.tsx"
+    ]
+  },
+  "limits": [
+    "No advertising publication or budget changes; local review is not Meta approval.",
+    "1000 objects per level, 93-day period, fixed Graph host and bounded IO; excess fails whole report.",
+    "Current production PostgreSQL evidence; no SQL2019/SIIE replay or institutional requalification.",
+    "Twenty historical evidence files remain absent. Existing historical acceptance receipts are preserved, not reconstructed.",
+    "Responsive CSS and reduced-motion guard implemented; no live mobile viewport acceptance or formal accessibility audit claimed.",
+    "No image rollback performed this turn; live local pause/reversal and controlled regressions are explicitly scoped."
+  ],
+  "prior_evidence": "artifacts/live/p9-meta-manager-20261118.json",
+  "preimages": {
+    "artifacts/live/history/p9-meta-20261118/phase-progress-contract.before.json": "453078488805c6411246957447838dc12696308fbef93299a586f1015d501df2",
+    "artifacts/live/history/p9-meta-20261118/phase-work-progress.before.json": "a1ab42a3f7abe175f86d549eff465dbaa75a7ccd2cc4d1157b5c2d06fac305fd",
+    "artifacts/live/history/p9-meta-20261118/rinovaplus-live-progress.before.json": "9b9e04d99bbe2cfc559fde534c92565a559c939a39bcc628d5d2df66f2184bab"
+  }
+}

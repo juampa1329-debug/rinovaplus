@@ -1,7 +1,7 @@
 {
   "schema_version": "technical-work-milestones-v1",
   "date": "2026-11-18",
-  "status": "current_evidence_based_partial_work_and_separate_acceptance",
+  "status": "P9_Meta_reads_local_drafts_closed_P10_P11_partial",
   "authorized_change": "La petición humana nueva autoriza cuantificar trabajo parcial. La regla histórica partial_credit=0 queda intacta para aceptación y no rige esta nueva columna de avance técnico.",
   "scope": "Current assessment of implementation/contract/test/integration/acceptance work; legacy and current evidence scopes are explicit. Not hours, deployment readiness or exact percentage of features.",
   "policy": {
@@ -802,6 +802,12 @@
       "source_location": "$.real_run; $.restart; $.versions; $.human_cancel; $.cleanup; $.limits",
       "source_sha256_at_review": "8a8c428319bf2bd6fd252320ba347a6ced142762738abfbe25f846f11c4428b4",
       "scope": "P8 closure after accepted P5/P6/P7: owner-authorized single free Meta template, persisted wait across redeploy, pause/resume, version restoration to draft, Human cancellation and cleanup. Controlled regressions and historical SQL checkpoint limits explicitly separated."
+    },
+    "P9_Meta_live_20261118": {
+      "file": "artifacts/live/p9-meta-acceptance-20261118.json",
+      "source_location": "$.criteria.P9.close; $.real_read; $.drafts; $.duplicate_capture; $.pause_reversal",
+      "source_sha256_at_review": "7ec2111f89a203abffaf4b811c2a71fa3c7a757551377d182234184fbfa0a865",
+      "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
     }
   },
   "phases": [
@@ -7280,15 +7286,17 @@
             {
               "id": "P9.close.m4",
               "description": "Cerrar P9/dependencias con alcance de cuentas/acciones aceptado.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 4
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P9_Meta_live_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L277"
@@ -7296,35 +7304,35 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 3,
+            "done_milestones": 4,
             "total_milestones": 4,
             "criterion_equivalent": {
-              "numerator": 3,
-              "denominator": 4
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "75.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
           }
         }
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 15,
-          "denominator": 4
+          "numerator": 4,
+          "denominator": 1
         },
         "criterion_denominator": 4,
         "fraction": {
-          "numerator": 15,
-          "denominator": 16
+          "numerator": 1,
+          "denominator": 1
         },
-        "percent_display": "93.75%",
-        "phase_accepted": false
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "historical_closure": {
         "accepted_criteria": 0,
@@ -8578,16 +8586,16 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 34,
-      "denominator": 35
+      "numerator": 1093,
+      "denominator": 1120
     },
-    "overall_technical_percent_display": "97.14%",
+    "overall_technical_percent_display": "97.59%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 272,
-    "pending_milestones": 7,
-    "accepted_criteria": 52,
+    "done_milestones": 273,
+    "pending_milestones": 6,
+    "accepted_criteria": 53,
     "milestone_counts_are_not_weights": true,
     "phases": [
       {
@@ -8738,17 +8746,17 @@
         "id": "P9",
         "criterion_denominator": 4,
         "criterion_equivalents_completed": {
-          "numerator": 15,
-          "denominator": 4
+          "numerator": 4,
+          "denominator": 1
         },
         "work_fraction": {
-          "numerator": 15,
-          "denominator": 16
+          "numerator": 1,
+          "denominator": 1
         },
-        "work_percent_display": "93.75%",
-        "accepted_criteria": 3,
-        "acceptance_percent_display": "75.00%",
-        "phase_accepted": false
+        "work_percent_display": "100.00%",
+        "accepted_criteria": 4,
+        "acceptance_percent_display": "100.00%",
+        "phase_accepted": true
       },
       {
         "id": "P10",
