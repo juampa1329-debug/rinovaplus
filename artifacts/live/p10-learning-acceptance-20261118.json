@@ -1,0 +1,138 @@
+{
+  "schema_version": "p10-live-acceptance-v1",
+  "date": "2026-11-18",
+  "status": "accepted_technical_synthetic_lifecycle",
+  "criteria": {
+    "P10.close": {
+      "state": "accepted",
+      "milestone": "P10.close.m4",
+      "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim",
+      "dependencies_accepted": [
+        "P5",
+        "P6",
+        "P8",
+        "P9"
+      ]
+    }
+  },
+  "real_run": {
+    "surface": "Authenticated production UI through existing Learning service, CSRF and recent identity confirmation",
+    "database_engine": "PostgreSQL",
+    "pack_id": "736cf87e-2f48-43be-b066-d42af0a0580a",
+    "pack_name": "P10 · Validación ficticia · NO OPERATIVO · 2026-11-18",
+    "scope": "demo",
+    "task": "lead_scoring",
+    "grants": 24,
+    "subjects": "24 distinct randomly generated synthetic subjects; no CRM contact data",
+    "samples": 24,
+    "dataset_id": "82d355f7-9329-491c-95c4-21fe73fed883",
+    "dataset_sha256": "5178c4699f73690c2282d898859de8283a93f7c8e7ce6ee68a8e0c79fc07fc86",
+    "cutoff": "2026-09-01T05:00:00Z",
+    "training_count": 16,
+    "holdout_count": 8,
+    "program_stage_segments": [
+      "general:nuevo"
+    ],
+    "raw_messages_used": false,
+    "commercial_consent_granted": false,
+    "academic_writes": false,
+    "external_messages": 0
+  },
+  "reproducibility": {
+    "same_persisted_dataset_trained_twice": true,
+    "artifact_ids": [
+      "10743935-e0b6-4138-954e-8d1eb45fee0f",
+      "22a1272d-15ec-443d-8ba0-bb13581985ef"
+    ],
+    "both_artifact_sha256": "f3bbefc99560c49614cdac6a72b0a882962484628780a5a3fbcb927c1020a4ef",
+    "same_hash_observed_in_UI": true,
+    "algorithm": "cbn_binary_logistic_gd_v1",
+    "candidate_accuracy": 1,
+    "baseline_accuracy": 0.5,
+    "candidate_auc": 1,
+    "baseline_auc": 0.5,
+    "candidate_brier_UI_rounded": 0.0001,
+    "baseline_brier": 0.25,
+    "holdout_false_positives": 0,
+    "holdout_false_negatives": 0,
+    "meaning": "Synthetic separable fixture validates the pipeline, not institutional predictive performance"
+  },
+  "sample_recipe": {
+    "count": 24,
+    "label": "i % 2",
+    "features_except_asked_for_price": "10 + 80 * (i % 2) + (i % 3)",
+    "asked_for_price": "i % 2",
+    "feature_dates_local": "i 0..11: 2026-08-01 10:00; i 12..15: 2026-08-02 10:00; i 16..23: 2026-09-02 10:00",
+    "outcome_dates_local": "i 0..11: 2026-08-02 10:00; i 12..15: 2026-08-03 10:00; i 16..23: 2026-09-03 10:00",
+    "timezone": "America/Bogota",
+    "limitations": "Purpose-built synthetic numbers; not empirically derived behavioral features"
+  },
+  "promotion_and_rollback": {
+    "first_shadow_predictions": 4,
+    "first_promoted": true,
+    "second_promotion_without_own_shadow": "Rejected by server with learning_shadow_observations_required; actionable error dialog verified",
+    "second_shadow_predictions": 4,
+    "second_promoted": true,
+    "rollback_to_first_approved": true,
+    "active_inference_after_rollback": true,
+    "drift_outlier_inference": "999999 features triggers review_required; no decision or message",
+    "total_predictions": 10,
+    "human_promotion_only": true,
+    "history_observed": [
+      "model.trained (twice)",
+      "model.promote (twice)",
+      "model.rollback",
+      "deployment.pause",
+      "pack.version"
+    ]
+  },
+  "cleanup": {
+    "selected_active_artifact": "10743935-e0b6-4138-954e-8d1eb45fee0f",
+    "prediction_state": "paused",
+    "training_enabled": false,
+    "pack_revision": 2,
+    "dataset_and_both_artifacts_retained": true,
+    "training_button_disabled": true,
+    "fresh_reload_preserved_state": true,
+    "note": "Demo-only purpose grants and immutable observations retained; no real-person authorizations created"
+  },
+  "interface_fix": {
+    "problem": "Native window.confirm blocked browser automation; attempted approval was not persisted when checked in a fresh tab",
+    "owner_response": "Owner reported approving; subsequent server state remained in shadow until corrected modal was used",
+    "fix_commit": "1049ad78422274842c86710073e00334d28a1206",
+    "change": "Shared RinovaPlus modal with cancel/focus restoration, explicit promotion and actionable learning errors",
+    "live_cancel_preserved_state_and_restored_focus": true,
+    "live_confirm_promoted": true,
+    "backend_gates_unchanged": true,
+    "Coolify_frontend_deployment": "txzcc2pqlqsv67sdvp7ne11o",
+    "deployment_status": "Success"
+  },
+  "verification": {
+    "backend_tests": 41,
+    "backend_suites": [
+      "backend/tests/test_institutional_learning.py",
+      "backend/tests/test_institutional_http.py"
+    ],
+    "pure_learning_tests": 24,
+    "frontend_tests": 11,
+    "frontend_suite": "frontend/src/test/institutionLearningP10.test.tsx",
+    "types": "passed",
+    "lint_changed_files": "passed",
+    "workspace_build": "passed; existing large-bundle warning",
+    "test_harness_correction": "Dialog tests initially failed because test DOM lacked showModal; explicit browser dialog shim added, all 11 pass",
+    "scope": "Live UI, pure engine and HTTP boundary tests are separate evidence, not one aggregate suite"
+  },
+  "limits": [
+    "No Gemini fine-tuning or new neural network; existing deterministic logistic JSON variant.",
+    "Live demonstration covers lead_scoring/general:nuevo. Four tasks and two synthetic program segments are covered by pure engine tests, not claimed as new live program pilots.",
+    "Numeric features are manually reviewed snapshots; no automatic historical feature extraction, institutional training or measured institutional efficacy.",
+    "No SQL2019/SIIE requalification, academic access, seed/preparer rerun, new containers or recovery rehearsal.",
+    "Twenty historical files remain absent; full historical replay not claimed. Existing earlier acceptance states retained; only P10.close is newly accepted.",
+    "P11 institutional operation and P12 formal acceptance remain pending."
+  ],
+  "preimages": {
+    "artifacts/live/history/p10-live-20261118/phase-progress-contract.before.json": "fbdcab7e293d2bff092d7b9908ee0507f3ed292418651bd4fa55a9138182ea9a",
+    "artifacts/live/history/p10-live-20261118/phase-work-progress.before.json": "3c29cab2938d3316744ed6d35b896046109040d5fb9d489bba6db59d1937e8af",
+    "artifacts/live/history/p10-live-20261118/rinovaplus-live-progress.before.json": "05fd2b56cef6b7f3cb7423717e0cdc168f543e44c26973220b50e5764a3f8bc3"
+  }
+}

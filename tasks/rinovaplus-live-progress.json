@@ -21,10 +21,10 @@
     "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
-  "canonical_percent": "97.59%",
-  "canonical_milestones_done": 273,
+  "canonical_percent": "98.04%",
+  "canonical_milestones_done": 274,
   "canonical_milestones_total": 279,
-  "canonical_criteria_accepted": 53,
+  "canonical_criteria_accepted": 54,
   "canonical_criteria_total": 56,
   "canonical_weight_changed": false,
   "phase_percentages": {
@@ -38,7 +38,7 @@
     "P7": "100.00%",
     "P8": "100.00%",
     "P9": "100.00%",
-    "P10": "95.00%",
+    "P10": "100.00%",
     "P11": "72.50%"
   },
   "P12": {
@@ -111,7 +111,6 @@
   },
   "next": [
     "P13_two_reviewed_programs_without_SIIE",
-    "P10_dependency_review",
     "P11_P12_institutional_commissioning"
   ],
   "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md",
@@ -156,5 +155,12 @@
     "accepted": 4,
     "total": 4,
     "evidence": "artifacts/live/p9-meta-acceptance-20261118.json"
+  },
+  "P10": {
+    "date": "2026-11-18",
+    "status": "accepted_technical_synthetic_lifecycle",
+    "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim",
+    "evidence": "artifacts/live/p10-learning-acceptance-20261118.json",
+    "institutional_efficacy_claimed": false
   }
 }

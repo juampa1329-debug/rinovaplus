@@ -3,7 +3,7 @@
   "defined_in_unit": "SQL-C12",
   "date": "2026-11-18",
   "timezone": "America/Bogota",
-  "status": "P9_Meta_reads_local_drafts_closed_P10_P11_partial",
+  "status": "P10_technical_lifecycle_closed_P11_institutional_partial",
   "measurement_label": "Porcentaje de criterios canónicos aceptados por fase",
   "meaning": "Cuenta criterios cerrados con evidencia en su alcance declarado. No mide horas, esfuerzo, porcentaje de funcionalidad real, calidad, entrega de proveedores ni preparación institucional. Un0% puede coexistir con subconjuntos funcionales probados.",
   "human_request": "El propietario pidió porcentajes por fase; este contrato sustituye la anterior omisión de porcentajes sólo para el reporte, sin cambiar los criterios de cierre.",
@@ -1864,8 +1864,8 @@
           "kind": "phase_closure",
           "requirement": "**Cierre:** dataset y modelo son reproducibles; mejora medida frente a baseline y errores por segmento; versión promovida/revertida; sin entrenamiento cruzado con otros clientes. Recoger eventos por sí solo no acredita aprendizaje. **Reversión:** seleccionar artefacto aprobado anterior y conservar evidencia de evaluación; detener nuevos entrenamientos sin borrar muestras revisadas.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P10",
@@ -1873,39 +1873,51 @@
             "line_at_assessment": 260,
             "canonical_text_sha256": "dcc9891413655b3d8127aa12fe53993058d4213a702479cd278d70b2ad6f85a3"
           },
-          "remaining_scope": "P8 and P9 now accepted in bounded Meta scope; separate P10.close review still required. No automatic acceptance.",
+          "remaining_scope": "Technical closure accepted with synthetic lifecycle evidence; institutional effectiveness, automated feature acquisition and commissioning are not asserted.",
           "evidence": [
             {
               "file": "artifacts/p10-es/acceptance-review.json",
               "source_location": "$.criteria.P10.close",
               "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            },
+            {
+              "file": "artifacts/live/p10-learning-acceptance-20261118.json",
+              "source_location": "$.criteria.P10.close",
+              "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
         }
       ],
       "completion": {
-        "accepted": 4,
+        "accepted": 5,
         "total": 5,
-        "partial": 1,
+        "partial": 0,
         "pending": 0,
         "fraction": {
-          "numerator": 4,
+          "numerator": 5,
           "denominator": 5
         },
         "reduced_fraction": {
-          "numerator": 4,
-          "denominator": 5
-        },
-        "percent_exact": {
-          "numerator": 80,
+          "numerator": 1,
           "denominator": 1
         },
-        "percent_display": "80.00%",
-        "phase_accepted": false
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "reporting_finding_id": "phase_progress_p10",
-      "graph_node_id": "phase_criteria_p10"
+      "graph_node_id": "phase_criteria_p10",
+      "live_scope_review": {
+        "date": "2026-11-18",
+        "status": "accepted_technical_synthetic_lifecycle",
+        "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim",
+        "evidence": "artifacts/live/p10-learning-acceptance-20261118.json",
+        "institutional_efficacy_claimed": false
+      }
     },
     {
       "id": "P11",
@@ -2045,12 +2057,12 @@
     }
   ],
   "summary": {
-    "accepted_criteria": 53,
+    "accepted_criteria": 54,
     "total_criteria": 56,
-    "partial_criteria": 3,
+    "partial_criteria": 2,
     "scope": "Totales de criterios únicamente; se omite porcentaje global porque el pedido es por fase.",
-    "as_of_accepted_checkpoint": "P9-Meta-live-20261118",
-    "active_unit_not_yet_accepted": "P10 separate closure review and P11 institutional commissioning remain partial."
+    "as_of_accepted_checkpoint": "P10-live-20261118",
+    "active_unit_not_yet_accepted": "P11 institutional commissioning remains partial; P12 formal online acceptance separate."
   },
   "current_unit_evidence_policy": {
     "unit": "P1-ES",
@@ -2553,6 +2565,13 @@
       "prior_accepted_criteria": 52,
       "accepted_criteria": 53,
       "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
+    },
+    {
+      "checkpoint": "P10-live-20261118",
+      "preserved_file": "artifacts/live/history/p10-live-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 53,
+      "accepted_criteria": 54,
+      "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
     }
   ]
 }
