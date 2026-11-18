@@ -1,0 +1,158 @@
+{
+  "date": "2026-11-18",
+  "phase": "P11",
+  "status": "technical_review_completed_institutional_acceptance_pending",
+  "canonical_percent_unchanged": "98.04%",
+  "phase_percent_unchanged": "72.50%",
+  "canonical_weight_added": 0,
+  "human_scope_amendment": {
+    "request": "Aceptar PostgreSQL actual como entorno definitivo",
+    "historical_sql2019_definition_preserved": true,
+    "current_target": "PostgreSQL 16.16 in existing Coolify service",
+    "final_institutional_acceptance": "pending"
+  },
+  "code": {
+    "commit": "9d8d608fa69efe526b1016f893c4f753ec812f97",
+    "push_branch": "deploy/coolify-rinovaplus",
+    "backend_deployment": "fmhicee7ogmmt5lrrs9tqy4z",
+    "backend_result": "healthy_after_replacement",
+    "frontend_result": "published_and_actual_PostgreSQL_panel_observed",
+    "changes": [
+      "Actual database product/version and PostgreSQL queue backend",
+      "Redis explicitly unused in this operation",
+      "Signed dated recovery receipt with strict identity/evidence binding",
+      "HTTPS configuration distinguished from institutional acceptance"
+    ]
+  },
+  "runtime": {
+    "url": "https://app.rinovaplus.com",
+    "database": "rinovaplus",
+    "version": "16.16",
+    "crm_tables": 155,
+    "total_tables_in_restore_manifest": 157,
+    "runtime_superuser": false,
+    "runtime_createdb": false,
+    "runtime_createrole": false,
+    "database_public_port": false,
+    "workers_fresh": 8,
+    "queue_backend": "postgresql",
+    "redis_used": false,
+    "new_test_containers": 0
+  },
+  "user_lifecycle": {
+    "owner_authorized": true,
+    "email": "p11-supervision@example.invalid",
+    "role": "viewer",
+    "created_then_deactivated": true,
+    "password_set": false,
+    "activation_code_transmitted_or_used": false,
+    "active": false,
+    "auth_version": 2,
+    "open_sessions": 0,
+    "eligible_challenges": 0,
+    "unconsumed_historical_challenge": 1,
+    "challenge_limit": "Retained row is invalid because account is inactive and AuthVersion changed"
+  },
+  "database_restore": {
+    "method": "native pg_dump custom archive using exported MVCC snapshot; manifests from that same snapshot",
+    "isolated_database": "rinovaplus_p11_restore_20261118_b",
+    "runtime_connect_allowed": false,
+    "pg_restore_exit_on_error": "passed",
+    "source_restored_manifests": "exact_match_157_tables",
+    "dump_sha256": "f26e643af65dbda097776160d24def9e84564d3ddd995576763d6dc27e14c730",
+    "source_and_restored_manifest_sha256": "464964b97d9553af39f503d4b206c767967a513c9482a73aa93f9a9d7cd61cc7",
+    "row_digest_algorithm": "per-table count and MD5 of sorted to_jsonb rows; whole manifest SHA256",
+    "production_database_replaced": false,
+    "runtime_started_on_clone": false
+  },
+  "media_restore": {
+    "private_files": 19,
+    "bytes": 2286296,
+    "source_extracted_paths_sizes_sha256": "exact_match",
+    "ready_assets_cross_checked": true,
+    "archive_sha256": "417ad782414f64f90015de3d0c27bcc88d7b9b4bd4dd9320e42ecc4a4399aba0",
+    "source_and_restored_manifest_sha256": "5bae4a07c6c610398525bd584904ca3b56886e5acff935987d5d909a04c54fd3"
+  },
+  "secret_authentication": {
+    "access_versions": 1,
+    "channel_versions": 76,
+    "ads_versions": 0,
+    "plaintext_printed_or_committed": false,
+    "keys_rotated": false
+  },
+  "scheduled_backups": {
+    "database": {
+      "schedule": "0 8 * * *",
+      "timezone": "UTC",
+      "bogota_time": "03:00",
+      "manual_run": "Success",
+      "reported_size": "2.14 MB"
+    },
+    "application_volume": {
+      "schedule": "5 8 * * *",
+      "timezone": "UTC",
+      "bogota_time": "03:05",
+      "manual_run": "Success",
+      "reported_size": "6.02 MB",
+      "containers_stopped": false
+    },
+    "retention": "all_copies_preserved_no_automatic_deletion",
+    "missing_backup_alert_days": 2,
+    "external_S3_validated": false,
+    "email_alert_delivery_tested": false,
+    "atomic_database_plus_media_snapshot": false
+  },
+  "recovery_receipt": {
+    "state": "verified",
+    "scope": "dated_operator_restore",
+    "verified_at_unix": 1795028413.1494467,
+    "tables": 157,
+    "ready_blobs": 19,
+    "binding": "database_institution_principal_profile_derived_key",
+    "stale_after_hours": 24,
+    "continuous_archive_verification": false,
+    "public_backup_restore_api": false
+  },
+  "queue_reconciliation": {
+    "pending_or_running_send_jobs_observed": 0,
+    "retained_uncertain_provider_operations": 3,
+    "uncertain_action": "comment_auto_gemini",
+    "uncertain_scope": "model_generation_requests_without_automatic_retry",
+    "manual_replay_or_outbound_message_initiated_by_this_test": false,
+    "historical_quarantine_and_failures_retained": true,
+    "business_producers_continued": true
+  },
+  "tests": {
+    "selected_backend": 117,
+    "selected_frontend": 16,
+    "types": "passed",
+    "changed_file_lint": "passed",
+    "workspace_build": "passed",
+    "existing_bundle_size_warning": "retained",
+    "historical_full_sql_replay": "not_claimed_20_historical_files_missing"
+  },
+  "reversal": {
+    "current_frontend": "9d8d608fa69efe526b1016f893c4f753ec812f97",
+    "previous_frontend_available": "19866a7a66ae033bf25437f1228ee14bafa1f276",
+    "live_test": "pending_specific_owner_authorization",
+    "automatic_review": "rejected_live_image_change_without_explicit_temporary_production_rollback_authorization",
+    "image_change_executed": false,
+    "database_or_media_rollback": false
+  },
+  "preserved_failures": [
+    "First psql script lost backslash commands and failed before dump/database creation; private directory p11-ops-20261118-a preserved; corrected -b run passed",
+    "Automatic browser review rejected frontend rollback; no image change performed"
+  ],
+  "residual_limits": [
+    "Backups currently share the production server; total server loss is not covered by these copies alone",
+    "External backup destination and key custody not validated",
+    "Independent DB/media schedules require reconciliation on recovery",
+    "Unlimited retention requires storage monitoring",
+    "No institutional RPO/RTO or load SLA established by these tests",
+    "Actual production database promotion was not performed",
+    "No full cybersecurity certification; P18 is planned",
+    "Email delivery/preferences remain P15; SIIE P16 and TikTok P17 deferred"
+  ],
+  "pending_canonical_milestones": ["P11.3.m2", "P11.3.m4", "P11.3.m5", "P11.close.m1", "P11.close.m4"],
+  "runbook": "docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md"
+}

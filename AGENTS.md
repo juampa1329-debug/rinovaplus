@@ -1,3 +1,11 @@
+## Revisión operativa P11 en PostgreSQL — 2026-11-18
+
+**General 98,04%; P11 72,50% y 2/4 criterios aceptados.** El propietario aceptó PostgreSQL como destino definitivo; la aceptación institucional final sigue pendiente. El backend/frontend `9d8d608` muestran motor 16.16, ocho procesos y recibo de recuperación verificado. Restauración aislada: 157 tablas y 19 archivos coincidentes; secretos autenticados sin exposición. Usuario de ensayo desactivado, cero sesiones/desafíos elegibles. Copias DB/volumen programadas 03:00/03:05 Bogotá con primeras ejecuciones Success; todavía son locales al servidor, sin destino externo ni custodia de clave validados.
+
+Evidencia: `artifacts/live/p11-postgres-review-20261118.json`; procedimiento y límites: `docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md`. Pruebas seleccionadas: 117 backend/16 frontend, tipos, lint modificado y build; no recertifican los recibos SQL históricos ausentes. La revisión automática rechazó la reversión temporal de la imagen frontend por requerir autorización específica; no se ejecutó y está pendiente. No cambiar aceptación ni declarar P11/P12 al 100% con este corte.
+
+P0–P10:100% cada una; P11:72,50%; P12:0% aceptación formal; P13 parcial 0/4; P14 plan; P15 correos 0/7; P16 SIIE y P17 TikTok diferidas 0/5 cada una; P18 seguridad planificada 0/8. Los porcentajes y denominadores originales permanecen intactos.
+
 ## Fase adicional P18 — 2026-11-18
 
 Por petición del propietario, se añade **P18 · Seguridad y ciberseguridad**, planificada 0/8 unidades aceptadas. Incluye tokens/sesiones, rate limit e IP confiable, 2FA, CAPTCHA, inyecciones, infraestructura y respuesta a incidentes. Ver `docs/adaptation/P18_SECURITY_PLAN.md` y `tasks/p18-security-progress.json`. P15 correos, P16 SIIE y P17 TikTok conservan la nueva numeración. No cambia el porcentaje ni los 56 criterios/279 hitos originales. P11 sigue en revisión operativa; los fallos críticos actuales no se difieren a P18.

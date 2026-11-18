@@ -179,6 +179,21 @@
     "historical_receipts_renamed": false,
     "canonical_weight_added": 0
   },
+  "P11_current_review": {
+    "status": "technical_review_completed_institutional_acceptance_pending",
+    "owner_target": "PostgreSQL current production accepted as definitive target",
+    "code": "9d8d608fa69efe526b1016f893c4f753ec812f97",
+    "evidence": "artifacts/live/p11-postgres-review-20261118.json",
+    "runbook": "docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md",
+    "restored_tables": 157,
+    "restored_files": 19,
+    "test_user_deactivated": true,
+    "eligible_activation_challenges": 0,
+    "scheduled_database_and_volume_backups": "configured_local_and_initial_runs_Success",
+    "offsite_backup_validated": false,
+    "frontend_reversal": "pending_specific_owner_authorization_after_automatic_review_rejection",
+    "canonical_acceptance_changed": false
+  },
   "P18": {
     "status": "planned_by_owner",
     "accepted": 0,
