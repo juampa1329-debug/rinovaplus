@@ -18,6 +18,9 @@ from app.institutional.db import uid
 
 
 def install(app, settings):
+    from app.institutional.ads_marketing import install as install_marketing
+
+    install_marketing(app, settings)
     service = Ads(settings)
 
     @app.get("/api/institution/ads/options")

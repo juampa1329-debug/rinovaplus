@@ -114,7 +114,7 @@ function mount(actions = session.actions) {
     });
   render(
     <SessionBoundary initial={{ ...session, actions }} expire={() => {}}>
-      <AdsWorkspace />
+      <AdsWorkspace initialView="capture" />
     </SessionBoundary>,
   );
   return { calls, fetcher };

@@ -447,6 +447,8 @@ class Ads:
                     dict(key=v.key, label=v.label) for v in config.stages if v.active
                 ],
                 external_sync_supported=False,
+                marketing_read_supported=True,
+                marketing_local_drafts_supported=True,
                 provider_spending_supported=False,
                 creative_addons_enabled=False,
             )
@@ -596,7 +598,7 @@ class Ads:
                 external_sync=False,
             )
 
-    def save_account(self, auth, body, id=None):
+    def save_account(self, auth, body, id=None, *, source_check=None):
         patch_existing = id is not None
         doc = body.document.model_dump(mode="json")
         s = self.settings
@@ -606,6 +608,8 @@ class Ads:
             else stable(institution(s), doc["provider"], doc["external_account_id"])
         )
         with self.tx(auth, True) as (c, actor):
+            if source_check:
+                source_check(c)
             digest, old = replay(
                 c,
                 s,

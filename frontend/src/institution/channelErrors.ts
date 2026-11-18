@@ -5,8 +5,10 @@ const cases = new Map<string, ErrorGuidance>([
     "saved_app_secret_incompatible",
     {
       title: "Esta clave no corresponde a la aplicación",
-      detail: "La clave elegida debe pertenecer al mismo App ID y al mismo tipo de inicio de sesión.",
-      nextStep: "Actualiza las credenciales y selecciona una clave vigente de esta aplicación.",
+      detail:
+        "La clave elegida debe pertenecer al mismo App ID y al mismo tipo de inicio de sesión.",
+      nextStep:
+        "Actualiza las credenciales y selecciona una clave vigente de esta aplicación.",
     },
   ],
   [
@@ -14,7 +16,8 @@ const cases = new Map<string, ErrorGuidance>([
     {
       title: "El número o la cuenta no corresponde a este canal",
       detail: "RinovaPlus conserva la cuenta que ya estaba configurada.",
-      nextStep: "Elige la cuenta que corresponde al canal. Para agregar otra, crea un canal separado.",
+      nextStep:
+        "Elige la cuenta que corresponde al canal. Para agregar otra, crea un canal separado.",
     },
   ],
   [
@@ -22,7 +25,8 @@ const cases = new Map<string, ErrorGuidance>([
     {
       title: "La autorización venció",
       detail: "Se agotó el tiempo para guardar la selección.",
-      nextStep: "Vuelve a iniciar sesión con el proveedor y selecciona el número, página o cuenta de nuevo.",
+      nextStep:
+        "Vuelve a iniciar sesión con el proveedor y selecciona el número, página o cuenta de nuevo.",
     },
   ],
   [
@@ -30,7 +34,8 @@ const cases = new Map<string, ErrorGuidance>([
     {
       title: "Falta la cuenta de WhatsApp",
       detail: "RinovaPlus necesita el WABA ID para sincronizar sus números.",
-      nextStep: "Conecta la cuenta con Meta o guarda el WABA ID desde el Administrador de WhatsApp.",
+      nextStep:
+        "Conecta la cuenta con Meta o guarda el WABA ID desde el Administrador de WhatsApp.",
     },
   ],
   [
@@ -168,6 +173,13 @@ const cases = new Map<string, ErrorGuidance>([
 ]);
 
 export function explainChannelError(failure: OperationFailure): ErrorGuidance {
+  if (failure.code?.startsWith("ads_meta_"))
+    return {
+      title: "No se pudo completar la operación de Publicidad",
+      detail: failure.message,
+      nextStep:
+        "En Publicidad revisa la cuenta, el período y su conexión con Meta. Tus borradores y consultas anteriores se conservan.",
+    };
   const known = failure.code && cases.get(failure.code);
   if (failure.status === 503) {
     return {

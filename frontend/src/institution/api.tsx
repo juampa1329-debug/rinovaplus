@@ -59,6 +59,34 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  ads_meta_permission_required:
+    "Meta no concedió acceso de lectura a Publicidad (ads_read). Activa ese permiso en la configuración de la app y vuelve a Conectar con Meta desde Publicidad.",
+  ads_meta_login_source_required:
+    "Elige una conexión de Facebook de CBN con inicio de sesión de Meta y una credencial vigente para consultar Publicidad.",
+  ads_meta_token_expired:
+    "La autorización de publicidad venció o fue revocada. En Publicidad abre Conexión y cuentas y vuelve a Conectar con Meta.",
+  ads_meta_context_changed:
+    "La cuenta o su credencial cambió durante la consulta. Revisa la cuenta seleccionada y sincroniza de nuevo.",
+  ads_meta_invalid_period:
+    "Selecciona un período válido de hasta 93 días, con fecha final posterior a la inicial y sin fechas futuras.",
+  ads_meta_rate_limited:
+    "Meta limitó temporalmente las consultas. Espera al menos un minuto antes de sincronizar; la consulta anterior se conserva.",
+  ads_meta_oauth_not_ready:
+    "La autorización aún no está lista o venció. Completa el inicio de sesión en Meta y vuelve aquí; si ya venció, inicia una conexión nueva.",
+  ads_meta_sync_required:
+    "Sincroniza primero esta cuenta con Meta para preparar y revisar borradores con los objetos correctos.",
+  ads_meta_scope_limit:
+    "La cuenta excede el límite de esta consulta (500 objetos por nivel). Acota el alcance o consulta los detalles en Meta; no se guardaron resultados parciales.",
+  ads_meta_unavailable:
+    "Meta no respondió a tiempo. Conservamos tus datos guardados; vuelve a sincronizar cuando se recupere la conexión.",
+  ads_meta_request_rejected:
+    "Meta rechazó esta consulta. Revisa que la conexión tenga acceso a esta cuenta publicitaria y que la versión Graph configurada admita Publicidad.",
+  ads_meta_invalid_response:
+    "Meta devolvió datos incompletos. No los reemplazamos por ceros. Vuelve a sincronizar o revisa la cuenta en Meta.",
+  ads_meta_draft_scope_limit:
+    "Esta cuenta alcanzó el límite de versiones consultables de borradores. Conserva su historial y solicita revisión del administrador.",
+  ads_meta_draft_not_found:
+    "El borrador no pertenece a esta cuenta o ya no está disponible. Actualiza la biblioteca de esta cuenta.",
   comment_source_unavailable: "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
   invalid_notification_cutoff: "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",
   learning_purpose_authorization_required: "Esta finalidad necesita una autorización vigente. Revisa las autorizaciones del pack.",

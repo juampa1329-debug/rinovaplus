@@ -12,6 +12,7 @@ import { ResourceState } from "./Settings";
 import { useAdsResource as useResource } from "./adsResource";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import "./ads.css";
+import { MetaAdsManager } from "./MetaAdsManager";
 
 type Tab = "leads" | "comments" | "campaigns" | "accounts" | "processes";
 type Doc = {
@@ -173,7 +174,40 @@ const command = (
 const stamp = (v?: string | null) =>
   v ? new Date(v).toLocaleString("es-CO") : "Sin registrar";
 
-export function AdsWorkspace() {
+export function AdsWorkspace({
+  initialView = "manager",
+}: {
+  initialView?: "manager" | "capture";
+}) {
+  const [view, setView] = useState(initialView);
+  return (
+    <div className="ads-workspace">
+      <nav className="button-row" aria-label="Área de publicidad">
+        <Button
+          variant={view === "manager" ? "primary" : "secondary"}
+          aria-pressed={view === "manager"}
+          onClick={() => {
+            if (allowNavigation()) setView("manager");
+          }}
+        >
+          Campañas y anuncios
+        </Button>
+        <Button
+          variant={view === "capture" ? "primary" : "secondary"}
+          aria-pressed={view === "capture"}
+          onClick={() => {
+            if (allowNavigation()) setView("capture");
+          }}
+        >
+          Captación y CRM
+        </Button>
+      </nav>
+      {view === "manager" ? <MetaAdsManager /> : <AdsCaptureWorkspace />}
+    </div>
+  );
+}
+
+function AdsCaptureWorkspace() {
   const { session, call } = useInstitution(),
     task = useTask(),
     intent = useIntent(),

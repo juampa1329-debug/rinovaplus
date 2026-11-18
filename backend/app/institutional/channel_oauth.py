@@ -30,6 +30,7 @@ SCOPES = {
         "whatsapp_business_messaging",
     },
     "facebook_login": {
+        "ads_read",
         "pages_show_list",
         "pages_manage_metadata",
         "pages_read_engagement",
@@ -47,6 +48,7 @@ SCOPES = {
     "tiktok_login_kit": {"user.info.basic", "user.info.profile", "user.info.stats"},
 }
 OAUTH_FAILURE_CODES = {
+    "ads_meta_permission_required",
     "configured_waba_required",
     "meta_app_secret_rejected",
     "oauth_asset_missing",
@@ -327,6 +329,18 @@ def exchange(item, secret, code, redirect, verifier):
     access = value.get("access_token")
     if not access:
         raise ProviderFailure("oauth_token_missing")
+    if item.get("MarketingOnly"):
+        permissions = http_json("GET", base+"me/permissions", headers={"Authorization": "Bearer "+access})
+        granted = {v.get("permission") for v in permissions.get("data", []) if v.get("status") == "granted"}
+        if "ads_read" not in granted:
+            raise ProviderFailure("ads_meta_permission_required")
+        profile = http_json("GET", base+"me", params={"fields": "id,name"}, headers={"Authorization": "Bearer "+access})
+        identity = graph_id(profile.get("id"))
+        if not identity:
+            raise ProviderFailure("oauth_asset_missing")
+        return {"access": access, "expires_in": value.get("expires_in"), "scopes": ["ads_read"],
+            "assets": [{"kind": "login_identity", "id": identity,
+                "name": "Meta Ads · "+str(profile.get("name", "Usuario")), "token": access}]}
     assets = []
     if issuer == "meta_whatsapp":
         assets = whatsapp_assets(base, item, secret, access)
@@ -555,6 +569,9 @@ class OAuth:
                 "integration_id": uid(str(item["IntegrationId"])),
                 "oauth_session_id": uid(str(session["OAuthSessionId"])),
             }
+            if json.loads(session["RequestedScopes"]) == ["ads_read"]:
+                item = {**item, "MarketingOnly": True}
+                return_context["marketing_only"] = True
             if not code or denied:
                 c.execute(
                     (
@@ -947,7 +964,8 @@ def install(app, settings):
                 request.cookies.get(cookie_name(settings), ""),
                 denied=bool(q.get("error")),
             )
-            path = f"/#/channels/oauth/{result['integration_id']}/{result['oauth_session_id']}"
+            area = "ads" if result.get("marketing_only") else "channels"
+            path = f"/#/{area}/oauth/{result['integration_id']}/{result['oauth_session_id']}"
         except HTTPException as error:
             reason = {
                 "password_confirmation_required": "confirm",
