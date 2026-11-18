@@ -144,6 +144,34 @@ it("recovers only the chosen identified event when multiple events need review",
   });
 });
 
+it("confirms recovery inside the app and cancelling creates no retry", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (url, init) => {
+    if (init?.method === "POST") return ok({ saved: true });
+    if (String(url).endsWith("routing-options")) return ok({ stages: [] });
+    return ok({ queue: [{ id: "failed-media", state: "failed", attempts: 1,
+      row_version: "0000000000000001", body_preview: "[Adjunto]" }], events: [], operations: [] });
+  });
+  mount(<ChannelOperations account={{
+    id: "account-one", application_id: "app-one", channel: "instagram",
+    issuer_profile: "facebook_login", display_name: "Instagram de prueba",
+    revision: 1, row_version: "version", application_version: "version",
+    verified_status: "verified", fields: {},
+  }} done={async () => {}} />,
+  { ...base, actions: [...base.actions, "settings.channels.write"] });
+  fireEvent.click(await screen.findByText("Actividad y recuperación"));
+  fireEvent.click(await screen.findByRole("button", { name: "Reintentar envío rechazado" }));
+  let dialog = await screen.findByRole("alertdialog", { name: "Confirmar recuperación" });
+  expect(fetcher.mock.calls.some(([, init]) => init?.method === "POST")).toBe(false);
+  fireEvent.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+  expect(fetcher.mock.calls.some(([, init]) => init?.method === "POST")).toBe(false);
+  fireEvent.click(screen.getByRole("button", { name: "Reintentar envío rechazado" }));
+  dialog = await screen.findByRole("alertdialog", { name: "Confirmar recuperación" });
+  fireEvent.click(within(dialog).getByRole("button", { name: "Confirmar recuperación" }));
+  await waitFor(() => expect(fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1));
+  const write = fetcher.mock.calls.find(([, init]) => init?.method === "POST");
+  expect(JSON.parse(String(write?.[1]?.body))).toMatchObject({ resource_id: "failed-media", action: "retry_send" });
+});
+
 it("reuses a saved App Secret by reference and lists only compatible applications", async () => {
   const sourceId = "11223344-0000-4000-8000-000000000001";
   const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (_path, init) => {

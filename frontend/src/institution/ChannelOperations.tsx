@@ -937,6 +937,12 @@ function ChannelHistory({ identity }: { identity: string }) {
     }>(`channels/${identity}/history`),
     { call, session } = useInstitution(),
     task = useTask();
+  const [recoveryConfirmation, setRecoveryConfirmation] = useState<{
+    resource: { id: string; row_version: string };
+    action: string;
+    detail: string;
+    trigger: Element | null;
+  } | null>(null);
   const recover = (
     resource: { id: string; row_version: string },
     action: string,
@@ -953,6 +959,13 @@ function ChannelHistory({ identity }: { identity: string }) {
   return (
     <details>
       <summary>Actividad y recuperación</summary>
+      {recoveryConfirmation && <OperationDialog
+        guidance={{title: "Confirmar recuperación", detail: recoveryConfirmation.detail}}
+        trigger={recoveryConfirmation.trigger}
+        dismiss={() => setRecoveryConfirmation(null)}
+        dismissLabel="Cancelar"
+        confirm={{label: "Confirmar recuperación", run: () => recover(recoveryConfirmation.resource, recoveryConfirmation.action)}}
+      />}
       {task.notices}
       <Button variant="secondary" onClick={() => void data.reload()}>
         Actualizar actividad
@@ -1008,19 +1021,12 @@ function ChannelHistory({ identity }: { identity: string }) {
                       !session.actions.includes("inbox.write")
                     }
                     onClick={() => {
-                      if (
-                        window.confirm(
-                          item.state === "failed"
+                      setRecoveryConfirmation({resource: item,
+                        action: item.state === "failed" ? "retry_send" : "resume_queued",
+                        trigger: document.activeElement,
+                        detail: item.state === "failed"
                             ? "Se creará un nuevo intento de este envío rechazado. ¿Continuar?"
-                            : "¿Autorizar este envío pendiente con tu sesión actual?",
-                        )
-                      )
-                        recover(
-                          item,
-                          item.state === "failed"
-                            ? "retry_send"
-                            : "resume_queued",
-                        );
+                            : "¿Autorizar este envío pendiente con tu sesión actual?"});
                     }}
                   >
                     {item.state === "failed"
@@ -1036,12 +1042,9 @@ function ChannelHistory({ identity }: { identity: string }) {
                     !session.actions.includes("settings.channels.write")
                   }
                   onClick={() => {
-                    if (
-                      window.confirm(
-                        "El proveedor pudo procesar este envío. Se conservará su historial y no se reenviará. ¿Cerrar su seguimiento como resultado incierto?",
-                      )
-                    )
-                      recover(item, "abandon_uncertain");
+                    setRecoveryConfirmation({resource: item, action: "abandon_uncertain",
+                      trigger: document.activeElement,
+                      detail: "El proveedor pudo procesar este envío. Se conservará su historial y no se reenviará. ¿Cerrar su seguimiento como resultado incierto?"});
                   }}
                 >
                   Cerrar seguimiento incierto

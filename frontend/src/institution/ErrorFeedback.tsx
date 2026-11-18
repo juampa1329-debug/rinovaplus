@@ -63,12 +63,14 @@ export function OperationDialog({
   dismiss,
   success = false,
   dismissLabel = "Cerrar aviso",
+  confirm,
 }: {
   guidance: Omit<ErrorGuidance, "nextStep"> & { nextStep?: string };
   trigger?: Element | null;
   dismiss: () => void;
   success?: boolean;
   dismissLabel?: string;
+  confirm?: { label: string; run: () => void };
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -115,7 +117,8 @@ export function OperationDialog({
             <p>{guidance.nextStep}</p>
           </div>
         )}
-        <Button onClick={close}>{dismissLabel}</Button>
+        <Button variant={confirm ? "secondary" : "primary"} onClick={close}>{dismissLabel}</Button>
+        {confirm && <Button onClick={() => { close(); confirm.run(); }}>{confirm.label}</Button>}
       </div>
     </dialog>
   );

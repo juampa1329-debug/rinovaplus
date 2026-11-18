@@ -8,7 +8,7 @@ import {
 import { beforeEach, expect, it, vi } from "vitest";
 import { WorkspaceSessionProvider } from "../shared/workspaceSession";
 import { WorkspaceP3, RiskSummary } from "../institution/Workspace";
-import { inboxProgramCode } from "../institution/InboxPresentation";
+import { ConversationRow, inboxProgramCode } from "../institution/InboxPresentation";
 import { explainInboxError } from "../institution/InboxDelivery";
 import type { Risk } from "../institution/Workspace";
 import { SessionBoundary } from "../institution/api";
@@ -36,6 +36,18 @@ const risk: Risk = {
   nextAction: "Revisar la conversación.",
   trainedPrediction: false,
 };
+
+it.each([["[Adjunto]", "Foto"], ["[image]", "Foto"], ["Mira nuestro material", "Mira nuestro material"]])(
+  "shows a photo icon and caption instead of generic attachment text: %s",
+  (preview, expected) => {
+    const { container } = render(<ConversationRow selected={false} onSelect={() => {}}
+      row={{ name: "Contacto", phone: "", stage: "Nuevo", state: "open", unread: false,
+        assignee: null, risk, previewKind: "image", preview }} />);
+    expect(screen.getByText(expected)).toBeVisible();
+    expect(container.querySelector('.inbox-row-preview svg')).toBeInTheDocument();
+    expect(container.querySelector('.inbox-row-preview')).not.toHaveTextContent("[Adjunto]");
+  },
+);
 const config = {
   stages: [{ key: "new", label: "Nueva", probability: null, active: true }],
   tags: ["Interés"],

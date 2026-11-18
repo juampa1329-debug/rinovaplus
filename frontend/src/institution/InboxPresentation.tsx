@@ -547,6 +547,12 @@ export function ConversationRow({
               <Icon name="microphone" className="inbox-preview-microphone" />
               {row.previewDuration ? clockTime(Number(row.previewDuration)) : "Audio"}
             </>
+          ) : row.previewKind === "image" || row.preview === "[image]" ? (
+            <>
+              <Icon name="image" className="inbox-preview-microphone" />
+              {row.preview?.trim() && !/^\[(Adjunto|image|imagen|photo|foto)\]$/i.test(row.preview.trim())
+                ? row.preview.trim() : "Foto"}
+            </>
           ) : row.preview?.trim() || "Sin mensajes"}
         </span>
         <span className="inbox-row-meta inbox-row-signals">
