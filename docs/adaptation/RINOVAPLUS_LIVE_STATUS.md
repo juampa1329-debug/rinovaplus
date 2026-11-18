@@ -1,6 +1,6 @@
 # RinovaPlus: avance y pendientes verificables
 
-Corte: 17 de noviembre de 2026. Este registro complementa el checkpoint SQL local del 28 de octubre con la operación actual en https://app.rinovaplus.com. No reemplaza ni modifica releases, grafos, pruebas o recibos históricos.
+Corte: 18 de noviembre de 2026. Este registro complementa el checkpoint SQL local del 28 de octubre con la operación actual en https://app.rinovaplus.com. No reemplaza ni modifica releases, grafos, pruebas o recibos históricos.
 
 ## Qué ya se comprobó en producción
 
@@ -62,7 +62,7 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P1 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P2 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P3 | 100,00% | Sin pendientes canónicos; las mejoras nuevas de Inbox se registran aparte. |
-| P4 | 82,29% | Operación vigente limitada a Meta: [matriz WhatsApp, Facebook/Messenger e Instagram](P4_META_ACCEPTANCE_MATRIX.md). Facebook comentarios e Instagram leído ya comprobados. Video, sticker estático y sticker animado WhatsApp salientes aceptados en cuenta gratuita con confirmación del propietario. Faltan corte institucional WhatsApp y ensayo externo de recuperación/reversión/edición-borrado. TikTok pasa a P16 por decisión humana; se conserva la definición histórica sin recalcular pesos. Hitos P4.3.m6/m7, P4.4.m4/m5 y P4.close.m5. |
+| P4 | 82,29% | Operación vigente limitada a Meta: [matriz WhatsApp, Facebook/Messenger e Instagram](P4_META_ACCEPTANCE_MATRIX.md). Facebook comentarios e Instagram leído ya comprobados. Video, sticker estático y sticker animado WhatsApp salientes aceptados en cuenta gratuita con confirmación del propietario. Pausa/recuperación real comprobada en los cuatro canales Meta; edición y borrado Facebook aprobados. Falta conciliar el borrado externo Instagram, el corte institucional WhatsApp y completar aceptación de reintentos/resultados inciertos. TikTok pasa a P16 por decisión humana; se conserva la definición histórica sin recalcular pesos. Hitos P4.3.m6/m7, P4.4.m4/m5 y P4.close.m5. |
 | P5 | 100,00% local | Respuestas personalizadas y silencio Humano posteriores al cambio ya probados en Messenger/Instagram; comentario y sugerencias reales verificados. Falta el piloto con hechos revisados de dos programas y ampliar la prueba de carrera durante inferencia. No se atribuyen estas ampliaciones a la aceptación local antigua. |
 | P6 | 100,00% local | Revisar y publicar información real de programas, fuentes y vigencias para el piloto. La función de conocimiento local ya está aceptada. |
 | P7 | 89,14% | Catálogo real aprobado, respuesta citada atribuida y estados reales hasta leído/fallido comprobados. Falta aceptación formal completa de catálogo e informe/reintento/recuperación y dependencia de P4. Hitos P7.1.m7, P7.4.m5 y P7.close.m5. |
@@ -111,3 +111,10 @@ El creador estándar admite hasta diez botones con límites y agrupación de Met
 El [manual de plantillas y mensajes naturales](WHATSAPP_TEMPLATE_OPERATOR_GUIDE.md) distingue solicitudes reales de mensajes generales de programas. Los ejemplos no cambian por sí solos la categoría que decide Meta. OTP, catálogos, carruseles, Flows y formatos exclusivos de Marketing Messages API quedan pendientes de integración/aceptación específicas; no se afirma paridad total con todos los productos de Meta ni se suman hitos nuevos al denominador original.
 
 El cierre de esta sesión añade [el recorrido real Facebook y lectura Instagram](../../artifacts/live/p4-meta-recovery-20261117.json): comentario del propietario a las 20:34:33 Bogotá, Gemini confirmado, respuesta aceptada y observada de vuelta por webhook, un intento. La publicación de origen tiene vista previa real. Se dejó ese comentario en Humano y se rechazó sin proveedor una revisión con su versión vigente. Instagram recibió la prueba nueva manual y notificó `read` firmado/procesado, un intento. Esas pruebas eliminan sus pendientes individuales de la matriz, sin aceptar aún el criterio multicanal completo ni alterar sus pesos.
+
+
+## Recuperación Meta: corte del 18 de noviembre
+
+[Recibo externo](../../artifacts/live/p4-meta-external-recovery-20261117.json): WhatsApp, Messenger, Facebook e Instagram conservaron eventos firmados durante pausas y recuperaron una sola proyección de cada prueba. Facebook editó y eliminó comentarios propios con sus eventos reales. Las cuentas quedaron conectadas/verificadas y sin envíos pendientes. La mejora fc10635 identifica cada evento de recuperación y conserva permisos del texto; frontend y backend comprobados en Coolify, 140 pruebas backend y 15 frontend correctas.
+
+El borrado externo de Instagram sigue abierto: propietario lo confirmó, Meta rechazó consultar ese objeto y el comentario de control sí fue accesible, pero no se recibió evento de eliminación y el CRM conserva Nuevo/Humano. No se fabricó un estado Eliminado. Próximo ajuste necesario: conciliación explícita de fuente no disponible/cambiada. También faltan el recorrido WhatsApp CBN y escenarios restantes de reintento/resultado incierto antes de aceptación formal. P4.4.m4 enlaza la evidencia parcial nueva y permanece pendiente; 94,23% general y 82,29% P4 se conservan con los mismos pesos.

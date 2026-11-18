@@ -1,0 +1,188 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "status": "completed_bounded_Meta_recovery_with_open_Instagram_deletion_gap",
+  "review_date": "2026-11-18",
+  "verification_revision": "fc1063500e64c02c512ad6f20a671a7d6b1f3953",
+  "runtime_revision": "4c169b04ff13c3055f423ce5f987aabe519cf47b",
+  "scope": "Live Meta event recovery, account pause/resume, comment edit and authorized deletion; no shared credential revocation or database restore",
+  "initial_state": {
+    "pending_sends_all_accounts": 0,
+    "whatsapp_test": "connected, verified",
+    "facebook_cbn": "connected, verified",
+    "messenger_cbn": "connected, verified",
+    "instagram_cbn": "connected, verified",
+    "whatsapp_cbn": "paused, unverified; institutional cutover remains pending"
+  },
+  "whatsapp": {
+    "integration_id": "9b1c8209-e664-497d-baa6-db3869d78124",
+    "account": "WhatsApp · Pruebas Meta",
+    "owner_phone": "ending 44",
+    "requested_test_text": "Prueba P4 recuperación WhatsApp",
+    "observed_test_text": "Prueba meta",
+    "event_id": "dfdbad23-6b42-4246-80d0-962a43a4ecd3",
+    "received_at_utc": "2026-11-18T04:37:45.670226Z",
+    "paused_observation": {"event_state": "quarantined", "attempts": 0, "authentication": "verified"},
+    "recovery": "Reconnected the same verified account, then used Reprocesar con la configuración actual in Canales",
+    "recovered_observation": {"same_event": true, "event_state": "processed", "attempts": 1, "last_error": null},
+    "before": {"identities": 1, "external_messages": 2},
+    "after": {"identities": 1, "external_messages": 3, "matching_test_messages": 1},
+    "inbox_message_observed": true,
+    "final_account": "connected, verified; webhook unchanged",
+    "final_chat_control": "AI",
+    "limit": "One recovery of one genuine owner message; no second replay or provider credential revocation was performed."
+  },
+  "facebook_edit_delete": {
+    "integration_id": "e4d0ae09-fb97-423b-ac2b-281c8725aae1",
+    "comment_id": "536ef580-a078-4be1-8fb2-c5de4c03dbfc",
+    "external_id": "1740249498147994_1125654166762335",
+    "author": "Authorized CBN test profile Cbneistas Carlos Quintero",
+    "initial_text": "Prueba técnica P4: edición de comentario, versión 1.",
+    "edited_text": "Prueba técnica P4: edición confirmada, versión 2.",
+    "events": [
+      {"id": "5e4ecbbe-d523-476f-94d1-6e122c3e887c", "verb": "add", "kind": "comment", "at_utc": "2026-11-18T04:35:08.412288Z"},
+      {"id": "06eca4c1-b486-488d-a5c0-80ecde572510", "verb": "edited", "kind": "comment", "at_utc": "2026-11-18T04:36:30.619808Z"},
+      {"id": "7ee8029c-f27f-42ca-b6e9-e4c64cb917fd", "verb": "remove", "kind": "comment_deleted", "at_utc": "2026-11-18T04:39:07.111050Z"}
+    ],
+    "all_events": {"authentication": "verified", "state": "processed", "attempts": 1},
+    "edited_text_observed_in_crm": true,
+    "deletion_authorization": "Owner explicitly approved deleting only this new test comment and its replies immediately before deletion.",
+    "final_comment_state": "deleted",
+    "final_control": "human",
+    "final_ui": "Listed by Eliminado filter; reply, suggestion, reaction and reopen controls disabled",
+    "existing_send_preserved": {"queue_id": "f4583464-06fe-4cd0-84ea-f345ad069f9e", "state": "accepted", "attempts": 1, "last_error": null},
+    "limit": "The first AI response was already accepted before edit/delete. This test does not establish cancellation of an in-flight inference or deletion of already accepted CRM send history."
+  },
+  "messenger": {
+    "integration_id": "ff016694-4939-45a3-8f41-d4510f8271b2",
+    "event_id": "aa777bf3-f85d-48a2-a86c-ce26820da794",
+    "observed_test_text": "Prueba p4 recuperación messenger",
+    "received_at_utc": "2026-11-18T04:43:42.598514Z",
+    "paused_observation": {"state": "quarantined", "attempts": 0, "authentication": "verified"},
+    "recovered_observation": {"same_event": true, "state": "processed", "attempts": 1},
+    "before": {"identities": 1, "external_messages": 3},
+    "after": {"identities": 1, "external_messages": 4},
+    "old_unmatched_status_receipts": "Three pre-existing delivery_unmatched events retained without reprocessing or invented delivery state.",
+    "operator_observation": "The first click did not produce a durable recovery operation. State and operation history were checked before the subsequent successful UI action; only one event projection occurred.",
+    "final_account": "connected, verified; shared Facebook webhook and credentials unchanged"
+  },
+  "facebook_recovery": {
+    "integration_id": "e4d0ae09-fb97-423b-ac2b-281c8725aae1",
+    "event_id": "ab2d2783-b052-4065-b15c-ab943aa354ba",
+    "received_at_utc": "2026-11-18T04:44:06.223617Z",
+    "test_text": "Prueba técnica P4: recuperación de comentario Facebook.",
+    "paused_observation": {"state": "quarantined", "attempts": 0, "authentication": "verified"},
+    "recovered_observation": {"same_event": true, "state": "processed", "attempts": 1},
+    "recovery_operation": "96ab863f-e934-4efe-8c83-243930c68378",
+    "recovery_result": {"saved": true, "provider_resend": false},
+    "comment_id": "86260d7a-1090-49ea-96c7-edc688b3388f",
+    "external_id": "1740249498147994_1809707943618877",
+    "final_comment_control": "human",
+    "final_account": "connected, verified",
+    "cleanup": {
+      "authorized_separately_by_owner": true,
+      "deleted_in_Facebook": true,
+      "final_local_state": "deleted",
+      "event_id": "985463e1-a70d-418d-b069-b7b2bada352c",
+      "event_kind": "comment_deleted",
+      "event_state": "processed",
+      "attempts": 1,
+      "at_utc": "2026-11-18T05:08:50.130462Z"
+    }
+  },
+  "operator_ui_fix": {
+    "revision": "fc1063500e64c02c512ad6f20a671a7d6b1f3953",
+    "problem": "Multiple recoverable events had indistinguishable labels, requiring the operator to identify the exact resource before action.",
+    "change": "Show event kind, ID, timestamp and bounded text preview; the server omits text without inbox.read or when Inbox is disabled. Raw provider payload is not returned.",
+    "backend_tests": 140,
+    "frontend_tests": 15,
+    "types_lint_institutional_build": "passed; existing bundle-size warning",
+    "deployment": {
+      "backend": "vn3mfrq8xq3khuf7oqe1hgrv",
+      "backend_health": "healthy",
+      "rolling_update_completed_at_utc": "2026-11-18T05:00:57Z",
+      "frontend": "gbxdtriwi1jewfgcza3zvy06",
+      "frontend_status": "Success",
+      "identified_event_selection_verified_in_production": true
+    }
+  },
+  "cancelled_retry_check": {
+    "queue_id": "0bb7cb90-4bdb-4c22-8922-8f65b835844c",
+    "state": "failed",
+    "attempts": 1,
+    "provider_id_present": true,
+    "observation": "The native confirmation blocked tab controls and was dismissed with Escape. The failure remained unchanged at one attempt. This is a cancellation, not proof that a retry guard executed."
+  },
+  "instagram": {
+    "integration_id": "088e4521-0109-4e59-a9a7-398ce628b514",
+    "message": {
+      "event_id": "d468108d-542d-419b-aba8-b4a86cc40129",
+      "text": "Prueba p4 recuperacion Instagram",
+      "received_at_utc": "2026-11-18T04:48:12.135782Z",
+      "before": {"state": "quarantined", "attempts": 0, "authentication": "verified"},
+      "after": {"same_event": true, "state": "processed", "attempts": 1, "last_error": null},
+      "matching_CRM_messages": 1
+    },
+    "comment": {
+      "event_id": "cb75b5d9-5ed2-4ab2-8832-971ff212b9e7",
+      "comment_id": "14662ae5-0b23-4ea1-81d9-45c6f9e4f57b",
+      "external_id": "17917344798491123",
+      "text": "Prueba p4 recuperación",
+      "received_at_utc": "2026-11-18T04:48:32.588677Z",
+      "before": {"state": "quarantined", "attempts": 0, "authentication": "verified"},
+      "after": {"same_event": true, "state": "processed", "attempts": 1, "last_error": null},
+      "control_after_recovery": "human",
+      "existing_send": {"state": "accepted", "attempts": 1, "last_error": null},
+      "source_publication": "https://www.instagram.com/reel/DUTfUc-CH5s/"
+    },
+    "identity_counts": {"before": 1, "after": 1},
+    "external_message_counts": {"before": 3, "after": 4},
+    "receipt_without_matching_job": {
+      "event_id": "9fea2f60-bd45-4610-8bc4-4b44966e355f",
+      "matching_jobs": 0,
+      "operator_reprocess_attempts": 1,
+      "final_state": "quarantined",
+      "last_error": "delivery_unmatched",
+      "provider_resend": false,
+      "incorrect_delivery_state_assigned": false
+    },
+    "other_unmatched_receipt": {
+      "event_id": "3d2dfd8c-91ae-4ebc-b2b2-e77183d6575b",
+      "matching_jobs": 0,
+      "state": "quarantined",
+      "attempts": 0,
+      "retained_without_reprocessing": true
+    },
+    "external_deletion_gap": {
+      "owner_confirmed_deletion": true,
+      "deletion_webhook_observed_at_cut": false,
+      "events_for_comment_at_cut": 1,
+      "only_observed_event_kind": "comment",
+      "CRM_state_at_cut": "new",
+      "CRM_control": "human",
+      "provider_read_of_deleted_comment": "provider_permission_or_request_rejected",
+      "provider_read_of_existing_control_comment": "accessible",
+      "interpretation": "The owner deleted the comment, but no matching deletion event was observed. Generic object-access rejection alone cannot be treated as authoritative proof of deletion by the application. Needs explicit source reconciliation and an honest unavailable/changed state; no local deleted flag or fake webhook was manufactured."
+    },
+    "final_account": "connected, verified; webhook and credentials unchanged"
+  },
+  "final_checks": {
+    "pending_send_jobs_all_accounts": 0,
+    "tested_accounts_restored_connected_verified": true,
+    "other_accounts_match_initial_state": true,
+    "shared_secrets_rotated_or_revoked": false,
+    "callbacks_changed": false,
+    "database_restore_performed": false,
+    "retained_send_attempts_not_repeated": true
+  },
+  "diagnostic_limits": [
+    "A first read-only comparison across differently collated PostgreSQL text columns failed with 42P22; the diagnostic was repeated with sequential parameterized reads. No application writes or repair SQL were used.",
+    "The native-confirmation retry check was cancelled, so it is not credited as execution of a retry guard. Existing local failure/uncertainty regressions are distinct from live provider effects.",
+    "No forced lost-response outbound POST, shared credential revocation or institutional backup restore was performed."
+  ],
+  "pending": [
+    "Implement and accept source reconciliation for externally deleted Instagram comments when no deletion webhook arrives; keep Human control for the test record until resolved.",
+    "Accept the institutional WhatsApp CBN number before retiring the previous number.",
+    "Complete formal P4.3/P4.4 and phase acceptance, including remaining uncertainty/retry limits; this bounded live recovery record is not full P4 acceptance."
+  ]
+}

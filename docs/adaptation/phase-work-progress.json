@@ -1,6 +1,6 @@
 {
   "schema_version": "technical-work-milestones-v1",
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "status": "current_evidence_based_partial_work_and_separate_acceptance",
   "authorized_change": "La petición humana nueva autoriza cuantificar trabajo parcial. La regla histórica partial_credit=0 queda intacta para aceptación y no rige esta nueva columna de avance técnico.",
   "scope": "Current assessment of implementation/contract/test/integration/acceptance work; legacy and current evidence scopes are explicit. Not hours, deployment readiness or exact percentage of features.",
@@ -784,6 +784,12 @@
       "source_location": "$.quoted_reply; $.controlled_failure; $.read_only_database_crosscheck",
       "scope": "Real Meta free test account: report/CSV and production database crosscheck of read/failed, one attempt and provider IDs retained; no institutional cutover or full criterion acceptance.",
       "source_sha256_at_review": "d032b2b99c15ee58f37eb1db002ca16ff5b04d5901cf6ac5c6ecbc606a8ea977"
+    },
+    "P4_live_external_recovery_20261118": {
+      "file": "artifacts/live/p4-meta-external-recovery-20261117.json",
+      "source_location": "$.whatsapp; $.messenger; $.facebook_edit_delete; $.facebook_recovery; $.instagram; $.diagnostic_limits",
+      "scope": "Real signed Meta events retained during account pauses and recovered once through the UI, Facebook edit/delete and bounded unmatched-receipt rejection. Instagram deletion reconciliation, institutional WhatsApp and remaining outbound uncertainty/retry acceptance are open; no full P4 criterion acceptance.",
+      "source_sha256_at_review": "660827ab0a457ad61d5b7f42f6d27513489731fb4645af93aa37a67f3ae2759b"
     }
   },
   "phases": [
@@ -3890,12 +3896,19 @@
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
+              "evidence_refs": [
+                "P4_live_external_recovery_20261118"
+              ],
               "reference_semantics": "required_work_not_yet_satisfied",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L233"
-              }
+              },
+              "verified_partial_scope": "WhatsApp, Messenger, Facebook comment and Instagram DM/comment real pause/recovery; original event IDs, one projection, preserved identities and account state. Facebook edits/deletes signed; an unmatched Instagram read stays quarantined without marking any job read.",
+              "remaining_work": [
+                "Complete and accept remaining outgoing retry/uncertain-result scenarios; the cancelled native-confirmation attempt is not execution of that guard.",
+                "Review formal criterion acceptance with the Instagram external-deletion reconciliation gap and institutional channel limits explicitly retained."
+              ]
             },
             {
               "id": "P4.4.m5",
