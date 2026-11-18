@@ -36,6 +36,7 @@ type Status = {
   observed_at: number;
 };
 const stages: Record<string, string> = {
+  email: "Correos y notificaciones",
   events: "Recepción de eventos",
   projection: "Conversaciones y comentarios",
   media: "Archivos",

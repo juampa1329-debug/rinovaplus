@@ -154,12 +154,14 @@
     "institutional_efficacy_claimed": false
   },
   "P15": {
-    "status": "planned_by_owner",
+    "status": "implementation_and_integration_in_progress",
     "accepted": 0,
     "total": 7,
-    "implementation_percent": "0.00%",
+    "implementation_percent": null,
     "scope": "email_notifications_templates_and_reports",
-    "details": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md"
+    "details": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
+    "acceptance_percent": "0.00%",
+    "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {
     "status": "deferred_by_owner",

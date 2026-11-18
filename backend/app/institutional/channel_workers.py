@@ -23,6 +23,7 @@ class Workers:
         self.queue_threads = ()
         self.thread = None
         self.gemini_thread = None
+        self.email_thread = None
         from app.institutional.operations import Pulse
 
         if getattr(settings, "postgres_profile", False) and not getattr(settings, "postgres_deployment", False):
@@ -34,7 +35,9 @@ class Workers:
         else:
             self.transport = transport
             self.media_downloader = media_downloader
-            self.pulse = Pulse()
+            from app.institutional.email_notifications import enabled
+            from app.institutional.operations import STAGES
+            self.pulse = Pulse(stages=(*STAGES, "email") if enabled(settings) else STAGES)
 
     def start(self):
         if self.thread is not None:
@@ -58,6 +61,10 @@ class Workers:
                 target=self.run_gemini, name="rinova-whatsapp-gemini", daemon=True
             )
             self.gemini_thread.start()
+        from app.institutional.email_notifications import enabled as email_enabled
+        if email_enabled(self.settings):
+            self.email_thread = threading.Thread(target=self.run_email, name="rinova-email-notifications", daemon=True)
+            self.email_thread.start()
 
     def stop(self):
         self.stop_event.set()
@@ -69,6 +76,8 @@ class Workers:
             self.gemini_thread.join(timeout=45)
         for thread in self.queue_threads:
             thread.join(timeout=45)
+        if self.email_thread:
+            self.email_thread.join(timeout=45)
 
     def run_queue(self, wake, consume):
         while not self.stop_event.is_set():
@@ -110,6 +119,18 @@ class Workers:
                 except Exception:
                     logger.warning("channel_gemini_worker_retry_required")
                     delay = 10
+            self.stop_event.wait(delay)
+
+    def run_email(self):
+        from app.institutional.email_notifications import Worker as EmailWorker
+        worker = EmailWorker(self.settings)
+        while not self.stop_event.is_set():
+            try:
+                worked = self.pulse.observe("email", worker.once)
+                delay = 1 if worked else 5
+            except Exception:
+                logger.warning("email_worker_retry_required")
+                delay = 15
             self.stop_event.wait(delay)
 
     def run(self):

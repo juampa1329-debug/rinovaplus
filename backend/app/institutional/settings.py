@@ -382,6 +382,7 @@ class Settings:
         if learning:
             ready |= {'intelligence'}
         return {
+            "notification_operations": bool(getattr(self.settings, "postgres_deployment", False)),
             "institutional_operations": self.settings.ticket.get("version") == "cbn-institutional-operations-p11-v1",
             "learning_operations": learning,
             "broadcast_operations": broadcasts,

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { OperationDialog } from "./ErrorFeedback";
 import { Button, Field, Notice, SelectField } from "../shared/ui";
 import { TypedFields } from "./Fields";
 import { useInstitution, useIntent, useTask } from "./api";
@@ -127,7 +128,7 @@ export function Profile({ contract }: { contract: Contract }) {
     </form>
   );
 }
-export function Users() {
+export function Users({ emailAvailable = false }: { emailAvailable?: boolean } = {}) {
   const { call, session } = useInstitution(),
     data = useResource<{ items: User[]; next: string | null }>("users"),
     roles = useResource<{ items: Role[] }>("roles"),
@@ -241,6 +242,7 @@ export function Users() {
             user={user}
             options={options}
             writable={writable}
+            emailAvailable={emailAvailable}
             onDone={async () => {
               await data.reload();
               setMore([]);
@@ -275,12 +277,14 @@ function UserRow({
   user,
   options,
   writable,
+  emailAvailable,
   onDone,
   onToken,
 }: {
   user: User;
   options: { value: string; label: string }[];
   writable: boolean;
+  emailAvailable: boolean;
   onDone: () => Promise<void>;
   onToken: (token: string) => void;
 }) {
@@ -290,6 +294,7 @@ function UserRow({
   const [name, setName] = useState(user.full_name),
     [role, setRole] = useState(user.role),
     [active, setActive] = useState(user.active);
+  const [emailReview, setEmailReview] = useState(false);
   useDraftGuard(
     name !== user.full_name || role !== user.role || active !== user.active,
   );
@@ -300,6 +305,7 @@ function UserRow({
         {user.active ? "Activo" : "Inactivo"}
       </summary>
       {task.notices}
+      {emailReview && <OperationDialog guidance={{title:"Enviar activación por correo",detail:`Se enviará un enlace de un solo uso a ${user.email}, válido durante una hora. Reemplazará el código de activación anterior.`}} dismiss={()=>setEmailReview(false)} confirm={{label:"Enviar activación",run:()=>{setEmailReview(false);void task.run(async()=>{await call(`notifications/users/${user.id}/invite`,"POST",{operation_id:intent.get({user:user.id,action:"email-invite"})});intent.clear();},"Activación en cola. Revisa su envío en Correos y notificaciones.");}}} />}
       <fieldset disabled={!writable || task.busy}>
         <div className="institution-fields">
           <Field
@@ -364,6 +370,7 @@ function UserRow({
           >
             Restablecer acceso
           </Button>
+          {emailAvailable && user.active && user.activation_pending && <Button variant="secondary" onClick={()=>setEmailReview(true)}>Enviar activación por correo</Button>}
         </div>
       </fieldset>
     </details>

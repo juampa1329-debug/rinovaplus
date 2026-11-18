@@ -34,6 +34,7 @@ import { CampaignWorkspace } from "./CampaignWorkspace";
 import { AdsWorkspace } from "./AdsWorkspace";
 import { LearningWorkspace } from "./LearningWorkspace";
 import { OperationsWorkspace } from "./OperationsWorkspace";
+import { EmailPreferences, EmailWorkspace } from "./EmailWorkspace";
 import { BroadcastWorkspace } from "./BroadcastWorkspace";
 import "./knowledge.css";
 import { AssistantChat as AgentAssistantChat } from "../modules/ai/pages/AgentAssistantChat";
@@ -73,6 +74,7 @@ const settingsTabs = [
   ["audit", "Auditoría", "audit.read"],
   ["crm", "Configuración CRM", "settings.crm.read"],
   ["operations", "Operación", "users.manage"],
+  ["notifications", "Correos y notificaciones", "users.manage"],
 ];
 function route() {
   const [page, tab] = window.location.hash.replace(/^#\/?/, "").split("/");
@@ -111,7 +113,8 @@ export function InstitutionApp({
       .then(async (status) => {
         if (!active) return;
         setInitialized(status.initialized);
-        if (status.initialized) {
+        const accessLink = new URLSearchParams(window.location.hash.split("?")[1] ?? "").has("token");
+        if (status.initialized && !accessLink) {
           try {
             const current = await send<Session>("auth/me");
             if (active) setSession(current);
@@ -223,13 +226,17 @@ function AccessScreen({
   accepted: (session: Session) => void;
 }) {
   const task = useTask();
-  const [mode, setMode] = useState(initialized ? "login" : "bootstrap"),
+  const resetToken = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("token") ?? "";
+  const [mode, setMode] = useState(resetToken ? "redeem" : initialized ? "login" : "bootstrap"),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [name, setName] = useState(""),
-    [token, setToken] = useState(""),
+    [token, setToken] = useState(resetToken),
     [challenge, setChallenge] = useState(""),
     [code, setCode] = useState("");
+  useEffect(() => {
+    if (resetToken) window.history.replaceState(null, "", window.location.pathname + window.location.search + "#/access/redeem");
+  }, [resetToken]);
   return (
     <AccessLayout>
       <h1 id="access-title">
@@ -237,7 +244,9 @@ function AccessScreen({
           ? "Verifica tu identidad"
           : mode === "bootstrap"
             ? "Configura tu acceso"
-            : mode === "redeem"
+            : mode === "recover"
+              ? "Recupera tu acceso"
+              : mode === "redeem"
               ? "Activa o recupera tu cuenta"
               : "Inicia sesión"}
       </h1>
@@ -252,6 +261,10 @@ function AccessScreen({
           event.preventDefault();
           void task.run(
             async () => {
+              if (mode === "recover") {
+                await send("auth/recover-email", "POST", { email });
+                return;
+              }
               if (mode === "redeem") {
                 await send("auth/redeem", "POST", {
                   token,
@@ -300,7 +313,9 @@ function AccessScreen({
                 accepted(result);
               }
             },
-            mode === "redeem"
+            mode === "recover"
+              ? "Si la cuenta está habilitada y tiene correo configurado, recibirás las instrucciones de recuperación."
+              : mode === "redeem"
               ? "Contraseña guardada. Ya puedes iniciar sesión."
               : "Acceso verificado.",
           );
@@ -341,7 +356,7 @@ function AccessScreen({
                   onChange={(event) => setName(event.target.value)}
                 />
               )}
-              {mode !== "login" && (
+              {!["login", "recover"].includes(mode) && (
                 <Field
                   id="login-token"
                   label={
@@ -356,7 +371,7 @@ function AccessScreen({
                   onChange={(event) => setToken(event.target.value)}
                 />
               )}
-              <Field
+              {mode !== "recover" && <Field
                 id="login-password"
                 label={mode === "redeem" ? "Nueva contraseña" : "Contraseña"}
                 type="password"
@@ -369,7 +384,7 @@ function AccessScreen({
                 value={password}
                 hint={mode !== "login" ? "De 15 a 128 caracteres." : undefined}
                 onChange={(event) => setPassword(event.target.value)}
-              />
+              />}
               {mode === "redeem" && (
                 <Field
                   id="redeem-code"
@@ -388,13 +403,17 @@ function AccessScreen({
                 ? "Verificar código"
                 : mode === "bootstrap"
                   ? "Crear cuenta de administración"
-                  : mode === "redeem"
+                  : mode === "recover"
+                    ? "Solicitar recuperación"
+                    : mode === "redeem"
                     ? "Guardar contraseña"
                     : "Iniciar sesión"}
           </Button>
         </fieldset>
       </form>
-      {initialized && (
+      {initialized && mode === "login" && <Button variant="quiet" onClick={() => { setPassword(""); setMode("recover"); }}>Olvidé mi contraseña</Button>}
+      {initialized && mode === "recover" && <Button variant="quiet" onClick={() => setMode("login")}>Volver al acceso</Button>}
+      {initialized && mode !== "recover" && (
         <Button
           variant="quiet"
           onClick={() => {
@@ -419,6 +438,7 @@ function Shell({
 }) {
   const { session, call, expire } = useInstitution(),
     runtime = useResource<{
+      notification_operations?: boolean;
       channel_operations?: boolean;
       agent_operations?: boolean;
       knowledge_operations?: boolean;
@@ -793,13 +813,15 @@ function Shell({
                     ) : (
                       <Denied />
                     )
+                  ) : location.tab === "notifications" ? (
+                    <EmailWorkspace />
                   ) : location.tab === "profile" ? (
-                    <Profile
-                      key={session.user.revision}
-                      contract={contract.value}
-                    />
+                    <>
+                      <Profile key={session.user.revision} contract={contract.value} />
+                      {runtime.value.notification_operations && <EmailPreferences />}
+                    </>
                   ) : location.tab === "users" ? (
-                    <Users />
+                    <Users emailAvailable={runtime.value.notification_operations} />
                   ) : location.tab === "roles" ? (
                     <Roles contract={contract.value} />
                   ) : location.tab === "security" ? (

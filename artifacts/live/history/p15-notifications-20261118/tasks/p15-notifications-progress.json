@@ -1,0 +1,66 @@
+{
+  "phase": "P15",
+  "title": "Correos y notificaciones configurables",
+  "date": "2026-11-18",
+  "status": "planned_by_owner",
+  "accepted": 0,
+  "total": 7,
+  "implementation_percent": "0.00%",
+  "canonical_weight_added": 0,
+  "canonical_criteria": 56,
+  "canonical_milestones": 279,
+  "units": [
+    {
+      "id": "P15.1",
+      "title": "Transporte y remitentes",
+      "requirement": "Configurar SMTP o API de proveedor, remitente/dominio verificado, TLS, secretos sólo de runtime, prueba controlada y diagnóstico. Revisar SPF/DKIM/DMARC cuando corresponda al dominio. No declarar entrega por aceptar la cola.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.2",
+      "title": "Reglas y destinatarios",
+      "requirement": "Administración por evento, severidad, canal, cuenta y módulo; usuarios, roles o grupos autorizados. Destinatarios explícitos, preferencias individuales y política institucional para avisos críticos de seguridad. Quién puede configurar, ver y recibir cada dato se comprueba en servidor.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.3",
+      "title": "Eventos de producto y seguridad",
+      "requirement": "Alta/invitación de usuario, recuperación de contraseña, cambio de acceso, nueva conexión/canal, nuevo agente o proveedor/modelo, indisponibilidad/fallo y recuperación de modelos, fallos de colas/webhooks y otros eventos registrados. Enlaces de un solo uso, caducidad, rate limit y respuestas que no revelen si existe una cuenta.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.4",
+      "title": "Editor y biblioteca de correo",
+      "requirement": "Crear y versionar plantillas, subir/editar HTML, vista previa y envío de prueba revisado. Variables permitidas con escape, datos ausentes visibles, borrador/publicación/reversión. Biblioteca de logos, encabezados, pie, colores de marca y firma visual por remitente; inspección de archivos y recursos embebidos. Sin JavaScript, formularios ejecutables ni URLs inseguras. Firma visual no equivale a firma electrónica certificada.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.5",
+      "title": "Cola, trazabilidad y fiabilidad",
+      "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicación, reintentos con espera, caducidad, supresión y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlación, auditoría y pausa. Conservar efectos inciertos sin duplicar; ningún secreto o contenido privado en logs.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.6",
+      "title": "Informes y agenda",
+      "requirement": "Informes diarios, semanales o con frecuencia elegida; hora local y zona IANA. Períodos y filtros explícitos, agregados autorizados, destinatarios revisados, sin afirmar aperturas no observadas. Evitar datos personales innecesarios; definir qué módulos y KPIs incluye cada informe.",
+      "state": "pending"
+    },
+    {
+      "id": "P15.7",
+      "title": "Aceptación y operación",
+      "requirement": "Probar invitación/recuperación sin enumeración, permisos, plantillas maliciosas/variables, destinatarios, DST, duplicados, caídas de proveedor, reintentos/recibos y pausa/reversión. Pruebas reales sólo a destinatarios autorizados. Documentar custodios, límites, costos, retención y recuperación.",
+      "state": "pending"
+    }
+  ],
+  "dependencies": [
+    "Usuarios y roles existentes",
+    "Auditoría y outbox",
+    "Proveedor de correo y dominio a elegir antes de activar envíos"
+  ],
+  "provider_configured": false,
+  "external_emails_sent": 0,
+  "documents": [
+    "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md"
+  ]
+}

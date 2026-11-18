@@ -1,0 +1,41 @@
+{
+  "source_commit": "df665d89d6719bff664a70d3797278413cec98c1",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "877d90f39ab0f096f4bba32daf3498660f865eb9309449c2a582f142508a46ee"
+    },
+    {
+      "path": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+      "sha256": "49b6693f33801d034e5bc6bb5bd5534d3fad7bfa2434faf4f9ccea86d97aa6f9"
+    },
+    {
+      "path": "docs/ADAPTATION_STATUS.md",
+      "sha256": "95d24448c26152d16e6fcd990d6b367a3677db6a730993b57b09b8846b838ae8"
+    },
+    {
+      "path": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md",
+      "sha256": "119986654fae58418e0a9baaad0e21e12454c34ad03fec79d6241ae48bd54960"
+    },
+    {
+      "path": "docs/adaptation/WORK_PROGRESS.md",
+      "sha256": "5e1e4f3c8a7eb27113068917e15601f09200f5f56246fe08a2dcb91469e195be"
+    },
+    {
+      "path": "tasks/rinovaplus-live-progress.json",
+      "sha256": "a8e9919be6dd630c0c94ab9d6a63a0154c75fd1afbcd0b1bffd5a36a5b4f9db5"
+    },
+    {
+      "path": "tasks/p15-notifications-progress.json",
+      "sha256": "cb0d2d406bb9bcd6c211c2d2b39888216dd23b5dea9cb23df1a76404bc56b028"
+    },
+    {
+      "path": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
+      "sha256": "ae7fa71b1cb35116bab3b8bc2b4e5330c761b262e418a9521248d690cb56ea6c"
+    },
+    {
+      "path": "docs/adaptation/PENDING_PHASES.md",
+      "sha256": "c4dd022f5889aefed9667491a6683e38258d7c4962805fe5efb02b261a1a75b7"
+    }
+  ]
+}

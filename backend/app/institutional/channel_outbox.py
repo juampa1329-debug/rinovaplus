@@ -846,6 +846,9 @@ class Dispatcher:
             c.execute(
                 ("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
             )
+            if state in {"accepted", "failed", "uncertain"}:
+                from app.institutional.email_notifications import observe_service
+                observe_service(c, self.settings, "channel-send:" + str(job["IntegrationId"]), failed=state != "accepted", module="channels", account=str(job["IntegrationId"]))
         return True
 
 

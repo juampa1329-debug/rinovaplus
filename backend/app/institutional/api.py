@@ -30,10 +30,13 @@ PUBLIC = {
     "/api/institution/auth/login",
     "/api/institution/auth/verify",
     "/api/institution/auth/redeem",
+    "/api/institution/auth/recover-email",
 }
 
 
 def core_permission(path, method):
+    if path.startswith("/api/institution/notifications"):
+        return "self", None
     if path == "/api/institution/operations":
         return "users.manage", None
     if path.startswith("/api/institution/provider-catalog/"):
@@ -210,6 +213,8 @@ def create_app(
                           and request.url.path.endswith("/templates/sample")))
                     else 524288
                 )
+                if request.url.path == "/api/institution/notifications/assets" and request.method == "POST":
+                    size_limit = 1_500_000
                 if (
                     getattr(settings, "ticket", {}).get("version")
                     in {
@@ -597,6 +602,10 @@ def create_app(
         from app.institutional.operations import install as install_operations
 
         install_operations(app, settings)
+
+    if getattr(settings, "postgres_deployment", False):
+        from app.institutional.email_notifications import install as install_notifications
+        install_notifications(app, settings)
 
     @app.api_route(
         "/api/{path:path}",

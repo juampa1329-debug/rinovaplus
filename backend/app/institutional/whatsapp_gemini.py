@@ -282,7 +282,13 @@ def finish(c, settings, operation, state, code, data, lease=None):
         operation,
         *((lease,) if lease else ()),
     )
-    return c.rowcount == 1
+    changed = c.rowcount == 1
+    from app.institutional.email_notifications import enabled as email_enabled, observe_service
+    if changed and email_enabled(settings) and state in {"confirmed", "failed", "uncertain"}:
+        account_id = c.execute("SELECT IntegrationId FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=?", institution(settings), operation).fetchval()
+        scope = "automatic-model:" + str(account_id)
+        observe_service(c, settings, scope, failed=state != "confirmed", module="ai", channel=data.get("channel", ""), account=str(account_id))
+    return changed
 
 
 class Worker:

@@ -862,6 +862,8 @@ class AgentsService:
                 payload,
                 {**item, "restored_from_version": restore_version},
             )
+            if not old and callable(getattr(cursor, "agent_email_event", None)):
+                cursor.agent_email_event("agents.create", key)
             invalidate(cursor)
         return {"confirmed": True, "version": item["version"]}
 

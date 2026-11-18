@@ -220,6 +220,8 @@ class Agents(AgentsService):
             ).decode().rstrip("=")
             c.agent_user, c.agent_session = actor["UserId"], actor["SessionId"]
             c.agent_catalog = self.catalog_adapter
+            from app.institutional.email_notifications import emit as emit_email
+            c.agent_email_event = lambda event, resource: emit_email(c, self.profile, event, resource, module="agents")
             c.agent_invalidate = invalidate
             if self.profile.ticket.get("version") in {
                 "cbn-institutional-knowledge-p6-v1",
@@ -575,6 +577,9 @@ class Agents(AgentsService):
             )
             if c.rowcount != 1:
                 failure = AiError("agents_request_uncertain", 409)
+            elif failure is None or isinstance(failure, AiError) and failure.status >= 500:
+                from app.institutional.email_notifications import observe_service
+                observe_service(c, self.profile, "agent-provider", failed=failure is not None)
         if failure:
             raise failure
         return result

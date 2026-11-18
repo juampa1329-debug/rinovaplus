@@ -173,6 +173,7 @@ const cases = new Map<string, ErrorGuidance>([
 ]);
 
 export function explainChannelError(failure: OperationFailure): ErrorGuidance {
+  if (failure.code?.startsWith("email_")) return { title: "No se pudo completar la operación de correo", detail: failure.message, nextStep: "Abre Ajustes → Correos y notificaciones. Revisa el aviso, la plantilla, los destinatarios y la configuración de Oracle en Coolify antes de repetir el envío." };
   if (failure.code?.startsWith("ads_meta_"))
     return {
       title: "No se pudo completar la operación de Publicidad",

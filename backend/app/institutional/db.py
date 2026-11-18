@@ -87,6 +87,9 @@ def audit(cursor, settings, actor, action, resource="", outcome="accepted", **me
         outcome,
         canonical(metadata).decode(),
     )
+    if getattr(settings, "postgres_deployment", False):
+        from app.institutional.email_notifications import emit
+        emit(cursor, settings, action, resource, **metadata)
 
 
 def public_user(value):
@@ -100,6 +103,7 @@ def public_user(value):
         "profile": json.loads(value["Profile"]),
         "employee_link": "not_bound",
         "account_kind": "human",
+        "activation_pending": "PasswordHash" in value and value["PasswordHash"] is None,
     }
 
 

@@ -23,6 +23,7 @@ export type User = {
   revision: number;
   profile: Record<string, string>;
   mfa_state: string;
+  activation_pending?: boolean;
 };
 export type Session = {
   user: User;
@@ -87,6 +88,27 @@ const messages: Record<string, string> = {
     "Esta cuenta alcanzó el límite de versiones consultables de borradores. Conserva su historial y solicita revisión del administrador.",
   ads_meta_draft_not_found:
     "El borrador no pertenece a esta cuenta o ya no está disponible. Actualiza la biblioteca de esta cuenta.",
+  email_invalid_configuration: "Hay un valor de configuración no permitido. Revisa identificador, evento, destinatarios y plantilla antes de guardar.",
+  email_invalid_header: "Revisa el nombre o asunto del correo: debe contener texto y no incluir saltos de línea.",
+  email_template_too_large: "El HTML debe ocupar entre 1 byte y 100 KB. Reduce su tamaño e incrusta las imágenes desde la biblioteca.",
+  email_invalid_image: "Usa una imagen PNG, JPEG o WebP estática, de hasta 1 MB y 2048 píxeles.",
+  email_asset_quota: "La biblioteca llegó a 20 MB. Solicita revisión del almacenamiento antes de cargar más recursos.",
+  email_asset_not_found: "Una imagen de la plantilla no está en esta biblioteca. Vuelve a subirla e insértala desde Logos y firmas.",
+  email_user_already_activated: "Esta cuenta ya tiene contraseña. Su titular puede usar Olvidé mi contraseña en el login si necesita recuperar el acceso.",
+  email_invalid_receipt: "Revisa el correo y la fecha del recibo de Oracle. Debe corresponder a un envío aceptado o incierto y a una observación posterior a su creación.",
+  email_invalid_daily_limit: "El límite diario de correo debe ser un número entero entre 1 y 10.000.",
+  email_migration_required: "Notificaciones necesita su instalación en PostgreSQL. Un administrador debe aplicar la migración P15 antes de guardar; la salida está pausada.",
+  email_provider_not_configured: "Faltan las credenciales SMTP de Oracle. Guarda CRM_SMTP_HOST, CRM_SMTP_USERNAME y CRM_SMTP_PASSWORD en las variables de producción del backend y redespliega.",
+  email_sending_paused: "El correo está pausado. Revisa Habilitar salida en Notificaciones y CRM_EMAIL_ENABLED en Coolify antes de enviar la prueba.",
+  email_unsafe_html: "El HTML contiene scripts, formularios o atributos no permitidos. Retíralos y vuelve a validar la vista previa.",
+  email_unsafe_css: "El estilo del correo incluye una propiedad o instrucción no permitida. Usa colores, tipografía, márgenes y tablas sin scripts ni recursos externos.",
+  email_unsafe_url: "Los enlaces del correo deben usar HTTPS y no contener credenciales. Corrige el enlace y vuelve a validar.",
+  email_image_requires_library: "Sube la imagen en Logos y firmas e insértala desde esa biblioteca. Las imágenes externas de seguimiento están bloqueadas.",
+  email_unknown_variable: "La plantilla tiene una variable desconocida. Usa únicamente las variables que aparecen debajo de la vista previa.",
+  email_missing_variables: "Faltan valores para completar la plantilla. Revisa sus variables antes de enviarla.",
+  email_invalid_address: "El correo destinatario o remitente no es válido. Escribe sólo la dirección, sin nombres ni saltos de línea.",
+  email_invalid_schedule: "Revisa la hora, el día y la zona horaria IANA; por ejemplo America/Bogota.",
+  email_not_cancellable: "El envío ya comenzó o terminó. Actualiza el historial; no se puede cancelar una entrega aceptada por Oracle.",
   comment_source_unavailable: "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
   comment_is_account_reply: "Esta respuesta pertenece a la cuenta conectada. Abre el hilo y selecciona el comentario de la persona a la que quieres responder.",
   invalid_notification_cutoff: "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",

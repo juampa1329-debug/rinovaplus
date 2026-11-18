@@ -896,4 +896,6 @@ class EventWorker:
                 institution(self.settings),
                 value["EventId"],
             )
+            from app.institutional.email_notifications import observe_service
+            observe_service(c, self.settings, "webhook-projection:" + str(value["IntegrationId"]), failed=status == "quarantined", module="webhooks", channel=(item or {}).get("Channel", ""), account=str(value["IntegrationId"]))
             return True
