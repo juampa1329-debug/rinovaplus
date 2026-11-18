@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { useInstitution, useTask, useIntent } from "./api";
 import { useAdsResource } from "./adsResource";
@@ -663,7 +663,10 @@ function ObjectTable({
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("all"),
     [page, setPage] = useState(0),
-    [selected, setSelected] = useState<AdObject | null>(null);
+    [selected, setSelected] = useState<{
+      value: AdObject;
+      trigger: Element | null;
+    } | null>(null);
   const values = snapshot[entity].filter(
     (v) =>
       `${v.name} ${v.id}`
@@ -738,7 +741,12 @@ function ObjectTable({
                   <th scope="row">
                     <button
                       className="meta-name"
-                      onClick={() => setSelected(v)}
+                      onClick={() =>
+                        setSelected({
+                          value: v,
+                          trigger: document.activeElement,
+                        })
+                      }
                     >
                       {v.name}
                     </button>
@@ -798,29 +806,72 @@ function ObjectTable({
         </p>
       )}
       {selected && (
-        <div className="meta-object-detail">
-          <div>
-            <h3>{selected.name}</h3>
-            <p>
-              ID {selected.id}{" "}
-              {selected.campaign_id && `· Campaña ${selected.campaign_id}`}{" "}
-              {selected.adset_id && `· Conjunto ${selected.adset_id}`}
-            </p>
-            <Button variant="quiet" onClick={() => setSelected(null)}>
-              Cerrar detalle
-            </Button>
-          </div>
-          {selected.creative ? (
-            <CreativePreview value={selected.creative} />
-          ) : (
-            <p>
-              {selected.objective ??
-                "Selecciona Anuncios para consultar la creatividad disponible."}
-            </p>
-          )}
-        </div>
+        <AdDetail
+          value={selected.value}
+          trigger={selected.trigger}
+          close={() => setSelected(null)}
+        />
       )}
     </section>
+  );
+}
+
+function AdDetail({
+  value,
+  trigger,
+  close,
+}: {
+  value: AdObject;
+  trigger: Element | null;
+  close: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null),
+    id = useId();
+  useLayoutEffect(() => {
+    const dialog = ref.current;
+    dialog?.showModal();
+    dialog?.querySelector("button")?.focus();
+    return () => {
+      dialog?.close();
+      if (trigger instanceof HTMLElement && trigger.isConnected)
+        trigger.focus({ preventScroll: true });
+    };
+  }, [trigger]);
+  return (
+    <dialog
+      ref={ref}
+      className="operation-error-dialog meta-ad-dialog"
+      role="dialog"
+      aria-labelledby={`${id}-title`}
+      onCancel={(e) => {
+        e.preventDefault();
+        close();
+      }}
+    >
+      <div className="meta-ad-dialog-body">
+        <header>
+          <div>
+            <small>Detalle de Meta · consulta</small>
+            <h3 id={`${id}-title`}>{value.name}</h3>
+          </div>
+          <Button variant="secondary" onClick={close}>
+            Cerrar detalle
+          </Button>
+        </header>
+        <p>
+          ID {value.id} {value.campaign_id && `· Campaña ${value.campaign_id}`}{" "}
+          {value.adset_id && `· Conjunto ${value.adset_id}`}
+        </p>
+        {value.creative ? (
+          <CreativePreview value={value.creative} />
+        ) : (
+          <p>
+            {value.objective ??
+              "Selecciona Anuncios para consultar la creatividad disponible."}
+          </p>
+        )}
+      </div>
+    </dialog>
   );
 }
 

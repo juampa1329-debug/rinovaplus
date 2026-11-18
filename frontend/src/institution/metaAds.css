@@ -227,6 +227,33 @@
   gap: 0.8rem;
   overflow-wrap: anywhere;
 }
+.meta-ad-dialog {
+  width: min(44rem, calc(100vw - 2rem));
+  max-height: 88dvh;
+}
+.meta-ad-dialog-body {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.meta-ad-dialog-body header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.meta-ad-dialog-body h3 {
+  margin: 0.4rem 0;
+}
+.meta-ad-dialog-body > p {
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.meta-ad-dialog .meta-creative {
+  width: 100%;
+  max-width: none;
+}
 .meta-creative p {
   white-space: pre-wrap;
 }

@@ -269,6 +269,24 @@ it("renders source, period, real hierarchy and accessible daily data", async () 
   ).toBeInTheDocument();
 });
 
+it("opens creative details immediately in a dialog and restores keyboard focus on close", async () => {
+  mount();
+  await screen.findByText("Importe gastado");
+  fireEvent.click(screen.getByRole("button", { name: "Anuncios (1)" }));
+  const trigger = screen.getByRole("button", { name: "Anuncio CBN" });
+  trigger.focus();
+  fireEvent.click(trigger);
+  const dialog = screen.getByRole("dialog", { name: "Anuncio CBN" });
+  expect(
+    within(dialog).getByRole("article", { name: "Vista previa del anuncio" }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Cerrar detalle" }),
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+});
+
 it("period change clears old results rather than labelling stale data", async () => {
   const { fetcher } = mount();
   await screen.findByText("Importe gastado");
