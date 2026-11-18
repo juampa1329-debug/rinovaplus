@@ -423,6 +423,7 @@ function CampaignEditor({
     [reason, setReason] = useState(""),
     [showTemplateTools, setShowTemplateTools] = useState(false),
     [templateToolsOpened, setTemplateToolsOpened] = useState(false),
+    [showResults, setShowResults] = useState(initial?.state === "completed"),
     [scheduleEnabled, setScheduleEnabled] = useState(
       !!initial?.document.scheduled_local,
     );
@@ -471,7 +472,25 @@ function CampaignEditor({
           {label(initial.state)} · versión {initial.revision}
         </Badge>
       )}
+      {initial && (
+        <nav className="institution-actions" aria-label="Vista de campaña">
+          <Button
+            variant={showResults ? "quiet" : "secondary"}
+            onClick={() => setShowResults(false)}
+          >
+            Configuración de campaña
+          </Button>
+          <Button
+            variant={showResults ? "secondary" : "quiet"}
+            onClick={() => setShowResults(true)}
+          >
+            <Icon name="chart" />
+            Ver resultados y gráficos
+          </Button>
+        </nav>
+      )}
       <form
+        hidden={showResults}
         onSubmit={(e) => {
           e.preventDefault();
           void task.run(async () => {
@@ -498,7 +517,10 @@ function CampaignEditor({
             value={doc.integration_id}
             options={[
               { value: "", label: "Selecciona una cuenta WhatsApp" },
-              ...options.accounts.map((a) => ({ value: a.id, label: a.name })),
+              ...options.accounts.map((a) => ({
+                value: a.id,
+                label: a.name,
+              })),
             ]}
             onChange={(e) =>
               update({
@@ -721,7 +743,7 @@ function CampaignEditor({
         </fieldset>
       </form>
       {templateToolsOpened && doc.integration_id && (
-        <div hidden={!showTemplateTools}>
+        <div hidden={showResults || !showTemplateTools}>
           <TemplatePanel
             key={doc.integration_id}
             account={doc.integration_id}
@@ -735,7 +757,7 @@ function CampaignEditor({
         </div>
       )}
       {initial && (
-        <>
+        <div hidden={showResults}>
           <Field
             id="campaign-reason"
             label="Motivo de la operación"
@@ -838,12 +860,14 @@ function CampaignEditor({
             La aceptación de Meta y la entrega son estados distintos. Un
             resultado incierto requiere revisión antes de repetir un envío.
           </p>
-          <CampaignReport
-            campaign={key}
-            canRetry={!dirty && reviewed && !task.busy}
-            retry={(ids) => action("retry", ids)}
-          />
-        </>
+        </div>
+      )}
+      {initial && (
+        <CampaignReport
+          campaign={key}
+          canRetry={!dirty && reviewed && !task.busy}
+          retry={(ids) => action("retry", ids)}
+        />
       )}
     </section>
   );

@@ -1,6 +1,7 @@
 """Segmentation rejects unknown facts and preserves observed receipt semantics."""
 import json
 from datetime import date
+from contextlib import contextmanager
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -92,3 +93,40 @@ def test_two_consent_guards_exclude_one_person_once(monkeypatch):
     assert result["counts"]==dict(matched=1,eligible=0,excluded=1)
     assert result["exclusions"]=={"marketing_consent_required":1}
     assert result["items"][0]["reasons"]==["marketing_consent_required"]
+
+
+@pytest.mark.parametrize("state,external,attempts,allowed",[("failed",None,1,True),("failed","accepted-id",1,False),("uncertain",None,1,False),("sending",None,1,False),("failed",None,20,False)])
+def test_retry_reprepares_only_definitive_unaccepted_work_without_provider_io(monkeypatch,state,external,attempts,allowed):
+    from app.institutional import broadcasts
+    from app.institutional.broadcast_models import Review
+    settings=SimpleNamespace(ticket={"version":"cbn-institutional-broadcast-p7-v1"})
+    service=broadcasts.Broadcasts(settings)
+    recipient,identity,contact=str(uuid4()),str(uuid4()),str(uuid4())
+    writes=[]
+    cursor=SimpleNamespace(execute=lambda sql,*args:writes.append((sql,args)))
+    actor=dict(UserId=str(uuid4()),AuthVersion=1,SessionId=str(uuid4()))
+    @contextmanager
+    def tx(auth,write=False,recent=False):
+        assert write and recent
+        yield cursor,actor
+    monkeypatch.setattr(service,"tx",tx)
+    monkeypatch.setattr(broadcasts,"institution",lambda *_:"institution")
+    monkeypatch.setattr(broadcasts,"replay",lambda *a:("hash",None))
+    monkeypatch.setattr(broadcasts,"current",lambda *a:dict(Revision=1,Epoch=1,State="running"))
+    monkeypatch.setattr(broadcasts,"authorize",lambda *a,**k:None)
+    monkeypatch.setattr(broadcasts,"one",lambda *a:dict(QueueState=state,ExternalId=external,Attempts=attempts,IdentityId=identity))
+    candidate=dict(identity_id=identity,eligible=True,audience_profile={"gender":"Sin dato"},template={},text="Test",phone="573000000000",contact_id=contact,template_record={"ProviderMetadata":'{"material_revision":"version"}'},consent={"ConsentId":str(uuid4()),"VersionNo":1},person={"ControlEpoch":0})
+    monkeypatch.setattr(broadcasts,"audience",lambda *a,**k:([candidate],{"RowVersion":b"version"}))
+    monkeypatch.setattr(broadcasts,"record_operation",lambda *a:None)
+    monkeypatch.setattr(broadcasts,"audit",lambda *a,**k:None)
+    monkeypatch.setattr(service,"request",lambda *a,**k:pytest.fail("Retry command must not perform provider IO"))
+    review=Review(operation_id=uuid4(),revision=1,reason="Controlled retry",confirmed=True,recipient_ids=[recipient])
+    if not allowed:
+        with pytest.raises(HTTPException,match="broadcast_retry_only_definitive_unaccepted_failure"):
+            service.action(None,str(uuid4()),"retry",review)
+        assert writes==[]
+    else:
+        assert service.action(None,str(uuid4()),"retry",review)["retried"]==1
+        assert len(writes)==2 and "State='prepared',CurrentQueueId=NULL" in writes[0][0]
+        assert json.loads(writes[0][1][-3])["audience_profile"]=={"gender":"Sin dato"}
+        assert all("DELETE" not in sql and "crm_broadcast7.Attempt" not in sql for sql,_ in writes)
