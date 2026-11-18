@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+import re
 from fastapi import HTTPException
 
 from app.institutional.email_notifications import (
@@ -138,7 +139,8 @@ class SMTP:
     def rcpt(self, *_):
         return self.recipient_code, b"not logged"
 
-    def data(self, *_):
+    def data(self, raw):
+        assert re.search(rb"(?<!\r)\n", raw) is None, "SMTP DATA must use CRLF"
         if self.data_failure:
             raise OSError("lost after DATA: possible acceptance")
         return 250, b"accepted"
@@ -189,6 +191,44 @@ def test_worker_disabled_does_not_open_storage(monkeypatch):
         side_effect=AssertionError("no IO"),
     ):
         assert Worker(SimpleNamespace(postgres_deployment=True)).once() is False
+
+
+def test_access_link_is_available_in_plain_text_and_date_is_present(monkeypatch):
+    import json
+    from app.institutional import email_notifications as mail
+
+    monkeypatch.setattr(mail, "key", lambda _: bytes(32))
+    monkeypatch.setattr(mail, "institution", lambda _: "institution")
+    monkeypatch.setattr(
+        mail,
+        "unseal",
+        lambda *_: json.dumps(
+            {
+                "name": "RinovaPlus",
+                "sender": "sender@example.invalid",
+                "reply_to": "",
+                "subject": "Activación de prueba",
+                "html": '<p>Abre <a style="color:#12343B" href="https://example.invalid/#/access/redeem?token=fake-for-test">tu cuenta</a>.</p>',
+            }
+        ),
+    )
+    result = mail.build_message(
+        None,
+        SimpleNamespace(connection={"database": "test"}),
+        {
+            "id": "test-mail",
+            "nonce": b"n",
+            "ciphertext": b"c",
+            "recipient": "authorized@example.invalid",
+            "message_id": "<stable@example.invalid>",
+        },
+    )
+    assert result["Date"]
+    assert result["Message-ID"] == "<stable@example.invalid>"
+    assert (
+        "https://example.invalid/#/access/redeem?token=fake-for-test"
+        in result.get_body(preferencelist=("plain",)).get_content()
+    )
 
 
 def test_recipients_respect_permission_inactive_role_and_preferences(monkeypatch):

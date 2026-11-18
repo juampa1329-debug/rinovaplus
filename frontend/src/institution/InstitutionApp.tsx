@@ -112,7 +112,6 @@ export function InstitutionApp({
     void send<{ initialized: boolean }>("auth/status")
       .then(async (status) => {
         if (!active) return;
-        setInitialized(status.initialized);
         const accessLink = new URLSearchParams(window.location.hash.split("?")[1] ?? "").has("token");
         if (status.initialized && !accessLink) {
           try {
@@ -122,6 +121,7 @@ export function InstitutionApp({
             /* Login is required when no cookie remains. */
           }
         }
+        if (active) setInitialized(status.initialized);
       })
       .catch((failure: unknown) => {
         if (active)

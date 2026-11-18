@@ -58,7 +58,7 @@
     "Auditoría y outbox",
     "Proveedor de correo y dominio a elegir antes de activar envíos"
   ],
-  "provider_configured": false,
+  "provider_configured": true,
   "external_emails_sent": 0,
   "documents": [
     "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
@@ -69,14 +69,21 @@
   "credentials_saved_by_owner": true,
   "oracle_region": "us-ashburn-1",
   "evidence": {
-    "backend_selected_passed": 329,
-    "backend_p15_passed": 32,
+    "backend_selected_passed": 330,
+    "backend_p15_passed": 33,
     "frontend_initial_selected_passed": 18,
     "native_postgres": "7 new tables; frozen CRM155; CREATE false; DELETE false; dedup1; second claim0; rollback leaves outbox0",
-    "production_acceptance": "pending",
+    "production_acceptance": "in_progress; DNS correction and delivery pending",
     "oracle_sender_registered": true,
     "dkim_dns_verified": false,
-    "spf_dns_verified": false,
-    "frontend_selected_passed": 18
+    "spf_dns_verified": true,
+    "frontend_selected_passed": 27,
+    "SMTP_authentication": "passed_STARTTLS_hostname_verified_NO_EMAIL_SENT",
+    "oracle_logs": "Outbound Accepted and Outbound Relayed active, 30-day retention",
+    "backend_deployment": {
+      "commit": "1c302ef7441a130412ea1574443c339399a85d88",
+      "deployment": "ilzuqh3auldcytyvajshncwb",
+      "healthy_workers": 9
+    }
   }
 }

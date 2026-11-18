@@ -37,5 +37,6 @@
       "path": "docs/adaptation/PENDING_PHASES.md",
       "sha256": "c4dd022f5889aefed9667491a6683e38258d7c4962805fe5efb02b261a1a75b7"
     }
-  ]
+  ],
+  "capture": "Working-tree bytes before P15 edits; line ending conversion from checkout may differ from Git blob bytes."
 }

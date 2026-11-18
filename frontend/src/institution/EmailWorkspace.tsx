@@ -106,6 +106,17 @@ export function EmailWorkspace() {
   const data = useResource<Data>("notifications");
   const [tab, setTab] = useState("transport");
   if (!data.value) return <ResourceState error={data.error} />;
+  const view = {
+    ...data.value,
+    enabled:
+      !!data.value.enabled &&
+      data.value.documents.some(
+        (doc) =>
+          doc.kind === "transport" &&
+          doc.id === "main" &&
+          doc.body.enabled === true,
+      ),
+  };
   return (
     <div className="email-workspace">
       <section className="panel email-intro">
@@ -124,7 +135,7 @@ export function EmailWorkspace() {
               : "Oracle pendiente"}
           </strong>
           <span>
-            {data.value.enabled ? "Transporte habilitado" : "Salida pausada"}
+            {view.enabled ? "Transporte habilitado" : "Salida pausada"}
           </span>
         </div>
       </section>
@@ -155,14 +166,9 @@ export function EmailWorkspace() {
             ))}
           </nav>
           {tab === "history" ? (
-            <History data={data.value} reload={data.reload} />
+            <History data={view} reload={data.reload} />
           ) : (
-            <Editor
-              key={tab}
-              kind={tab}
-              data={data.value}
-              reload={data.reload}
-            />
+            <Editor key={tab} kind={tab} data={view} reload={data.reload} />
           )}
         </>
       )}
@@ -191,6 +197,7 @@ function Editor({
   const current = data.documents.find(
     (x) => x.kind === kind && x.id === identity,
   );
+  const [revision, setRevision] = useState(current?.revision ?? 0);
   const [draft, setDraft] = useState<Record<string, unknown>>(
     current?.body ?? defaults[kind],
   );
@@ -213,6 +220,9 @@ function Editor({
     setDraft((old) => ({ ...old, [key]: value }));
   };
   const switchDoc = (id: string) => {
+    setRevision(
+      data.documents.find((x) => x.kind === kind && x.id === id)?.revision ?? 0,
+    );
     const next =
       data.documents.find((x) => x.kind === kind && x.id === id)?.body ??
       defaults[kind];
@@ -239,10 +249,15 @@ function Editor({
         onSubmit={(e) => {
           e.preventDefault();
           void task.run(async () => {
-            await call(`notifications/documents/${kind}/${identity}`, "PUT", {
-              revision: current?.revision ?? 0,
-              body: draft,
-            });
+            const saved = await call<{ revision: number }>(
+              `notifications/documents/${kind}/${identity}`,
+              "PUT",
+              {
+                revision,
+                body: draft,
+              },
+            );
+            setRevision(saved.revision);
             setBase(JSON.stringify(draft));
             await reload();
           }, "Configuración guardada. Revisa el estado de salida antes de activar reglas.");
@@ -250,7 +265,7 @@ function Editor({
       >
         <div className="institution-section-head">
           <h3>{labels[kind]}</h3>
-          <Badge>Versión {current?.revision ?? 0}</Badge>
+          <Badge>Versión {revision}</Badge>
         </div>
         {task.notices}
         <fieldset disabled={task.busy}>
@@ -752,6 +767,7 @@ function Editor({
               task.busy ||
               !data.configured ||
               !data.enabled ||
+              !recipient.trim() ||
               (kind === "template" && dirty)
             }
             variant="secondary"

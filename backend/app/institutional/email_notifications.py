@@ -8,8 +8,11 @@ import os
 import re
 import smtplib
 import ssl
+from html import unescape
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
+from email.policy import SMTP as SMTP_POLICY
+from email.utils import format_datetime
 from uuid import uuid4
 
 from fastapi import HTTPException, Request
@@ -392,7 +395,7 @@ def smtp_send(message, recipient):
                     "retry" if 400 <= code < 500 else "failed"
                 ), f"smtp_recipient_{code}"
             phase = "data"
-            code, _ = client.data(message.as_bytes())
+            code, _ = client.data(message.as_bytes(policy=SMTP_POLICY))
             phase = "accepted" if code == 250 else "rejected"
             return (
                 ("accepted", None)
@@ -435,10 +438,17 @@ def build_message(c, s, item):
     message["To"] = address(item["recipient"])
     message["Subject"] = header(payload["subject"])
     message["Message-ID"] = item["message_id"]
+    message["Date"] = format_datetime(datetime.now(timezone.utc))
     message["X-Rinova-Mail-ID"] = item["id"]
     if payload["reply_to"]:
         message["Reply-To"] = address(payload["reply_to"])
-    message.set_content(re.sub(r"<[^>]*>", " ", payload["html"]))
+    plain = re.sub(
+        r'<a\b[^>]*\bhref="([^"]+)"[^>]*>(.*?)</a>',
+        lambda match: match[2] + "\n" + match[1],
+        payload["html"],
+        flags=re.DOTALL,
+    )
+    message.set_content(unescape(re.sub(r"<[^>]*>", " ", plain)))
     message.add_alternative(payload["html"], subtype="html")
     for asset in set(re.findall(r"cid:([a-f0-9-]{36})", payload["html"])):
         found = native(
@@ -455,7 +465,7 @@ def build_message(c, s, item):
             subtype=found[0]["mime"].split("/")[1],
             cid=f"<{asset}>",
         )
-    if len(message.as_bytes()) > 2_000_000:
+    if len(message.as_bytes(policy=SMTP_POLICY)) > 2_000_000:
         fail("email_message_too_large")
     return message
 

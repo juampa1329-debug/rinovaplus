@@ -3,6 +3,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { EmailWorkspace } from "../institution/EmailWorkspace";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
+import { InstitutionApp } from "../institution/InstitutionApp";
 
 const session: Session = {
   session_id: "s",
@@ -50,6 +51,68 @@ it("keeps mail paused and does not expose SMTP credentials", async () => {
   ).toBeDisabled();
   expect(screen.queryByLabelText(/Contraseña SMTP/)).not.toBeInTheDocument();
   expect(screen.getByLabelText("Habilitar salida de correo")).not.toBeChecked();
+});
+
+it("requires the saved CRM switch even when the runtime transport is enabled", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        ...value,
+        configured: true,
+        enabled: true,
+        documents: [
+          {
+            kind: "transport",
+            id: "main",
+            revision: 1,
+            body: {
+              enabled: false,
+              name: "CBN",
+              sender: "sender@example.invalid",
+              daily_limit: 100,
+            },
+          },
+        ],
+      }),
+    ),
+  );
+  mount();
+  expect(await screen.findByText("Salida pausada")).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "Enviar correo de prueba" }),
+  ).toBeDisabled();
+});
+
+it("does not flash a login form while an existing session is being checked", async () => {
+  let release!: (response: Response) => void;
+  window.location.hash = "";
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (url) =>
+      String(url).endsWith("auth/status")
+        ? new Response(JSON.stringify({ initialized: true }))
+        : new Promise<Response>((resolve) => {
+            release = resolve;
+          }),
+    );
+  render(<InstitutionApp />);
+  await waitFor(() =>
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/institution/auth/me",
+      expect.anything(),
+    ),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Iniciar sesión" }),
+  ).not.toBeInTheDocument();
+  release(
+    new Response(JSON.stringify({ detail: "session_required" }), {
+      status: 401,
+    }),
+  );
+  expect(
+    await screen.findByRole("button", { name: "Iniciar sesión" }),
+  ).toBeVisible();
 });
 
 it("shows the explicit installation requirement without inventing configured transport", async () => {
