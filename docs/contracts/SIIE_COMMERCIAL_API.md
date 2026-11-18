@@ -1,6 +1,6 @@
 # API SIIE → RinovaPlus: catálogo académico y financiero
 
-**Estado vigente:** integración trasladada a [P15 y diferida por el propietario](../adaptation/P15_SIIE_INTEGRATION.md). Este contrato y la base implementada se conservan para retomarla; no bloquean P13 ni autorizan configurar credenciales ahora.
+**Estado vigente:** integración trasladada a [P16 y diferida por el propietario](../adaptation/P16_SIIE_INTEGRATION.md). Este contrato y la base implementada se conservan para retomarla; no bloquean P13 ni autorizan configurar credenciales ahora.
 
 Solicitud institucional del 17 de noviembre de 2026. **Fuente oficial: API del sistema SIIE conectado con DBSIIE.** RinovaPlus no necesita usuario SQL ni acceso directo a sus tablas. El conector es de sólo lectura y está desactivado hasta configurar el endpoint y la credencial. No hay cobros, matrículas, creación de obligaciones ni escritura hacia SIIE.
 

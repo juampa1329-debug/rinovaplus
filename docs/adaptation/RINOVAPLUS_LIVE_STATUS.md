@@ -1,3 +1,11 @@
+## Fase adicional P18 — 2026-11-18
+
+Por petición del propietario, se añade **P18 · Seguridad y ciberseguridad**, planificada 0/8 unidades aceptadas. Incluye tokens/sesiones, rate limit e IP confiable, 2FA, CAPTCHA, inyecciones, infraestructura y respuesta a incidentes. Ver `docs/adaptation/P18_SECURITY_PLAN.md` y `tasks/p18-security-progress.json`. P15 correos, P16 SIIE y P17 TikTok conservan la nueva numeración. No cambia el porcentaje ni los 56 criterios/279 hitos originales. P11 sigue en revisión operativa; los fallos críticos actuales no se difieren a P18.
+
+## Numeración adicional vigente — 2026-11-18
+
+Por petición del propietario, **P15 es Correos y notificaciones** (planificada, 0/7 unidades y 0% implementación); **SIIE pasa a P16** y **TikTok a P17** (diferidas, 0/5 cada una). Ver `docs/adaptation/P15_EMAIL_NOTIFICATIONS.md` y `tasks/p15-notifications-progress.json`. No cambia el porcentaje original, sus 56 criterios/279 hitos ni la evidencia histórica. P11 sigue en revisión operativa; no se acreditan envíos de correo por crear esta fase.
+
 ## Corte vigente: P10 técnica aceptada — 2026-11-18
 
 **General 98,04%; P10 100%, 5/5 criterios.** Se completó el ciclo de entrenamiento con datos exclusivamente ficticios en producción: reproducibilidad, baseline, sombra propia por versión, dos promociones, reversión, deriva y pausa. [Pruebas, uso y límites](P10_LIVE_ACCEPTANCE.md). El pack de ensayo conserva su evidencia con entrenamiento detenido y predicción pausada. P11/P12 institucionales siguen pendientes; los cortes inferiores se conservan como historia.
@@ -68,9 +76,9 @@ Regresión final de frontend: **46 pruebas en cuatro suites**, TypeScript y ESLi
 
 Validación local de esta entrega: **179 pruebas backend**, **42 frontend** en tres suites, TypeScript y build institucional correctos. Tras ajustar el ciclo de vida de sugerencias se repitieron sus dos casos y lint/tipos/build. Ruff F sin errores en los ocho módulos backend afectados; ESLint sin errores en los componentes/pruebas nuevos. El build mantiene el aviso de tamaño de bundle mayor de 500 kB; no es una aceptación de rendimiento. Las primeras preparaciones del arnés temporal necesitaron rutas/dependencia de emojis y mocks corregidos; no se presentan como ejecuciones aprobadas. No se crearon contenedores ni se modificaron datos para los tests.
 
-## Decisión vigente: SIIE pasa a P15
+## Decisión vigente: SIIE pasa a P16
 
-Por instrucción posterior del propietario, la integración DBSIIE queda en **[P15, diferida con base técnica conservada](P15_SIIE_INTEGRATION.md)**. Deja de ser una dependencia obligatoria de P13. Las fichas piloto se pueden revisar manualmente o desde fuentes institucionales. Los registros anteriores sobre la prioridad de la API reflejan la decisión previa; no exigen activarla ahora. No se modifican denominadores ni se acredita una aceptación externa por moverla de fase.
+Por instrucción posterior del propietario, la integración DBSIIE queda en **[P16, diferida con base técnica conservada](P16_SIIE_INTEGRATION.md)**. Deja de ser una dependencia obligatoria de P13. Las fichas piloto se pueden revisar manualmente o desde fuentes institucionales. Los registros anteriores sobre la prioridad de la API reflejan la decisión previa; no exigen activarla ahora. No se modifican denominadores ni se acredita una aceptación externa por moverla de fase.
 
 ## Aceptación real de Gemini y Humano — 17 de noviembre
 
@@ -88,7 +96,7 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P1 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P2 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P3 | 100,00% | Sin pendientes canónicos; las mejoras nuevas de Inbox se registran aparte. |
-| P4 | 100,00% Meta | Aceptación acotada completada: cuentas/OAuth, firma/deduplicación, multimedia, recuperación por canal y conciliación explícita Instagram. TikTok permanece en P16. |
+| P4 | 100,00% Meta | Aceptación acotada completada: cuentas/OAuth, firma/deduplicación, multimedia, recuperación por canal y conciliación explícita Instagram. TikTok permanece en P17. |
 | P5 | 100,00% local | Respuestas personalizadas y silencio Humano posteriores al cambio ya probados en Messenger/Instagram; comentario y sugerencias reales verificados. Falta el piloto con hechos revisados de dos programas y ampliar la prueba de carrera durante inferencia. No se atribuyen estas ampliaciones a la aceptación local antigua. |
 | P6 | 100,00% local | Revisar y publicar información real de programas, fuentes y vigencias para el piloto. La función de conocimiento local ya está aceptada. |
 | P7 | 100,00% | Catálogo/estados Meta, plantillas reales, audiencia, recibos, respuesta citada, informe/CSV y guardas de reintento aceptados. Revisión de Meta de cada nueva plantilla sigue siendo externa. |
@@ -97,12 +105,14 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P10 | 100,00% | Ciclo técnico con dataset ficticio, reproducibilidad, evaluación, sombra, promoción, reversión y pausa verificados; no eficacia institucional. |
 | P11 | 72,50% | Puesta institucional y recuperación específica, aceptación de alcance y cierres P1–P10. PostgreSQL publicado no acredita por sí solo el criterio original de migración SQL2019/SIIE. |
 | P12 | 0,00% de aceptación formal | La infraestructura online YA existe y los despliegues/HTTPS se han comprobado. Falta conciliarla formalmente con los criterios originales, custodios, restauración/RPO/RTO, mapeo académico y aceptación institucional; el 0% es del checkpoint formal, no significa que no exista aplicación publicada. |
-| P13 | 0/4 hitos aceptados | Revisar fichas de Enfermería y Software con fuentes manuales o institucionales; aceptar especialista/enrutamiento y piloto real de ambos programas con control humano. SIIE no es dependencia obligatoria: pasa a P15. |
+| P13 | 0/4 hitos aceptados | Revisar fichas de Enfermería y Software con fuentes manuales o institucionales; aceptar especialista/enrutamiento y piloto real de ambos programas con control humano. SIIE no es dependencia obligatoria: pasa a P16. |
 | P14 | Plan pendiente | Definir dataset autorizado, finalidad, variables/resultados, baseline, evaluación temporal y por sujeto, revisión humana y monitoreo. Primero completar P4/P7 y el piloto P13; no habilitar entrenamiento con mensajes por defecto. |
-| P15 | Diferida; 0/5 unidades aceptadas | Integración SIIE: contrato/acceso, dos ofertas reales, sincronización revisada, uso por agentes y operación institucional. Base técnica implementada, conexión no configurada. |
-| P16 | Diferida; 0/5 unidades aceptadas | [Todo TikTok en plan independiente](P16_TIKTOK_PLAN.md): documentación/capacidades, app y OAuth, adaptación, pruebas reales y aceptación/reversión. No bloquea la ejecución operativa Meta solicitada; el checkpoint canónico histórico se conserva. |
+| P15 | Planificada; 0/7 unidades aceptadas | [Correos, notificaciones, plantillas HTML, marca e informes](P15_EMAIL_NOTIFICATIONS.md). |
+| P16 | Diferida; 0/5 unidades aceptadas | Integración SIIE: contrato/acceso, dos ofertas reales, sincronización revisada, uso por agentes y operación institucional. Base técnica implementada, conexión no configurada. |
+| P17 | Diferida; 0/5 unidades aceptadas | [Todo TikTok en plan independiente](P17_TIKTOK_PLAN.md): documentación/capacidades, app y OAuth, adaptación, pruebas reales y aceptación/reversión. No bloquea la ejecución operativa Meta solicitada; el checkpoint canónico histórico se conserva. |
+| P18 | Planificada; 0/8 unidades aceptadas | [Seguridad, tokens, límites por IP, 2FA, CAPTCHA e inyecciones](P18_SECURITY_PLAN.md). |
 
-**Total técnico actualizado: 98,04%, 274/279 hitos y 54/56 criterios aceptados.** Quedan cinco hitos originales de P11. P10.close.m4 aceptado con [aprendizaje técnico ficticio](../../artifacts/live/p10-learning-acceptance-20261118.json). P9.close.m4 aceptado con [consulta real y borradores locales](../../artifacts/live/p9-meta-acceptance-20261118.json). P8.close.m5 aceptado con [prueba real y límites](../../artifacts/live/p8-meta-acceptance-20261118.json). Definición, pesos y denominadores intactos; P12–P16 fuera del denominador. Los veinte artefactos ausentes siguen impidiendo el replay íntegro histórico; cálculo y evidencia nueva se validan por separado.
+**Total técnico actualizado: 98,04%, 274/279 hitos y 54/56 criterios aceptados.** Quedan cinco hitos originales de P11. P10.close.m4 aceptado con [aprendizaje técnico ficticio](../../artifacts/live/p10-learning-acceptance-20261118.json). P9.close.m4 aceptado con [consulta real y borradores locales](../../artifacts/live/p9-meta-acceptance-20261118.json). P8.close.m5 aceptado con [prueba real y límites](../../artifacts/live/p8-meta-acceptance-20261118.json). Definición, pesos y denominadores intactos; P12–P18 fuera del denominador. Los veinte artefactos ausentes siguen impidiendo el replay íntegro histórico; cálculo y evidencia nueva se validan por separado.
 
 ## Cómo se actualizará desde ahora
 
@@ -124,9 +134,9 @@ El párrafo anterior conserva el corte inicial del ensayo. Su continuación comp
 
 También se publicaron segmentación por personas/grupos/programas/jornadas/tipo/etapa y campos CRM explícitos, programación local IANA, creación de plantillas dentro del editor y gráficos animados de entrega/lectura/respuesta. La edad/género/ubicación sólo salen de campos declarados y se fotografían al preparar; los envíos antiguos sin esa información muestran «Sin dato». La selección vacía de personas no se convierte en toda la cuenta. Se probaron guardado de borrador y vista previa de un único contacto, excluido por consentimiento revocado y programa ausente; no se activó ese borrador. La sincronización de Meta recuperó de forma append-only los enlaces nombre/programa, que se habían perdido por el orden de componentes del proveedor.
 
-La [consolidación de recuperación Meta](P4_META_ACCEPTANCE_MATRIX.md) añade 40 casos locales por canal y conserva límites de pruebas reales. El adaptador de Instagram solicita `messaging_seen` y entiende los dos formatos documentados; sólo se acreditará una lectura cuando llegue su evento real. El [plan P16](P16_TIKTOK_PLAN.md) reúne todo TikTok, diferido por el propietario.
+La [consolidación de recuperación Meta](P4_META_ACCEPTANCE_MATRIX.md) añade 40 casos locales por canal y conserva límites de pruebas reales. El adaptador de Instagram solicita `messaging_seen` y entiende los dos formatos documentados; sólo se acreditará una lectura cuando llegue su evento real. El [plan P17](P17_TIKTOK_PLAN.md) reúne todo TikTok, diferido por el propietario.
 
-Orden inmediato: puesta institucional P11 y conciliación P12; piloto de programas P13 con datos revisados y diseño P14. P4/P7/P8/P9 aceptadas en Meta y P10 aceptada en el alcance técnico documentado. P15 y P16 se retoman bajo nueva instrucción.
+Orden inmediato: puesta institucional P11 y conciliación P12; piloto de programas P13 con datos revisados y diseño P14. P4/P7/P8/P9 aceptadas en Meta y P10 aceptada en el alcance técnico documentado. P16 y P17 se retoman bajo nueva instrucción.
 
 ## Adjuntos y guía del creador estándar de Meta
 

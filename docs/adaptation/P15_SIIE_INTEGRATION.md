@@ -1,3 +1,7 @@
+## Referencia histórica de numeración
+
+Desde el 18 de noviembre de 2026 esta integración es [P16 · SIIE](P16_SIIE_INTEGRATION.md). P15 ahora corresponde a correos y notificaciones. El contenido inferior se conserva como historial.
+
 # P15 · Integración académica y financiera con SIIE
 
 Estado al 17 de noviembre de 2026: **diferida por decisión del propietario**. La base técnica está implementada y probada, pero no hay conexión real ni aceptación de datos oficiales. Esta fase adicional no añade peso al denominador canónico de 56 criterios/279 hitos.

@@ -1,0 +1,64 @@
+{
+  "phase": "P18",
+  "title": "Seguridad y ciberseguridad",
+  "date": "2026-11-18",
+  "status": "planned_by_owner",
+  "accepted": 0,
+  "total": 8,
+  "phase_execution_percent": "0.00%",
+  "existing_protections": "Inventory and dedicated acceptance pending; existing P1/P2/P11 controls retained",
+  "canonical_weight_added": 0,
+  "canonical_criteria": 56,
+  "canonical_milestones": 279,
+  "units": [
+    {
+      "id": "P18.1",
+      "title": "Inventario y amenazas",
+      "requirement": "Inventariar rutas, datos, actores, proveedores, secretos y superficies públicas. Clasificar protecciones existentes, vacíos y riesgos con alcance de prueba autorizado; separar auditoría técnica de certificación.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.2",
+      "title": "Tokens, sesiones y secretos",
+      "requirement": "Validar expiración, revocación, rotación, fijación de sesión, cookies Secure/HttpOnly/SameSite, CSRF, OAuth state/PKCE según flujo, tokens de un uso, firmas de webhooks, cifrado/custodia de claves y ausencia de secretos en URLs/logs/builds.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.3",
+      "title": "Rate limit y abuso por IP/cuenta",
+      "requirement": "Límites por IP confiable del proxy, cuenta, sesión y acción; ventanas, espera progresiva y recuperación. Probar spoofing de X-Forwarded-For, NAT, concurrencia, reinicios, password spraying, enumeración y límites de carga; evitar bloquear al equipo por el tráfico normal.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.4",
+      "title": "2FA y recuperación",
+      "requirement": "Activar 2FA con confirmación del factor, exigir verificación reciente al desactivar/cambiar, códigos de recuperación de un solo uso, revocación y auditoría. Probar reloj/reuso/intentos y pérdida del factor con cuentas de ensayo; conservar acceso de emergencia del propietario. Ningún factor se desactiva automáticamente para ensayar.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.5",
+      "title": "CAPTCHA y fricción adaptativa",
+      "requirement": "Elegir proveedor y condiciones de riesgo; validación en servidor, expiración, reuso, fallos, privacidad y alternativa accesible. Aplicar donde aporte a login/recuperación sin penalizar al usuario legítimo; no sustituye rate limit ni autorización.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.6",
+      "title": "Inyecciones y entradas no confiables",
+      "requirement": "Revisar parámetros SQL e identificadores de lista cerrada, consultas dinámicas, roles mínimos y errores. Probar XSS/HTML de plantillas, SSRF/URLs de medios y crawl, rutas/adjuntos, inyección de cabeceras y comandos. Revisar aislamiento de prompts/herramientas IA y fuentes RAG. Sin ataques destructivos a datos reales.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.7",
+      "title": "Infraestructura y monitoreo",
+      "requirement": "HTTPS/TLS, dominios/cabeceras, redes y puertos privados, permisos de base/roles/archivos, dependencias/imágenes y secretos, trazas/auditoría, alertas P15 y respaldo cifrado/custodiado. Reportar hallazgos con severidad y verificación de corrección.",
+      "state": "pending"
+    },
+    {
+      "id": "P18.8",
+      "title": "Aceptación, regresión y respuesta",
+      "requirement": "Matriz por control/rol/ruta con evidencias, pruebas de abuso en entorno autorizado, corrección y repetición, riesgos aceptados explícitos, runbooks de incidente/rotación/revocación y plan periódico. No declarar ausencia de vulnerabilidades por una suite verde.",
+      "state": "pending"
+    }
+  ],
+  "details": "docs/adaptation/P18_SECURITY_PLAN.md"
+}

@@ -1,3 +1,11 @@
+## Fase adicional P18 — 2026-11-18
+
+Por petición del propietario, se añade **P18 · Seguridad y ciberseguridad**, planificada 0/8 unidades aceptadas. Incluye tokens/sesiones, rate limit e IP confiable, 2FA, CAPTCHA, inyecciones, infraestructura y respuesta a incidentes. Ver `docs/adaptation/P18_SECURITY_PLAN.md` y `tasks/p18-security-progress.json`. P15 correos, P16 SIIE y P17 TikTok conservan la nueva numeración. No cambia el porcentaje ni los 56 criterios/279 hitos originales. P11 sigue en revisión operativa; los fallos críticos actuales no se difieren a P18.
+
+## Numeración adicional vigente — 2026-11-18
+
+Por petición del propietario, **P15 es Correos y notificaciones** (planificada, 0/7 unidades y 0% implementación); **SIIE pasa a P16** y **TikTok a P17** (diferidas, 0/5 cada una). Ver `docs/adaptation/P15_EMAIL_NOTIFICATIONS.md` y `tasks/p15-notifications-progress.json`. No cambia el porcentaje original, sus 56 criterios/279 hitos ni la evidencia histórica. P11 sigue en revisión operativa; no se acreditan envíos de correo por crear esta fase.
+
 ## Corte vigente: P10 técnica aceptada — 2026-11-18
 
 **General 98,04%; 274/279 hitos y 54/56 criterios. P10: 100%, 5/5 criterios, con alcance técnico y datos ficticios explícitos.** P5/P6/P8/P9 aceptadas. En producción PostgreSQL se completó por la UI un pack demo con 24 sujetos independientes y 24 muestras numéricas: 16 de entrenamiento y 8 posteriores al corte. Dos entrenamientos del mismo dataset generan idéntico SHA256. Mejora sintética contra baseline y errores de general:nuevo visibles; cuatro tareas/dos segmentos adicionales cubiertos por pruebas puras. Sombra propia de cada versión, rechazo de promoción prematura, dos promociones, reversión al primer aprobado, inferencia y deriva comprobados. Pack demo v2 conserva evidencia con entrenamiento detenido y predicción pausada. No es eficacia institucional, fine-tuning de Gemini, red neuronal adicional ni extracción automática de features.

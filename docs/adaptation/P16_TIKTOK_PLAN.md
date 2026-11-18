@@ -1,3 +1,7 @@
+## Referencia histórica de numeración
+
+Desde el 18 de noviembre de 2026 TikTok es [P17](P17_TIKTOK_PLAN.md). P16 ahora corresponde a SIIE. El contenido inferior se conserva como historial.
+
 # P16 · TikTok, plan separado
 
 Estado: diferido por decisión del propietario, 17 de noviembre de 2026. Sin cuenta ni aplicación de prueba disponibles. Esta fase adicional queda fuera del denominador original de 56 criterios/279 hitos.

@@ -57,14 +57,6 @@
   "P14": {
     "status": "planning_pending_after_P4_P7_P13"
   },
-  "P15": {
-    "status": "deferred_by_owner",
-    "accepted": 0,
-    "total": 5,
-    "implementation": "read_only_base_retained",
-    "scope": "SIIE_academic_and_financial_API",
-    "blocks_P13": false
-  },
   "verified_production": [
     "whatsapp_text_and_voice",
     "whatsapp_image_in_and_out",
@@ -94,7 +86,7 @@
     "required_content": "reviewed_program_facts_for_specific_values"
   },
   "siie_api": {
-    "phase": "P15",
+    "phase": "P16",
     "status": "deferred_by_owner_base_deployed_a333463",
     "backend_tests": 193,
     "frontend_tests": 19,
@@ -130,12 +122,7 @@
   "P4_P7_acceptance": {
     "status": "accepted_bounded_Meta",
     "evidence": "artifacts/live/p4-p7-acceptance-20261118.json",
-    "TikTok": "P16_deferred"
-  },
-  "P16": {
-    "status": "deferred_by_owner",
-    "accepted": 0,
-    "total": 5
+    "TikTok": "P17_deferred"
   },
   "P8": {
     "status": "accepted_Meta_closure",
@@ -162,5 +149,42 @@
     "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim",
     "evidence": "artifacts/live/p10-learning-acceptance-20261118.json",
     "institutional_efficacy_claimed": false
+  },
+  "P15": {
+    "status": "planned_by_owner",
+    "accepted": 0,
+    "total": 7,
+    "implementation_percent": "0.00%",
+    "scope": "email_notifications_templates_and_reports",
+    "details": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md"
+  },
+  "P16": {
+    "status": "deferred_by_owner",
+    "accepted": 0,
+    "total": 5,
+    "implementation": "read_only_base_retained",
+    "scope": "SIIE_academic_and_financial_API",
+    "blocks_P13": false
+  },
+  "P17": {
+    "status": "deferred_by_owner",
+    "accepted": 0,
+    "total": 5
+  },
+  "auxiliary_numbering": {
+    "date": "2026-11-18",
+    "P15": "New email and notifications phase",
+    "old_P15_SIIE": "P16",
+    "old_P16_TikTok": "P17",
+    "historical_receipts_renamed": false,
+    "canonical_weight_added": 0
+  },
+  "P18": {
+    "status": "planned_by_owner",
+    "accepted": 0,
+    "total": 8,
+    "phase_execution_percent": "0.00%",
+    "scope": "security_tokens_IP_rate_limits_MFA_CAPTCHA_injection_and_operations",
+    "details": "docs/adaptation/P18_SECURITY_PLAN.md"
   }
 }
