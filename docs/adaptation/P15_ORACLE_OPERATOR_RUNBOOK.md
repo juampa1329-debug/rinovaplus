@@ -78,3 +78,14 @@ El respaldo de PostgreSQL incluye documentos, assets y outbox de P15; el dump pr
 ## Aceptación pendiente
 
 Guardar resultados reales por unidad en `tasks/p15-notifications-progress.json`: DNS y SMTP, destinatarios/permisos/preferencias, invitación/recuperación/2FA, HTML/recursos/versión, persistencia/fallos/reintentos/recibos/pausa, agenda/informe y recuperación/operación. La prueba real requiere confirmación del buzón autorizado y evidencia de Oracle. OPS-05 sólo cierra al demostrar alertas efectivamente entregadas. No usar código ni cantidad de tests como sustituto de esta aceptación.
+
+
+## Verificación real del 18 de noviembre
+
+El titular confirmó recepción, activación con ingreso y recuperación con nuevo ingreso. El usuario Consulta de ensayo fue desactivado; cero sesiones y desafíos vigentes. Cinco correos transaccionales autorizados, sin campañas activas por estas pruebas. La plantilla institucional está limpia y publicada en revisión4; el HTML importado queda como ejemplo en borrador y las dos imágenes sintéticas se conservan identificadas en biblioteca privada.
+
+El remitente de una prueba manual queda ligado a su usuario administrador para volver a validar su acceso antes de SMTP. Una supresión local por revocación/preferencia/correo cambiado sólo afecta al elemento; un rebote permanente observado conserva el bloqueo a la dirección. Los recibos se registran manualmente desde Historial con ID/fecha de Oracle, sin afirmar integración automática OCI.
+
+Informes iniciales: intervalos móviles explícitos de24h o7×24h terminados en el instante programado; se muestra el rango UTC. La hora de disparo usa zona IANA y reglas DST. El total es de auditoría, no un informe financiero ni todos los KPIs del CRM. El límite de recuperación por cuenta es3/h y el de dirección de conexión5/15min; tras el proxy actual la dirección de conexión puede ser compartida. El tratamiento de IP real con proxies de confianza queda en P18, sin confiar en encabezados arbitrarios del cliente.
+
+La matriz de ejecución nativa usa PostgreSQL real con rollback, bajo el bloqueo de la institución. SMTP se reemplaza sólo en el proceso de ensayo, no en el servicio. Los scripts guardados en artifacts/live/p15-*-rollback-20261118.py son evidencia del ensayo controlado; no ejecutarlos como preparadores ni resembrar la base. El primer informe falló por CreatedAt y se corrigió a OccurredAt; el intento ampliado de supresión detectó el guard manual que se reforzó. Se conservan los intentos y resultados en p15-mail-validation-20261118.json.

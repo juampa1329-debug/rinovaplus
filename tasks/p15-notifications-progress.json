@@ -103,6 +103,7 @@
     "actual_HTML_import": "saved P15 HTML imported draft; valid preview; published default clean template revision4; rejected executable HTML",
     "asset_envelope": "481084 byte PNG uploaded and inspected through production HTTP; prior512KB envelope corrected for asset route only",
     "error_popup": "actual accessible operation dialog observed after unsafe HTML rejection",
-    "report_deployed": "2972137 healthy; actual unpatched report query and failure/recovery transitions pass with rollback,SMTP0"
+    "report_deployed": "2972137 healthy; actual unpatched report query and failure/recovery transitions pass with rollback,SMTP0",
+    "final_dispatch_policy": "Manual tests bind current administrator and recheck authority. Only a permanent bounced receipt blocks all future mail; local permission/preference suppression applies to that item only. Expanded native matrix pending final deploy."
   }
 }

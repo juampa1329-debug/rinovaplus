@@ -11,7 +11,7 @@ try:
   owner=next(u for u in m.users(c,s) if u['RoleKey']=='owner' and u['Active'])
   m.transaction=lambda *args,**kwargs:nullcontext(c)
   calls=[]
-  outcomes=iter([('retry','smtp_recipient_450'),('accepted',None),('uncertain','smtp_result_unknown'),('retry','smtp_recipient_450')])
+  outcomes=iter([('retry','smtp_recipient_450'),('accepted',None),('uncertain','smtp_result_unknown'),('retry','smtp_recipient_450'),('accepted',None)])
   def sender(message,recipient):
    calls.append(1)
    return next(outcomes)
@@ -39,15 +39,20 @@ try:
   assert not worker.once() and len(calls)==4
   inactive=m.enqueue(c,s,'mail.test',marker+'-inactive',owner['Login'],{},user_id='9f304694-b04d-408a-9376-3457b2aa8af4')
   assert worker.once() and row(inactive)['state']=='suppressed' and row(inactive)['attempts']==0 and len(calls)==4
+  after_local=enqueue('-after-local-suppression')
+  assert worker.once() and row(after_local)['state']=='accepted' and len(calls)==5
+  c.native("UPDATE rinova_notify.outbox SET state='bounced' WHERE id=%s",after_local)
+  after_bounce=enqueue('-after-permanent-bounce')
+  assert worker.once() and row(after_bounce)['state']=='suppressed' and row(after_bounce)['attempts']==0 and len(calls)==5
   cancelled=enqueue('-cancelled')
   c.native("UPDATE rinova_notify.outbox SET state='cancelled' WHERE id=%s",cancelled)
-  assert not worker.once() and row(cancelled)['attempts']==0 and len(calls)==4
+  assert not worker.once() and row(cancelled)['attempts']==0 and len(calls)==5
   paused=enqueue('-paused')
   c.native("UPDATE rinova_notify.document SET body=jsonb_set(body,'{enabled}','false'::jsonb) WHERE kind='transport' AND id='main'")
   assert not worker.once() and row(paused)['state']=='queued' and row(paused)['attempts']==0
   c.native("UPDATE rinova_notify.document SET body=jsonb_set(jsonb_set(body,'{enabled}','true'::jsonb),'{daily_limit}','1'::jsonb) WHERE kind='transport' AND id='main'")
   assert not worker.once() and row(paused)['attempts']==0
-  print('P15_NATIVE_WORKER retry/backoff/accepted/no-duplicate/uncertain/expired-lease/expiry/cap/suppression/cancel/pause/quota PASSED; STUB_CALLS',len(calls),'EXTERNAL_SMTP',0)
+  print('P15_NATIVE_WORKER retry/backoff/accepted/no-duplicate/uncertain/expired-lease/expiry/cap/suppression/local-recovery/permanent-bounce/cancel/pause/quota PASSED; STUB_CALLS',len(calls),'EXTERNAL_SMTP',0)
   raise RuntimeError(marker)
 except RuntimeError as error:
  if str(error)!=marker: raise

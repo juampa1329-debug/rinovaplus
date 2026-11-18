@@ -532,7 +532,7 @@ class Worker:
                 (v for v in users(c, s) if v["UserId"] == item["user_id"]), None
             )
             suppressed = c.native(
-                "SELECT count(*) FROM rinova_notify.outbox WHERE institution=%s AND recipient=%s AND state IN('bounced','suppressed')",
+                "SELECT count(*) FROM rinova_notify.outbox WHERE institution=%s AND recipient=%s AND state='bounced'",
                 institution(s),
                 item["recipient"],
             ).fetchval()

@@ -1,3 +1,5 @@
+P15: se añade a la revisión final de cola que una supresión por permisos/preferencias no se convierta en bloqueo permanente del correo; sólo un rebote permanente activa ese bloqueo. Continúa 5/7 hasta la matriz nativa y el despliegue final.
+
 ## P15: editor e informes publicados; revisión final de despacho — 2026-11-18
 
 P15:5/7 aceptadas (71,43%): transporte, reglas, eventos/acceso, editor/marca e informes. Editor real: HTML importado guardado como borrador, preview segura, scripts rechazados con modal explicativo, versión3 recuperada sin publicar y versión4 limpia publicada. PNG de481.084bytes cargado correctamente tras ajustar únicamente la envolvente HTTP de recursos. El backend2972137 está saludable y su consulta de informes se probó sin parches de ensayo:2avisos de transición y1informe tras dos pasadas, rollback ySMTP0.
