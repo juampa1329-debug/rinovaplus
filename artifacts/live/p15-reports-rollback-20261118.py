@@ -9,11 +9,6 @@ s=apply_environment()
 marker='p15-'+uuid4().hex
 try:
  with transaction(s,True,anonymous=True) as c:
-  execute=c.execute
-  def checked_execute(sql,*args):
-   if 'FROM crm_access.Audit' in sql: sql=sql.replace('CreatedAt','OccurredAt')
-   return execute(sql,*args)
-  c.execute=checked_execute
   owner=next(u for u in users(c,s) if u['RoleKey']=='owner' and u['Active'])
   def put(kind,identity,body):
    c.native('INSERT INTO rinova_notify.document(institution,kind,id,revision,body,actor) VALUES(%s,%s,%s,1,%s::jsonb,%s)',institution(s),kind,identity,json.dumps(body),owner['UserId'])

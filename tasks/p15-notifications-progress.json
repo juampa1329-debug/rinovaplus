@@ -3,7 +3,7 @@
   "title": "Correos y notificaciones configurables",
   "date": "2026-11-18",
   "status": "implementation_and_integration_in_progress",
-  "accepted": 4,
+  "accepted": 5,
   "total": 7,
   "implementation_percent": null,
   "canonical_weight_added": 0,
@@ -33,19 +33,19 @@
       "id": "P15.4",
       "title": "Editor y biblioteca de correo",
       "requirement": "Crear y versionar plantillas, subir/editar HTML, vista previa y envÃ­o de prueba revisado. Variables permitidas con escape, datos ausentes visibles, borrador/publicaciÃ³n/reversiÃ³n. Biblioteca de logos, encabezados, pie, colores de marca y firma visual por remitente; inspecciÃ³n de archivos y recursos embebidos. Sin JavaScript, formularios ejecutables ni URLs inseguras. Firma visual no equivale a firma electrÃ³nica certificada.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.5",
       "title": "Cola, trazabilidad y fiabilidad",
       "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicaciÃ³n, reintentos con espera, caducidad, supresiÃ³n y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlaciÃ³n, auditorÃ­a y pausa. Conservar efectos inciertos sin duplicar; ningÃºn secreto o contenido privado en logs.",
-      "state": "accepted"
+      "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.6",
       "title": "Informes y agenda",
       "requirement": "Informes diarios, semanales o con frecuencia elegida; hora local y zona IANA. PerÃ­odos y filtros explÃ­citos, agregados autorizados, destinatarios revisados, sin afirmar aperturas no observadas. Evitar datos personales innecesarios; definir quÃ© mÃ³dulos y KPIs incluye cada informe.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.7",
@@ -65,16 +65,16 @@
     "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
     "docs/adaptation/P15_ORACLE_OPERATOR_RUNBOOK.md"
   ],
-  "acceptance_percent": "57.14%",
+  "acceptance_percent": "71.43%",
   "implementation_measurement": "Partial code/tests are recorded separately; unit acceptance is not estimated feature completeness.",
   "credentials_saved_by_owner": true,
   "oracle_region": "us-ashburn-1",
   "evidence": {
-    "backend_selected_passed": 336,
-    "backend_p15_passed": 36,
+    "backend_selected_passed": 343,
+    "backend_p15_passed": 43,
     "frontend_initial_selected_passed": 18,
     "native_postgres": "7 new tables; frozen CRM155; CREATE false; DELETE false; dedup1; second claim0; rollback leaves outbox0",
-    "production_acceptance": "4/7 accepted; final deploy needed for report timestamp, error popup and asset upload envelope; final operation review pending",
+    "production_acceptance": "5/7 accepted. Extended manual-test revocation case found missing dispatcher authority binding; guard corrected,343selected pass; native recheck and final recovery/deploy pending",
     "oracle_sender_registered": true,
     "dkim_dns_verified": true,
     "spf_dns_verified": true,
@@ -99,6 +99,10 @@
     "test_user_live_sessions": 0,
     "test_user_valid_challenges": 0,
     "public_recovery_non_enumeration": "same generic response for inactive known account and absent synthetic account, no further mail",
-    "worker_native": "retry/backoff; accepted no duplicate; uncertain no retry; expired lease uncertain; expiry; pause; quota. SMTP stub3 calls, external0, rollback verified"
+    "worker_native": "retry/backoff; accepted no duplicate; uncertain no retry; expired lease uncertain; expiry; pause; quota. SMTP stub3 calls, external0, rollback verified",
+    "actual_HTML_import": "saved P15 HTML imported draft; valid preview; published default clean template revision4; rejected executable HTML",
+    "asset_envelope": "481084 byte PNG uploaded and inspected through production HTTP; prior512KB envelope corrected for asset route only",
+    "error_popup": "actual accessible operation dialog observed after unsafe HTML rejection",
+    "report_deployed": "2972137 healthy; actual unpatched report query and failure/recovery transitions pass with rollback,SMTP0"
   }
 }

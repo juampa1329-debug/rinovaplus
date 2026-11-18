@@ -447,3 +447,67 @@ def test_report_period_query_uses_the_declared_audit_schema(monkeypatch):
     monkeypatch.setattr(mail, "selected_users", lambda *_: [])
     mail.due_reports(cursor, None)
     assert cursor.execute.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "person,action,recipient,event,allowed",
+    [
+        (None, "users.manage", "test@example.invalid", "mail.test", False),
+        (
+            {
+                "Active": False,
+                "Actions": '["users.manage"]',
+                "Login": "owner@example.invalid",
+            },
+            "users.manage",
+            "test@example.invalid",
+            "mail.test",
+            False,
+        ),
+        (
+            {"Active": True, "Actions": "[]", "Login": "owner@example.invalid"},
+            "users.manage",
+            "test@example.invalid",
+            "mail.test",
+            False,
+        ),
+        (
+            {
+                "Active": True,
+                "Actions": '["users.manage"]',
+                "Login": "owner@example.invalid",
+            },
+            "users.manage",
+            "test@example.invalid",
+            "mail.test",
+            True,
+        ),
+        (
+            {"Active": True, "Actions": "[]", "Login": "target@example.invalid"},
+            "self",
+            "target@example.invalid",
+            "user.invited",
+            True,
+        ),
+        (
+            {"Active": True, "Actions": "[]", "Login": "target@example.invalid"},
+            "self",
+            "other@example.invalid",
+            "user.invited",
+            False,
+        ),
+        (
+            {"Active": False, "Actions": "[]", "Login": "target@example.invalid"},
+            "self",
+            "target@example.invalid",
+            "password.reset",
+            False,
+        ),
+    ],
+)
+def test_dispatch_rechecks_authority_even_for_manual_test_mail(
+    person, action, recipient, event, allowed
+):
+    from app.institutional.email_notifications import recipient_allowed
+
+    assert bool(recipient_allowed(person, action, recipient, event)) is allowed

@@ -1,3 +1,9 @@
+## P15: editor e informes publicados; revisión final de despacho — 2026-11-18
+
+P15:5/7 aceptadas (71,43%): transporte, reglas, eventos/acceso, editor/marca e informes. Editor real: HTML importado guardado como borrador, preview segura, scripts rechazados con modal explicativo, versión3 recuperada sin publicar y versión4 limpia publicada. PNG de481.084bytes cargado correctamente tras ajustar únicamente la envolvente HTTP de recursos. El backend2972137 está saludable y su consulta de informes se probó sin parches de ensayo:2avisos de transición y1informe tras dos pasadas, rollback ySMTP0.
+
+La prueba adicional de revocación reabre P15.5 hasta verificar el nuevo guard: las pruebas manuales deben conservar el administrador emisor y comprobar que sigue autorizado, aunque el destinatario de prueba sea externo al directorio CRM. El intento fallido usó SMTP simulado y rollback, sin envío externo. Código corregido;343backend seleccionadas (43correo),33frontend y15regresionesPG separadas. Cuenta de prueba inactiva,0sesiones/0desafíos. Pendientes: redespliegue del guard, ensayo ampliado y recuperación final; no declarar P15al100hasta esos resultados. General originalP0–P11:100%, P12auxiliar:100%; demás fases adicionales conservan alcance/estado documentados.
+
 ## P15: acceso y cola validados; despliegue final pendiente — 2026-11-18
 
 P15:4/7 aceptadas (57,14%): transporte, reglas/destinatarios, eventos/acceso y outbox. El titular confirmó activación y recuperación. Cuenta de ensayo desactivada:0sesiones y0desafíos vigentes. La respuesta pública para cuenta inactiva y cuenta inexistente es igual y no produce nuevos correos. Cinco correos reales autorizados; recibo de Gmail observado en Oracle y registrado manualmente.

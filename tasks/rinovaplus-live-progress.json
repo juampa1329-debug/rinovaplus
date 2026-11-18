@@ -154,13 +154,13 @@
     "institutional_efficacy_claimed": false
   },
   "P15": {
-    "status": "final_validation_in_progress",
-    "accepted": 4,
+    "status": "final_dispatcher_and_operation_validation",
+    "accepted": 5,
     "total": 7,
     "implementation_percent": null,
     "scope": "email_notifications_templates_and_reports",
     "details": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
-    "acceptance_percent": "57.14%",
+    "acceptance_percent": "71.43%",
     "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {

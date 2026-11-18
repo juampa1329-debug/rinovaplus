@@ -221,6 +221,12 @@ def selected_users(c, s, rule, action, event):
     ]
 
 
+def recipient_allowed(person, action, recipient, event):
+    return permitted(person, action) and (
+        event == "mail.test" or address(person["Login"]) == recipient
+    )
+
+
 def validate_activation(c, s, kind, value):
     if kind not in {"rule", "schedule"} or not value.get("enabled"):
         return
@@ -530,9 +536,8 @@ class Worker:
                 institution(s),
                 item["recipient"],
             ).fetchval()
-            allowed = item["event"] == "mail.test" or (
-                permitted(person, item["required_action"])
-                and address(person["Login"]) == item["recipient"]
+            allowed = recipient_allowed(
+                person, item["required_action"], item["recipient"], item["event"]
             )
             prefs = document(c, s, "preference", item["user_id"] or "")["body"]
             if (
@@ -909,6 +914,7 @@ def install(app, s):
                     "detalle": "Prueba autorizada de P15. Este correo comprueba el transporte y la identidad visual de RinovaPlus; no contiene información de estudiantes ni claves de acceso."
                 },
                 source=source,
+                user_id=actor["UserId"],
             )
             audit(
                 c, s, actor["UserId"], "notifications.test", identity or "deduplicated"
