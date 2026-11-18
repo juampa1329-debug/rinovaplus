@@ -35,6 +35,23 @@ type Comment = {
   synthetic_demo?: boolean;
   preview?: PostPreview;
   source?: { status: string; checked_at: string; reason?: string };
+  is_self?: boolean;
+  thread?: {
+    id: string;
+    post_id: string | null;
+    comments: number;
+    replies: number;
+    unread: number;
+    focus_id: string;
+    unlinked_reply: boolean;
+  };
+  replies?: {
+    id: string;
+    author: string;
+    body: string;
+    received_at: string;
+    state: string;
+  }[];
   capabilities: { public_comment_reply: boolean; comment_like: boolean };
 };
 const labels: Record<string, string> = {
@@ -51,6 +68,7 @@ const labels: Record<string, string> = {
   uncertain: "Resultado incierto",
   failed: "Fallido",
   cancelled: "Cancelado",
+  published: "Publicado en Meta",
 };
 
 export function Comments({
@@ -66,10 +84,12 @@ export function Comments({
     items: Comment[];
     total: number;
     has_more: boolean;
+    view?: string;
   }>(
     "comments?" +
       new URLSearchParams({
         channel,
+        view: "threads",
         state,
         q: query,
         offset: String(offset),
@@ -78,7 +98,13 @@ export function Comments({
           : {}),
       }),
   );
-  const comment = data.value?.items.find((v) => v.id === selected);
+  const comment =
+    data.value?.items.find(
+      (v) => (v.thread?.id || v.id) === selected || v.id === selected,
+    ) ||
+    (initialComment && selected === initialComment
+      ? data.value?.items[0]
+      : undefined);
   const change = (fn: () => void) => {
     if (allowNavigation()) {
       fn();
@@ -160,16 +186,24 @@ export function Comments({
           <>
             <p className="inbox-results-count" role="status">
               {data.value.total}{" "}
-              {data.value.total === 1 ? "comentario" : "comentarios"}
+              {data.value.view === "threads"
+                ? data.value.total === 1
+                  ? "hilo"
+                  : "hilos"
+                : data.value.total === 1
+                  ? "comentario"
+                  : "comentarios"}
+              {data.value.items.some((v) => v.thread) &&
+                " · por persona y publicación"}
             </p>
             {data.value.items.map((row) => (
               <button
                 type="button"
                 className="inbox-conversation"
-                key={row.id}
-                aria-pressed={row.id === selected}
+                key={row.thread?.id || row.id}
+                aria-pressed={row === comment}
                 onClick={() => {
-                  if (allowNavigation()) setSelected(row.id);
+                  if (allowNavigation()) setSelected(row.thread?.id || row.id);
                 }}
               >
                 <span className="inbox-avatar" aria-hidden="true">
@@ -184,6 +218,23 @@ export function Comments({
                   <small>
                     {row.account} · {labels[row.state] || row.state}
                   </small>
+                  {row.thread && (
+                    <small className="comments-group-count">
+                      {row.thread.unlinked_reply
+                        ? "Respuesta de la cuenta · contexto no recibido"
+                        : `${row.thread.comments} ${row.thread.comments === 1 ? "comentario" : "comentarios"} · ${row.thread.replies} ${row.thread.replies === 1 ? "respuesta" : "respuestas"}`}
+                      {!!row.thread.unread &&
+                        ` · ${row.thread.unread} sin leer`}
+                    </small>
+                  )}
+                  {row.thread?.post_id && (
+                    <small
+                      className="comments-post-ref"
+                      title={`Publicación ${row.thread.post_id}`}
+                    >
+                      Publicación {row.thread.post_id}
+                    </small>
+                  )}
                 </span>
               </button>
             ))}
@@ -220,8 +271,8 @@ export function Comments({
         )}
       </aside>
       {comment ? (
-        <CommentDetail
-          key={comment.id}
+        <CommentWorkspace
+          key={comment.thread?.id || comment.id}
           comment={comment}
           done={data.reload}
           back={() => {
@@ -249,7 +300,20 @@ export function Comments({
     </div>
   );
 }
-function CommentDetail({
+
+function CommentWorkspace(props: {
+  comment: Comment;
+  done: () => Promise<unknown>;
+  back: () => void;
+}) {
+  return props.comment.thread ? (
+    <ThreadedCommentDetail {...props} />
+  ) : (
+    <CommentDetail {...props} />
+  );
+}
+
+function ThreadedCommentDetail({
   comment,
   done,
   back,
@@ -258,6 +322,170 @@ function CommentDetail({
   done: () => Promise<unknown>;
   back: () => void;
 }) {
+  const { session } = useInstitution();
+  const [anchor] = useState(comment.thread?.focus_id || comment.id);
+  const [targetId, setTargetId] = useState("");
+  const [offset, setOffset] = useState(0);
+  const thread = useResource<{
+    items: Comment[];
+    total: number;
+    has_more: boolean;
+    focus_id: string;
+    unlinked_reply: boolean;
+  }>(`comments/${anchor}/thread?offset=${offset}`);
+  if (!thread.value)
+    return (
+      <section className="panel comments-center">
+        <ResourceState error={thread.error} />
+      </section>
+    );
+  const target =
+    thread.value.items.find(
+      (v) => v.id === (targetId || thread.value?.focus_id),
+    ) || thread.value.items[0];
+  if (!target)
+    return (
+      <section className="panel comments-center">
+        <h2>Respuesta de {comment.account}</h2>
+        <p>{comment.body}</p>
+        <Notice>
+          El comentario original aún no llegó desde Meta. Conservamos esta
+          respuesta, pero no la vinculamos a otra persona sin evidencia.
+        </Notice>
+      </section>
+    );
+  const refresh = async () => {
+    await thread.reload();
+    await done();
+  };
+  return (
+    <CommentDetail
+      key={target.id}
+      comment={{ ...target, preview: target.preview || comment.preview }}
+      done={refresh}
+      back={back}
+      focusComposer={!!targetId}
+      threadContent={
+        <section
+          className="comments-person-thread"
+          aria-label={`Comentarios de ${target.author} en esta publicación`}
+        >
+          <header>
+            <h3>{target.author} en esta publicación</h3>
+            <p>
+              {thread.value.total}{" "}
+              {thread.value.total === 1 ? "comentario" : "comentarios"} ·
+              Respuestas de {comment.account}
+            </p>
+          </header>
+          {thread.error && (
+            <Notice error>
+              {thread.error} Conservamos el hilo que estabas consultando.
+            </Notice>
+          )}
+          {thread.value.items.map((entry) => (
+            <article
+              key={entry.id}
+              className="comments-thread-entry"
+              data-reply-target={entry.id === target.id || undefined}
+              aria-label={`Comentario de ${entry.author}`}
+            >
+              <div className="comments-heading">
+                <strong>{entry.author}</strong>
+                <time dateTime={entry.received_at}>
+                  {new Date(entry.received_at).toLocaleString("es-CO")}
+                </time>
+              </div>
+              <p>{entry.body}</p>
+              <div className="comments-heading">
+                <small>
+                  {labels[entry.state] || entry.state}
+                  {entry.id === target.id ? " · Comentario seleccionado" : ""}
+                </small>
+                <Button
+                  variant="quiet"
+                  aria-label={`Responder al comentario: ${entry.body.slice(0, 80)}`}
+                  disabled={
+                    !session.actions.includes("inbox.write") ||
+                    ["deleted", "unavailable"].includes(entry.state)
+                  }
+                  onClick={() => {
+                    if (entry.id === target.id) {
+                      document.getElementById("comment-public-reply")?.focus();
+                      return;
+                    }
+                    if (allowNavigation()) setTargetId(entry.id);
+                  }}
+                >
+                  Responder
+                </Button>
+              </div>
+              {!!entry.replies?.length && (
+                <ol
+                  className="comments-thread-replies"
+                  aria-label={`Respuestas a: ${entry.body.slice(0, 80)}`}
+                >
+                  {entry.replies.map((response) => (
+                    <li key={response.id}>
+                      <div className="comments-heading">
+                        <strong>
+                          {response.author} <small>Cuenta conectada</small>
+                        </strong>
+                        <time dateTime={response.received_at}>
+                          {new Date(response.received_at).toLocaleString(
+                            "es-CO",
+                          )}
+                        </time>
+                      </div>
+                      <p>{response.body}</p>
+                      <small>{labels[response.state] || response.state}</small>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </article>
+          ))}
+          {(offset > 0 || thread.value.has_more) && (
+            <div className="institution-actions">
+              <Button
+                variant="secondary"
+                disabled={!thread.value.has_more}
+                onClick={() => {
+                  if (allowNavigation()) setOffset(offset + 25);
+                }}
+              >
+                Comentarios anteriores
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={!offset}
+                onClick={() => {
+                  if (allowNavigation()) setOffset(Math.max(0, offset - 25));
+                }}
+              >
+                Más recientes
+              </Button>
+            </div>
+          )}
+        </section>
+      }
+    />
+  );
+}
+
+function CommentDetail({
+  comment,
+  done,
+  back,
+  threadContent,
+  focusComposer = false,
+}: {
+  comment: Comment;
+  done: () => Promise<unknown>;
+  back: () => void;
+  threadContent?: ReactNode;
+  focusComposer?: boolean;
+}) {
   const [reply, setReply] = useState(""),
     [suggestion, setSuggestion] = useState(""),
     [name, setName] = useState(""),
@@ -265,8 +493,12 @@ function CommentDetail({
     task = useTask(),
     intent = useIntent();
   useDraftGuard(!!reply || !!name);
+  useEffect(() => {
+    if (focusComposer) document.getElementById("comment-public-reply")?.focus();
+  }, [focusComposer, comment.id]);
   const writable = session.actions.includes("inbox.write"),
-    active = !["deleted", "unavailable"].includes(comment.state),
+    active =
+      !comment.is_self && !["deleted", "unavailable"].includes(comment.state),
     human = comment.control_mode === "human";
   const act = (action: string) =>
     void task.run(async () => {
@@ -372,21 +604,23 @@ function CommentDetail({
           </div>
         )}
         <CommentPost comment={comment} />
-        <div className="comments-original">
-          <div className="comments-heading">
-            <strong>{comment.author || "Autor sin identificar"}</strong>
-            <time dateTime={comment.received_at}>
-              {new Date(comment.received_at).toLocaleString("es-CO")}
-            </time>
+        {threadContent || (
+          <div className="comments-original">
+            <div className="comments-heading">
+              <strong>{comment.author || "Autor sin identificar"}</strong>
+              <time dateTime={comment.received_at}>
+                {new Date(comment.received_at).toLocaleString("es-CO")}
+              </time>
+            </div>
+            <p>{comment.body}</p>
+            <small>
+              {labels[comment.state] || comment.state}
+              {comment.reply_state
+                ? " · " + (labels[comment.reply_state] || comment.reply_state)
+                : ""}
+            </small>
           </div>
-          <p>{comment.body}</p>
-          <small>
-            {labels[comment.state] || comment.state}
-            {comment.reply_state
-              ? " · " + (labels[comment.reply_state] || comment.reply_state)
-              : ""}
-          </small>
-        </div>
+        )}
         <div className="institution-actions">
           {comment.capabilities.comment_like && (
             <Button
@@ -443,6 +677,12 @@ function CommentDetail({
             act("reply");
           }}
         >
+          {threadContent && (
+            <p className="comments-reply-target">
+              Respondiendo a <strong>{comment.author}</strong>:{" "}
+              {comment.body.slice(0, 180)}
+            </p>
+          )}
           <TextArea
             id="comment-public-reply"
             label="Respuesta pública"

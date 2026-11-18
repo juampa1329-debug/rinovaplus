@@ -1,3 +1,9 @@
+## Mejora de Comentarios y comunicación de pendientes — 2026-11-18
+
+Preferencia permanente del propietario: **siempre informar ID, nombre, finalidad y estado de cada fase pendiente**, no sólo su numeración. Resumen vigente: `docs/adaptation/PENDING_PHASES.md` (P13 Académico/agentes por programa; P14 entrenamiento comercial; P15 correos; P16 API SIIE; P17 TikTok; P18 seguridad).
+
+La mejora actual agrupa Comentarios por persona/publicación/cuenta y muestra cada respuesta de CBN debajo del comentario original, con Responder por comentario. Las respuestas propias se excluyen de las notificaciones nuevas. Código y pruebas completos, despliegue pendiente al corte: `tasks/comment-threads-progress.json`, guía `docs/adaptation/COMMENT_THREADS.md`. General original P0–P11:100%; P12 auxiliar:100% en alcance PostgreSQL/Meta; no se añade peso ni se acredita implementación de fases adicionales. Los cortes inferiores son historia.
+
 ## Aceptación vigente P11/P12 en PostgreSQL — 2026-11-18
 
 **Roadmap original P0–P11: 100,00%; 279/279 hitos y 56/56 criterios aceptados. P11:100%, 4/4.** El propietario aceptó explícitamente «Aceptar ese alcance y registrar las mejoras pendientes»: PostgreSQL actual publicado, recorridos acordados P1–P10 y los límites operativos entregados. Sólo se aceptan P11.3/P11.close y se completan sus cinco hitos pendientes; P11.1/P11.2 y todos los cierres previos conservan sus alcances. La referencia SQL2019 se mantiene con modificación humana explícita del destino a PostgreSQL; no se recertifica SQL2019 ni se afirma mapa completo DBSIIE.

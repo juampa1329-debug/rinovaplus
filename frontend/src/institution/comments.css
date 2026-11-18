@@ -65,6 +65,77 @@
   overflow-wrap: anywhere;
   background: var(--surface);
 }
+.comments-group-count {
+  font-weight: 650;
+}
+.comments-post-ref {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.comments-person-thread {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.comments-person-thread header p,
+.comments-thread-entry time,
+.comments-thread-entry small {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.comments-person-thread header :is(h3, p),
+.comments-thread-entry p {
+  margin: 0;
+}
+.comments-thread-entry {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.875rem;
+  border: 1px solid var(--inbox-edge);
+  border-radius: var(--radius-control);
+  overflow-wrap: anywhere;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+.comments-thread-entry[data-reply-target] {
+  border-color: var(--accent);
+}
+.comments-thread-entry p,
+.comments-reply-target {
+  white-space: pre-wrap;
+}
+.comments-thread-replies {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.25rem 0 0 0.75rem;
+  padding: 0 0 0 0.875rem;
+  list-style: none;
+  border-inline-start: 2px solid var(--inbox-edge);
+}
+.comments-thread-replies li {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-control);
+  background: var(--inbox-selected);
+}
+.comments-thread-replies strong small {
+  display: block;
+  font-weight: 400;
+}
+.comments-reply-target {
+  margin: 0 0 0.75rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 3px solid var(--accent);
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .comments-thread-entry {
+    transition: none;
+  }
+}
 .comments-post-idle {
   flex: 1;
   min-block-size: 14rem;

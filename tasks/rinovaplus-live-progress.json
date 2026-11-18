@@ -53,10 +53,12 @@
     "implementation": "partial",
     "pilot": "pending_human_acceptance",
     "required_source": "reviewed_manual_or_institutional_content",
-    "siie_dependency": false
+    "siie_dependency": false,
+    "title": "Académico y agentes de venta por programa"
   },
   "P14": {
-    "status": "planning_pending_after_P4_P7_P13"
+    "status": "planning_pending_after_P4_P7_P13",
+    "title": "Entrenamiento y mejora del agente de ventas"
   },
   "verified_production": [
     "whatsapp_text_and_voice",
@@ -211,5 +213,11 @@
     "total": 4,
     "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
     "residual_improvements": "tasks/operations-hardening-backlog.json"
+  },
+  "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md",
+  "comment_threads": {
+    "status": "implemented_tested_deployment_pending",
+    "evidence": "tasks/comment-threads-progress.json",
+    "canonical_weight_added": 0
   }
 }

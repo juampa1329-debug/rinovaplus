@@ -10,6 +10,7 @@ from app.institutional.auth import authorize
 from app.institutional.db import audit, institution, record_operation, replay, rows, utc
 from app.institutional.models import Strict
 from app.institutional.store import transaction
+from app.institutional.comment_threads import incoming_only_sql
 
 ACTION = "comments.notifications.read"
 
@@ -55,12 +56,12 @@ class Notifications:
                 "ON i.InstitutionId=s.InstitutionId AND i.IntegrationId=s.IntegrationId "
                 "WHERE s.InstitutionId=? AND s.ReceivedAt>? AND s.ReceivedAt<=? "
                 "AND ISNULL(JSON_VALUE(s.Payload,'$._crm.state'),'new')='new'"
-            )
+            ) + incoming_only_sql()
             total = c.execute("SELECT COUNT(*)" + where, *params).fetchval()
             values = rows(
                 c,
                 "SELECT TOP(8) s.CommentId,s.Body,s.AuthorExternalId,s.Payload,"
-                "s.ReceivedAt,i.Channel"
+                "s.ReceivedAt,i.Channel,i.DisplayName"
                 + where
                 + " ORDER BY s.ReceivedAt DESC,s.CommentId",
                 *params,
@@ -74,6 +75,7 @@ class Notifications:
                         "body": v["Body"],
                         "author": display_author(v),
                         "channel": v["Channel"],
+                        "account": v.get("DisplayName", ""),
                         "received_at": utc(v["ReceivedAt"]),
                     }
                     for v in values

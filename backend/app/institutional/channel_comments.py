@@ -36,6 +36,8 @@ class CommentAction(Strict):
 
 
 def public_comment(value):
+    from app.institutional.comment_threads import is_account_comment
+
     payload = json.loads(value["Payload"])
     state = payload.get("_crm", {})
     provider = payload.get("provider")
@@ -48,13 +50,14 @@ def public_comment(value):
             "",
         )
     synthetic = bool(state.get("synthetic_demo"))
+    own = is_account_comment(value)
     return {
         "id": uid(str(value["CommentId"])),
         "integration_id": uid(str(value["IntegrationId"])),
         "channel": value["Channel"],
         "account": value["DisplayName"],
         "external_id": value["ExternalId"],
-        "author": display_name or value["AuthorExternalId"],
+        "author": value["DisplayName"] if own else display_name or value["AuthorExternalId"],
         "body": value["Body"],
         "received_at": utc(value["ReceivedAt"]),
         "row_version": bytes(value["RowVersion"]).hex(),
@@ -71,11 +74,12 @@ def public_comment(value):
             **capabilities(value),
             **(
                 {"public_comment_reply": False, "comment_like": False}
-                if synthetic
+                if synthetic or own
                 else {}
             ),
         },
         "synthetic_demo": synthetic,
+        "is_self": own,
     }
 
 
@@ -85,8 +89,12 @@ class Comments:
 
     def read(
         self, authority, *, integration="", channel="", state="all", q="", offset=0,
-        comment_id="",
+        comment_id="", view="comments",
     ):
+        if view == "threads" and getattr(self.settings, "postgres_deployment", False):
+            from app.institutional.comment_threads import Threads
+
+            return Threads(self.settings).read(authority, integration=integration, channel=channel, state=state, q=q, offset=offset, comment_id=comment_id)
         with transaction(self.settings, anonymous=True) as c:
             authorize(c, self.settings, authority, "inbox.read")
             where, params = ["s.InstitutionId=?"], [institution(self.settings)]
@@ -172,6 +180,10 @@ class Comments:
             if state.get("state") == "unavailable":
                 raise HTTPException(409, "comment_source_unavailable")
             item = account(c, self.settings, str(value["IntegrationId"]))
+            from app.institutional.comment_threads import is_account_comment
+
+            if body.action in {"reply", "convert", "takeover", "release"} and is_account_comment(value, item):
+                raise HTTPException(409, "comment_is_account_reply")
             result = {}
             if body.action == "convert":
                 authorize(c, self.settings, authority, "crm.write")
@@ -354,6 +366,7 @@ def install(app, settings):
         request: Request,
         integration: str = "",
         comment_id: str = "",
+        view: Literal["comments", "threads"] = "comments",
         channel: Literal["", "facebook", "instagram", "tiktok"] = "",
         state: Literal["all", "new", "read", "archived", "deleted", "unavailable"] = "all",
         q: str = Query("", max_length=200),
@@ -367,7 +380,16 @@ def install(app, settings):
             q=q,
             offset=offset,
             comment_id=comment_id,
+            view=view,
         )
+
+    @app.get("/api/institution/comments/{identity}/thread")
+    def thread(request: Request, identity: str, offset: int = Query(0, ge=0, le=10000)):
+        from app.institutional.comment_threads import Threads
+
+        if not getattr(settings, "postgres_deployment", False):
+            raise HTTPException(409, "comment_threads_require_postgres")
+        return Threads(settings).detail(request.state.authority, identity, offset)
 
     @app.post("/api/institution/comments/{identity}")
     def action(request: Request, identity: str, body: CommentAction):

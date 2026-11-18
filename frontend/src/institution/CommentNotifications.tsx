@@ -13,6 +13,7 @@ type NewComments = {
     author: string;
     body: string;
     channel: string;
+    account?: string;
     received_at: string;
   }[];
 };
@@ -119,7 +120,7 @@ export function CommentNotifications() {
           <ul>
             {value.items
               .slice(0, 8)
-              .map(({ id, author, channel, body, received_at }) => (
+              .map(({ id, author, channel, account, body, received_at }) => (
                 <li key={id}>
                   <a
                     href={`#/comments/${encodeURIComponent(id)}`}
@@ -132,6 +133,9 @@ export function CommentNotifications() {
                       <ChannelLabel channel={channel} />
                     </span>
                     <span className="comment-notification-preview">{body}</span>
+                    {account && (
+                      <small>{account} · Abrir hilo de esta publicación</small>
+                    )}
                     <time dateTime={received_at}>
                       {new Date(received_at).toLocaleString("es-CO", {
                         month: "short",

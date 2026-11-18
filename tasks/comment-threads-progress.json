@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-18",
+  "status": "implemented_tested_deployment_pending",
+  "scope": "Group comments by institution, account, post and author, show each connected-account reply below its original, and exclude self comments from notifications",
+  "canonical_weight_added": 0,
+  "backend_selected_tests": 186,
+  "frontend_selected_tests": 22,
+  "types_changed_lint_workspace_build": "passed",
+  "existing_bundle_warning": "retained",
+  "postgres_read_only_probe": {
+    "actual_comments": 44,
+    "account_comments": 24,
+    "linked_account_comments": 24,
+    "groups": 17,
+    "synthetic_rows": 15,
+    "database_writes": 0,
+    "new_containers": 0
+  },
+  "new_external_comments_or_replies_sent": 0,
+  "details": "docs/adaptation/COMMENT_THREADS.md",
+  "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md"
+}

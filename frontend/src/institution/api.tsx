@@ -88,6 +88,7 @@ const messages: Record<string, string> = {
   ads_meta_draft_not_found:
     "El borrador no pertenece a esta cuenta o ya no está disponible. Actualiza la biblioteca de esta cuenta.",
   comment_source_unavailable: "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
+  comment_is_account_reply: "Esta respuesta pertenece a la cuenta conectada. Abre el hilo y selecciona el comentario de la persona a la que quieres responder.",
   invalid_notification_cutoff: "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",
   learning_purpose_authorization_required: "Esta finalidad necesita una autorización vigente. Revisa las autorizaciones del pack.",
   learning_authorization_changed_rebuild_required: "Cambió una autorización usada por el dataset. Revisa las muestras y crea un dataset nuevo.",

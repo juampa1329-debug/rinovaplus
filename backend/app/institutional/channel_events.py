@@ -584,13 +584,18 @@ def project(c, settings, item, effect):
             item["IntegrationId"],
             effect["external"],
         )
-        state = json.loads(comment["Payload"]).get("_crm", {}) if comment else {}
+        previous = json.loads(comment["Payload"]) if comment else {}
+        state = previous.get("_crm", {})
+        provider = {**previous.get("provider", {}), **effect["provider"]}
+        own_ids = {str(item.get("ExternalAccountId") or ""), str(effect.get("route") or ""), str(provider.get("self_ig_scoped_id") or "")} - {""}
+        author = effect.get("author") or (comment.get("AuthorExternalId") if comment else "")
+        state["is_self"] = bool(state.get("is_self") or author and str(author) in own_ids)
         if effect["kind"] == "comment_deleted":
             state["state"] = "deleted"
         else:
             state.setdefault("state", "new")
         value = json.dumps(
-            {"provider": effect["provider"], "_crm": state}, ensure_ascii=False
+            {"provider": provider, "_crm": state}, ensure_ascii=False
         )
         if comment:
             c.execute(
