@@ -89,6 +89,7 @@ const messages: Record<string, string> = {
   ads_meta_draft_not_found:
     "El borrador no pertenece a esta cuenta o ya no está disponible. Actualiza la biblioteca de esta cuenta.",
   password_policy: "La contraseña debe tener entre 15 y 128 caracteres y no puede ser una secuencia o clave demasiado común. Elige una frase personal más segura y vuelve a guardarla; el enlace sigue disponible si no ha vencido.",
+  email_access_link_required: "La plantilla de invitación o recuperación debe incluir {{enlace}} para que la persona pueda crear su contraseña. Añade un enlace HTTPS usando esa variable, valida y publica la plantilla.",
   email_template_not_published: "Selecciona una plantilla publicada antes de activar esta regla o informe.",
   email_recipient_selection_required: "Selecciona al menos un usuario, rol o grupo de destinatarios antes de activar esta regla o informe.",
   email_invalid_configuration: "Hay un valor de configuración no permitido. Revisa identificador, evento, destinatarios y plantilla antes de guardar.",

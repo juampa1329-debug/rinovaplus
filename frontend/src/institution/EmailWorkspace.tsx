@@ -48,12 +48,14 @@ const defaults: Record<string, Record<string, unknown>> = {
     reply_to: "",
     daily_limit: 100,
     recovery_enabled: false,
+    invitation_template: "",
+    recovery_template: "",
   },
   template: {
     name: "Aviso institucional",
     subject: "{{evento}} · RinovaPlus",
-    html: '<div style="background-color:#12343B;color:#F5F7F2;padding:32px;border-radius:16px"><h1>{{evento}}</h1><p>Hola {{nombre}},</p><p>{{detalle}}</p><p>{{fecha}}</p><p><a href="{{enlace}}" style="color:#C4F04D">Abrir RinovaPlus</a></p></div>',
-    signature: "<p>Corporación Bolivariana del Norte — CBN</p>",
+    html: '<div style="font-family:Arial,Helvetica,sans-serif;background-color:#12343B;color:#F5F7F2;padding:32px;border-radius:16px"><h1>{{evento}}</h1><p>Hola {{nombre}},</p><p>{{detalle}}</p><p>{{fecha}}</p><p><a href="{{enlace}}" style="color:#C4F04D">Abrir RinovaPlus</a></p></div>',
+    signature: '<p style="font-family:Arial,Helvetica,sans-serif;color:#52666B">Corporación Bolivariana del Norte — CBN</p>',
     published: false,
   },
   rule: {
@@ -372,6 +374,36 @@ function Editor({
                 />
                 Permitir recuperación de contraseña por correo
               </label>
+              {(
+                [
+                  ["invitation_template", "Plantilla de invitación"],
+                  ["recovery_template", "Plantilla de recuperación"],
+                ] as const
+              ).map(([field, label]) => (
+                <SelectField
+                  key={field}
+                  id={`mail-${field}`}
+                  label={label}
+                  value={str(field)}
+                  onChange={(e) => change(field, e.target.value)}
+                  options={[
+                    { value: "", label: "Diseño de RinovaPlus (respaldo)" },
+                    ...data.documents
+                      .filter(
+                        (doc) => doc.kind === "template" && doc.body.published,
+                      )
+                      .map((doc) => ({
+                        value: doc.id,
+                        label: String(doc.body.name ?? doc.id),
+                      })),
+                  ]}
+                />
+              ))}
+              <Notice>
+                Estas plantillas necesitan la variable {"{{enlace}}"}. Si una
+                versión deja de estar publicada, el acceso usa el diseño seguro
+                de respaldo.
+              </Notice>
               <Notice>
                 La contraseña SMTP se guarda sólo en las variables de producción
                 de Coolify. La conexión usa TLS en el puerto 587. El máximo

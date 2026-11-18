@@ -53,6 +53,8 @@ DEFAULT_TRANSPORT = {
     "reply_to": "",
     "daily_limit": 100,
     "recovery_enabled": False,
+    "invitation_template": "",
+    "recovery_template": "",
 }
 
 
@@ -123,6 +125,8 @@ def validate(kind, body):
             "reply_to",
             "daily_limit",
             "recovery_enabled",
+            "invitation_template",
+            "recovery_template",
         },
         "template": {"name", "subject", "html", "published", "signature"},
         "rule": {
@@ -170,6 +174,12 @@ def validate(kind, body):
             fail("email_invalid_configuration")
     if kind == "transport":
         body = {**DEFAULT_TRANSPORT, **body}
+        for field in ("invitation_template", "recovery_template"):
+            value = body.get(field, "")
+            if not isinstance(value, str) or (
+                value and not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", value)
+            ):
+                fail("email_invalid_configuration")
         address(body["sender"])
         if body["reply_to"]:
             address(body["reply_to"])
@@ -227,7 +237,35 @@ def recipient_allowed(person, action, recipient, event):
     )
 
 
+def transactional_source(c, s, event, cfg):
+    field = {
+        "user.invited": "invitation_template",
+        "password.reset": "recovery_template",
+    }.get(event)
+    identity = cfg.get(field, "") if field else ""
+    if not identity:
+        return None
+    source = document(c, s, "template", identity)["body"]
+    return (
+        source
+        if source.get("published")
+        and "{{enlace}}" in (source.get("html", "") + source.get("signature", ""))
+        else None
+    )
+
+
 def validate_activation(c, s, kind, value):
+    if kind == "transport" and value.get("enabled"):
+        for field in ("invitation_template", "recovery_template"):
+            if value.get(field):
+                source = document(c, s, "template", value[field])["body"]
+                if not source.get("published"):
+                    fail("email_template_not_published")
+                if "{{enlace}}" not in (
+                    source.get("html", "") + source.get("signature", "")
+                ):
+                    fail("email_access_link_required")
+        return
     if kind not in {"rule", "schedule"} or not value.get("enabled"):
         return
     source = document(c, s, "template", value.get("template", ""))["body"]
@@ -244,17 +282,21 @@ def enqueue(
     recipient = address(recipient)
     identity = str(uuid4())
     cfg = transport(c, s)
-    source = source or {
-        "subject": "{{evento}} · RinovaPlus",
-        "html": DEFAULT_HTML.replace(
-            "Abrir RinovaPlus",
-            {
-                "user.invited": "Activar mi cuenta",
-                "password.reset": "Crear nueva contraseña",
-            }.get(event, "Abrir RinovaPlus"),
-        ),
-        "signature": "<p>Corporación Bolivariana del Norte — CBN</p>",
-    }
+    source = (
+        source
+        or transactional_source(c, s, event, cfg)
+        or {
+            "subject": "{{evento}} · RinovaPlus",
+            "html": DEFAULT_HTML.replace(
+                "Abrir RinovaPlus",
+                {
+                    "user.invited": "Activar mi cuenta",
+                    "password.reset": "Crear nueva contraseña",
+                }.get(event, "Abrir RinovaPlus"),
+            ),
+            "signature": '<p style="font-family:Arial,Helvetica,sans-serif;color:#52666B">Corporación Bolivariana del Norte — CBN</p>',
+        }
+    )
     values = {
         "nombre": "equipo CBN",
         "evento": EVENTS[event][0],

@@ -3,7 +3,7 @@
   "title": "Correos y notificaciones configurables",
   "date": "2026-11-18",
   "status": "implementation_and_integration_in_progress",
-  "accepted": 5,
+  "accepted": 6,
   "total": 7,
   "implementation_percent": null,
   "canonical_weight_added": 0,
@@ -39,7 +39,7 @@
       "id": "P15.5",
       "title": "Cola, trazabilidad y fiabilidad",
       "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicaciÃ³n, reintentos con espera, caducidad, supresiÃ³n y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlaciÃ³n, auditorÃ­a y pausa. Conservar efectos inciertos sin duplicar; ningÃºn secreto o contenido privado en logs.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.6",
@@ -65,16 +65,16 @@
     "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
     "docs/adaptation/P15_ORACLE_OPERATOR_RUNBOOK.md"
   ],
-  "acceptance_percent": "71.43%",
+  "acceptance_percent": "85.71%",
   "implementation_measurement": "Partial code/tests are recorded separately; unit acceptance is not estimated feature completeness.",
   "credentials_saved_by_owner": true,
   "oracle_region": "us-ashburn-1",
   "evidence": {
-    "backend_selected_passed": 343,
-    "backend_p15_passed": 43,
+    "backend_selected_passed": 347,
+    "backend_p15_passed": 47,
     "frontend_initial_selected_passed": 18,
     "native_postgres": "7 new tables; frozen CRM155; CREATE false; DELETE false; dedup1; second claim0; rollback leaves outbox0",
-    "production_acceptance": "5/7 accepted. Extended manual-test revocation case found missing dispatcher authority binding; guard corrected,343selected pass; native recheck and final recovery/deploy pending",
+    "production_acceptance": "6/7; final critical-template selectors, real manual test with bound sender and final operational review pending",
     "oracle_sender_registered": true,
     "dkim_dns_verified": true,
     "spf_dns_verified": true,
@@ -99,11 +99,12 @@
     "test_user_live_sessions": 0,
     "test_user_valid_challenges": 0,
     "public_recovery_non_enumeration": "same generic response for inactive known account and absent synthetic account, no further mail",
-    "worker_native": "retry/backoff; accepted no duplicate; uncertain no retry; expired lease uncertain; expiry; pause; quota. SMTP stub3 calls, external0, rollback verified",
+    "worker_native": "42f8a19: retry,backoff,accepted/no-duplicate,uncertain,expired lease,expiry,max5 attempts,inactive sender suppression,local suppression recovery,permanent bounce,cancel,pause,quota;5stub calls,externalSMTP0,rollback verified",
     "actual_HTML_import": "saved P15 HTML imported draft; valid preview; published default clean template revision4; rejected executable HTML",
     "asset_envelope": "481084 byte PNG uploaded and inspected through production HTTP; prior512KB envelope corrected for asset route only",
     "error_popup": "actual accessible operation dialog observed after unsafe HTML rejection",
     "report_deployed": "2972137 healthy; actual unpatched report query and failure/recovery transitions pass with rollback,SMTP0",
-    "final_dispatch_policy": "Manual tests bind current administrator and recheck authority. Only a permanent bounced receipt blocks all future mail; local permission/preference suppression applies to that item only. Expanded native matrix pending final deploy."
+    "final_dispatch_policy": "Manual tests bind current administrator and recheck authority. Only a permanent bounced receipt blocks all future mail; local permission/preference suppression applies to that item only. Expanded native matrix pending final deploy.",
+    "access_templates": "published invitation/recovery selectors, link validation, safe fallback if archived; initial default typography prepared"
   }
 }

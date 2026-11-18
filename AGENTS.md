@@ -1,3 +1,9 @@
+## P15: cola completa validada; revisión de operación — 2026-11-18
+
+P15:6/7 (85,71%) aceptadas. Matriz completa sobre el backend42f8a19 publicado: reintento/espera, aceptación sin duplicación, incertidumbre, lease vencido, caducidad, máximo5intentos, supresión por emisor inactivo, recuperación tras supresión local, bloqueo por rebote permanente, cancelación, pausa y cupo. Cinco llamadas al SMTP simulado, cero externas y rollback comprobado. La cuenta de ensayo sigue inactiva. Segundo respaldo/recuperación: siete tablas coinciden, cinco correos cifrados y dos recursos SHA verificados; copia sin CONNECT ni sesiones ni correo ejecutable.
+
+Pasan347backend seleccionadas (47correo),33frontend, tipos/ESLint/build y15regresionesPG separadas. Se añaden selectores de plantilla publicada para invitación/recuperación, obligando {{enlace}} y con respaldo seguro si se archiva; falta comprobar esos controles publicados, la última prueba manual ligada a administrador y el cierre operativo. General originalP0–P11:100%/P12auxiliar:100%; P15todavía no se declara100%. Límites de informes de auditoría, recibos Oracle manuales y OPS/P18 documentados explícitamente.
+
 ## P15: editor e informes publicados; revisión final de despacho — 2026-11-18
 
 P15:5/7 aceptadas (71,43%): transporte, reglas, eventos/acceso, editor/marca e informes. Editor real: HTML importado guardado como borrador, preview segura, scripts rechazados con modal explicativo, versión3 recuperada sin publicar y versión4 limpia publicada. PNG de481.084bytes cargado correctamente tras ajustar únicamente la envolvente HTTP de recursos. El backend2972137 está saludable y su consulta de informes se probó sin parches de ensayo:2avisos de transición y1informe tras dos pasadas, rollback ySMTP0.

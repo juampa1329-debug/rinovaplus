@@ -25,7 +25,7 @@ EVENTS = {
     "report.weekly": ("Informe semanal", "users.manage"),
 }
 VARIABLES = {"nombre", "evento", "detalle", "fecha", "enlace", "institucion", "periodo"}
-DEFAULT_HTML = '<h1>{{evento}}</h1><p>Hola {{nombre}},</p><p>{{detalle}}</p><p>{{fecha}}</p><p><a href="{{enlace}}">Abrir RinovaPlus</a></p><p>{{institucion}}</p>'
+DEFAULT_HTML = '<div style="font-family:Arial,Helvetica,sans-serif;background-color:#F5F7F2;color:#12343B;padding:32px;border-radius:16px"><p style="color:#52666B">RinovaPlus · CBN</p><h1 style="font-size:24px">{{evento}}</h1><p>Hola {{nombre}},</p><p>{{detalle}}</p><p>{{fecha}}</p><p><a style="background-color:#C4F04D;color:#12343B;padding:12px;border-radius:8px;text-decoration:none" href="{{enlace}}">Abrir RinovaPlus</a></p><p>{{institucion}}</p></div>'
 EMAIL = re.compile(
     r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,63}\Z"
 )

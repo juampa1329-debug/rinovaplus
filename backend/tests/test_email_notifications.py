@@ -511,3 +511,57 @@ def test_dispatch_rechecks_authority_even_for_manual_test_mail(
     from app.institutional.email_notifications import recipient_allowed
 
     assert bool(recipient_allowed(person, action, recipient, event)) is allowed
+
+
+@pytest.mark.parametrize(
+    "published,html,expected",
+    [
+        (True, '<a href="{{enlace}}">Continuar</a>', True),
+        (False, '<a href="{{enlace}}">Continuar</a>', False),
+        (True, "<p>Sin acceso</p>", False),
+    ],
+)
+def test_critical_mail_uses_published_template_and_keeps_a_safe_fallback(
+    monkeypatch, published, html, expected
+):
+    from app.institutional import email_notifications as mail
+
+    source = {"published": published, "html": html}
+    monkeypatch.setattr(mail, "document", lambda *_: {"body": source})
+    assert (
+        bool(
+            mail.transactional_source(
+                None, None, "user.invited", {"invitation_template": "brand"}
+            )
+        )
+        is expected
+    )
+    assert (
+        bool(
+            mail.transactional_source(
+                None, None, "password.reset", {"recovery_template": "brand"}
+            )
+        )
+        is expected
+    )
+    assert (
+        mail.transactional_source(
+            None, None, "users.create", {"invitation_template": "brand"}
+        )
+        is None
+    )
+
+
+def test_transport_rejects_a_custom_access_template_without_the_link(monkeypatch):
+    from app.institutional import email_notifications as mail
+
+    monkeypatch.setattr(
+        mail,
+        "document",
+        lambda *_: {"body": {"published": True, "html": "<p>Missing link</p>"}},
+    )
+    with pytest.raises(HTTPException) as error:
+        mail.validate_activation(
+            None, None, "transport", {"enabled": True, "invitation_template": "brand"}
+        )
+    assert error.value.detail == "email_access_link_required"

@@ -3,7 +3,7 @@
   "date": "2026-11-18",
   "acceptance": "in_progress",
   "original_general": "100.00%",
-  "additional_phase_accepted": "5/7",
+  "additional_phase_accepted": "6/7",
   "DNS": {
     "SPF": "Oracle console Yes",
     "DKIM_selector": "rinova20261118",
@@ -24,25 +24,34 @@
     "operator_relay_observation_saved": true
   },
   "tests": {
-    "backend_selected": 343,
-    "mail_backend": 43,
+    "backend_selected": 347,
+    "mail_backend": 47,
     "frontend_selected": 33,
     "postgres_dialect_separate": 15
   },
   "restore": {
     "source": "rinovaplus",
-    "isolated_copy": "rinovaplus_p15_restore_20261118",
-    "dump": "/var/lib/postgresql/data/p15-20261118/with-p15.dump",
-    "sha256": "57c214c86e902ceae6d2bc439c1ab6c396951ababc889603816555a0d7d38826",
+    "isolated_copy": "rinovaplus_p15_restore_20261118_final",
+    "dump": "/var/lib/postgresql/data/p15-20261118/final-reviewed.dump",
+    "sha256": "4f9865f191b6430bcf66699783bd630d7c8e52bbaf2781dfcd42eb8221a72423",
     "tables_matched": 7,
-    "outbox_envelopes": 3,
-    "asset_count": 1,
-    "runtime_connect_revoked": true,
-    "restored_worker_started": false,
-    "boundary": "point-in-time snapshot before later template edits; no offsite or total-host-loss acceptance",
+    "counts": {
+      "version": 1,
+      "document": 4,
+      "history": 7,
+      "outbox": 5,
+      "receipt": 1,
+      "asset": 2,
+      "cursor": 6
+    },
     "runtime_connect": false,
     "runnable_mail": 0,
-    "asset_sha256_verified": 1
+    "live_sessions": 0,
+    "revoked_sessions": 17,
+    "consumed_challenges": 1,
+    "asset_sha256_verified": 2,
+    "restored_worker_started": false,
+    "scope": "P15 snapshot includes populated config, five encrypted messages, observed relay and two assets. No offsite custody or total-host-loss acceptance."
   },
   "test_user": {
     "id": "9f304694-b04d-408a-9376-3457b2aa8af4",
@@ -77,12 +86,18 @@
       "uncertain_no_retry",
       "expired_lease",
       "expiry",
+      "five_attempt_cap",
+      "inactive_sender_suppression",
+      "local_suppression_recovery",
+      "permanent_bounce_suppression",
+      "cancel",
       "pause",
       "quota"
     ],
-    "stub_SMTP_calls": 3,
+    "stub_SMTP_calls": 5,
     "external_SMTP_calls": 0,
-    "rollback_confirmed": true
+    "rollback_confirmed": true,
+    "deployed_commit": "42f8a197fbcf09b19ec83d708288f22f417b82a8"
   },
   "editor": {
     "HTML_imported": true,
@@ -92,5 +107,22 @@
     "unsafe_HTML_rejected": true,
     "error_dialog_observed": true,
     "boundary_PNG_bytes_uploaded": 481084
-  }
+  },
+  "restore_history": [
+    {
+      "source": "rinovaplus",
+      "isolated_copy": "rinovaplus_p15_restore_20261118",
+      "dump": "/var/lib/postgresql/data/p15-20261118/with-p15.dump",
+      "sha256": "57c214c86e902ceae6d2bc439c1ab6c396951ababc889603816555a0d7d38826",
+      "tables_matched": 7,
+      "outbox_envelopes": 3,
+      "asset_count": 1,
+      "runtime_connect_revoked": true,
+      "restored_worker_started": false,
+      "boundary": "point-in-time snapshot before later template edits; no offsite or total-host-loss acceptance",
+      "runtime_connect": false,
+      "runnable_mail": 0,
+      "asset_sha256_verified": 1
+    }
+  ]
 }
