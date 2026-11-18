@@ -38,7 +38,10 @@ function mount() {
     </SessionBoundary>,
   );
 }
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  window.history.replaceState(null, "", "/");
+});
 
 it("keeps mail paused and does not expose SMTP credentials", async () => {
   vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -189,4 +192,115 @@ it("never equates SMTP acceptance or uncertain delivery with inbox delivery", as
   expect(
     screen.queryByRole("button", { name: /Reintentar/ }),
   ).not.toBeInTheDocument();
+});
+
+it("can create another template after the default institutional template exists", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        ...value,
+        documents: [
+          {
+            kind: "template",
+            id: "institucional",
+            revision: 2,
+            body: {
+              name: "CBN actual",
+              subject: "Aviso",
+              html: "<p>CBN</p>",
+              signature: "",
+              published: true,
+            },
+          },
+        ],
+      }),
+    ),
+  );
+  mount();
+  await screen.findByText("Oracle pendiente");
+  fireEvent.click(screen.getByRole("button", { name: "Plantillas y marca" }));
+  expect(screen.getByLabelText("Identificador")).toHaveAttribute("readonly");
+  fireEvent.change(screen.getByLabelText("Registro"), {
+    target: { value: "__new__" },
+  });
+  expect(screen.getByLabelText("Identificador")).not.toHaveAttribute(
+    "readonly",
+  );
+  expect(screen.getByLabelText("Identificador")).not.toHaveValue(
+    "institucional",
+  );
+  expect(screen.getByText("Versión 0")).toBeVisible();
+});
+
+for (const path of [
+  "/#/access/redeem?token=fixture-only",
+  "/access/redeem#token=fixture-only",
+  "/access/redeem",
+]) {
+  it(`opens the activation form instead of session login for ${path}`, async () => {
+    window.history.replaceState(null, "", path);
+    const fetcher = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ initialized: true })));
+    render(<InstitutionApp />);
+    expect(
+      await screen.findByRole("heading", {
+        name: "Activa o recupera tu cuenta",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Guardar contraseña" }),
+    ).toBeVisible();
+    expect(
+      screen.getByLabelText("Código de activación o recuperación"),
+    ).toHaveValue(path.endsWith("fixture-only") ? "fixture-only" : "");
+    expect(fetcher).not.toHaveBeenCalledWith(
+      "/api/institution/auth/me",
+      expect.anything(),
+    );
+    expect(window.location.href).not.toContain("fixture-only");
+  });
+}
+
+it("restores a published email version as an unpublished draft", async () => {
+  const body = {
+    name: "Actual",
+    subject: "Aviso",
+    html: "<p>Actual</p>",
+    signature: "",
+    published: true,
+  };
+  vi.spyOn(globalThis, "fetch").mockImplementation(
+    async (url) =>
+      new Response(
+        JSON.stringify(
+          String(url).endsWith("/history")
+            ? {
+                items: [
+                  { revision: 1, body: { ...body, html: "<p>Anterior</p>" } },
+                ],
+              }
+            : {
+                ...value,
+                documents: [
+                  { kind: "template", id: "institucional", revision: 2, body },
+                ],
+              },
+        ),
+      ),
+  );
+  mount();
+  await screen.findByText("Oracle pendiente");
+  fireEvent.click(screen.getByRole("button", { name: "Plantillas y marca" }));
+  fireEvent.click(screen.getByRole("button", { name: "Ver versiones" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Recuperar como borrador" }),
+  );
+  expect(
+    screen.getByLabelText("Publicar esta versión para reglas e informes"),
+  ).not.toBeChecked();
+  expect(screen.getByLabelText("HTML del correo")).toHaveValue(
+    "<p>Anterior</p>",
+  );
+  expect(screen.getByText("Versión 2")).toBeVisible();
 });

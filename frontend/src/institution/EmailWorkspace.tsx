@@ -193,17 +193,26 @@ function Editor({
       : kind === "template"
         ? "institucional"
         : "nuevo";
+  const blank = {
+    ...defaults[kind],
+    ...(["rule", "schedule"].includes(kind)
+      ? {
+          template:
+            data.documents.find(
+              (x) => x.kind === "template" && x.body.published,
+            )?.id ?? "",
+        }
+      : {}),
+  };
   const [identity, setIdentity] = useState(initialId);
   const current = data.documents.find(
     (x) => x.kind === kind && x.id === identity,
   );
   const [revision, setRevision] = useState(current?.revision ?? 0);
   const [draft, setDraft] = useState<Record<string, unknown>>(
-    current?.body ?? defaults[kind],
+    current?.body ?? blank,
   );
-  const [base, setBase] = useState(
-    JSON.stringify(current?.body ?? defaults[kind]),
-  );
+  const [base, setBase] = useState(JSON.stringify(current?.body ?? blank));
   const [preview, setPreview] = useState("");
   const [audience, setAudience] = useState<
     { name: string; email: string }[] | null
@@ -224,8 +233,7 @@ function Editor({
       data.documents.find((x) => x.kind === kind && x.id === id)?.revision ?? 0,
     );
     const next =
-      data.documents.find((x) => x.kind === kind && x.id === id)?.body ??
-      defaults[kind];
+      data.documents.find((x) => x.kind === kind && x.id === id)?.body ?? blank;
     setIdentity(id);
     setDraft(next);
     setBase(JSON.stringify(next));
@@ -274,13 +282,19 @@ function Editor({
               <SelectField
                 id="mail-document"
                 label="Registro"
-                value={identity}
+                value={current ? identity : "__new__"}
                 disabled={dirty}
-                onChange={(e) => switchDoc(e.target.value)}
+                onChange={(e) =>
+                  switchDoc(
+                    e.target.value === "__new__"
+                      ? crypto.randomUUID()
+                      : e.target.value,
+                  )
+                }
                 options={[
-                  { value: initialId, label: "Nuevo registro" },
+                  { value: "__new__", label: "Nuevo registro" },
                   ...data.documents
-                    .filter((x) => x.kind === kind && x.id !== initialId)
+                    .filter((x) => x.kind === kind)
                     .map((x) => ({
                       value: x.id,
                       label: String(x.body.name ?? x.id),
@@ -651,7 +665,13 @@ function Editor({
               <Button
                 variant="quiet"
                 onClick={() => {
-                  setDraft(v.body);
+                  setDraft({
+                    ...v.body,
+                    ...(kind === "template" ? { published: false } : {}),
+                    ...(["transport", "rule", "schedule"].includes(kind)
+                      ? { enabled: false }
+                      : {}),
+                  });
                   setPreview("");
                 }}
               >
@@ -791,6 +811,82 @@ function Editor({
   );
 }
 
+function OracleReceipt({
+  mail,
+  reload,
+}: {
+  mail: Mail;
+  reload: () => Promise<Data>;
+}) {
+  const { call } = useInstitution(),
+    task = useTask();
+  const [reference, setReference] = useState(""),
+    [observed, setObserved] = useState(""),
+    [action, setAction] = useState("relayed");
+  return (
+    <details>
+      <summary>Registrar recibo de Oracle</summary>
+      <p>
+        Observación manual del administrador. Contrasta el Message-ID {mail.id}
+        @rinovaplus.com en el log de Oracle. La aceptación SMTP no acredita
+        entrega; un rebote suprime nuevos envíos a esa dirección.
+      </p>
+      {task.notices}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void task.run(async () => {
+            await call("notifications/receipts", "POST", {
+              id: reference,
+              mail_id: mail.id,
+              action,
+              observed_at: observed,
+            });
+            await reload();
+          }, "Recibo registrado como observación manual del administrador.");
+        }}
+      >
+        <fieldset disabled={task.busy}>
+          <Field
+            id={`receipt-id-${mail.id}`}
+            label="ID del evento en Oracle"
+            value={reference}
+            maxLength={200}
+            required
+            onChange={(e) => setReference(e.target.value)}
+          />
+          <Field
+            id={`receipt-time-${mail.id}`}
+            label="Fecha del evento (ISO con zona horaria)"
+            value={observed}
+            placeholder="2026-11-18T22:51:41.436Z"
+            required
+            onChange={(e) => setObserved(e.target.value)}
+          />
+          <SelectField
+            id={`receipt-action-${mail.id}`}
+            label="Resultado observado"
+            value={action}
+            options={[
+              {
+                value: "relayed",
+                label: "Aceptado por el proveedor del buzón",
+              },
+              { value: "bounced", label: "Rebote permanente confirmado" },
+            ]}
+            onChange={(e) => setAction(e.target.value)}
+          />
+          <label>
+            <input type="checkbox" required /> He verificado que el recibo
+            corresponde a este correo y destinatario.
+          </label>
+          <Button type="submit">Guardar recibo observado</Button>
+        </fieldset>
+      </form>
+    </details>
+  );
+}
+
 function History({
   data,
   reload,
@@ -859,6 +955,9 @@ function History({
                   </td>
                   <td>{mail.attempts}</td>
                   <td>
+                    {["accepted", "uncertain"].includes(mail.state) && (
+                      <OracleReceipt mail={mail} reload={reload} />
+                    )}
                     {["queued", "retry"].includes(mail.state) && (
                       <Button
                         variant="quiet"

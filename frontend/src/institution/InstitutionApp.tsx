@@ -97,9 +97,17 @@ const capabilities: UiCapabilities = {
   ) as UiCapabilities["features"],
 };
 
+function accessRequest() {
+  const fragment = window.location.hash.slice(1);
+  const path = window.location.pathname.replace(/\/$/, "");
+  const token = new URLSearchParams(fragment.startsWith("token=") ? fragment : fragment.split("?")[1] ?? "").get("token") ?? "";
+  return { token, requested: !!token || path === "/access/redeem" || fragment.split("?")[0] === "/access/redeem" };
+}
+
 export function InstitutionApp({
   core: CoreView = Core,
 }: { core?: ComponentType<{ page: string; showComments?: boolean }> } = {}) {
+  const [accessLink] = useState(accessRequest);
   const [session, setSession] = useState<Session | null>(null),
     [initialized, setInitialized] = useState<boolean | null>(null),
     [error, setError] = useState("");
@@ -112,8 +120,7 @@ export function InstitutionApp({
     void send<{ initialized: boolean }>("auth/status")
       .then(async (status) => {
         if (!active) return;
-        const accessLink = new URLSearchParams(window.location.hash.split("?")[1] ?? "").has("token");
-        if (status.initialized && !accessLink) {
+        if (status.initialized && !accessLink.requested) {
           try {
             const current = await send<Session>("auth/me");
             if (active) setSession(current);
@@ -135,7 +142,7 @@ export function InstitutionApp({
       active = false;
       bindInstitutionSession("");
     };
-  }, []);
+  }, [accessLink]);
   if (initialized === null)
     return (
       <AccessLayout>
@@ -146,6 +153,7 @@ export function InstitutionApp({
   if (!session)
     return (
       <AccessScreen
+        accessLink={accessLink}
         initialized={initialized}
         accepted={(value) => {
           setInitialized(true);
@@ -219,15 +227,17 @@ function AccessLayout({ children }: { children: ReactNode }) {
 }
 
 function AccessScreen({
+  accessLink,
   initialized,
   accepted,
 }: {
+  accessLink: { token: string; requested: boolean };
   initialized: boolean;
   accepted: (session: Session) => void;
 }) {
   const task = useTask();
-  const resetToken = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("token") ?? "";
-  const [mode, setMode] = useState(resetToken ? "redeem" : initialized ? "login" : "bootstrap"),
+  const resetToken = accessLink.token;
+  const [mode, setMode] = useState(accessLink.requested ? "redeem" : initialized ? "login" : "bootstrap"),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [name, setName] = useState(""),
@@ -253,7 +263,7 @@ function AccessScreen({
       <p>
         {mode === "bootstrap"
           ? "Crea la primera cuenta de administración con el código privado de configuración."
-          : "Accede con tu cuenta institucional para continuar."}
+          : mode === "redeem" ? "Crea tu contraseña personal para activar o recuperar el acceso. El enlace sólo puede usarse una vez y vence en una hora." : "Accede con tu cuenta institucional para continuar."}
       </p>
       {task.notices}
       <form
@@ -274,6 +284,7 @@ function AccessScreen({
                 setToken("");
                 setPassword("");
                 setCode("");
+                window.history.replaceState(null, "", "/#/access");
                 setMode("login");
                 return;
               }

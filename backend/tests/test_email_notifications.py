@@ -298,6 +298,38 @@ def test_group_membership_does_not_grant_new_access(monkeypatch):
     )
 
 
+def test_active_rules_require_a_published_template_and_selected_recipients(monkeypatch):
+    from app.institutional import email_notifications as mail
+
+    monkeypatch.setattr(mail, "document", lambda *_: {"body": {"published": False}})
+    with pytest.raises(HTTPException) as error:
+        mail.validate_activation(
+            None,
+            None,
+            "rule",
+            {"enabled": True, "template": "draft", "roles": ["owner"]},
+        )
+    assert error.value.detail == "email_template_not_published"
+    monkeypatch.setattr(mail, "document", lambda *_: {"body": {"published": True}})
+    with pytest.raises(HTTPException) as error:
+        mail.validate_activation(
+            None, None, "rule", {"enabled": True, "template": "valid"}
+        )
+    assert error.value.detail == "email_recipient_selection_required"
+    mail.validate_activation(
+        None, None, "rule", {"enabled": True, "template": "valid", "roles": ["owner"]}
+    )
+
+
+def test_disabled_rule_can_be_saved_as_an_incomplete_draft(monkeypatch):
+    from app.institutional import email_notifications as mail
+
+    monkeypatch.setattr(
+        mail, "document", lambda *_: pytest.fail("draft must not require template IO")
+    )
+    mail.validate_activation(None, None, "rule", {"enabled": False})
+
+
 @pytest.mark.parametrize(
     "endpoint,method,body",
     [

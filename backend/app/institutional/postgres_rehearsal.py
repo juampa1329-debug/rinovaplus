@@ -225,7 +225,9 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
                 authorize(cursor, settings, authority, permission or authority["permission"], recent=recent)
             yield cursor
     except (Error, ProfileError, ValueError) as error:
-        LOG.warning("postgres_storage_error state=%s", getattr(error, "pgcode", None) or type(error).__name__)
+        safe_tags = {"password_policy", "invalid_password", "unported_statement", "unmapped_crm_table", "unported_update_target", "unported_update_join", "unported_subquery_limit", "unported_outer_apply"}
+        tag = str(error) if type(error) is ValueError and str(error) in safe_tags else "unclassified"
+        LOG.warning("postgres_storage_error state=%s tag=%s", getattr(error, "pgcode", None) or type(error).__name__, tag)
         raise HTTPException(503, "general_storage_unavailable") from None
 
 

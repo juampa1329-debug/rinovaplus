@@ -194,3 +194,25 @@ def test_chunked_body_stops_before_reading_entire_request():
     asyncio.run(app(scope, receive, send))
     assert next(m["status"] for m in sent if m["type"] == "http.response.start") == 413
     assert len(received) == 3
+
+
+def test_redemption_password_policy_is_a_validation_error_not_storage_failure():
+    from unittest.mock import MagicMock
+    settings = SimpleNamespace(ticket={"context": [[1, "00000000-0000-0000-0000-000000000001"]]})
+    body = Redeem(token="x" * 43, new_password="123456789012345")
+    cursor = MagicMock()
+    cursor.execute.return_value.fetchval.return_value = 0
+    with (
+        patch("app.institutional.management.transaction", return_value=nullcontext(cursor)),
+        patch("app.institutional.management.rate", return_value=True),
+        patch("app.institutional.management.one", return_value={"UserId":"00000000-0000-0000-0000-000000000002", "ChallengeId":"challenge", "AuthVersion":1}),
+        patch("app.institutional.management.user", return_value={"AuthVersion":1}),
+        patch("app.institutional.management.bound_hash", return_value=b""),
+        patch("app.institutional.management.revoke_user") as revoke,
+    ):
+        with pytest.raises(HTTPException) as failure:
+            Management(settings).redeem(body)
+        assert failure.value.status_code == 422
+        assert failure.value.detail == "password_policy"
+        revoke.assert_not_called()
+        assert not any("PasswordHash" in str(call) for call in cursor.execute.call_args_list)

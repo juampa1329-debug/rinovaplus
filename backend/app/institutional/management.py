@@ -701,7 +701,10 @@ class Management:
                         )
                     )
                 ):
-                    encoded = password_hash(body.new_password.get_secret_value())
+                    try:
+                        encoded = password_hash(body.new_password.get_secret_value())
+                    except ValueError:
+                        raise HTTPException(422, "password_policy") from None
                     c.execute(
                         "UPDATE crm_access.AccessUser SET PasswordHash=?,Revision=Revision+1,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND UserId=?",
                         encoded,

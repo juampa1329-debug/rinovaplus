@@ -1,3 +1,11 @@
+## P15: entrega real y corrección de activación — 2026-11-18
+
+Oracle confirma SPF y firma DKIM activos. Tres correos controlados a cbnaudiovisuales@gmail.com fueron aceptados en un intento por envío; el titular confirmó su recepción. El log de Oracle acredita relay de la invitación a Gmail con SMTP 250 y TLS. El usuario de prueba Consulta continúa pendiente de activación; el titular reportó un error de validación y el backend registró ValueError. Se corrige la clasificación de contraseña rechazada (422 explicativo), se refuerza la ruta de activación sin exponer el token al servidor y se diferencia «Activar mi cuenta» de la muestra. No afirmar resuelto hasta repetir el recorrido real.
+
+Pasan 333 pruebas backend seleccionadas (35 de correo); nuevas regresiones de enlaces y múltiples plantillas. La copia P15 aislada conserva las siete tablas nuevas, incluida la imagen y los tres envelopes cifrados, con huellas iguales al snapshot; runtime sin CONNECT y sin consumidor en esa copia. No sustituye la recuperación P11 ni valida copia externa/custodia. Se corrige crear otro registro y recuperar versiones como borrador/pausadas. Historial incorpora observación manual de recibos Oracle, diferenciada de un webhook automático.
+
+P15 permanece 0/7 aceptadas, en validación. General original P0–P11:100%; P12 auxiliar:100% en alcance aceptado. P13 Académico/agentes por programa:parcial (0/4); P14 entrenamiento comercial:plan; P15 correos/notificaciones:pruebas (0/7); P16 API SIIE:diferida (0/5); P17 TikTok:diferida (0/5); P18 seguridad:plan (0/8). No alterar el denominador original ni cerrar OPS-05 por una muestra transaccional.
+
 ## P15 en implementación y pruebas — 2026-11-18
 
 Ajustes → Correos y notificaciones incorpora transporte Oracle SMTP/TLS, reglas por evento y destinatarios, grupos, preferencias propias, versiones de HTML y recursos de marca inspeccionados, informes diarios/semanales y outbox cifrado en PostgreSQL. Recuperación por correo sin enumeración y activación revisada desde Usuarios reutilizan códigos de un uso/una hora y conservan 2FA. El consumidor SMTP es independiente de mensajería. SMTP aceptado no equivale a entrega; resultados inciertos no se reenvían automáticamente. Los recibos de Oracle se registran como observación de operador, no como webhook automático.

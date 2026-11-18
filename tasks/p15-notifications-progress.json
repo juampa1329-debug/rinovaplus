@@ -13,53 +13,53 @@
     {
       "id": "P15.1",
       "title": "Transporte y remitentes",
-      "requirement": "Configurar SMTP o API de proveedor, remitente/dominio verificado, TLS, secretos sólo de runtime, prueba controlada y diagnóstico. Revisar SPF/DKIM/DMARC cuando corresponda al dominio. No declarar entrega por aceptar la cola.",
+      "requirement": "Configurar SMTP o API de proveedor, remitente/dominio verificado, TLS, secretos sÃ³lo de runtime, prueba controlada y diagnÃ³stico. Revisar SPF/DKIM/DMARC cuando corresponda al dominio. No declarar entrega por aceptar la cola.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.2",
       "title": "Reglas y destinatarios",
-      "requirement": "Administración por evento, severidad, canal, cuenta y módulo; usuarios, roles o grupos autorizados. Destinatarios explícitos, preferencias individuales y política institucional para avisos críticos de seguridad. Quién puede configurar, ver y recibir cada dato se comprueba en servidor.",
+      "requirement": "AdministraciÃ³n por evento, severidad, canal, cuenta y mÃ³dulo; usuarios, roles o grupos autorizados. Destinatarios explÃ­citos, preferencias individuales y polÃ­tica institucional para avisos crÃ­ticos de seguridad. QuiÃ©n puede configurar, ver y recibir cada dato se comprueba en servidor.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.3",
       "title": "Eventos de producto y seguridad",
-      "requirement": "Alta/invitación de usuario, recuperación de contraseña, cambio de acceso, nueva conexión/canal, nuevo agente o proveedor/modelo, indisponibilidad/fallo y recuperación de modelos, fallos de colas/webhooks y otros eventos registrados. Enlaces de un solo uso, caducidad, rate limit y respuestas que no revelen si existe una cuenta.",
+      "requirement": "Alta/invitaciÃ³n de usuario, recuperaciÃ³n de contraseÃ±a, cambio de acceso, nueva conexiÃ³n/canal, nuevo agente o proveedor/modelo, indisponibilidad/fallo y recuperaciÃ³n de modelos, fallos de colas/webhooks y otros eventos registrados. Enlaces de un solo uso, caducidad, rate limit y respuestas que no revelen si existe una cuenta.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.4",
       "title": "Editor y biblioteca de correo",
-      "requirement": "Crear y versionar plantillas, subir/editar HTML, vista previa y envío de prueba revisado. Variables permitidas con escape, datos ausentes visibles, borrador/publicación/reversión. Biblioteca de logos, encabezados, pie, colores de marca y firma visual por remitente; inspección de archivos y recursos embebidos. Sin JavaScript, formularios ejecutables ni URLs inseguras. Firma visual no equivale a firma electrónica certificada.",
+      "requirement": "Crear y versionar plantillas, subir/editar HTML, vista previa y envÃ­o de prueba revisado. Variables permitidas con escape, datos ausentes visibles, borrador/publicaciÃ³n/reversiÃ³n. Biblioteca de logos, encabezados, pie, colores de marca y firma visual por remitente; inspecciÃ³n de archivos y recursos embebidos. Sin JavaScript, formularios ejecutables ni URLs inseguras. Firma visual no equivale a firma electrÃ³nica certificada.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.5",
       "title": "Cola, trazabilidad y fiabilidad",
-      "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicación, reintentos con espera, caducidad, supresión y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlación, auditoría y pausa. Conservar efectos inciertos sin duplicar; ningún secreto o contenido privado en logs.",
+      "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicaciÃ³n, reintentos con espera, caducidad, supresiÃ³n y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlaciÃ³n, auditorÃ­a y pausa. Conservar efectos inciertos sin duplicar; ningÃºn secreto o contenido privado en logs.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.6",
       "title": "Informes y agenda",
-      "requirement": "Informes diarios, semanales o con frecuencia elegida; hora local y zona IANA. Períodos y filtros explícitos, agregados autorizados, destinatarios revisados, sin afirmar aperturas no observadas. Evitar datos personales innecesarios; definir qué módulos y KPIs incluye cada informe.",
+      "requirement": "Informes diarios, semanales o con frecuencia elegida; hora local y zona IANA. PerÃ­odos y filtros explÃ­citos, agregados autorizados, destinatarios revisados, sin afirmar aperturas no observadas. Evitar datos personales innecesarios; definir quÃ© mÃ³dulos y KPIs incluye cada informe.",
       "state": "in_progress_pending_acceptance"
     },
     {
       "id": "P15.7",
-      "title": "Aceptación y operación",
-      "requirement": "Probar invitación/recuperación sin enumeración, permisos, plantillas maliciosas/variables, destinatarios, DST, duplicados, caídas de proveedor, reintentos/recibos y pausa/reversión. Pruebas reales sólo a destinatarios autorizados. Documentar custodios, límites, costos, retención y recuperación.",
+      "title": "AceptaciÃ³n y operaciÃ³n",
+      "requirement": "Probar invitaciÃ³n/recuperaciÃ³n sin enumeraciÃ³n, permisos, plantillas maliciosas/variables, destinatarios, DST, duplicados, caÃ­das de proveedor, reintentos/recibos y pausa/reversiÃ³n. Pruebas reales sÃ³lo a destinatarios autorizados. Documentar custodios, lÃ­mites, costos, retenciÃ³n y recuperaciÃ³n.",
       "state": "in_progress_pending_acceptance"
     }
   ],
   "dependencies": [
     "Usuarios y roles existentes",
-    "Auditoría y outbox",
-    "Proveedor de correo y dominio a elegir antes de activar envíos"
+    "AuditorÃ­a y outbox",
+    "Proveedor de correo y dominio a elegir antes de activar envÃ­os"
   ],
   "provider_configured": true,
-  "external_emails_sent": 0,
+  "external_emails_sent": 3,
   "documents": [
     "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
     "docs/adaptation/P15_ORACLE_OPERATOR_RUNBOOK.md"
@@ -69,21 +69,24 @@
   "credentials_saved_by_owner": true,
   "oracle_region": "us-ashburn-1",
   "evidence": {
-    "backend_selected_passed": 330,
-    "backend_p15_passed": 33,
+    "backend_selected_passed": 333,
+    "backend_p15_passed": 35,
     "frontend_initial_selected_passed": 18,
     "native_postgres": "7 new tables; frozen CRM155; CREATE false; DELETE false; dedup1; second claim0; rollback leaves outbox0",
-    "production_acceptance": "in_progress; DNS correction and delivery pending",
+    "production_acceptance": "recipient confirmed emails received; activation reported general_storage_unavailable/ValueError; correction in validation before repeat",
     "oracle_sender_registered": true,
-    "dkim_dns_verified": false,
+    "dkim_dns_verified": true,
     "spf_dns_verified": true,
-    "frontend_selected_passed": 27,
-    "SMTP_authentication": "passed_STARTTLS_hostname_verified_NO_EMAIL_SENT",
+    "frontend_selected_passed": 32,
+    "SMTP_authentication": "passed_STARTTLS_hostname_verified; three emails accepted once each",
     "oracle_logs": "Outbound Accepted and Outbound Relayed active, 30-day retention",
     "backend_deployment": {
-      "commit": "1c302ef7441a130412ea1574443c339399a85d88",
-      "deployment": "ilzuqh3auldcytyvajshncwb",
-      "healthy_workers": 9
-    }
+      "commit": "e78a44508e5decf0e75330c73393b822830df2c3",
+      "deployment": "uyskwkuy5xxfatj4fmjpxooc",
+      "status": "healthy"
+    },
+    "oracle_dkim_signing": "Active",
+    "postgres_restore": "fresh isolated copy, all seven native tables match pre-quarantine hashes; runtime CONNECT revoked; no restored worker",
+    "static_checks": "Frontend types, ESLint and workspace build pass; backend critical Ruff rules pass; broad style scan reported SQL line-length/import-layout findings and is not claimed clean"
   }
 }

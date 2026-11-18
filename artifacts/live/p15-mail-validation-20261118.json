@@ -1,0 +1,56 @@
+{
+  "phase": "P15",
+  "date": "2026-11-18",
+  "acceptance": "in_progress",
+  "original_general": "100.00%",
+  "additional_phase_accepted": "0/7",
+  "DNS": {
+    "SPF": "Oracle console Yes",
+    "DKIM_selector": "rinova20261118",
+    "customer_DNS": "Active",
+    "signing": "Active",
+    "DMARC": "existing p=quarantine preserved"
+  },
+  "mail": {
+    "external_accepted": 3,
+    "recipient_confirmed_received": true,
+    "activation_mail_id": "4ce34b41-9b71-4f77-81ad-f88d0a0f8c5d",
+    "oracle_event_id": "30203126-2993-4ABD-A865-98549747D3D8",
+    "relay_at": "2026-11-18T22:51:41.436Z",
+    "gmail_smtp_status": "250 2.0.0 OK",
+    "tls": true,
+    "activation": "failed during owner attempt; backend ValueError; correction awaiting redeploy and repetition"
+  },
+  "tests": {
+    "backend_selected": 333,
+    "mail_backend": 35,
+    "frontend_selected": 32
+  },
+  "restore": {
+    "source": "rinovaplus",
+    "isolated_copy": "rinovaplus_p15_restore_20261118",
+    "dump": "/var/lib/postgresql/data/p15-20261118/with-p15.dump",
+    "sha256": "57c214c86e902ceae6d2bc439c1ab6c396951ababc889603816555a0d7d38826",
+    "tables_matched": 7,
+    "outbox_envelopes": 3,
+    "asset_count": 1,
+    "runtime_connect_revoked": true,
+    "restored_worker_started": false,
+    "boundary": "point-in-time snapshot before later template edits; no offsite or total-host-loss acceptance",
+    "runtime_connect": false,
+    "runnable_mail": 0,
+    "asset_sha256_verified": 1
+  },
+  "test_user": {
+    "id": "9f304694-b04d-408a-9376-3457b2aa8af4",
+    "role": "Consulta",
+    "activation_pending": true,
+    "deactivation": "required at end of authorized test"
+  },
+  "failures": [
+    "Activation owner attempt: backend ValueError, validation classification correction awaiting real repeat",
+    "Native SMTP CRLF correction in earlier e78a445",
+    "Broad backend style check not clean (line lengths/import layout); critical rules pass",
+    "Frontend regression preparation had a Windows encoding error; UTF-8 corrected, all32 passed"
+  ]
+}

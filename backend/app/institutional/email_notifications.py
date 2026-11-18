@@ -221,6 +221,16 @@ def selected_users(c, s, rule, action, event):
     ]
 
 
+def validate_activation(c, s, kind, value):
+    if kind not in {"rule", "schedule"} or not value.get("enabled"):
+        return
+    source = document(c, s, "template", value.get("template", ""))["body"]
+    if not source.get("published"):
+        fail("email_template_not_published")
+    if not any(value.get(field) for field in ("users", "roles", "groups")):
+        fail("email_recipient_selection_required")
+
+
 def enqueue(
     c, s, event, dedup, recipient, values, *, user_id=None, source=None, expires=86400
 ):
@@ -230,7 +240,13 @@ def enqueue(
     cfg = transport(c, s)
     source = source or {
         "subject": "{{evento}} · RinovaPlus",
-        "html": DEFAULT_HTML,
+        "html": DEFAULT_HTML.replace(
+            "Abrir RinovaPlus",
+            {
+                "user.invited": "Activar mi cuenta",
+                "password.reset": "Crear nueva contraseña",
+            }.get(event, "Abrir RinovaPlus"),
+        ),
         "signature": "<p>Corporación Bolivariana del Norte — CBN</p>",
     }
     values = {
@@ -774,6 +790,7 @@ def install(app, s):
             if current["revision"] != body.revision:
                 raise HTTPException(409, "revision_conflict")
             revision = body.revision + 1
+            validate_activation(c, s, kind, value)
             if kind == "template":
                 for asset in set(
                     re.findall(
@@ -1066,7 +1083,7 @@ def install(app, s):
                                 "nombre": target["DisplayName"],
                                 "detalle": "Solicitaste recuperar tu acceso. El enlace vence en una hora y sólo puede utilizarse una vez. Si no lo solicitaste, ignora este correo. El autenticador sigue siendo necesario si está habilitado.",
                                 "enlace": s.public_origin
-                                + "/#/access/redeem?token="
+                                + "/access/redeem#token="
                                 + raw,
                             },
                             user_id=target["UserId"],
@@ -1127,7 +1144,7 @@ def install(app, s):
                 {
                     "nombre": target["DisplayName"],
                     "detalle": "Te invitaron a RinovaPlus. Activa tu cuenta personal con este enlace de un solo uso, válido durante una hora.",
-                    "enlace": s.public_origin + "/#/access/redeem?token=" + raw,
+                    "enlace": s.public_origin + "/access/redeem#token=" + raw,
                 },
                 user_id=identity,
                 expires=3600,
