@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-18",
+  "timezone": "America/Bogota",
+  "kind": "owner_confirmation_supplement",
+  "parent_evidence": "artifacts/live/p8-meta-acceptance-20261118.json",
+  "parent_sha256": "8a8c428319bf2bd6fd252320ba347a6ced142762738abfbe25f846f11c4428b4",
+  "enrollment": "8347e61b-ded2-4ec2-ad09-f15310e04ffb",
+  "queue": "b6efc285-3c09-4c76-8abf-325917db7391",
+  "recipient": "owner_test_phone_ending_44",
+  "sender": "free_Meta_test_account",
+  "template": "hello_world",
+  "owner_statement": "Sí, llegó una sola plantilla nueva",
+  "confirmation": "Owner independently confirmed physical receipt of exactly one new P8 template on the test phone after the recorded provider delivery.",
+  "limits": "This supplements the existing acceptance cut without altering its bytes or claiming a new read webhook, another send or additional roadmap credit. Temporary consent and cadence remain restored as recorded."
+}

@@ -14,6 +14,8 @@ Estado: 100%, 4/4 criterios; corte 18 de noviembre de 2026. General 97,14%, 272/
 
 ## Evidencia y límites
 
+Confirmación posterior del propietario: «Sí, llegó una sola plantilla nueva». Se conserva como [evidencia adicional](../../artifacts/live/p8-owner-confirmation-20261118.json), ligada al hash del registro original. Confirma recepción física sin duplicado; no inventa un recibo de leído ni añade avance al roadmap.
+
 [Registro completo](../../artifacts/live/p8-meta-acceptance-20261118.json). Nuevas pruebas: 53 backend y nueve de interfaz; catorce casos de guardas runtime usan SQL controlado y prohíben llamadas al proveedor. Cubren cambios de contexto/autoridad/consentimiento, plazo de reanudación y efectos inciertos/aceptados sin reenvío. No se presentan como casos externos adicionales.
 
 Producción actual es PostgreSQL. Los criterios funcionales P8.1/P8.2/P8.3 ya aceptados en el ledger se conservan; la revisión actual cierra su dependencia real P4/P7 y añade evidencia operativa nueva. El recibo SQL2019 histórico no está presente en este checkout y no se reconstruye ni se declara reejecutado. No se ejecutaron preparadores, seeds ni calificadores históricos sobre bases pobladas.
