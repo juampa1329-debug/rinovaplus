@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "account": "WhatsApp · Pruebas Meta",
+  "recipient": "owner-authorized phone ending in 44",
+  "scope": "Real Meta test-resource events observed in RinovaPlus UI and exported CSV; no paid institutional sender",
+  "quoted_reply": {
+    "campaign": "Prueba P7 gratuita · hello_world · 44",
+    "state": "completed",
+    "recipient_state": "read",
+    "attempts": 1,
+    "replied_at_UTC": "2026-11-17T23:49:12.123822Z",
+    "attributed_replies": 1,
+    "reply_percent": 100,
+    "owner_confirmation": "Responded quoting second hello_world with Prueba P7 recibida",
+    "report_matches_export": true,
+    "retry_checkbox": "disabled; already accepted by Meta"
+  },
+  "controlled_failure": {
+    "campaign": "Prueba P7 controlada · archivo inválido · 44",
+    "template": "jaspers_market_image_cta_v1",
+    "language": "en_US",
+    "fault": "Header media URL deliberately points to own public HTML page instead of an image",
+    "audience_before_temporary_permission": {"matched": 1, "eligible": 0, "excluded": 1},
+    "audience_after_temporary_permission": {"matched": 1, "eligible": 1, "excluded": 0},
+    "attempts": 1,
+    "accepted_at_UTC": "2026-11-17T23:55:08.578882Z",
+    "failed_at_UTC": "2026-11-17T23:55:09.432629Z",
+    "normalized_error": "whatsapp_media_upload_failed",
+    "status": "failed",
+    "delivery_or_read_invented": false,
+    "provider_message_id_present": true,
+    "retry_checkbox": "disabled; accepted-ID guard preserved",
+    "report_matches_export": true,
+    "end_state": "Temporary test consent revoked and test-account cadence disabled, confirmed in UI"
+  },
+  "issues_found": [
+    "Same consent exclusion was counted twice for one recipient; fixed by deduplicating reasons, with regression test",
+    "Broadcast error used technical English code; now opens existing accessible error modal with cause and next step",
+    "Specific-person search used SQL not supported by the PostgreSQL adapter; corrected and observed returning the single test contact",
+    "Meta reordered template components and the CRM bindings were lost; append-only sync recovered first-name/program bindings without crossing a content revision"
+  ],
+  "enhancement": {
+    "code": "9cfcba4870f77e9644878ddad82a5905a4442668",
+    "frontend_deployment": "Coolify Success, 00m 54s",
+    "backend_deployment": "00f2127 healthy and rolling update completed; eyxenuz5egfkmmousbvklakf",
+    "corrective_code": "00f2127630d87e02ac0bfaa1fb90cad9e587b83a",
+    "corrective_frontend": "Success, 00m 40s; hiibr5diqjbzykey6ahkq3p7",
+    "backend_tests_at_this_cut": 143,
+    "frontend_tests": 16,
+    "types_lint_build": "passed",
+    "motion": "260ms panel entry; 420ms transform-only bars; skeleton pulse; disabled by reduced-motion preference",
+    "production_smoke": "Completed campaign opens results; actual totals 1 delivered/read/attributed reply and 0 failed. Chart DOM confirms 0.42s bar animation; desktop has no horizontal overflow. Specific-person search recovered, named/program CRM defaults recovered after sync. Saved a draft scheduled for 2026-11-19 09:00 America/Bogota with only owner contact selected and stage Nuevo; preview matched one, excluded one for revoked consent and absent program. Not activated.",
+    "mobile_visual_acceptance": "not claimed: viewport capability returned but the actual IAB viewport remained 1280x720; responsive CSS exists"
+  },
+  "read_only_database_crosscheck": {
+    "environment": "Coolify production PostgreSQL, normal application transaction; read-only",
+    "hello_world": {"state":"read","attempts":1,"provider_id_present":true,"error":null},
+    "controlled_failure": {"state":"failed","attempts":1,"provider_id_present":true,"error":"whatsapp_media_upload_failed"},
+    "raw_credentials_or_phone_exported": false
+  },
+  "limits": [
+    "Does not close P4 or P7.close; real channel matrix remains outstanding",
+    "No claim of load SLA or institutional SQL commissioning",
+    "No extra canonical weight for the requested analytics enhancements",
+    "Historical full checker replay remains unavailable due to 20 missing referenced artifacts"
+  ]
+}

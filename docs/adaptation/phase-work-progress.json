@@ -778,6 +778,12 @@
       "source_location": "$.template",
       "scope": "Catálogo Meta positivo real, aprobado y ligado a credencial; no acredita envío ni recibos masivos.",
       "source_sha256_at_review": "29ff11f0129a0eadecefeabb617f60831f66511b87f2fcb46de3f213314b24c6"
+    },
+    "P7_live_real_receipts_20261117": {
+      "file": "artifacts/live/p7-replies-failure-20261117.json",
+      "source_location": "$.quoted_reply; $.controlled_failure; $.read_only_database_crosscheck",
+      "scope": "Real Meta free test account: report/CSV and production database crosscheck of read/failed, one attempt and provider IDs retained; no institutional cutover or full criterion acceptance.",
+      "source_sha256_at_review": "d032b2b99c15ee58f37eb1db002ca16ff5b04d5901cf6ac5c6ecbc606a8ea977"
     }
   },
   "phases": [
@@ -5978,15 +5984,17 @@
             {
               "id": "P7.4.m4",
               "description": "Aceptar estados pendiente/aceptado/enviado/entregado/leído/fallido con recibos reales.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "test",
               "evidence_level": "SQL",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P7_live_real_receipts_20261117"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L259"
@@ -6011,13 +6019,13 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 3,
+            "done_milestones": 4,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 3,
+              "numerator": 4,
               "denominator": 5
             },
-            "percent_display": "60.00%",
+            "percent_display": "80.00%",
             "acceptance_pending": true
           },
           "proposed_criterion_accepted": false,
@@ -6158,15 +6166,15 @@
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 149,
+          "numerator": 156,
           "denominator": 35
         },
         "criterion_denominator": 5,
         "fraction": {
-          "numerator": 149,
+          "numerator": 156,
           "denominator": 175
         },
-        "percent_display": "85.14%",
+        "percent_display": "89.14%",
         "phase_accepted": false
       },
       "historical_closure": {
@@ -8525,15 +8533,15 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 46,
-      "denominator": 49
+      "numerator": 1847,
+      "denominator": 1960
     },
-    "overall_technical_percent_display": "93.88%",
+    "overall_technical_percent_display": "94.23%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 262,
-    "pending_milestones": 17,
+    "done_milestones": 263,
+    "pending_milestones": 16,
     "accepted_criteria": 45,
     "milestone_counts_are_not_weights": true,
     "phases": [
@@ -8653,14 +8661,14 @@
         "id": "P7",
         "criterion_denominator": 5,
         "criterion_equivalents_completed": {
-          "numerator": 149,
+          "numerator": 156,
           "denominator": 35
         },
         "work_fraction": {
-          "numerator": 149,
+          "numerator": 156,
           "denominator": 175
         },
-        "work_percent_display": "85.14%",
+        "work_percent_display": "89.14%",
         "accepted_criteria": 2,
         "acceptance_percent_display": "40.00%",
         "phase_accepted": false

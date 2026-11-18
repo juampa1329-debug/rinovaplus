@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "scope": ["whatsapp", "facebook", "messenger", "instagram"],
+  "tiktok": "deferred_to_P16_by_owner; existing code and historical tests preserved",
+  "code_commit": "1b8d0b6d79e4853543ba36e6421ea5953371423f",
+  "local_regressions": {
+    "command": "python -m pytest tests/test_p4_channel_operations.py tests/test_institutional_broadcasts.py tests/test_broadcast_template_builder.py tests/test_broadcast_audience.py -q",
+    "result": "186 passed; 4 pre-existing datetime.utcnow deprecation warnings",
+    "ruff_F": "passed on changed provider, normalizer and test files",
+    "new_meta_recovery_cases": 40,
+    "per_channel": {
+      "whatsapp": 10,
+      "facebook": 10,
+      "messenger": 10,
+      "instagram": 10
+    },
+    "coverage": [
+      "Reprocess a genuine AES-GCM sealed synthetic receipt through the real Meta normalizer and recovery service",
+      "Queue only the original matching account/event and retain compare-and-swap row version",
+      "Reject changed body digest, changed stored effect, paused account, inactive route, duplicate event and stale row version before any write",
+      "A failed job with provider operation uncertain, running or confirmed cannot create another attempt"
+    ],
+    "boundaries": "SQL transaction and authority are controlled doubles. These are service regressions, not a new SQL restore, production rollback or provider revocation exercise. No network requests or real credentials in these cases."
+  },
+  "live_evidence": {
+    "whatsapp": "p7-replies-failure-20261117.json: actual async failure, one provider-ID-bearing attempt, retry disabled, temporary test consent revoked and cadence disabled",
+    "messenger": "social-ai-20261117.json: actual delivered reply and human followup with zero model operations/bot messages",
+    "instagram": "social-ai-20261117.json: actual accepted DM, public reply observed back by webhook and human control guard",
+    "facebook": "Real Necesito orientación comment, one confirmed Gemini inference, one accepted send and exact reply ID observed back through webhook"
+  },
+  "instagram_seen": {
+    "fix": "Subscribe messaging_seen and normalize read.mid from both entry.messaging and entry.changes",
+    "regressions": 3,
+    "provider_subscription": "Meta Developers messaging_seen switch checked; RinovaPlus Sincronizar suscripción confirmed by provider after fab8b19",
+    "real_read_event": "New manual Instagram P4 message sent in Human mode; owner confirmed reception; UI shows Read. Database crosscheck: one attempt, WebhookReceipt Authentication=verified, WebhookEvent Status=processed and ReceiptState=read. Prior accepted messages were not upgraded without their own event."
+  },
+  "facebook_comment_roundtrip": {
+    "observed_comment": "Necesito orientación",
+    "received_UTC": "2026-11-18T01:34:33.023404Z",
+    "received_Bogota": "2026-11-17 20:34:33",
+    "publication_preview": "Actual Facebook post about Mantenimiento Electrónico y Energías Renovables; original publication link available in UI",
+    "model_operation": "comment_auto_gemini confirmed; 1 attempt",
+    "provider_send": "accepted; 1 attempt",
+    "reply_id_observed_back_in_webhook": true,
+    "final_comment_control": "Human; confirmed in UI",
+    "fresh_version_dispatch_guard": "comment_auto_source_changed; read-only service check with no provider call",
+    "limit": "Human dispatch guard check is not a new public comment or an inference-race exercise. Owner reply said publique excelente; exact observed comment text is recorded here rather than assuming that wording was the comment body."
+  },
+  "followup": {
+    "code_commit": "fab8b19bd11c0a3612dd602886834a7537fc8cd4",
+    "bug_observed": "Explicit repeat subscription hit PostgreSQL unique-effect key before provider IO (23505). Existing intent/history retained.",
+    "fix": "Meta-only subscription reconciliation uses operation-specific effect key; same-operation replay remains fenced. Other credential/effect scopes unchanged.",
+    "provider_result": "Confirmed by provider in RinovaPlus; no alert after synchronization",
+    "full_related_backend_suite": "209 passed; 4 existing deprecation warnings",
+    "production_backend": "fab8b19 healthy and rolling update completed; zufvgz7mixwj4r21crarbz3w",
+    "production_frontend": "fab8b19 Success"
+  },
+  "institutional_recovery_acceptance": "pending; production shared secrets were not revoked and customer events were not resent to simulate acceptance",
+  "canonical_P4_credit_added": 0
+}

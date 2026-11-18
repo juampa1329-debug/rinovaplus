@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "code_commit": "fab8b19bd11c0a3612dd602886834a7537fc8cd4",
+  "environment": "https://app.rinovaplus.com",
+  "backend_deployment": "zufvgz7mixwj4r21crarbz3w; healthy; rolling update completed",
+  "frontend_deployment": "fab8b19 Success",
+  "account": "WhatsApp · Pruebas Meta; existing owner-authorized free Meta resource",
+  "source_files": "New neutral fixtures with no personal data: PNG 800x450, PDF one page, MP4 two seconds 640x360",
+  "review_uploads": {
+    "image": "Real Meta resumable upload confirmed in UI; template saved and creation request confirmed",
+    "document": "Real Meta resumable upload confirmed in UI; template saved and creation request confirmed",
+    "video": "Real Meta resumable upload confirmed in UI; template saved and creation request confirmed"
+  },
+  "templates": [
+    {"name":"prueba_material_cbn_20261117","language":"es","requested_category":"UTILITY","observed_category":"UTILITY","observed_status":"APPROVED"},
+    {"name":"prueba_documento_cbn_20261117","language":"es","requested_category":"UTILITY","observed_status":"PENDING"},
+    {"name":"prueba_video_cbn_20261117","language":"es","requested_category":"UTILITY","observed_status":"PENDING"}
+  ],
+  "delivery_uploads": {
+    "image": "Actual file uploaded to chosen WhatsApp phone and bound to saved campaign draft",
+    "document": "Actual file uploaded to chosen WhatsApp phone and bound to subsequent saved draft revision",
+    "video": "Actual file uploaded to chosen WhatsApp phone and bound to subsequent saved draft revision"
+  },
+  "campaign": {
+    "name": "Prueba P7 adjuntos cargados · no enviar",
+    "state": "draft",
+    "recipient_scope": "only owner-authorized phone ending in 44 selected",
+    "activated": false,
+    "temporary_broadcast_consent": "remains revoked",
+    "test_account_cadence": "remains disabled"
+  },
+  "checks": {
+    "backend": "209 passed; 4 existing datetime.utcnow deprecation warnings",
+    "frontend": "18 passed",
+    "typescript": "passed",
+    "eslint": "passed on changed components/tests",
+    "ruff_F": "passed on changed backend files/tests",
+    "institutional_workspace_build": "passed; existing chunk-size warning remains",
+    "replay": "Same upload operation reuses result without provider IO; changed account context cannot return a confirmed handle",
+    "account_scope": "Delivery media ID requires confirmed operation for same institution/account, format, credential and account revision at preflight/dispatch",
+    "binary_validation": "Uses existing image/PDF inspectors and bounded MP4 normalization; temporary server files cleaned after upload",
+    "credentials": "Sent only in server Authorization headers; not returned or included in public fixture files"
+  },
+  "operator_guide": "docs/adaptation/WHATSAPP_TEMPLATE_OPERATOR_GUIDE.md",
+  "limits": [
+    "PENDING is a review request, not approval. Meta may reclassify or reject.",
+    "No broadcast using the new media templates was activated; no handset delivery is claimed for them.",
+    "This editor covers standard text/image/video/PDF templates and supported buttons. OTP, catalogs, carousels, Flows and Marketing Messages API-only formats remain separate unsupported extensions.",
+    "No new canonical roadmap credit is assigned merely for these UI enhancements."
+  ]
+}
