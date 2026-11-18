@@ -66,6 +66,7 @@ def public_comment(value):
         "reply_state": value.get("ReplyState"),
         "liked": bool(state.get("liked", False)),
         "preview": state.get("preview"),
+        "source": state.get("source"),
         "capabilities": {
             **capabilities(value),
             **(
@@ -168,6 +169,8 @@ class Comments:
             state = payload.setdefault("_crm", {})
             if state.get("state") == "deleted":
                 raise HTTPException(409, "comment_deleted")
+            if state.get("state") == "unavailable":
+                raise HTTPException(409, "comment_source_unavailable")
             item = account(c, self.settings, str(value["IntegrationId"]))
             result = {}
             if body.action == "convert":
@@ -341,6 +344,9 @@ class Comments:
 
 
 def install(app, settings):
+    from app.institutional.comment_notifications import install as install_notifications
+
+    install_notifications(app, settings)
     service = Comments(settings)
 
     @app.get("/api/institution/comments")
@@ -349,7 +355,7 @@ def install(app, settings):
         integration: str = "",
         comment_id: str = "",
         channel: Literal["", "facebook", "instagram", "tiktok"] = "",
-        state: Literal["all", "new", "read", "archived", "deleted"] = "all",
+        state: Literal["all", "new", "read", "archived", "deleted", "unavailable"] = "all",
         q: str = Query("", max_length=200),
         offset: int = Query(0, ge=0, le=10000),
     ):

@@ -34,6 +34,7 @@ type Comment = {
   liked?: boolean;
   synthetic_demo?: boolean;
   preview?: PostPreview;
+  source?: { status: string; checked_at: string; reason?: string };
   capabilities: { public_comment_reply: boolean; comment_like: boolean };
 };
 const labels: Record<string, string> = {
@@ -41,6 +42,7 @@ const labels: Record<string, string> = {
   read: "Leído",
   archived: "Archivado",
   deleted: "Eliminado",
+  unavailable: "Fuente no disponible",
   queued: "En cola",
   sending: "Enviando",
   accepted: "Aceptado por el proveedor",
@@ -138,10 +140,12 @@ export function Comments({
               onChange={(e) => change(() => setState(e.target.value))}
               options={[
                 { value: "all", label: "Todos los estados" },
-                ...["new", "read", "archived", "deleted"].map((value) => ({
-                  value,
-                  label: labels[value],
-                })),
+                ...["new", "read", "archived", "deleted", "unavailable"].map(
+                  (value) => ({
+                    value,
+                    label: labels[value],
+                  }),
+                ),
               ]}
             />
           </div>
@@ -262,7 +266,7 @@ function CommentDetail({
     intent = useIntent();
   useDraftGuard(!!reply || !!name);
   const writable = session.actions.includes("inbox.write"),
-    active = comment.state !== "deleted",
+    active = !["deleted", "unavailable"].includes(comment.state),
     human = comment.control_mode === "human";
   const act = (action: string) =>
     void task.run(async () => {
@@ -337,6 +341,36 @@ function CommentDetail({
           </Notice>
         )}
         {task.notices}
+        {comment.state === "unavailable" && (
+          <Notice>
+            Meta no permite consultar este comentario. Puede haberse eliminado o
+            haber cambiado su acceso. Conservamos el historial y pausamos las
+            respuestas sobre este comentario. Revisa la publicación y los
+            permisos de la cuenta; después pulsa «Sincronizar comentario».
+          </Notice>
+        )}
+        {["facebook", "instagram"].includes(comment.channel) && (
+          <div className="institution-actions">
+            <Button
+              variant="secondary"
+              disabled={
+                !writable ||
+                task.busy ||
+                comment.state === "deleted" ||
+                comment.synthetic_demo
+              }
+              onClick={() => effect("reconcile")}
+            >
+              Sincronizar comentario
+            </Button>
+            {comment.source?.checked_at && (
+              <small>
+                Última consulta:{" "}
+                {new Date(comment.source.checked_at).toLocaleString("es-CO")}
+              </small>
+            )}
+          </div>
+        )}
         <CommentPost comment={comment} />
         <div className="comments-original">
           <div className="comments-heading">
@@ -494,42 +528,83 @@ function safePostMediaUrl(value?: string) {
   const safe = safePostUrl(value);
   if (!safe) return undefined;
   const host = new URL(safe).hostname;
-  return ["fbcdn.net", "cdninstagram.com", "fbsbx.com", "facebook.com", "instagram.com"].some(
-    (domain) => host === domain || host.endsWith("." + domain),
-  ) ? safe : undefined;
+  return [
+    "fbcdn.net",
+    "cdninstagram.com",
+    "fbsbx.com",
+    "facebook.com",
+    "instagram.com",
+  ].some((domain) => host === domain || host.endsWith("." + domain))
+    ? safe
+    : undefined;
 }
 
 function CommentPost({ comment }: { comment: Comment }) {
   const { call } = useInstitution();
-  const [preview, setPreview] = useState<PostPreview>(),
-    [loading, setLoading] = useState(false),
-    [error, setError] = useState(""),
+  const [resource, setResource] = useState<{
+      key: string;
+      preview?: PostPreview;
+      error: string;
+    }>({ key: "", error: "" }),
     [revision, setRevision] = useState(0);
-  const enabled = !comment.synthetic_demo && ["facebook", "instagram"].includes(comment.channel);
+  const enabled =
+    !comment.synthetic_demo &&
+    ["facebook", "instagram"].includes(comment.channel);
+  const requestKey = `${comment.id}:${revision}`;
+  const loading = enabled && resource.key !== requestKey;
+  const error = resource.key === requestKey ? resource.error : "";
   useEffect(() => {
     if (!enabled) return;
     let active = true;
-    setLoading(true);
-    setError("");
-    void call<PostPreview>(`comments/${comment.id}/preview`).then((value) => {
-      if (active && (typeof value.caption === "string" || Array.isArray(value.media)))
-        setPreview(value);
-    }).catch((failure: unknown) => {
-      if (active) setError(failure instanceof Error ? failure.message : "No se pudo cargar la publicación.");
-    }).finally(() => {
-      if (active) setLoading(false);
-    });
-    return () => { active = false; };
-  }, [call, comment.id, enabled, revision]);
-  const current = preview ?? comment.preview;
-  const media = (current?.media ?? []).filter((item) => safePostMediaUrl(item.url));
+    void call<PostPreview>(`comments/${comment.id}/preview`)
+      .then((value) => {
+        if (active)
+          setResource({
+            key: requestKey,
+            preview:
+              typeof value.caption === "string" || Array.isArray(value.media)
+                ? value
+                : undefined,
+            error: "",
+          });
+      })
+      .catch((failure: unknown) => {
+        if (active)
+          setResource((previous) => ({
+            ...previous,
+            key: requestKey,
+            error:
+              failure instanceof Error
+                ? failure.message
+                : "No se pudo cargar la publicación.",
+          }));
+      });
+    return () => {
+      active = false;
+    };
+  }, [call, comment.id, enabled, requestKey]);
+  const current = resource.preview ?? comment.preview;
+  const media = (current?.media ?? []).filter((item) =>
+    safePostMediaUrl(item.url),
+  );
   return (
-    <div className="comments-post" aria-label="Vista previa de la publicación" aria-busy={loading}>
+    <div
+      className="comments-post"
+      aria-label="Vista previa de la publicación"
+      aria-busy={loading}
+    >
       <strong>{comment.account}</strong>
       {media.length > 0 && (
-        <div className="comments-post-media" aria-label="Contenido de la publicación">
+        <div
+          className="comments-post-media"
+          aria-label="Contenido de la publicación"
+        >
           {media.map((item, index) => (
-            <PostMedia key={`${item.url}:${revision}`} item={item} index={index} />
+            <PostMedia
+              key={`${item.url}:${revision}`}
+              item={item}
+              index={index}
+            />
           ))}
         </div>
       )}
@@ -540,33 +615,59 @@ function CommentPost({ comment }: { comment: Comment }) {
       )}
       {error && <Notice error>{error}</Notice>}
       {safePostUrl(current?.permalink) && (
-        <a href={safePostUrl(current?.permalink)} target="_blank" rel="noreferrer">
+        <a
+          href={safePostUrl(current?.permalink)}
+          target="_blank"
+          rel="noreferrer"
+        >
           Abrir publicación original
         </a>
       )}
-        <Button variant="secondary" disabled={!enabled || loading} onClick={() => setRevision((v) => v + 1)}>
-          Actualizar publicación
-        </Button>
+      <Button
+        variant="secondary"
+        disabled={!enabled || loading}
+        onClick={() => setRevision((v) => v + 1)}
+      >
+        Actualizar publicación
+      </Button>
     </div>
   );
 }
 
-function PostMedia({ item, index }: {
+function PostMedia({
+  item,
+  index,
+}: {
   item: NonNullable<PostPreview["media"]>[number];
   index: number;
 }) {
   const [failed, setFailed] = useState(false);
   return (
     <figure>
-      {failed ? <figcaption>Este archivo no está disponible. Actualiza la publicación para volver a consultarlo.</figcaption>
-        : item.type === "video" ? (
-          <video controls playsInline preload="metadata"
-            src={safePostMediaUrl(item.url)} poster={safePostMediaUrl(item.poster)}
-            aria-label={`Video ${index + 1} de la publicación`} onError={() => setFailed(true)} />
-        ) : (
-          <img src={safePostMediaUrl(item.url)} alt={`Imagen ${index + 1} de la publicación`}
-            loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
-        )}
+      {failed ? (
+        <figcaption>
+          Este archivo no está disponible. Actualiza la publicación para volver
+          a consultarlo.
+        </figcaption>
+      ) : item.type === "video" ? (
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          src={safePostMediaUrl(item.url)}
+          poster={safePostMediaUrl(item.poster)}
+          aria-label={`Video ${index + 1} de la publicación`}
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <img
+          src={safePostMediaUrl(item.url)}
+          alt={`Imagen ${index + 1} de la publicación`}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setFailed(true)}
+        />
+      )}
     </figure>
   );
 }
@@ -679,9 +780,10 @@ function CommentAIEditor({
             aria-describedby="comments-auto-description"
           />
           <p className="scope-text" id="comments-auto-description">
-            Gemini redacta una respuesta personalizada con estas instrucciones y la
-            información vigente de Académico y Conocimiento. Este ejemplo no es una
-            respuesta fija. Las consultas que requieren un asesor quedan para revisión.
+            Gemini redacta una respuesta personalizada con estas instrucciones y
+            la información vigente de Académico y Conocimiento. Este ejemplo no
+            es una respuesta fija. Las consultas que requieren un asesor quedan
+            para revisión.
           </p>
         </>
       )}

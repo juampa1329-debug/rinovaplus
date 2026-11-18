@@ -246,7 +246,7 @@ class Drafts:
             if (
                 bytes(comment["RowVersion"]).hex() != body.row_version
                 or json.loads(comment["Payload"]).get("_crm", {}).get("state")
-                == "deleted"
+                in {"deleted", "unavailable"}
             ):
                 raise HTTPException(409, "comment_changed_or_deleted")
             configured = setting(c, self.settings, "ai")

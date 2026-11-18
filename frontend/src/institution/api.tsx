@@ -59,6 +59,8 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  comment_source_unavailable: "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
+  invalid_notification_cutoff: "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",
   learning_purpose_authorization_required: "Esta finalidad necesita una autorización vigente. Revisa las autorizaciones del pack.",
   learning_authorization_changed_rebuild_required: "Cambió una autorización usada por el dataset. Revisa las muestras y crea un dataset nuevo.",
   learning_dataset_corrected_rebuild_required: "Una muestra fue corregida. Crea un dataset nuevo para incorporar la revisión.",

@@ -502,9 +502,42 @@ it("shows new comments in the notification menu and links to the exact comment",
   expect(link).toHaveAttribute("href", "#/comments/comment-one");
   expect(
     fetcher.mock.calls.every(([url]) =>
-      String(url).endsWith("/comments?state=new"),
+      String(url).endsWith("/comments/notifications"),
     ),
   ).toBe(true);
+});
+
+it("acknowledges the notification snapshot without changing comments or their AI mode", async () => {
+  let acknowledged = false;
+  const cutoff = "2026-11-18T12:00:00Z";
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (url, init) => {
+    if (init?.method === "POST") {
+      expect(String(url)).toMatch(/comments\/notifications\/read$/);
+      expect(JSON.parse(String(init.body))).toEqual({ read_through: cutoff, operation_id: expect.any(String) });
+      acknowledged = true;
+      return ok({ saved: true });
+    }
+    return ok({ total: acknowledged ? 0 : 3, items: acknowledged ? [] : [comment], read_through: cutoff });
+  });
+  mount(<CommentNotifications />);
+  fireEvent.click(await screen.findByLabelText("Notificaciones de comentarios, 3 nuevos"));
+  fireEvent.click(screen.getByRole("button", { name: "Marcar todas como leídas" }));
+  expect(await screen.findByText("Estás al día con los comentarios.")).toBeVisible();
+  expect(fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+});
+
+it("shows inaccessible comments honestly and allows source reconciliation without external replies", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+    if (init?.method === "POST") return ok({ status: "confirmed", result: { source: { status: "unavailable" } } });
+    return ok({ items: [{ ...comment, state: "unavailable" }], total: 1, has_more: false });
+  });
+  mount(<Comments />);
+  fireEvent.click(await screen.findByRole("button", { name: /Cuenta CBN · Fuente no disponible/ }));
+  expect(screen.getByText(/Meta no permite consultar este comentario/)).toBeVisible();
+  expect(screen.getByRole("button", { name: "Sugerir respuesta con IA" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Enviar respuesta pública" })).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Sincronizar comentario" }));
+  await waitFor(() => expect(fetcher.mock.calls.some(([url, init]) => init?.method === "POST" && String(url).endsWith("/comment-one/effects/reconcile"))).toBe(true));
 });
 
 it("labels persisted examples and disables external effects without disabling CRM review", async () => {

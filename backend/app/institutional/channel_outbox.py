@@ -106,7 +106,7 @@ def enqueue(
                 "ent WHERE InstitutionId=? AND Integrat"
                 "ionId=? AND CommentId=? AND ISNULL(JSO"
                 "N_VALUE(Payload,'$._crm.state'),'new')"
-                "<>'deleted'"
+                " NOT IN('deleted','unavailable')"
             ),
             inst,
             item["IntegrationId"],
@@ -283,7 +283,7 @@ def ready(c, settings, job, *, controlled=False):
         )
         if (
             not comment
-            or json.loads(comment["Payload"]).get("_crm", {}).get("state") == "deleted"
+            or json.loads(comment["Payload"]).get("_crm", {}).get("state") in {"deleted", "unavailable"}
         ):
             raise HTTPException(409, "comment_deleted")
         payload["target"] = comment["ExternalId"]

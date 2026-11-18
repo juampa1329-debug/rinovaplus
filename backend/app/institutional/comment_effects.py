@@ -2,6 +2,7 @@
 
 import json
 import re
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, Request
 from pydantic import Field
@@ -24,6 +25,23 @@ def call_provider(adapter, action, comment):
     target = comment["ExternalId"]
     if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,200}", target):
         raise providers.ProviderFailure("comment_target_invalid")
+    if action == "reconcile":
+        try:
+            value = providers.request(adapter, "GET", target, params={
+                "fields": "id,text" if adapter["channel"] == "instagram" else "id,message",
+            })
+        except providers.ProviderFailure as error:
+            # Meta does not distinguish an inaccessible object from a deleted one
+            # reliably. Preserve the record and never fabricate a deletion event.
+            if error.code != "provider_permission_or_request_rejected":
+                raise
+            return {"source": {"status": "unavailable", "reason": error.code}}
+        if str(value.get("id")) != target:
+            raise providers.ProviderFailure("comment_target_mismatch")
+        text = value.get("text" if adapter["channel"] == "instagram" else "message")
+        if not isinstance(text, str):
+            raise providers.ProviderFailure("comment_source_invalid")
+        return {"source": {"status": "available"}, "body": text[:4000]}
     if action in {"like", "unlike"}:
         value = providers.request(
             adapter, "POST" if action == "like" else "DELETE", target + "/likes", {}
@@ -112,7 +130,7 @@ class Effects:
             raise HTTPException(409, "comment_preview_unavailable") from None
 
     def perform(self, authority, identity, action, body):
-        if action not in {"like", "unlike", "preview"}:
+        if action not in {"like", "unlike", "preview", "reconcile"}:
             raise HTTPException(404, "comment_effect_not_found")
         operation = uid(body.operation_id)
         digest = bound_hash(
@@ -165,13 +183,15 @@ class Effects:
                 raise HTTPException(409, "revision_conflict")
             if json.loads(comment["Payload"]).get("_crm", {}).get("state") == "deleted":
                 raise HTTPException(409, "comment_deleted")
+            if action != "reconcile" and json.loads(comment["Payload"]).get("_crm", {}).get("state") == "unavailable":
+                raise HTTPException(409, "comment_source_unavailable")
             if (
                 item["Channel"] == "tiktok"
                 or action in {"like", "unlike"}
                 and not capabilities(item)["comment_like"]
             ):
                 raise HTTPException(409, "comment_effect_unsupported_by_provider")
-            if action != "preview" and (
+            if action not in {"preview", "reconcile"} and (
                 not configuration(c, self.settings)["OutboundEnabled"]
                 or item["RequestedStatus"] != "connected"
                 or item["VerifiedStatus"] != "verified"
@@ -204,6 +224,8 @@ class Effects:
                 if action in {"like", "unlike"} and type(result.get("liked")) is bool
                 else {"preview": result["preview"]}
                 if action == "preview" and isinstance(result.get("preview"), dict)
+                else result
+                if action == "reconcile" and valid_source_result(result)
                 else None
             )
             if safe is None:
@@ -256,20 +278,28 @@ class Effects:
                 or not active_intent
             ):
                 status, code = "uncertain", "comment_or_authority_changed"
+                safe = {}
             if status == "confirmed":
                 payload = json.loads(current["Payload"])
-                payload.setdefault("_crm", {}).update(safe)
+                if action == "reconcile":
+                    apply_source_result(payload, safe)
+                else:
+                    payload.setdefault("_crm", {}).update(safe)
                 c.execute(
                     (
                         "UPDATE crm_channels2.SocialComment SET Payload"
-                        "=? WHERE InstitutionId=? AND CommentId=? AND R"
+                        "=?,Body=? WHERE InstitutionId=? AND CommentId=? AND R"
                         "owVersion=?"
                     ),
                     json.dumps(payload, ensure_ascii=False),
+                    safe["body"] if action == "reconcile" and "body" in safe else current["Body"],
                     institution(self.settings),
                     uid(identity),
                     comment["RowVersion"],
                 )
+                if c.rowcount != 1:
+                    raise HTTPException(409, "revision_conflict")
+                c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
             c.execute(
                 (
                     "UPDATE crm_channels2.ProviderOperation SET Sta"
@@ -285,6 +315,29 @@ class Effects:
                 operation,
             )
         return {"status": status, "code": code, "result": safe}
+
+
+def valid_source_result(result):
+    source = result.get("source")
+    return isinstance(source, dict) and (
+        source == {"status": "available"} and isinstance(result.get("body"), str)
+        and len(result["body"]) <= 4000 and set(result) == {"source", "body"}
+        or source == {"status": "unavailable", "reason": "provider_permission_or_request_rejected"}
+        and set(result) == {"source"}
+    )
+
+
+def apply_source_result(payload, result):
+    state = payload.setdefault("_crm", {})
+    state["source"] = {
+        **result["source"], "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if result["source"]["status"] == "unavailable":
+        if state.get("state") != "unavailable":
+            state["state_before_unavailable"] = state.get("state", "new")
+        state["state"] = "unavailable"
+    elif state.get("state") == "unavailable":
+        state["state"] = state.pop("state_before_unavailable", "new")
 
 
 def install(app, settings):

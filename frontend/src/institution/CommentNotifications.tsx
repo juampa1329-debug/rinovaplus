@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import { Icon } from "../shared/Icon";
+import { Button } from "../shared/ui";
+import { useInstitution, useIntent, useTask } from "./api";
 import { ChannelLabel } from "./InboxPresentation";
 import { useResource } from "./Settings";
 
 type NewComments = {
   total: number;
+  read_through: string;
   items: {
     id: string;
     author: string;
@@ -17,8 +20,12 @@ type NewComments = {
 export function CommentNotifications() {
   const panel = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);
-  const { value, error, reload } =
-    useResource<NewComments>("comments?state=new");
+  const { call, session } = useInstitution();
+  const task = useTask();
+  const intent = useIntent();
+  const { value, error, reload } = useResource<NewComments>(
+    "comments/notifications",
+  );
   const refresh = () => void reload().catch(() => {});
   useEffect(() => {
     let timer: number | undefined;
@@ -80,6 +87,29 @@ export function CommentNotifications() {
           <h2>Comentarios nuevos</h2>
           {value && <span>{value.total}</span>}
         </header>
+        <Button
+          variant="quiet"
+          disabled={
+            !value?.total ||
+            !value.read_through ||
+            task.busy ||
+            !session.actions.includes("inbox.write")
+          }
+          onClick={() =>
+            void task.run(async () => {
+              if (!value) return;
+              const body = { read_through: value.read_through };
+              await call("comments/notifications/read", "POST", {
+                ...body,
+                operation_id: intent.get(body),
+              });
+              await reload();
+            })
+          }
+        >
+          Marcar todas como leídas
+        </Button>
+        {task.notices}
         {error && (
           <p role="status">No se pudieron actualizar los comentarios.</p>
         )}
