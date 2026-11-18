@@ -796,6 +796,12 @@
       "source_location": "$.criteria_review; $.institutional_WhatsApp; $.live_HTTP_signature_and_duplicate_checks; $.Instagram_source_reconciliation; $.social_media; $.P7_final_review; $.limits",
       "scope": "Owner-authorized Meta acceptance: real institutional WhatsApp and Human silence, signed duplicate/recovery guards, Facebook edit/delete, honest Instagram source reconciliation and recovered media send, actual approved template catalog/report/CSV and bounded retry refusal. Controlled race/unknown-result tests remain distinguished; TikTok is P16, not fabricated acceptance.",
       "source_sha256_at_review": "7f44a60c90b73e12b66a5761e5c064f28a1e6c23b1a27b9d80c495cfddbde20c"
+    },
+    "P8_Meta_acceptance_20261118": {
+      "file": "artifacts/live/p8-meta-acceptance-20261118.json",
+      "source_location": "$.real_run; $.restart; $.versions; $.human_cancel; $.cleanup; $.limits",
+      "source_sha256_at_review": "8a8c428319bf2bd6fd252320ba347a6ced142762738abfbe25f846f11c4428b4",
+      "scope": "P8 closure after accepted P5/P6/P7: owner-authorized single free Meta template, persisted wait across redeploy, pause/resume, version restoration to draft, Human cancellation and cleanup. Controlled regressions and historical SQL checkpoint limits explicitly separated."
     }
   },
   "phases": [
@@ -6756,15 +6762,17 @@
             {
               "id": "P8.close.m5",
               "description": "Cerrar P8 y P5/P6/P7: evaluación local no equivale a remarketing completo.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P8_Meta_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L269"
@@ -6772,35 +6780,35 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 4,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 4,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "80.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_P8_Meta_live_closure_20261118"
           }
         }
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 19,
-          "denominator": 5
+          "numerator": 4,
+          "denominator": 1
         },
         "criterion_denominator": 4,
         "fraction": {
-          "numerator": 19,
-          "denominator": 20
+          "numerator": 1,
+          "denominator": 1
         },
-        "percent_display": "95.00%",
-        "phase_accepted": false
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "historical_closure": {
         "accepted_criteria": 0,
@@ -8562,16 +8570,16 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 271,
-      "denominator": 280
+      "numerator": 34,
+      "denominator": 35
     },
-    "overall_technical_percent_display": "96.79%",
+    "overall_technical_percent_display": "97.14%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 271,
-    "pending_milestones": 8,
-    "accepted_criteria": 51,
+    "done_milestones": 272,
+    "pending_milestones": 7,
+    "accepted_criteria": 52,
     "milestone_counts_are_not_weights": true,
     "phases": [
       {
@@ -8706,17 +8714,17 @@
         "id": "P8",
         "criterion_denominator": 4,
         "criterion_equivalents_completed": {
-          "numerator": 19,
-          "denominator": 5
+          "numerator": 4,
+          "denominator": 1
         },
         "work_fraction": {
-          "numerator": 19,
-          "denominator": 20
+          "numerator": 1,
+          "denominator": 1
         },
-        "work_percent_display": "95.00%",
-        "accepted_criteria": 3,
-        "acceptance_percent_display": "75.00%",
-        "phase_accepted": false
+        "work_percent_display": "100.00%",
+        "accepted_criteria": 4,
+        "acceptance_percent_display": "100.00%",
+        "phase_accepted": true
       },
       {
         "id": "P9",

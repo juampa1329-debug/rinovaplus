@@ -1,3 +1,22 @@
+## Corte vigente: P8 Meta aceptada — 2026-11-18
+
+**General: 97,14%; 272/279 hitos y 52/56 criterios aceptados. P8: 100%, 4/4 criterios.** Cierre revisado tras P4/P7: una hello_world de la cuenta gratuita al propietario, espera persistida de diez minutos que sobrevivió a un redeploy real, pausa/reanudación sin cambiar plazo, recuperación de versión como borrador y cancelación por Humano en una copia sin mensaje. Cuenta de prueba devuelta a cupo 2, envío desactivado y consentimiento revocado; ninguna campaña comercial ni envío institucional de pago.
+
+| Fases | Avance vigente |
+|---|---:|
+| P0–P8 | 100,00% (P4/P7/P8 operativas Meta) |
+| P9 | 93,75% |
+| P10 | 95,00% |
+| P11 | 72,50% |
+| P12 | 0,00% de aceptación formal; infraestructura publicada existente |
+| P13 | Parcial, 0/4 aceptados |
+| P14 | Plan pendiente |
+| P15 SIIE, P16 TikTok | Diferidas, 0/5 cada una |
+
+La evidencia del cierre es `artifacts/live/p8-meta-acceptance-20261118.json`; guía `docs/adaptation/P8_META_ACCEPTANCE.md`. No modificar definiciones, pesos, releases, grafos ni checkers anteriores. La nueva aceptación no recertifica SQL2019/SIIE institucional ni reconstruye los veinte artefactos históricos ausentes. P9/P10/P11 conservan sus revisiones pendientes; no declararlas cerradas automáticamente. La próxima revisión solicitada es P9 después de este cierre.
+
+## Cortes anteriores conservados
+
 ## Estado vigente operativo Meta — 2026-11-18
 
 **General: 96,79%; 271/279 hitos y 51/56 criterios aceptados. P4 y P7: 100% en el alcance Meta autorizado.** Se mantienen los 56 criterios, los 279 hitos, textos y pesos originales. TikTok fue separado expresamente por el propietario a P16; no se acredita una prueba TikTok. La aceptación nueva está trazada por criterio en [la evidencia del cierre](../artifacts/live/p4-p7-acceptance-20261118.json), con preimágenes del ledger conservadas. No equivale a puesta institucional SQL/SIIE ni cierra automáticamente P8–P11.

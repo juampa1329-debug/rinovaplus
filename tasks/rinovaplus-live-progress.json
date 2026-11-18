@@ -21,10 +21,10 @@
     "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
-  "canonical_percent": "96.79%",
-  "canonical_milestones_done": 271,
+  "canonical_percent": "97.14%",
+  "canonical_milestones_done": 272,
   "canonical_milestones_total": 279,
-  "canonical_criteria_accepted": 51,
+  "canonical_criteria_accepted": 52,
   "canonical_criteria_total": 56,
   "canonical_weight_changed": false,
   "phase_percentages": {
@@ -36,7 +36,7 @@
     "P5": "100.00%",
     "P6": "100.00%",
     "P7": "100.00%",
-    "P8": "95.00%",
+    "P8": "100.00%",
     "P9": "93.75%",
     "P10": "95.00%",
     "P11": "72.50%"
@@ -110,8 +110,9 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
+    "P9_separate_closure_review",
     "P13_two_reviewed_programs_without_SIIE",
-    "P8_P9_P10_separate_closure_reviews",
+    "P10_dependency_review",
     "P11_P12_institutional_commissioning"
   ],
   "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md",
@@ -137,5 +138,11 @@
     "status": "deferred_by_owner",
     "accepted": 0,
     "total": 5
+  },
+  "P8": {
+    "status": "accepted_Meta_closure",
+    "evidence": "artifacts/live/p8-meta-acceptance-20261118.json",
+    "accepted": 4,
+    "total": 4
   }
 }

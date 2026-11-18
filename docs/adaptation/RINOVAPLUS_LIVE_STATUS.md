@@ -2,7 +2,11 @@
 
 Corte: 18 de noviembre de 2026. Este registro complementa el checkpoint SQL local del 28 de octubre con la operación actual en https://app.rinovaplus.com. No reemplaza ni modifica releases, grafos, pruebas o recibos históricos.
 
-## Cierre vigente Meta del 18 de noviembre
+## Corte posterior: P8 cerrada al 100% en Meta
+
+La [revisión P8](P8_META_ACCEPTANCE.md) acredita la única plantilla autorizada, conservación exacta de espera/inscripción/paso tras cambio de contenedor, pausa/reanudación, restauración de versión como borrador y cancelación humana de una copia sin envío. El cupo volvió a 2, la cadencia quedó apagada y el consentimiento de prueba revocado. Las secciones fechadas anteriores conservan el historial; la tabla vigente prevalece.
+
+## Cierre anterior P4/P7 Meta del 18 de noviembre
 
 P4 y P7 quedan aceptados dentro del alcance Meta autorizado. La [evidencia por criterio](../../artifacts/live/p4-p7-acceptance-20261118.json) distingue pruebas reales, simuladas y límites. La imagen de Instagram falló antes de obtener ID por usar el ID de Instagram como Page ID; se corrigió el adaptador, se recuperó el envío con un nuevo registro aceptado y el propietario confirmó recepción. Los dos chats siguen en Humano. No hay envíos pendientes al corte.
 
@@ -76,9 +80,9 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P5 | 100,00% local | Respuestas personalizadas y silencio Humano posteriores al cambio ya probados en Messenger/Instagram; comentario y sugerencias reales verificados. Falta el piloto con hechos revisados de dos programas y ampliar la prueba de carrera durante inferencia. No se atribuyen estas ampliaciones a la aceptación local antigua. |
 | P6 | 100,00% local | Revisar y publicar información real de programas, fuentes y vigencias para el piloto. La función de conocimiento local ya está aceptada. |
 | P7 | 100,00% | Catálogo/estados Meta, plantillas reales, audiencia, recibos, respuesta citada, informe/CSV y guardas de reintento aceptados. Revisión de Meta de cada nueva plantilla sigue siendo externa. |
-| P8 | 95,00% | P4/P7 ya aceptados; falta revisión específica del recorrido y cierre P8.close.m5. No activar campañas comerciales para simular aceptación. |
+| P8 | 100,00% Meta | Cierre completo revisado: espera persistida tras redeploy, pausa/reanudación, una salida real vía P7, versiones y cancelación Humano sin mensaje. [Evidencia y límites](P8_META_ACCEPTANCE.md). |
 | P9 | 93,75% | Dependencia P4 satisfecha; falta su revisión específica de cierre P9.close.m4. |
-| P10 | 95,00% | Cerrar P8/P9 y dependencia P10.close.m4. El algoritmo actual es logística revisada; no se afirma red neuronal ni eficacia real. |
+| P10 | 95,00% | P8 ya aceptada; faltan P9 y revisión específica de P10.close.m4. No se afirma red neuronal ni eficacia institucional. |
 | P11 | 72,50% | Puesta institucional y recuperación específica, aceptación de alcance y cierres P1–P10. PostgreSQL publicado no acredita por sí solo el criterio original de migración SQL2019/SIIE. |
 | P12 | 0,00% de aceptación formal | La infraestructura online YA existe y los despliegues/HTTPS se han comprobado. Falta conciliarla formalmente con los criterios originales, custodios, restauración/RPO/RTO, mapeo académico y aceptación institucional; el 0% es del checkpoint formal, no significa que no exista aplicación publicada. |
 | P13 | 0/4 hitos aceptados | Revisar fichas de Enfermería y Software con fuentes manuales o institucionales; aceptar especialista/enrutamiento y piloto real de ambos programas con control humano. SIIE no es dependencia obligatoria: pasa a P15. |
@@ -86,7 +90,7 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P15 | Diferida; 0/5 unidades aceptadas | Integración SIIE: contrato/acceso, dos ofertas reales, sincronización revisada, uso por agentes y operación institucional. Base técnica implementada, conexión no configurada. |
 | P16 | Diferida; 0/5 unidades aceptadas | [Todo TikTok en plan independiente](P16_TIKTOK_PLAN.md): documentación/capacidades, app y OAuth, adaptación, pruebas reales y aceptación/reversión. No bloquea la ejecución operativa Meta solicitada; el checkpoint canónico histórico se conserva. |
 
-**Total técnico actualizado: 96,79%, 271/279 hitos y 51/56 criterios aceptados.** Quedan ocho hitos originales. Nueva aceptación de seis criterios existentes en [evidencia Meta](../../artifacts/live/p4-p7-acceptance-20261118.json); definición, pesos y denominadores intactos. P12–P16 están fuera del denominador. El replay íntegro continúa limitado por 20 artefactos históricos ausentes; cálculo exacto y nuevas referencias se validan por separado.
+**Total técnico actualizado: 97,14%, 272/279 hitos y 52/56 criterios aceptados.** Quedan siete hitos originales. P8.close.m5 aceptado con [prueba real y límites](../../artifacts/live/p8-meta-acceptance-20261118.json). Definición, pesos y denominadores intactos; P12–P16 fuera del denominador. Los veinte artefactos ausentes siguen impidiendo el replay íntegro histórico; cálculo y evidencia nueva se validan por separado.
 
 ## Cómo se actualizará desde ahora
 

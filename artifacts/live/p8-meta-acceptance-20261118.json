@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-18",
+  "timezone": "America/Bogota",
+  "status": "accepted",
+  "scope": "P8 closure for owner-authorized Meta operations after P4/P7 acceptance; original SQL checkpoints and all fixed roadmap definitions retained. TikTok remains separate P16.",
+  "authorization": "Owner requested P8 first and explicitly authorized one hello_world to the phone ending 44 from the free Meta account, temporary consent and daily limit 3 because 2 slots remained reserved from P7, followed by revocation, limit 2 and disabled cadence.",
+  "revision": "efe13b9",
+  "production_url": "https://app.rinovaplus.com/#/campaigns",
+  "flow": "28383a25-58f7-4832-8e74-a4d031e53e94",
+  "name": "P8 · Ensayo técnico del 44 · 2026-11-18",
+  "initial_preflight": "One evaluated owner contact, zero eligible: cadence disabled and consent revoked. No provider effects. After explicit authorization: one eligible, zero excluded; configuration reviewed.",
+  "steps": "10-minute persistent wait then exactly one approved hello_world; exit_on_response enabled; no trigger activated and no other contacts selected.",
+  "real_run": {
+    "enrollment": "8347e61b-ded2-4ec2-ad09-f15310e04ffb",
+    "wait_step": "7c231cba-d9a5-4cd9-9293-03af2fc64697",
+    "wait_due_UTC": "2026-11-18T14:33:35.877119Z",
+    "initial_state": "waiting",
+    "state": "completed",
+    "initial_provider_attempts": 0,
+    "pause_resume": "Original execution paused, flow reactivated and same execution explicitly resumed. Deadline unchanged; FlowEpoch advanced to 2 without replacing VersionNo 1.",
+    "one_send": true,
+    "native_campaign": "87a8ac1c-3dc6-55af-9b43-800046b33d83",
+    "send_step": "43a31f96-c9b2-4a00-b160-0ab930cae43e",
+    "queue": "b6efc285-3c09-4c76-8abf-325917db7391",
+    "attempts": 1,
+    "provider_id_present": true,
+    "receipt_state": "delivered",
+    "created_UTC": "2026-11-18T14:33:42.144856Z",
+    "completed_UTC": "2026-11-18T14:33:45.732169Z",
+    "UI_metrics": "A: 1 person, 1 attempt, 1 accepted, 1 delivered, 0 read at this cut, 0 attributed replies, 0 failures, 0 uncertain. B all zero.",
+    "owner_confirmation": "Optional phone confirmation requested; at acceptance cut provider delivery is observed, not claimed as read or physically confirmed. No quoted reply required for this test."
+  },
+  "restart": {
+    "deployment": "sburqpfft9qp3nqfevmf7fsz",
+    "result": "Success, 04m 15s",
+    "before_container": "nwbyrdvtsfclmm6zyffjqjqp-20261118T140401",
+    "after_container": "nwbyrdvtsfclmm6zyffjqjqp-20261118T142527",
+    "same_enrollment": true,
+    "same_wait_step": true,
+    "same_wait_deadline": true,
+    "after": "Fresh read-only SQL transaction in new container returned same enrollment, step, version 1, epoch 2 and exact future deadline. UI agreed; zero attempts. No preparer, seed, SQL write or historical qualifier run."
+  },
+  "versions": {
+    "copy": "Separate copy of active flow, in draft, zero enrollments",
+    "observed": "Copy v1 wait 10 minutes; edit created v2 wait 5; explicit restore of v1 created v3 in draft with wait 10. v1/v2 history retained; active original unaffected.",
+    "human_test_preparation": "Copy v4 renamed P8 · Cancelación Humano · sin envíos · 2026-11-18; message step removed and only 30-minute wait retained. Not activated before original send completes."
+  },
+  "CRM_template": {
+    "name": "P8 · Plantilla CRM de simulación · no enviar",
+    "state": "draft",
+    "scope_notice": "UI explicitly distinguishes CRM response-window template from provider-approved Meta template.",
+    "simulation": "Hola Aspirante, esta es una prueba del seguimiento de RinovaPlus. No necesitas realizar ningún pago.",
+    "provider_sends": 0
+  },
+  "regressions": {
+    "backend": "53 passed: 39 existing P8 protocol/media/scheduling tests plus 14 new runtime-boundary cases",
+    "frontend": "9 passed across campaign editor and assets suites",
+    "ruff_F": "passed on new runtime tests",
+    "new_cases": "Stage/program/canonical-identity/control-epoch/reply changes invalidate future waits; revoked consent blocks send; paused/replaced/epoch-changed flow rejected; resume preserves future due date; uncertain/queued/completed cannot be resumed as paused; already accepted send is observed without preparing another send.",
+    "controlled_scope": "New runtime tests use controlled SQL and forbid provider requests. These are not claimed as additional real external sends or SQL Server recovery tests."
+  },
+  "human_cancel": {
+    "flow": "2fee5a6f-cebf-482e-9f88-498450a6c208",
+    "version": 4,
+    "enrollment": "1fe62a38-c128-4806-8e08-523665fb2b31",
+    "initial_state": "waiting",
+    "initial_due_UTC": "2026-11-18T15:05:47.385926Z",
+    "state": "cancelled",
+    "reason": "campaign_handoff_changed",
+    "provider_sends": 0,
+    "scope": "Only a 30-minute wait, message step removed before activation; actual switch to Human on the free-account chat cancelled the future wait. Switch subsequently restored to AI; no other chat was changed."
+  },
+  "cleanup": {
+    "cadence_enabled": false,
+    "daily_limit": 2,
+    "interval_seconds": 30,
+    "consent": "revoked",
+    "retained_reservations": 3,
+    "active_P8_test_flows": 0,
+    "evidence": "Fresh UI shows disabled checkbox, max 2 and revoked consent; fresh read-only SQL shows both test flows paused, original completed and one delivered attempt retained, Human copy cancelled. Reservations preserved; no forced quota release or history deletion."
+  },
+  "limits": [
+    "Current production is PostgreSQL; this review does not recertify historical SQL2019/SIIE commissioning or migrate academic data.",
+    "Twenty old artifacts, including the historical P8 acceptance file, remain absent from this checkout. Earlier accepted ledger entries are retained; no full historical replay or reconstructed evidence is claimed.",
+    "No paid institutional campaign, commercial opt-in, public post, TikTok test or assertion of statistical A/B effectiveness is included. Only the owner's free-account test is authorized.",
+    "No artificial loss of an accepted external POST, live shared-secret revocation, or forced provider outage; those safety boundaries are explicitly controlled regressions."
+  ]
+}
