@@ -37,17 +37,35 @@ const risk: Risk = {
   trainedPrediction: false,
 };
 
-it.each([["[Adjunto]", "Foto"], ["[image]", "Foto"], ["Mira nuestro material", "Mira nuestro material"]])(
-  "shows a photo icon and caption instead of generic attachment text: %s",
-  (preview, expected) => {
+it.each([
+  ["image", "[Adjunto]", "Foto"],
+  ["image", "[image]", "Foto"],
+  ["image", "Mira nuestro material", "Mira nuestro material"],
+  ["video", "[Adjunto]", "Video"],
+  ["video", "Recorrido por la sede", "Recorrido por la sede"],
+  ["sticker", "[sticker]", "Sticker"],
+  ["document", "[Adjunto]", "Documento"],
+  ["document", "Guía de inscripción.pdf", "Guía de inscripción.pdf"],
+  ["audio", "[Adjunto]", "Audio"],
+  [null, "[video]", "Video"],
+  [null, "[document]", "Documento"],
+])(
+  "shows the media icon and readable preview for %s: %s",
+  (previewKind, preview, expected) => {
     const { container } = render(<ConversationRow selected={false} onSelect={() => {}}
       row={{ name: "Contacto", phone: "", stage: "Nuevo", state: "open", unread: false,
-        assignee: null, risk, previewKind: "image", preview }} />);
+        assignee: null, risk, previewKind, preview }} />);
     expect(screen.getByText(expected)).toBeVisible();
     expect(container.querySelector('.inbox-row-preview svg')).toBeInTheDocument();
     expect(container.querySelector('.inbox-row-preview')).not.toHaveTextContent("[Adjunto]");
   },
 );
+it("keeps voice-note duration beside the microphone", () => {
+  render(<ConversationRow selected={false} onSelect={() => {}}
+    row={{ name: "Contacto", phone: "", stage: "Nuevo", state: "open", unread: false,
+      assignee: null, risk, previewKind: "audio", preview: "[Adjunto]", previewDuration: "65" }} />);
+  expect(screen.getByText("1:05")).toBeVisible();
+});
 const config = {
   stages: [{ key: "new", label: "Nueva", probability: null, active: true }],
   tags: ["Interés"],

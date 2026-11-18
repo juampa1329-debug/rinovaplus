@@ -27,6 +27,8 @@ const paths: Record<string, string> = {
   microphone:
     "M9 5a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0z M5 10v2a7 7 0 0 0 14 0v-2 M12 19v3 M8 22h8",
   image: "M3 3h18v18H3z M7 7h.01 M3 17l6-6 4 4 3-3 5 5",
+  video: "M3 5h18v14H3z m7 4 6 3-6 3V9z",
+  sticker: "M4 3h16v11l-7 7H4V3z M13 21v-7h7 M8 8h.01 M15 8h.01 M8 11c1 2 4 2 5 0",
   smile:
     "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z M8 14a4.5 4.5 0 0 0 8 0 M9 9h.01 M15 9h.01",
   send: "M22 2 7 17 M22 2l-5 20-5-10L2 7z",

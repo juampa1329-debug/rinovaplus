@@ -479,6 +479,31 @@ export function InboxListControls({
   );
 }
 
+const previewMedia = {
+  image: { icon: "image", label: "Foto" },
+  video: { icon: "video", label: "Video" },
+  sticker: { icon: "sticker", label: "Sticker" },
+  document: { icon: "application", label: "Documento" },
+  audio: { icon: "microphone", label: "Audio" },
+};
+
+function ConversationPreview({ preview, kind, duration }: {
+  preview?: string | null;
+  kind?: string | null;
+  duration?: string | null;
+}) {
+  const text = preview?.trim() || "";
+  const marker = /^\[(audio|image|video|sticker|document)\]$/i.exec(text)?.[1]?.toLowerCase();
+  const media = previewMedia[(kind || marker || "") as keyof typeof previewMedia];
+  if (!media) return text || "Sin mensajes";
+  const caption = text && !/^\[(adjunto|audio|image|imagen|photo|foto|video|sticker|document|documento)\]$/i.test(text)
+    ? text : "";
+  const seconds = Number(duration);
+  const label = media === previewMedia.audio && Number.isFinite(seconds) && seconds > 0
+    ? clockTime(seconds) : caption || media.label;
+  return <><Icon name={media.icon} className="inbox-preview-media" />{label}</>;
+}
+
 export function ConversationRow({
   row,
   selected,
@@ -542,18 +567,7 @@ export function ConversationRow({
           <span>{labelFor(states, row.state)}</span>
         </span>
         <span className="inbox-row-preview">
-          {row.previewKind === "audio" || row.preview === "[audio]" ? (
-            <>
-              <Icon name="microphone" className="inbox-preview-microphone" />
-              {row.previewDuration ? clockTime(Number(row.previewDuration)) : "Audio"}
-            </>
-          ) : row.previewKind === "image" || row.preview === "[image]" ? (
-            <>
-              <Icon name="image" className="inbox-preview-microphone" />
-              {row.preview?.trim() && !/^\[(Adjunto|image|imagen|photo|foto)\]$/i.test(row.preview.trim())
-                ? row.preview.trim() : "Foto"}
-            </>
-          ) : row.preview?.trim() || "Sin mensajes"}
+          <ConversationPreview preview={row.preview} kind={row.previewKind} duration={row.previewDuration} />
         </span>
         <span className="inbox-row-meta inbox-row-signals">
           {temperature && (
