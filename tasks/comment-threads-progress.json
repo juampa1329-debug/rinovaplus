@@ -1,10 +1,10 @@
 {
   "date": "2026-11-18",
-  "status": "implemented_tested_deployment_pending",
+  "status": "deployed_verified_existing_Meta_threads",
   "scope": "Group comments by institution, account, post and author, show each connected-account reply below its original, and exclude self comments from notifications",
   "canonical_weight_added": 0,
-  "backend_selected_tests": 186,
-  "frontend_selected_tests": 22,
+  "backend_selected_tests": 189,
+  "frontend_selected_tests": 23,
   "types_changed_lint_workspace_build": "passed",
   "existing_bundle_warning": "retained",
   "postgres_read_only_probe": {
@@ -18,5 +18,15 @@
   },
   "new_external_comments_or_replies_sent": 0,
   "details": "docs/adaptation/COMMENT_THREADS.md",
-  "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md"
+  "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md",
+  "code": "525dae1720daa723eb83187d02e19520dce32e57",
+  "backend_deployment": "qh3e8mqweguf8lpipahlolus",
+  "frontend_deployment": "jlud60mtdzmbwfdf55frmjtv",
+  "backend_readiness": "200 postgres_deployment",
+  "live_groups": 17,
+  "notifications_before": 10,
+  "notifications_after": 4,
+  "own_notifications_excluded": true,
+  "per_comment_reply_target": "verified_on_both_existing_comments_without_sending",
+  "same_person_post_existing_example": "two_comments_two_correctly_nested_account_replies"
 }

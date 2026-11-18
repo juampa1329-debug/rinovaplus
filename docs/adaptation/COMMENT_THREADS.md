@@ -22,7 +22,7 @@ La vista nueva no añade tablas, permisos, claves ni llamadas de escritura a Met
 
 ## Verificación
 
-186 pruebas backend seleccionadas y 22 frontend correctas; TypeScript, lint modificado y build workspace correctos. La advertencia previa de bundle grande permanece. La primera invocación apuntó a una ruta de suite inexistente y no ejecutó tests; se corrigió la ruta. Una aserción inicial de UI buscaba un contador exacto sin su texto de contexto; se corrigió el selector, sin alterar el comportamiento para hacer pasar el ensayo.
+189 pruebas backend seleccionadas y 23 frontend correctas; TypeScript, lint modificado y build workspace correctos. La advertencia previa de bundle grande permanece. La primera invocación apuntó a una ruta de suite inexistente y no ejecutó tests; se corrigió la ruta. Una aserción inicial de UI buscaba un contador exacto sin su texto de contexto; se corrigió el selector, sin alterar el comportamiento para hacer pasar el ensayo.
 
 Ensayo SELECT en el PostgreSQL existente, sin escrituras ni contenedores nuevos: 44 registros, 24 propios y 24 propios vinculados; 17 grupos. Tres detalles reales devolvieron 1 comentario y 2/2/1 respuestas, respectivamente. Un SELECT con 15 filas ficticias probó mismo autor/post, otra persona, otra cuenta, otra publicación, padre ausente, padre de otro post, ciclo, eco de SendJob y respuestas anidadas. La comprobación de consultas se realizó en un proceso operador separado; la autorización de la aplicación no se modificó.
 

@@ -1,3 +1,9 @@
+## Comentarios agrupados verificados en producción — 2026-11-18
+
+Despliegue `525dae1` confirmado: 17 hilos por persona/publicación/cuenta; cada comentario conserva Responder y muestra debajo su respuesta de la cuenta conectada. Probado con dos comentarios de juampa1329 en el mismo post y con Juan Pablo en Facebook. Los dos botones eligieron el destinatario correcto sin enviar una respuesta nueva. Notificaciones 10→4 al excluir las respuestas propias. Pasan 189 backend/23 frontend seleccionadas, tipos/lint modificado/build; advertencia previa de bundle grande conservada. Se incluyen límites de ancho del listado y regreso en móvil desde un contexto no recibido.
+
+Evidencia: `artifacts/live/comment-threads-20261118.json`; guía `docs/adaptation/COMMENT_THREADS.md`. General original P0–P11:100%; P12 auxiliar:100% en alcance PostgreSQL/Meta. Pendientes, siempre con nombre y finalidad: P13 Académico/agentes por programa (piloto, parcial 0/4); P14 entrenamiento del agente comercial (plan); P15 correos/notificaciones/HTML (0/7); P16 API académica/financiera SIIE (diferida 0/5); P17 integración TikTok (diferida 0/5); P18 seguridad/2FA/IP/tokens/CAPTCHA/inyecciones (planificada 0/8). Seis mejoras operativas aceptadas como límites siguen abiertas. No se suman pesos por esta mejora. Los cortes inferiores son historia.
+
 ## Mejora de Comentarios y comunicación de pendientes — 2026-11-18
 
 Preferencia permanente del propietario: **siempre informar ID, nombre, finalidad y estado de cada fase pendiente**, no sólo su numeración. Resumen vigente: `docs/adaptation/PENDING_PHASES.md` (P13 Académico/agentes por programa; P14 entrenamiento comercial; P15 correos; P16 API SIIE; P17 TikTok; P18 seguridad).

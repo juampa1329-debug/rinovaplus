@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-18",
+  "status": "deployed_verified_existing_Meta_threads",
+  "code": "525dae1720daa723eb83187d02e19520dce32e57",
+  "backend": {
+    "deployment": "qh3e8mqweguf8lpipahlolus",
+    "result": "healthy_rolling_update_completed",
+    "readiness": "200 postgres_deployment"
+  },
+  "frontend": {
+    "deployment": "jlud60mtdzmbwfdf55frmjtv",
+    "result": "Success"
+  },
+  "verification": {
+    "existing_graph": {
+      "actual_comments": 44,
+      "account_comments": 24,
+      "linked_account_comments": 24,
+      "groups": 17,
+      "synthetic_rows": 15,
+      "database_writes": 0,
+      "new_containers": 0
+    },
+    "live_groups": 17,
+    "notifications_before": 10,
+    "notifications_after": 4,
+    "notification_authors": "four_people_no_account_replies",
+    "facebook_thread": "original_and_account_reply_observed",
+    "instagram_thread": "two_original_comments_each_with_own_correct_account_reply",
+    "reply_targets": "both_selected_and_composer_target_observed",
+    "new_public_writes": 0
+  },
+  "checks": {
+    "selected_backend": 189,
+    "selected_frontend": 23,
+    "types": "passed",
+    "changed_lint": "passed",
+    "workspace_build": "passed_existing_large_chunk_warning"
+  },
+  "scope": "PostgreSQL current deployment; read-only grouping and per-comment existing guarded actions; historical SQL checkpoint untouched",
+  "notes": [
+    "Unlinked replies retain history without guessing their recipient",
+    "Parent/post retained across partial edits",
+    "No double bubble for a SendJob and its provider echo",
+    "Deleted account replies keep their state",
+    "Comments enhancement does not add canonical roadmap weight"
+  ],
+  "guide": "docs/adaptation/COMMENT_THREADS.md",
+  "pending_phases": "docs/adaptation/PENDING_PHASES.md"
+}

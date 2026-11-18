@@ -69,9 +69,23 @@
   font-weight: 650;
 }
 .comments-post-ref {
+  display: block;
+  min-inline-size: 0;
+  max-inline-size: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.comments-directory .inbox-conversation-body {
+  grid-template-columns: minmax(0, 1fr);
+}
+.comments-directory .inbox-row-heading {
+  min-inline-size: 0;
+  gap: 0.35rem;
+}
+.comments-directory .inbox-row-heading strong {
+  min-inline-size: 0;
+  flex: 1;
 }
 .comments-person-thread {
   display: grid;

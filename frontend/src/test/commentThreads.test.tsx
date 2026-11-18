@@ -169,9 +169,15 @@ it("responds to the chosen original using its own version and preserves the draf
     target: { value: "Respuesta individual" },
   });
   const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
-  fireEvent.click(screen.getByRole("button", { name: "Responder al comentario: ¿Cuánto cuesta?" }));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Responder al comentario: ¿Cuánto cuesta?",
+    }),
+  );
   expect(confirm).not.toHaveBeenCalled();
-  expect(screen.getByLabelText("Respuesta pública")).toHaveValue("Respuesta individual");
+  expect(screen.getByLabelText("Respuesta pública")).toHaveValue(
+    "Respuesta individual",
+  );
   fireEvent.click(screen.getByRole("button", { name: "Actualizar" }));
   await waitFor(() =>
     expect(screen.getByLabelText("Respuesta pública")).toHaveValue(
@@ -236,4 +242,50 @@ it("read-only roles see the full thread but cannot respond to an individual comm
   expect(
     screen.getByRole("button", { name: "Enviar respuesta pública" }),
   ).toBeDisabled();
+});
+
+it("keeps an unlinked account reply without guessing the author and allows returning to the list", async () => {
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (path) => {
+    if (String(path).includes("/thread?"))
+      return ok({
+        items: [],
+        total: 0,
+        has_more: false,
+        unlinked_reply: true,
+        focus_id: "orphan",
+      });
+    return ok({
+      items: [
+        {
+          ...group,
+          id: "orphan",
+          author: "CBN",
+          body: "Respuesta sin padre recibido",
+          is_self: true,
+          thread: { ...group.thread, focus_id: "orphan", unlinked_reply: true },
+        },
+      ],
+      total: 1,
+      has_more: false,
+      view: "threads",
+    });
+  });
+  render(
+    <SessionBoundary initial={session} expire={() => {}}>
+      <Comments />
+    </SessionBoundary>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: /CBN.*contexto no recibido/ }),
+  );
+  expect(
+    await screen.findByText(/El comentario original aún no llegó desde Meta/),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("button", { name: "Enviar respuesta pública" }),
+  ).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Volver a comentarios" }));
+  expect(
+    screen.getByRole("heading", { name: "Selecciona un comentario" }),
+  ).toBeVisible();
 });

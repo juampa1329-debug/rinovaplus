@@ -346,6 +346,9 @@ function ThreadedCommentDetail({
   if (!target)
     return (
       <section className="panel comments-center">
+        <Button variant="quiet" className="comments-back" onClick={back}>
+          Volver a comentarios
+        </Button>
         <h2>Respuesta de {comment.account}</h2>
         <p>{comment.body}</p>
         <Notice>

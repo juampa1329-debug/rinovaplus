@@ -9,6 +9,7 @@ from fastapi import HTTPException
 
 from app.institutional import comment_threads as threads
 from app.institutional.channel_comments import public_comment
+from app.institutional import channel_events
 
 
 @pytest.mark.parametrize("source", ["account", "instagram_scoped", "stored", "echo"])
@@ -150,3 +151,63 @@ def test_account_table_names_are_validated_not_composed_from_request_values():
     settings.ticket["table_map"]["crm_channels2.SocialComment"] = "dbo.unsafe;DROP"
     with pytest.raises(ValueError):
         threads.table(settings, "crm_channels2.SocialComment")
+
+
+@pytest.mark.parametrize("own", [True, False])
+def test_partial_edits_keep_parent_and_post_without_creating_another_comment(
+    monkeypatch, own
+):
+    changes = []
+    existing = {
+        "CommentId": str(uuid4()),
+        "AuthorExternalId": "cbn" if own else "person",
+        "Payload": json.dumps(
+            {
+                "provider": {
+                    "post_id": "post",
+                    "parent_id": "original",
+                    "from": {"id": "cbn" if own else "person"},
+                },
+                "_crm": {"state": "read"},
+            }
+        ),
+    }
+
+    class Cursor:
+        def execute(self, sql, *params):
+            changes.append((sql, params))
+
+    monkeypatch.setattr(channel_events, "institution", lambda *_a: "institution")
+    monkeypatch.setattr(channel_events, "one", lambda *_a: existing)
+    channel_events.project(
+        Cursor(),
+        None,
+        {"IntegrationId": "account", "ExternalAccountId": "cbn"},
+        {
+            "kind": "comment",
+            "external": "reply",
+            "text": "Edited",
+            "provider": {"verb": "edited"},
+            "route": "cbn",
+            "author": "",
+        },
+    )
+    assert len(changes) == 1 and changes[0][0].startswith("UPDATE")
+    payload = json.loads(changes[0][1][1])
+    assert (
+        payload["provider"]["parent_id"] == "original"
+        and payload["provider"]["post_id"] == "post"
+    )
+    assert payload["_crm"]["state"] == "read" and payload["_crm"]["is_self"] == own
+
+
+def test_deleted_account_reply_keeps_history_without_claiming_it_is_published():
+    now = datetime(2026, 11, 18)
+    row = {
+        "CommentId": uuid4(),
+        "ExternalId": "reply",
+        "Body": "Former reply",
+        "ReceivedAt": now,
+        "Payload": '{"_crm":{"state":"deleted"}}',
+    }
+    assert threads.reply_history([row], [], "CBN")[0]["state"] == "deleted"

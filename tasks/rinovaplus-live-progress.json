@@ -216,8 +216,11 @@
   },
   "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md",
   "comment_threads": {
-    "status": "implemented_tested_deployment_pending",
+    "status": "deployed_verified_existing_Meta_threads",
     "evidence": "tasks/comment-threads-progress.json",
-    "canonical_weight_added": 0
+    "canonical_weight_added": 0,
+    "code": "525dae1720daa723eb83187d02e19520dce32e57",
+    "live_groups": 17,
+    "own_notifications_excluded": true
   }
 }
