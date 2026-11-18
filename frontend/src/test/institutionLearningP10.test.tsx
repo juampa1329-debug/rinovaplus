@@ -4,11 +4,19 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { LearningWorkspace } from "../institution/LearningWorkspace";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
+
+beforeEach(() => {
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: { configurable: true, value() { this.setAttribute("open", ""); } },
+    close: { configurable: true, value() { this.removeAttribute("open"); } },
+  });
+});
 
 const session: Session = {
   session_id: "s",
@@ -64,7 +72,7 @@ const evaluation = {
 afterEach(() => {
   vi.restoreAllMocks();
 });
-function fixture(actions = session.actions, morePacks = false) {
+function fixture(actions = session.actions, morePacks = false, shadow = false) {
   const calls: { path: string; body: Record<string, unknown> | null }[] = [];
   let hold: ((value: Response) => void) | undefined;
   const mock = vi
@@ -121,7 +129,7 @@ function fixture(actions = session.actions, morePacks = false) {
             revision: 1,
             state: "enabled",
             active_id: null,
-            shadow_id: null,
+            shadow_id: shadow ? "artifact-1" : null,
             document: {},
           },
         };
@@ -286,7 +294,8 @@ it("lost acknowledgement reuses the exact operation identity on retry", async ()
     target: { value: "Datos revisados" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Guardar pack" }));
-  await screen.findByText("Respuesta perdida");
+  await screen.findByRole("alertdialog");
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
   fireEvent.click(screen.getByRole("button", { name: "Guardar pack" }));
   await waitFor(() => expect(f.calls.filter((v) => v.body).length).toBe(2));
   const posted = f.calls.filter((v) => v.body);
@@ -361,4 +370,42 @@ it("sample authorization selection can reach records after the first fifty", asy
   expect(
     await screen.findByRole("option", { name: /REFERENCIA-51/ }),
   ).toHaveValue("g51");
+});
+
+it("promotion can be cancelled without a write and restores the trigger focus", async () => {
+  const f = fixture(session.actions, false, true);
+  await choose();
+  const trigger = await screen.findByRole("button", {
+    name: "Promover versión",
+  });
+  trigger.focus();
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", {
+    name: "Aprobar versión de apoyo",
+  });
+  expect(within(dialog).getByText(/Ejemplo ficticio/)).toBeVisible();
+  expect(f.calls.filter((v) => v.body)).toHaveLength(0);
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Cancelar promoción" }),
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  expect(f.calls.filter((v) => v.body)).toHaveLength(0);
+});
+
+it("promotion confirms the captured artifact and revision exactly once", async () => {
+  const f = fixture(session.actions, false, true);
+  await choose();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Promover versión" }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Confirmar promoción" }),
+  );
+  await waitFor(() => expect(f.calls.filter((v) => v.body)).toHaveLength(1));
+  expect(f.calls.find((v) => v.body)).toMatchObject({
+    path: "learning/packs/p1/selection",
+    body: { action: "promote", artifact_id: "artifact-1", revision: 1 },
+  });
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });

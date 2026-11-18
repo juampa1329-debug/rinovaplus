@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Field, Notice, SelectField } from "../shared/ui";
 import { useInstitution, useIntent, useTask } from "./api";
 import { ResourceState } from "./Settings";
+import { ErrorFeedback, OperationDialog } from "./ErrorFeedback";
+import type { ErrorGuidance, OperationFailure } from "./ErrorFeedback";
 import { useAdsResource as useResource } from "./adsResource";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import "./learning.css";
@@ -150,7 +152,41 @@ function useLive() {
   return ref;
 }
 
+function explainLearningError(failure: OperationFailure): ErrorGuidance {
+  const code = failure.code ?? "";
+  let nextStep =
+    "Conserva tus datos y revisa la sección correspondiente del pack antes de reintentar.";
+  if (code.includes("shadow"))
+    nextStep =
+      "Selecciona el modelo en sombra y registra cuatro observaciones de sujetos distintos en la revisión actual antes de promoverlo.";
+  else if (/authorization|purpose|subject/.test(code))
+    nextStep =
+      "Revisa las autorizaciones de finalidad. Si cambió una autorización o identidad, reconstruye el dataset.";
+  else if (/dataset|sample|temporal|version/.test(code))
+    nextStep =
+      "Revisa muestras, fechas y versión del pack. Congela un dataset nuevo con entrenamiento y validación temporal separados.";
+  else if (/drift|evaluation/.test(code))
+    nextStep =
+      "Compara el modelo con el baseline y los errores por segmento. Revisa la deriva; conserva la versión aprobada anterior.";
+  else if (code.includes("paused"))
+    nextStep =
+      "Reanuda sólo la función que necesitas: entrenamiento desde Editar pack o predicción desde Reanudar predicción.";
+  return {
+    title: "No se pudo completar la operación de aprendizaje",
+    detail: failure.message,
+    nextStep,
+  };
+}
+
 export function LearningWorkspace() {
+  return (
+    <ErrorFeedback explain={explainLearningError}>
+      <LearningContent />
+    </ErrorFeedback>
+  );
+}
+
+function LearningContent() {
   const [packOffset, setPackOffset] = useState(0);
   const { session } = useInstitution(),
     catalog = useResource<Catalog>("learning/catalog"),
@@ -445,7 +481,12 @@ function Records({
     records = useResource<{ items: Item[]; more: boolean }>(
       `${base}/${tab}?offset=${offset}`,
     ),
-    [selected, setSelected] = useState<Item | null>(null);
+    [selected, setSelected] = useState<Item | null>(null),
+    [promotion, setPromotion] = useState<{
+      id: string;
+      revision: number;
+      trigger: Element | null;
+    } | null>(null);
   const { call, session } = useInstitution(),
     task = useTask(),
     intent = useIntent(),
@@ -497,6 +538,33 @@ function Records({
         )}
       </section>
       {task.notices}
+      {promotion && (
+        <OperationDialog
+          success
+          guidance={{
+            title: "Aprobar versión de apoyo",
+            detail: `Modelo ${promotion.id.slice(0, 8)} · ${pack.scope === "demo" ? "Ejemplo ficticio" : "Datos institucionales autorizados"}. Revisa las métricas y las observaciones en sombra. Esta operación no envía mensajes ni toma decisiones sobre personas.`,
+            nextStep:
+              "El servidor comprobará evaluación, autorizaciones, deriva y la revisión actual antes de promoverlo.",
+          }}
+          trigger={promotion.trigger}
+          dismiss={() => setPromotion(null)}
+          dismissLabel="Cancelar promoción"
+          confirm={{
+            label: "Confirmar promoción",
+            run: () =>
+              action(
+                `${base}/selection`,
+                {
+                  revision: promotion.revision,
+                  artifact_id: promotion.id,
+                  action: "promote",
+                },
+                "Versión aprobada para predicciones de apoyo.",
+              ),
+          }}
+        />
+      )}
       {tab === "grants" && (
         <GrantEditor
           key={`${offset}:${selected?.id ?? "new"}`}
@@ -574,18 +642,13 @@ function Records({
                         !item.document.evaluation.eligible ||
                         deployment.shadow_id !== item.id
                       }
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "¿Aprobar esta versión para predicciones de apoyo? Revisa primero las métricas y las observaciones en sombra.",
-                          )
-                        )
-                          action(`${base}/selection`, {
-                            revision: deployment.revision,
-                            artifact_id: item.id,
-                            action: "promote",
-                          });
-                      }}
+                      onClick={() =>
+                        setPromotion({
+                          id: item.id,
+                          revision: deployment.revision,
+                          trigger: document.activeElement,
+                        })
+                      }
                     >
                       Promover versión
                     </Button>
