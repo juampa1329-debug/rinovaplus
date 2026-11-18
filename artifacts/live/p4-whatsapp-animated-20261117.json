@@ -39,7 +39,8 @@
     "all_receipts": {"authentication": "verified", "event_status": "processed"}
   },
   "control": {"before": "AI", "during_manual_send": "Human", "after": "AI"},
-  "handset_animation_confirmation": "pending",
+  "handset_animation_confirmation": "confirmed_by_owner",
+  "owner_confirmation": "Sí, llegó y se anima correctamente",
   "validation": {
     "backend_tests": 137,
     "frontend_tests": 26,
