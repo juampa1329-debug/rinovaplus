@@ -1,3 +1,7 @@
+## Corte vigente: P9 ampliada a Marketing API — 2026-11-18
+
+**General 97,14%; 272/279 hitos, 52/56 criterios. P9 sigue 93,75% y 3/4 criterios.** El propietario pidió datos reales de Meta y borradores de creación/edición revisables. `00ac7af` desplegado; OAuth y descubrimiento reales pasan, token con ads_read y sin ads_management. Pendiente elegir entre las dos cuentas autorizadas y verificar Insights/creatividad/borradores en vivo antes de aceptar P9.close.m4. P4 ya no bloquea P9 en Meta; no cerrar por cantidad de pruebas. Detalles en `docs/adaptation/P9_META_ADS_MANAGER_REVIEW.md` y `artifacts/live/p9-meta-manager-20261118.json`. No publicar anuncios ni cambiar gasto. P0–P8:100%; P10:95%; P11:72,50%; P12:0% aceptación formal; P13 parcial 0/4; P14 plan; P15 SIIE/P16 TikTok diferidas 0/5 cada una. El corte anterior y las guardas SQL siguen conservados.
+
 ## Corte vigente: P8 Meta aceptada — 2026-11-18
 
 **General: 97,14%; 272/279 hitos y 52/56 criterios aceptados. P8: 100%, 4/4 criterios.** Cierre revisado tras P4/P7: una hello_world de la cuenta gratuita al propietario, espera persistida de diez minutos que sobrevivió a un redeploy real, pausa/reanudación sin cambiar plazo, recuperación de versión como borrador y cancelación por Humano en una copia sin mensaje. Cuenta de prueba devuelta a cupo 2, envío desactivado y consentimiento revocado; ninguna campaña comercial ni envío institucional de pago.

@@ -263,3 +263,54 @@ it("rejects unsafe creative links", () => {
     "https://example.com/image.png",
   );
 });
+
+it("keeps an unsaved draft when synchronization is cancelled", async () => {
+  const { calls } = mount();
+  await screen.findByText("Importe gastado");
+  fireEvent.click(screen.getByRole("button", { name: "Borradores locales" }));
+  await screen.findByText("Aún no hay borradores guardados en esta cuenta.");
+  fireEvent.click(screen.getByRole("button", { name: "Crear borrador" }));
+  fireEvent.change(screen.getByLabelText("Nombre del borrador"), {
+    target: { value: "Conservar propuesta" },
+  });
+  vi.spyOn(window, "confirm").mockReturnValue(false);
+  fireEvent.click(screen.getByRole("button", { name: "Sincronizar con Meta" }));
+  expect(screen.getByLabelText("Nombre del borrador")).toHaveValue(
+    "Conservar propuesta",
+  );
+  expect(calls.some((v) => v.path.endsWith("/sync"))).toBe(false);
+});
+
+it("editing a saved draft sends only editable fields and its exact revision", async () => {
+  const { calls } = mount();
+  await screen.findByText("Importe gastado");
+  fireEvent.click(screen.getByRole("button", { name: "Borradores locales" }));
+  await screen.findByText("Aún no hay borradores guardados en esta cuenta.");
+  fireEvent.click(screen.getByRole("button", { name: "Crear borrador" }));
+  fireEvent.change(screen.getByLabelText("Nombre del borrador"), {
+    target: { value: "Propuesta v1" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar versión del borrador" }),
+  );
+  await screen.findByText("Propuesta v1");
+  fireEvent.click(screen.getByRole("button", { name: "Editar borrador" }));
+  fireEvent.change(screen.getByLabelText("Nombre del borrador"), {
+    target: { value: "Propuesta v2" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar versión del borrador" }),
+  );
+  await waitFor(() =>
+    expect(
+      calls.filter((v) => v.method === "POST" && v.path.endsWith("/drafts")),
+    ).toHaveLength(2),
+  );
+  const body = calls.filter(
+    (v) => v.method === "POST" && v.path.endsWith("/drafts"),
+  )[1].body;
+  expect(body.draft_revision).toBe(1);
+  expect(body.draft_id).toBe("draft1");
+  expect(body).not.toHaveProperty("provider_writes");
+  expect(body).not.toHaveProperty("state");
+});

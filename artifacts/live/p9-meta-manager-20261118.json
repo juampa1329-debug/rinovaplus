@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-18",
+  "status": "deployed_oauth_discovery_verified_account_choice_pending",
+  "phase_closed": false,
+  "implementation_commit": "00ac7af2ffad7890b1e103647e8131f8c721f493",
+  "scope": "Meta Marketing API reads and local reviewed creation/edit drafts",
+  "meta_app_id": "1688152039579779",
+  "facebook_login_configuration_id": "1672600597931078",
+  "oauth_real_callback": "returned_to_publicidad_and_completed_in_same_user_session",
+  "permission_probe": {
+    "http_status": 200,
+    "ads_read": true,
+    "ads_management": false,
+    "pages_messaging": true
+  },
+  "source_channel_state": {
+    "requested": "connected",
+    "verified": "verified"
+  },
+  "discovery_real": [
+    {
+      "id": "52067617",
+      "name": "Cbneistas Bienestar",
+      "currency": "COP",
+      "timezone": "America/Bogota"
+    },
+    {
+      "id": "393527636692914",
+      "name": "Cbneistas Carlos Quintero",
+      "currency": "COP",
+      "timezone": "America/Bogota"
+    }
+  ],
+  "selected_account": null,
+  "real_insights_verified": false,
+  "real_creative_verified": false,
+  "local_draft_persistence_live_verified": false,
+  "provider_advertising_writes": 0,
+  "live_test_advertising_spend_changes": 0,
+  "backend_deployment": {
+    "container": "nwbyrdvtsfclmm6zyffjqjqp-20261118T163013",
+    "rolling_update_completed_utc": "2026-11-18T16:34:31Z"
+  },
+  "frontend_deployment": "Coolify_success_00ac7af",
+  "local_tests": {
+    "backend_selected_suite": 128,
+    "frontend_publicidad": 19,
+    "typecheck": "passed",
+    "changed_files_lint": "passed",
+    "production_build": "passed_workspace_target",
+    "bundle_warning": "preexisting_large_chunk",
+    "build_command": "vite build --config vite.workspace.config.ts"
+  },
+  "limits": [
+    "Account selection pending owner answer",
+    "No real campaign/insight acceptance yet",
+    "Historical SQL checkpoint not recertified",
+    "Twenty historical receipts absent"
+  ],
+  "reviewed_rejection": "Broad all-current-and-future Pages selection rejected; resolved using only institutional CBN Page before continuing",
+  "details": "docs/adaptation/P9_META_ADS_MANAGER_REVIEW.md"
+}

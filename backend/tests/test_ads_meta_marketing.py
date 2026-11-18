@@ -14,7 +14,7 @@ from app.institutional.ads_meta_provider import (
     creative,
     validate_period,
 )
-from app.institutional.ads_marketing import Marketing, Draft, draft_issues
+from app.institutional.ads_marketing import Marketing, Draft, Sync, Complete, draft_issues
 from app.institutional import ads_marketing as module
 from app.institutional import channel_oauth
 
@@ -248,3 +248,55 @@ def test_read_oauth_does_not_discover_or_select_pages(monkeypatch):
     assert value["scopes"] == ["ads_read"]
     assert value["assets"][0]["kind"] == "login_identity"
     assert len(urls) == 3 and not any("accounts" in v for v in urls)
+
+
+def test_sync_rechecks_credentials_after_network_and_rejects_rotation(monkeypatch):
+    service = Marketing(SimpleNamespace(), reader=Mock())
+    @contextmanager
+    def tx(*a, **kw): yield Mock(), {"UserId": "actor"}
+    service.ads.tx = tx
+    monkeypatch.setattr(module, "authorize", Mock())
+    monkeypatch.setattr(module, "account", lambda *a: {"State": "connected", "Provider": "meta", "Revision": 1, "ExternalId": "123"})
+    monkeypatch.setattr(module, "replay", lambda *a: ("digest", None))
+    credentials = [({"ApiVersion": "v25.0"}, "secret", ["v1"]), ({"ApiVersion": "v25.0"}, "secret2", ["v2"])]
+    monkeypatch.setattr(module, "credential", lambda *a: credentials.pop(0))
+    writes = Mock()
+    monkeypatch.setattr(module, "event", writes)
+    service.reader.return_value.snapshot.return_value = {"provider_writes": False}
+    body = Sync(operation_id="00000000-0000-4000-8000-000000000001", revision=1, start="2026-11-01", end="2026-11-02")
+    with pytest.raises(HTTPException, match="ads_meta_context_changed"):
+        service.sync({}, "account", body)
+    service.reader.return_value.snapshot.assert_called_once()
+    writes.assert_not_called()
+
+
+def test_stale_draft_revision_is_rejected_before_journal_write(monkeypatch):
+    service = Marketing(SimpleNamespace())
+    @contextmanager
+    def tx(*a, **kw): yield Mock(), {"UserId": "actor"}
+    service.ads.tx = tx
+    monkeypatch.setattr(module, "account", lambda *a: {"State": "connected", "Provider": "meta"})
+    monkeypatch.setattr(module, "replay", lambda *a: ("digest", None))
+    monkeypatch.setattr(module, "latest", lambda *a: ({"campaigns": [], "adsets": [], "ads": []}, "snapshot"))
+    monkeypatch.setattr(module, "one", lambda *a: {"Document": json.dumps({"revision": 2})})
+    monkeypatch.setattr(module, "institution", lambda *a: "institution")
+    writes = Mock(); monkeypatch.setattr(module, "event", writes)
+    body = Draft(operation_id="00000000-0000-4000-8000-000000000001", draft_id="00000000-0000-4000-8000-000000000002", draft_revision=1, name="Old version")
+    with pytest.raises(HTTPException, match="revision_conflict"):
+        service.save_draft({}, "account", body)
+    writes.assert_not_called()
+
+
+def test_oauth_completion_cannot_be_taken_from_another_user(monkeypatch):
+    service = Marketing(SimpleNamespace())
+    @contextmanager
+    def tx(*a, **kw): yield Mock(), {"UserId": "this-user"}
+    service.ads.tx = tx
+    monkeypatch.setattr(module, "authorize", Mock())
+    monkeypatch.setattr(module, "institution", lambda *a: "institution")
+    monkeypatch.setattr(module, "one", lambda *a: {"ActorRef": "another-user"})
+    writes = Mock(); monkeypatch.setattr(module, "secret_put", writes)
+    body = Complete(operation_id="00000000-0000-4000-8000-000000000001", integration_id="00000000-0000-4000-8000-000000000002", oauth_session_id="00000000-0000-4000-8000-000000000003")
+    with pytest.raises(HTTPException, match="oauth_session_not_found"):
+        service.complete({"token": "session-private"}, body)
+    writes.assert_not_called()

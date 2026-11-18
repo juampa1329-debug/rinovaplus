@@ -238,6 +238,7 @@ function MetaConnection({
               if (!active.current) return;
               setSource(oauth.integration_id);
               setOauth(null);
+              setLink("");
               setSuccess(
                 "Meta autorizó la consulta de publicidad. Elige la cuenta que quieres agregar a RinovaPlus.",
               );
@@ -353,8 +354,10 @@ function AccountDashboard({ account }: { account: Account }) {
         </Button>
         <Button
           disabled={task.busy || account.status !== "connected"}
-          onClick={() =>
+          onClick={() => {
+            if (!allowNavigation()) return;
             void task.run(async () => {
+              setDraft(null);
               const generation = current.current;
               await call(`ads/meta/${account.id}/sync`, "POST", {
                 operation_id: crypto.randomUUID(),
@@ -363,8 +366,8 @@ function AccountDashboard({ account }: { account: Account }) {
               });
               if (generation === current.current && generation.active)
                 await data.reload();
-            }, "Datos consultados y guardados desde Meta.")
-          }
+            }, "Datos consultados y guardados desde Meta.");
+          }}
         >
           {task.busy ? "Consultando Meta…" : "Sincronizar con Meta"}
         </Button>
@@ -838,7 +841,10 @@ function DraftLibrary({
   const library = useAdsResource<{ items: Draft[] }>(
     `ads/meta/${account.id}/drafts`,
   );
-  const [review, setReview] = useState("");
+  const [review, setReview] = useState<{
+    message: string;
+    success: boolean;
+  } | null>(null);
   return (
     <section className="panel meta-drafts">
       <header>
@@ -895,9 +901,12 @@ function DraftLibrary({
                     operation_id: crypto.randomUUID(),
                     revision: v.revision,
                   });
-                  setReview(
-                    result.reviewed ? result.message : result.issues.join(" "),
-                  );
+                  setReview({
+                    message: result.reviewed
+                      ? result.message
+                      : result.issues.join(" "),
+                    success: result.reviewed,
+                  });
                   await library.reload();
                 }, "Revisión local completada.")
               }
@@ -928,14 +937,14 @@ function DraftLibrary({
       )}
       {review && (
         <OperationDialog
-          success
+          success={review.success}
           guidance={{
             title: "Resultado de revisión local",
-            detail: review,
+            detail: review.message,
             nextStep:
               "La publicación en Meta es un paso posterior que requiere autorización explícita.",
           }}
-          dismiss={() => setReview("")}
+          dismiss={() => setReview(null)}
         />
       )}
     </section>

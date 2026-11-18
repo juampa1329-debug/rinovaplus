@@ -144,5 +144,13 @@
     "evidence": "artifacts/live/p8-meta-acceptance-20261118.json",
     "accepted": 4,
     "total": 4
+  },
+  "P9_meta_ads_manager": {
+    "date": "2026-11-18",
+    "scope": "Real Meta reads and local reviewed creation/edit drafts, as requested by owner",
+    "status": "deployed_oauth_discovery_verified_account_choice_pending",
+    "evidence": "artifacts/live/p9-meta-manager-20261118.json",
+    "acceptance_pending": "Choose account, verify real campaigns/Insights/creative and live local draft persistence; P4 dependency is already accepted.",
+    "provider_advertising_writes": 0
   }
 }

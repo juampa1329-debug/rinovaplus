@@ -2,6 +2,10 @@
 
 Corte: 18 de noviembre de 2026. Este registro complementa el checkpoint SQL local del 28 de octubre con la operación actual en https://app.rinovaplus.com. No reemplaza ni modifica releases, grafos, pruebas o recibos históricos.
 
+## Corte posterior: P9 con conexión real a Marketing API
+
+[Revisión P9](P9_META_ADS_MANAGER_REVIEW.md): administrador publicado con KPIs/gráfica/jerarquía y borradores locales. OAuth y descubrimiento de dos cuentas reales comprobados, ads_read concedido y ads_management ausente. Falta la selección de cuenta por el propietario y aceptar consultas/borradores reales. P9 permanece 93,75%; general 97,14%. P4 está aceptada y ya no constituye el bloqueo anterior.
+
 ## Corte posterior: P8 cerrada al 100% en Meta
 
 La [revisión P8](P8_META_ACCEPTANCE.md) acredita la única plantilla autorizada, conservación exacta de espera/inscripción/paso tras cambio de contenedor, pausa/reanudación, restauración de versión como borrador y cancelación humana de una copia sin envío. El cupo volvió a 2, la cadencia quedó apagada y el consentimiento de prueba revocado. Las secciones fechadas anteriores conservan el historial; la tabla vigente prevalece.
