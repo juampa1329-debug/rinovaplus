@@ -80,3 +80,29 @@ def test_provider_sync_preserves_crm_mapping_only_for_unchanged_content(monkeypa
     metadata = json.loads(captured[0][12])
     assert metadata["quality_score"] == "UNKNOWN" and metadata["rejection_reason"] == ""
     assert metadata["variable_bindings"] == ({} if changed else {"body.1":{"source":"customer_name"}})
+
+
+def test_Meta_component_reordering_preserves_bindings_but_button_order_is_significant():
+    body={"type":"BODY","text":"Hola {{1}}"}
+    header={"type":"HEADER","format":"TEXT","text":"CBN"}
+    assert templates.binding_content([body,header]) == templates.binding_content([header,body])
+    buttons={"type":"BUTTONS","buttons":[{"type":"QUICK_REPLY","text":"Uno"},{"type":"QUICK_REPLY","text":"Dos"}]}
+    assert templates.binding_content([buttons]) != templates.binding_content([dict(buttons,buttons=list(reversed(buttons["buttons"])) )])
+
+
+@pytest.mark.parametrize("content_changed",[False,True])
+def test_sync_recovers_lost_bindings_append_only_without_crossing_content_changes(monkeypatch,content_changed):
+    body={"type":"BODY","text":"Hola {{1}}"}
+    header={"type":"HEADER","format":"TEXT","text":"CBN"}
+    old={"TemplateId":str(uuid4()),"VersionNo":4,"Paused":False,"Definition":json.dumps([header,body]),"ProviderMetadata":"{}"}
+    prior={"VersionNo":2,"Definition":json.dumps([body if not content_changed else dict(body,text="Otro {{1}}"),header]),"ProviderMetadata":json.dumps({"variable_bindings":{"body.1":{"source":"customer_first_name"}}})}
+    monkeypatch.setattr(templates,"one",lambda *a:old)
+    monkeypatch.setattr(templates,"rows",lambda *a:[prior])
+    monkeypatch.setattr(templates,"institution",lambda *a:"institution")
+    captured=[]
+    cursor=SimpleNamespace(execute=lambda sql,*values:captured.append((sql,values)))
+    templates.append(cursor,None,{"IntegrationId":str(uuid4()),"RowVersion":b"12345678"},{"id":"123","name":"test","language":"es","status":"APPROVED","components":[header,body]},{"SecretId":str(uuid4())},"provider")
+    assert len(captured)==1 and captured[0][0].startswith("INSERT")
+    metadata=json.loads(captured[0][1][12])
+    assert metadata["variable_bindings"] == ({} if content_changed else {"body.1":{"source":"customer_first_name"}})
+    assert metadata.get("binding_recovered_from_version") == (None if content_changed else 2)

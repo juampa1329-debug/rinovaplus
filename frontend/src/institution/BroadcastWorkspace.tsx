@@ -165,6 +165,12 @@ const reasonLabel: Record<string, string> = {
     "Esta persona ya tiene un envío aceptado o pendiente de conciliación",
   broadcast_cadence_wait: "Esperando el intervalo entre envíos",
   marketing_consent_required: "Sin consentimiento vigente",
+  broadcast_variable_value_missing:
+    "Faltan datos en la ficha para completar la plantilla",
+  broadcast_crm_field_unavailable: "Un campo CRM de la plantilla está inactivo",
+  broadcast_segment_field_unavailable: "Un campo de segmentación está inactivo",
+  broadcast_variable_required:
+    "Asigna los campos del CRM a las variables de la plantilla",
   no_contact: "No contactar",
   conversation_closed: "Conversación cerrada",
   duplicate_contact: "Contacto duplicado",

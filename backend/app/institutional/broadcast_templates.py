@@ -8,11 +8,18 @@ from uuid import uuid4
 
 from fastapi import HTTPException
 
-from app.institutional.db import institution, one, uid
+from app.institutional.db import institution, one, rows, uid
 from app.institutional.models import public_url
 from app.modules.channels import providers
 
 TOKEN = re.compile(r"\{\{\s*([^{}]+?)\s*\}\}")
+
+
+def binding_content(items):
+    # Meta returns HEADER before BODY. Component order is independent; button
+    # order and all actual text/format/URL fields remain significant.
+    clean = [{k: v for k, v in item.items() if k != "example"} for item in items]
+    return sorted(clean, key=lambda v: v.get("type", ""))
 
 
 def encoded(value):
@@ -180,12 +187,21 @@ def append(
     rejection = raw.get("rejected_reason", raw.get("rejection_reason", ""))
     rejection = "" if str(rejection).strip().upper() in {"", "NONE", "NULL", "N/A"} else str(rejection)[:1000]
     default_bindings = raw.get("variable_bindings", {})
+    recovered_from = None
     if "variable_bindings" not in raw and old:
         old_components = json.loads(old["Definition"])
-        def content(items):
-            return [{k: v for k, v in item.items() if k != "example"} for item in items]
-        if content(old_components) == content(components):
+        if binding_content(old_components) == binding_content(components):
             default_bindings = previous.get("variable_bindings", {})
+            if not default_bindings and old["VersionNo"] > 1:
+                history = rows(c, "SELECT TOP(20) VersionNo,Definition,ProviderMetadata FROM crm_broadcast7.Template WHERE InstitutionId=? AND IntegrationId=? AND TemplateId=? AND VersionNo<? ORDER BY VersionNo DESC", institution(settings), item["IntegrationId"], key, old["VersionNo"])
+                for prior in history:
+                    if binding_content(json.loads(prior["Definition"])) != binding_content(components):
+                        break
+                    candidate = json.loads(prior["ProviderMetadata"]).get("variable_bindings", {})
+                    if candidate:
+                        default_bindings = candidate
+                        recovered_from = prior["VersionNo"]
+                        break
     metadata = {
         "material_revision": epoch,
         "material_fingerprint": fingerprint(material),
@@ -194,6 +210,8 @@ def append(
         "variable_bindings": default_bindings,
     }
     metadata["allow_category_change"] = raw.get("allow_category_change", True)
+    if recovered_from is not None:
+        metadata["binding_recovered_from_version"] = recovered_from
     c.execute(
         (
             "INSERT crm_broadcast7.Template(Institu"

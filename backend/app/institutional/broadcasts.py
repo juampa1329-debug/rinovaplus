@@ -964,8 +964,8 @@ class Broadcasts:
         with self.tx(auth) as (c, _):
             account(c, self.settings, integration)
             if audience:
-                found = rows(c, "SELECT i.IdentityId,i.ExternalId,p.ContactId,p.Name FROM crm_channels2.ExternalIdentity i LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=i.ContactId AND g.Active=1 JOIN crm.Contact p ON p.ContactId=COALESCE(g.TargetContactId,i.ContactId) WHERE i.InstitutionId=? AND i.IntegrationId=? AND (?='' OR CHARINDEX(?,p.Name)>0 OR CHARINDEX(?,i.ExternalId)>0) ORDER BY p.Name,i.IdentityId OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY", institution(self.settings), integration, search, search, search, offset)
-                return {"items": [{"id": uid(str(v["IdentityId"])), "contact_id": uid(str(v["ContactId"])), "name": v["Name"], "phone": v["ExternalId"]} for v in found[:100]], "has_more": len(found)>100, "offset": offset}
+                found = rows(c, "WITH base AS (SELECT i.IdentityId,i.ExternalId AS Phone,p.ContactId,p.Name FROM crm_channels2.ExternalIdentity i LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=i.ContactId AND g.Active=1 JOIN crm.Contact p ON p.ContactId=COALESCE(g.TargetContactId,i.ContactId) WHERE i.InstitutionId=? AND i.IntegrationId=?) SELECT * FROM base WHERE (?='' OR CHARINDEX(?,Name)>0 OR CHARINDEX(?,Phone)>0) ORDER BY Name,IdentityId OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY", institution(self.settings), integration, search, search, search, offset)
+                return {"items": [{"id": uid(str(v["IdentityId"])), "contact_id": uid(str(v["ContactId"])), "name": v["Name"], "phone": v["Phone"]} for v in found[:100]], "has_more": len(found)>100, "offset": offset}
             found = rows(
                 c,
                 (

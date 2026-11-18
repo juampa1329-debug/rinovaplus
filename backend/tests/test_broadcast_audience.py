@@ -130,3 +130,26 @@ def test_retry_reprepares_only_definitive_unaccepted_work_without_provider_io(mo
         assert len(writes)==2 and "State='prepared',CurrentQueueId=NULL" in writes[0][0]
         assert json.loads(writes[0][1][-3])["audience_profile"]=={"gender":"Sin dato"}
         assert all("DELETE" not in sql and "crm_broadcast7.Attempt" not in sql for sql,_ in writes)
+
+
+def test_people_search_is_scoped_paged_and_portable_on_postgres(monkeypatch):
+    from app.institutional import broadcasts
+    from app.institutional.postgres_dialect import postgres_sql
+    service=broadcasts.Broadcasts(SimpleNamespace(ticket={}))
+    @contextmanager
+    def tx(*a,**k):
+        yield None,None
+    monkeypatch.setattr(service,"tx",tx)
+    monkeypatch.setattr(broadcasts,"account",lambda *a:None)
+    monkeypatch.setattr(broadcasts,"institution",lambda *a:"institution")
+    calls=[]
+    def capture(c,sql,*args):
+        calls.append((sql,args))
+        return []
+    monkeypatch.setattr(broadcasts,"rows",capture)
+    assert service.identities(None,"account",audience=True,search="Ana%",offset=100)=={"items":[],"offset":100,"has_more":False}
+    sql,args=calls[0]
+    assert args==("institution","account","Ana%","Ana%","Ana%",100)
+    converted=postgres_sql(sql,{"crm_channels2.ExternalIdentity":"dbo.identities","crm_workspace.Merge":"dbo.merges","crm.Contact":"dbo.contacts"})
+    assert 'CHARINDEX' not in converted and converted.count('strpos(')==2
+    assert 'i.InstitutionId' in sql and 'i.IntegrationId' in sql and 'FETCH NEXT 101' in sql
