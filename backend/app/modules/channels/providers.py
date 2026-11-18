@@ -547,7 +547,7 @@ def send_meta_media(account, payload, media, before_send):
                                     "type": "file"
                                     if media["kind"] == "document"
                                     else media["kind"],
-                                    "payload": {},
+                                    **({"payload": {}} if channel == "messenger" else {}),
                                 }
                             }
                         ),

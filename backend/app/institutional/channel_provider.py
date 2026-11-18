@@ -61,7 +61,13 @@ def provider_account(c, settings, item, *, require_access=True, require_account=
         "phoneNumberId": item["ExternalAccountId"],
         "wabaId": item["ParentExternalId"],
         "accountId": item["ExternalAccountId"],
-        "pageId": item["ExternalAccountId"],
+        # Instagram's binary attachment endpoint belongs to its linked Facebook
+        # Page. The Instagram account ID remains the target for profile/text APIs.
+        "pageId": (
+            item["ParentExternalId"]
+            if item["Channel"] == "instagram" and item["IssuerProfile"] == "facebook_login"
+            else item["ExternalAccountId"]
+        ),
         "appId": item["ClientId"],
         "apiVersion": item["ApiVersion"],
         "instagramLogin": "instagram"
