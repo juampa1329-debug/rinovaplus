@@ -120,6 +120,12 @@ const messages: Record<string, string> = {
     "Hay una variable que no pertenece al CRM. Insértala desde el selector de campos o usa una variable numérica y asígnala al preparar la campaña.",
   broadcast_crm_field_unavailable:
     "Un campo personalizado está inactivo o dejó de existir. Revisa la asignación de variables de la campaña antes de enviar.",
+  broadcast_segment_field_unavailable:
+    "Un campo de segmentación está inactivo o ya no existe. Revisa los campos de género, fecha de nacimiento, ubicación y filtros adicionales en la campaña.",
+  broadcast_birth_date_field_required:
+    "Selecciona un campo CRM de tipo Fecha para calcular la edad. No se estima a partir de otros datos.",
+  broadcast_analytics_scope_limit:
+    "El informe supera 5.000 destinatarios. Acota el estado o la búsqueda para consultar los gráficos sin truncar los resultados.",
   broadcast_variable_value_missing:
     "Falta un dato del contacto para completar esta plantilla. Completa su ficha del CRM o exclúyelo de este envío.",
   template_header_one_variable:

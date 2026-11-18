@@ -90,18 +90,35 @@ class Variable(Strict):
         return self
 
 
+class CustomFilter(Strict):
+    field_key: str = Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")
+    values: list[str] = Field(min_length=1, max_length=100)
+
+
 class Filters(Strict):
+    audience_mode: Literal["segment", "contacts"] = "segment"
     contact_ids: list[JsonUUID] = Field(default_factory=list, max_length=5000)
     program_ids: list[int] = Field(default_factory=list, max_length=100)
     stages: list[str] = Field(default_factory=list, max_length=100)
     cities: list[str] = Field(default_factory=list, max_length=100)
     tags: list[str] = Field(default_factory=list, max_length=100)
+    tag_match: Literal["all", "any"] = "all"
+    schedules: list[str] = Field(default_factory=list, max_length=100)
+    contact_types: list[str] = Field(default_factory=list, max_length=100)
+    genders: list[str] = Field(default_factory=list, max_length=30)
+    regions: list[str] = Field(default_factory=list, max_length=100)
+    countries: list[str] = Field(default_factory=list, max_length=100)
+    age_min: int | None = Field(default=None, ge=0, le=120)
+    age_max: int | None = Field(default=None, ge=0, le=120)
+    custom_fields: list[CustomFilter] = Field(default_factory=list, max_length=20)
 
     @model_validator(mode="after")
     def safe(self):
         if any(v <= 0 for v in self.program_ids):
             raise ValueError("program_id_invalid")
-        for values in [self.stages, self.cities, self.tags]:
+        if self.age_min is not None and self.age_max is not None and self.age_min > self.age_max:
+            raise ValueError("age_range_invalid")
+        for values in [self.stages, self.cities, self.tags, self.schedules, self.contact_types, self.genders, self.regions, self.countries, *(f.values for f in self.custom_fields)]:
             if any(
                 not v.strip() or "\x00" in v or len(v.encode("utf-16-le")) > 1000
                 for v in values
@@ -116,6 +133,7 @@ class CampaignWrite(Command):
     template_id: JsonUUID
     template_version: int = Field(ge=1)
     filters: Filters = Field(default_factory=Filters)
+    demographic_fields: dict[Literal["gender", "birth_date", "region", "country"], str] = Field(default_factory=dict, max_length=4)
     variables: dict[str, Variable] = Field(default_factory=dict, max_length=50)
     header_media_url: str = Field(default="", max_length=2000)
     scheduled_local: str | None = None
@@ -135,6 +153,15 @@ class CampaignWrite(Command):
             raise ValueError("timezone_invalid") from e
         if self.header_media_url:
             public_url(self.header_media_url)
+        if self.filters.audience_mode == "contacts" and not self.filters.contact_ids:
+            raise ValueError("audience_contacts_required")
+        if any(not re.fullmatch(r"[a-z][a-z0-9_]{0,39}", v) for v in self.demographic_fields.values()):
+            raise ValueError("demographic_field_invalid")
+        for filter_key, mapping_key in [("genders", "gender"), ("regions", "region"), ("countries", "country")]:
+            if getattr(self.filters, filter_key) and mapping_key not in self.demographic_fields:
+                raise ValueError("demographic_mapping_required")
+        if (self.filters.age_min is not None or self.filters.age_max is not None) and "birth_date" not in self.demographic_fields:
+            raise ValueError("birth_date_mapping_required")
         scheduled(self.scheduled_local, self.timezone)
         return self
 

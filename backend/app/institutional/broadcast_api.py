@@ -29,8 +29,8 @@ def install(app, settings, gateway=None):
         return service.listing(request.state.authority)
 
     @app.get(("/api/institution/broadcasts/accounts/{integration}/identities"))
-    def identities(request: Request, integration: str):
-        return service.identities(request.state.authority, uid(integration))
+    def identities(request: Request, integration: str, audience: bool = False, search: str = Query(default="", max_length=100), offset: int = Query(default=0, ge=0)):
+        return service.identities(request.state.authority, uid(integration), audience=audience, search=search, offset=offset)
 
     @app.get(("/api/institution/broadcasts/accounts/{integration}/cadence"))
     def cadence(request: Request, integration: str):
@@ -107,9 +107,10 @@ def install(app, settings, gateway=None):
             ),
         ),
         search: str = Query(default="", max_length=100),
+        analytics: bool = False,
     ):
         return service.report(
-            request.state.authority, uid(campaign), offset, state=state, search=search
+            request.state.authority, uid(campaign), offset, state=state, search=search, include_analytics=analytics
         )
 
     @app.get("/api/institution/broadcasts/{campaign}/preview")

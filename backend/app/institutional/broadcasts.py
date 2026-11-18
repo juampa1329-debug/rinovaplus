@@ -7,11 +7,13 @@ from collections import Counter
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
 from app.institutional import broadcast_templates as templates
 from app.institutional import broadcast_variables
+from app.institutional import broadcast_audience as segments
 from app.institutional.auth import authorize
 from app.institutional.broadcast_models import scheduled
 from app.institutional.channel_operations import account, configuration
@@ -166,6 +168,8 @@ def candidate_rows(c, s, document):
         ("program_ids", "p.ProgramId"),
         ("stages", "p.Stage"),
         ("cities", "p.City"),
+        ("schedules", "p.Schedule"),
+        ("contact_types", "p.Type"),
     ]:
         values = document["filters"].get(field, [])
         if values:
@@ -209,21 +213,24 @@ def candidate_rows(c, s, document):
         v
         for v in result
         if not requested
-        or requested
-        <= set(
+        or (bool(requested & set(
+            x.strip().casefold() for x in v["Tags"].replace(";", ",").replace("|", ",").split(",")
+        )) if document["filters"].get("tag_match") == "any" else requested <= set(
             x.strip().casefold()
             for x in v["Tags"].replace(";", ",").replace("|", ",").split(",")
-        )
+        ))
     ]
 
 
 def audience(c, s, campaign, *, controlled=False):
     document = json.loads(campaign["Document"])
+    from app.modules.crm_configuration.application.service import read_configuration
+
+    crm_config, _ = read_configuration(c, foundation=True)
+    segments.configuration(document, crm_config.fields)
+    as_of = datetime.now(timezone.utc).astimezone(ZoneInfo(document.get("timezone", "America/Bogota"))).date()
     allowed_custom_fields = set()
     if any(v.get("source") == "custom_field" for v in document.get("variables", {}).values()):
-        from app.modules.crm_configuration.application.service import read_configuration
-
-        crm_config, _ = read_configuration(c, foundation=True)
         allowed_custom_fields = {f.key for f in crm_config.fields if f.active}
     item = account(c, s, str(campaign["IntegrationId"]))
     template = None
@@ -279,6 +286,8 @@ def audience(c, s, campaign, *, controlled=False):
     )
     candidates = []
     for person in candidate_rows(c, s, document):
+        if not segments.matches(person, document, as_of):
+            continue
         reasons = list(global_reasons)
         if s.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}:
             from app.institutional.campaigns import marketing_allowed
@@ -335,8 +344,9 @@ def audience(c, s, campaign, *, controlled=False):
                 "program": person["Program"],
                 "stage": person["Stage"],
                 "consent": grant,
-                "reasons": reasons,
+                "reasons": list(dict.fromkeys(reasons)),
                 "eligible": not reasons,
+                "audience_profile": segments.details(person, document, as_of)[0],
                 "template": rendered,
                 "text": text,
                 "template_record": template,
@@ -478,6 +488,12 @@ class Broadcasts:
                 "programs": Catalog(self.settings).programs(c, 0, 300)["items"],
                 "stages": [v.label for v in config.stages if v.active],
                 "variables": broadcast_variables.catalog(config.fields),
+                "crm_fields": [f.model_dump() for f in config.fields if f.active],
+                "tags": [t for t in config.tags if t not in config.inactiveTags],
+                "audience_facets": {
+                    key: [v["Value"] for v in rows(c, f"SELECT TOP(500) {column} AS Value FROM crm.Contact WHERE {column}<>'' GROUP BY {column} ORDER BY {column}")]
+                    for key, column in [("schedules", "Schedule"), ("contact_types", "Type"), ("cities", "City")]
+                },
                 "outbound_enabled": bool(
                     configuration(c, self.settings)["OutboundEnabled"]
                 ),
@@ -515,6 +531,10 @@ class Broadcasts:
             mode="json", exclude={"operation_id", "revision", "reason"}
         )
         with self.tx(auth, True) as (c, actor):
+            from app.modules.crm_configuration.application.service import read_configuration
+
+            crm_config, _ = read_configuration(c, foundation=True)
+            segments.configuration(document, crm_config.fields)
             if (
                 self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
                 and c.execute(
@@ -744,6 +764,7 @@ class Broadcasts:
                         str(uuid4()) if not old else uid(str(old["RecipientId"]))
                     )
                     snapshot = {
+                        "audience_profile": candidate["audience_profile"],
                         "template": candidate["template"],
                         "body": candidate["text"],
                         "target": candidate["phone"],
@@ -869,6 +890,7 @@ class Broadcasts:
                     if not candidate:
                         raise HTTPException(409, "broadcast_recipient_excluded")
                     snapshot = {
+                        "audience_profile": candidate["audience_profile"],
                         "template": candidate["template"],
                         "body": candidate["text"],
                         "target": candidate["phone"],
@@ -938,9 +960,12 @@ class Broadcasts:
             )
             return result
 
-    def identities(self, auth, integration):
+    def identities(self, auth, integration, *, audience=False, search="", offset=0):
         with self.tx(auth) as (c, _):
             account(c, self.settings, integration)
+            if audience:
+                found = rows(c, "SELECT i.IdentityId,i.ExternalId,p.ContactId,p.Name FROM crm_channels2.ExternalIdentity i LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=i.ContactId AND g.Active=1 JOIN crm.Contact p ON p.ContactId=COALESCE(g.TargetContactId,i.ContactId) WHERE i.InstitutionId=? AND i.IntegrationId=? AND (?='' OR CHARINDEX(?,p.Name)>0 OR CHARINDEX(?,i.ExternalId)>0) ORDER BY p.Name,i.IdentityId OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY", institution(self.settings), integration, search, search, search, offset)
+                return {"items": [{"id": uid(str(v["IdentityId"])), "contact_id": uid(str(v["ContactId"])), "name": v["Name"], "phone": v["ExternalId"]} for v in found[:100]], "has_more": len(found)>100, "offset": offset}
             found = rows(
                 c,
                 (
@@ -963,6 +988,7 @@ class Broadcasts:
                         "id": uid(str(v["IdentityId"])),
                         "name": v["Name"],
                         "phone": v["ExternalId"],
+                        "contact_id": uid(str(v["ContactId"])),
                         "conversation_id": uid(str(v["ConversationId"])),
                         "consent": (
                             {
@@ -1552,7 +1578,7 @@ class Broadcasts:
             )
             return result
 
-    def report(self, auth, key, offset=0, *, state="", search="", all_items=False):
+    def report(self, auth, key, offset=0, *, state="", search="", all_items=False, include_analytics=False):
         with self.tx(auth) as (c, _):
             campaign = current(c, self.settings, key)
             # Status dates are authenticated event observation dates, never inferred
@@ -1567,7 +1593,7 @@ class Broadcasts:
                 "CE(q.LastErrorCode COLLATE Latin1_Gene"
                 "ral_100_BIN2,r.LastError) AS Error,\n  "
                 "              q.ExternalId AS Provider"
-                "MessageId,JSON_VALUE(r.Snapshot,'$.bod"
+                "MessageId,r.Snapshot,JSON_VALUE(r.Snapshot,'$.bod"
                 "y') AS Body,\n                r.Created"
                 "At AS PreparedAt,q.CreatedAt AS Queued"
                 "At,\n                CASE WHEN q.Extern"
@@ -1672,6 +1698,7 @@ class Broadcasts:
                     if v["CurrentQueueId"]
                     else None,
                     "body": v["Body"],
+                    "profile": segments.snapshot_profile(v["Snapshot"]),
                     **{
                         n: utc(v[col])
                         for n, col in [
@@ -1691,6 +1718,12 @@ class Broadcasts:
             delivered = counts.get("delivered", 0) + counts.get("read", 0)
             read = counts.get("read", 0)
             replied = sum(v["Replied"] for v in aggregates)
+            analysis = None
+            if include_analytics:
+                analysis_rows = rows(c, base + "SELECT Status,Snapshot,SentAt,DeliveredAt,ReadAt,RepliedAt FROM filtered ORDER BY RecipientId OFFSET 0 ROWS FETCH NEXT 5001 ROWS ONLY", *args)
+                if len(analysis_rows) > 5000:
+                    raise HTTPException(413, "broadcast_analytics_scope_limit")
+                analysis = segments.analytics(analysis_rows)
             return {
                 "campaign": public_campaign(campaign),
                 "counts": counts,
@@ -1706,6 +1739,7 @@ class Broadcasts:
                     "read_percent": round(read * 100 / total, 2) if total else None,
                     "reply_percent": round(replied * 100 / total, 2) if total else None,
                 },
+                "analytics": analysis,
                 "timestamp_semantics": "authenticated_event_observation_UTC",
                 "external_acceptance": False if self.controlled else None,
             }
@@ -1733,6 +1767,7 @@ class Broadcasts:
             "failed_at",
             "provider_message_id",
             "error",
+            *segments.DIMENSIONS,
         ]
         writer.writerow(
             [
@@ -1752,6 +1787,7 @@ class Broadcasts:
                 "fallo_observado_UTC",
                 "id_proveedor",
                 "error",
+                "genero", "franja_edad", "ciudad", "region", "pais", "programa", "jornada", "tipo_contacto", "estado_crm",
             ]
         )
 
@@ -1765,5 +1801,5 @@ class Broadcasts:
             )
 
         for item in all_items:
-            writer.writerow([cell(item[k]) for k in fields])
+            writer.writerow([cell(item["profile"].get(k, "Sin dato") if k in segments.DIMENSIONS else item[k]) for k in fields])
         return out.getvalue()

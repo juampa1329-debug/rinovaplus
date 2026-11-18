@@ -1,4 +1,5 @@
 const paths: Record<string, string> = {
+  chart: "M3 3v18h18 M7 16v-5 M12 16V7 M17 16v-8",
   panelCollapse: "M3 4h18v16H3z M9 4v16 m7-11-3 3 3 3",
   panelExpand: "M3 4h18v16H3z M9 4v16 m4-11 3 3-3 3",
   academic: "m2 9 10-5 10 5-10 5-10-5 M6 11v6c4 3 8 3 12 0v-6 M22 9v7",

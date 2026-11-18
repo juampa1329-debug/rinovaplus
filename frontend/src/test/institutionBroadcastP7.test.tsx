@@ -147,6 +147,106 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("creates a template inside a campaign without submitting or losing the campaign draft", async () => {
+  const f = setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }),
+  );
+  fireEvent.change(screen.getByLabelText("Nombre de campaña"), {
+    target: { value: "Campaña conservada" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Crear o gestionar plantillas de esta campaña",
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Nombre de plantilla"), {
+    target: { value: "nueva_plantilla" },
+  });
+  fireEvent.change(screen.getByLabelText("Cuerpo del mensaje"), {
+    target: { value: "Hola, prueba de nueva plantilla." },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar borrador de plantilla" }),
+  );
+  await waitFor(() =>
+    expect(
+      f.mock.calls.some(
+        ([path, init]) =>
+          String(path).includes("/templates/") && init?.method === "PUT",
+      ),
+    ).toBe(true),
+  );
+  expect(screen.getByLabelText("Nombre de campaña")).toHaveValue(
+    "Campaña conservada",
+  );
+  expect(
+    f.mock.calls.filter(([, init]) => init?.method === "PUT"),
+  ).toHaveLength(1);
+});
+it("an empty specific-person audience cannot become a send to everyone", async () => {
+  setup((path) =>
+    path.includes("audience=true")
+      ? ok({
+          items: [
+            {
+              contact_id: "contact-one",
+              name: "Persona autorizada",
+              phone: "573000000000",
+            },
+          ],
+          has_more: false,
+        })
+      : undefined,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }),
+  );
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: "Elegir personas específicas" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Guardar campaña" }),
+  ).toBeDisabled();
+  fireEvent.click(
+    await screen.findByRole("checkbox", {
+      name: "Seleccionar a Persona autorizada, 573000000000",
+    }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Guardar campaña" }),
+  ).not.toBeDisabled();
+});
+it("loads campaign analytics only when the charts are requested", async () => {
+  const f = setup((path) =>
+    path.includes("analytics=true")
+      ? ok({
+          counts: {},
+          total: 0,
+          items: [],
+          offset: 0,
+          has_more: false,
+          analytics: {
+            totals: { total: 0, delivered: 0, read: 0, replied: 0, failed: 0 },
+            dimensions: { gender: [] },
+          },
+        })
+      : undefined,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }),
+  );
+  expect(
+    f.mock.calls.some(([path]) => String(path).includes("analytics=true")),
+  ).toBe(false);
+  fireEvent.click(screen.getByRole("button", { name: "Gráficos y detalles" }));
+  expect(
+    await screen.findByRole("region", { name: "Gráficos de la campaña" }),
+  ).toBeInTheDocument();
+  expect(
+    f.mock.calls.some(([path]) => String(path).includes("analytics=true")),
+  ).toBe(true);
+});
 it("composes CRM variables with synthetic examples and previews them without sending", async () => {
   const f = setup();
   fireEvent.click(
@@ -308,9 +408,7 @@ it("uses declared program IDs and preserves the form after a CAS conflict", asyn
   fireEvent.change(screen.getByLabelText("Nombre de campaña"), {
     target: { value: "Nombre conservado" },
   });
-  fireEvent.change(screen.getByLabelText("Programa declarado en CRM"), {
-    target: { value: "7" },
-  });
+  fireEvent.click(screen.getByRole("checkbox", { name: "Programa declarado" }));
   fireEvent.click(screen.getByRole("button", { name: "Guardar campaña" }));
   expect(
     await screen.findByText(/Hay una versión más reciente/),

@@ -1,4 +1,18 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { BroadcastAudience } from "./BroadcastAudience";
+import type {
+  AudienceFilters,
+  CrmField,
+  DemographicFields,
+} from "./BroadcastAudience";
+import {
+  BroadcastAnalytics,
+  BroadcastAnalyticsSkeleton,
+} from "./BroadcastAnalytics";
+import type { CampaignAnalytics } from "./BroadcastAnalytics";
+import { Icon } from "../shared/Icon";
+import { OperationDialog } from "./ErrorFeedback";
+import { explainInboxError } from "./InboxDelivery";
 import {
   metaExamples,
   qualityLabel,
@@ -51,13 +65,8 @@ type Document = {
   integration_id: string;
   template_id: string;
   template_version: number;
-  filters: {
-    contact_ids: string[];
-    program_ids: number[];
-    stages: string[];
-    cities: string[];
-    tags: string[];
-  };
+  filters: AudienceFilters;
+  demographic_fields?: DemographicFields;
   variables: Record<string, Binding>;
   header_media_url: string;
   scheduled_local: string | null;
@@ -70,6 +79,8 @@ type Campaign = {
   revision: number;
   epoch: number;
   document: Document;
+  scheduled_at?: string | null;
+  timezone?: string;
 };
 type Options = {
   accounts: { id: string; name: string; verified_status: string }[];
@@ -78,6 +89,13 @@ type Options = {
   stages: string[];
   outbound_enabled: boolean;
   variables?: CrmVariable[];
+  crm_fields?: CrmField[];
+  tags?: string[];
+  audience_facets?: {
+    schedules: string[];
+    contact_types: string[];
+    cities: string[];
+  };
 };
 type Preview = {
   counts: { matched: number; eligible: number; excluded: number };
@@ -91,6 +109,7 @@ type Preview = {
   }[];
 };
 type Report = {
+  analytics?: CampaignAnalytics | null;
   metrics?: {
     replied: number;
     delivered_percent: number | null;
@@ -118,6 +137,7 @@ type Report = {
     read_at?: string;
     replied_at?: string;
     failed_at?: string;
+    profile?: Record<string, string>;
   }[];
 };
 const stateLabel: Record<string, string> = {
@@ -157,6 +177,17 @@ const reasonLabel: Record<string, string> = {
 };
 const label = (value: string) =>
   stateLabel[value] || reasonLabel[value] || value.replaceAll("_", " ");
+const profileLabels: Record<string, string> = {
+  gender: "Género",
+  age_band: "Edad al preparar",
+  city: "Ciudad",
+  region: "Departamento o región",
+  country: "País",
+  program: "Programa",
+  schedule: "Jornada",
+  contact_type: "Tipo de contacto",
+  stage: "Estado CRM",
+};
 const sources = [
   "literal",
   "customer_name",
@@ -210,7 +241,8 @@ const blank = (): Document => ({
   variables: {},
   header_media_url: "",
   scheduled_local: null,
-  timezone: "America/Bogota",
+  timezone:
+    Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Bogota",
 });
 
 export function BroadcastWorkspace() {
@@ -317,6 +349,9 @@ export function BroadcastWorkspace() {
               key={chosen ? `${chosen.id}-${chosen.revision}` : "new"}
               initial={chosen}
               options={options.value}
+              refreshOptions={async () => {
+                await options.reload();
+              }}
               saved={async (id) => {
                 await reload();
                 setChosen(
@@ -368,10 +403,12 @@ function CampaignEditor({
   initial,
   options,
   saved,
+  refreshOptions,
 }: {
   initial: Campaign | null;
   options: Options;
   saved: (id: string) => Promise<void>;
+  refreshOptions: () => Promise<void>;
 }) {
   const { call, session } = useInstitution(),
     task = useTask(),
@@ -383,7 +420,12 @@ function CampaignEditor({
     ),
     [preview, setPreview] = useState<Preview | null>(null),
     [reviewed, setReviewed] = useState(false),
-    [reason, setReason] = useState("");
+    [reason, setReason] = useState(""),
+    [showTemplateTools, setShowTemplateTools] = useState(false),
+    [templateToolsOpened, setTemplateToolsOpened] = useState(false),
+    [scheduleEnabled, setScheduleEnabled] = useState(
+      !!initial?.document.scheduled_local,
+    );
   const dirty = JSON.stringify(doc) !== baseline;
   useDraftGuard(dirty);
   const template = options.templates.find((t) => t.id === doc.template_id),
@@ -463,6 +505,7 @@ function CampaignEditor({
                 integration_id: e.target.value,
                 template_id: "",
                 variables: {},
+                filters: { ...doc.filters, contact_ids: [] },
               })
             }
           />
@@ -477,7 +520,7 @@ function CampaignEditor({
                 .filter((t) => t.integration_id === doc.integration_id)
                 .map((t) => ({
                   value: t.id,
-                  label: `${t.name} · ${t.language} · ${t.status}${t.paused ? " · Pausada" : ""}`,
+                  label: `${t.name} · ${t.language} · ${templateStatus(t.status)}${t.paused ? " · Pausada" : ""}`,
                 })),
             ]}
             onChange={(e) => {
@@ -497,6 +540,21 @@ function CampaignEditor({
               });
             }}
           />
+          <Button
+            variant="secondary"
+            disabled={!doc.integration_id}
+            aria-expanded={showTemplateTools}
+            onClick={() => {
+              setTemplateToolsOpened(true);
+              setShowTemplateTools(!showTemplateTools);
+            }}
+          >
+            Crear o gestionar plantillas de esta campaña
+          </Button>
+          <p className="broadcast-help">
+            Crea la plantilla sin salir de la campaña. Podrás seleccionarla
+            cuando Meta la apruebe; el borrador de campaña se conserva.
+          </p>
           {template && (
             <div className="broadcast-message">
               {template.components
@@ -597,80 +655,39 @@ function CampaignEditor({
               onChange={(e) => update({ header_media_url: e.target.value })}
             />
           )}
-          <details>
-            <summary>Segmentación de destinatarios</summary>
-            <SelectField
-              id="filter-program"
-              label="Programa declarado en CRM"
-              value={String(doc.filters.program_ids[0] || "")}
-              options={[
-                { value: "", label: "Todos los programas" },
-                ...options.programs.map((p) => ({
-                  value: String(p.program_id),
-                  label: p.name,
-                })),
-              ]}
-              onChange={(e) =>
-                update({
-                  filters: {
-                    ...doc.filters,
-                    program_ids: e.target.value ? [Number(e.target.value)] : [],
-                  },
-                })
-              }
-            />
-            <SelectField
-              id="filter-stage"
-              label="Etapa CRM"
-              value={doc.filters.stages[0] || ""}
-              options={[
-                { value: "", label: "Todas las etapas" },
-                ...options.stages,
-              ]}
-              onChange={(e) =>
-                update({
-                  filters: {
-                    ...doc.filters,
-                    stages: e.target.value ? [e.target.value] : [],
-                  },
-                })
-              }
-            />
-            {(["cities", "tags", "contact_ids"] as const).map((k, i) => (
-              <Field
-                key={k}
-                id={`filter-${k}`}
-                label={
-                  [
-                    "Ciudades, separadas por coma",
-                    "Etiquetas, separadas por coma",
-                    "IDs de contactos, separados por coma",
-                  ][i]
-                }
-                value={doc.filters[k].join(", ")}
-                onChange={(e) =>
-                  update({
-                    filters: {
-                      ...doc.filters,
-                      [k]: e.target.value
-                        .split(",")
-                        .map((v) => v.trim())
-                        .filter(Boolean),
-                    },
-                  })
-                }
-              />
-            ))}
-            <p>
-              Se excluyen personas sin consentimiento vigente, atención humana,
-              no contactar y duplicados.
-            </p>
-          </details>
+          <BroadcastAudience
+            account={doc.integration_id}
+            filters={doc.filters}
+            mapping={doc.demographic_fields || {}}
+            fields={options.crm_fields || []}
+            programs={options.programs}
+            stages={options.stages}
+            tags={options.tags || []}
+            facets={options.audience_facets}
+            change={(filters, demographic_fields) =>
+              update({ filters, demographic_fields })
+            }
+          />
+          <SelectField
+            id="campaign-delivery-mode"
+            label="Cuándo enviar"
+            value={scheduleEnabled ? "scheduled" : "now"}
+            options={[
+              { value: "now", label: "Al activar la campaña" },
+              { value: "scheduled", label: "Programar fecha y hora local" },
+            ]}
+            onChange={(e) => {
+              setScheduleEnabled(e.target.value === "scheduled");
+              if (e.target.value === "now") update({ scheduled_local: null });
+            }}
+          />
           <div className="broadcast-binding">
             <Field
               id="bulk-schedule"
               label="Fecha y hora local (opcional)"
               type="datetime-local"
+              required={scheduleEnabled}
+              disabled={!scheduleEnabled}
               value={doc.scheduled_local || ""}
               onChange={(e) =>
                 update({ scheduled_local: e.target.value || null })
@@ -684,9 +701,39 @@ function CampaignEditor({
               onChange={(e) => update({ timezone: e.target.value })}
             />
           </div>
-          <Button type="submit">Guardar campaña</Button>
+          <p className="broadcast-schedule-summary">
+            {scheduleEnabled
+              ? `Se enviará desde ${doc.scheduled_local?.replace("T", " ") || "la fecha que selecciones"}, zona ${doc.timezone}. Debes guardar y activar la campaña.`
+              : "Guardar sólo crea un borrador. El envío empieza cuando revises los destinatarios y actives la campaña."}
+            {initial?.scheduled_at &&
+              !dirty &&
+              ` Fecha confirmada: ${new Date(initial.scheduled_at).toLocaleString("es-CO", { timeZone: initial.timezone || doc.timezone })} (${initial.timezone || doc.timezone}).`}
+          </p>
+          <Button
+            type="submit"
+            disabled={
+              doc.filters.audience_mode === "contacts" &&
+              !doc.filters.contact_ids.length
+            }
+          >
+            Guardar campaña
+          </Button>
         </fieldset>
       </form>
+      {templateToolsOpened && doc.integration_id && (
+        <div hidden={!showTemplateTools}>
+          <TemplatePanel
+            key={doc.integration_id}
+            account={doc.integration_id}
+            templates={options.templates.filter(
+              (t) => t.integration_id === doc.integration_id,
+            )}
+            variables={options.variables || standardVariables}
+            reload={refreshOptions}
+            initiallyCreating
+          />
+        </div>
+      )}
       {initial && (
         <>
           <Field
@@ -812,8 +859,21 @@ function CampaignReport({
   retry: (ids: string[]) => void;
 }) {
   const [state, setState] = useState(""),
-    [search, setSearch] = useState("");
-  const query = new URLSearchParams({ state, search }).toString();
+    [search, setSearch] = useState(""),
+    [searchQuery, setSearchQuery] = useState(""),
+    [charts, setCharts] = useState(false),
+    [failure, setFailure] = useState<{ code: string; trigger: Element } | null>(
+      null,
+    );
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+  const query = new URLSearchParams({
+    state,
+    search: searchQuery,
+    ...(charts ? { analytics: "true" } : {}),
+  }).toString();
   const [offset, setOffset] = useState(0),
     [selected, setSelected] = useState<string[]>([]),
     data = useResource<Report>(
@@ -824,6 +884,14 @@ function CampaignReport({
   return (
     <section>
       <h3>Resultados por destinatario</h3>
+      <Button
+        variant="secondary"
+        aria-expanded={charts}
+        onClick={() => setCharts(!charts)}
+      >
+        <Icon name="chart" />
+        {charts ? "Ocultar gráficos" : "Gráficos y detalles"}
+      </Button>
       <div className="broadcast-binding">
         <SelectField
           id="report-status"
@@ -864,7 +932,11 @@ function CampaignReport({
       </div>
       {task.notices}
       {!data.value ? (
-        <ResourceState error={data.error} />
+        charts && !data.error ? (
+          <BroadcastAnalyticsSkeleton />
+        ) : (
+          <ResourceState error={data.error} />
+        )
       ) : (
         <>
           <p>
@@ -872,6 +944,9 @@ function CampaignReport({
               .map(([k, n]) => `${label(k)}: ${n}`)
               .join(" · ") || "Sin destinatarios preparados"}
           </p>
+          {charts && data.value.analytics && (
+            <BroadcastAnalytics data={data.value.analytics} />
+          )}
           {data.value.metrics && (
             <p>
               Respuestas atribuidas: {data.value.metrics.replied} · Entrega:{" "}
@@ -997,11 +1072,33 @@ function CampaignReport({
                             </div>
                           ))}
                         </dl>
+                        {p.profile && (
+                          <dl>
+                            {Object.entries(p.profile).map(([key, value]) => (
+                              <div key={key}>
+                                <dt>{profileLabels[key] || key}</dt>
+                                <dd>{value}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        )}
                       </details>
                     </td>
                     <td>
                       {label(p.status)}
-                      {p.error && <small>{label(p.error)}</small>}
+                      {p.error && (
+                        <Button
+                          variant="quiet"
+                          onClick={(e) =>
+                            setFailure({
+                              code: p.error!,
+                              trigger: e.currentTarget,
+                            })
+                          }
+                        >
+                          Ver motivo y solución
+                        </Button>
+                      )}
                     </td>
                     <td>{p.attempts}</td>
                   </tr>
@@ -1044,6 +1141,16 @@ function CampaignReport({
           </div>
         </>
       )}
+      {failure && (
+        <OperationDialog
+          guidance={explainInboxError({
+            code: failure.code,
+            message: "El canal informó un problema con este envío.",
+          })}
+          trigger={failure.trigger}
+          dismiss={() => setFailure(null)}
+        />
+      )}
     </section>
   );
 }
@@ -1053,16 +1160,18 @@ function TemplatePanel({
   templates,
   reload,
   variables,
+  initiallyCreating = false,
 }: {
   account: string;
   templates: Template[];
   reload: () => Promise<void>;
   variables: CrmVariable[];
+  initiallyCreating?: boolean;
 }) {
   const { call } = useInstitution(),
     task = useTask(),
     intent = useIntent();
-  const [creating, setCreating] = useState(false),
+  const [creating, setCreating] = useState(initiallyCreating),
     [reviewed, setReviewed] = useState("");
   const command = (revision = 0, extra = {}) => {
     const value = {
