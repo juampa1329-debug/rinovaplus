@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-18",
+  "timezone": "America/Bogota",
+  "status": "accepted_bounded_Meta_P4_and_P7",
+  "authorization": "Owner requested completing P4 and P7, previously authorized real tests with phone ending 44, and explicitly moved all TikTok work to separate P16.",
+  "scope": "RinovaPlus operational Meta channels and WhatsApp broadcasting. Real provider acceptance and failure/recovery observations are distinguished from controlled transport and authority regressions. This is not institutional SQL/SIIE commissioning or a new acceptance of P8-P11.",
+  "revision": "f3f7856",
+  "deployment": {
+    "backend_revision": "300aff7f97deb673ef090583a1a883482552009f",
+    "backend": "rbhb4c2o9sdup5yizybw6cwb",
+    "backend_health": "healthy",
+    "backend_rolling_update_completed_UTC": "2026-11-18T13:39:25Z",
+    "frontend_revision": "f3f7856",
+    "frontend": "ofcxg4jjsirfyfagn6kym7q3",
+    "frontend_status": "Success",
+    "frontend_duration": "00m 38s",
+    "public_bundle": "/assets/workspace-CnZ9bvOT.js",
+    "public_UI": "Fresh authenticated Inbox showed photo SVG plus Foto for both real social image messages. Owner confirmed seeing new icons. Older chat tab retained an old document despite reload and was left intact; verification used a fresh tab."
+  },
+  "regressions": {
+    "backend_P4_P7_comments_notifications": "242 passed, 2 existing ffmpeg-dependent host skips; 4 pre-existing datetime.utcnow warnings",
+    "backend_HTTP_authority": "39 passed in separate suites",
+    "frontend_channels_comments_notifications_broadcasts": "71 passed after all media preview types and duration regression",
+    "types_lint_build": "passed; existing large-bundle warning retained",
+    "environment": "Isolated local Windows venv from project requirements.lock plus tzdata 2026.6; Node 24.19.0. No new local Docker containers.",
+    "initial_failure": "First backend run lacked Windows IANA tzdata: 217 passed, 2 failed. Installed tzdata only in isolated test environment and reran. Initial frontend lint found synchronous loading state in the publication preview effect; replaced it with request-bound resource state and reran types/lint/tests/build.",
+    "controlled_scope": "Provider IO and SQL are blocked/doubled in unit tests. These tests cover source/authority races, per-user notification acknowledgement, safe retry of only definitive unaccepted failures, rejection of uncertain/running/accepted effects, receipt ordering and source integrity. They are not additional real Meta sends."
+  },
+  "institutional_WhatsApp": {
+    "integration": "e2f287c0-44cf-4725-be3c-69bb17002e30",
+    "account": "WhatsApp · CBN",
+    "destination_last_four": "7294",
+    "state": "connected/verified",
+    "route": "Meta confirmed RinovaPlus URL for this account; initial stage Nuevo",
+    "message_event": "493e7263-19e9-49c2-ae66-b14717955e83",
+    "message_text": "Prueba cierre p4 cbn",
+    "message_received_UTC": "2026-11-18T13:12:46.472869Z",
+    "incoming": "signed verified, processed, one attempt",
+    "gemini": "confirmed, one attempt, 2026-11-18T13:12:46.555242Z",
+    "send_queue": "095aa7a7-6c73-4e3a-9f1b-d87aa86a8c91",
+    "send": "read, one attempt, provider ID present, no error",
+    "receipts": {
+      "sent": "c9f6288c-f70a-4d60-8cf4-cea77ad6ec81",
+      "delivered": "8d82e222-7752-4cad-b0d1-62daa8fa606e",
+      "read": "536a9f96-d38b-4cd6-b859-03e136dcbd19",
+      "authentication": "verified; processed once each"
+    },
+    "human_test": {
+      "actual_text": "Prueba cierre p4 silencio humabi",
+      "event": "c67ba00a-7340-4b52-b0cf-e5fb06850197",
+      "received_UTC": "2026-11-18T13:18:00.947597Z",
+      "status": "processed, one attempt",
+      "model_operations_after_UTC_1317": 0,
+      "send_jobs_after_UTC_1317": 0,
+      "final_control": "AI, confirmed switch aria-checked=false"
+    },
+    "limit": "First requested closure text arrived at the free test number instead. It was not credited as institutional acceptance; the later institutional event above was checked separately. Original personal/test channels were retained. No paid template campaign was sent from CBN."
+  },
+  "live_HTTP_signature_and_duplicate_checks": {
+    "method": "Reused exact retained authenticated owner-test receipt bytes after verifying their SHA-256 and decrypting only in server memory. Posted to the same RinovaPlus callback. Credentials, signatures and raw receipts were never exported.",
+    "cases": [
+      {
+        "channel": "whatsapp",
+        "event": "493e7263-19e9-49c2-ae66-b14717955e83"
+      },
+      {
+        "channel": "messenger",
+        "event": "aa777bf3-f85d-48a2-a86c-ce26820da794"
+      },
+      {
+        "channel": "facebook",
+        "event": "7ee8029c-f27f-42ca-b6e9-e4c64cb917fd"
+      },
+      {
+        "channel": "instagram",
+        "event": "d468108d-542d-419b-aba8-b4a86cc40129"
+      }
+    ],
+    "all_four_results": {
+      "invalid_signature_HTTP": 403,
+      "authentic_duplicate_HTTP": 200,
+      "authentic_duplicate_body": {
+        "received": true,
+        "duplicate": true
+      },
+      "original_projection_before": [
+        "processed",
+        1
+      ],
+      "original_projection_after": [
+        "processed",
+        1
+      ]
+    }
+  },
+  "Instagram_source_reconciliation": {
+    "unavailable_comment": "14662ae5-0b23-4ea1-81d9-45c6f9e4f57b",
+    "prior_owner_action": "Owner deleted their own test comment in Instagram; no deletion webhook was observed.",
+    "live_result": "Explicit Sincronizar comentario query completed. Persisted state/source unavailable, control human; UI explains deletion versus access ambiguity, retains accepted history and disables public reply, suggestions and reactions.",
+    "available_control_comment": "2d59ed58-628a-4c20-9f07-853ec9b65692",
+    "available_control_result": "Meta returned current exact comment; source available, original new state and AI control retained; body Me interesan los programas 😍 unchanged.",
+    "safety": "Never infer deleted from generic Graph access rejection. Token/network failures do not mark objects unavailable. Object/account/authority/version changes prevent applying late results. No fabricated webhook or SQL tombstone."
+  },
+  "notifications": {
+    "button": "Marcar todas como leídas",
+    "live_count_before": 31,
+    "live_count_after": 0,
+    "live_message": "Estás al día con los comentarios.",
+    "persistence": "Server operation journal watermark scoped to institution and authenticated user; zero badge persisted through navigation. Future timestamps rejected; newer comments excluded from older acknowledgement.",
+    "workflow_unchanged": "30 comments still new after acknowledgement and after separately reconciling the unavailable test comment. Notification read does not archive comments or stop their AI."
+  },
+  "P7_final_review": {
+    "catalog_sync": "Catálogo sincronizado con Meta observed again on free account. hello_world, cbn_informacion_programas_20261117 and prueba_material_cbn_20261117 approved. Document/video examples still in Meta review at this cut, displayed as pending rather than approved locally.",
+    "hello_world": "Completed campaign; 1 read recipient, 1 attempt, 1 attributed quoted reply; 100% delivery/read/attributed response; accepted recipients cannot be selected for retry.",
+    "real_failure": "Completed controlled invalid-media campaign; 1 failed recipient, 1 attempt, existing provider ID retained, zero delivered/read. Retry checkbox disabled.",
+    "fresh_failure_CSV": {
+      "rows": 1,
+      "state": "failed",
+      "attempts": 1,
+      "error": "whatsapp_media_upload_failed",
+      "provider_id_present": true,
+      "accepted_UTC": "2026-11-17T23:55:08.578882Z",
+      "failed_UTC": "2026-11-17T23:55:09.432629Z",
+      "delivered_date_present": false,
+      "read_date_present": false
+    },
+    "live_retry_guard": "Read-only service check with the real failed queue 0bb7cb90-4bdb-4c22-8922-8f65b835844c and production mappings rejected 409 broadcast_retry_from_campaign before any mutation/provider IO; exact queue state, attempt count and provider ID unchanged. This is not a successful HTTP retry or a new send.",
+    "error_feedback": "Ver motivo y solución opened WhatsApp rechazó el adjunto with plain-language cause and file format/size remedy.",
+    "end_state": "Free account cadence disabled (daily limit 2 retained); latest temporary test consent revoked version 4; zero queued/sending/uncertain send jobs at final SQL crosscheck."
+  },
+  "criteria_review": {
+    "P4.3": {
+      "state": "accepted",
+      "basis": "Real Meta OAuth/assets/tokens/callback/identity/receipts plus prior confirmed WhatsApp inbound/outbound multimedia and current institutional CBN roundtrip. TikTok explicitly assigned to P16 by owner."
+    },
+    "P4.4": {
+      "state": "accepted",
+      "basis": "Prior real per-channel pause/quarantine/recovery, Facebook edit/delete, current HTTP invalid signature and exact duplicate rejection, honest Instagram source reconciliation, live unmatched receipt retention and bounded retry refusal. Unknown-effect race guards are controlled regressions, not forced production loss of an accepted POST."
+    },
+    "P4.close": {
+      "state": "accepted",
+      "basis": "Real UI/data wired; recovery retained original events/identities; one projection per receipt; no inferred delivery; unsupported/unavailable behavior explained; accounts restored and no pending outbox jobs. P2/P3 already accepted."
+    },
+    "P7.1": {
+      "state": "accepted",
+      "basis": "Real provider catalog and statuses, CRM variable mappings preserved through Meta reorder, approved custom template, media example submissions, audience/preview/scheduling and consent exclusions; provider review remains external."
+    },
+    "P7.4": {
+      "state": "accepted",
+      "basis": "Real read and failed reports match exported observations, quoted reply attribution, ID-bearing failures blocked from retry; controlled service tests reprepare only definitive unaccepted selected failures and block uncertain/running effects."
+    },
+    "P7.close": {
+      "state": "accepted",
+      "basis": "Authorized free-account end-to-end campaign completed; consent revoked/cadence disabled; attempts/receipts preserved; real account pause/recovery plus prior controlled pause/revoke/frontier qualification. P2/P3/P4 dependencies reviewed."
+    }
+  },
+  "supporting_evidence": [
+    "artifacts/live/social-ai-20261117.json",
+    "artifacts/live/p4-meta-recovery-20261117.json",
+    "artifacts/live/p4-meta-external-recovery-20261117.json",
+    "artifacts/live/p4-whatsapp-media-20261117.json",
+    "artifacts/live/p4-whatsapp-animated-20261117.json",
+    "artifacts/live/p7-catalog-20261117.json",
+    "artifacts/live/p7-broadcasting-20261117.json",
+    "artifacts/live/p7-template-media-20261117.json",
+    "artifacts/live/p7-replies-failure-20261117.json"
+  ],
+  "limits": [
+    "No full historical checker replay is claimed: 20 previously referenced artifacts remain absent from this checkout. Frozen definitions, previous checkers, releases and graphs remain intact; new evidence and arithmetic are verified separately.",
+    "No shared credential revocation, institutional database restore, forced loss of an accepted external POST, paid institutional template, load SLA or total parity with every Meta template product is claimed.",
+    "P4/P7 acceptance is bounded to owner-authorized Meta scope. All TikTok app/account/API/real tests remain P16 and no TikTok acceptance is fabricated.",
+    "P8/P9/P10/P11 and formal P12 commissioning are not automatically closed by these dependencies. SIIE P15 and training P14 remain separate."
+  ],
+  "social_media": {
+    "sample": "Neutral CBN image, 800x450, 17335 bytes, no personal data",
+    "messenger": {
+      "queue": "49be81f6-73f7-4bef-96ed-f41344d80635",
+      "state": "delivered",
+      "attempts": 1,
+      "provider_id_present": true
+    },
+    "instagram": {
+      "initial": {
+        "queue": "d329a178-1322-4cb4-8941-a2160e1fda12",
+        "state": "failed",
+        "attempts": 1,
+        "provider_id_present": false,
+        "error": "provider_permission_or_request_rejected"
+      },
+      "cause": "Facebook Login binary upload used Instagram account ID as Page ID. Adapter now uses linked ParentExternalId and omits empty Instagram attachment payload.",
+      "fix": "300aff7f97deb673ef090583a1a883482552009f",
+      "recovered": {
+        "queue": "9c92ba17-5dd1-4042-9af2-52e67fc2be1d",
+        "state": "accepted",
+        "attempts": 1,
+        "provider_id_present": true,
+        "created_UTC": "2026-11-18T13:43:53.127352Z"
+      },
+      "original_after": "retried, one attempt, no provider ID; original error retained",
+      "confirmation_limit": "Recovery completed through old native browser confirmation. The deployed replacement in-app dialog was separately regression tested, not credited as the live retry UI."
+    },
+    "owner_confirmation": "both_images_confirmed",
+    "owner_Instagram_text": "llego imagen de prueba la misma de messenger a instagram",
+    "final_pending_outbox": [],
+    "control": "Both owner test chats stayed Human; no other customer chat used."
+  },
+  "media_previews": {
+    "types": [
+      "Foto",
+      "Video",
+      "Sticker",
+      "Documento",
+      "Audio"
+    ],
+    "behavior": "Each known media type has a distinct SVG; caption replaces generic label when present; voice note keeps microphone and finite positive duration. Text messages unchanged.",
+    "live_photo": "Both owner social image rows show icon plus Foto; no additional sends made for cosmetic preview tests.",
+    "other_types": "Covered by local parameterized rendering regressions; not presented as new real external sends."
+  }
+}

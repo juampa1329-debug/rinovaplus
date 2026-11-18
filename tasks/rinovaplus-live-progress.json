@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "current_url": "https://app.rinovaplus.com",
   "broadcasting_editor": {
     "status": "deployed_real_template_submission_and_broadcast_receipts_verified",
@@ -15,16 +15,16 @@
     "test_inbound": "observed_with_Gemini_reply_in_AI_mode",
     "new_template_provider_submission": "Meta_received_PENDING_then_APPROVED_after_catalog_sync",
     "broadcast_receipts": "one_attempt_accepted_sent_delivered_read",
-    "quoted_campaign_reply": "not_observed_yet",
+    "quoted_campaign_reply": "verified_attributed_to_quoted_second_hello_world",
     "temporary_test_consent": "revoked",
     "test_cadence": "disabled_after_single_recipient_test",
     "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
-  "canonical_percent": "93.88%",
-  "canonical_milestones_done": 262,
+  "canonical_percent": "96.79%",
+  "canonical_milestones_done": 271,
   "canonical_milestones_total": 279,
-  "canonical_criteria_accepted": 45,
+  "canonical_criteria_accepted": 51,
   "canonical_criteria_total": 56,
   "canonical_weight_changed": false,
   "phase_percentages": {
@@ -32,10 +32,10 @@
     "P1": "100.00%",
     "P2": "100.00%",
     "P3": "100.00%",
-    "P4": "82.29%",
+    "P4": "100.00%",
     "P5": "100.00%",
     "P6": "100.00%",
-    "P7": "85.14%",
+    "P7": "100.00%",
     "P8": "95.00%",
     "P9": "93.75%",
     "P10": "95.00%",
@@ -110,9 +110,9 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
-    "P7_quoted_reply_controlled_failure_and_remaining_receipt_matrix",
-    "complete_P4_channel_matrix",
-    "P13_two_reviewed_programs_without_SIIE"
+    "P13_two_reviewed_programs_without_SIIE",
+    "P8_P9_P10_separate_closure_reviews",
+    "P11_P12_institutional_commissioning"
   ],
   "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md",
   "final_frontend_regression": {
@@ -122,10 +122,20 @@
     "suggestion_recovery": "same_request_id"
   },
   "P7_catalog": {
-    "status": "real_approved_catalog_verified",
+    "status": "accepted_with_provider_approved_and_pending_statuses",
     "milestone": "P7.1.m5",
     "evidence": "artifacts/live/p7-catalog-20261117.json",
     "broadcast_send": "free_test_hello_world_accepted_sent_delivered_read_one_attempt",
     "historical_checker": "blocked_by_20_absent_historical_artifacts"
+  },
+  "P4_P7_acceptance": {
+    "status": "accepted_bounded_Meta",
+    "evidence": "artifacts/live/p4-p7-acceptance-20261118.json",
+    "TikTok": "P16_deferred"
+  },
+  "P16": {
+    "status": "deferred_by_owner",
+    "accepted": 0,
+    "total": 5
   }
 }

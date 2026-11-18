@@ -790,6 +790,12 @@
       "source_location": "$.whatsapp; $.messenger; $.facebook_edit_delete; $.facebook_recovery; $.instagram; $.diagnostic_limits",
       "scope": "Real signed Meta events retained during account pauses and recovered once through the UI, Facebook edit/delete and bounded unmatched-receipt rejection. Instagram deletion reconciliation, institutional WhatsApp and remaining outbound uncertainty/retry acceptance are open; no full P4 criterion acceptance.",
       "source_sha256_at_review": "660827ab0a457ad61d5b7f42f6d27513489731fb4645af93aa37a67f3ae2759b"
+    },
+    "Meta_P4_P7_acceptance_20261118": {
+      "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+      "source_location": "$.criteria_review; $.institutional_WhatsApp; $.live_HTTP_signature_and_duplicate_checks; $.Instagram_source_reconciliation; $.social_media; $.P7_final_review; $.limits",
+      "scope": "Owner-authorized Meta acceptance: real institutional WhatsApp and Human silence, signed duplicate/recovery guards, Facebook edit/delete, honest Instagram source reconciliation and recovered media send, actual approved template catalog/report/CSV and bounded retry refusal. Controlled race/unknown-result tests remain distinguished; TikTok is P16, not fabricated acceptance.",
+      "source_sha256_at_review": "7f44a60c90b73e12b66a5761e5c064f28a1e6c23b1a27b9d80c495cfddbde20c"
     }
   },
   "phases": [
@@ -3762,15 +3768,17 @@
             {
               "id": "P4.3.m6",
               "description": "Aceptar OAuth/números/token/adjuntos/callback/identidad/entrega por canal.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "test",
               "evidence_level": "SQL",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 7
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L232"
@@ -3779,15 +3787,17 @@
             {
               "id": "P4.3.m7",
               "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 7
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L232"
@@ -3795,20 +3805,20 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 5,
+            "done_milestones": 7,
             "total_milestones": 7,
             "criterion_equivalent": {
-              "numerator": 5,
-              "denominator": 7
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "71.43%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         },
         {
@@ -3889,7 +3899,7 @@
             {
               "id": "P4.4.m4",
               "description": "Probar recuperación/reintento/incertidumbre externa acotada por canal.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "test",
               "evidence_level": "SQL",
               "criterion_share": {
@@ -3897,31 +3907,29 @@
                 "denominator": 5
               },
               "evidence_refs": [
-                "P4_live_external_recovery_20261118"
+                "Meta_P4_P7_acceptance_20261118"
               ],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L233"
               },
-              "verified_partial_scope": "WhatsApp, Messenger, Facebook comment and Instagram DM/comment real pause/recovery; original event IDs, one projection, preserved identities and account state. Facebook edits/deletes signed; an unmatched Instagram read stays quarantined without marking any job read.",
-              "remaining_work": [
-                "Complete and accept remaining outgoing retry/uncertain-result scenarios; the cancelled native-confirmation attempt is not execution of that guard.",
-                "Review formal criterion acceptance with the Instagram external-deletion reconciliation gap and institutional channel limits explicitly retained."
-              ]
+              "verified_partial_scope": "WhatsApp, Messenger, Facebook comment and Instagram DM/comment real pause/recovery; original event IDs, one projection, preserved identities and account state. Facebook edits/deletes signed; an unmatched Instagram read stays quarantined without marking any job read."
             },
             {
               "id": "P4.4.m5",
               "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L233"
@@ -3929,20 +3937,20 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 3,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 3,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "60.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         },
         {
@@ -4042,15 +4050,17 @@
             {
               "id": "P4.close.m5",
               "description": "Cerrar P4/unidades/dependencias sin aceptar por esquema.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L235"
@@ -4058,35 +4068,35 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 4,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 4,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "80.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         }
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 144,
-          "denominator": 35
+          "numerator": 5,
+          "denominator": 1
         },
         "criterion_denominator": 5,
         "fraction": {
-          "numerator": 144,
-          "denominator": 175
+          "numerator": 1,
+          "denominator": 1
         },
-        "percent_display": "82.29%",
-        "phase_accepted": false
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "historical_closure": {
         "accepted_criteria": 0,
@@ -5606,15 +5616,17 @@
             {
               "id": "P7.1.m7",
               "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 7
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L256"
@@ -5622,20 +5634,20 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 6,
+            "done_milestones": 7,
             "total_milestones": 7,
             "criterion_equivalent": {
-              "numerator": 6,
-              "denominator": 7
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "85.71%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         },
         {
@@ -6016,15 +6028,17 @@
             {
               "id": "P7.4.m5",
               "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L259"
@@ -6032,20 +6046,20 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 4,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 4,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "80.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         },
         {
@@ -6144,15 +6158,17 @@
             {
               "id": "P7.close.m5",
               "description": "Cerrar P7 y P2/P3/P4 con recorrido no productivo completo.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "Meta_P4_P7_acceptance_20261118"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L261"
@@ -6160,35 +6176,35 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 4,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 4,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "80.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
           }
         }
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 156,
-          "denominator": 35
+          "numerator": 5,
+          "denominator": 1
         },
         "criterion_denominator": 5,
         "fraction": {
-          "numerator": 156,
-          "denominator": 175
+          "numerator": 1,
+          "denominator": 1
         },
-        "percent_display": "89.14%",
-        "phase_accepted": false
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "historical_closure": {
         "accepted_criteria": 0,
@@ -8546,16 +8562,16 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 1847,
-      "denominator": 1960
+      "numerator": 271,
+      "denominator": 280
     },
-    "overall_technical_percent_display": "94.23%",
+    "overall_technical_percent_display": "96.79%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 263,
-    "pending_milestones": 16,
-    "accepted_criteria": 45,
+    "done_milestones": 271,
+    "pending_milestones": 8,
+    "accepted_criteria": 51,
     "milestone_counts_are_not_weights": true,
     "phases": [
       {
@@ -8626,17 +8642,17 @@
         "id": "P4",
         "criterion_denominator": 5,
         "criterion_equivalents_completed": {
-          "numerator": 144,
-          "denominator": 35
+          "numerator": 5,
+          "denominator": 1
         },
         "work_fraction": {
-          "numerator": 144,
-          "denominator": 175
+          "numerator": 1,
+          "denominator": 1
         },
-        "work_percent_display": "82.29%",
-        "accepted_criteria": 2,
-        "acceptance_percent_display": "40.00%",
-        "phase_accepted": false
+        "work_percent_display": "100.00%",
+        "accepted_criteria": 5,
+        "acceptance_percent_display": "100.00%",
+        "phase_accepted": true
       },
       {
         "id": "P5",
@@ -8674,17 +8690,17 @@
         "id": "P7",
         "criterion_denominator": 5,
         "criterion_equivalents_completed": {
-          "numerator": 156,
-          "denominator": 35
+          "numerator": 5,
+          "denominator": 1
         },
         "work_fraction": {
-          "numerator": 156,
-          "denominator": 175
+          "numerator": 1,
+          "denominator": 1
         },
-        "work_percent_display": "89.14%",
-        "accepted_criteria": 2,
-        "acceptance_percent_display": "40.00%",
-        "phase_accepted": false
+        "work_percent_display": "100.00%",
+        "accepted_criteria": 5,
+        "acceptance_percent_display": "100.00%",
+        "phase_accepted": true
       },
       {
         "id": "P8",

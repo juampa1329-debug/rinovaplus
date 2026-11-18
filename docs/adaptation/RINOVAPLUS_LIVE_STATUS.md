@@ -2,12 +2,22 @@
 
 Corte: 18 de noviembre de 2026. Este registro complementa el checkpoint SQL local del 28 de octubre con la operación actual en https://app.rinovaplus.com. No reemplaza ni modifica releases, grafos, pruebas o recibos históricos.
 
+## Cierre vigente Meta del 18 de noviembre
+
+P4 y P7 quedan aceptados dentro del alcance Meta autorizado. La [evidencia por criterio](../../artifacts/live/p4-p7-acceptance-20261118.json) distingue pruebas reales, simuladas y límites. La imagen de Instagram falló antes de obtener ID por usar el ID de Instagram como Page ID; se corrigió el adaptador, se recuperó el envío con un nuevo registro aceptado y el propietario confirmó recepción. Los dos chats siguen en Humano. No hay envíos pendientes al corte.
+
+La campana bajó 31→0 y conservó los comentarios nuevos para su flujo. Sincronizar comentario marca fuente no disponible sin inventar un evento deleted; el comentario de control sigue accesible. WhatsApp CBN recibió/responde y respeta Humano. El receptor gratuito se conserva separado.
+
+Regresiones del cierre: 242 backend correctas y dos skips de ffmpeg del host; 39 de autoridad HTTP en suites separadas y 71 de interfaz. Ampliación posterior de etiquetas: 70 backend y 72 interfaz; tipos y build correctos. El barrido adicional encontró un fallo preexistente del doble ReadCursor en test_inbox_operations y un error ESLint preexistente de setState síncrono en Workspace.tsx: no se cuentan como checks aprobados ni se modifican para simular éxito. Bundle grande conserva su advertencia.
+
+Los párrafos fechados posteriores de esta página conservan observaciones históricas; este corte y la tabla vigente prevalecen sobre sus pendientes antiguos.
+
 ## Qué ya se comprobó en producción
 
 | Área | Evidencia disponible | Límite de la evidencia |
 |---|---|---|
 | Identidad RinovaPlus | Login, aplicación, iconos y menú plegable publicados en Coolify. | No equivale a auditoría formal de accesibilidad. |
-| WhatsApp | OAuth descubre números institucionales. Texto, imagen, sticker y voz tienen pruebas previas en la cuenta anterior; el recurso gratuito tiene plantilla y recibos reales. | «WhatsApp · CBN» aún figura pendiente de verificar. Las pruebas anteriores no aceptan su corte institucional; conservar el número anterior hasta completar ese recorrido. Video y sticker estático salientes comprobados en recurso gratuito: recibos firmados, un intento y reproducción confirmada por propietario. Salida animada implementada y probada al 44: 159 KB, 32 fotogramas conservados, un intento y recibo firmado de leído. El propietario confirmó la animación correcta en el teléfono. |
+| WhatsApp | CBN conectado/verificado, entrada real, Gemini y recibos enviados/entregados/leídos; silencio en Humano y regreso a IA. Multimedia previa confirmada, incluida animación. | Cuenta anterior conservada; no se envió plantilla institucional de pago. |
 | Messenger CBN | Mensaje real entrante, Gemini y envío con recibo entregado. Nombre Juan Pablo recuperado por participantes autorizados. | Foto sólo si Meta la entrega; no se inventa un perfil. |
 | Instagram CBN | DM real, Gemini y control Humano. `messaging_seen` suscrito; prueba nueva manual marcada Leído con un intento y recibo firmado verificado/procesado. | La lectura de esa prueba no actualiza otros mensajes aceptados sin su propio evento. |
 | Comentarios Meta | Respuestas personalizadas reales de Gemini en Instagram y Facebook observadas de vuelta por webhook con el mismo ID. Facebook «Necesito orientación» en un intento y con publicación real identificada. | No acredita datos del catálogo aún ausentes, edición/borrado ni una carrera nueva de toma de control durante inferencia. |
@@ -62,12 +72,12 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P1 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P2 | 100,00% | Sin pendientes canónicos de esta fase. |
 | P3 | 100,00% | Sin pendientes canónicos; las mejoras nuevas de Inbox se registran aparte. |
-| P4 | 82,29% | Operación vigente limitada a Meta: [matriz WhatsApp, Facebook/Messenger e Instagram](P4_META_ACCEPTANCE_MATRIX.md). Facebook comentarios e Instagram leído ya comprobados. Video, sticker estático y sticker animado WhatsApp salientes aceptados en cuenta gratuita con confirmación del propietario. Pausa/recuperación real comprobada en los cuatro canales Meta; edición y borrado Facebook aprobados. Falta conciliar el borrado externo Instagram, el corte institucional WhatsApp y completar aceptación de reintentos/resultados inciertos. TikTok pasa a P16 por decisión humana; se conserva la definición histórica sin recalcular pesos. Hitos P4.3.m6/m7, P4.4.m4/m5 y P4.close.m5. |
+| P4 | 100,00% Meta | Aceptación acotada completada: cuentas/OAuth, firma/deduplicación, multimedia, recuperación por canal y conciliación explícita Instagram. TikTok permanece en P16. |
 | P5 | 100,00% local | Respuestas personalizadas y silencio Humano posteriores al cambio ya probados en Messenger/Instagram; comentario y sugerencias reales verificados. Falta el piloto con hechos revisados de dos programas y ampliar la prueba de carrera durante inferencia. No se atribuyen estas ampliaciones a la aceptación local antigua. |
 | P6 | 100,00% local | Revisar y publicar información real de programas, fuentes y vigencias para el piloto. La función de conocimiento local ya está aceptada. |
-| P7 | 89,14% | Catálogo real aprobado, respuesta citada atribuida y estados reales hasta leído/fallido comprobados. Falta aceptación formal completa de catálogo e informe/reintento/recuperación y dependencia de P4. Hitos P7.1.m7, P7.4.m5 y P7.close.m5. |
-| P8 | 95,00% | Cierre de recorrido/dependencias P4/P7, hito P8.close.m5. No activar campañas comerciales para simular aceptación. |
-| P9 | 93,75% | Aceptación externa y dependencias de P4, hito P9.close.m4. |
+| P7 | 100,00% | Catálogo/estados Meta, plantillas reales, audiencia, recibos, respuesta citada, informe/CSV y guardas de reintento aceptados. Revisión de Meta de cada nueva plantilla sigue siendo externa. |
+| P8 | 95,00% | P4/P7 ya aceptados; falta revisión específica del recorrido y cierre P8.close.m5. No activar campañas comerciales para simular aceptación. |
+| P9 | 93,75% | Dependencia P4 satisfecha; falta su revisión específica de cierre P9.close.m4. |
 | P10 | 95,00% | Cerrar P8/P9 y dependencia P10.close.m4. El algoritmo actual es logística revisada; no se afirma red neuronal ni eficacia real. |
 | P11 | 72,50% | Puesta institucional y recuperación específica, aceptación de alcance y cierres P1–P10. PostgreSQL publicado no acredita por sí solo el criterio original de migración SQL2019/SIIE. |
 | P12 | 0,00% de aceptación formal | La infraestructura online YA existe y los despliegues/HTTPS se han comprobado. Falta conciliarla formalmente con los criterios originales, custodios, restauración/RPO/RTO, mapeo académico y aceptación institucional; el 0% es del checkpoint formal, no significa que no exista aplicación publicada. |
@@ -76,7 +86,7 @@ Esto cierra el recorrido positivo personalizado y el silencio posterior al cambi
 | P15 | Diferida; 0/5 unidades aceptadas | Integración SIIE: contrato/acceso, dos ofertas reales, sincronización revisada, uso por agentes y operación institucional. Base técnica implementada, conexión no configurada. |
 | P16 | Diferida; 0/5 unidades aceptadas | [Todo TikTok en plan independiente](P16_TIKTOK_PLAN.md): documentación/capacidades, app y OAuth, adaptación, pruebas reales y aceptación/reversión. No bloquea la ejecución operativa Meta solicitada; el checkpoint canónico histórico se conserva. |
 
-**Total técnico actualizado: 94,23%, 263/279 hitos y 45/56 criterios aceptados.** Son 16 hitos originales pendientes. P7.1.m5 se acredita con [el catálogo real observado](../../artifacts/live/p7-catalog-20261117.json) y P7.4.m4 con [recibos, respuesta atribuida y fallo real](../../artifacts/live/p7-replies-failure-20261117.json). No se aceptan aún P7.1/P7.4 completos. Se conservaron definición, pesos y denominadores. P12–P16 quedan fuera del denominador original. El verificador histórico completo no pudo ejecutarse: faltan 20 artefactos históricos referenciados en este checkout. El cálculo usa la función existente de fracciones exactas, pero no se presenta como replay histórico aprobado ni se recrea evidencia ausente.
+**Total técnico actualizado: 96,79%, 271/279 hitos y 51/56 criterios aceptados.** Quedan ocho hitos originales. Nueva aceptación de seis criterios existentes en [evidencia Meta](../../artifacts/live/p4-p7-acceptance-20261118.json); definición, pesos y denominadores intactos. P12–P16 están fuera del denominador. El replay íntegro continúa limitado por 20 artefactos históricos ausentes; cálculo exacto y nuevas referencias se validan por separado.
 
 ## Cómo se actualizará desde ahora
 

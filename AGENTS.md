@@ -1,3 +1,26 @@
+## Estado vigente operativo Meta — 2026-11-18
+
+**General: 96,79%; 271/279 hitos y 51/56 criterios aceptados. P4 y P7: 100% en el alcance Meta autorizado.** Se mantienen los 56 criterios, los 279 hitos, textos y pesos originales. TikTok fue separado expresamente por el propietario a P16; no se acredita una prueba TikTok. La aceptación nueva está trazada por criterio en [la evidencia del cierre](artifacts/live/p4-p7-acceptance-20261118.json), con preimágenes del ledger conservadas. No equivale a puesta institucional SQL/SIIE ni cierra automáticamente P8–P11.
+
+| Fases | Avance actual |
+|---|---:|
+| P0, P1, P2, P3, P4, P5, P6, P7 | 100,00% |
+| P8, P10 | 95,00% |
+| P9 | 93,75% |
+| P11 | 72,50% |
+| P12 | 0,00% de aceptación formal; infraestructura publicada existente |
+| P13 | Parcial, 0/4 aceptados |
+| P14 | Plan pendiente |
+| P15 SIIE, P16 TikTok | Diferidas, 0/5 cada una |
+
+WhatsApp CBN completó entrada real, Gemini, recibos enviados/entregados/leídos y silencio en Humano; volvió a IA. Meta rechazó firmas inválidas y deduplicó recibos auténticos en cuatro canales sin segundo procesamiento. Conciliación Instagram distingue fuente no disponible de borrado probado. Imagen Messenger entregada; imagen Instagram recuperada tras corregir Page ID, aceptada y vista por el propietario. Catálogo, informes/CSV, respuesta citada y rechazo de reintento de P7 verificados; cadencia gratuita apagada y consentimiento temporal revocado. Los escenarios de carrera/resultado incierto se probaron con dobles controlados: no se forzó pérdida de un POST aceptado en producción ni se revocaron secretos compartidos.
+
+La campana permite marcar todas como leídas por usuario. Inbox muestra iconos y etiquetas para foto/video/sticker/documento/audio, pie cuando existe y duración de voz. Las cuentas múltiples conservan identidad/ruta separada; etiqueta de cuenta en lista y número receptor verificado dentro del chat. La etiqueta se edita desde Canales; solo cambiarla no pausa la conexión. El checkpoint SQL local histórico inferior conserva sus guardas y evidencia; no confundirlo con el despliegue PostgreSQL actual. El replay histórico íntegro sigue limitado por 20 artefactos ausentes: no se fabricaron ni se modificaron checkers/releases/grafos.
+
+Próximo: aceptar P13 con dos programas revisados, revisar por separado cierres P8/P9/P10 y completar puesta institucional P11/P12. No retirar el número anterior sin decisión humana.
+
+## Historial previo conservado
+
 ## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.

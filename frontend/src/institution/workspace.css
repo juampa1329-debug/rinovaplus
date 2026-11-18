@@ -166,11 +166,14 @@
 }
 
 .inbox-preview-media {
-  display: inline-block;
   width: 0.9em;
   height: 0.9em;
   margin-inline-end: 0.3em;
   vertical-align: -0.1em;
+}
+.inbox-row-preview > .inbox-preview-media,
+.inbox-row-account > .inbox-preview-media {
+  display: inline-block;
 }
 .p3-actions {
   display: flex;

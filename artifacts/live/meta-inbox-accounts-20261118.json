@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-18",
+  "code": "ef28c9ea9b431b5e527b222bc7e68ab62327b468",
+  "backend_deployment": "geszvhlwxlrwknq8h1ggmasm",
+  "backend_result": "Success, 04m 17s; real authenticated Inbox returned receiver labels and verified WhatsApp receiver phone",
+  "frontend_deployment": "nvvzsh0rmpuwzx5zr21qcvtf",
+  "frontend_result": "Success, 00m 42s",
+  "cause_of_two_rows": "Same owner's contact on separate receiving accounts: WhatsApp CBN and WhatsApp Pruebas Meta. Existing identity, conversation and reply route remain isolated per integration.",
+  "list": "Labels observed for CBN WhatsApp, Pruebas Meta WhatsApp, CBN Messenger and CBN Instagram. The list label does not expose the receiver phone.",
+  "thread": "Opened institutional chat: Cuenta receptora: WhatsApp · CBN · +57 311 7207294; AI switch retained.",
+  "settings": "Canales shows Etiqueta de la cuenta en Inbox, populated from the existing DisplayName. Cosmetic-only save uses existing CAS, recent authority, CSRF and idempotent channel edit; it does not pause or invalidate provider verification. No new schema, identity merge, provider permission or external send.",
+  "phone_source": "Latest confirmed verification of same integration/application and exact current provider asset ID; no phone inferred from the sender or guessed from a provider ID. Missing evidence remains absent.",
+  "verification": {
+    "backend_scoped": "70 passed, including label-only save preserving connection and recent authority; overlaps earlier suites and must not be added as unique tests",
+    "frontend": "72 passed across Workspace, Channels P4 and Broadcasting P7",
+    "types_and_build": "passed",
+    "ruff_F": "passed on changed backend files",
+    "preexisting_limits": [
+      "Broader sweep: test_inbox_operations.test_typed_filters_are_sql_predicates_before_paging fails in its unrelated legacy ReadCursor OBJECT_ID stub; 84 passed, 1 failed. This suite is not claimed passing.",
+      "ESLint full changed Workspace.tsx retains pre-existing react-hooks/set-state-in-effect error at social-profile cache effect. Other changed frontend files passed lint; this full lint check is not claimed passing.",
+      "Existing bundle-size warning retained. Historical SQL release replay not rerun."
+    ]
+  },
+  "roadmap": "This UX enhancement does not add canonical milestone credit or change the Meta acceptance proof hash. General 96.79%, P4/P7 Meta 100% with original 56 criteria and 279 milestones.",
+  "screenshots": "Saved separately in the user's local visualizations folder; no private chat screenshot committed."
+}

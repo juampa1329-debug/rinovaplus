@@ -1,9 +1,9 @@
 {
   "schema_version": "canonical-phase-criteria-v1",
   "defined_in_unit": "SQL-C12",
-  "date": "2026-10-28",
+  "date": "2026-11-18",
   "timezone": "America/Bogota",
-  "status": "P11_local_operability_accepted_external_commissioning_grouped_in_P12",
+  "status": "P4_P7_Meta_accepted_P11_institutional_commissioning_still_partial",
   "measurement_label": "Porcentaje de criterios canónicos aceptados por fase",
   "meaning": "Cuenta criterios cerrados con evidencia en su alcance declarado. No mide horas, esfuerzo, porcentaje de funcionalidad real, calidad, entrega de proveedores ni preparación institucional. Un0% puede coexistir con subconjuntos funcionales probados.",
   "human_request": "El propietario pidió porcentajes por fase; este contrato sustituye la anterior omisión de porcentajes sólo para el reporte, sin cambiar los criterios de cierre.",
@@ -874,8 +874,8 @@
           "kind": "canonical_unit",
           "requirement": "unificar ajustes/diagnóstico de cuentas, webhooks, identidad externa, adjuntos y estados de entrega. Relacionar callback y configuración sin exponer secretos.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P4",
@@ -883,7 +883,7 @@
             "line_at_assessment": 206,
             "canonical_text_sha256": "5ee7d7f65a66c9caf610ea9d9ed05714f0078ae8df5541a029607445dc3dffcc"
           },
-          "remaining_scope": "real_OAuth_numbers_tokens_media_callback_identity_delivery_per_channel",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "docs/adaptation/sql/sql_c9_validation.json",
@@ -929,17 +929,22 @@
               "file": "artifacts/p4-es/acceptance-review.json",
               "source_location": "$.criteria.P4.3",
               "scope": "real_OAuth_numbers_tokens_media_callback_identity_delivery_per_channel"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.3",
+              "scope": "Real Meta OAuth/assets/tokens/callback/identity/receipts plus prior confirmed WhatsApp inbound/outbound multimedia and current institutional CBN roundtrip. TikTok explicitly assigned to P16 by owner."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         },
         {
           "id": "P4.4",
           "kind": "canonical_unit",
           "requirement": "probar deduplicación, firma inválida, comentario eliminado, cuenta desactivada, mensajes repetidos y recuperación; pruebas externas sólo en entorno de aceptación autorizado.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P4",
@@ -947,23 +952,28 @@
             "line_at_assessment": 207,
             "canonical_text_sha256": "db076301b259f89479194c0afad7377337bf5231e77c3c33f80afaebbb808bf0"
           },
-          "remaining_scope": "authorized_real_provider_recovery_and_uncertainty_per_channel",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "artifacts/p4-es/acceptance-review.json",
               "source_location": "$.criteria.P4.4",
               "scope": "authorized_real_provider_recovery_and_uncertainty_per_channel"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.4",
+              "scope": "Prior real per-channel pause/quarantine/recovery, Facebook edit/delete, current HTTP invalid signature and exact duplicate rejection, honest Instagram source reconciliation, live unmatched receipt retention and bounded retry refusal. Unknown-effect race guards are controlled regressions, not forced production loss of an accepted POST."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         },
         {
           "id": "P4.close",
           "kind": "phase_closure",
           "requirement": "**Cierre:** UI y datos reales están conectados; reintentos no duplican acciones; un POST aceptado no se presenta como mensaje entregado; funciones no soportadas se explican. **Reversión:** pausar entradas/salidas afectadas y conservar eventos para recuperación; no vaciar colas.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P4",
@@ -971,7 +981,7 @@
             "line_at_assessment": 209,
             "canonical_text_sha256": "bcc483f7a1d5901031ee7de46139bd798b2055ef890972ce9e77e17f63bdcc58"
           },
-          "remaining_scope": "P4.3_and_P4.4_external_acceptance",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "docs/adaptation/sql/sql_c9_validation.json",
@@ -987,30 +997,35 @@
               "file": "artifacts/p4-es/acceptance-review.json",
               "source_location": "$.criteria.P4.close",
               "scope": "P4.3_and_P4.4_external_acceptance"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.close",
+              "scope": "Real UI/data wired; recovery retained original events/identities; one projection per receipt; no inferred delivery; unsupported/unavailable behavior explained; accounts restored and no pending outbox jobs. P2/P3 already accepted."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         }
       ],
       "completion": {
-        "accepted": 2,
+        "accepted": 5,
         "total": 5,
-        "partial": 3,
+        "partial": 0,
         "pending": 0,
         "fraction": {
-          "numerator": 2,
+          "numerator": 5,
           "denominator": 5
         },
         "reduced_fraction": {
-          "numerator": 2,
-          "denominator": 5
-        },
-        "percent_exact": {
-          "numerator": 40,
+          "numerator": 1,
           "denominator": 1
         },
-        "percent_display": "40.00%",
-        "phase_accepted": false
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "reporting_finding_id": "phase_progress_p4",
       "graph_node_id": "phase_criteria_p4"
@@ -1309,8 +1324,8 @@
           "kind": "canonical_unit",
           "requirement": "completar catálogo/estado de plantillas Meta, variables, audiencias, importación cuando la referencia la soporte y previsualización con conteos reales.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P7",
@@ -1318,15 +1333,20 @@
             "line_at_assessment": 230,
             "canonical_text_sha256": "ed406df163125ca168d4a35d93d0c0f760503f709c1ce375db47108692720575"
           },
-          "remaining_scope": "Real Meta catalog/receipts or P4 dependency acceptance remains pending; see P7 review.",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "artifacts/p7-es/acceptance-review.json",
               "source_location": "$.criteria.P7.1",
               "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.1",
+              "scope": "Real provider catalog and statuses, CRM variable mappings preserved through Meta reorder, approved custom template, media example submissions, audience/preview/scheduling and consent exclusions; provider review remains external."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         },
         {
           "id": "P7.2",
@@ -1381,8 +1401,8 @@
           "kind": "canonical_unit",
           "requirement": "completar reporte, exportación y reintento selectivo, distinguiendo pendiente/aceptado/enviado/entregado/leído/fallido.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P7",
@@ -1390,23 +1410,28 @@
             "line_at_assessment": 233,
             "canonical_text_sha256": "29a1c9c1b3d852e75648f2fd8027862af226837409c59e6a46a0505a76133f5d"
           },
-          "remaining_scope": "Real Meta catalog/receipts or P4 dependency acceptance remains pending; see P7 review.",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "artifacts/p7-es/acceptance-review.json",
               "source_location": "$.criteria.P7.4",
               "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.4",
+              "scope": "Real read and failed reports match exported observations, quoted reply attribution, ID-bearing failures blocked from retry; controlled service tests reprepare only definitive unaccepted selected failures and block uncertain/running effects."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         },
         {
           "id": "P7.close",
           "kind": "phase_closure",
           "requirement": "**Cierre:** ensayo no productivo demuestra selección correcta, idempotencia y pausa efectiva; revocar consentimiento impide enviar aunque el destinatario se haya preparado antes. **Reversión:** pausar campaña/transporte, conservar outbox y recibos y reconciliar resultados inciertos antes de reintentar.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P7",
@@ -1414,36 +1439,41 @@
             "line_at_assessment": 235,
             "canonical_text_sha256": "4509b12726cb671cc2eb5a9315531cb29c03f9c75967225a7434020fcf57c35d"
           },
-          "remaining_scope": "Real Meta catalog/receipts or P4 dependency acceptance remains pending; see P7 review.",
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
           "evidence": [
             {
               "file": "artifacts/p7-es/acceptance-review.json",
               "source_location": "$.criteria.P7.close",
               "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.close",
+              "scope": "Authorized free-account end-to-end campaign completed; consent revoked/cadence disabled; attempts/receipts preserved; real account pause/recovery plus prior controlled pause/revoke/frontier qualification. P2/P3/P4 dependencies reviewed."
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
         }
       ],
       "completion": {
-        "accepted": 2,
+        "accepted": 5,
         "total": 5,
-        "partial": 3,
+        "partial": 0,
         "pending": 0,
         "fraction": {
-          "numerator": 2,
+          "numerator": 5,
           "denominator": 5
         },
         "reduced_fraction": {
-          "numerator": 2,
-          "denominator": 5
-        },
-        "percent_exact": {
-          "numerator": 40,
+          "numerator": 1,
           "denominator": 1
         },
-        "percent_display": "40.00%",
-        "phase_accepted": false
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "reporting_finding_id": "phase_progress_p7",
       "graph_node_id": "phase_criteria_p7"
@@ -1998,12 +2028,12 @@
     }
   ],
   "summary": {
-    "accepted_criteria": 45,
+    "accepted_criteria": 51,
     "total_criteria": 56,
-    "partial_criteria": 11,
+    "partial_criteria": 5,
     "scope": "Totales de criterios únicamente; se omite porcentaje global porque el pedido es por fase.",
-    "as_of_accepted_checkpoint": "P11-ES-local-partial",
-    "active_unit_not_yet_accepted": "P11.3/P11.close pending institutional deployment and preceding external closures; grouped P12"
+    "as_of_accepted_checkpoint": "Meta-P4-P7-live-20261118",
+    "active_unit_not_yet_accepted": "P8/P9/P10 closures require their own final review; P11 institutional commissioning remains partial."
   },
   "current_unit_evidence_policy": {
     "unit": "P1-ES",
@@ -2485,6 +2515,13 @@
       "preserved_file": "artifacts/p3-es/history/phase-progress-contract.json.before-P3.json",
       "accepted_criteria": 15,
       "scope": "Frozen P2 and P1 replay independently; canonical56criteria remain unchanged."
+    },
+    {
+      "checkpoint": "Meta-P4-P7-live-20261118",
+      "preserved_file": "artifacts/live/history/p4-p7-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 45,
+      "accepted_criteria": 51,
+      "scope": "Same canonical 56 criteria and fixed text; new bounded Meta acceptance of six existing criteria. Historical graph/report snapshots and prior SQL checkpoints are not rerun or changed."
     }
   ]
 }

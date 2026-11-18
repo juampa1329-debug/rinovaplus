@@ -2,6 +2,12 @@
 
 Corte: 18 de noviembre de 2026, America/Bogota; incluye pruebas iniciadas el 17. Alcance vigente autorizado: WhatsApp, Facebook/Messenger e Instagram. Todo TikTok pasa al [plan P16](P16_TIKTOK_PLAN.md). Los checkpoints y denominadores históricos se conservan; esta matriz no fabrica cierre canónico ni pruebas externas.
 
+## Aceptación vigente: P4 Meta 100% — 18 de noviembre
+
+El [cierre por criterio](../../artifacts/live/p4-p7-acceptance-20261118.json) acepta el alcance Meta solicitado. CBN completó entrada/respuesta/recibos y silencio Humano. Firmas inválidas y duplicados se probaron por HTTP en los cuatro canales. Instagram dispone de conciliación explícita segura de fuente y recuperación real de una imagen fallida; el propietario confirmó que llegó. Facebook edición/borrado y pausa/recuperación de los cuatro canales conservan su evidencia previa. Los recibos sin envío siguen en cuarentena, sin atribuir lecturas a otro mensaje. No se revocaron secretos compartidos ni se forzó pérdida de un efecto externo aceptado; las carreras/reversión incierta están calificadas en regresiones controladas. TikTok es P16.
+
+## Matriz histórica anterior al cierre, conservada como evidencia de los pendientes resueltos
+
 | Recorrido | Evidencia verificada | Pendiente real |
 |---|---|---|
 | WhatsApp OAuth | Descubrimiento de números CBN y cuenta gratuita separada autorizada por OAuth. | La cuenta «WhatsApp · CBN» aún figura pendiente de verificar; aceptar el número institucional antes de retirar el anterior. |
