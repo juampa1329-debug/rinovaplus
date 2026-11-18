@@ -62,6 +62,8 @@ type Row = {
   unread: boolean;
   assignee: string | null;
   channel?: string;
+  accountName?: string | null;
+  accountPhone?: string | null;
   updatedAt?: string;
   preview?: string | null;
   previewKind?: string | null;
@@ -923,6 +925,7 @@ function WorkspaceView({
             ) : selected ? (
               <Person
                 key={selected}
+                receivingAccount={list.value?.items.find((row) => row.conversationId === selected)}
                 socialProfile={socialProfiles[selected]}
                 conversation={selected}
                 page={page}
@@ -1113,6 +1116,7 @@ function CreateContact({
   );
 }
 function Person({
+  receivingAccount,
   conversation,
   page,
   refresh,
@@ -1127,6 +1131,7 @@ function Person({
   toggleContact,
   socialProfile,
 }: {
+  receivingAccount?: Pick<Row, "accountName" | "accountPhone">;
   conversation: string;
   page: string;
   refresh: number;
@@ -1175,6 +1180,7 @@ function Person({
       {detail.error && <Notice error>{detail.error}</Notice>}
       {page === "inbox" && (
         <Conversation
+          receivingAccount={receivingAccount}
           conversation={conversation}
           socialProfile={socialProfile}
           detail={detail.value}
@@ -1260,6 +1266,7 @@ function Person({
   );
 }
 function Conversation({
+  receivingAccount,
   conversation,
   detail,
   refresh,
@@ -1273,6 +1280,7 @@ function Conversation({
   onBack,
   socialProfile,
 }: {
+  receivingAccount?: Pick<Row, "accountName" | "accountPhone">;
   conversation: string;
   detail: Detail;
   refresh: number;
@@ -1428,6 +1436,11 @@ function Conversation({
               <ChannelLabel channel="local" />
             )}
           </div>
+          {(receivingAccount?.accountName || receivingAccount?.accountPhone) && (
+            <p className="inbox-receiving-account">
+              Cuenta receptora: {[receivingAccount.accountName, receivingAccount.accountPhone].filter(Boolean).join(" · ")}
+            </p>
+          )}
         </div>
         <div className="inbox-header-actions">
           <InboxContactProfile

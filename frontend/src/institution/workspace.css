@@ -166,6 +166,7 @@
 }
 
 .inbox-preview-media {
+  display: inline-block;
   width: 0.9em;
   height: 0.9em;
   margin-inline-end: 0.3em;
@@ -466,6 +467,20 @@
 .inbox-row-preview {
   color: var(--muted);
   font-size: 0.8rem;
+}
+.inbox-row-account {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.inbox-receiving-account {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
 }
 .inbox-avatar {
   position: relative;

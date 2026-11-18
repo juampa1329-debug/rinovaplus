@@ -66,6 +66,13 @@ it("keeps voice-note duration beside the microphone", () => {
       assignee: null, risk, previewKind: "audio", preview: "[Adjunto]", previewDuration: "65" }} />);
   expect(screen.getByText("1:05")).toBeVisible();
 });
+it("distinguishes the receiving account from the sender's phone", () => {
+  render(<ConversationRow selected={false} onSelect={() => {}}
+    row={{ name: "Mismo contacto", phone: "+573001112244", stage: "Nuevo", state: "open", unread: false,
+      assignee: null, risk, channel: "whatsapp", accountName: "WhatsApp · CBN", accountPhone: "+57 311 7207294" }} />);
+  expect(screen.getByTitle("Cuenta receptora: WhatsApp · CBN")).toBeVisible();
+  expect(screen.queryByText(/311 7207294/)).not.toBeInTheDocument();
+});
 const config = {
   stages: [{ key: "new", label: "Nueva", probability: null, active: true }],
   tags: ["Interés"],

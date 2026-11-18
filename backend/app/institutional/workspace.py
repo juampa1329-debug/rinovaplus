@@ -527,6 +527,27 @@ class Workspace:
         )
         return f"COALESCE({connected},{legacy},'local')"
 
+    def inbox_account_columns(self):
+        if not self.operational_channels:
+            return ""
+        account = (
+            " FROM crm_channels2.ExternalIdentity ci "
+            "JOIN crm_channels2.Integration ca ON ca.InstitutionId=ci.InstitutionId "
+            "AND ca.IntegrationId=ci.IntegrationId "
+            "WHERE ci.ConversationId=v.ConversationId ORDER BY ci.IdentityId)"
+        )
+        return (
+            ",(SELECT TOP(1) ca.DisplayName" + account + " AS accountName"
+            ",(SELECT TOP(1) (SELECT TOP(1) "
+            "JSON_VALUE(op.ResultMetadata,'$.asset.display_phone_number') "
+            "FROM crm_channels2.ProviderOperation op "
+            "WHERE op.InstitutionId=ca.InstitutionId AND op.IntegrationId=ca.IntegrationId "
+            "AND op.ApplicationId=ca.ApplicationId AND op.Action='verify' "
+            "AND op.Status='confirmed' AND ca.Channel='whatsapp' "
+            "AND JSON_VALUE(op.ResultMetadata,'$.asset.id')=ca.ExternalAccountId "
+            "ORDER BY op.CompletedAt DESC,op.OperationId)" + account + " AS accountPhone"
+        )
+
     def __init__(self, settings):
         self.profile = settings
 
@@ -823,6 +844,7 @@ class Workspace:
                     )
                     + SLA_STATUS
                     + f" AS slaStatus,{channel_expression} AS channel"
+                    + (self.inbox_account_columns() if area == "inbox" else "")
                     + (
                         ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
                         " WHERE m.ConversationId=v.ConversationId"

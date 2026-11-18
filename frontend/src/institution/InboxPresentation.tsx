@@ -519,6 +519,8 @@ export function ConversationRow({
     unread: boolean;
     assignee: string | null;
     channel?: string;
+    accountName?: string | null;
+    accountPhone?: string | null;
     preview?: string | null;
     previewKind?: string | null;
     previewDuration?: string | null;
@@ -569,6 +571,12 @@ export function ConversationRow({
         <span className="inbox-row-preview">
           <ConversationPreview preview={row.preview} kind={row.previewKind} duration={row.previewDuration} />
         </span>
+        {row.accountName && (
+          <span className="inbox-row-account" title={`Cuenta receptora: ${row.accountName}`}>
+            <Icon name="channels" className="inbox-preview-media" />
+            {row.accountName}
+          </span>
+        )}
         <span className="inbox-row-meta inbox-row-signals">
           {temperature && (
             <span data-temperature={row.temperature}>

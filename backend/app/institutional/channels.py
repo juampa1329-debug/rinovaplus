@@ -74,6 +74,17 @@ class AccountEdit(Strict):
     row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
     application_version: str = Field(pattern=r"^[0-9a-f]{16}$")
     values: dict
+    display_name: str | None = Field(default=None, min_length=1, max_length=160)
+
+    @field_validator("display_name")
+    @classmethod
+    def label(cls, value):
+        if value is None:
+            return value
+        value = value.strip()
+        if not value or len(value.encode("utf-16-le")) > 320:
+            raise ValueError("invalid_account_label")
+        return value
 
 
 def validate_field(field, value):
@@ -431,7 +442,7 @@ class Channels:
                 identity,
             ).fetchval()
             document = json.loads(old) if old else {}
-            updates = {}
+            updates = {"DisplayName": body.display_name} if body.display_name is not None else {}
             for field_id, raw in body.values.items():
                 field = allowed[field_id]
                 try:
@@ -501,7 +512,9 @@ class Channels:
                     text,
                     actor["UserId"],
                 )
-            self.edited(c, identity)
+            # A cosmetic label does not change provider identity, permissions or routing.
+            if body.values or body.display_name is None:
+                self.edited(c, identity)
             result = self._item(c, identity)
             record_operation(
                 c,

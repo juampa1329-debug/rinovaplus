@@ -361,12 +361,13 @@ function ChannelEditor({
   const { call, session } = useInstitution(),
     task = useTask(),
     intent = useIntent();
-  const [draft, setDraft] = useState({ base: account, values: account.fields });
+  const [draft, setDraft] = useState({ base: account, values: account.fields, name: account.display_name });
   const dirty =
-    JSON.stringify(draft.values) !== JSON.stringify(draft.base.fields);
+    JSON.stringify(draft.values) !== JSON.stringify(draft.base.fields) || draft.name !== draft.base.display_name;
   const values = dirty ? draft.values : account.fields;
   const base = dirty ? draft.base : account;
-  const setValues = (values: Document) => setDraft({ base, values });
+  const name = dirty ? draft.name : account.display_name;
+  const setValues = (values: Document) => setDraft({ base, values, name });
   useDraftGuard(dirty);
   const groups = catalog.groups.filter((g) =>
     g.applies_to_channels.includes(account.channel),
@@ -412,7 +413,7 @@ function ChannelEditor({
                   "¿Reemplazar este borrador por la configuración guardada?",
                 )
               )
-                setDraft({ base: account, values: account.fields });
+                setDraft({ base: account, values: account.fields, name: account.display_name });
             }}
           >
             Cargar configuración guardada
@@ -427,6 +428,7 @@ function ChannelEditor({
               revision: base.revision,
               row_version: base.row_version,
               application_version: base.application_version,
+              ...(name !== base.display_name ? { display_name: name } : {}),
               values: Object.fromEntries(
                 editable
                   .filter(
@@ -447,11 +449,14 @@ function ChannelEditor({
               },
             );
             await done();
-            setDraft({ base: result, values: result.fields });
+            setDraft({ base: result, values: result.fields, name: result.display_name });
           });
         }}
       >
         <fieldset disabled={task.busy || !writable}>
+          <Field id={`channel-label-${account.id}`} label="Etiqueta de la cuenta en Inbox" value={name} maxLength={160} required
+            onChange={(event) => setDraft({ base, values, name: event.target.value })} />
+          <p>Identifica esta cuenta en las conversaciones. Por ejemplo: CBN Admisiones o CBN Atención. El número receptor de WhatsApp aparece al abrir el chat.</p>
           {groups
             .filter(
               (g) => g.id !== "webhooks" && g.id !== "meta_secret_rotation",
