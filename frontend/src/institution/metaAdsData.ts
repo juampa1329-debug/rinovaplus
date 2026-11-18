@@ -19,6 +19,8 @@ export type AdObject = {
   campaign_id?: string;
   adset_id?: string;
   objective?: string;
+  daily_budget?: string;
+  lifetime_budget?: string;
   creative?: {
     title: string;
     body: string;

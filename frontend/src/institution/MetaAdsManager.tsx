@@ -378,6 +378,13 @@ function AccountDashboard({ account }: { account: Account }) {
         </Button>
       </form>
       {task.notices}
+      {account.status !== "connected" && (
+        <Notice>
+          Esta cuenta está pausada o desconectada en RinovaPlus. Puedes
+          consultar el historial guardado. Reactívala desde Captación y CRM →
+          Cuentas publicitarias para volver a sincronizar.
+        </Notice>
+      )}
       {data.error && <Notice error>{data.error}</Notice>}
       {!data.value && !data.error && (
         <div
@@ -493,6 +500,7 @@ function AccountDashboard({ account }: { account: Account }) {
                   parent_id: v.adset_id ?? v.campaign_id ?? "",
                   name: v.name,
                   objective: v.objective ?? "OUTCOME_LEADS",
+                  daily_budget_cents: Number(v.daily_budget ?? 0),
                   body: v.creative?.body ?? "",
                   headline: v.creative?.title ?? "",
                   image_url: v.creative?.image_url ?? "",

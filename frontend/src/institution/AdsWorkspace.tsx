@@ -330,7 +330,7 @@ function AdsCaptureWorkspace() {
             ["campaigns", "Campañas"],
             ["open_leads", "Leads abiertos"],
             ["open_comments", "Comentarios abiertos"],
-            ["webhook_events", "Webhooks firmados"],
+            ["webhook_events", "Recibos compartidos de canales"],
             ["conversations", "Conversaciones vinculadas"],
           ].map(([key, label]) => (
             <div className="panel" key={key}>

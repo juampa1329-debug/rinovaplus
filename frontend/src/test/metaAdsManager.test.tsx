@@ -372,6 +372,21 @@ it("rejects unsafe creative links", () => {
   );
 });
 
+it("copies the existing campaign budget only into a local edit proposal", async () => {
+  const { calls } = mount({
+    value: {
+      ...snapshot,
+      campaigns: [{ ...snapshot.campaigns[0], daily_budget: "250000" }],
+    },
+  });
+  await screen.findByText("Importe gastado");
+  fireEvent.click(screen.getByRole("button", { name: "Preparar edición" }));
+  expect(
+    await screen.findByLabelText(/Presupuesto diario propuesto/),
+  ).toHaveValue(250000);
+  expect(calls.some((v) => v.method === "POST")).toBe(false);
+});
+
 it("keeps an unsaved draft when synchronization is cancelled", async () => {
   const { calls } = mount();
   await screen.findByText("Importe gastado");

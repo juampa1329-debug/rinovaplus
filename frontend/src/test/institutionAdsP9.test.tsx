@@ -139,7 +139,7 @@ function mount(actions = session.actions) {
 it("loads the scoped local indicators through GET and exposes no spending action", async () => {
   const { calls } = mount();
   await screen.findByRole("button", { name: "Importar lead" });
-  expect(screen.getByText("Webhooks firmados")).toBeInTheDocument();
+  expect(screen.getByText("Recibos compartidos de canales")).toBeInTheDocument();
   expect(calls.every((v) => !v.init.method || v.init.method === "GET")).toBe(
     true,
   );
