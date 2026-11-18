@@ -256,7 +256,17 @@ def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=Tr
                         value,
                     )
                 )
-        for value in entry.get("messaging", [])[:100]:
+        messaging = list(entry.get("messaging", [])[:100])
+        if payload.get("object") == "instagram":
+            for change in entry.get("changes", [])[:100]:
+                value = change.get("value") or {}
+                if (
+                    change.get("field") in {"messages", "messaging_seen"}
+                    and isinstance(value, dict)
+                    and ("message" in value or "read" in value)
+                ):
+                    messaging.append(value)
+        for value in messaging[:200]:
             channel = (
                 "instagram" if payload.get("object") == "instagram" else "messenger"
             )

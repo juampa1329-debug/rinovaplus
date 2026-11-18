@@ -249,7 +249,7 @@ def subscribe(account):
     else:
         asset = config.get("accountId") if channel == "instagram" else config["pageId"]
         fields = (
-            "comments,messages,messaging_postbacks"
+            "comments,messages,messaging_postbacks,messaging_seen"
             if channel == "instagram"
             else "feed"
             if channel == "facebook"

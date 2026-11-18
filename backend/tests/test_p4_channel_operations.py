@@ -1,4 +1,6 @@
+import hashlib
 import hmac
+import json
 from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
@@ -14,6 +16,7 @@ from fastapi.testclient import TestClient
 from app.institutional.channel_events import delivery, normalize
 from app.institutional import channel_events, channel_ingress, channel_operations
 from app.institutional import whatsapp_gemini, channel_workspace, comment_automation
+from app.institutional import channel_recovery, channel_retry
 from app.institutional.comment_effects import call_provider as comment_provider
 from app.institutional.auth import api_request_limit
 from app.institutional.channel_ingress import signature_valid
@@ -429,6 +432,149 @@ def test_page_subscription_preserves_comments_and_message_fields(monkeypatch, ch
         "channel": channel,
         "configuration": {"pageId": "123", "sharedPageSubscription": True},
     })["success"]
+
+
+def test_instagram_subscription_includes_actual_seen_receipts(monkeypatch):
+    def request(account,method,path,body):
+        assert method=="POST" and path=="123/subscribed_apps"
+        assert set(body["subscribed_fields"].split(","))=={"comments","messages","messaging_postbacks","messaging_seen"}
+        return {"success":True}
+    monkeypatch.setattr(providers,"request",request)
+    assert providers.subscribe({"channel":"instagram","configuration":{"accountId":"123"}})["success"]
+
+
+@pytest.mark.parametrize("wrapper",["messaging","changes"])
+def test_instagram_seen_receipt_normalizes_only_the_referenced_message(wrapper):
+    from app.institutional.channel_events import normalize
+    value={"sender":{"id":"person"},"recipient":{"id":"account"},"timestamp":1794956400000,"read":{"mid":"message-one"}}
+    entry={"id":"account",wrapper:[value] if wrapper=="messaging" else [{"field":"messaging_seen","value":value}]}
+    result=normalize("meta",{"object":"instagram","entry":[entry]})
+    assert len(result)==1 and result[0]["kind"]=="status" and result[0]["text"]=="read"
+    assert result[0]["external"]=="message-one" and result[0]["route"]=="account"
+
+
+@pytest.fixture(params=["whatsapp", "messenger", "instagram", "facebook"])
+def meta_recovery(request, monkeypatch):
+    """Real normalizer and authenticated receipt; SQL/authority are controlled doubles."""
+    channel = request.param
+    profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    item = {"Channel": channel, "IntegrationId": str(uuid4()),
+            "ApplicationId": str(uuid4()), "ExternalAccountId": "123",
+            "RequestedStatus": "connected", "VerifiedStatus": "verified"}
+    if channel == "whatsapp":
+        entry = {"id": "waba", "changes": [{"field": "messages", "value": {
+            "messaging_product": "whatsapp", "metadata": {"phone_number_id": "123"},
+            "messages": [{"id": "message-one", "from": "person", "type": "text",
+                          "text": {"body": "Prueba de recuperación"}}],
+        }}]}
+    elif channel == "facebook":
+        entry = {"id": "123", "changes": [{"field": "feed", "value": {
+            "item": "comment", "comment_id": "comment-one", "from": {"id": "person"},
+            "message": "Prueba de recuperación", "post_id": "post-one",
+        }}]}
+    else:
+        entry = {"id": "123", "messaging": [{"sender": {"id": "person"},
+            "message": {"mid": "message-one", "text": "Prueba de recuperación"}}]}
+    raw = json.dumps({"object": "instagram" if channel == "instagram" else "page", "entry": [entry]})
+    effect, = normalize("meta", json.loads(raw))
+    nonce, cipher = seal(b"k" * 32, {"receipt": "fixture"}, raw)
+    value = {"Status": "quarantined", "RowVersion": bytes(8),
+             "BodyNonce": nonce, "BodyCiphertext": cipher, "Digest": hashlib.sha256(raw.encode()).digest(),
+             "Payload": json.dumps(effect), "Provider": "meta", "SubeventPath": "0",
+             "IntegrationId": item["IntegrationId"], "ReceiptId": str(uuid4()), "EndpointId": str(uuid4()),
+             "RouteKind": "configured_" + channel, "RouteExternalId": "123", "DedupeKey": b"dedupe"}
+    state = {"route_active": True, "duplicate": False, "writes": [], "recorded": []}
+
+    class Cursor:
+        rowcount = 1
+
+        def execute(self, query, *params):
+            self.result = None
+            if "EndpointIntegration" in query:
+                assert params[-3:] == (item["IntegrationId"], value["RouteKind"], "123")
+                self.result = (1,) if state["route_active"] else None
+            elif query.startswith("SELECT"):
+                assert "DedupeKey" in query and params[1] == item["IntegrationId"]
+                self.result = (1,) if state["duplicate"] else None
+            else:
+                state["writes"].append((query, params))
+            return self
+
+        def fetchone(self):
+            return self.result
+
+    cursor = Cursor()
+    monkeypatch.setattr(channel_recovery, "transaction", lambda *a, **kw: nullcontext(cursor))
+    monkeypatch.setattr(channel_recovery, "authorize", lambda *a, **kw: {"UserId": str(uuid4())})
+    monkeypatch.setattr(channel_recovery, "account", lambda *a: item)
+    monkeypatch.setattr(channel_recovery, "one", lambda *a: value)
+    monkeypatch.setattr(channel_recovery, "key", lambda *a: b"k" * 32)
+    monkeypatch.setattr(channel_recovery, "body_owner", lambda *a: {"receipt": "fixture"})
+    monkeypatch.setattr(channel_recovery, "replay", lambda *a: ("digest", None))
+    monkeypatch.setattr(channel_recovery, "record_operation", lambda *a: state["recorded"].append(a[-1]))
+    body = channel_recovery.Recovery(operation_id=str(uuid4()), resource_id=str(uuid4()),
+                                    row_version=bytes(8).hex(), action="reprocess_event")
+    return SimpleNamespace(profile=profile, item=item, value=value, state=state,
+                           cursor=cursor, body=body, service=channel_recovery.Recoveries(profile))
+
+
+def test_meta_recovery_requeues_only_authenticated_matching_source(meta_recovery):
+    f = meta_recovery
+    result = f.service.apply({}, f.item["IntegrationId"], f.body)
+    assert result == {"saved": True, "provider_resend": False}
+    assert len(f.state["writes"]) == 1 and f.state["recorded"] == [result]
+    query, params = f.state["writes"][0]
+    assert "Status='queued'" in query and params[0] == f.item["IntegrationId"]
+    assert json.loads(params[1]) == json.loads(f.value["Payload"])
+    assert params[-1] == bytes(8)
+
+
+@pytest.mark.parametrize(("fault", "expected"), [
+    ("digest", "receipt_integrity_rejected"),
+    ("source", "event_route_mismatch"),
+    ("paused", "event_account_mismatch"),
+    ("route", "event_route_not_configured"),
+    ("duplicate", "event_already_processed"),
+    ("version", "event_recovery_unavailable"),
+])
+def test_meta_recovery_rejects_changed_context_without_writing(meta_recovery, fault, expected):
+    f = meta_recovery
+    if fault == "digest":
+        f.value["Digest"] = bytes(32)
+    elif fault == "source":
+        f.value["Payload"] = json.dumps({**json.loads(f.value["Payload"]), "text": "changed"})
+    elif fault == "paused":
+        f.item["RequestedStatus"] = "paused"
+    elif fault == "route":
+        f.state["route_active"] = False
+    elif fault == "duplicate":
+        f.state["duplicate"] = True
+    else:
+        f.value["RowVersion"] = b"changed!"
+    with pytest.raises(HTTPException) as error:
+        f.service.apply({}, f.item["IntegrationId"], f.body)
+    assert error.value.detail == expected
+    assert not f.state["writes"] and not f.state["recorded"]
+
+
+@pytest.mark.parametrize("operation_status", ["uncertain", "confirmed", "running"])
+def test_meta_recovery_never_retries_a_failed_job_with_an_unresolved_provider_effect(
+    meta_recovery, monkeypatch, operation_status,
+):
+    f = meta_recovery
+    job = {"State": "failed", "RowVersion": bytes(8), "Payload": "{}", "OperationId": str(uuid4())}
+    monkeypatch.setattr(channel_retry, "authorize", lambda *a, **kw: {})
+    monkeypatch.setattr(channel_retry, "configuration", lambda *a: {"ModuleEnabled": True})
+    monkeypatch.setattr(channel_retry, "one", lambda _c, query, *a: (
+        {"Status": operation_status} if "ProviderOperation" in query else job
+    ))
+    def no_enqueue(*a, **kw):
+        pytest.fail("An unresolved provider effect must not create a second attempt")
+    monkeypatch.setattr(channel_retry, "enqueue", no_enqueue)
+    body = f.body.model_copy(update={"action": "retry_send"})
+    with pytest.raises(HTTPException) as error:
+        channel_retry.recover_send(f.cursor, f.profile, {}, {"UserId": "owner"}, f.item, body)
+    assert error.value.detail == "certain_failure_required" and not f.state["writes"]
 
 
 @pytest.mark.parametrize("phone_override", [None, "https://other.example/webhook"])
