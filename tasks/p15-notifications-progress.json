@@ -3,7 +3,7 @@
   "title": "Correos y notificaciones configurables",
   "date": "2026-11-18",
   "status": "implementation_and_integration_in_progress",
-  "accepted": 0,
+  "accepted": 4,
   "total": 7,
   "implementation_percent": null,
   "canonical_weight_added": 0,
@@ -14,19 +14,20 @@
       "id": "P15.1",
       "title": "Transporte y remitentes",
       "requirement": "Configurar SMTP o API de proveedor, remitente/dominio verificado, TLS, secretos sÃ³lo de runtime, prueba controlada y diagnÃ³stico. Revisar SPF/DKIM/DMARC cuando corresponda al dominio. No declarar entrega por aceptar la cola.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted",
+      "evidence": "Oracle SPF/DKIM Active, TLS SMTP authenticated, real mail received by authorized recipient, Oracle relay to Gmail observed"
     },
     {
       "id": "P15.2",
       "title": "Reglas y destinatarios",
       "requirement": "AdministraciÃ³n por evento, severidad, canal, cuenta y mÃ³dulo; usuarios, roles o grupos autorizados. Destinatarios explÃ­citos, preferencias individuales y polÃ­tica institucional para avisos crÃ­ticos de seguridad. QuiÃ©n puede configurar, ver y recibir cada dato se comprueba en servidor.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.3",
       "title": "Eventos de producto y seguridad",
       "requirement": "Alta/invitaciÃ³n de usuario, recuperaciÃ³n de contraseÃ±a, cambio de acceso, nueva conexiÃ³n/canal, nuevo agente o proveedor/modelo, indisponibilidad/fallo y recuperaciÃ³n de modelos, fallos de colas/webhooks y otros eventos registrados. Enlaces de un solo uso, caducidad, rate limit y respuestas que no revelen si existe una cuenta.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.4",
@@ -38,7 +39,7 @@
       "id": "P15.5",
       "title": "Cola, trazabilidad y fiabilidad",
       "requirement": "Outbox persistente en PostgreSQL, claves de idempotencia, deduplicaciÃ³n, reintentos con espera, caducidad, supresiÃ³n y cola de fallos. Recibos de entrega/rebote cuando los soporte el proveedor, correlaciÃ³n, auditorÃ­a y pausa. Conservar efectos inciertos sin duplicar; ningÃºn secreto o contenido privado en logs.",
-      "state": "in_progress_pending_acceptance"
+      "state": "accepted"
     },
     {
       "id": "P15.6",
@@ -59,25 +60,25 @@
     "Proveedor de correo y dominio a elegir antes de activar envÃ­os"
   ],
   "provider_configured": true,
-  "external_emails_sent": 3,
+  "external_emails_sent": 5,
   "documents": [
     "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
     "docs/adaptation/P15_ORACLE_OPERATOR_RUNBOOK.md"
   ],
-  "acceptance_percent": "0.00%",
+  "acceptance_percent": "57.14%",
   "implementation_measurement": "Partial code/tests are recorded separately; unit acceptance is not estimated feature completeness.",
   "credentials_saved_by_owner": true,
   "oracle_region": "us-ashburn-1",
   "evidence": {
-    "backend_selected_passed": 333,
-    "backend_p15_passed": 35,
+    "backend_selected_passed": 336,
+    "backend_p15_passed": 36,
     "frontend_initial_selected_passed": 18,
     "native_postgres": "7 new tables; frozen CRM155; CREATE false; DELETE false; dedup1; second claim0; rollback leaves outbox0",
-    "production_acceptance": "recipient confirmed emails received; activation reported general_storage_unavailable/ValueError; correction in validation before repeat",
+    "production_acceptance": "4/7 accepted; final deploy needed for report timestamp, error popup and asset upload envelope; final operation review pending",
     "oracle_sender_registered": true,
     "dkim_dns_verified": true,
     "spf_dns_verified": true,
-    "frontend_selected_passed": 32,
+    "frontend_selected_passed": 33,
     "SMTP_authentication": "passed_STARTTLS_hostname_verified; three emails accepted once each",
     "oracle_logs": "Outbound Accepted and Outbound Relayed active, 30-day retention",
     "backend_deployment": {
@@ -87,6 +88,17 @@
     },
     "oracle_dkim_signing": "Active",
     "postgres_restore": "fresh isolated copy, all seven native tables match pre-quarantine hashes; runtime CONNECT revoked; no restored worker",
-    "static_checks": "Frontend types, ESLint and workspace build pass; backend critical Ruff rules pass; broad style scan reported SQL line-length/import-layout findings and is not claimed clean"
+    "static_checks": "Frontend types, ESLint and workspace build pass; backend critical Ruff rules pass; broad style scan reported SQL line-length/import-layout findings and is not claimed clean",
+    "postgres_dialect_regressions": 15,
+    "activation": "owner confirmed successful activation and login after0c4afd1",
+    "password_recovery": "owner confirmed successful reset and login",
+    "native_report_and_alert_check": "2 transition notices, repeated failure not duplicated, 1 report after two runs; all rolled back, zero SMTP. First run caught nonexistent audit CreatedAt; corrected to schema OccurredAt. Candidate query checked before deploy.",
+    "authenticated_envelopes": 3,
+    "oracle_relay_observation_saved": true,
+    "test_user_deactivated": true,
+    "test_user_live_sessions": 0,
+    "test_user_valid_challenges": 0,
+    "public_recovery_non_enumeration": "same generic response for inactive known account and absent synthetic account, no further mail",
+    "worker_native": "retry/backoff; accepted no duplicate; uncertain no retry; expired lease uncertain; expiry; pause; quota. SMTP stub3 calls, external0, rollback verified"
   }
 }

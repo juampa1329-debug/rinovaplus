@@ -606,7 +606,7 @@ def due_reports(c, s):
             if source.get("published"):
                 start = due - timedelta(days=7 if body["frequency"] == "weekly" else 1)
                 totals = c.execute(
-                    "SELECT COUNT(*) FROM crm_access.Audit WHERE InstitutionId=? AND CreatedAt>=? AND CreatedAt<?",
+                    "SELECT COUNT(*) FROM crm_access.Audit WHERE InstitutionId=? AND OccurredAt>=? AND OccurredAt<?",
                     institution(s),
                     start,
                     due,

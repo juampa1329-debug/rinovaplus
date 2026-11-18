@@ -4,6 +4,8 @@ import { useInstitution, useTask } from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import "./email.css";
+import { ErrorFeedback } from "./ErrorFeedback";
+import { explainChannelError } from "./channelErrors";
 
 type Doc = {
   kind: string;
@@ -103,6 +105,14 @@ const states: Record<string, string> = {
 };
 
 export function EmailWorkspace() {
+  return (
+    <ErrorFeedback explain={explainChannelError}>
+      <EmailWorkspaceContent />
+    </ErrorFeedback>
+  );
+}
+
+function EmailWorkspaceContent() {
   const data = useResource<Data>("notifications");
   const [tab, setTab] = useState("transport");
   if (!data.value) return <ResourceState error={data.error} />;

@@ -3,7 +3,7 @@
   "date": "2026-11-18",
   "acceptance": "in_progress",
   "original_general": "100.00%",
-  "additional_phase_accepted": "0/7",
+  "additional_phase_accepted": "4/7",
   "DNS": {
     "SPF": "Oracle console Yes",
     "DKIM_selector": "rinova20261118",
@@ -12,19 +12,22 @@
     "DMARC": "existing p=quarantine preserved"
   },
   "mail": {
-    "external_accepted": 3,
+    "external_accepted": 5,
     "recipient_confirmed_received": true,
     "activation_mail_id": "4ce34b41-9b71-4f77-81ad-f88d0a0f8c5d",
     "oracle_event_id": "30203126-2993-4ABD-A865-98549747D3D8",
     "relay_at": "2026-11-18T22:51:41.436Z",
     "gmail_smtp_status": "250 2.0.0 OK",
     "tls": true,
-    "activation": "failed during owner attempt; backend ValueError; correction awaiting redeploy and repetition"
+    "activation": "owner confirmed successful activation and login after0c4afd1",
+    "password_recovery": "owner confirmed reset and login",
+    "operator_relay_observation_saved": true
   },
   "tests": {
-    "backend_selected": 333,
-    "mail_backend": 35,
-    "frontend_selected": 32
+    "backend_selected": 336,
+    "mail_backend": 36,
+    "frontend_selected": 33,
+    "postgres_dialect_separate": 15
   },
   "restore": {
     "source": "rinovaplus",
@@ -44,13 +47,40 @@
   "test_user": {
     "id": "9f304694-b04d-408a-9376-3457b2aa8af4",
     "role": "Consulta",
-    "activation_pending": true,
-    "deactivation": "required at end of authorized test"
+    "activation_pending": false,
+    "deactivation": "completed",
+    "live_sessions": 0,
+    "valid_challenges": 0
   },
   "failures": [
     "Activation owner attempt: backend ValueError, validation classification correction awaiting real repeat",
     "Native SMTP CRLF correction in earlier e78a445",
     "Broad backend style check not clean (line lengths/import layout); critical rules pass",
-    "Frontend regression preparation had a Windows encoding error; UTF-8 corrected, all32 passed"
-  ]
+    "Frontend regression preparation had a Windows encoding error; UTF-8 corrected, all32 passed",
+    "Native report first run failed42703: audit uses OccurredAt; candidate corrected, schema regression and native rollback passed",
+    "Dialog unit test needed native showModal/close support and cleanup before descriptor restore; corrected;33 selected frontend pass"
+  ],
+  "native_execution": {
+    "candidate_audit_fix": "CreatedAt -> OccurredAt per frozen access schema",
+    "transitions_queued": 2,
+    "reports_queued_after_two_runs": 1,
+    "SMTP_calls": 0,
+    "rollback_confirmed": true,
+    "envelopes_authenticated": 3
+  },
+  "native_worker": {
+    "cases": [
+      "retry",
+      "backoff",
+      "accepted_no_duplicate",
+      "uncertain_no_retry",
+      "expired_lease",
+      "expiry",
+      "pause",
+      "quota"
+    ],
+    "stub_SMTP_calls": 3,
+    "external_SMTP_calls": 0,
+    "rollback_confirmed": true
+  }
 }

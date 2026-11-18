@@ -38,7 +38,18 @@ function mount() {
     </SessionBoundary>,
   );
 }
+const nativeDialogMethods = Object.fromEntries(
+  ["showModal", "close"].map((name) => [
+    name,
+    Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, name),
+  ]),
+);
 afterEach(() => {
+  for (const [name, descriptor] of Object.entries(nativeDialogMethods)) {
+    if (descriptor)
+      Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
+    else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
+  }
   vi.restoreAllMocks();
   window.history.replaceState(null, "", "/");
 });
@@ -303,4 +314,41 @@ it("restores a published email version as an unpublished draft", async () => {
     "<p>Anterior</p>",
   );
   expect(screen.getByText("Versión 2")).toBeVisible();
+});
+
+it("explains rejected email HTML in an accessible operation dialog", async () => {
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: {
+      configurable: true,
+      value(this: HTMLDialogElement) {
+        this.setAttribute("open", "");
+      },
+    },
+    close: {
+      configurable: true,
+      value(this: HTMLDialogElement) {
+        this.removeAttribute("open");
+      },
+    },
+  });
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) =>
+    init?.method === "POST"
+      ? new Response(JSON.stringify({ detail: "email_unsafe_html" }), {
+          status: 422,
+        })
+      : new Response(JSON.stringify(value)),
+  );
+  mount();
+  await screen.findByText("Oracle pendiente");
+  fireEvent.click(screen.getByRole("button", { name: "Plantillas y marca" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Validar y previsualizar" }),
+  );
+  expect(
+    await screen.findByRole("alertdialog", {
+      name: "No se pudo completar la operación de correo",
+    }),
+  ).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
+  expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
 });

@@ -398,3 +398,52 @@ def test_recovery_does_not_enumerate_accounts_when_mail_is_disabled(monkeypatch)
     assert first.status_code == second.status_code == 200
     assert first.json() == second.json()
     assert "token" not in first.text
+
+
+def test_report_period_query_uses_the_declared_audit_schema(monkeypatch):
+    import re
+    from pathlib import Path
+    from datetime import datetime, timedelta, timezone
+    from unittest.mock import MagicMock
+    from app.institutional import email_notifications as mail
+
+    ddl = (
+        Path(__file__).parents[1]
+        / "migrations/cbn_institutional_spanish_v1/P2ES_002_access.sql"
+    ).read_text(encoding="utf-8")
+    audit_ddl = ddl.split("CREATE TABLE [dbo].[CRMAccesoAuditoria](", 1)[1].split(
+        "CREATE INDEX", 1
+    )[0]
+    schema_columns = set(re.findall(r"\b([A-Za-z]+At)\s+datetime2", audit_ddl))
+    cursor = MagicMock()
+    cursor.native.return_value.fetchval.return_value = {
+        "next": (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
+    }
+
+    def execute(sql, *_):
+        assert set(re.findall(r"\b([A-Za-z]+At)\b", sql)) <= schema_columns
+        return MagicMock()
+
+    cursor.execute.side_effect = execute
+    monkeypatch.setattr(mail, "institution", lambda _: "institution")
+    monkeypatch.setattr(
+        mail,
+        "documents",
+        lambda *_: [
+            {
+                "id": "daily",
+                "revision": 1,
+                "body": {
+                    "enabled": True,
+                    "frequency": "daily",
+                    "zone": "America/Bogota",
+                    "time": "08:00",
+                    "template": "source",
+                },
+            }
+        ],
+    )
+    monkeypatch.setattr(mail, "document", lambda *_: {"body": {"published": True}})
+    monkeypatch.setattr(mail, "selected_users", lambda *_: [])
+    mail.due_reports(cursor, None)
+    assert cursor.execute.call_count == 1

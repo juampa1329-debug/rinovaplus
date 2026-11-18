@@ -1,3 +1,15 @@
+## P15: acceso y cola validados; despliegue final pendiente — 2026-11-18
+
+P15:4/7 aceptadas (57,14%): transporte, reglas/destinatarios, eventos/acceso y outbox. El titular confirmó activación y recuperación. Cuenta de ensayo desactivada:0sesiones y0desafíos vigentes. La respuesta pública para cuenta inactiva y cuenta inexistente es igual y no produce nuevos correos. Cinco correos reales autorizados; recibo de Gmail observado en Oracle y registrado manualmente.
+
+Pasan336 backend seleccionadas,33 frontend, tipos/ESLint/build y15 regresiones separadas de dialecto. Worker real sobre SQL nativo bajo rollback con SMTP simulado: reintento/espera, aceptación sin duplicación, incertidumbre sin reenvío, lease vencido, caducidad, pausa y cupo. Se conservan scripts y límites en artifacts/live/p15-*-20261118.*. El HTML importado y la reversión funcionan; se prueba bloqueo de scripts. Pendientes de despliegue: fecha OccurredAt del informe, modal explicativo y envolvente HTTP2MB para admitir PNG1MB. La aceptación final de editor/informes/operación se mantiene abierta hasta comprobarlos publicados. General P0–P11:100% y P12 auxiliar:100%; P13parcial, P14plan, P16SIIE yP17TikTok diferidas, P18seguridad planificada.
+
+## P15: transporte aceptado y acceso real confirmado — 2026-11-18
+
+P15.1 aceptada: SMTP/TLS, SPF/DKIM activos y entrega real confirmada por el destinatario. P15 avanza 1/7 (14,29% de aceptación), sin modificar el general original P0–P11:100% ni P12 auxiliar:100%. El titular confirmó activación e ingreso y luego recuperación/cambio de contraseña e ingreso, después del arreglo0c4afd1. Se está desactivando la cuenta de ensayo. Cinco envíos transaccionales controlados; la primera invitación tiene recibo de relay Oracle registrado expresamente como observación del operador.
+
+Pasan334 backend seleccionadas (36 de correo),32 frontend, tipos/ESLint/build;15 regresiones separadas de dialecto PG. Prueba nativa con rollback: dos avisos por transición fallo/recuperación, sin duplicar el fallo repetido; un informe tras ejecutar dos veces; cero llamadas SMTP. El primer intento detectó CreatedAt inexistente en auditoría; se corrige a OccurredAt y se valida contra el esquema congelado. La copia aislada conserva siete tablas, tres envelopes autenticados y una imagen SHA verificada, sin CONNECT del runtime ni correo ejecutable. Pendiente completar pruebas del worker y revisión final de P15; OPS01–06 y fases adicionales mantienen sus límites.
+
 ## P15: entrega real y corrección de activación — 2026-11-18
 
 Oracle confirma SPF y firma DKIM activos. Tres correos controlados a cbnaudiovisuales@gmail.com fueron aceptados en un intento por envío; el titular confirmó su recepción. El log de Oracle acredita relay de la invitación a Gmail con SMTP 250 y TLS. El usuario de prueba Consulta continúa pendiente de activación; el titular reportó un error de validación y el backend registró ValueError. Se corrige la clasificación de contraseña rechazada (422 explicativo), se refuerza la ruta de activación sin exponer el token al servidor y se diferencia «Activar mi cuenta» de la muestra. No afirmar resuelto hasta repetir el recorrido real.

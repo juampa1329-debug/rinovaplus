@@ -216,3 +216,27 @@ def test_redemption_password_policy_is_a_validation_error_not_storage_failure():
         assert failure.value.detail == "password_policy"
         revoke.assert_not_called()
         assert not any("PasswordHash" in str(call) for call in cursor.execute.call_args_list)
+
+
+@pytest.mark.parametrize("second_factor", [None, "000000"])
+def test_recovery_cannot_replace_password_without_existing_second_factor(second_factor):
+    from unittest.mock import MagicMock
+    settings = SimpleNamespace(ticket={"context": [[1, "00000000-0000-0000-0000-000000000001"]]})
+    body = Redeem(token="x" * 43, new_password="A safe synthetic test phrase", code=second_factor)
+    cursor = MagicMock()
+    cursor.execute.return_value.fetchval.return_value = 1
+    with (
+        patch("app.institutional.management.transaction", return_value=nullcontext(cursor)),
+        patch("app.institutional.management.rate", return_value=True),
+        patch("app.institutional.management.one", return_value={"UserId":"00000000-0000-0000-0000-000000000002", "ChallengeId":"challenge", "AuthVersion":1}),
+        patch("app.institutional.management.user", return_value={"AuthVersion":1}),
+        patch("app.institutional.management.bound_hash", return_value=b""),
+        patch("app.institutional.management.audit"),
+        patch("app.institutional.management.factor_code", return_value=False),
+        patch("app.institutional.management.password_hash") as kdf,
+    ):
+        with pytest.raises(HTTPException) as failure:
+            Management(settings).redeem(body)
+        assert failure.value.status_code == 401
+        kdf.assert_not_called()
+        assert not any("PasswordHash" in str(call) for call in cursor.execute.call_args_list)
