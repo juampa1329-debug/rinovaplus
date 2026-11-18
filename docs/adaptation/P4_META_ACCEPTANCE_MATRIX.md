@@ -6,7 +6,7 @@ Corte: 17 de noviembre de 2026, America/Bogota. Alcance vigente autorizado: What
 |---|---|---|
 | WhatsApp OAuth | Descubrimiento de números CBN y cuenta gratuita separada autorizada por OAuth. | La cuenta «WhatsApp · CBN» aún figura pendiente de verificar; aceptar el número institucional antes de retirar el anterior. |
 | WhatsApp recepción | Callback de prueba verificado por el propietario, texto entrante y Gemini en IA. Imagen y sticker animado entrantes comprobados previamente. | Consolidar recorrido institucional con su propia ruta. |
-| WhatsApp salida y recibos | Voz confirmada por propietario; imagen anterior recibida; hello_world desde broadcasting con pendiente/aceptado/enviado/entregado/leído y respuesta citada atribuida. | Video y sticker salientes, comprobación en teléfono. |
+| WhatsApp salida y recibos | Voz e imagen previas confirmadas por propietario. Video MP4 y sticker WebP estático enviados desde Inbox al 44: ambos leídos, un intento, recibos firmados y reproducción confirmada en teléfono. hello_world y respuesta citada atribuida. | Sticker animado saliente y recorrido del número institucional. |
 | WhatsApp fallo y recuperación | Cabecera deliberadamente inválida en número gratuito: Meta aceptó y notificó fallo real; un intento, ID conservado y reintento automático bloqueado. Consentimiento temporal revocado y cadencia apagada. | Consolidar reversión y revisión de colas con cuenta institucional. |
 | Messenger | OAuth, cuenta/webhook, nombre, mensaje entrante, Gemini y entrega; seguimiento en Humano con cero inferencias/respuestas bot. | Prueba revisada de recuperación y revocación sin afectar las otras cuentas. |
 | Instagram DM | OAuth, entrada real, Gemini y silencio en Humano. `messaging_seen` activado y sincronizado. Nueva prueba manual recibida y leída: un intento; recibo firmado verificado y evento procesado `read`. | Consolidar recuperación/reversión; no convertir otros mensajes aceptados en leídos sin sus propios eventos. |
@@ -39,3 +39,15 @@ Antes de cualquier ensayo: anotar cuenta/app, estado de control, callback y oper
 ## Documentación oficial contrastada
 
 [Campos y permisos de Instagram](https://developers.facebook.com/documentation/instagram-platform/webhooks/fields) y [ejemplos de notificaciones](https://developers.facebook.com/documentation/instagram-platform/webhooks/examples), consultados el 17 de noviembre: `messaging_seen` usa `instagram_manage_messages` en la API de mensajería compatible; informa `read.mid`. La suscripción por app y la habilitación por cuenta deben probarse juntas. El adaptador incorpora la suscripción y ambos formatos documentados, `entry.messaging` y el envoltorio `entry.changes`.
+
+## Salida multimedia real al 44 — 17 de noviembre, 23:02–23:04 Bogotá
+
+[Evidencia de video y sticker](../../artifacts/live/p4-whatsapp-media-20261117.json): se usó el número gratuito y la ventana de servicio existente. Video neutro de cuatro segundos con movimiento y tono; sticker estático WebP de 512 × 512. Cada envío tuvo un intento, ID de proveedor y recibos sent/delivered/read verificados y procesados. El propietario confirmó: «Ambos se ven y el video se escucha bien». El video también terminó de reproducirse dentro del Inbox sin error. Se restauró IA después de la atención humana temporal. No hubo cambios de código ni contenedores nuevos.
+
+La revisión usada para esta prueba admitía salida de stickers estáticos; todavía no se había probado la salida animada. No se concede aceptación de salida animada ni del cambio al número institucional. Los pendientes de recuperación/reversión y el porcentaje canónico P4 permanecen.
+
+## Implementación de salida animada — prueba productiva pendiente
+
+El inspector permite WebP animado conservando los bytes y los tiempos originales: 512 × 512, hasta 500 KB, hasta 10 segundos, mínimo 8 ms por fotograma y máximo interno de 600 fotogramas. Estáticos conservan 100 KB. El compositor admite la subida de hasta 500 KB y el backend distingue el tipo real. Los errores explican los límites y cómo corregir el archivo. Se mantiene el envío nativo sticker de WhatsApp y las guardas de cuenta/cola.
+
+Contraste: [SDK oficial de WhatsApp](https://whatsapp.github.io/WhatsApp-Nodejs-SDK/api-reference/messages/sticker/) y [especificación oficial de stickers](https://github.com/WhatsApp/stickers/blob/main/Android/README.md). Verificación local: 137 pruebas backend, 26 frontend, tipos, lint y build institucional correctos; permanece el aviso previo de tamaño de bundle. Las primeras preparaciones del arnés necesitaron dependencias y configuración de tests correctas; no se presentan como ejecuciones aprobadas. Pendiente desplegar y aceptar la animación en el 44.

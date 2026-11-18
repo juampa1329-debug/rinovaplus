@@ -34,12 +34,12 @@ const details: Record<string, [string, string, string]> = {
   ],
   media_sticker_invalid: [
     "El sticker necesita otro formato",
-    "RinovaPlus admite stickers estáticos WebP de 512 × 512 píxeles.",
-    "Exporta el archivo como WebP estático de hasta 100 KB y adjúntalo de nuevo.",
+    "El sticker debe ser WebP de 512 × 512 píxeles. Si es animado, debe durar hasta 10 segundos, con al menos 8 milisegundos por fotograma y hasta 600 fotogramas.",
+    "Exporta un WebP estático de hasta 100 KB o animado de hasta 500 KB con esos límites y adjúntalo de nuevo.",
   ],
   media_sticker_limit: [
     "El sticker supera el tamaño permitido",
-    "Los stickers WebP estáticos pueden pesar hasta 100 KB.",
+    "Los stickers WebP estáticos pueden pesar hasta 100 KB y los animados hasta 500 KB.",
     "Reduce la calidad o el peso del WebP, conserva 512 × 512 píxeles y vuelve a adjuntarlo.",
   ],
   campaign_video_limit: [

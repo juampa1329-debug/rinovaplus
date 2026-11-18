@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "scope": "Real outbound WhatsApp video and static sticker from the RinovaPlus Inbox",
+  "runtime_revision": "fab8b19bd11c0a3612dd602886834a7537fc8cd4",
+  "account": "WhatsApp · Pruebas Meta",
+  "integration_id": "9b1c8209-e664-497d-baa6-db3869d78124",
+  "recipient": "Owner test phone ending 44",
+  "transport": "Meta free test sender, existing service window",
+  "video": {
+    "filename": "prueba-p4-video.mp4",
+    "fixture_bytes": 323222,
+    "content": "Neutral moving test pattern, four seconds, audible test tone",
+    "queue_id": "7539ed0f-45b7-48b8-9545-f7aa5011915f",
+    "created_at_utc": "2026-11-18T04:02:55.628178Z",
+    "sent_receipt_at_utc": "2026-11-18T04:03:01.090622Z",
+    "delivered_receipt_at_utc": "2026-11-18T04:03:01.240136Z",
+    "read_receipt_at_utc": "2026-11-18T04:04:47.189738Z",
+    "attempts": 1,
+    "provider_id_present": true,
+    "last_error_code": null,
+    "final_state": "read",
+    "inbox_playback": {"duration_seconds": 4.01, "ended": true, "media_error": null},
+    "handset_playback_confirmed_by_owner": true
+  },
+  "sticker": {
+    "filename": "prueba-p4-sticker.webp",
+    "fixture_bytes": 4918,
+    "dimensions": [512, 512],
+    "animated": false,
+    "content": "Neutral green and teal CBN test sticker with transparency",
+    "queue_id": "7bc68fd6-92b7-4578-9888-023778496282",
+    "created_at_utc": "2026-11-18T04:03:26.878000Z",
+    "sent_receipt_at_utc": "2026-11-18T04:03:30.537122Z",
+    "delivered_receipt_at_utc": "2026-11-18T04:03:30.629380Z",
+    "read_receipt_at_utc": "2026-11-18T04:04:46.719567Z",
+    "attempts": 1,
+    "provider_id_present": true,
+    "last_error_code": null,
+    "final_state": "read",
+    "inbox_image_loaded": true,
+    "handset_display_confirmed_by_owner": true
+  },
+  "verification": {
+    "source": "RinovaPlus UI and read-only SQL through the production backend terminal in Coolify",
+    "all_six_receipts": {"authentication": "verified", "event_status": "processed"},
+    "owner_confirmation": "Ambos se ven y el video se escucha bien",
+    "control_before": "AI",
+    "control_during_manual_send": "Human",
+    "control_after": "AI",
+    "new_containers": 0,
+    "application_code_changed": false,
+    "canonical_progress_changed": false
+  },
+  "limits": [
+    "This accepts video and static-sticker delivery for the free test account, not institutional CBN cutover.",
+    "Animated outbound stickers remain unsupported by the current inspector; this test does not accept them.",
+    "Receipt arrival times are observations, not a latency SLA or load test.",
+    "P4 recovery, reversal and other outstanding acceptance requirements remain pending."
+  ]
+}

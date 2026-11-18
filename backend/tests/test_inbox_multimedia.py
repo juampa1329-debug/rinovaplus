@@ -44,6 +44,62 @@ def test_incoming_sticker_preserves_animation(tmp_path, monkeypatch):
         sticker.load()
 
 
+@pytest.mark.parametrize("incoming", [False, True])
+def test_animated_sticker_over_static_limit_preserves_frames(tmp_path, monkeypatch, incoming):
+    monkeypatch.setenv("CRM_AI_STATE_DIR", str(tmp_path))
+    identity = uuid4()
+    frames = [Image.effect_noise((512, 512), 40).convert("RGBA") for _ in range(3)]
+    frames[0].save(files.path(identity, ".part"), "WEBP", save_all=True,
+                   append_images=frames[1:], duration=[100, 200, 300], loop=0, quality=80)
+    raw = files.path(identity, ".part").read_bytes()
+    assert 100_000 < len(raw) <= 500_000
+    result = inspect_attachment(identity, "animado.webp", incoming=incoming)
+    assert result["mime"] == "image/webp" and result["size"] == len(raw)
+    assert files.path(identity).read_bytes() == raw
+    with Image.open(files.path(identity)) as sticker:
+        assert sticker.n_frames == 3
+        durations = []
+        for frame in range(sticker.n_frames):
+            sticker.seek(frame)
+            sticker.load()
+            durations.append(sticker.info["duration"])
+        assert durations == [100, 200, 300]
+
+
+@pytest.mark.parametrize("durations,accepted", [([8, 8], True), ([5000, 5000], True),
+                                                   ([7, 100], False), ([5001, 5000], False)])
+def test_outgoing_animation_duration_bounds(tmp_path, monkeypatch, durations, accepted):
+    monkeypatch.setenv("CRM_AI_STATE_DIR", str(tmp_path))
+    identity = uuid4()
+    frames = [Image.new("RGBA", (512, 512), color) for color in ("red", "blue")]
+    frames[0].save(files.path(identity, ".part"), "WEBP", save_all=True,
+                   append_images=frames[1:], duration=durations, loop=0)
+    if accepted:
+        assert inspect_attachment(identity, "animado.webp")["mime"] == "image/webp"
+    else:
+        with pytest.raises(HTTPException) as error:
+            inspect_attachment(identity, "animado.webp")
+        assert error.value.detail == "media_sticker_invalid"
+        assert not files.path(identity).exists()
+    assert not files.path(identity, ".part").exists()
+    assert not files.path(identity, ".checked").exists()
+
+
+@pytest.mark.parametrize("animated", [False, True])
+def test_outgoing_sticker_rejects_over_its_type_limit(tmp_path, monkeypatch, animated):
+    monkeypatch.setenv("CRM_AI_STATE_DIR", str(tmp_path))
+    identity = uuid4()
+    frames = [Image.new("RGBA", (512, 512), color) for color in ("red", "blue")]
+    frames[0].save(files.path(identity, ".part"), "WEBP", save_all=animated,
+                   append_images=frames[1:] if animated else [], duration=100, loop=0,
+                   exif=b"x" * (500_001 if animated else 100_001))
+    with pytest.raises(HTTPException) as error:
+        inspect_attachment(identity, "pesado.webp")
+    assert error.value.detail == "media_sticker_limit"
+    assert not files.path(identity).exists()
+    assert not files.path(identity, ".part").exists()
+
+
 @pytest.mark.skipif(not shutil.which("ffmpeg") or not shutil.which("ffprobe"), reason="FFmpeg unavailable")
 @pytest.mark.parametrize(("kind", "source", "suffix", "mime"), [
     ("audio", "sine=frequency=440:duration=1", "webm", "audio/ogg"),

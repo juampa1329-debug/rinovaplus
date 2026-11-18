@@ -45,20 +45,28 @@ def inspect_sticker(identity, name, *, incoming=False):
         raise HTTPException(429, "media_inspection_busy")
     try:
         raw = source.read_bytes()
-        limit = ANIMATED_STICKER_MAX if incoming else STICKER_MAX
-        if not 0 < len(raw) <= limit:
+        if not 0 < len(raw) <= ANIMATED_STICKER_MAX:
             raise HTTPException(413, "media_sticker_limit")
         with warnings.catch_warnings():
             warnings.simplefilter("error", Image.DecompressionBombWarning)
             with Image.open(source, formats=("WEBP",)) as image:
-                if image.size != (512, 512) or (image.is_animated and not incoming):
+                if image.size != (512, 512):
                     raise HTTPException(415, "media_sticker_invalid")
+                limit = ANIMATED_STICKER_MAX if incoming or image.is_animated else STICKER_MAX
+                if len(raw) > limit:
+                    raise HTTPException(413, "media_sticker_limit")
                 if image.is_animated:
                     if image.n_frames > 600:
                         raise HTTPException(415, "media_sticker_invalid")
+                    duration = 0
                     for frame in range(image.n_frames):
                         image.seek(frame)
                         image.load()
+                        if not incoming:
+                            frame_duration = image.info.get("duration", 0)
+                            duration += frame_duration
+                            if frame_duration < 8 or duration > 10_000:
+                                raise HTTPException(415, "media_sticker_invalid")
                     output.write_bytes(raw)
                 else:
                     image.load()

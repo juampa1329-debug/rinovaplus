@@ -82,13 +82,17 @@ export function MediaUpload({
     setPending(null);
     const sizeLimit =
       kind === "sticker"
-        ? 100_000
+        ? 500_000
         : channel === "tiktok"
           ? 3_000_000
           : 5_000_000;
     if (!file.size || file.size > sizeLimit) {
       const limit =
-        kind === "sticker" ? "100 KB" : channel === "tiktok" ? "3 MB" : "5 MB";
+        kind === "sticker"
+          ? "500 KB (100 KB si es estático)"
+          : channel === "tiktok"
+            ? "3 MB"
+            : "5 MB";
       report?.(
         {
           code: "inbox_file_size",
@@ -347,7 +351,11 @@ export function MediaDownload({ attachment }: { attachment: Attachment }) {
   return (
     <div className="inbox-attachment" ref={region}>
       {task.notices}
-      {previewFailed && <small>No se pudo cargar la vista previa. Intenta descargar el archivo.</small>}
+      {previewFailed && (
+        <small>
+          No se pudo cargar la vista previa. Intenta descargar el archivo.
+        </small>
+      )}
       {preview && attachment.kind === "image" && (
         <img
           className={preview.blob.type === "image/webp" ? "inbox-sticker" : ""}
