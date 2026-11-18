@@ -3,10 +3,12 @@ import { useResource, ResourceState } from "./Settings";
 import { useTask } from "./api";
 
 type Status = {
-  scope: "local";
+  scope: "local" | "postgres_deployment" | "postgres_rehearsal";
   sql: {
     state: string;
     engine: number;
+    product?: string;
+    version?: string;
     tables: number;
     academic_access: boolean;
   };
@@ -29,7 +31,8 @@ type Status = {
     restore_verified: boolean;
   };
   local_ready: boolean;
-  online: { state: string; phase: string };
+  online: { state: string; phase: string; public_origin?: string | null };
+  infrastructure?: { queue_backend: string; redis: string };
   observed_at: number;
 };
 const stages: Record<string, string> = {
@@ -49,6 +52,8 @@ const states: Record<string, string> = {
   failed: "Necesita revisión",
   verified: "Verificado",
   missing: "Sin verificación registrada",
+  unverified: "Restauración aún no verificada",
+  rehearsal: "Entorno de ensayo",
   invalid: "Verificación inválida",
 };
 const groups: Record<string, string> = {
@@ -98,19 +103,30 @@ export function OperationsWorkspace() {
           </p>
           <Notice error={!data.value.local_ready}>
             {data.value.local_ready
-              ? "La base de datos y los procesos locales responden."
-              : "La operación local necesita revisión. Consulta los procesos pendientes."}
+              ? "La base de datos y los procesos responden."
+              : "La operación necesita revisión. Consulta los procesos pendientes."}
           </Notice>
           <section className="panel">
             <h3>Base de datos</h3>
             <p>
-              SQL Server {data.value.sql.engine} · {data.value.sql.tables}{" "}
-              tablas verificadas.
+              {data.value.sql.product ?? "SQL Server"}{" "}
+              {data.value.sql.version ?? data.value.sql.engine} ·{" "}
+              {data.value.sql.tables} tablas verificadas.
             </p>
             <p>
-              Las tablas académicas permanecen protegidas. La aplicación no
-              tiene permisos para modificarlas.
+              {data.value.scope === "postgres_deployment"
+                ? "Esta base contiene el CRM. La integración académica SIIE está separada y no se accede a ella desde este panel."
+                : "Las tablas académicas permanecen protegidas. La aplicación no tiene permisos para modificarlas."}
             </p>
+            {data.value.infrastructure && (
+              <p>
+                Colas persistentes en{" "}
+                {data.value.infrastructure.queue_backend === "postgresql"
+                  ? "PostgreSQL"
+                  : "SQL Server"}
+                . Redis no se utiliza en este recorrido.
+              </p>
+            )}
           </section>
           <section className="panel">
             <h3>Procesos</h3>
@@ -146,6 +162,11 @@ export function OperationsWorkspace() {
               El operador realiza y verifica los respaldos. Una verificación con
               más de 24 horas requiere actualización.
             </p>
+            <p>
+              Este recibo acredita una restauración fechada; no verifica
+              continuamente los archivos ni sustituye una copia externa y la
+              custodia de claves.
+            </p>
           </section>
           <section className="panel">
             <h3>Actividad pendiente</h3>
@@ -174,9 +195,9 @@ export function OperationsWorkspace() {
           <section className="panel">
             <h3>Disponibilidad online</h3>
             <p>
-              La publicación institucional se configurará en{" "}
-              {data.value.online.phase} cuando estén disponibles el servidor y
-              la URL HTTPS.
+              {data.value.online.state === "configured"
+                ? `URL HTTPS configurada: ${data.value.online.public_origin}. La aceptación institucional se documenta por separado.`
+                : `La publicación institucional se configurará en ${data.value.online.phase} cuando estén disponibles el servidor y la URL HTTPS.`}
             </p>
           </section>
         </>

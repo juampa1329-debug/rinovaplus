@@ -60,6 +60,33 @@ function resource() {
 }
 afterEach(() => vi.restoreAllMocks());
 
+it("reports PostgreSQL and the configured HTTPS origin without claiming SQL Server or an external restore", async () => {
+  const value = resource();
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({
+    ...value, scope: "postgres_deployment",
+    sql: { ...value.sql, product: "PostgreSQL", version: "16.16", engine: 16, tables: 155 },
+    infrastructure: { queue_backend: "postgresql", redis: "not_used" },
+    backup: { state: "missing", restore_verified: false },
+    online: { state: "configured", phase: "P12", public_origin: "https://app.example.test" },
+  })));
+  mount(<OperationsWorkspace />);
+  expect(await screen.findByText(/PostgreSQL 16.16/)).toBeVisible();
+  expect(screen.queryByText(/SQL Server 16/)).not.toBeInTheDocument();
+  expect(screen.getByText(/Redis no se utiliza/)).toBeVisible();
+  expect(screen.getByText(/URL HTTPS configurada: https:\/\/app.example.test/)).toBeVisible();
+  expect(screen.getByText("Sin verificación registrada")).toBeVisible();
+});
+
+it("a dated restored-file receipt is distinct from continuous and off-server backup coverage", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({
+    ...resource(), backup: { state: "verified", restore_verified: true, verified_at: 1000, ready_blobs: 19 },
+  })));
+  mount(<OperationsWorkspace />);
+  expect(await screen.findByText("Verificado")).toBeVisible();
+  expect(screen.getByText(/19 archivos conservados/)).toBeVisible();
+  expect(screen.getByText(/no verifica continuamente los archivos/)).toBeVisible();
+});
+
 it("distinguishes loading, missing backup, global counts and online scope", async () => {
   let resolve!: (r: Response) => void;
   vi.spyOn(globalThis, "fetch").mockImplementation(

@@ -285,20 +285,31 @@ def install(app, settings):
         with transaction(settings, anonymous=True) as c:
             authorize(c, settings, request.state.authority, "users.manage")
             counts = queues(c, settings)
+            version = c.native("SELECT current_setting('server_version')").fetchval() if postgres else "2019"
         workers = worker_status(app)
+        if postgres:
+            from app.institutional.postgres_operations import backup_status as postgres_backup_status
+
+            backup = postgres_backup_status(settings) if deployment else {"state": "rehearsal", "restore_verified": False}
+        else:
+            backup = backup_status(settings)
         return {
             "scope": scope,
             "sql": {
                 "state": "verified",
                 "engine": 16 if postgres else 2019,
+                "product": "PostgreSQL" if postgres else "SQL Server",
+                "version": version,
                 "tables": len(settings.ticket["table_map"]) if postgres else 185,
                 "academic_access": False,
             },
             "workers": workers,
             "queues": counts,
-            "backup": {"state": "unverified" if deployment else "rehearsal"} if postgres else backup_status(settings),
+            "backup": backup,
+            "infrastructure": {"queue_backend": "postgresql" if postgres else "sqlserver", "redis": "not_used"},
             "local_ready": workers["ready"],
-            "online": {"state": "pending", "phase": "P12"},
+            "online": {"state": "configured" if deployment and getattr(settings, "public_origin", None) else "pending",
+                       "phase": "P12", "public_origin": getattr(settings, "public_origin", None)},
             "observed_at": time.time(),
         }
 
