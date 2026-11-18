@@ -35,6 +35,10 @@ import { useInstitution, useIntent, useTask } from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import "./broadcast.css";
+import {
+  TemplateExampleGuide,
+  TemplateSamplePicker,
+} from "./BroadcastTemplateMedia";
 
 type Component = {
   type: string;
@@ -69,6 +73,8 @@ type Document = {
   demographic_fields?: DemographicFields;
   variables: Record<string, Binding>;
   header_media_url: string;
+  header_media_id?: string;
+  header_media_operation?: string | null;
   scheduled_local: string | null;
   timezone: string;
 };
@@ -442,7 +448,7 @@ function CampaignEditor({
         initial.state,
       );
   const update = (changes: Partial<Document>) => {
-    setDoc({ ...doc, ...changes });
+    setDoc((current) => ({ ...current, ...changes }));
     setReviewed(false);
     setPreview(null);
   };
@@ -533,6 +539,9 @@ function CampaignEditor({
                 integration_id: e.target.value,
                 template_id: "",
                 variables: {},
+                header_media_url: "",
+                header_media_id: "",
+                header_media_operation: null,
                 filters: { ...doc.filters, contact_ids: [] },
               })
             }
@@ -556,6 +565,9 @@ function CampaignEditor({
               update({
                 template_id: e.target.value,
                 template_version: t?.version || 1,
+                header_media_url: "",
+                header_media_id: "",
+                header_media_operation: null,
                 variables: Object.fromEntries(
                   variableKeys(t).map((k) => [
                     k,
@@ -672,16 +684,54 @@ function CampaignEditor({
             </div>
           ))}
           {template?.components.some(
-            (c) => c.type === "HEADER" && c.format !== "TEXT",
+            (c) =>
+              c.type === "HEADER" &&
+              ["IMAGE", "VIDEO", "DOCUMENT"].includes(c.format || ""),
           ) && (
-            <Field
-              id="header-media"
-              label="URL HTTPS del archivo de cabecera"
-              type="url"
-              required
-              value={doc.header_media_url}
-              onChange={(e) => update({ header_media_url: e.target.value })}
-            />
+            <section aria-label="Adjunto de la campaña">
+              <TemplateSamplePicker
+                key={`${doc.integration_id}-${doc.template_id}`}
+                account={doc.integration_id}
+                kind={
+                  template.components.find((c) => c.type === "HEADER")
+                    ?.format || "IMAGE"
+                }
+                purpose="delivery"
+                onUploaded={() =>
+                  update({ header_media_id: "", header_media_operation: null })
+                }
+                onDelivery={(id, operation) =>
+                  update({
+                    header_media_id: id,
+                    header_media_operation: operation,
+                    header_media_url: "",
+                  })
+                }
+              />
+              {doc.header_media_id && (
+                <Notice>
+                  Archivo de la campaña cargado y vinculado a esta cuenta de
+                  WhatsApp.
+                </Notice>
+              )}
+              <details>
+                <summary>Usar una URL HTTPS en lugar de un archivo</summary>
+                <Field
+                  id="header-media"
+                  label="URL HTTPS del archivo de cabecera"
+                  type="url"
+                  required={!doc.header_media_id}
+                  value={doc.header_media_url}
+                  onChange={(e) =>
+                    update({
+                      header_media_url: e.target.value,
+                      header_media_id: "",
+                      header_media_operation: null,
+                    })
+                  }
+                />
+              </details>
+            </section>
           )}
           <BroadcastAudience
             account={doc.integration_id}
@@ -740,8 +790,15 @@ function CampaignEditor({
           <Button
             type="submit"
             disabled={
-              doc.filters.audience_mode === "contacts" &&
-              !doc.filters.contact_ids.length
+              (doc.filters.audience_mode === "contacts" &&
+                !doc.filters.contact_ids.length) ||
+              (!!template?.components.some(
+                (c) =>
+                  c.type === "HEADER" &&
+                  ["IMAGE", "VIDEO", "DOCUMENT"].includes(c.format || ""),
+              ) &&
+                !doc.header_media_id &&
+                !doc.header_media_url)
             }
           >
             Guardar campaña
@@ -1381,14 +1438,24 @@ function TemplateForm({
       text: string;
       url: string;
       phone_number: string;
+      url_example: string;
     }[],
     allow_category_change: true,
     examples: {} as Record<string, string>,
   };
   const [doc, setDoc] = useState(initial),
     [clean, setClean] = useState(false);
+  const [mediaPreview, setMediaPreview] = useState(""),
+    [sampleGeneration, setSampleGeneration] = useState(0);
+  useEffect(
+    () => () => {
+      if (mediaPreview) URL.revokeObjectURL(mediaPreview);
+    },
+    [mediaPreview],
+  );
   useDraftGuard(!clean && JSON.stringify(doc) !== JSON.stringify(initial));
-  const change = (value: Partial<typeof doc>) => setDoc({ ...doc, ...value });
+  const change = (value: Partial<typeof doc>) =>
+    setDoc((current) => ({ ...current, ...value }));
   const bodySelection = useRef({ start: 0, end: 0 });
   const insertBody = (token: string) => {
     const { start, end } = bodySelection.current;
@@ -1441,6 +1508,37 @@ function TemplateForm({
         {task.notices}
         <fieldset disabled={task.busy}>
           <h3>Nueva plantilla</h3>
+          <ol
+            className="broadcast-composer-steps"
+            aria-label="Pasos para crear la plantilla"
+          >
+            <li>Categoría y formato</li>
+            <li>Contenido y ejemplos</li>
+            <li>Revisión de Meta</li>
+          </ol>
+          <TemplateExampleGuide
+            choose={(example) => {
+              change({
+                name: doc.name || example.name,
+                category: example.category,
+                body_text: example.body,
+                header_type: example.header,
+                header_text: "",
+                header_media_handle: "",
+                examples: {},
+                footer_text: "Corporación Bolivariana del Norte · CBN",
+                buttons: example.buttons.map((text) => ({
+                  type: "QUICK_REPLY",
+                  text,
+                  url: "",
+                  phone_number: "",
+                  url_example: "",
+                })),
+              });
+              setMediaPreview("");
+              setSampleGeneration((value) => value + 1);
+            }}
+          />
           <Field
             id="template-name"
             label="Nombre de plantilla"
@@ -1521,7 +1619,11 @@ function TemplateForm({
               { value: "VIDEO", label: "Video" },
               { value: "DOCUMENT", label: "Documento" },
             ]}
-            onChange={(e) => change({ header_type: e.target.value })}
+            onChange={(e) => {
+              change({ header_type: e.target.value, header_media_handle: "" });
+              setMediaPreview("");
+              setSampleGeneration((value) => value + 1);
+            }}
           />
           {doc.header_type === "TEXT" ? (
             <>
@@ -1548,15 +1650,31 @@ function TemplateForm({
             </>
           ) : (
             doc.header_type && (
-              <Field
-                id="template-header-example"
-                label="Identificador de archivo de ejemplo de Meta"
-                required
-                value={doc.header_media_handle}
-                onChange={(e) =>
-                  change({ header_media_handle: e.target.value })
-                }
-              />
+              <div>
+                <TemplateSamplePicker
+                  key={`${account}-${doc.header_type}-${sampleGeneration}`}
+                  account={account}
+                  kind={doc.header_type}
+                  onUploaded={(handle) =>
+                    change({ header_media_handle: handle })
+                  }
+                  onPreview={setMediaPreview}
+                />
+                {doc.header_media_handle && (
+                  <Notice>Muestra lista para la revisión de Meta.</Notice>
+                )}
+                <details>
+                  <summary>Usar un identificador de muestra existente</summary>
+                  <Field
+                    id="template-header-example"
+                    label="Identificador de archivo de ejemplo de Meta"
+                    value={doc.header_media_handle}
+                    onChange={(e) =>
+                      change({ header_media_handle: e.target.value })
+                    }
+                  />
+                </details>
+              </div>
             )
           )}
           <Field
@@ -1624,6 +1742,46 @@ function TemplateForm({
                   }
                 />
               )}
+              {b.type === "URL" && b.url.includes("{{") && (
+                <Field
+                  id={`button-example-${i}`}
+                  label={`Ejemplo de la variable del enlace ${i + 1}`}
+                  required
+                  value={b.url_example}
+                  onChange={(e) =>
+                    change({
+                      buttons: doc.buttons.map((v, j) =>
+                        j === i ? { ...v, url_example: e.target.value } : v,
+                      ),
+                    })
+                  }
+                  hint="Usa {{1}} al final de la URL. Al preparar la campaña asignarás su valor desde el CRM."
+                />
+              )}
+              <div className="institution-actions">
+                <Button
+                  variant="quiet"
+                  disabled={i === 0}
+                  onClick={() => {
+                    const buttons = [...doc.buttons];
+                    [buttons[i - 1], buttons[i]] = [buttons[i], buttons[i - 1]];
+                    change({ buttons });
+                  }}
+                >
+                  Subir botón {i + 1}
+                </Button>
+                <Button
+                  variant="quiet"
+                  disabled={i === doc.buttons.length - 1}
+                  onClick={() => {
+                    const buttons = [...doc.buttons];
+                    [buttons[i + 1], buttons[i]] = [buttons[i], buttons[i + 1]];
+                    change({ buttons });
+                  }}
+                >
+                  Bajar botón {i + 1}
+                </Button>
+              </div>
               <Button
                 variant="quiet"
                 onClick={() =>
@@ -1636,18 +1794,29 @@ function TemplateForm({
           ))}
           <Button
             variant="secondary"
-            disabled={doc.buttons.length >= 3}
+            disabled={doc.buttons.length >= 10}
             onClick={() =>
               change({
                 buttons: [
                   ...doc.buttons,
-                  { type: "QUICK_REPLY", text: "", url: "", phone_number: "" },
+                  {
+                    type: "QUICK_REPLY",
+                    text: "",
+                    url: "",
+                    phone_number: "",
+                    url_example: "",
+                  },
                 ],
               })
             }
           >
             Agregar botón
           </Button>
+          <p className="broadcast-help">
+            {doc.buttons.length}/10 botones. Hasta 2 enlaces y 1 teléfono.
+            Agrupa juntas las respuestas rápidas. Con 4 o más botones, WhatsApp
+            puede pedir abrir el mensaje en el teléfono.
+          </p>
           <label className="broadcast-check">
             <input
               type="checkbox"
@@ -1658,10 +1827,22 @@ function TemplateForm({
             />
             Permitir que Meta ajuste la categoría
           </label>
-          <Button type="submit">Guardar borrador de plantilla</Button>
+          <Button
+            type="submit"
+            disabled={
+              ["IMAGE", "VIDEO", "DOCUMENT"].includes(doc.header_type) &&
+              !doc.header_media_handle
+            }
+          >
+            Guardar borrador de plantilla
+          </Button>
         </fieldset>
       </form>
-      <TemplateChatPreview doc={doc} variables={variables} />
+      <TemplateChatPreview
+        doc={doc}
+        variables={variables}
+        mediaPreview={mediaPreview}
+      />
     </div>
   );
 }

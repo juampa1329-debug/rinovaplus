@@ -52,6 +52,7 @@ REHEARSAL_ROUTES = {
     "/api/institution/broadcasts/accounts/{integration}/cadence": {"get", "put"},
     "/api/institution/broadcasts/accounts/{integration}/consent/{identity}": {"put"},
     "/api/institution/broadcasts/accounts/{integration}/templates/sync": {"post"},
+    "/api/institution/broadcasts/accounts/{integration}/templates/sample": {"post"},
     "/api/institution/knowledge": {"get"},
     "/api/institution/memory": {"get"},
     "/api/institution/ads/accounts": {"get"},

@@ -169,6 +169,17 @@ def call_provider(adapter, action, item, pin=None):
     raise HTTPException(422, "unsupported_provider_action")
 
 
+def provider_effect_key(settings, operation, action, digest, provider):
+    # Meta subscription updates set the current fields on an owned asset.
+    # A deliberate new reconciliation must not collide with its prior intent;
+    # replay of the same operation remains fenced by OperationId + digest.
+    if action == "subscribe" and provider == "meta":
+        return bound_hash(settings, operation, "meta-subscription-intent")
+    if action in {"verify", "numbers", "health"}:
+        return bound_hash(settings, operation, "provider-diagnostic")
+    return digest
+
+
 class ProviderOperations:
     def __init__(self, settings, transport=None):
         self.settings = settings
@@ -201,11 +212,6 @@ class ProviderOperations:
             },
             "provider-intent",
         )
-        effect_key = (
-            bound_hash(self.settings, operation, "provider-diagnostic")
-            if action in {"verify", "numbers", "health"}
-            else digest
-        )
         with transaction(self.settings, True, anonymous=True) as c:
             actor = authorize(
                 c, self.settings, authority, "settings.channels.write", recent=True
@@ -213,6 +219,7 @@ class ProviderOperations:
             if not configuration(c, self.settings)["ModuleEnabled"]:
                 raise HTTPException(403, "module_disabled")
             item = account(c, self.settings, identity)
+            effect_key = provider_effect_key(self.settings, operation, action, digest, item["Provider"])
             existing = one(
                 c,
                 (

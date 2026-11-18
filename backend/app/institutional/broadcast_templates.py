@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+from urllib.parse import quote
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -81,9 +82,21 @@ def definition(body):
             raise HTTPException(422, "template_footer_variables_unsupported")
         result.append({"type": "FOOTER", "text": body.footer_text})
     buttons = []
+    kinds = [v.type for v in body.buttons]
+    if kinds.count("PHONE_NUMBER") > 1 or kinds.count("URL") > 2:
+        raise HTTPException(422, "template_button_type_limit")
+    quick = [k == "QUICK_REPLY" for k in kinds]
+    if sum(a != b for a, b in zip(quick, quick[1:])) > 1:
+        raise HTTPException(422, "template_button_grouping_invalid")
     for item in body.buttons:
         value = {"type": item.type, "text": item.text}
         if item.type == "URL":
+            if "{{" in item.url or "}}" in item.url:
+                if TOKEN.findall(item.url) != ["1"] or not item.url.endswith("{{1}}") or "{{" in TOKEN.sub("", item.url) or "}}" in TOKEN.sub("", item.url):
+                    raise HTTPException(422, "template_button_url_variable_invalid")
+                if not item.url_example.strip():
+                    raise HTTPException(422, "template_button_url_example_required")
+                value["example"] = [item.url_example]
             public_url(item.url.replace("{{1}}", "sample"))
             value["url"] = item.url
         elif item.type == "PHONE_NUMBER":
@@ -274,6 +287,9 @@ def approved(c, settings, campaign, item, *, controlled=False):
     _, credential = provider_account(c, settings, item)
     if not same_id(current["CredentialId"], credential["SecretId"]):
         raise HTTPException(409, "broadcast_template_credential_changed")
+    from app.institutional.broadcast_sample import delivery_binding
+
+    delivery_binding(c, settings, campaign, item, credential, current["Definition"])
     return current
 
 
@@ -332,7 +348,7 @@ def parameters(template, document, person, campaign_name, *, allowed_custom_fiel
                 or len(value.encode("utf-16-le")) > 2000
             ):
                 raise HTTPException(409, "broadcast_variable_value_missing")
-            params.append({"type": "text", "text": value})
+            params.append({"type": "text", "text": quote(value, safe="") if group.startswith("button.") else value})
             rendered = re.sub(
                 r"\{\{\s*" + re.escape(index) + r"\s*\}\}", lambda _: value, rendered
             )
@@ -345,14 +361,16 @@ def parameters(template, document, person, campaign_name, *, allowed_custom_fiel
             media = component.get("format", "TEXT").upper()
             if kind == "HEADER" and media in {"IMAGE", "VIDEO", "DOCUMENT"}:
                 link = document.get("header_media_url", "")
-                if not link:
+                identity = document.get("header_media_id", "")
+                if not link and not identity:
                     raise HTTPException(409, "broadcast_header_media_required")
-                public_url(link)
+                if link:
+                    public_url(link)
                 components.append(
                     {
                         "type": "header",
                         "parameters": [
-                            {"type": media.lower(), media.lower(): {"link": link}}
+                            {"type": media.lower(), media.lower(): {"id": identity} if identity else {"link": link}}
                         ],
                     }
                 )

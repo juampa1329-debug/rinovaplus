@@ -169,7 +169,7 @@ def test_template_components_and_named_aliases_are_normalized():
             header_text="CBN {{sede}}",
             footer_text="Admisiones",
             buttons=[
-                {"type": "URL", "text": "Ver", "url": "https://cbn.example/{{1}}"},
+                {"type": "URL", "text": "Ver", "url": "https://cbn.example/{{1}}", "url_example": "solicitud_ficticia"},
                 {
                     "type": "PHONE_NUMBER",
                     "text": "Llamar",

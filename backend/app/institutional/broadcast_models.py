@@ -34,6 +34,7 @@ class Button(Strict):
     text: str = Field(min_length=1, max_length=25)
     url: str = Field(default="", max_length=2000)
     phone_number: str = Field(default="", max_length=30, pattern=r"^$|^\+[0-9]{7,15}$")
+    url_example: str = Field(default="", max_length=1000)
 
 
 class TemplateWrite(Command):
@@ -43,9 +44,9 @@ class TemplateWrite(Command):
     body_text: str = Field(min_length=1, max_length=1024)
     header_type: Literal["", "TEXT", "IMAGE", "VIDEO", "DOCUMENT"] = ""
     header_text: str = Field(default="", max_length=60)
-    header_media_handle: str = Field(default="", max_length=500)
+    header_media_handle: str = Field(default="", max_length=2000)
     footer_text: str = Field(default="", max_length=60)
-    buttons: list[Button] = Field(default_factory=list, max_length=3)
+    buttons: list[Button] = Field(default_factory=list, max_length=10)
     allow_category_change: bool = True
     examples: dict[str, str] = Field(default_factory=dict, max_length=50)
 
@@ -64,6 +65,14 @@ class TemplateWrite(Command):
 
 class TemplatePause(Command):
     paused: bool
+
+
+class TemplateSample(Command):
+    filename: str = Field(min_length=1, max_length=160)
+    kind: Literal["image", "video", "document"]
+    content_base64: str = Field(min_length=1, max_length=6666668, repr=False)
+    confirmed: bool = False
+    purpose: Literal["review", "delivery"] = "review"
 
 
 class Variable(Strict):
@@ -136,6 +145,8 @@ class CampaignWrite(Command):
     demographic_fields: dict[Literal["gender", "birth_date", "region", "country"], str] = Field(default_factory=dict, max_length=4)
     variables: dict[str, Variable] = Field(default_factory=dict, max_length=50)
     header_media_url: str = Field(default="", max_length=2000)
+    header_media_id: str = Field(default="", pattern=r"^$|^[0-9]{1,100}$")
+    header_media_operation: JsonUUID | None = None
     scheduled_local: str | None = None
     timezone: str = Field(default="America/Bogota", max_length=80)
 
@@ -153,6 +164,8 @@ class CampaignWrite(Command):
             raise ValueError("timezone_invalid") from e
         if self.header_media_url:
             public_url(self.header_media_url)
+        if bool(self.header_media_id) != bool(self.header_media_operation) or (self.header_media_id and self.header_media_url):
+            raise ValueError("broadcast_media_upload_required")
         if self.filters.audience_mode == "contacts" and not self.filters.contact_ids:
             raise ValueError("audience_contacts_required")
         if any(not re.fullmatch(r"[a-z][a-z0-9_]{0,39}", v) for v in self.demographic_fields.values()):

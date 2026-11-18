@@ -12,6 +12,7 @@ from app.institutional.broadcast_models import (
     Review,
     TemplatePause,
     TemplateWrite,
+    TemplateSample,
 )
 from app.institutional.broadcasts import Broadcasts
 from app.institutional.db import uid
@@ -49,6 +50,12 @@ def install(app, settings, gateway=None):
     @app.post(("/api/institution/broadcasts/accounts/{integration}/templates/sync"))
     def sync(request: Request, integration: str, body: Command):
         return service.sync(request.state.authority, uid(integration), body)
+
+    @app.post("/api/institution/broadcasts/accounts/{integration}/templates/sample")
+    def upload_sample(request: Request, integration: str, body: TemplateSample):
+        from app.institutional.broadcast_sample import upload
+
+        return upload(service, request.state.authority, uid(integration), body)
 
     @app.put(
         ("/api/institution/broadcasts/accounts/{integration}/templates/{template}")

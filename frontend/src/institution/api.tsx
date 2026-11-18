@@ -130,6 +130,17 @@ const messages: Record<string, string> = {
     "Falta un dato del contacto para completar esta plantilla. Completa su ficha del CRM o exclúyelo de este envío.",
   template_header_one_variable:
     "La cabecera de texto admite una variable. Conserva un solo campo del CRM en la cabecera.",
+  template_sample_format_invalid: "El archivo de muestra no coincide con el formato. Usa JPG/PNG para imagen, MP4 para video o PDF para documento.",
+  template_sample_upload_rejected: "Meta rechazó la muestra. Comprueba el formato, el tamaño y que el acceso de esta cuenta siga vigente.",
+  template_sample_upload_unknown: "Meta no confirmó la carga. Conserva el borrador y revisa Actividad en Canales antes de repetirla. No se ha activado ninguna campaña.",
+  template_sample_handle_missing: "Meta no devolvió el identificador del archivo. Revisa el estado de la conexión antes de repetir la carga.",
+  template_sample_session_invalid: "Meta devolvió una sesión de carga que RinovaPlus no puede usar. Revisa el acceso de la cuenta y contacta al administrador.",
+  template_sample_confirmation_required: "Confirma que autorizas enviar el archivo de muestra a Meta antes de cargarlo.",
+  broadcast_media_upload_required: "El adjunto ya no está vinculado a esta cuenta o cambió su conexión. Vuelve a cargar el archivo en la campaña y revisa los destinatarios.",
+  template_button_type_limit: "La plantilla permite hasta dos botones de enlace y uno de teléfono. Los demás pueden ser respuestas rápidas, hasta diez botones en total.",
+  template_button_grouping_invalid: "Agrupa juntas las respuestas rápidas y después los enlaces/teléfono, o al revés. Usa Subir/Bajar para ordenarlos.",
+  template_button_url_variable_invalid: "El enlace admite una variable {{1}} al final de la URL. Corrige su posición o usa un enlace fijo.",
+  template_button_url_example_required: "Añade un ejemplo ficticio para la variable del enlace. Meta lo necesita para revisar la plantilla.",
   template_footer_variables_unsupported:
     "El pie de la plantilla debe ser texto fijo. Coloca los campos del CRM en el cuerpo o en la cabecera.",
   template_example_unused:

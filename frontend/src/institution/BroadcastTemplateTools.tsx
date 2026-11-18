@@ -129,9 +129,11 @@ export function TemplateVariableFields({
 export function TemplateChatPreview({
   doc,
   variables,
+  mediaPreview,
 }: {
   doc: Composition;
   variables: CrmVariable[];
+  mediaPreview?: string;
 }) {
   const render = (text: string, group: string) =>
     text.replace(
@@ -163,6 +165,20 @@ export function TemplateChatPreview({
             )}
             {["IMAGE", "VIDEO", "DOCUMENT"].includes(doc.header_type) && (
               <div className="broadcast-media-example">
+                {mediaPreview && doc.header_type === "IMAGE" && (
+                  <img
+                    src={mediaPreview}
+                    alt="Archivo de muestra de la plantilla"
+                  />
+                )}
+                {mediaPreview && doc.header_type === "VIDEO" && (
+                  <video
+                    src={mediaPreview}
+                    controls
+                    preload="metadata"
+                    aria-label="Video de muestra de la plantilla"
+                  />
+                )}
                 Cabecera:{" "}
                 {
                   { IMAGE: "Imagen", VIDEO: "Video", DOCUMENT: "Documento" }[

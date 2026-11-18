@@ -381,6 +381,126 @@ it("reuses the approved template CRM mapping and preserves custom field keys in 
 it("extracts body, header and dynamic URL bindings without alias collisions", () => {
   expect(variableKeys(template)).toEqual(["body.1", "header.1", "button.0.1"]);
 });
+
+it("chooses a natural requested-document example without publishing or sending", async () => {
+  const f = setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Plantillas WhatsApp" }),
+  );
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
+    target: { value: "a" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Crear plantilla" }),
+  );
+  fireEvent.click(screen.getByText("Guía y ejemplos de mensajes naturales"));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Usar ejemplo: Documento solicitado",
+    }),
+  );
+  expect(screen.getByLabelText("Categoría")).toHaveValue("UTILITY");
+  expect(screen.getByLabelText("Tipo de cabecera")).toHaveValue("DOCUMENT");
+  expect(
+    (screen.getByLabelText("Cuerpo del mensaje") as HTMLTextAreaElement).value,
+  ).toContain("documento que solicitaste");
+  expect(
+    screen.getByRole("button", { name: "Guardar borrador de plantilla" }),
+  ).toBeDisabled();
+  expect(screen.getByLabelText("Adjuntar archivo de muestra")).toHaveAttribute(
+    "accept",
+    "application/pdf",
+  );
+  expect(
+    f.mock.calls.every(([, init]) => !init?.method || init.method === "GET"),
+  ).toBe(true);
+});
+
+it("requires explicit media upload approval and preserves text edited during upload", async () => {
+  const originalUrl = globalThis.URL;
+  vi.stubGlobal(
+    "URL",
+    Object.assign(class extends originalUrl {}, {
+      createObjectURL: vi.fn(() => "blob:sample"),
+      revokeObjectURL: vi.fn(),
+    }),
+  );
+  let resolveUpload: (response: Response) => void = () => {};
+  const pending = new Promise<Response>((resolve) => {
+    resolveUpload = resolve;
+  });
+  const f = setup();
+  const normalFetch = f.getMockImplementation()!;
+  f.mockImplementation((url, init) =>
+    String(url).endsWith("/templates/sample")
+      ? pending
+      : normalFetch(url, init),
+  );
+  try {
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Plantillas WhatsApp" }),
+    );
+    fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
+      target: { value: "a" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Crear plantilla" }),
+    );
+    fireEvent.change(screen.getByLabelText("Tipo de cabecera"), {
+      target: { value: "IMAGE" },
+    });
+    fireEvent.change(screen.getByLabelText("Adjuntar archivo de muestra"), {
+      target: {
+        files: [new File(["png"], "ejemplo.png", { type: "image/png" })],
+      },
+    });
+    expect(
+      screen.getByRole("button", { name: "Cargar muestra en Meta" }),
+    ).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole("checkbox", {
+        name: "Autorizo enviar esta muestra a Meta para revisar la plantilla.",
+      }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Cargar muestra en Meta" }),
+    );
+    await waitFor(() =>
+      expect(
+        f.mock.calls.some(([u]) => String(u).endsWith("/templates/sample")),
+      ).toBe(true),
+    );
+    fireEvent.change(screen.getByLabelText("Cuerpo del mensaje"), {
+      target: { value: "Texto conservado mientras se carga" },
+    });
+    resolveUpload(ok({ status: "confirmed", handle: "4::sample-handle" }));
+    expect(
+      await screen.findByText("Muestra lista para la revisión de Meta."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Cuerpo del mensaje")).toHaveValue(
+      "Texto conservado mientras se carga",
+    );
+    expect(
+      screen.getByLabelText("Identificador de archivo de ejemplo de Meta"),
+    ).toHaveValue("4::sample-handle");
+    const body = JSON.parse(
+      String(
+        f.mock.calls.find(([u]) => String(u).endsWith("/templates/sample"))?.[1]
+          ?.body,
+      ),
+    );
+    expect(body.confirmed).toBe(true);
+    expect(body.kind).toBe("image");
+    expect(
+      f.mock.calls.some(
+        ([u]) =>
+          String(u).endsWith("/submit") || String(u).endsWith("/activate"),
+      ),
+    ).toBe(false);
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
 it("loads the integrated campaign list and keeps sending review separate from saving", async () => {
   setup();
   fireEvent.click(
@@ -483,7 +603,7 @@ it("template editor has Scentra components and no local provider approval contro
   });
   expect(
     screen.getByLabelText("Identificador de archivo de ejemplo de Meta"),
-  ).toBeRequired();
+  ).not.toBeRequired();
   fireEvent.click(screen.getByRole("button", { name: "Agregar botón" }));
   expect(screen.getByLabelText("Tipo de botón 1")).toBeInTheDocument();
   expect(

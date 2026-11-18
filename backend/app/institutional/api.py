@@ -201,12 +201,13 @@ def create_app(
                 size_limit = (
                     7_000_000
                     if is_operational
-                    and request.url.path
-                    in {
+                    and (request.url.path in {
                         "/api/institution/media/upload",
                         "/api/institution/knowledge/upload",
                         "/api/institution/campaigns/assets",
-                    }
+                    } or (request.method == "POST"
+                          and request.url.path.startswith("/api/institution/broadcasts/accounts/")
+                          and request.url.path.endswith("/templates/sample")))
                     else 524288
                 )
                 if (

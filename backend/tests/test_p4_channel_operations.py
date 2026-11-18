@@ -17,6 +17,7 @@ from app.institutional.channel_events import delivery, normalize
 from app.institutional import channel_events, channel_ingress, channel_operations
 from app.institutional import whatsapp_gemini, channel_workspace, comment_automation
 from app.institutional import channel_recovery, channel_retry
+from app.institutional import channel_provider
 from app.institutional.comment_effects import call_provider as comment_provider
 from app.institutional.auth import api_request_limit
 from app.institutional.channel_ingress import signature_valid
@@ -54,6 +55,14 @@ def test_public_sql_deployment_has_wakeable_inbound_and_outbound_queues():
 
     assert production.fast_queues
     assert not local.fast_queues
+
+
+def test_meta_subscription_reconciliation_has_a_new_intent_but_replay_stays_stable(monkeypatch):
+    monkeypatch.setattr(channel_provider,"bound_hash",lambda settings,value,purpose:hmac.digest(b"fixture-key",(purpose+str(value)).encode(),"sha256"))
+    keys=[channel_provider.provider_effect_key(None,operation,"subscribe",b"same-account-revision","meta") for operation in ("first","first","second")]
+    assert keys[0]==keys[1] and keys[0]!=keys[2]
+    assert channel_provider.provider_effect_key(None,"second","refresh",b"prior-effect","meta")==b"prior-effect"
+    assert channel_provider.provider_effect_key(None,"second","subscribe",b"prior-effect","tiktok")==b"prior-effect"
 
 
 @pytest.mark.parametrize("channel", ["messenger", "instagram"])
