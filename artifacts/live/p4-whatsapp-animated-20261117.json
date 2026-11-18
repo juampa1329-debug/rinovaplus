@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-17",
+  "timezone": "America/Bogota",
+  "scope": "Real animated WhatsApp sticker sent from the production RinovaPlus Inbox to the owner phone ending 44",
+  "runtime_revision": "4c169b04ff13c3055f423ce5f987aabe519cf47b",
+  "deployment": {
+    "backend": "ewivcnbehfiya910oyw0typa",
+    "backend_health": "healthy",
+    "rolling_update_completed_at_utc": "2026-11-18T04:24:36Z",
+    "frontend": "avpp8q1akhiflia1rb52hdc2",
+    "frontend_status": "Success"
+  },
+  "account": "WhatsApp · Pruebas Meta",
+  "integration_id": "9b1c8209-e664-497d-baa6-db3869d78124",
+  "sticker": {
+    "filename": "prueba-p4-animado.webp",
+    "mime": "image/webp",
+    "bytes": 159312,
+    "dimensions": [512, 512],
+    "frames": 32,
+    "duration_ms": 1920,
+    "minimum_frame_ms": 60,
+    "sha256": "5ff75deb5a5c83fcd77b8fe9fc7dc0fef382b354a282e42c536d76574d19619c",
+    "production_file_matches_original_hash": true,
+    "inbox_image_loaded": true
+  },
+  "send": {
+    "queue_id": "bd3d0e38-75b9-4b6d-901e-307cb3e0f356",
+    "created_at_utc": "2026-11-18T04:25:33.818513Z",
+    "attempts": 1,
+    "provider_id_present": true,
+    "last_error_code": null,
+    "final_state": "read",
+    "receipts": [
+      {"state": "sent", "at_utc": "2026-11-18T04:25:38.163524Z"},
+      {"state": "delivered", "at_utc": "2026-11-18T04:25:38.818382Z"},
+      {"state": "read", "at_utc": "2026-11-18T04:25:46.423724Z"}
+    ],
+    "all_receipts": {"authentication": "verified", "event_status": "processed"}
+  },
+  "control": {"before": "AI", "during_manual_send": "Human", "after": "AI"},
+  "handset_animation_confirmation": "pending",
+  "validation": {
+    "backend_tests": 137,
+    "frontend_tests": 26,
+    "typecheck": "passed",
+    "lint": "passed",
+    "institutional_build": "passed, existing bundle-size warning",
+    "harness_preparation": "Initial runs needed missing static imports and the normal frontend test setup; these failures were corrected and are not counted as passing runs.",
+    "new_local_containers": 0,
+    "temporary_test_harness_removed": true
+  },
+  "limits": [
+    "This is a free Meta test account; institutional CBN number cutover remains separate.",
+    "P4 recovery, reversal and remaining acceptance requirements are not completed by this single test.",
+    "Canonical progress and fixed weights remain unchanged."
+  ],
+  "official_references": [
+    "https://whatsapp.github.io/WhatsApp-Nodejs-SDK/api-reference/messages/sticker/",
+    "https://github.com/WhatsApp/stickers/blob/main/Android/README.md"
+  ]
+}
