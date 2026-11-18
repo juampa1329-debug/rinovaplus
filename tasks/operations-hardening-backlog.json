@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-18",
+  "status": "pending_improvements_after_explicit_owner_risk_acceptance",
+  "canonical_weight_added": 0,
+  "owner_acceptance": "Aceptar ese alcance y registrar las mejoras pendientes",
+  "scope": "Current PostgreSQL commissioning accepted; these improvements are not implemented or verified by acceptance",
+  "items": [
+    {
+      "id": "OPS-01",
+      "title": "Copia externa",
+      "requirement": "Configurar destino externo cifrado y ensayar pérdida del servidor con copia fuera del host.",
+      "follow_up_phase": "P18.7",
+      "state": "pending",
+      "residual_limit_accepted": true
+    },
+    {
+      "id": "OPS-02",
+      "title": "Custodia de clave",
+      "requirement": "Validar custodios y recuperación independiente de CRM_SECURITY_KEY sin exponer la clave en chat/Git.",
+      "follow_up_phase": "P18.7",
+      "state": "pending",
+      "residual_limit_accepted": true
+    },
+    {
+      "id": "OPS-03",
+      "title": "RPO/RTO institucional",
+      "requirement": "Acordar pérdida de datos y tiempo de recuperación aceptables; medir un ensayo acorde, sin inferir SLA de este test.",
+      "follow_up_phase": "P18.8",
+      "state": "pending",
+      "residual_limit_accepted": true
+    },
+    {
+      "id": "OPS-04",
+      "title": "Retención y espacio",
+      "requirement": "Supervisar crecimiento de copias conservadas sin borrado automático y acordar política de retención.",
+      "follow_up_phase": "P18.7",
+      "state": "pending",
+      "residual_limit_accepted": true
+    },
+    {
+      "id": "OPS-05",
+      "title": "Alertas entregadas",
+      "requirement": "Configurar destinatarios y probar entrega real de avisos de respaldos y operación; agenda configurada no prueba correo recibido.",
+      "follow_up_phase": "P15",
+      "state": "pending",
+      "residual_limit_accepted": true
+    },
+    {
+      "id": "OPS-06",
+      "title": "Consistencia DB y archivos",
+      "requirement": "Ensayar recuperación con cortes DB/volumen independientes y conciliación completa antes de promover la copia.",
+      "follow_up_phase": "P18.8",
+      "state": "pending",
+      "residual_limit_accepted": true
+    }
+  ]
+}

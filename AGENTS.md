@@ -1,3 +1,13 @@
+## Aceptación vigente P11/P12 en PostgreSQL — 2026-11-18
+
+**Roadmap original P0–P11: 100,00%; 279/279 hitos y 56/56 criterios aceptados. P11:100%, 4/4.** El propietario aceptó explícitamente «Aceptar ese alcance y registrar las mejoras pendientes»: PostgreSQL actual publicado, recorridos acordados P1–P10 y los límites operativos entregados. Sólo se aceptan P11.3/P11.close y se completan sus cinco hitos pendientes; P11.1/P11.2 y todos los cierres previos conservan sus alcances. La referencia SQL2019 se mantiene con modificación humana explícita del destino a PostgreSQL; no se recertifica SQL2019 ni se afirma mapa completo DBSIIE.
+
+P12 queda al 100% como agrupación auxiliar de los 18 hitos originales ya resueltos en el alcance PostgreSQL/Meta, sin añadir peso. Copia externa, custodia de clave, RPO/RTO, retención/espacio, alertas entregadas y conciliación adicional DB/archivos siguen abiertos como OPS-01–OPS-06 en `tasks/operations-hardening-backlog.json`. La aceptación no los declara implementados ni cubre pérdida total del servidor. SIIE y TikTok continúan diferidos.
+
+Evidencia: `artifacts/live/p11-postgres-acceptance-20261118.json`; guía `docs/adaptation/P11_P12_LIVE_ACCEPTANCE.md`; manual `docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md`; preimágenes en `artifacts/live/history/p11-postgres-20261118/`. Restauración aislada 157 tablas/19 archivos y reversión frontend 19866a7→9d8d608 verificadas, misma sesión y ocho consumidores. Las 117 pruebas backend/16 frontend seleccionadas, tipos/lint modificado/build son de esa revisión; no equivalen a replay SQL histórico integral, cuyos veinte archivos ausentes siguen declarados. No modificar releases/checkers/grafos anteriores ni ejecutar seeds/preparadores sobre bases pobladas.
+
+P0–P11:100% cada una; P12 auxiliar:100% en el alcance aceptado; P13 parcial 0/4; P14 plan; P15 correos planificada 0/7; P16 SIIE y P17 TikTok diferidas 0/5 cada una; P18 seguridad planificada 0/8. Las fases adicionales no forman parte del denominador de 56 criterios; no declarar implementadas todas sus capacidades. Los cortes inferiores se conservan como historia y prevalece esta aceptación nueva.
+
 ## Ensayo de reversión frontend P11 — 2026-11-18
 
 Con autorización específica del propietario, Coolify desplegó `19866a7` y devolvió el frontend a `9d8d608`; ambas imágenes saludables, ambas interfaces abiertas con la misma sesión. Se conservaron ocho procesos frescos, recibo de 19 archivos, totales de salida y tres inferencias inciertas sin reintento. Backend/base/volumen intactos durante el ensayo. La revisión automática inicial quedó resuelta por la autorización humana; evidencia `artifacts/live/p11-postgres-review-20261118.json` y manual `docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md`.

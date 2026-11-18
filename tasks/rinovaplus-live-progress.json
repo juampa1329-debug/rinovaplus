@@ -21,10 +21,10 @@
     "production_evidence": "artifacts/live/p7-broadcasting-20261117.json",
     "details": "docs/design/broadcasting-scentra-adaptation.md"
   },
-  "canonical_percent": "98.04%",
-  "canonical_milestones_done": 274,
+  "canonical_percent": "100.00%",
+  "canonical_milestones_done": 279,
   "canonical_milestones_total": 279,
-  "canonical_criteria_accepted": 54,
+  "canonical_criteria_accepted": 56,
   "canonical_criteria_total": 56,
   "canonical_weight_changed": false,
   "phase_percentages": {
@@ -39,12 +39,13 @@
     "P8": "100.00%",
     "P9": "100.00%",
     "P10": "100.00%",
-    "P11": "72.50%"
+    "P11": "100.00%"
   },
   "P12": {
-    "formal_acceptance_percent": "0.00%",
+    "formal_acceptance_percent": "100.00%",
     "online_runtime": "verified_in_prior_deployments",
-    "equivalence_to_original_sql_commissioning": "pending"
+    "equivalence_to_original_sql_commissioning": "owner_explicit_PostgreSQL_scope_amendment_no_SQL2019_recertification",
+    "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json"
   },
   "P13": {
     "accepted": 0,
@@ -180,10 +181,10 @@
     "canonical_weight_added": 0
   },
   "P11_current_review": {
-    "status": "technical_review_completed_institutional_acceptance_pending",
+    "status": "accepted_in_explicit_owner_PostgreSQL_scope",
     "owner_target": "PostgreSQL current production accepted as definitive target",
     "code": "9d8d608fa69efe526b1016f893c4f753ec812f97",
-    "evidence": "artifacts/live/p11-postgres-review-20261118.json",
+    "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
     "runbook": "docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md",
     "restored_tables": 157,
     "restored_files": 19,
@@ -192,7 +193,9 @@
     "scheduled_database_and_volume_backups": "configured_local_and_initial_runs_Success",
     "offsite_backup_validated": false,
     "frontend_reversal": "owner_authorized_real_19866a7_and_return_9d8d608_passed",
-    "canonical_acceptance_changed": false
+    "canonical_acceptance_changed": true,
+    "owner_acceptance": "Aceptar ese alcance y registrar las mejoras pendientes",
+    "residual_improvements": "tasks/operations-hardening-backlog.json"
   },
   "P18": {
     "status": "planned_by_owner",
@@ -201,5 +204,12 @@
     "phase_execution_percent": "0.00%",
     "scope": "security_tokens_IP_rate_limits_MFA_CAPTCHA_injection_and_operations",
     "details": "docs/adaptation/P18_SECURITY_PLAN.md"
+  },
+  "P11": {
+    "status": "accepted_owner_PostgreSQL_scope",
+    "accepted": 4,
+    "total": 4,
+    "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
+    "residual_improvements": "tasks/operations-hardening-backlog.json"
   }
 }

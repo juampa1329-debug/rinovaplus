@@ -3,7 +3,7 @@
   "defined_in_unit": "SQL-C12",
   "date": "2026-11-18",
   "timezone": "America/Bogota",
-  "status": "P10_technical_lifecycle_closed_P11_institutional_partial",
+  "status": "P0_P11_accepted_owner_PostgreSQL_scope_with_explicit_residual_limits",
   "measurement_label": "Porcentaje de criterios canónicos aceptados por fase",
   "meaning": "Cuenta criterios cerrados con evidencia en su alcance declarado. No mide horas, esfuerzo, porcentaje de funcionalidad real, calidad, entrega de proveedores ni preparación institucional. Un0% puede coexistir con subconjuntos funcionales probados.",
   "human_request": "El propietario pidió porcentajes por fase; este contrato sustituye la anterior omisión de porcentajes sólo para el reporte, sin cambiar los criterios de cierre.",
@@ -1988,8 +1988,8 @@
           "kind": "canonical_unit",
           "requirement": "preparar despliegue institucional, migración ensayada, monitorización, respaldo, retención y recuperación; aceptación externa y puesta en servicio con alcance explícito.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P11",
@@ -1997,23 +1997,28 @@
             "line_at_assessment": 266,
             "canonical_text_sha256": "da38f8d715bb34c770d3a8a7aab37ea19d17976d2355c2559f0da23229da1614"
           },
-          "remaining_scope": "External institutional deployment, acceptance and preceding closures require P12.",
+          "remaining_scope": "Accepted current commissioning scope; explicit residual improvements remain in tasks/operations-hardening-backlog.json",
           "evidence": [
             {
               "file": "artifacts/p11-es/acceptance-review.json",
               "source_location": "$.criteria.P11.3",
               "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            },
+            {
+              "file": "artifacts/live/p11-postgres-acceptance-20261118.json",
+              "source_location": "$.criteria.P11.3",
+              "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
         },
         {
           "id": "P11.close",
           "kind": "phase_closure",
           "requirement": "**Cierre:** institución acepta los recorridos acordados con datos y entorno identificados; riesgos residuales y runbooks quedan entregados. **Reversión:** versión e imagen anteriores, pausa de productores, restauración ensayada y reconciliación de colas/recibos.",
           "weight": 1,
-          "state": "partial",
-          "credit": 0,
+          "state": "accepted",
+          "credit": 1,
           "source": {
             "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
             "phase_section": "P11",
@@ -2021,48 +2026,53 @@
             "line_at_assessment": 268,
             "canonical_text_sha256": "ec423d777a1acc2462924fda7f7421fa03170685b1a54bf3de8999c6fdc68d83"
           },
-          "remaining_scope": "External institutional deployment, acceptance and preceding closures require P12.",
+          "remaining_scope": "Accepted current commissioning scope; explicit residual improvements remain in tasks/operations-hardening-backlog.json",
           "evidence": [
             {
               "file": "artifacts/p11-es/acceptance-review.json",
               "source_location": "$.criteria.P11.close",
               "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            },
+            {
+              "file": "artifacts/live/p11-postgres-acceptance-20261118.json",
+              "source_location": "$.criteria.P11.close",
+              "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
             }
           ],
-          "accepted_scope": null
+          "accepted_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
         }
       ],
       "completion": {
-        "accepted": 2,
+        "accepted": 4,
         "total": 4,
-        "partial": 2,
+        "partial": 0,
         "pending": 0,
         "fraction": {
-          "numerator": 2,
+          "numerator": 4,
           "denominator": 4
         },
         "reduced_fraction": {
           "numerator": 1,
-          "denominator": 2
-        },
-        "percent_exact": {
-          "numerator": 50,
           "denominator": 1
         },
-        "percent_display": "50.00%",
-        "phase_accepted": false
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "reporting_finding_id": "phase_progress_p11",
       "graph_node_id": "phase_criteria_p11"
     }
   ],
   "summary": {
-    "accepted_criteria": 54,
+    "accepted_criteria": 56,
     "total_criteria": 56,
-    "partial_criteria": 2,
-    "scope": "Totales de criterios únicamente; se omite porcentaje global porque el pedido es por fase.",
-    "as_of_accepted_checkpoint": "P10-live-20261118",
-    "active_unit_not_yet_accepted": "P11 institutional commissioning remains partial; P12 formal online acceptance separate."
+    "partial_criteria": 0,
+    "scope": "Original 56 canonical criteria accepted in their explicit owner-approved scopes; additional phases excluded",
+    "as_of_accepted_checkpoint": "P11-P12-PostgreSQL-live-20261118",
+    "active_unit_not_yet_accepted": "None in P0-P11; additional P13-P18 phases and operational improvements retain their own pending states"
   },
   "current_unit_evidence_policy": {
     "unit": "P1-ES",
@@ -2572,6 +2582,30 @@
       "prior_accepted_criteria": 53,
       "accepted_criteria": 54,
       "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
+    },
+    {
+      "checkpoint": "P11-P12-PostgreSQL-live-20261118",
+      "preserved_file": "artifacts/live/history/p11-postgres-20261118/phase-progress-contract.json.before",
+      "prior_accepted_criteria": 54,
+      "accepted_criteria": 56,
+      "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    }
+  ],
+  "human_scope_amendments": [
+    {
+      "date": "2026-11-18",
+      "owner_target_response": "Aceptar PostgreSQL actual como entorno definitivo",
+      "owner_final_response": "Aceptar ese alcance y registrar las mejoras pendientes",
+      "affected_literal_milestone": "P11.3.m2",
+      "historical_literal": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+      "accepted_current_target": "PostgreSQL 16.16 on the current Coolify server",
+      "definition_text_weights_denominators_preserved": true,
+      "not_claimed": [
+        "New SQL2019 institutional commissioning",
+        "Full DBSIIE mapping",
+        "TikTok provider acceptance",
+        "Total-server disaster recovery guarantee"
+      ]
     }
   ]
 }

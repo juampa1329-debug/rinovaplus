@@ -1,0 +1,23 @@
+{
+  "phase": "P11",
+  "date": "2026-11-18",
+  "status": "accepted_owner_PostgreSQL_scope",
+  "percent": "100.00%",
+  "accepted_criteria": 4,
+  "total_criteria": 4,
+  "general_percent": "100.00%",
+  "canonical_milestones_done": 279,
+  "canonical_milestones_total": 279,
+  "canonical_criteria_accepted": 56,
+  "canonical_criteria_total": 56,
+  "completed_formerly_pending_milestones": [
+    "P11.3.m2",
+    "P11.3.m4",
+    "P11.3.m5",
+    "P11.close.m1",
+    "P11.close.m4"
+  ],
+  "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
+  "residual_improvements": "tasks/operations-hardening-backlog.json",
+  "historical_SQL_checkpoint_unchanged": "tasks/p11-es-progress.json"
+}

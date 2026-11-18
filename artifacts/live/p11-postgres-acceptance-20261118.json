@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-18",
+  "status": "accepted_in_explicit_owner_PostgreSQL_scope",
+  "phase": "P11",
+  "owner_acceptance": {
+    "question": "¿Aceptas el entorno PostgreSQL publicado y los recorridos P1–P10 con estos límites explícitos: respaldos diarios locales, copia externa y custodia de clave aún sin validar, sin RPO/RTO institucional acordado; SIIE y TikTok siguen diferidos?",
+    "answer": "Aceptar ese alcance y registrar las mejoras pendientes",
+    "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+  },
+  "human_scope_amendment": {
+    "date": "2026-11-18",
+    "owner_target_response": "Aceptar PostgreSQL actual como entorno definitivo",
+    "owner_final_response": "Aceptar ese alcance y registrar las mejoras pendientes",
+    "affected_literal_milestone": "P11.3.m2",
+    "historical_literal": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+    "accepted_current_target": "PostgreSQL 16.16 on the current Coolify server",
+    "definition_text_weights_denominators_preserved": true,
+    "not_claimed": [
+      "New SQL2019 institutional commissioning",
+      "Full DBSIIE mapping",
+      "TikTok provider acceptance",
+      "Total-server disaster recovery guarantee"
+    ]
+  },
+  "technical_review": {
+    "file": "artifacts/live/p11-postgres-review-20261118.json",
+    "sha256": "f688822c19eecc3001dd962fb0f2ab027e4b2c4c8513b6b3350a515f11ceb1ea",
+    "unchanged": true
+  },
+  "preimages": {
+    "ledger": {
+      "file": "artifacts/live/history/p11-postgres-20261118/phase-progress-contract.json.before",
+      "sha256": "399e38b3140cfeb7cf07826679b51f54320e3c9e5408003fb50dc44d9ebb9236"
+    },
+    "work": {
+      "file": "artifacts/live/history/p11-postgres-20261118/phase-work-progress.json.before",
+      "sha256": "1174a9ee7322c358e37ce2a57a0d2b2536c80c425d138f3879356307edd8ac9f"
+    },
+    "live": {
+      "file": "artifacts/live/history/p11-postgres-20261118/rinovaplus-live-progress.json.before",
+      "sha256": "ceaf184eb6d7df6fd279c8fdf8a6a75c965b91d49968ab93bc4db56df742ce74"
+    },
+    "p12": {
+      "file": "artifacts/live/history/p11-postgres-20261118/p12-online-backlog.json.before",
+      "sha256": "fa6775ee771a2e1c1a6204f681ba2db71258b4b068770d8c636968a3de9afcfd"
+    },
+    "runbook": {
+      "file": "artifacts/live/history/p11-postgres-20261118/P11_POSTGRES_OPERATOR_RUNBOOK.md.before",
+      "sha256": "501c17ead2af64a5868168a5e3a2159e8b6b21258b7247ac482e1293743f5d63"
+    }
+  },
+  "criteria": {
+    "P11.3": {
+      "state": "accepted",
+      "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification",
+      "evidence": [
+        "Current PostgreSQL target explicitly chosen by owner",
+        "157 tables restored from consistent MVCC snapshot with exact manifest comparison",
+        "19 media files restored and hashed; encrypted secrets authenticated without exposure",
+        "Daily DB/volume backups configured; initial jobs Success",
+        "Runtime roles, user deactivation, read-only operations and eight fresh consumers observed",
+        "Owner accepts local-backup and recovery-objective limits after runbook delivery"
+      ]
+    },
+    "P11.close": {
+      "state": "accepted",
+      "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification",
+      "evidence": [
+        "Owner accepts agreed P1-P10 journeys and current institution/data/environment",
+        "Old frontend 19866a7 opened and returned to 9d8d608 with same session and healthy images",
+        "DB/media restore and queue uncertainty limitations delivered",
+        "Operational runbook and explicit pending-improvement register delivered"
+      ]
+    }
+  },
+  "milestone_transitions": [
+    {
+      "id": "P11.3.m2",
+      "from": "pending",
+      "to": "done",
+      "evidence_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    },
+    {
+      "id": "P11.3.m4",
+      "from": "pending",
+      "to": "done",
+      "evidence_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    },
+    {
+      "id": "P11.3.m5",
+      "from": "pending",
+      "to": "done",
+      "evidence_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    },
+    {
+      "id": "P11.close.m1",
+      "from": "pending",
+      "to": "done",
+      "evidence_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    },
+    {
+      "id": "P11.close.m4",
+      "from": "pending",
+      "to": "done",
+      "evidence_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
+    }
+  ],
+  "preserved_existing_criteria": [
+    "P11.1",
+    "P11.2"
+  ],
+  "historical_sql_recognition": "Existing accepted scopes retained; no new replay or recertification of missing historical files",
+  "residual_improvements": "tasks/operations-hardening-backlog.json",
+  "no_external_backup_or_key_custody_claimed": true,
+  "runbook": "docs/adaptation/P11_POSTGRES_OPERATOR_RUNBOOK.md",
+  "canonical_criteria": 56,
+  "canonical_milestones": 279,
+  "canonical_weight_changed": false,
+  "additional_phases_included_in_100_percent": false
+}

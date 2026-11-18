@@ -1,15 +1,16 @@
 {
   "unit": "P12",
   "type": "auxiliary_execution_group",
-  "date": "2026-10-28",
+  "date": "2026-11-18",
   "human_direction": "No URL available; create an additional phase for institutional URLs and online commissioning.",
-  "status": "pending_inputs_no_external_execution",
-  "auxiliary_execution_percent": "0.00%",
+  "status": "accepted_current_PostgreSQL_Meta_scope_by_owner",
+  "auxiliary_execution_percent": "100.00%",
   "canonical_weight_added": 0,
   "fixed_criteria": 56,
   "fixed_milestones": 279,
   "no_double_credit": true,
-  "pending_existing_milestones": [
+  "pending_existing_milestones": [],
+  "resolved_existing_milestones": [
     {
       "id": "P4.3.m6",
       "phase": "P4",
@@ -191,7 +192,28 @@
       }
     }
   ],
-  "required_inputs": [
+  "human_scope_amendment": {
+    "date": "2026-11-18",
+    "owner_target_response": "Aceptar PostgreSQL actual como entorno definitivo",
+    "owner_final_response": "Aceptar ese alcance y registrar las mejoras pendientes",
+    "affected_literal_milestone": "P11.3.m2",
+    "historical_literal": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+    "accepted_current_target": "PostgreSQL 16.16 on the current Coolify server",
+    "definition_text_weights_denominators_preserved": true,
+    "not_claimed": [
+      "New SQL2019 institutional commissioning",
+      "Full DBSIIE mapping",
+      "TikTok provider acceptance",
+      "Total-server disaster recovery guarantee"
+    ]
+  },
+  "original_backlog_preimage": {
+    "file": "artifacts/live/history/p11-postgres-20261118/p12-online-backlog.json.before",
+    "sha256": "fa6775ee771a2e1c1a6204f681ba2db71258b4b068770d8c636968a3de9afcfd"
+  },
+  "acceptance_evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
+  "residual_improvements": "tasks/operations-hardening-backlog.json",
+  "historical_required_inputs": [
     "Linux server and storage",
     "DNS/public HTTPS URL",
     "SQL2019 full schema and reviewed academic mappings",
@@ -199,5 +221,7 @@
     "Institutional custodians, backup/retention/RPO/RTO and secret authority",
     "Explicit commissioning approval"
   ],
-  "plan": "docs/adaptation/sql/SQL_P12_ONLINE_PLAN.md"
+  "current_scope": "Current Linux/Coolify/HTTPS/PostgreSQL/Meta commissioning accepted; full SIIE mappings deferred P16, TikTok deferred P17; offsite/key custody/RPO-RTO remain explicit accepted residual improvements",
+  "historical_plan": "docs/adaptation/sql/SQL_P12_ONLINE_PLAN.md",
+  "plan": "docs/adaptation/P11_P12_LIVE_ACCEPTANCE.md"
 }

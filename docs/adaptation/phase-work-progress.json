@@ -1,7 +1,7 @@
 {
   "schema_version": "technical-work-milestones-v1",
   "date": "2026-11-18",
-  "status": "P10_technical_lifecycle_closed_P11_institutional_partial",
+  "status": "P0_P11_accepted_owner_PostgreSQL_scope_with_explicit_residual_limits",
   "authorized_change": "La petición humana nueva autoriza cuantificar trabajo parcial. La regla histórica partial_credit=0 queda intacta para aceptación y no rige esta nueva columna de avance técnico.",
   "scope": "Current assessment of implementation/contract/test/integration/acceptance work; legacy and current evidence scopes are explicit. Not hours, deployment readiness or exact percentage of features.",
   "policy": {
@@ -814,6 +814,12 @@
       "source_location": "$.criteria.P10.close; $.real_run; $.reproducibility; $.promotion_and_rollback; $.cleanup; $.limits",
       "source_sha256_at_review": "6b0f6fda1dc50184d65cff2fcb06e482aac2939d1b4b5f5a59d09f4ac65503f4",
       "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
+    },
+    "P11_PostgreSQL_owner_acceptance": {
+      "file": "artifacts/live/p11-postgres-acceptance-20261118.json",
+      "source_location": "$.criteria",
+      "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification",
+      "source_sha256_at_review": "985ea5d302bcaa2c8554fbf60f94664da3d4dccddbcf1524ffcbea145bb43173"
     }
   },
   "phases": [
@@ -8349,15 +8355,17 @@
             {
               "id": "P11.3.m2",
               "description": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "test",
               "evidence_level": "SQL",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P11_PostgreSQL_owner_acceptance"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L292"
@@ -8385,15 +8393,17 @@
             {
               "id": "P11.3.m4",
               "description": "Entregar/aceptar puesta en servicio externa con datos/entorno/alcance.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P11_PostgreSQL_owner_acceptance"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L292"
@@ -8402,15 +8412,17 @@
             {
               "id": "P11.3.m5",
               "description": "Aceptar criterio completo en alcance canónico, con evidencia/límites/reversión revisados.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 5
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P11_PostgreSQL_owner_acceptance"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L292"
@@ -8418,20 +8430,20 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 2,
+            "done_milestones": 5,
             "total_milestones": 5,
             "criterion_equivalent": {
-              "numerator": 2,
-              "denominator": 5
+              "numerator": 1,
+              "denominator": 1
             },
-            "percent_display": "40.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
           }
         },
         {
@@ -8454,15 +8466,17 @@
             {
               "id": "P11.close.m1",
               "description": "Aceptar recorridos institucionales y todos los cierres/dependencias P1–P10.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 4
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P11_PostgreSQL_owner_acceptance"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L294"
@@ -8509,15 +8523,17 @@
             {
               "id": "P11.close.m4",
               "description": "Cerrar puesta en servicio con aprobación y alcance explícitos.",
-              "state": "pending",
+              "state": "done",
               "work_kind": "acceptance",
               "evidence_level": "accepted",
               "criterion_share": {
                 "numerator": 1,
                 "denominator": 4
               },
-              "evidence_refs": [],
-              "reference_semantics": "required_work_not_yet_satisfied",
+              "evidence_refs": [
+                "P11_PostgreSQL_owner_acceptance"
+              ],
+              "reference_semantics": "observed_completed_work",
               "requirement_reference": {
                 "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
                 "source_location": "L294"
@@ -8525,35 +8541,35 @@
             }
           ],
           "technical_completion": {
-            "done_milestones": 2,
+            "done_milestones": 4,
             "total_milestones": 4,
             "criterion_equivalent": {
               "numerator": 1,
-              "denominator": 2
+              "denominator": 1
             },
-            "percent_display": "50.00%",
-            "acceptance_pending": true
+            "percent_display": "100.00%",
+            "acceptance_pending": false
           },
-          "proposed_criterion_accepted": false,
+          "proposed_criterion_accepted": true,
           "current_acceptance": {
-            "state": "partial",
-            "credit": 0,
-            "accepted_scope": null
+            "state": "accepted",
+            "credit": 1,
+            "accepted_scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification"
           }
         }
       ],
       "technical_work": {
         "criterion_equivalents_completed": {
-          "numerator": 29,
-          "denominator": 10
+          "numerator": 4,
+          "denominator": 1
         },
         "criterion_denominator": 4,
         "fraction": {
-          "numerator": 29,
-          "denominator": 40
+          "numerator": 1,
+          "denominator": 1
         },
-        "percent_display": "72.50%",
-        "phase_accepted": false
+        "percent_display": "100.00%",
+        "phase_accepted": true
       },
       "historical_closure": {
         "accepted_criteria": 0,
@@ -8569,10 +8585,12 @@
     }
   ],
   "review_summary": {
-    "checkpoint": "P3-ES",
+    "checkpoint": "P11-P12-PostgreSQL-live-20261118",
     "historical_source_preimages_preserved": true,
     "fixed_definition_unchanged": true,
-    "provider_operation_or_institutional_production_accepted": false
+    "owner_accepted_current_PostgreSQL_commissioning": true,
+    "full_historical_SQL_replay_claimed": false,
+    "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json"
   },
   "graph_semantics": {
     "EXTRACTED": [
@@ -8594,16 +8612,16 @@
   "definition_sha256": "3ada201775c4955cb88796252ad684e257d64733598a6d4bae238529867d101a",
   "summary": {
     "overall_technical_fraction": {
-      "numerator": 549,
-      "denominator": 560
+      "numerator": 1,
+      "denominator": 1
     },
-    "overall_technical_percent_display": "98.04%",
+    "overall_technical_percent_display": "100.00%",
     "overall_formula": "Suma del trabajo realizado de cada criterio, incluido parcial, dividida por56 criterios de peso1; no promedio simple de fases ni ratio de hitos.",
     "criterion_count": 56,
     "milestone_count": 279,
-    "done_milestones": 274,
-    "pending_milestones": 5,
-    "accepted_criteria": 54,
+    "done_milestones": 279,
+    "pending_milestones": 0,
+    "accepted_criteria": 56,
     "milestone_counts_are_not_weights": true,
     "phases": [
       {
@@ -8786,18 +8804,48 @@
         "id": "P11",
         "criterion_denominator": 4,
         "criterion_equivalents_completed": {
-          "numerator": 29,
-          "denominator": 10
+          "numerator": 4,
+          "denominator": 1
         },
         "work_fraction": {
-          "numerator": 29,
-          "denominator": 40
+          "numerator": 1,
+          "denominator": 1
         },
-        "work_percent_display": "72.50%",
-        "accepted_criteria": 2,
-        "acceptance_percent_display": "50.00%",
-        "phase_accepted": false
+        "work_percent_display": "100.00%",
+        "accepted_criteria": 4,
+        "acceptance_percent_display": "100.00%",
+        "phase_accepted": true
       }
     ]
+  },
+  "human_scope_amendments": [
+    {
+      "date": "2026-11-18",
+      "owner_target_response": "Aceptar PostgreSQL actual como entorno definitivo",
+      "owner_final_response": "Aceptar ese alcance y registrar las mejoras pendientes",
+      "affected_literal_milestone": "P11.3.m2",
+      "historical_literal": "Aceptar despliegue/migración SQL Server 2019 institucional y restauración específica.",
+      "accepted_current_target": "PostgreSQL 16.16 on the current Coolify server",
+      "definition_text_weights_denominators_preserved": true,
+      "not_claimed": [
+        "New SQL2019 institutional commissioning",
+        "Full DBSIIE mapping",
+        "TikTok provider acceptance",
+        "Total-server disaster recovery guarantee"
+      ]
+    }
+  ],
+  "current_review": {
+    "checkpoint": "P11-P12-PostgreSQL-live-20261118",
+    "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
+    "scope": "Owner-accepted current PostgreSQL/Coolify institutional commissioning and P1-P10 agreed journeys; dated isolated DB/media restore and compatible frontend rollback; local daily backups only with offsite/key custody/RPO-RTO residual limits explicitly accepted; SIIE P16 and TikTok P17 deferred; historical SQL2019 scope retained without recertification",
+    "prior_evidence_scopes_retained": true,
+    "historical_full_replay_claimed": false
+  },
+  "historical_review_summary": {
+    "checkpoint": "P3-ES",
+    "historical_source_preimages_preserved": true,
+    "fixed_definition_unchanged": true,
+    "provider_operation_or_institutional_production_accepted": false
   }
 }

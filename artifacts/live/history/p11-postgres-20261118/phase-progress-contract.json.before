@@ -1,0 +1,2577 @@
+{
+  "schema_version": "canonical-phase-criteria-v1",
+  "defined_in_unit": "SQL-C12",
+  "date": "2026-11-18",
+  "timezone": "America/Bogota",
+  "status": "P10_technical_lifecycle_closed_P11_institutional_partial",
+  "measurement_label": "Porcentaje de criterios canónicos aceptados por fase",
+  "meaning": "Cuenta criterios cerrados con evidencia en su alcance declarado. No mide horas, esfuerzo, porcentaje de funcionalidad real, calidad, entrega de proveedores ni preparación institucional. Un0% puede coexistir con subconjuntos funcionales probados.",
+  "human_request": "El propietario pidió porcentajes por fase; este contrato sustituye la anterior omisión de porcentajes sólo para el reporte, sin cambiar los criterios de cierre.",
+  "basis": {
+    "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+    "section": "Unidades y aceptación por etapa",
+    "canonical_definition_sha256": "73f41cc7883e5d9264e65615476d1bf8a48e0723ebea862e0607e16a750ebb6e",
+    "unit_count": 44,
+    "closure_count": 12,
+    "fixed_criteria_total": 56,
+    "counts_by_phase": {
+      "P0": 5,
+      "P1": 5,
+      "P2": 5,
+      "P3": 5,
+      "P4": 5,
+      "P5": 4,
+      "P6": 5,
+      "P7": 5,
+      "P8": 4,
+      "P9": 4,
+      "P10": 5,
+      "P11": 4
+    },
+    "hash_scope": "SHA256 de IDs/textos exactos de las44 unidades y12 cierres, serializados JSON UTF8 sort_keys/separators compactos. Las cabeceras de avance del roadmap no forman parte de esta huella."
+  },
+  "counting_policy": {
+    "criterion_weight": 1,
+    "accepted_credit": 1,
+    "partial_credit": 0,
+    "pending_credit": 0,
+    "blocked_credit": 0,
+    "phase_formula": "100 * accepted_criteria / fixed_criteria_in_that_phase",
+    "store_exact_fraction": true,
+    "rounding": "ROUND_HALF_UP sólo en presentación con2 decimales; nunca sumar porcentajes redondeados.",
+    "accepted_requires": [
+      "Todo el criterio dentro de su alcance canónico explícito.",
+      "Evidencia pública enlazada, comprobada y con límites.",
+      "Alcance accepted_scope explícito para los hitos offline P1.1/P1.2/P1.3.",
+      "Cierre de fase exige todas sus unidades y cierres de dependencias aceptados."
+    ],
+    "phase_closed_only_when_all_criteria_accepted": true,
+    "dependencies_gate_phase_closure_not_independent_scoped_experiments": true,
+    "no_extra_credit_from": [
+      "Cantidad de tests",
+      "Número de tablas/FK",
+      "Cortes SQL-C3 a SQL-C12",
+      "Código existente sin aceptación",
+      "Criterio parcial",
+      "Nodos/findings de reporte de este ledger"
+    ],
+    "definition_changes": "No añadir/quitar/dividir/reponderar criterios para mejorar el porcentaje. Cambiar unidades/cierres requiere versión y transición explícitas con preimagen/nueva definición y motivo; no rebaselining silencioso.",
+    "evidence_updates": "Un cambio de estado requiere fuente nueva y reevaluación íntegra del criterio; los avances parciales se conservan como evidencia sin crédito."
+  },
+  "phases": [
+    {
+      "id": "P0",
+      "title": "Inventario y continuidad",
+      "depends_on": [],
+      "criteria": [
+        {
+          "id": "P0.1",
+          "kind": "canonical_unit",
+          "requirement": "fijar origen/destino, decisiones, exclusiones y estado previo sin sobrescribir el trabajo existente.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P0",
+            "selector": "canonical bold unit P0.1",
+            "line_at_assessment": 166,
+            "canonical_text_sha256": "b7c5eed1cdb0af7e522a69cb3f7bb8ca171cf1fbbb14be685a4ee6c6a0554660"
+          },
+          "accepted_scope": "documentation_decisions_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/scope.json",
+              "source_location": "$.product_decisions",
+              "scope": "Decisiones de origen/destino y adaptación educativa documentadas."
+            },
+            {
+              "file": "docs/adaptation/scope.json",
+              "source_location": "$.exclusions",
+              "scope": "Exclusiones fijadas sin sobrescribir el origen."
+            },
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.scope",
+              "scope": "Corte P0 sólo documentación/grafos."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P0.2",
+          "kind": "canonical_unit",
+          "requirement": "generar el grafo AST de código activo, actualizar la referencia Scentra y construir el grafo comparativo con evidencia y etapas.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P0",
+            "selector": "canonical bold unit P0.2",
+            "line_at_assessment": 167,
+            "canonical_text_sha256": "77b30ebfbbb0ec60a65e381e77099432ad1b30530267f9346f64061746a953a7"
+          },
+          "accepted_scope": "documentation_graphs_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.graph_diagnostics",
+              "scope": "Grafo AST y comparativo con extremos/duplicados comprobados."
+            },
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.phases",
+              "scope": "Doce fases inventariadas."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P0.3",
+          "kind": "canonical_unit",
+          "requirement": "documentar matriz, riesgos, ruta de lectura, tareas y comandos de reconstrucción/verificación.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P0",
+            "selector": "canonical bold unit P0.3",
+            "line_at_assessment": 168,
+            "canonical_text_sha256": "445c5460bee3556fddc935f0654eb89059a98e3e09f094fbecafbc9c1864368e"
+          },
+          "accepted_scope": "documentation_continuity_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/PARITY_MATRIX.md",
+              "source_location": "L1",
+              "scope": "Matriz de paridad y evidencias."
+            },
+            {
+              "file": "docs/adaptation/GRAPH_GUIDE.md",
+              "source_location": "L1",
+              "scope": "Ruta de lectura y grafos."
+            },
+            {
+              "file": "docs/adaptation/RESUME.md",
+              "source_location": "L3",
+              "scope": "Continuidad y siguiente corte; selector de sección Retomar después de SQL-C11."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P0.4",
+          "kind": "canonical_unit",
+          "requirement": "comprobar JSON, referencias, fases sin ciclos, hashes, enlaces, integridad de grafos y apertura de sus HTML; registrar límites.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P0",
+            "selector": "canonical bold unit P0.4",
+            "line_at_assessment": 169,
+            "canonical_text_sha256": "845e3ebc8c351f9d10c6c7a707ff91602f73bea99b3f28d1978fc2498855fad6"
+          },
+          "accepted_scope": "documentation_validation_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.local_markdown_links_checked",
+              "scope": "276 enlaces comprobados en el corte P0."
+            },
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.graph_diagnostics",
+              "scope": "Integridad JSON/grafos y fases comprobada."
+            },
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.graph_browser",
+              "scope": "HTML de ambos grafos abierto, sin afirmar prueba de la app."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P0.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** otro agente puede ubicar el siguiente paso desde `AGENTS.md`, memoria y tarea sin consultar la conversación. Ninguna capacidad P1–P11 se presenta como implementada. **Reversión:** retirar únicamente los artefactos de planificación nuevos de este corte, preservando informes históricos y cambios anteriores.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P0",
+            "selector": "**Cierre:** within ### P0",
+            "line_at_assessment": 171,
+            "canonical_text_sha256": "e759f899c1fb7650bd7a416d2b6f9f5a8df273e2e9d04e82e1290dc3e45a0e5d"
+          },
+          "accepted_scope": "initial_planning_closure_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.independent_reader_review",
+              "scope": "Revisión de lector independiente y corrección de asignación churn."
+            },
+            {
+              "file": "docs/adaptation/validation.json",
+              "source_location": "$.not_run",
+              "scope": "Se distinguen planificación y capacidades posteriores no ejecutadas en P0."
+            },
+            {
+              "file": "docs/adaptation/RESUME.md",
+              "source_location": "L3",
+              "scope": "Ruta de reanudación pública y próximo paso conservados."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p0",
+      "graph_node_id": "phase_criteria_p0"
+    },
+    {
+      "id": "P1",
+      "title": "Base SQL Server 2019 y Docker",
+      "depends_on": [
+        "P0"
+      ],
+      "criteria": [
+        {
+          "id": "P1.1",
+          "kind": "canonical_unit",
+          "requirement": "inventario de **19 migraciones destino** (001–009 y 011–020; 010 no existe), objetos/contratos/guards/runners y mapeo de las 68 tablas declaradas. La cifra 20 del plan P0 confundía el máximo ordinal con el número de archivos. [Resultado y límites](adaptation/sql/P1_1_REVIEW.md), sin DDL ni conexión.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P1",
+            "selector": "canonical bold unit P1.1",
+            "line_at_assessment": 175,
+            "canonical_text_sha256": "cc9f79554ee557451d5582d29ea9614f0bc2a46535500237fbe64b2aebc7b21d"
+          },
+          "accepted_scope": "complete_static_inventory_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/validation.json",
+              "source_location": "$.final_status",
+              "scope": "P1.1_complete_static_only."
+            },
+            {
+              "file": "docs/adaptation/sql/validation.json",
+              "source_location": "$.inventory_summary",
+              "scope": "19 fuentes,9runners y68tablas declaradas; no esquema conectado."
+            },
+            {
+              "file": "docs/adaptation/sql/P1_1_REVIEW.md",
+              "source_location": "L44",
+              "scope": "Cierre explícito documental del inventario."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P1.2",
+          "kind": "canonical_unit",
+          "requirement": "perfil SQL independiente de modo, DNS/TCP e identidad institucional explícitos, TLS fijo, validación SQL 2019/compatibilidad/principales antes de negocio; marker/forma local y permisos mínimos preservados. Workspace institucional bloqueado antes del transporte. [Contrato y evidencia](adaptation/sql/P1_2_CONTRACT.md). La aceptación conectada de TLS, versión/edición/compatibilidad y nombres reales requiere copia autorizada; sigue pendiente y no cambia compatibilidad automáticamente.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P1",
+            "selector": "canonical bold unit P1.2",
+            "line_at_assessment": 176,
+            "canonical_text_sha256": "9f52ec904b4bedcf26cc9b498d9ee537b292799f93c9bb0c8739be18360a22d1"
+          },
+          "accepted_scope": "implemented_tested_offline_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/P1_2_CONTRACT.md",
+              "source_location": "L3",
+              "scope": "Contrato implementado/verificado offline; P1 general abierto."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_2_validation.json",
+              "source_location": "$.tests.new_contract_cases_passed",
+              "scope": "72 casos nuevos de contrato verdes; no IO real."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_2_validation.json",
+              "source_location": "$.tests.known_unrelated_failures",
+              "scope": "Dos fallos previos ajenos registrados, sin fingir suite integral verde."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_2_validation.json",
+              "source_location": "$.connected_acceptance",
+              "scope": "Aceptación conectada institucional todavía pendiente."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P1.3",
+          "kind": "canonical_unit",
+          "requirement": "secuencia de 19 fuentes/18 grupos institucionales propuestos, historial atómico/adopción/reconciliación, drift por modelo final y recuperación acotada preservando SIIE. [Plan/manifiesto/evidencia](adaptation/sql/P1_3_MIGRATION_PLAN.md). No hay SQL institucional/runner ni ensayo conectado implementados. Los históricos permanecen intactos; su implementación posterior requiere unidad explícita y no es una aplicación automática.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P1",
+            "selector": "canonical bold unit P1.3",
+            "line_at_assessment": 177,
+            "canonical_text_sha256": "1a669b5473745017a5d4b3cd3ebc3e095ce6060029f7e1d168403c185f895e5d"
+          },
+          "accepted_scope": "defined_reviewed_verified_offline_only",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/p1_3_validation.json",
+              "source_location": "$.definition_checks.positive_validation",
+              "scope": "Definición/manifiesto positivo aprobado."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_3_validation.json",
+              "source_location": "$.definition_checks.negative_checks_passed",
+              "scope": "12 negativos documentales; no runner ni SQL institucional."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_3_validation.json",
+              "source_location": "$.independent_review",
+              "scope": "Revisión semántica de orden, deriva, historial y reversión."
+            },
+            {
+              "file": "docs/adaptation/sql/p1_3_validation.json",
+              "source_location": "$.limitations",
+              "scope": "No convertir este cierre de diseño en implementación institucional."
+            }
+          ],
+          "remaining_scope": "Este criterio conserva su alcance documental/offline explícito; no acepta por sí mismo la fase institucional."
+        },
+        {
+          "id": "P1.4",
+          "kind": "canonical_unit",
+          "requirement": "separar receta de desarrollo de imagen institucional; comprobar volúmenes IA/media, configuración, secretos, salud, reinicio y recuperación de workers.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P1",
+            "selector": "canonical bold unit P1.4",
+            "line_at_assessment": 198,
+            "canonical_text_sha256": "0c088d21ce89d986b111cd4bedbe707bb5a196833a027f12e50a90b624fbf706"
+          },
+          "remaining_scope": "Criterio P1.4 completo en la composición autónoma de ensayo: receta sin HMR/binds, volúmenes IA/media, perfil/secretos, salud, reinicio y recuperación durable local. Esto no acepta motor15/SQL2019 ni sus migraciones, entrega externa o identidad institucional; esas puertas permanecen en P1.close/P2/P4/P8/P11.",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/sql_c5_validation.json",
+              "source_location": "$.status",
+              "scope": "C5 limita su aceptación al runtime/UI foundation local."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c9_validation.json",
+              "source_location": "$.status",
+              "scope": "C9 es composición independiente de Canales, no imagen institucional."
+            },
+            {
+              "file": "artifacts/sql-c13/build-materials.json",
+              "source_location": "$.clean_build",
+              "scope": "Build autónomo sin caché desde bases oficiales, ODBC18 fijado, sin base de desarrollo; imagen anterior compatible con perfil actual."
+            },
+            {
+              "file": "artifacts/sql-c13/build-materials.json",
+              "source_location": "$.runtime",
+              "scope": "Usuario10001, raízRO, loopback4176, perfiles/CA RO y volúmenes IA/media propios; health SQL sin DDL de arranque."
+            },
+            {
+              "file": "artifacts/sql-c13/runtime-drill.json",
+              "source_location": "$.checks",
+              "scope": "16 comprobaciones reales: persistencia, recreación, claim/efecto bajo SIGKILL, lease y reconciliación una vez; evidencia discrepante uncertain sin reintento. No proveedor ni fallo eléctrico."
+            },
+            {
+              "file": "artifacts/sql-c13/http-checks.json",
+              "source_location": "$.checks",
+              "scope": "25 HTTP: bootstrap/session/Host/Origin, CRM/config/Inbox, replay/conflicto y texto local, bloqueos de proveedor."
+            },
+            {
+              "file": "artifacts/sql-c13/sql-audit.json",
+              "source_location": "$.checks",
+              "scope": "15 SQL: permisos columna/academia, drift y preservación de cinco fuentes;50 tablas/44180 filas académicas, diario17 sin cambio."
+            },
+            {
+              "file": "artifacts/sql-c13/offline-checks.json",
+              "source_location": "$.offline_tests",
+              "scope": "265 backend=23 C13+242 regresiones;52 frontend=11 C13+41 regresiones; suite general no recertificada."
+            },
+            {
+              "file": "docs/adaptation/sql/SQL_C13_REVIEW.md",
+              "source_location": "L15",
+              "scope": "Aceptación acotada del sprint Docker P1.4; P1.close sigue pendiente de copia restaurable SQL2019 real."
+            }
+          ],
+          "accepted_scope": "autonomous_image_local_volumes_profile_health_restart_and_durable_local_worker_recovery",
+          "accepted_at_checkpoint": "SQL-C13"
+        },
+        {
+          "id": "P1.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** contratos y migraciones aceptados en una copia restaurable SQL Server 2019; guards negativos, reintento y conflictos comprobados; sin DDL automático al arranque. **Reversión:** versión anterior de aplicación más reversión de la migración específica; restauración ensayada antes de la primera aplicación. No borrar registros existentes para volver a una versión.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P1",
+            "selector": "**Cierre:** within ### P1",
+            "line_at_assessment": 180,
+            "canonical_text_sha256": "7abf5e5005d3000e5950bcc0ef739115beade43e669787f1f53add62dc1b8cd6"
+          },
+          "remaining_scope": "P1 technical foundation complete. P2 migration/profile/UI and Spanish-name runtime binding, full DBSIIE data/business objects and institutional acceptance stay in their respective phases.",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/sql_c11_validation.json",
+              "source_location": "$.status",
+              "scope": "Esquema local restaurado aceptado sólo en su alcance."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c11_validation.json",
+              "source_location": "$.institutional_sql2019_accepted",
+              "scope": "false; motor local16/160 no certifica2019."
+            },
+            {
+              "file": "artifacts/p1-es/connected-result.json",
+              "source_location": "$.scenarios",
+              "scope": "ActualSQL2019 restored-first migration, journal/NOOP, failures, drift, concurrency, recovery, rollback, restart and preservation."
+            },
+            {
+              "file": "artifacts/p1-es/acceptance-review.json",
+              "source_location": "$",
+              "scope": "Semantic review of connected evidence with limits; technical foundation only."
+            }
+          ],
+          "accepted_scope": "technical_foundation_SQL2019_15_150_native_restored_isolated_98_plus_journal_release_not_institutional_production"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p1",
+      "graph_node_id": "phase_criteria_p1"
+    },
+    {
+      "id": "P2",
+      "title": "Ajustes, usuarios y permisos institucionales",
+      "depends_on": [
+        "P1"
+      ],
+      "criteria": [
+        {
+          "id": "P2.1",
+          "kind": "canonical_unit",
+          "requirement": "mapear ajustes Scentra → ajustes CBN; mantener proveedores/modelos y canales existentes. Incorporar perfil institucional, módulos y webhooks con validación, permisos y persistencia.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P2",
+            "selector": "canonical bold unit P2.1",
+            "line_at_assessment": 186,
+            "canonical_text_sha256": "1fb2260bb483fc0edbc0d83ef78ea66d8d20f060c25b16848a9e4da101511fba"
+          },
+          "remaining_scope": "Provider operation, complete educational integration and institutional production remain in their later canonical phases.",
+          "evidence": [
+            {
+              "file": "artifacts/p2-es/acceptance-review.json",
+              "source_location": "$.criteria.P2.1",
+              "scope": "Seven source settings groups, typed institutional/profile/AI/models/channel/webhook/module/budget/CRM configuration; SQL revisions/history/CAS, encrypted write-only credentials and one model/endpoint authority."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_institutional_administration"
+        },
+        {
+          "id": "P2.2",
+          "kind": "canonical_unit",
+          "requirement": "implementar cuentas, sesiones revocables y roles/acciones; distinguir empleado SIIE, usuario de acceso y agente IA. No usar el registro de empleados como una sesión autenticada.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P2",
+            "selector": "canonical bold unit P2.2",
+            "line_at_assessment": 187,
+            "canonical_text_sha256": "24c9edba20a8bf9f1d19b521d056a88174b5df345aa6984de0d2e647e47b5c09"
+          },
+          "remaining_scope": "Provider operation, complete educational integration and institutional production remain in their later canonical phases.",
+          "evidence": [
+            {
+              "file": "artifacts/p2-es/acceptance-review.json",
+              "source_location": "$.criteria.P2.2",
+              "scope": "Human access accounts separated from employee registry and AI agents; opaque revocable SQL sessions, roles, current-password confirmation, TOTP/recovery/invite/reset, useful owner safety and lifecycle races."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_institutional_administration"
+        },
+        {
+          "id": "P2.3",
+          "kind": "canonical_unit",
+          "requirement": "sustituir dependencias comerciales por disponibilidad institucional explícita. Inventariar imports/consultas de billing antes de portar cada módulo; mantener cuotas técnicas, presupuestos y controles de proveedor.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P2",
+            "selector": "canonical bold unit P2.3",
+            "line_at_assessment": 188,
+            "canonical_text_sha256": "b7e4d0606ca18a3b484e808c21f5af0a71e916077c992d315cbea6f8d2211a9e"
+          },
+          "remaining_scope": "Provider operation, complete educational integration and institutional production remain in their later canonical phases.",
+          "evidence": [
+            {
+              "file": "artifacts/p2-es/acceptance-review.json",
+              "source_location": "$.criteria.P2.3",
+              "scope": "Explicit institutional availability and local request/integration capacity; technical daily provider budgets preserved/configured. Billing/plan/checkout/WooCommerce routes absent. External budget consumption remains unavailable with providers disabled."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_institutional_administration"
+        },
+        {
+          "id": "P2.4",
+          "kind": "canonical_unit",
+          "requirement": "documentar autorización de cada endpoint y auditoría; configurar quién puede administrar agentes, fuentes, campañas, publicidad y usuarios.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P2",
+            "selector": "canonical bold unit P2.4",
+            "line_at_assessment": 189,
+            "canonical_text_sha256": "f1b1312ae35ecd73b2a5fb080c092bb76a51247a391ed6c9316a3caa3c68cb30"
+          },
+          "remaining_scope": "Provider operation, complete educational integration and institutional production remain in their later canonical phases.",
+          "evidence": [
+            {
+              "file": "artifacts/p2-es/acceptance-review.json",
+              "source_location": "$.criteria.P2.4",
+              "scope": "55 installed method/path rows and30 actions documented. Durable SQL role/action checks and append-only audit, denied valid DTOs, five administrative domains configured through UI."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_institutional_administration"
+        },
+        {
+          "id": "P2.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** un usuario sin permiso no puede leer o cambiar el recurso protegido por acceso directo; sesión cerrada/revocada deja de funcionar; ajustes sobreviven a reinicio; no aparecen plan/cobro/checkout. **Reversión:** restaurar configuración y versión previa sin perder cuentas/auditoría; no abrir rutas para solucionar incompatibilidades.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P2",
+            "selector": "**Cierre:** within ### P2",
+            "line_at_assessment": 191,
+            "canonical_text_sha256": "1f46df21ce53d233bf3d37ae8c67921981cfa76cd2260c1556c2408e6b9b5cd6"
+          },
+          "remaining_scope": "Provider operation, complete educational integration and institutional production remain in their later canonical phases.",
+          "evidence": [
+            {
+              "file": "artifacts/p2-es/acceptance-review.json",
+              "source_location": "$.criteria.P2.close",
+              "scope": "Direct denials, effective revocation/logout, restart persistence, full settings UI, populated native restore and compatible previous consumer preserve checkpoint accounts/audit without opening routes."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_institutional_administration"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p2",
+      "graph_node_id": "phase_criteria_p2"
+    },
+    {
+      "id": "P3",
+      "title": "Inbox, mini CRM y CRM",
+      "depends_on": [
+        "P1",
+        "P2"
+      ],
+      "criteria": [
+        {
+          "id": "P3.1",
+          "kind": "canonical_unit",
+          "requirement": "contrastar filtros, paginación, no leídos, asignación, control humano, lectura, borradores y conflictos por conversación.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P3",
+            "selector": "canonical bold unit P3.1",
+            "line_at_assessment": 195,
+            "canonical_text_sha256": "dba1ee28c24e64ae9ed2dea0eba8a8df6781d6464a2eec81ee142c4f0d8f4ba5"
+          },
+          "remaining_scope": "Canonical local P3 complete. Providers, AI agent execution, automatic campaigns/trained inference and institutional production retain their later phases and explicit parity bounds.",
+          "evidence": [
+            {
+              "file": "artifacts/p3-es/acceptance-review.json",
+              "source_location": "$.criteria.P3.1",
+              "scope": "Inbox SQL filters/queues/channel/stage before paging, eligible human users, observed read sequence, CAS conflicts, safe epoch handoff, persistent in-session drafts, uncertain command replay and browser keyboard/mobile/error paths."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_Inbox_CRM_risk_surface"
+        },
+        {
+          "id": "P3.2",
+          "kind": "canonical_unit",
+          "requirement": "completar ficha compartida, etapas, etiquetas, campos, notas, actividad y tareas. Una sola zona por dato: edición en el lugar correspondiente, sin bloque completo no editable arriba y formulario repetido abajo. Conservar identidad educativa y unificación reversible; no crear otra ficha de la misma persona.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P3",
+            "selector": "canonical bold unit P3.2",
+            "line_at_assessment": 196,
+            "canonical_text_sha256": "534793d878acb738597e9ac5475d225466216e49ff398c1fc22f996d4b5db76d"
+          },
+          "remaining_scope": "Canonical local P3 complete. Providers, AI agent execution, automatic campaigns/trained inference and institutional production retain their later phases and explicit parity bounds.",
+          "evidence": [
+            {
+              "file": "artifacts/p3-es/acceptance-review.json",
+              "source_location": "$.criteria.P3.2",
+              "scope": "One editable shared CRM/Inbox ficha, institutional stage/tag/custom definitions, append-only notes, paginated tasks/activity, current human authority, academic origin preserved and reversible alias merge without reparenting or deleting originals."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_Inbox_CRM_risk_surface"
+        },
+        {
+          "id": "P3.3",
+          "kind": "canonical_unit",
+          "requirement": "llevar listados Clientes y tareas a consultas SQL paginadas cuando corresponda; no cargar el workspace completo para filtrar en memoria.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P3",
+            "selector": "canonical bold unit P3.3",
+            "line_at_assessment": 197,
+            "canonical_text_sha256": "37ae4e4f9f09e2884ed7e22497b94a4aa37dc97a0d2793ff4a4127484f38df89"
+          },
+          "remaining_scope": "Canonical local P3 complete. Providers, AI agent execution, automatic campaigns/trained inference and institutional production retain their later phases and explicit parity bounds.",
+          "evidence": [
+            {
+              "file": "artifacts/p3-es/acceptance-review.json",
+              "source_location": "$.criteria.P3.3",
+              "scope": "Independent filtered SQL queries for clients and tasks (25/page) and numeric bigint message cursor(50/page), required revision anchor on later pages, stale anchor rejection,602-contact volume and draft-preserving UI."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_Inbox_CRM_risk_surface"
+        },
+        {
+          "id": "P3.4",
+          "kind": "canonical_unit",
+          "requirement": "comparar el mini CRM con Scentra, separando valores manuales, reglas y predicciones evaluadas. Diseñar y conectar el resumen de riesgo de abandono existente cuando sea válido: estado, razones, fecha y siguiente acción; datos insuficientes muestran «Sin evaluación». La inferencia entrenada se cierra en P10; no se difiere toda la superficie de churn hasta entonces.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P3",
+            "selector": "canonical bold unit P3.4",
+            "line_at_assessment": 198,
+            "canonical_text_sha256": "123f67acc4357e4be7c604531e0ec024674d06b66cc6dc289837922dc8bf53ea"
+          },
+          "remaining_scope": "Canonical local P3 complete. Providers, AI agent execution, automatic campaigns/trained inference and institutional production retain their later phases and explicit parity bounds.",
+          "evidence": [
+            {
+              "file": "artifacts/p3-es/acceptance-review.json",
+              "source_location": "$.criteria.P3.4",
+              "scope": "Shared risk read model for CRM/Inbox/miniCRM with same identity/conversation/watermark/stage/freshness, state/reasons/date/next action, unknown safe, manual interest and SLA separate. Existing completed-rule evidence tested with an explicit synthetic fixture; trained inference remains P10."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_Inbox_CRM_risk_surface"
+        },
+        {
+          "id": "P3.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** misma acción produce datos coherentes en Clientes/Inbox y SQL; ficha sin duplicación lectura/formulario; ayuda extensa y detalle técnico colapsados; resumen operativo y churn identifican origen y frescura; filtros antes de paginar, borradores conservados y handoff seguro. Glass funciona con teclado y móvil. Contrato detallado: [organización de información](adaptation/INFORMATION_DESIGN.md). **Reversión:** contrato aditivo y cambio de consumidor reversible; no reparentar/borrar contactos para restaurar la UI.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P3",
+            "selector": "**Cierre:** within ### P3",
+            "line_at_assessment": 200,
+            "canonical_text_sha256": "af07cfa392ef95bb3bf834f5a2fad52661cff1231f4867c88967cec407d62dfa"
+          },
+          "remaining_scope": "Canonical local P3 complete. Providers, AI agent execution, automatic campaigns/trained inference and institutional production retain their later phases and explicit parity bounds.",
+          "evidence": [
+            {
+              "file": "artifacts/p3-es/acceptance-review.json",
+              "source_location": "$.criteria.P3.close",
+              "scope": "Coherent shared edits, one ficha, collapsed technical detail, authoritative roles/modules, safe handoff and response-loss retry, desktop/mobile/keyboard, clean profile, restart, populated native restore and independent earlier consumer preserved. P1/P2 frozen checkers replayed without weakening them."
+            }
+          ],
+          "accepted_scope": "actual_SQL2019_own_Spanish_Inbox_CRM_risk_surface"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p3",
+      "graph_node_id": "phase_criteria_p3"
+    },
+    {
+      "id": "P4",
+      "title": "Comentarios, canales y webhooks",
+      "depends_on": [
+        "P2",
+        "P3"
+      ],
+      "criteria": [
+        {
+          "id": "P4.1",
+          "kind": "canonical_unit",
+          "requirement": "conectar la vista Comentarios con las rutas y tabla existentes; completar filtros, estados y conversión a CRM según la referencia.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P4",
+            "selector": "canonical bold unit P4.1",
+            "line_at_assessment": 204,
+            "canonical_text_sha256": "1c2c145a8277fefaeea3256f5f082d21a1b409c8de708b8d752e86f6e4cb0f8f"
+          },
+          "remaining_scope": "Local criterion accepted; real provider accounts remain outside this acceptance.",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/sql_c8_validation.json",
+              "source_location": "$.status",
+              "scope": "Repositorios/API local con datos sintéticos y permisos acotados."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c9_validation.json",
+              "source_location": "$.status",
+              "scope": "UI de comentarios sólo lectura."
+            },
+            {
+              "file": "artifacts/p4-es/acceptance-review.json",
+              "source_location": "$.criteria.P4.1",
+              "scope": "SQL2019_local_comments_filters_state_conversion_UI_and_controlled_provider_effects"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_comments_filters_state_conversion_UI_and_controlled_provider_effects"
+        },
+        {
+          "id": "P4.2",
+          "kind": "canonical_unit",
+          "requirement": "mapear respuesta pública/privada, reacción y asistencia IA por canal y capacidad real; reutilizar outbox, firmas y recibos existentes.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P4",
+            "selector": "canonical bold unit P4.2",
+            "line_at_assessment": 205,
+            "canonical_text_sha256": "5c43f21fae1c741aa38a1b5e4ff679d820e6d66ff630cb2c1f302fa51d8da4a7"
+          },
+          "remaining_scope": "Local criterion accepted; real provider accounts remain outside this acceptance.",
+          "evidence": [
+            {
+              "file": "artifacts/p4-es/acceptance-review.json",
+              "source_location": "$.criteria.P4.2",
+              "scope": "real_capability_mapping_and_local_single_outbox_signed_receipts_human_AI_draft_with_controlled_provider_transport"
+            }
+          ],
+          "accepted_scope": "real_capability_mapping_and_local_single_outbox_signed_receipts_human_AI_draft_with_controlled_provider_transport"
+        },
+        {
+          "id": "P4.3",
+          "kind": "canonical_unit",
+          "requirement": "unificar ajustes/diagnóstico de cuentas, webhooks, identidad externa, adjuntos y estados de entrega. Relacionar callback y configuración sin exponer secretos.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P4",
+            "selector": "canonical bold unit P4.3",
+            "line_at_assessment": 206,
+            "canonical_text_sha256": "5ee7d7f65a66c9caf610ea9d9ed05714f0078ae8df5541a029607445dc3dffcc"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/sql_c9_validation.json",
+              "source_location": "$.status",
+              "scope": "UI Canales de alcance limitado."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c10_validation.json",
+              "source_location": "$.status",
+              "scope": "Contrato de paridad sólo definido offline."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c11_validation.json",
+              "source_location": "$.status",
+              "scope": "Estructura nueva en restauraciones; no cuentas promovidas ni proveedores."
+            },
+            {
+              "file": "artifacts/sql-c12/connected-result.json",
+              "source_location": "$.preparation.mapping",
+              "scope": "C12:23bindings deterministas,2 aplicaciones/integraciones en borrador,2 secretos recifrados y recibo/cola en cuarentena; no cierre P4."
+            },
+            {
+              "file": "artifacts/sql-c12/connected-result.json",
+              "source_location": "$.API_SQL_checks",
+              "scope": "47 pruebas SQL/API de repositorios locales; no UI completa ni proveedor."
+            },
+            {
+              "file": "artifacts/sql-c12/connected-result.json",
+              "source_location": "$.fault_checks",
+              "scope": "15 fallos/drift/recuperación; claves y targets validados en NOOP."
+            },
+            {
+              "file": "artifacts/sql-c12/preservation.json",
+              "source_location": "$.existing_previews_modified",
+              "scope": "false:4173 C5 y4175 C9 conservan su alcance."
+            },
+            {
+              "file": "artifacts/sql-c12/offline-checks.json",
+              "source_location": "$.offline_tests",
+              "scope": "42 nuevas+200 regresiones=242; no suite general recertificada."
+            },
+            {
+              "file": "artifacts/p4-es/acceptance-review.json",
+              "source_location": "$.criteria.P4.3",
+              "scope": "real_OAuth_numbers_tokens_media_callback_identity_delivery_per_channel"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.3",
+              "scope": "Real Meta OAuth/assets/tokens/callback/identity/receipts plus prior confirmed WhatsApp inbound/outbound multimedia and current institutional CBN roundtrip. TikTok explicitly assigned to P16 by owner."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        },
+        {
+          "id": "P4.4",
+          "kind": "canonical_unit",
+          "requirement": "probar deduplicación, firma inválida, comentario eliminado, cuenta desactivada, mensajes repetidos y recuperación; pruebas externas sólo en entorno de aceptación autorizado.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P4",
+            "selector": "canonical bold unit P4.4",
+            "line_at_assessment": 207,
+            "canonical_text_sha256": "db076301b259f89479194c0afad7377337bf5231e77c3c33f80afaebbb808bf0"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "artifacts/p4-es/acceptance-review.json",
+              "source_location": "$.criteria.P4.4",
+              "scope": "authorized_real_provider_recovery_and_uncertainty_per_channel"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.4",
+              "scope": "Prior real per-channel pause/quarantine/recovery, Facebook edit/delete, current HTTP invalid signature and exact duplicate rejection, honest Instagram source reconciliation, live unmatched receipt retention and bounded retry refusal. Unknown-effect race guards are controlled regressions, not forced production loss of an accepted POST."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        },
+        {
+          "id": "P4.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** UI y datos reales están conectados; reintentos no duplican acciones; un POST aceptado no se presenta como mensaje entregado; funciones no soportadas se explican. **Reversión:** pausar entradas/salidas afectadas y conservar eventos para recuperación; no vaciar colas.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P4",
+            "selector": "**Cierre:** within ### P4",
+            "line_at_assessment": 209,
+            "canonical_text_sha256": "bcc483f7a1d5901031ee7de46139bd798b2055ef890972ce9e77e17f63bdcc58"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "docs/adaptation/sql/sql_c9_validation.json",
+              "source_location": "$.status",
+              "scope": "C9 configuración/lectura con acciones proveedor bloqueadas."
+            },
+            {
+              "file": "docs/adaptation/sql/sql_c11_validation.json",
+              "source_location": "$.legacy_rows_copied_to_new_schema",
+              "scope": "false; el inventario B011 no es promoción ni operación."
+            },
+            {
+              "file": "artifacts/p4-es/acceptance-review.json",
+              "source_location": "$.criteria.P4.close",
+              "scope": "P4.3_and_P4.4_external_acceptance"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P4.close",
+              "scope": "Real UI/data wired; recovery retained original events/identities; one projection per receipt; no inferred delivery; unsupported/unavailable behavior explained; accounts restored and no pending outbox jobs. P2/P3 already accepted."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p4",
+      "graph_node_id": "phase_criteria_p4"
+    },
+    {
+      "id": "P5",
+      "title": "Agentes educativos",
+      "depends_on": [
+        "P2",
+        "P3"
+      ],
+      "criteria": [
+        {
+          "id": "P5.1",
+          "kind": "canonical_unit",
+          "requirement": "comparar constructor, instrucciones/variables, personalidad, objetivos, reglas, herramientas, canales, modelos, fallback y presupuestos.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P5",
+            "selector": "canonical bold unit P5.1",
+            "line_at_assessment": 213,
+            "canonical_text_sha256": "09e796037c31ded2349f3921252a3a3153d9df780787f9435f7f2044b8b581a0"
+          },
+          "remaining_scope": "Canonical local criterion accepted; external channel operation and later phases retain their own limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p5-es/acceptance-review.json",
+              "source_location": "$.criteria.P5.1",
+              "scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+        },
+        {
+          "id": "P5.2",
+          "kind": "canonical_unit",
+          "requirement": "conservar jerarquía, versiones, pausa, archivo y asignación desde Inbox; contrastar validaciones de preparación con Scentra. La decisión vigente de CBN permite usar un perfil válido al guardarlo y deja el diagnóstico opcional: no reinstalar una aprobación obligatoria adicional por copiar la referencia.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P5",
+            "selector": "canonical bold unit P5.2",
+            "line_at_assessment": 214,
+            "canonical_text_sha256": "5b0673b5421374718b900c8b9b829c63a274f2bd629ee2c7b56c3030678747a4"
+          },
+          "remaining_scope": "Canonical local criterion accepted; external channel operation and later phases retain their own limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p5-es/acceptance-review.json",
+              "source_location": "$.criteria.P5.2",
+              "scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+        },
+        {
+          "id": "P5.3",
+          "kind": "canonical_unit",
+          "requirement": "comprobar simulación del perfil elegido, un único propietario de respuesta, límites de contexto y transferencia humana concurrente.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P5",
+            "selector": "canonical bold unit P5.3",
+            "line_at_assessment": 215,
+            "canonical_text_sha256": "505d2ee8b4f15f349caa5a5838c5edc5701ee8a0102fa216534c8217dbacfe1a"
+          },
+          "remaining_scope": "Canonical local criterion accepted; external channel operation and later phases retain their own limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p5-es/acceptance-review.json",
+              "source_location": "$.criteria.P5.3",
+              "scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+        },
+        {
+          "id": "P5.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** agente inactivo/sin permisos o fuente de otro programa no ejecutan; el simulador usa el perfil seleccionado; no hay respuestas dobles. Guardar configuración válida conserva la disponibilidad definida en CBN y no habilita por sí solo respuestas automáticas del Inbox o proveedores. Las acciones sensibles y publicación de fuentes mantienen sus propios controles. **Reversión:** desactivar la versión nueva y restaurar la anterior manteniendo memorias, historial y asignaciones revisables.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P5",
+            "selector": "**Cierre:** within ### P5",
+            "line_at_assessment": 217,
+            "canonical_text_sha256": "cf0810f03786cfd50bed9b1c05794410f5d0a4c3a0ba155cf18e2358a0d16887"
+          },
+          "remaining_scope": "Canonical local criterion accepted; external channel operation and later phases retain their own limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p5-es/acceptance-review.json",
+              "source_location": "$.criteria.P5.close",
+              "scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_educational_agents_with_P2_P3_owned_controlled_provider_qualification"
+        }
+      ],
+      "completion": {
+        "accepted": 4,
+        "total": 4,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 4,
+          "denominator": 4
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p5",
+      "graph_node_id": "phase_criteria_p5"
+    },
+    {
+      "id": "P6",
+      "title": "Conocimiento, memoria colectiva y ADN institucional",
+      "depends_on": [
+        "P3",
+        "P5"
+      ],
+      "criteria": [
+        {
+          "id": "P6.1",
+          "kind": "canonical_unit",
+          "requirement": "contrastar fuentes, carga, extracción, publicación, búsqueda y citas; preservar la recuperación léxica útil y evaluar mejoras contra casos reales antes de elegir otra técnica.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P6",
+            "selector": "canonical bold unit P6.1",
+            "line_at_assessment": 221,
+            "canonical_text_sha256": "3290fdbf6539e4016a5ba60c80ef66594693fbccec5da8a28961433ad3060b4f"
+          },
+          "remaining_scope": "Canonical local P6 accepted. Later phases, full academic mapping and external channel acceptance retain their own scope.",
+          "evidence": [
+            {
+              "file": "artifacts/p6-es/acceptance-review.json",
+              "source_location": "$.criteria.P6.1",
+              "scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+        },
+        {
+          "id": "P6.2",
+          "kind": "canonical_unit",
+          "requirement": "implementar gestión de memoria colectiva institucional: contenido, ámbito, vigencia, visibilidad, revisión, archivo y auditoría, integrada al contexto de agentes.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P6",
+            "selector": "canonical bold unit P6.2",
+            "line_at_assessment": 222,
+            "canonical_text_sha256": "7e77d3d2ef05a87155e6fa96d17bc528470bcd17c7f9a860bb08afeda63bb024"
+          },
+          "remaining_scope": "Canonical local P6 accepted. Later phases, full academic mapping and external channel acceptance retain their own scope.",
+          "evidence": [
+            {
+              "file": "artifacts/p6-es/acceptance-review.json",
+              "source_location": "$.criteria.P6.2",
+              "scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+        },
+        {
+          "id": "P6.3",
+          "kind": "canonical_unit",
+          "requirement": "definir ADN institucional compartido y versiones de comportamiento sin confundirlo con catálogo/precios SIIE ni instrucciones particulares de un agente.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P6",
+            "selector": "canonical bold unit P6.3",
+            "line_at_assessment": 223,
+            "canonical_text_sha256": "24c011a232bb2c3dc7a2d92fbe2389075c05f7f2f1c61d51ecf6c396378e241f"
+          },
+          "remaining_scope": "Canonical local P6 accepted. Later phases, full academic mapping and external channel acceptance retain their own scope.",
+          "evidence": [
+            {
+              "file": "artifacts/p6-es/acceptance-review.json",
+              "source_location": "$.criteria.P6.3",
+              "scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+        },
+        {
+          "id": "P6.4",
+          "kind": "canonical_unit",
+          "requirement": "separar memoria de aspirante, conversación, programa, institución y memoria compartida; capturar origen y correcciones sin divulgar contenido privado entre aspirantes.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P6",
+            "selector": "canonical bold unit P6.4",
+            "line_at_assessment": 224,
+            "canonical_text_sha256": "20b6790d81902e1408d0879fe779d1bd74842a6d006089c4e62b4fda8364af2e"
+          },
+          "remaining_scope": "Canonical local P6 accepted. Later phases, full academic mapping and external channel acceptance retain their own scope.",
+          "evidence": [
+            {
+              "file": "artifacts/p6-es/acceptance-review.json",
+              "source_location": "$.criteria.P6.4",
+              "scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+        },
+        {
+          "id": "P6.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** respuesta verificable con fuente vigente; documentos no publicados/ajenos no entran al contexto; corrección y archivo cambian la versión efectiva; la autoridad académica sigue en SIIE. **Reversión:** volver a la versión de memoria/ADN aprobada y reconstruir únicamente índices derivados.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P6",
+            "selector": "**Cierre:** within ### P6",
+            "line_at_assessment": 226,
+            "canonical_text_sha256": "00cae1e1239288fdbbdad893c4b157869a95a60868e98fee0ccf45f817058a9d"
+          },
+          "remaining_scope": "Canonical local P6 accepted. Later phases, full academic mapping and external channel acceptance retain their own scope.",
+          "evidence": [
+            {
+              "file": "artifacts/p6-es/acceptance-review.json",
+              "source_location": "$.criteria.P6.close",
+              "scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_governed_PDF_TXT_lexical_sources_collective_DNA_private_context_with_controlled_provider_qualification"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p6",
+      "graph_node_id": "phase_criteria_p6"
+    },
+    {
+      "id": "P7",
+      "title": "Mensajería masiva",
+      "depends_on": [
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "criteria": [
+        {
+          "id": "P7.1",
+          "kind": "canonical_unit",
+          "requirement": "completar catálogo/estado de plantillas Meta, variables, audiencias, importación cuando la referencia la soporte y previsualización con conteos reales.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P7",
+            "selector": "canonical bold unit P7.1",
+            "line_at_assessment": 230,
+            "canonical_text_sha256": "ed406df163125ca168d4a35d93d0c0f760503f709c1ce375db47108692720575"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "artifacts/p7-es/acceptance-review.json",
+              "source_location": "$.criteria.P7.1",
+              "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.1",
+              "scope": "Real provider catalog and statuses, CRM variable mappings preserved through Meta reorder, approved custom template, media example submissions, audience/preview/scheduling and consent exclusions; provider review remains external."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        },
+        {
+          "id": "P7.2",
+          "kind": "canonical_unit",
+          "requirement": "implementar destinatarios y programación con consentimiento, exclusiones, cadencia y pausa; reemplazar conjuntamente las fronteras de transporte bloqueado por validación transaccional.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P7",
+            "selector": "canonical bold unit P7.2",
+            "line_at_assessment": 231,
+            "canonical_text_sha256": "aceafe4b7686355bdffc349d94875a786e88493d2ccd3d0e8c2e5f4bc5881d4f"
+          },
+          "remaining_scope": "Local criterion accepted with controlled C10 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p7-es/acceptance-review.json",
+              "source_location": "$.criteria.P7.2",
+              "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+        },
+        {
+          "id": "P7.3",
+          "kind": "canonical_unit",
+          "requirement": "reutilizar la única outbox; probar leases, reintentos, cancelación, resultado incierto, reconciliación y revalidación inmediatamente antes de enviar.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P7",
+            "selector": "canonical bold unit P7.3",
+            "line_at_assessment": 232,
+            "canonical_text_sha256": "fbda34ce794d7cf503b4b3cbf9ccb51106e55f5c5cea5eb4f8a24a3ccbe94a51"
+          },
+          "remaining_scope": "Local criterion accepted with controlled C10 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p7-es/acceptance-review.json",
+              "source_location": "$.criteria.P7.3",
+              "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+        },
+        {
+          "id": "P7.4",
+          "kind": "canonical_unit",
+          "requirement": "completar reporte, exportación y reintento selectivo, distinguiendo pendiente/aceptado/enviado/entregado/leído/fallido.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P7",
+            "selector": "canonical bold unit P7.4",
+            "line_at_assessment": 233,
+            "canonical_text_sha256": "29a1c9c1b3d852e75648f2fd8027862af226837409c59e6a46a0505a76133f5d"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "artifacts/p7-es/acceptance-review.json",
+              "source_location": "$.criteria.P7.4",
+              "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.4",
+              "scope": "Real read and failed reports match exported observations, quoted reply attribution, ID-bearing failures blocked from retry; controlled service tests reprepare only definitive unaccepted selected failures and block uncertain/running effects."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        },
+        {
+          "id": "P7.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** ensayo no productivo demuestra selección correcta, idempotencia y pausa efectiva; revocar consentimiento impide enviar aunque el destinatario se haya preparado antes. **Reversión:** pausar campaña/transporte, conservar outbox y recibos y reconciliar resultados inciertos antes de reintentar.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P7",
+            "selector": "**Cierre:** within ### P7",
+            "line_at_assessment": 235,
+            "canonical_text_sha256": "4509b12726cb671cc2eb5a9315531cb29c03f9c75967225a7434020fcf57c35d"
+          },
+          "remaining_scope": "No remaining work within this bounded Meta acceptance; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "artifacts/p7-es/acceptance-review.json",
+              "source_location": "$.criteria.P7.close",
+              "scope": "SQL2019_native_C10_controlled_broadcast_consent_cadence_schedule_outbox_idempotence_uncertainty_and_frontier_qualification"
+            },
+            {
+              "file": "artifacts/live/p4-p7-acceptance-20261118.json",
+              "source_location": "$.criteria_review.P7.close",
+              "scope": "Authorized free-account end-to-end campaign completed; consent revoked/cadence disabled; attempts/receipts preserved; real account pause/recovery plus prior controlled pause/revoke/frontier qualification. P2/P3/P4 dependencies reviewed."
+            }
+          ],
+          "accepted_scope": "owner_authorized_Meta_live_and_controlled_safety_acceptance_20261118"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p7",
+      "graph_node_id": "phase_criteria_p7"
+    },
+    {
+      "id": "P8",
+      "title": "Campañas CRM y remarketing",
+      "depends_on": [
+        "P5",
+        "P6",
+        "P7"
+      ],
+      "criteria": [
+        {
+          "id": "P8.1",
+          "kind": "canonical_unit",
+          "requirement": "completar campañas, plantillas CRM y segmentos guardados con la semántica de Scentra; no confundir una plantilla CRM con una plantilla Meta aprobada.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P8",
+            "selector": "canonical bold unit P8.1",
+            "line_at_assessment": 239,
+            "canonical_text_sha256": "2d6fa398322268a6b1b243af7c793117929dfe89d61bde18d84206af25d8c88a"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P7 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p8-es/acceptance-review.json",
+              "source_location": "$.criteria.P8.1",
+              "scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+        },
+        {
+          "id": "P8.2",
+          "kind": "canonical_unit",
+          "requirement": "portar activadores y flujos de varios pasos: condiciones, esperas persistidas, horarios, salida por respuesta, pausa y reglas por etapa/programa.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P8",
+            "selector": "canonical bold unit P8.2",
+            "line_at_assessment": 240,
+            "canonical_text_sha256": "1d18d5fb17951f97c1661b1eb4a7f994f339b429188109dc3ed6754106a5fb55"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P7 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p8-es/acceptance-review.json",
+              "source_location": "$.criteria.P8.2",
+              "scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+        },
+        {
+          "id": "P8.3",
+          "kind": "canonical_unit",
+          "requirement": "incorporar simulación/preflight, versiones, A/B y medición donde exista equivalente; conectar al mismo dispatcher validado en P7.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P8",
+            "selector": "canonical bold unit P8.3",
+            "line_at_assessment": 241,
+            "canonical_text_sha256": "b74ad51945f495c20aa4d105b65769f5e66607de099c164926cfff08bee6ee1b"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P7 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p8-es/acceptance-review.json",
+              "source_location": "$.criteria.P8.3",
+              "scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+        },
+        {
+          "id": "P8.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** avances de flujo sobreviven a reinicio; un cambio de etapa, respuesta, handoff o baja cancela lo que corresponda; no hay envíos duplicados por reejecución de worker. **Reversión:** pausar versión/flujo, conservar ejecuciones y reactivar una versión anterior sólo tras revisar trabajos pendientes.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P8",
+            "selector": "**Cierre:** within ### P8",
+            "line_at_assessment": 243,
+            "canonical_text_sha256": "a1f552013e345bc84cdae5203500d17cca707ee68da0dc055b078c3540ea8a74"
+          },
+          "remaining_scope": "No remaining work within reviewed P8 Meta closure; TikTok P16 and institutional commissioning remain separate.",
+          "evidence": [
+            {
+              "file": "artifacts/p8-es/acceptance-review.json",
+              "source_location": "$.criteria.P8.close",
+              "scope": "SQL2019_native_campaign_templates_segments_versioned_multi_step_triggers_media_C10_P7_dispatch_AB_metrics_controlled_local_acceptance"
+            },
+            {
+              "file": "artifacts/live/p8-meta-acceptance-20261118.json",
+              "source_location": "$",
+              "scope": "P8 closure after accepted P5/P6/P7: owner-authorized single free Meta template, persisted wait across redeploy, pause/resume, version restoration to draft, Human cancellation and cleanup. Controlled regressions and historical SQL checkpoint limits explicitly separated."
+            }
+          ],
+          "accepted_scope": "owner_authorized_P8_Meta_live_closure_20261118"
+        }
+      ],
+      "completion": {
+        "accepted": 4,
+        "total": 4,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 4,
+          "denominator": 4
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p8",
+      "graph_node_id": "phase_criteria_p8"
+    },
+    {
+      "id": "P9",
+      "title": "Meta Ads y captación",
+      "depends_on": [
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "criteria": [
+        {
+          "id": "P9.1",
+          "kind": "canonical_unit",
+          "requirement": "inventariar la función Ads realmente disponible en Scentra: cuentas, campañas, formularios/leads, detalle y vínculo con conversaciones. No incluir automáticamente Ads Creative, Content Studio u otros add-ons.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P9",
+            "selector": "canonical bold unit P9.1",
+            "line_at_assessment": 247,
+            "canonical_text_sha256": "5fb932d437d23b94a330085018e9f6f2a4dd8370c4a72cdcf9bb0088f1c75641"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P4 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p9-es/acceptance-review.json",
+              "source_location": "$.criteria.P9.1",
+              "scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+        },
+        {
+          "id": "P9.2",
+          "kind": "canonical_unit",
+          "requirement": "adaptar persistencia, configuración/credenciales, permisos y pantalla al estilo CBN; enlazar leads al CRM y programas sin mezclar identidades de cuentas.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P9",
+            "selector": "canonical bold unit P9.2",
+            "line_at_assessment": 248,
+            "canonical_text_sha256": "abc0114e27a09ec14770e0088b12ee4a60a038dbd624cef67350a31e6e4ae578"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P4 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p9-es/acceptance-review.json",
+              "source_location": "$.criteria.P9.2",
+              "scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+        },
+        {
+          "id": "P9.3",
+          "kind": "canonical_unit",
+          "requirement": "reproducir los indicadores y acciones soportados, con sincronización/reintento y trazabilidad. Las acciones que gastan presupuesto requieren aceptación concreta del operador.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P9",
+            "selector": "canonical bold unit P9.3",
+            "line_at_assessment": 249,
+            "canonical_text_sha256": "0180537ec3925487c1baa9bdfeedce85289bac06939d7d4d18145e1215636dd1"
+          },
+          "remaining_scope": "Local criterion accepted with native SQL/API/UI and controlled C10/P4 transport.",
+          "evidence": [
+            {
+              "file": "artifacts/p9-es/acceptance-review.json",
+              "source_location": "$.criteria.P9.3",
+              "scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+        },
+        {
+          "id": "P9.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** lead repetido no duplica persona/conversación; cuenta/período/origen se preservan; reportes identifican fecha y fuente; ninguna lectura modifica campañas o gasto. **Reversión:** pausar sincronización/acciones, conservar IDs externos y registros; no borrar ni alterar anuncios reales para revertir una pantalla.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P9",
+            "selector": "**Cierre:** within ### P9",
+            "line_at_assessment": 251,
+            "canonical_text_sha256": "44ab0888bbe77824dde7212a0b2b29eeda44d9f63668c607fba2cb5c521867b6"
+          },
+          "remaining_scope": "Accepted in the owner-authorized Meta read/local-draft scope. Advertising publication is outside this delivery.",
+          "evidence": [
+            {
+              "file": "artifacts/p9-es/acceptance-review.json",
+              "source_location": "$.criteria.P9.close",
+              "scope": "SQL2019_native_Ads_source_parity_local_accounts_campaigns_qualified_metrics_forms_comments_independent_verified_receipt_cursor_canonical_CRM_Inbox_vault_UI_permissions_and_recovery"
+            },
+            {
+              "file": "artifacts/live/p9-meta-acceptance-20261118.json",
+              "source_location": "$.criteria.P9.close",
+              "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
+            }
+          ],
+          "accepted_scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
+        }
+      ],
+      "completion": {
+        "accepted": 4,
+        "total": 4,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 4,
+          "denominator": 4
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p9",
+      "graph_node_id": "phase_criteria_p9",
+      "live_scope_review": {
+        "date": "2026-11-18",
+        "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification",
+        "status": "accepted",
+        "evidence": "artifacts/live/p9-meta-acceptance-20261118.json",
+        "provider_advertising_writes": 0
+      }
+    },
+    {
+      "id": "P10",
+      "title": "Inteligencia y entrenamiento evaluado",
+      "depends_on": [
+        "P5",
+        "P6",
+        "P8",
+        "P9"
+      ],
+      "criteria": [
+        {
+          "id": "P10.1",
+          "kind": "canonical_unit",
+          "requirement": "mapear eventos, correcciones, resultados y features desde conversaciones/campañas/admisiones; datos y consentimiento mínimos por finalidad.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P10",
+            "selector": "canonical bold unit P10.1",
+            "line_at_assessment": 255,
+            "canonical_text_sha256": "8b35f961d2a935d7bb0e95f36a53156f00e47cff384a417824072db08f2cb88f"
+          },
+          "remaining_scope": "Local contract accepted with declared estimator, reviewed numeric inputs and synthetic-only effectiveness evidence.",
+          "evidence": [
+            {
+              "file": "artifacts/p10-es/acceptance-review.json",
+              "source_location": "$.criteria.P10.1",
+              "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+        },
+        {
+          "id": "P10.2",
+          "kind": "canonical_unit",
+          "requirement": "adaptar packs, datasets versionados, evaluaciones y candidatos de mejora. Definir métricas y conjunto de validación por programa/etapa, evitando fuga temporal o de etiquetas.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P10",
+            "selector": "canonical bold unit P10.2",
+            "line_at_assessment": 256,
+            "canonical_text_sha256": "1ec275fe21eada2e912880e7247761d1a5ba15094610c7d2d04d0cda5e436149"
+          },
+          "remaining_scope": "Local contract accepted with declared estimator, reviewed numeric inputs and synthetic-only effectiveness evidence.",
+          "evidence": [
+            {
+              "file": "artifacts/p10-es/acceptance-review.json",
+              "source_location": "$.criteria.P10.2",
+              "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+        },
+        {
+          "id": "P10.3",
+          "kind": "canonical_unit",
+          "requirement": "portar el pipeline entrenable aplicable de Scentra y su registro de artefactos; comenzar con evaluación fuera de línea y modo sombra antes de promoción.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P10",
+            "selector": "canonical bold unit P10.3",
+            "line_at_assessment": 257,
+            "canonical_text_sha256": "758b4e8ee5a6d4b1fef429afccc7d15756d8854f00829d4eb355020da0e0d4bf"
+          },
+          "remaining_scope": "Local contract accepted with declared estimator, reviewed numeric inputs and synthetic-only effectiveness evidence.",
+          "evidence": [
+            {
+              "file": "artifacts/p10-es/acceptance-review.json",
+              "source_location": "$.criteria.P10.3",
+              "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+        },
+        {
+          "id": "P10.4",
+          "kind": "canonical_unit",
+          "requirement": "integrar inferencia versionada, comparación, deriva, promoción y reversión; distinguir reglas, memoria, LLM y modelos entrenados. Si se necesita una red neuronal adicional, requiere especificación y evidencia propia.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P10",
+            "selector": "canonical bold unit P10.4",
+            "line_at_assessment": 258,
+            "canonical_text_sha256": "48671776b37ecacdee06c554fe307f59b84921fea1a1c069a45ccfbc3e0142ed"
+          },
+          "remaining_scope": "Local contract accepted with declared estimator, reviewed numeric inputs and synthetic-only effectiveness evidence.",
+          "evidence": [
+            {
+              "file": "artifacts/p10-es/acceptance-review.json",
+              "source_location": "$.criteria.P10.4",
+              "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            }
+          ],
+          "accepted_scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+        },
+        {
+          "id": "P10.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** dataset y modelo son reproducibles; mejora medida frente a baseline y errores por segmento; versión promovida/revertida; sin entrenamiento cruzado con otros clientes. Recoger eventos por sí solo no acredita aprendizaje. **Reversión:** seleccionar artefacto aprobado anterior y conservar evidencia de evaluación; detener nuevos entrenamientos sin borrar muestras revisadas.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P10",
+            "selector": "**Cierre:** within ### P10",
+            "line_at_assessment": 260,
+            "canonical_text_sha256": "dcc9891413655b3d8127aa12fe53993058d4213a702479cd278d70b2ad6f85a3"
+          },
+          "remaining_scope": "Technical closure accepted with synthetic lifecycle evidence; institutional effectiveness, automated feature acquisition and commissioning are not asserted.",
+          "evidence": [
+            {
+              "file": "artifacts/p10-es/acceptance-review.json",
+              "source_location": "$.criteria.P10.close",
+              "scope": "SQL2019_native_institutional_reviewed_numeric_learning_explicit_purpose_temporal_group_split_logistic_JSON_artifacts_reproducible_baseline_segment_evaluation_shadow_current_grants_human_promotion_rollback_UI_and_recovery"
+            },
+            {
+              "file": "artifacts/live/p10-learning-acceptance-20261118.json",
+              "source_location": "$.criteria.P10.close",
+              "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
+            }
+          ],
+          "accepted_scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
+        }
+      ],
+      "completion": {
+        "accepted": 5,
+        "total": 5,
+        "partial": 0,
+        "pending": 0,
+        "fraction": {
+          "numerator": 5,
+          "denominator": 5
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "percent_exact": {
+          "numerator": 100,
+          "denominator": 1
+        },
+        "percent_display": "100.00%",
+        "phase_accepted": true
+      },
+      "reporting_finding_id": "phase_progress_p10",
+      "graph_node_id": "phase_criteria_p10",
+      "live_scope_review": {
+        "date": "2026-11-18",
+        "status": "accepted_technical_synthetic_lifecycle",
+        "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim",
+        "evidence": "artifacts/live/p10-learning-acceptance-20261118.json",
+        "institutional_efficacy_claimed": false
+      }
+    },
+    {
+      "id": "P11",
+      "title": "Aceptación y operación",
+      "depends_on": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8",
+        "P9",
+        "P10"
+      ],
+      "criteria": [
+        {
+          "id": "P11.1",
+          "kind": "canonical_unit",
+          "requirement": "cerrar la matriz requisito por requisito y capa por capa; probar roles, restauración, concurrencia de workers, cuotas, errores y continuidad.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P11",
+            "selector": "canonical bold unit P11.1",
+            "line_at_assessment": 264,
+            "canonical_text_sha256": "cb8bb64cef2ed9a9b8c86867aedfc7564f7294228adfdb1d9587b4a1c75f1d91"
+          },
+          "remaining_scope": "Local current-capability evaluation complete, with explicit external/data limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p11-es/acceptance-review.json",
+              "source_location": "$.criteria.P11.1",
+              "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+        },
+        {
+          "id": "P11.2",
+          "kind": "canonical_unit",
+          "requirement": "recorrido completo claro/oscuro, escritorio/móvil, teclado, estados vacíos/carga/error y densidad; preservar el estilo autorizado sin un rediseño general.",
+          "weight": 1,
+          "state": "accepted",
+          "credit": 1,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P11",
+            "selector": "canonical bold unit P11.2",
+            "line_at_assessment": 265,
+            "canonical_text_sha256": "753692eb0f6d6b8d325eb4c776520ac32890c8178ef87091a23dfa6fea998cad"
+          },
+          "remaining_scope": "Local current-capability evaluation complete, with explicit external/data limits.",
+          "evidence": [
+            {
+              "file": "artifacts/p11-es/acceptance-review.json",
+              "source_location": "$.criteria.P11.2",
+              "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            }
+          ],
+          "accepted_scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+        },
+        {
+          "id": "P11.3",
+          "kind": "canonical_unit",
+          "requirement": "preparar despliegue institucional, migración ensayada, monitorización, respaldo, retención y recuperación; aceptación externa y puesta en servicio con alcance explícito.",
+          "weight": 1,
+          "state": "partial",
+          "credit": 0,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P11",
+            "selector": "canonical bold unit P11.3",
+            "line_at_assessment": 266,
+            "canonical_text_sha256": "da38f8d715bb34c770d3a8a7aab37ea19d17976d2355c2559f0da23229da1614"
+          },
+          "remaining_scope": "External institutional deployment, acceptance and preceding closures require P12.",
+          "evidence": [
+            {
+              "file": "artifacts/p11-es/acceptance-review.json",
+              "source_location": "$.criteria.P11.3",
+              "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            }
+          ],
+          "accepted_scope": null
+        },
+        {
+          "id": "P11.close",
+          "kind": "phase_closure",
+          "requirement": "**Cierre:** institución acepta los recorridos acordados con datos y entorno identificados; riesgos residuales y runbooks quedan entregados. **Reversión:** versión e imagen anteriores, pausa de productores, restauración ensayada y reconciliación de colas/recibos.",
+          "weight": 1,
+          "state": "partial",
+          "credit": 0,
+          "source": {
+            "file": "docs/SCENTRA_ADAPTATION_ROADMAP.md",
+            "phase_section": "P11",
+            "selector": "**Cierre:** within ### P11",
+            "line_at_assessment": 268,
+            "canonical_text_sha256": "ec423d777a1acc2462924fda7f7421fa03170685b1a54bf3de8999c6fdc68d83"
+          },
+          "remaining_scope": "External institutional deployment, acceptance and preceding closures require P12.",
+          "evidence": [
+            {
+              "file": "artifacts/p11-es/acceptance-review.json",
+              "source_location": "$.criteria.P11.close",
+              "scope": "SQL2019_local_current_capabilities_acceptance_and_operability_not_external_commissioning_or_full_DBSIIE"
+            }
+          ],
+          "accepted_scope": null
+        }
+      ],
+      "completion": {
+        "accepted": 2,
+        "total": 4,
+        "partial": 2,
+        "pending": 0,
+        "fraction": {
+          "numerator": 2,
+          "denominator": 4
+        },
+        "reduced_fraction": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "percent_exact": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "percent_display": "50.00%",
+        "phase_accepted": false
+      },
+      "reporting_finding_id": "phase_progress_p11",
+      "graph_node_id": "phase_criteria_p11"
+    }
+  ],
+  "summary": {
+    "accepted_criteria": 54,
+    "total_criteria": 56,
+    "partial_criteria": 2,
+    "scope": "Totales de criterios únicamente; se omite porcentaje global porque el pedido es por fase.",
+    "as_of_accepted_checkpoint": "P10-live-20261118",
+    "active_unit_not_yet_accepted": "P11 institutional commissioning remains partial; P12 formal online acceptance separate."
+  },
+  "current_unit_evidence_policy": {
+    "unit": "P1-ES",
+    "phase": "P1",
+    "candidate_criterion": "P1.close",
+    "state": "accepted_technical_SQL2019_foundation",
+    "criterion_credit": 1,
+    "evidence": [
+      {
+        "file": "artifacts/p1-es/connected-result.json",
+        "source_location": "$.scenarios",
+        "scope": "ActualSQL2019 restored-first migration, journal/NOOP, failures, drift, concurrency, recovery, rollback, restart and preservation."
+      },
+      {
+        "file": "artifacts/p1-es/acceptance-review.json",
+        "source_location": "$",
+        "scope": "Semantic review of connected evidence with limits; technical foundation only."
+      }
+    ],
+    "limits": [
+      "Schema-only artifact excludes academic data, business procedures/views/triggers/users and credentials.",
+      "Spanish dbo.CRM names are an isolated new release, not aliases or replacements for current crm/crm_channels2 runtime.",
+      "P2 access migration/profile/UI and integration binding to this Spanish release remain pending.",
+      "The earlier CHECK-dependent academic transfer was not weakened; no full DBSIIE restoration is claimed."
+    ]
+  },
+  "reporting_findings": [
+    {
+      "id": "phase_progress_p0",
+      "phase": "P0",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 5,
+      "total": 5,
+      "percent_display": "100.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[0].completion"
+    },
+    {
+      "id": "phase_progress_p1",
+      "phase": "P1",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 4,
+      "total": 5,
+      "percent_display": "80.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[1].completion",
+      "as_of_accepted_checkpoint": "SQL-C13"
+    },
+    {
+      "id": "phase_progress_p2",
+      "phase": "P2",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[2].completion"
+    },
+    {
+      "id": "phase_progress_p3",
+      "phase": "P3",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[3].completion"
+    },
+    {
+      "id": "phase_progress_p4",
+      "phase": "P4",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[4].completion"
+    },
+    {
+      "id": "phase_progress_p5",
+      "phase": "P5",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 4,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[5].completion"
+    },
+    {
+      "id": "phase_progress_p6",
+      "phase": "P6",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[6].completion"
+    },
+    {
+      "id": "phase_progress_p7",
+      "phase": "P7",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[7].completion"
+    },
+    {
+      "id": "phase_progress_p8",
+      "phase": "P8",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 4,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[8].completion"
+    },
+    {
+      "id": "phase_progress_p9",
+      "phase": "P9",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 4,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[9].completion"
+    },
+    {
+      "id": "phase_progress_p10",
+      "phase": "P10",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 5,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[10].completion"
+    },
+    {
+      "id": "phase_progress_p11",
+      "phase": "P11",
+      "reporting_only": true,
+      "not_a_new_product_capability": true,
+      "status": "reported_exact_accepted_criteria",
+      "accepted": 0,
+      "total": 4,
+      "percent_display": "0.00%",
+      "source_file": "docs/adaptation/phase-progress-contract.json",
+      "source_location": "$.phases[11].completion"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "phase_criteria_p0",
+        "label": "P0 · 100.00% (5/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[0].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P0",
+        "reporting_finding_id": "phase_progress_p0"
+      },
+      {
+        "id": "phase_criteria_p1",
+        "label": "P1 · 100.00% (5/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[1].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P1",
+        "reporting_finding_id": "phase_progress_p1",
+        "as_of_accepted_checkpoint": "P1-ES"
+      },
+      {
+        "id": "phase_criteria_p2",
+        "label": "P2 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P2",
+        "reporting_finding_id": "phase_progress_p2"
+      },
+      {
+        "id": "phase_criteria_p3",
+        "label": "P3 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[3].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P3",
+        "reporting_finding_id": "phase_progress_p3"
+      },
+      {
+        "id": "phase_criteria_p4",
+        "label": "P4 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[4].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P4",
+        "reporting_finding_id": "phase_progress_p4"
+      },
+      {
+        "id": "phase_criteria_p5",
+        "label": "P5 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[5].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P5",
+        "reporting_finding_id": "phase_progress_p5"
+      },
+      {
+        "id": "phase_criteria_p6",
+        "label": "P6 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[6].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P6",
+        "reporting_finding_id": "phase_progress_p6"
+      },
+      {
+        "id": "phase_criteria_p7",
+        "label": "P7 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[7].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P7",
+        "reporting_finding_id": "phase_progress_p7"
+      },
+      {
+        "id": "phase_criteria_p8",
+        "label": "P8 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[8].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P8",
+        "reporting_finding_id": "phase_progress_p8"
+      },
+      {
+        "id": "phase_criteria_p9",
+        "label": "P9 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[9].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P9",
+        "reporting_finding_id": "phase_progress_p9"
+      },
+      {
+        "id": "phase_criteria_p10",
+        "label": "P10 · 0.00% (0/5 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[10].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P10",
+        "reporting_finding_id": "phase_progress_p10"
+      },
+      {
+        "id": "phase_criteria_p11",
+        "label": "P11 · 0.00% (0/4 criterios aceptados)",
+        "file_type": "document",
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[11].completion",
+        "scope": "criteria_report_only_not_product_readiness",
+        "phase_id": "P11",
+        "reporting_finding_id": "phase_progress_p11"
+      }
+    ],
+    "edges": [
+      {
+        "source": "phase_criteria_p0",
+        "target": "P0",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[0].completion"
+      },
+      {
+        "source": "phase_criteria_p1",
+        "target": "P1",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[1].completion"
+      },
+      {
+        "source": "phase_criteria_p2",
+        "target": "P2",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[2].completion"
+      },
+      {
+        "source": "phase_criteria_p3",
+        "target": "P3",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[3].completion"
+      },
+      {
+        "source": "phase_criteria_p4",
+        "target": "P4",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[4].completion"
+      },
+      {
+        "source": "phase_criteria_p5",
+        "target": "P5",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[5].completion"
+      },
+      {
+        "source": "phase_criteria_p6",
+        "target": "P6",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[6].completion"
+      },
+      {
+        "source": "phase_criteria_p7",
+        "target": "P7",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[7].completion"
+      },
+      {
+        "source": "phase_criteria_p8",
+        "target": "P8",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[8].completion"
+      },
+      {
+        "source": "phase_criteria_p9",
+        "target": "P9",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[9].completion"
+      },
+      {
+        "source": "phase_criteria_p10",
+        "target": "P10",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[10].completion"
+      },
+      {
+        "source": "phase_criteria_p11",
+        "target": "P11",
+        "relation": "reports_exact_accepted_canonical_criteria",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1,
+        "source_file": "docs/adaptation/phase-progress-contract.json",
+        "source_location": "$.phases[11].completion"
+      }
+    ]
+  },
+  "assessment_history": [
+    {
+      "checkpoint": "SQL-C12",
+      "ledger_sha256": "d105633a869012cfabf6d86f63dd1d6a7d94f7bb78001e0febbd37c85b232b76",
+      "accepted_criteria": 8,
+      "P1": {
+        "accepted": 3,
+        "total": 5,
+        "percent_display": "60.00%"
+      },
+      "current_unit_evidence_policy": {
+        "unit": "SQL-C12",
+        "state": "accepted_isolated_subset_as_partial_phase_evidence",
+        "phase": "P4",
+        "candidate_criterion": "P4.3",
+        "evidence": [
+          {
+            "file": "artifacts/sql-c12/connected-result.json",
+            "source_location": "$.preparation.mapping",
+            "scope": "C12:23bindings deterministas,2 aplicaciones/integraciones en borrador,2 secretos recifrados y recibo/cola en cuarentena; no cierre P4."
+          },
+          {
+            "file": "artifacts/sql-c12/connected-result.json",
+            "source_location": "$.API_SQL_checks",
+            "scope": "47 pruebas SQL/API de repositorios locales; no UI completa ni proveedor."
+          },
+          {
+            "file": "artifacts/sql-c12/connected-result.json",
+            "source_location": "$.fault_checks",
+            "scope": "15 fallos/drift/recuperación; claves y targets validados en NOOP."
+          },
+          {
+            "file": "artifacts/sql-c12/preservation.json",
+            "source_location": "$.existing_previews_modified",
+            "scope": "false:4173 C5 y4175 C9 conservan su alcance."
+          },
+          {
+            "file": "artifacts/sql-c12/offline-checks.json",
+            "source_location": "$.offline_tests",
+            "scope": "42 nuevas+200 regresiones=242; no suite general recertificada."
+          }
+        ],
+        "rule": "C12 publicado y revisado se acredita únicamente como evidencia parcial de P4.3. No cierra P4.* ni agrega criterios, peso o aceptación;56 totales y8accepted se conservan.",
+        "criterion_credit": 0
+      },
+      "preserved_evidence": "artifacts/sql-c12/progress-review.json",
+      "scope": "Snapshot histórico, no sobrescrito; el ledger vivo cambia sólo P1.4 en SQL-C13."
+    },
+    {
+      "checkpoint": "SQL-C13",
+      "ledger_sha256": "fa7661df8ff91d16b51584d61aa509bc669eaf3db0ed5874c649bea3ecadd22c",
+      "preserved_file": "artifacts/p1-es/history/phase-progress-contract.before.json",
+      "accepted_criteria": 9,
+      "P1": {
+        "accepted": 4,
+        "total": 5,
+        "percent_display": "80.00%"
+      },
+      "scope": "Unmodified previous acceptance snapshot; current change is P1.close only."
+    }
+  ],
+  "history": [
+    {
+      "checkpoint": "P1-ES",
+      "preserved_file": "artifacts/p2-es/history/phase-progress-contract.json.before-P2.json",
+      "accepted_criteria": 10,
+      "scope": "Frozen P1 foundation checkpoint is replayed separately; canonical definitions and56 total unchanged."
+    },
+    {
+      "checkpoint": "P2-ES",
+      "preserved_file": "artifacts/p3-es/history/phase-progress-contract.json.before-P3.json",
+      "accepted_criteria": 15,
+      "scope": "Frozen P2 and P1 replay independently; canonical56criteria remain unchanged."
+    },
+    {
+      "checkpoint": "Meta-P4-P7-live-20261118",
+      "preserved_file": "artifacts/live/history/p4-p7-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 45,
+      "accepted_criteria": 51,
+      "scope": "Same canonical 56 criteria and fixed text; new bounded Meta acceptance of six existing criteria. Historical graph/report snapshots and prior SQL checkpoints are not rerun or changed."
+    },
+    {
+      "checkpoint": "P8-Meta-live-20261118",
+      "preserved_file": "artifacts/live/history/p8-meta-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 51,
+      "accepted_criteria": 52,
+      "scope": "P8 closure after accepted P5/P6/P7: owner-authorized single free Meta template, persisted wait across redeploy, pause/resume, version restoration to draft, Human cancellation and cleanup. Controlled regressions and historical SQL checkpoint limits explicitly separated."
+    },
+    {
+      "checkpoint": "P9-Meta-live-20261118",
+      "preserved_file": "artifacts/live/history/p9-meta-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 52,
+      "accepted_criteria": 53,
+      "scope": "Meta real read-only Marketing API and local reviewed drafts; manual duplicate capture, dated reports and reversible local pause; P4 Meta accepted; no provider advertising writes or SQL2019 recertification"
+    },
+    {
+      "checkpoint": "P10-live-20261118",
+      "preserved_file": "artifacts/live/history/p10-live-20261118/phase-progress-contract.before.json",
+      "prior_accepted_criteria": 53,
+      "accepted_criteria": 54,
+      "scope": "P10 technical lifecycle closure with isolated synthetic numeric data in current PostgreSQL production; reproducible training, baseline/segment evaluation, per-version shadow gate, promotion, rollback, drift and preserved paused evidence after accepted P5/P6/P8/P9; no institutional efficacy claim"
+    }
+  ]
+}
