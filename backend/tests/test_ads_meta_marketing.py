@@ -78,6 +78,21 @@ def test_zero_activity_distinct_from_failure():
         ).accounts()
 
 
+def test_reads_526_ads_in_bounded_pages_without_truncation():
+    requests = []
+    def transport(path, params):
+        requests.append(params)
+        page = int(params.get("after", "0"))
+        return {"data": [{"id": str(v)} for v in range(page * 250, min(526, (page + 1) * 250))],
+                "paging": {"next": "ignored", "cursors": {"after": str(page + 1)}} if page < 2 else {}}
+    result = MetaReader("private", "v27.0", transport=transport).edge("act_123/ads", fields="id")
+    assert len(result) == 526
+    assert len({v["id"] for v in result}) == 526
+    assert len(requests) == 3 and all(v["limit"] == 250 for v in requests)
+    with pytest.raises(HTTPException, match="ads_meta_scope_limit"):
+        MetaReader("private", "v27.0", transport=lambda *a: {"data": [{"id": "1"}] * 1001}).edge("act_123/ads")
+
+
 @pytest.mark.parametrize(
     "code,status,detail",
     [

@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AdsWorkspace } from "../institution/AdsWorkspace";
 import { SessionBoundary } from "../institution/api";
@@ -122,7 +128,21 @@ function mount({ connected = true, value = snapshot as Snapshot | null } = {}) {
             { id: "source", name: "Facebook CBN", provider: "meta" },
           ],
         };
-      else if (path.endsWith("/snapshot")) result = { snapshot: value };
+      else if (path === "ads/meta/discover")
+        result = {
+          items: [
+            {
+              id: "123",
+              name: "CBN",
+              currency: "COP",
+              timezone: "America/Bogota",
+            },
+          ],
+        };
+      else if (path === "ads/meta/connect") {
+        connected = true;
+        result = { id: "account", revision: 1 };
+      } else if (path.endsWith("/snapshot")) result = { snapshot: value };
       else if (path.endsWith("/drafts")) {
         if (method === "POST") {
           const row = {
@@ -162,6 +182,76 @@ it("shows connection guidance without fabricated KPIs", async () => {
   expect(
     screen.getByRole("button", { name: "Conectar con Meta" }),
   ).toBeEnabled();
+});
+
+it("keeps the connection success dialog visible when the account section collapses", async () => {
+  mount({ connected: false });
+  await screen.findByText("Conecta tu primera cuenta");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Consultar cuentas autorizadas" }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Usar esta cuenta" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Conexión completada",
+  });
+  expect(dialog.closest("details")).toBeNull();
+  expect(screen.getByLabelText("Cuenta publicitaria")).toHaveValue("account");
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+});
+
+it("paginates large inventories and searches across every page", async () => {
+  mount({
+    value: {
+      ...snapshot,
+      campaigns: Array.from({ length: 101 }, (_, n) => ({
+        id: String(1000 + n),
+        name: `Campaña ${n}`,
+      })),
+    },
+  });
+  await screen.findByText("Importe gastado");
+  expect(
+    screen.getByText("Página 1 de 3 · 50 filas por página"),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Campaña 100" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+  expect(
+    screen.getByText("Página 2 de 3 · 50 filas por página"),
+  ).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("Buscar campañas"), {
+    target: { value: "Campaña 100" },
+  });
+  expect(
+    screen.getByRole("button", { name: "Campaña 100" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("navigation", { name: "Páginas de resultados de Meta" }),
+  ).not.toBeInTheDocument();
+});
+
+it("explains failed Meta queries in a modal and retains the last valid metrics", async () => {
+  const { fetcher } = mount();
+  await screen.findByText("Importe gastado");
+  fetcher.mockImplementation(
+    async () =>
+      new Response(JSON.stringify({ detail: "ads_meta_unavailable" }), {
+        status: 502,
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Sincronizar con Meta" }));
+  const dialog = await screen.findByRole("alertdialog", {
+    name: "No se pudo completar la operación de Publicidad",
+  });
+  expect(
+    within(dialog).getByText(/Meta no respondió a tiempo/),
+  ).toBeInTheDocument();
+  expect(within(dialog).getByText("Cómo resolverlo")).toBeInTheDocument();
+  expect(screen.getByText("Importe gastado")).toBeInTheDocument();
 });
 
 it("renders source, period, real hierarchy and accessible daily data", async () => {

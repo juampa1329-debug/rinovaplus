@@ -82,15 +82,12 @@ export function MetaAdsManager() {
         </div>
         <span className="badge">Consulta real · borradores locales</span>
       </header>
-      <details className="panel meta-connect" open={!accounts.length}>
-        <summary>Conexión y cuentas publicitarias</summary>
-        <MetaConnection
-          options={options.value}
-          connected={async () => {
-            await options.reload();
-          }}
-        />
-      </details>
+      <MetaConnection
+        options={options.value}
+        connected={async () => {
+          await options.reload();
+        }}
+      />
       {!!accounts.length && (
         <SelectField
           id="meta-account"
@@ -164,133 +161,141 @@ function MetaConnection({
     if (active.current) setRemote(value.items);
   };
   return (
-    <div className="meta-connect-body">
-      <p>
-        Usa una conexión de Facebook de CBN. Meta debe conceder{" "}
-        <code>ads_read</code> para consultar tus cuentas y resultados.
-      </p>
-      <SelectField
-        id="meta-source"
-        label="Conexión de Meta"
-        disabled={task.busy}
-        value={source}
-        options={[
-          { value: "", label: "Selecciona una conexión" },
-          ...sources.map((v) => ({ value: v.id, label: v.name })),
-        ]}
-        onChange={(e) => {
-          setSource(e.target.value);
-          setRemote(null);
-        }}
-      />
-      <div className="button-row">
-        <Button
-          disabled={!source || !canConnect || task.busy}
-          onClick={() =>
-            void task.run(async () => {
-              const value = await call<{
-                authorization_url: string;
-                oauth_session_id: string;
-              }>(`channels/${source}/oauth`, "POST", {
-                operation_id: crypto.randomUUID(),
-                scopes: ["ads_read"],
-              });
-              if (!active.current) return;
-              setOauth({
-                integration_id: source,
-                oauth_session_id: value.oauth_session_id,
-              });
-              setLink(value.authorization_url);
-              window.open(
-                value.authorization_url,
-                "_blank",
-                "noopener,noreferrer",
-              );
-            }, "Completa la autorización en Meta y vuelve para finalizar la conexión.")
-          }
-        >
-          Conectar con Meta
-        </Button>
-        <Button
-          variant="secondary"
-          disabled={!source || !canConnect || task.busy}
-          onClick={() =>
-            void task.run(() => discover(source), "Consulta completada.")
-          }
-        >
-          Consultar cuentas autorizadas
-        </Button>
-      </div>
-      {link && (
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          Abrir autorización de Meta
-        </a>
-      )}
-      {oauth && (
-        <Button
-          disabled={task.busy || !canConnect}
-          onClick={() =>
-            void task.run(async () => {
-              await call("ads/meta/oauth/complete", "POST", {
-                operation_id: crypto.randomUUID(),
-                ...oauth,
-              });
-              if (!active.current) return;
-              setSource(oauth.integration_id);
-              setOauth(null);
-              setLink("");
-              setSuccess(
-                "Meta autorizó la consulta de publicidad. Elige la cuenta que quieres agregar a RinovaPlus.",
-              );
-              await discover(oauth.integration_id);
-            }, "Autorización de Meta completada.")
-          }
-        >
-          Completar conexión de publicidad
-        </Button>
-      )}
-      {task.notices}
-      {remote && !remote.length && (
-        <Notice>
-          Meta no devolvió cuentas publicitarias. Comprueba el acceso a los
-          activos publicitarios del negocio en Meta Business.
-        </Notice>
-      )}
-      <div className="meta-remote-list">
-        {remote?.map((v) => (
-          <article className="panel" key={v.id}>
-            <div>
-              <strong>{v.name}</strong>
-              <small>
-                {v.id} · {v.currency} · {v.timezone}
-              </small>
-            </div>
+    <>
+      <details
+        className="panel meta-connect"
+        open={!options.accounts.some((v) => v.provider === "meta")}
+      >
+        <summary>Conexión y cuentas publicitarias</summary>
+        <div className="meta-connect-body">
+          <p>
+            Usa una conexión de Facebook de CBN. Meta debe conceder{" "}
+            <code>ads_read</code> para consultar tus cuentas y resultados.
+          </p>
+          <SelectField
+            id="meta-source"
+            label="Conexión de Meta"
+            disabled={task.busy}
+            value={source}
+            options={[
+              { value: "", label: "Selecciona una conexión" },
+              ...sources.map((v) => ({ value: v.id, label: v.name })),
+            ]}
+            onChange={(e) => {
+              setSource(e.target.value);
+              setRemote(null);
+            }}
+          />
+          <div className="button-row">
             <Button
-              disabled={task.busy}
+              disabled={!source || !canConnect || task.busy}
               onClick={() =>
                 void task.run(async () => {
-                  const body = {
-                    integration_id: source,
-                    external_account_id: v.id,
-                  };
-                  await call("ads/meta/connect", "POST", {
-                    ...body,
-                    operation_id: intent.get(body),
+                  const value = await call<{
+                    authorization_url: string;
+                    oauth_session_id: string;
+                  }>(`channels/${source}/oauth`, "POST", {
+                    operation_id: crypto.randomUUID(),
+                    scopes: ["ads_read"],
                   });
-                  intent.clear();
-                  await connected();
-                  if (active.current)
-                    setSuccess(
-                      `Cuenta ${v.name} agregada. Ya puedes consultar campañas y resultados.`,
-                    );
-                }, "Cuenta publicitaria conectada.")
+                  if (!active.current) return;
+                  setOauth({
+                    integration_id: source,
+                    oauth_session_id: value.oauth_session_id,
+                  });
+                  setLink(value.authorization_url);
+                  window.open(
+                    value.authorization_url,
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }, "Completa la autorización en Meta y vuelve para finalizar la conexión.")
               }
             >
-              Usar esta cuenta
+              Conectar con Meta
             </Button>
-          </article>
-        ))}
-      </div>
+            <Button
+              variant="secondary"
+              disabled={!source || !canConnect || task.busy}
+              onClick={() =>
+                void task.run(() => discover(source), "Consulta completada.")
+              }
+            >
+              Consultar cuentas autorizadas
+            </Button>
+          </div>
+          {link && (
+            <a href={link} target="_blank" rel="noopener noreferrer">
+              Abrir autorización de Meta
+            </a>
+          )}
+          {oauth && (
+            <Button
+              disabled={task.busy || !canConnect}
+              onClick={() =>
+                void task.run(async () => {
+                  await call("ads/meta/oauth/complete", "POST", {
+                    operation_id: crypto.randomUUID(),
+                    ...oauth,
+                  });
+                  if (!active.current) return;
+                  setSource(oauth.integration_id);
+                  setOauth(null);
+                  setLink("");
+                  setSuccess(
+                    "Meta autorizó la consulta de publicidad. Elige la cuenta que quieres agregar a RinovaPlus.",
+                  );
+                  await discover(oauth.integration_id);
+                }, "Autorización de Meta completada.")
+              }
+            >
+              Completar conexión de publicidad
+            </Button>
+          )}
+          {task.notices}
+          {remote && !remote.length && (
+            <Notice>
+              Meta no devolvió cuentas publicitarias. Comprueba el acceso a los
+              activos publicitarios del negocio en Meta Business.
+            </Notice>
+          )}
+          <div className="meta-remote-list">
+            {remote?.map((v) => (
+              <article className="panel" key={v.id}>
+                <div>
+                  <strong>{v.name}</strong>
+                  <small>
+                    {v.id} · {v.currency} · {v.timezone}
+                  </small>
+                </div>
+                <Button
+                  disabled={task.busy}
+                  onClick={() =>
+                    void task.run(async () => {
+                      const body = {
+                        integration_id: source,
+                        external_account_id: v.id,
+                      };
+                      await call("ads/meta/connect", "POST", {
+                        ...body,
+                        operation_id: intent.get(body),
+                      });
+                      intent.clear();
+                      await connected();
+                      if (active.current)
+                        setSuccess(
+                          `Cuenta ${v.name} agregada. Ya puedes consultar campañas y resultados.`,
+                        );
+                    }, "Cuenta publicitaria conectada.")
+                  }
+                >
+                  Usar esta cuenta
+                </Button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </details>
       {success && (
         <OperationDialog
           success
@@ -298,7 +303,7 @@ function MetaConnection({
           dismiss={() => setSuccess("")}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -657,6 +662,7 @@ function ObjectTable({
 }) {
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("all"),
+    [page, setPage] = useState(0),
     [selected, setSelected] = useState<AdObject | null>(null);
   const values = snapshot[entity].filter(
     (v) =>
@@ -674,13 +680,23 @@ function ObjectTable({
   ];
   return (
     <section className="panel meta-objects">
+      <p>
+        <small>
+          Inventario actual de Meta. Las métricas corresponden al período
+          seleccionado; — indica que Meta no devolvió un resultado para ese
+          objeto o no existe denominador.
+        </small>
+      </p>
       <div className="meta-object-filters">
         <Field
           id="meta-search"
           label={`Buscar ${labels[entity].toLowerCase()}`}
           placeholder="Nombre o ID"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(0);
+          }}
         />
         <SelectField
           id="meta-status"
@@ -690,7 +706,10 @@ function ObjectTable({
             { value: "all", label: "Todos los estados" },
             ...statuses.map((v) => ({ value: v, label: v })),
           ]}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(0);
+          }}
         />
       </div>
       <div className="meta-table-scroll">
@@ -712,7 +731,7 @@ function ObjectTable({
             </tr>
           </thead>
           <tbody>
-            {values.map((v) => {
+            {values.slice(page * 50, (page + 1) * 50).map((v) => {
               const m = objectMetrics(snapshot, entity, v.id);
               return (
                 <tr key={v.id}>
@@ -751,6 +770,28 @@ function ObjectTable({
           </tbody>
         </table>
       </div>
+      {values.length > 50 && (
+        <nav className="button-row" aria-label="Páginas de resultados de Meta">
+          <Button
+            variant="secondary"
+            disabled={page === 0}
+            onClick={() => setPage((v) => v - 1)}
+          >
+            Anterior
+          </Button>
+          <span>
+            Página {page + 1} de {Math.ceil(values.length / 50)} · 50 filas por
+            página
+          </span>
+          <Button
+            variant="secondary"
+            disabled={(page + 1) * 50 >= values.length}
+            onClick={() => setPage((v) => v + 1)}
+          >
+            Siguiente
+          </Button>
+        </nav>
+      )}
       {!values.length && (
         <p className="meta-chart-empty">
           No hay {labels[entity].toLowerCase()} para estos filtros.

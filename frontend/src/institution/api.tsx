@@ -76,7 +76,7 @@ const messages: Record<string, string> = {
   ads_meta_sync_required:
     "Sincroniza primero esta cuenta con Meta para preparar y revisar borradores con los objetos correctos.",
   ads_meta_scope_limit:
-    "La cuenta excede el límite de esta consulta (500 objetos por nivel). Acota el alcance o consulta los detalles en Meta; no se guardaron resultados parciales.",
+    "La cuenta excede la capacidad de esta consulta (1000 objetos por nivel o el tiempo disponible). Consulta los detalles en Meta; no se guardaron resultados parciales.",
   ads_meta_unavailable:
     "Meta no respondió a tiempo. Conservamos tus datos guardados; vuelve a sincronizar cuando se recupere la conexión.",
   ads_meta_request_rejected:

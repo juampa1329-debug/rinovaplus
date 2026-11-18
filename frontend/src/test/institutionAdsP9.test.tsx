@@ -4,8 +4,9 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AdsWorkspace } from "../institution/AdsWorkspace";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
@@ -48,6 +49,22 @@ const session: Session = {
 };
 afterEach(() => {
   vi.restoreAllMocks();
+});
+beforeEach(() => {
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.open = true;
+      },
+    },
+    close: {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.open = false;
+      },
+    },
+  });
 });
 function mount(actions = session.actions) {
   const accounts = [{ ...account }],
@@ -238,7 +255,9 @@ it("keeps the same operation id when retrying an unchanged save after a lost res
     throw new Error("Respuesta perdida");
   });
   fireEvent.click(screen.getByRole("button", { name: "Guardar registro" }));
-  await screen.findByText("Respuesta perdida");
+  const dialog = await screen.findByRole("alertdialog");
+  expect(within(dialog).getByText("Respuesta perdida")).toBeInTheDocument();
+  fireEvent.click(within(dialog).getByRole("button", { name: "Cerrar aviso" }));
   fireEvent.click(screen.getByRole("button", { name: "Guardar registro" }));
   await waitFor(() =>
     expect(

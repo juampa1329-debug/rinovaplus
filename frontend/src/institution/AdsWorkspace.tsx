@@ -13,6 +13,8 @@ import { useAdsResource as useResource } from "./adsResource";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import "./ads.css";
 import { MetaAdsManager } from "./MetaAdsManager";
+import { ErrorFeedback } from "./ErrorFeedback";
+import { explainChannelError } from "./channelErrors";
 
 type Tab = "leads" | "comments" | "campaigns" | "accounts" | "processes";
 type Doc = {
@@ -174,7 +176,15 @@ const command = (
 const stamp = (v?: string | null) =>
   v ? new Date(v).toLocaleString("es-CO") : "Sin registrar";
 
-export function AdsWorkspace({
+export function AdsWorkspace(props: { initialView?: "manager" | "capture" }) {
+  return (
+    <ErrorFeedback explain={explainChannelError}>
+      <AdsWorkspaceContent {...props} />
+    </ErrorFeedback>
+  );
+}
+
+function AdsWorkspaceContent({
   initialView = "manager",
 }: {
   initialView?: "manager" | "capture";

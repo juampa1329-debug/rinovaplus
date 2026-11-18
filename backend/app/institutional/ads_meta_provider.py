@@ -10,6 +10,8 @@ import httpx2 as httpx
 from fastapi import HTTPException
 
 INSIGHT_FIELDS = "date_start,date_stop,spend,impressions,reach,clicks,actions"
+PAGE_SIZE = 250
+MAX_OBJECTS = 1000
 
 
 def external_id(value):
@@ -145,13 +147,13 @@ class MetaReader:
         result, seen, after = [], set(), None
         for _ in range(10):
             value = self.get(
-                path, **params, limit=100, **({"after": after} if after else {})
+                path, **params, limit=PAGE_SIZE, **({"after": after} if after else {})
             )
             data = value.get("data")
             if not isinstance(data, list) or any(not isinstance(v, dict) for v in data):
                 raise HTTPException(502, "ads_meta_invalid_response")
             result.extend(data)
-            if len(result) > 500:
+            if len(result) > MAX_OBJECTS:
                 raise HTTPException(413, "ads_meta_scope_limit")
             paging = value.get("paging", {})
             if not isinstance(paging, dict) or not paging.get("next"):
