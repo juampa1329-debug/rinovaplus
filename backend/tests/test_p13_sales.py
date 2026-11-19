@@ -256,3 +256,35 @@ def test_generation_recovery_requires_no_committed_reply_expired_lease_and_curre
     monkeypatch.setattr(sales_recovery, "source", lambda *_: (_ for _ in ()).throw(HTTPException(409, "gemini_whatsapp_control_or_history_changed")))
     with pytest.raises(HTTPException, match="gemini_whatsapp_control_or_history_changed"):
         sales_recovery.review(None, None, row)
+
+
+def test_generation_recovery_keeps_effect_identity_and_writes_valid_audit(monkeypatch):
+    from app.institutional import sales_recovery, operations_policy
+    from app.institutional.postgres_dialect import postgres_sql
+    from pglast import parse_sql
+    inst, actor, integration, generation_id = [str(uuid4()) for _ in range(4)]
+    settings = SimpleNamespace(ticket={"context": [[1, inst]]})
+    commands = []
+    class Cursor:
+        rowcount = 1
+        def execute(self, sql, *args):
+            commands.append((sql, args))
+            assert sql.count("?") == len(args)
+            parse_sql(postgres_sql(sql, operations_policy.layout()["tables"]).replace("%s", "NULL"))
+            return self
+    service = SimpleNamespace(transaction=lambda *_: nullcontext(Cursor()))
+    row = {"Status": "uncertain", "Expired": 1, "Attempts": 1, "IntegrationId": integration, "ResultCode": "operation_lease_expired", "ResultMetadata": '{"incoming":"same-source"}'}
+    monkeypatch.setattr(sales_recovery, "source", lambda *_: None)
+    monkeypatch.setattr(sales_recovery, "authorize", lambda *_a, **_k: {"UserId": actor})
+    monkeypatch.setattr(sales_recovery.db, "replay", lambda *_: (b"reviewed", None))
+    monkeypatch.setattr(sales_recovery.db, "one", lambda *_: row)
+    app = FastAPI()
+    sales_recovery.install(app, service, settings)
+    with TestClient(app) as client:
+        response = client.post(f"/api/institution/channels/{integration}/recover-generation", json={"generation_id": generation_id, "operation_id": str(uuid4()), "confirmed": True, "acknowledge_consumption": True})
+    assert response.status_code == 200
+    assert response.json()["same_generation_id"] == generation_id
+    assert any("crm_access.Audit" in sql for sql, _ in commands)
+    update = commands[0][0]
+    assert "OperationId=?" in update and "EffectKey=" not in update
+    assert not any(sql.startswith("INSERT crm_channels2.ProviderOperation") for sql, _ in commands)

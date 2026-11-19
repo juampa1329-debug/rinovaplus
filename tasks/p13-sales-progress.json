@@ -54,7 +54,8 @@
     "workspace_build": "passed",
     "existing_bundle_warning": true,
     "postgres_filter_parser": "passed_3_levels",
-    "simulator_fix_regressions": 91
+    "simulator_fix_regressions": 91,
+    "recovery_endpoint_regressions": 29
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -77,6 +78,10 @@
     "failure": "Legacy save_assessment SQL Server IF batch rejected by PostgreSQL; final enqueue transaction rolled back",
     "fix": "Bound INSERT/UPDATE inside institutional write lock, preserving human assessment",
     "recovery": "Explicit operator review, same generation ID/effect key, no committed reply or newer message; no automatic replay of uncertain generation",
-    "state": "pending_live_retest"
-  }
+    "state": "pending_live_retest",
+    "recovery_audit_fix": "Use the permitted reason metadata; positive endpoint regression validates actual audit and SQL, retaining the effect identity."
+  },
+  "requested_followups": [
+    "Edit own human/AI public replies where official Meta API supports it; inspect sent-DM editing support per provider."
+  ]
 }

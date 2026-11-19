@@ -78,5 +78,5 @@ def install(app, service, settings):
                 raise HTTPException(409, "sales_generation_not_recoverable")
             result = {"saved": True, "status": "pending", "same_generation_id": str(body.generation_id), "message_resent": False}
             db.record_operation(c, settings, actor["UserId"], str(body.operation_id), "sales.recover-generation", integration, checksum, result)
-            db.audit(c, settings, actor["UserId"], "sales.recover-generation", str(body.generation_id), prior_status=row["Status"])
+            db.audit(c, settings, actor["UserId"], "sales.recover-generation", str(body.generation_id), reason="prior_status:" + row["Status"])
             return result
