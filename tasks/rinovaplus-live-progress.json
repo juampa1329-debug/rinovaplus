@@ -164,14 +164,14 @@
     "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {
-    "status": "resumed_read_adapter_and_views_implemented_pending_credentials",
+    "status": "catalog_access_verified_admissions_and_financial_detail_pending",
     "accepted": 0,
     "total": 5,
     "implementation": "nine_GET_provider_routes_with_inspection_and_pagination",
     "scope": "SIIE_academic_and_financial_API",
     "blocks_P13": false,
     "details": "docs/adaptation/P16_SIIE_INTEGRATION.md",
-    "evidence": "tasks/p16-siie-progress.json"
+    "evidence": "artifacts/live/p16-siie-read-checks-20261118.json"
   },
   "P17": {
     "status": "deferred_by_owner",

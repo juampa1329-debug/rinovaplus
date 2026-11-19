@@ -1,0 +1,85 @@
+{
+  "phase": "P16",
+  "date_local": "2026-11-18",
+  "timezone": "America/Bogota",
+  "scope": "Authorized HTTPS GET only; no SQL DDL, domain import, enrollment, payment or remote follow-up writes",
+  "deployment": {
+    "commit": "1da0155946d11d82f4ce9bc42cfd028c7b1abbe9",
+    "id": "ljtguv9vqdnajytrjhamxvd9",
+    "container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T013411",
+    "status": "healthy_rolling_update_completed",
+    "completed_UTC": "2026-11-19T01:39:49Z"
+  },
+  "credentials": {
+    "catalog_saved_by_owner": true,
+    "catalog_access_verified": true,
+    "admissions_configured_in_service": false,
+    "same_catalog_key_admissions_probe": "rejected_by_source; wrapper502 siie_catalog_access_rejected means upstream401/403",
+    "admissions_probe_persistence": "same existing token used only in a child-process environment; no General token stored in Coolify or service",
+    "secret_values_logged_or_committed": false
+  },
+  "catalog": {
+    "first_program_page_count": 25,
+    "first_program_request_correlation": "88cbb0abfbe341b58ab40cd834a292dd",
+    "program_pagination": "first and second pages verified in native client and authenticated CRM UI",
+    "software": {
+      "program_id": "143",
+      "name": "DESARROLLO DE SOFTWARE Y APLICACIONES MOVILES",
+      "code": "DSAM",
+      "school": "ESCUELA DE TIC",
+      "duration_display": "4 niveles"
+    },
+    "software_offer_pagination": "four UI pages observed, including periods2016-A through2027-A; live keyset, not immutable snapshot",
+    "software_2026_B_reference": "1080-n1",
+    "program100_offer_page_correlation": "58df9e8a9da64ff6a439fdbbbc53add4",
+    "program143_offer_page_correlation": "4b3ea2037a5048a0ac3fe20136f523db",
+    "CRM_program_rows_saved": 0
+  },
+  "source_detail_checks": [
+    {
+      "offer_id": "338-n1",
+      "program_id": "100",
+      "period": "2018-A",
+      "direct_source_HTTP": 503,
+      "source_code": "catalog_unavailable",
+      "correlation_id": "39b0a401f0564399854d80675d940f6f",
+      "quotable": false,
+      "partial_offer_received": false
+    },
+    {
+      "offer_id": "281-n1",
+      "program_id": "143",
+      "period": "2016-A",
+      "consumer_HTTP": 502,
+      "consumer_code": "siie_catalog_unavailable",
+      "direct_source_status_not_observed_for_this_id": true
+    },
+    {
+      "offer_id": "1080-n1",
+      "program_id": "143",
+      "period": "2026-B",
+      "direct_source_HTTP": 503,
+      "source_code": "catalog_unavailable",
+      "correlation_id": "488bd06b491747fea60ec1f101d6345a",
+      "quotable": false,
+      "partial_offer_received": false,
+      "CRM_UI_error_dialog_verified_and_dismissed": true
+    }
+  ],
+  "source_contract_difference": "Provider guide expects422 source_data_incomplete with partial_offer. Actual inspected detail endpoint returns503 catalog_unavailable, without partial_offer. No actual complete financial offer verified.",
+  "native_successful_source_reads": 5,
+  "UI_successful_source_reads": 6,
+  "successful_source_reads_count_excludes_local_status_checks": true,
+  "accepted_units_changed": false,
+  "accepted": 0,
+  "total": 5,
+  "remaining": [
+    "General Admisiones credential",
+    "SIIE operator logs for detail request correlation488bd06b491747fea60ec1f101d6345a",
+    "Two complete current offers and commercial validation",
+    "Reviewed local/external synchronization and changes",
+    "Agent finance acceptance",
+    "Student enrollment and individual balances API not delivered",
+    "Institutional operation acceptance"
+  ]
+}

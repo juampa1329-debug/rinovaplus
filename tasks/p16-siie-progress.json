@@ -2,7 +2,7 @@
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
   "date": "2026-11-18",
-  "status": "resumed_adapter_and_read_views_implemented",
+  "status": "catalog_access_and_UI_verified_admissions_and_source_detail_pending",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -12,17 +12,17 @@
     {
       "id": "P16.1",
       "title": "Contrato y acceso",
-      "state": "in_progress_credentials_and_authorized_read_pending"
+      "state": "in_progress_catalog_access_verified_general_key_and_contract_acceptance_pending"
     },
     {
       "id": "P16.2",
       "title": "Consulta oficial",
-      "state": "pending_two_complete_current_offers_source_currently_422"
+      "state": "pending_source_detail503_no_complete_current_offers"
     },
     {
       "id": "P16.3",
       "title": "Catálogo y sincronización revisada",
-      "state": "read_pagination_implemented_persistence_change_review_pending"
+      "state": "read_pagination_verified_local_link_changes_and_review_pending"
     },
     {
       "id": "P16.4",
@@ -61,14 +61,15 @@
     "content_type": "application/json; charset=utf-8",
     "scope": "availability_only_no_credentials_no_data"
   },
-  "source_limit": "All resolvable offers currently422 source_data_incomplete. Original catalog token and General admissions key are distinct. Student enrollment and balances are not exposed.",
+  "source_limit": "Provider guide expects422 partial offers; actual detail tests338-n1 and1080-n1 returned503 catalog_unavailable without partial_offer. Catalog token valid, rejected for General Admisiones. Student enrollment/balances not exposed.",
   "tests": {
     "backend_selected_passed": 129,
     "provider_and_legacy_contract_tests": 50,
     "frontend_selected": 21,
     "types_and_changed_ESLint": "passed",
     "workspace_build": "passed; retained existing chunk-size warning",
-    "no_real_SIIE_credentials_used": true
+    "no_real_SIIE_credentials_used": true,
+    "scope": "automated_fixture_tests_only; live checks are separate evidence"
   },
   "failures_preserved": [
     "Initial Windows fixture ID exceeded temporary-path naming limits; explicit short parametrization IDs fixed it.",
@@ -76,19 +77,49 @@
     "First live missing-key test displayed inline guidance only; connected SIIE to the existing RinovaPlus modal and added dismissal regression before follow-up frontend deployment."
   ],
   "production": {
-    "backend_commit": "7e147bb938edfe20464c1397c12e7dd9982981b0",
-    "backend_deployment": "ayipptdqgukdqcor97ypcny5",
+    "backend_commit": "1da0155946d11d82f4ce9bc42cfd028c7b1abbe9",
+    "backend_deployment": "ljtguv9vqdnajytrjhamxvd9",
     "backend_status": "healthy_rolling_update_completed",
     "native_readiness": "ready_scope_postgres_deployment",
     "frontend_base_commit": "9d2ba41c25ea74c94f4b33dfe89771c72111d776",
     "frontend_base_deployment": "ik1eary4u2qpvzupglnrxnux",
-    "status_route": "authenticated_UI_passed_both_keys_missing",
-    "public_authenticated_SIIE_reads": 0,
+    "status_route": "authenticated_UI_catalog_configured_admissions_missing",
+    "public_authenticated_SIIE_reads": 11,
     "SQL_DDL_or_academic_writes": 0,
     "modal_improvement": "healthy_deployed_live_missing_key_dialog_verified_and_dismissed",
     "frontend_modal_commit": "68f585d6f79370621233535763b7e0857c213e3f",
     "frontend_modal_deployment": "cmszf7ur0fppp5oawj9xttdq",
     "supervision_tab": "https://app.rinovaplus.com/#/academic",
-    "review_note": "Read consumer deployed; both credentials absent. No authenticated SIIE data, student enrollment, individual finance, or remote follow-up writes verified."
-  }
+    "review_note": "Catalog programs and offer references verified in real source and UI; no General credential and financial detail source503. No CRM import or SIIE writes."
+  },
+  "deployment_history": [
+    {
+      "backend_commit": "7e147bb938edfe20464c1397c12e7dd9982981b0",
+      "backend_deployment": "ayipptdqgukdqcor97ypcny5",
+      "backend_status": "healthy_rolling_update_completed",
+      "native_readiness": "ready_scope_postgres_deployment",
+      "frontend_base_commit": "9d2ba41c25ea74c94f4b33dfe89771c72111d776",
+      "frontend_base_deployment": "ik1eary4u2qpvzupglnrxnux",
+      "status_route": "authenticated_UI_passed_both_keys_missing",
+      "public_authenticated_SIIE_reads": 0,
+      "SQL_DDL_or_academic_writes": 0,
+      "modal_improvement": "healthy_deployed_live_missing_key_dialog_verified_and_dismissed",
+      "frontend_modal_commit": "68f585d6f79370621233535763b7e0857c213e3f",
+      "frontend_modal_deployment": "cmszf7ur0fppp5oawj9xttdq",
+      "supervision_tab": "https://app.rinovaplus.com/#/academic",
+      "review_note": "Read consumer deployed; both credentials absent. No authenticated SIIE data, student enrollment, individual finance, or remote follow-up writes verified."
+    }
+  ],
+  "configuration": {
+    "base_url": "https://siieplus.online/SIIEWebPlus",
+    "allowed_hosts": [
+      "siieplus.online"
+    ],
+    "catalog_token_saved_by_owner": true,
+    "catalog_verified": true,
+    "admissions_token_saved": false,
+    "runtime_only": true,
+    "secret_values_in_repo": false
+  },
+  "live_evidence": "artifacts/live/p16-siie-read-checks-20261118.json"
 }
