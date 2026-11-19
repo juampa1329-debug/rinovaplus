@@ -31,3 +31,9 @@ El propietario autorizó iniciar P19 sin esperar el arreglo del productor SIIE y
 ## Primer piloto real
 
 Catálogo autenticado: 22 voces y 9 modelos, incluidos Eleven v4/v4 Turbo. Juampa disponible. Una muestra de374caracteres,25segundos, convertida a OGG/Opus y enviada manualmente al44 desde WhatsApp institucional: recibo Entregado y reproducción completa confirmada por el propietario. Se aceptan proveedor/catálogo y compatibilidad/reproducción (P19.1 yP19.4). El propietario solicita mejorar la naturalidad: se prepara interpretación por perfil, instrucciones orales y controles compatibles por modelo, con nueva muestra v4. La voz automática sigue apagada hasta el piloto. No se declara P19al100%.
+
+## Controles y cuatro saludos publicados
+
+2fd5214 saludable en Coolify. Estabilidad, similitud e idioma elegidos del catálogo funcionan por perfil; Entonación del saludo ofrece Natural, Cálida, Tranquila y Animada para v4/v3. Se generaron cuatro muestras con idéntico texto y voz Juampa y las cuatro figuran entregadas al44 en ese orden. La reproducción desde historial y descarga privada se verificaron sin nuevas generaciones. El propietario aún debe elegir la entonación.
+
+Piloto guardado en revisión8: sólo el hilo institucional del44, modo nota de voz entrante, máximo1audio automático y60segundos. Chat de vuelta en IA después de los envíos manuales. Pendiente nota entrante real, comprobar respuesta Gemini/Eleven, cupo y cierre de asignaciones/operación antes de aceptar P19al100%.143backend y20frontend pasan; dos pruebas locales omitidas por multimedia.

@@ -153,7 +153,8 @@
     ],
     "paid_generations": 4,
     "production_configuration_unchanged": true,
-    "whatsapp_delivery": "pending"
+    "whatsapp_delivery": "all_four_delivered_to_authorized_owner44_from_institutional_account_in_order",
+    "owner_selection": "pending"
   },
   "scoped_deployment": {
     "commit": "ee0404cce81f7b31d219ff8eb17be17adb117814",
@@ -162,5 +163,34 @@
     "native_worker_and_reservations_rollback_passed": true,
     "paid_io_in_native_checks": 0
   },
-  "preview_followup": "Explicit private blob download, replay own confirmed previews from history without synthesis, and fit players inside narrow cards"
+  "preview_followup": "Explicit private blob download, replay own confirmed previews from history without synthesis, and fit players inside narrow cards",
+  "preview_recovery": {
+    "private_history_replay_verified": true,
+    "download_links_verified_in_fresh_chat_browser_tab": true,
+    "additional_paid_generations": 0,
+    "responsive_audio_width_fixed": true
+  },
+  "final_code_deployment": {
+    "commit": "2fd5214fc4510a9aa03d809f5cf5b8ff205b5bcf",
+    "backend_run": "zav8dfqublnq7n6ijzuq6afj",
+    "healthy_completed_utc": "2026-11-19T17:48:54Z",
+    "frontend_new_history_and_download_controls_visible": true
+  },
+  "live_pilot": {
+    "setting_revision": 8,
+    "scope": "single_authorized_institutional_owner44_thread",
+    "enabled": true,
+    "mode": "voice_notes",
+    "max_audios_per_conversation": 1,
+    "max_audio_seconds": 60,
+    "daily_characters": 20000,
+    "control_after_manual_samples": "ai",
+    "real_incoming_note": "awaiting_owner",
+    "other_threads_voice_enabled": false
+  },
+  "automatic_review": {
+    "global_voice_activation": "rejected_before_execution_then_replaced_with_scoped_pilot",
+    "root_ssh_file_recovery": "rejected_before_execution_no_ssh_access_attempt_executed",
+    "safe_recovery": "existing private samples downloaded through normal RinovaPlus UI in a fresh browser tab"
+  }
 }

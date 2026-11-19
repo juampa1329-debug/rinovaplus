@@ -2,7 +2,7 @@
   "phase": "P19",
   "title": "Voces y notas de audio con ElevenLabs",
   "date": "2026-11-19",
-  "status": "live_validation_scoped_pilot_and_greeting_comparison",
+  "status": "live_owner_selection_and_automatic_pilot_pending",
   "accepted": 2,
   "total": 5,
   "canonical_weight_added": 0,
@@ -66,6 +66,7 @@
   "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md",
   "evidence": "artifacts/live/p19-voices-review-20261119.json",
   "owner_quality_followup": "Complete playback confirmed; second more natural sample requested",
-  "controls": "Sliders, language and four greeting tones verified live; private historical replay/download pending deployment",
-  "activation_scope": "Global activation blocked by automatic browser review; implement recipient44-only pilot before tests"
+  "controls": "Verified deployed sliders, catalog languages, greeting tones, private history replay and explicit download",
+  "activation_scope": "Enabled only for authorized owner44 institutional conversation: one audio, incoming-note mode, 60 seconds. Real incoming pilot awaiting owner; other conversations remain text",
+  "greeting_samples": "All four delivered; owner selection pending"
 }
