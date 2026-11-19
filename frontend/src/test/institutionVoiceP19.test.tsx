@@ -65,7 +65,8 @@ function mock(
       const url = String(input);
       const value = extra?.(url, init);
       if (value) return value;
-    if (url.endsWith("/private/audio")) return new Response(new Blob(["OggS"], { type: "audio/ogg" }));
+      if (url.endsWith("/private/audio"))
+        return new Response(new Blob(["OggS"], { type: "audio/ogg" }));
       if (url.endsWith("/voice/usage"))
         return respond({ daily_characters: 0, daily_attempts: 0, history: [] });
       if (url.endsWith("/api/v1/agents")) return respond({ agents: [] });
@@ -73,7 +74,13 @@ function mock(
       if (url.endsWith("/voice/catalog"))
         return respond({
           voices: [{ id: "voice1", name: "Juampa" }],
-          models: [{ id: "model1", name: "Modelo disponible" }],
+          models: [
+            {
+              id: "model1",
+              name: "Modelo disponible",
+              languages: [{ id: "es", name: "Spanish" }],
+            },
+          ],
         });
       throw new Error("Unexpected route: " + url);
     });
@@ -94,7 +101,13 @@ const dialogDescriptors = Object.fromEntries(
   ]),
 );
 beforeEach(() => {
-  vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: vi.fn(() => "blob:private-preview"), revokeObjectURL: vi.fn() }));
+  vi.stubGlobal(
+    "URL",
+    Object.assign(URL, {
+      createObjectURL: vi.fn(() => "blob:private-preview"),
+      revokeObjectURL: vi.fn(),
+    }),
+  );
   Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
     configurable: true,
     value: function (this: HTMLDialogElement) {
@@ -170,6 +183,46 @@ it("saves zero duration and the chosen mode while preserving the agent system pr
   expect(saved!.document.system_prompt).toBe(base.document.system_prompt);
 });
 
+it("loads the catalog automatically and saves stability, similarity and a catalog language", async () => {
+  let saved: {
+    voice: {
+      profiles: {
+        stability: number;
+        similarity_boost: number;
+        language_code: string;
+      }[];
+    };
+  } | null = null;
+  const fetch = mock((url, init) => {
+    if (url.endsWith("/settings/ai") && init?.method === "PUT") {
+      saved = JSON.parse(String(init.body)).document;
+      return respond(base);
+    }
+  });
+  mount();
+  const stability = await screen.findByRole("slider", { name: "Estabilidad" });
+  fireEvent.change(stability, { target: { value: "0.25" } });
+  fireEvent.change(screen.getByRole("slider", { name: "Similitud" }), {
+    target: { value: "0.9" },
+  });
+  await waitFor(() => expect(screen.getByLabelText("Idioma")).toBeEnabled());
+  fireEvent.change(screen.getByLabelText("Idioma"), {
+    target: { value: "es" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar configuración de voz" }),
+  );
+  await waitFor(() => expect(saved).not.toBeNull());
+  expect(saved!.voice.profiles[0]).toMatchObject({
+    stability: 0.25,
+    similarity_boost: 0.9,
+    language_code: "es",
+  });
+  expect(
+    fetch.mock.calls.some(([url]) => String(url).endsWith("/voice/catalog")),
+  ).toBe(true);
+});
+
 it("reuses the preview intent to avoid duplicate charges and renders a private audio player", async () => {
   const ids: string[] = [];
   mock((url, init) => {
@@ -187,7 +240,9 @@ it("reuses the preview intent to avoid duplicate charges and renders a private a
   fireEvent.click(
     await screen.findByRole("button", { name: "Generar muestra" }),
   );
-  expect(await screen.findByLabelText("Muestra de voz generada")).toHaveAttribute("src", "blob:private-preview");
+  expect(
+    await screen.findByLabelText("Muestra de voz generada"),
+  ).toHaveAttribute("src", "blob:private-preview");
   await waitFor(() =>
     expect(
       screen.getByRole("button", { name: "Generar muestra" }),

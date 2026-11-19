@@ -36,3 +36,7 @@ Referencias: [catálogo de voces](https://elevenlabs.io/docs/api-reference/voice
 ## Naturalidad por perfil
 
 Cada perfil incorpora estilo conversado, calmado, expresivo o neutro; instrucciones de cómo hablar para Gemini y reacciones opcionales sólo cuando el contexto es empático. Las guías de actuación no alteran las palabras ni añaden hechos al texto revisado. v4 recibe sólo estabilidad y semejanza; no se le envían estilo, velocidad, speaker boost ni SSML. v3 usa sus niveles compatibles de estabilidad; otros motores no reciben etiquetas de reacción. Los modelos disponibles se consultan al abrir el panel, incluidos v4/v4 Turbo si aparecen en el catálogo de la clave. La calidad se revisa con muestras, no se garantiza naturalidad perfecta por configurar parámetros.
+
+## Controles de ElevenLabs en RinovaPlus
+
+Cada perfil incorpora deslizadores Estabilidad (creativo→robusto) y Similitud (baja→alta), con valores0–100% y teclado nativo. El estilo propone valores iniciales; el operador puede ajustarlos. v3 adapta estabilidad a sus niveles0/0.5/1. Idioma ofrece Automático o los idiomas de la lista del modelo, sin escribir códigos. Multilingualv2 conserva automático porque su API no permite imponer idioma. Cambiar de modelo vuelve el idioma a automático. El backend valida la selección contra el catálogo antes de un POST de síntesis. No modifica permanentemente la voz en ElevenLabs: los controles se aplican a cada generación.

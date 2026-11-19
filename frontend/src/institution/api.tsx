@@ -60,6 +60,7 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  voice_language_unsupported: "El modelo no admite fijar ese idioma o ya no lo incluye en su catálogo. Elige Automático o un idioma disponible para el modelo seleccionado.",
   voice_duration_estimated_exceeded: "El texto de la muestra duraría más que el máximo configurado. No se generó audio. Reduce el texto, aumenta la duración máxima o usa 0 para desactivar ese límite.",
   voice_duration_actual_exceeded: "El audio generado excedió la duración máxima. Se descartó sin cortarlo. La generación pudo consumir caracteres; revisa la actividad y reduce el texto antes de otra prueba.",
   voice_key_required: "Guarda primero la clave de ElevenLabs en Ajustes → APIs y modelos → Credenciales.",

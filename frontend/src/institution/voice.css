@@ -79,6 +79,41 @@
   flex-shrink: 0;
   accent-color: #8daf20;
 }
+.voice-tuning {
+  display: grid;
+  gap: 0.4rem;
+  padding-block: 0.75rem;
+}
+.voice-slider-label,
+.voice-range-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.voice-slider-label label {
+  font-weight: 700;
+}
+.voice-slider-label output {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.voice-tuning input[type="range"] {
+  appearance: auto;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  accent-color: #8daf20;
+  cursor: pointer;
+}
+.voice-range-legend {
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+}
 .voice-section-heading {
   display: flex;
   align-items: center;

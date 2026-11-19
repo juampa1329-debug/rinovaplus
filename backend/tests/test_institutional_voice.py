@@ -193,6 +193,24 @@ def test_reactions_are_opt_in_contextual_and_never_sent_to_unsupported_models():
     assert voice_settings(profile(model_id="eleven_v3"))["stability"] == 0.5
 
 
+def test_manual_voice_controls_are_bounded_and_v3_is_quantized():
+    from app.institutional.voice_policy import VoiceProfile
+    p = VoiceProfile(**profile(model_id="eleven_v4", stability=0.25, similarity_boost=0.9, language_code="es"))
+    assert voice_settings(p.model_dump()) == {"stability": 0.25, "similarity_boost": 0.9}
+    assert voice_settings(profile(model_id="eleven_v3", stability=0.36))["stability"] == 0.5
+    for patch in [{"stability": -0.1}, {"similarity_boost": 1.01}, {"stability": float("nan")}, {"language_code": "inventado"}, {"model_id": "eleven_multilingual_v2", "language_code": "es"}]:
+        with pytest.raises(ValidationError): VoiceProfile(**profile(**patch))
+
+
+def test_language_must_come_from_selected_model_before_paid_io(monkeypatch):
+    class Gateway:
+        def __init__(self, *_): pass
+        async def catalog(self, *_): return {"voices": [{"id": "voice-id"}], "models": [{"id": "eleven_v4", "languages": [{"id": "en"}]}]}
+        async def request(self, *_a, **_k): pytest.fail("Unsupported language cannot cause paid IO")
+    with pytest.raises(AiError, match="voice_language_unsupported"):
+        asyncio.run(voice.synthesize("fake", profile(model_id="eleven_v4", language_code="es"), "Hola", str(uuid4()), Gateway))
+
+
 def test_catalog_rechecks_authority_after_network_and_never_returns_key(monkeypatch):
     app = FastAPI()
     @app.middleware("http")

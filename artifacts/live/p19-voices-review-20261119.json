@@ -56,9 +56,9 @@
     "automatic_voice_enabled": false
   },
   "tests": {
-    "backend_passed": 132,
+    "backend_passed": 134,
     "backend_skipped_environment": 2,
-    "frontend_selected_passed": 15,
+    "frontend_selected_passed": 16,
     "types": "passed",
     "lint_modified": "passed",
     "workspace_build": "passed_with_existing_large_bundle_warning"
@@ -68,12 +68,20 @@
     "Second Juampa sample with v4; owner quality review",
     "Native full Gemini/voice/outbox frontier with mocked paid providers and rollback",
     "Automatic incoming voice, long reply, cap and Human pilot",
-    "Profile assignment and final operation acceptance"
+    "Profile assignment and final operation acceptance",
+    "Deploy and verify native stability/similarity/language controls requested from owner screenshot"
   ],
   "security": {
     "no_ddl_or_seed": true,
     "no_siie_writes": true,
     "no_api_key_or_private_voice_id_in_evidence": true,
     "calls_remain_P20": true
+  },
+  "natural_delivery_deployment": {
+    "commit": "73a0b43b0f5aa4bdc198912d83436936685f8530",
+    "run": "nlrnqh5vkmdzco79bgxo06sk",
+    "container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T163757",
+    "completed_utc": "2026-11-19T16:42:17Z",
+    "status": "healthy_rolling_update_completed"
   }
 }

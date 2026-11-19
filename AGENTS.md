@@ -1,3 +1,7 @@
+## P19: controles de ElevenLabs solicitados — 2026-11-19
+
+Se añaden a cada perfil deslizadores de estabilidad/similitud e idioma automático o seleccionado del catálogo del modelo. v3 adapta estabilidad y Multilingualv2 conserva idioma automático; v4 no recibe parámetros incompatibles.134backend/16frontend seleccionadas pasan. Pendiente publicar/probar estos controles. Naturalidad73a0b43 saludable en Coolify, runnlrnqh5vkmdzco79bgxo06sk completado16:42:17UTC; segunda muestraJuampa/v4 en preparación. P19 mantiene2/5aceptadas; no cerrar por cantidad de código. General y demás fases conservan el corte inferior.
+
 ## P19: catálogo y nota real verificados; naturalidad en ajuste — 2026-11-19
 
 P19 avanza 2/5 aceptadas en alcance técnico: P19.1 catálogo/credencial y P19.4 compatibilidad/reproducción. Coolify c93b366 saludable, backend xiwmrfy7mxndthdyhbi6unui completado16:24:29UTC. Catálogo real22voces/9modelos incluyev4/v4Turbo y Juampa. Muestra374caracteres/25segundos entregada al44 desde WhatsApp CBN; el titular confirmó reproducción completa y pidió mejorar naturalidad. Se añaden estilo por perfil, guía oral del agente y parámetros/etiquetas compatibles con v4, con otra muestra pendiente. Voz automática todavía apagada y chat44enHumano para ensayo manual. Sin nuevas tablas ni escrituras SIIE. Native rollback validó cuota durable/duplicación y conversión realMP3→OGG/Opus1.006s, sin proveedor ni persistencia.132backend/15frontend seleccionadas pasan (2multimedia omitidas por entorno). Evidencia artifacts/live/p19-voices-review-20261119.json.

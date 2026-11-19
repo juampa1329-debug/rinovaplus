@@ -30,6 +30,9 @@ export type VoiceProfile = {
   delivery?: string;
   allow_reactions?: boolean;
   speech_instructions?: string;
+  stability?: number | null;
+  similarity_boost?: number;
+  language_code?: string;
   agent_ids: string[];
   schools: string[];
 };
@@ -55,7 +58,12 @@ const defaults: VoicePolicy = {
   default_profile_id: "",
   profiles: [],
 };
-type CatalogItem = { id: string; name: string; language?: string };
+type CatalogItem = {
+  id: string;
+  name: string;
+  language?: string;
+  languages?: { id: string; name: string }[];
+};
 type VoiceCatalog = { voices: CatalogItem[]; models: CatalogItem[] };
 type Usage = {
   daily_characters: number;
@@ -425,7 +433,10 @@ function VoiceEditor({
                     value={p.model_id}
                     disabled={!catalog}
                     onChange={(event) =>
-                      profile(p.id, { model_id: event.target.value })
+                      profile(p.id, {
+                        model_id: event.target.value,
+                        language_code: "",
+                      })
                     }
                     options={[
                       { value: "", label: "Selecciona un modelo" },
@@ -435,6 +446,91 @@ function VoiceEditor({
                       ...modelOptions,
                     ]}
                   />
+                  <div className="voice-tuning">
+                    <div className="voice-slider-label">
+                      <label htmlFor={`voice-stability-${p.id}`}>
+                        Estabilidad
+                      </label>
+                      <output htmlFor={`voice-stability-${p.id}`}>
+                        {Math.round(stabilityFor(p) * 100)}%
+                      </output>
+                    </div>
+                    <input
+                      id={`voice-stability-${p.id}`}
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={p.model_id.startsWith("eleven_v3") ? 0.5 : 0.01}
+                      value={stabilityFor(p)}
+                      aria-valuetext={`${Math.round(stabilityFor(p) * 100)} por ciento`}
+                      onChange={(event) =>
+                        profile(p.id, { stability: Number(event.target.value) })
+                      }
+                    />
+                    <div className="voice-range-legend">
+                      <small>Creativo</small>
+                      <small>Robusto</small>
+                    </div>
+                    <div className="voice-slider-label">
+                      <label htmlFor={`voice-similarity-${p.id}`}>
+                        Similitud
+                      </label>
+                      <output htmlFor={`voice-similarity-${p.id}`}>
+                        {Math.round((p.similarity_boost ?? 0.75) * 100)}%
+                      </output>
+                    </div>
+                    <input
+                      id={`voice-similarity-${p.id}`}
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      value={p.similarity_boost ?? 0.75}
+                      aria-valuetext={`${Math.round((p.similarity_boost ?? 0.75) * 100)} por ciento`}
+                      onChange={(event) =>
+                        profile(p.id, {
+                          similarity_boost: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <div className="voice-range-legend">
+                      <small>Baja</small>
+                      <small>Alta</small>
+                    </div>
+                    <SelectField
+                      id={`voice-language-${p.id}`}
+                      label="Idioma"
+                      value={p.language_code ?? ""}
+                      disabled={
+                        !catalog || p.model_id === "eleven_multilingual_v2"
+                      }
+                      onChange={(event) =>
+                        profile(p.id, { language_code: event.target.value })
+                      }
+                      options={[
+                        { value: "", label: "Automático" },
+                        ...(catalog?.models
+                          .find((m) => m.id === p.model_id)
+                          ?.languages?.map((l) => ({
+                            value: l.id,
+                            label:
+                              (
+                                {
+                                  es: "Español",
+                                  en: "Inglés",
+                                  pt: "Portugués",
+                                  fr: "Francés",
+                                } as Record<string, string>
+                              )[l.id] ?? l.name,
+                          })) ?? []),
+                      ]}
+                    />
+                    <small>
+                      {p.model_id === "eleven_multilingual_v2"
+                        ? "Este modelo detecta el idioma automáticamente; no admite fijarlo por API."
+                        : "Los idiomas se cargan del modelo elegido. Menor estabilidad da más variación; mayor similitud conserva más rasgos de la voz original."}
+                    </small>
+                  </div>
                   <details>
                     <summary>Naturalidad e interpretación</summary>
                     <SelectField
@@ -442,7 +538,10 @@ function VoiceEditor({
                       label="Estilo de voz"
                       value={p.delivery ?? "conversational"}
                       onChange={(event) =>
-                        profile(p.id, { delivery: event.target.value })
+                        profile(p.id, {
+                          delivery: event.target.value,
+                          stability: null,
+                        })
                       }
                       options={[
                         {
@@ -756,6 +855,21 @@ function PreviewPlayer({ url }: { url: string }) {
   ) : (
     <span role="status">Cargando muestra privada…</span>
   );
+}
+
+function stabilityFor(profile: VoiceProfile) {
+  const preset = (
+    {
+      conversational: 0.4,
+      calm: 0.65,
+      expressive: 0.3,
+      neutral: 0.7,
+    } as Record<string, number>
+  )[profile.delivery ?? "conversational"];
+  const value = profile.stability ?? preset;
+  return profile.model_id.startsWith("eleven_v3")
+    ? Math.round(value * 2) / 2
+    : value;
 }
 
 export function voiceReason(code: string) {

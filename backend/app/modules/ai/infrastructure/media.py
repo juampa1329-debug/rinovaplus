@@ -419,6 +419,7 @@ class MediaGateway:
                 {
                     "id": item["model_id"],
                     "name": str(item.get("name", item["model_id"]))[:200],
+                    "languages": [{"id": lang["language_id"], "name": str(lang.get("name", lang["language_id"]))[:80]} for lang in (item.get("languages") or [])[:200] if isinstance(lang, dict) and isinstance(lang.get("language_id"), str) and re.fullmatch(r"[a-z]{2}", lang["language_id"])],
                 }
                 for item in data
                 if isinstance(item, dict)

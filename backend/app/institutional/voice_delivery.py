@@ -40,11 +40,13 @@ def speech_text(profile, text):
 def voice_settings(profile):
     style = profile.get("delivery", "conversational")
     stability = {"conversational": 0.4, "calm": 0.65, "expressive": 0.3, "neutral": 0.7}[style]
+    if profile.get("stability") is not None:
+        stability = profile["stability"]
     model = profile["model_id"]
     if model.startswith("eleven_v3"):
-        stability = 0.0 if style == "expressive" else 0.5
+        stability = round(stability * 2) / 2
     # v4 deliberately receives no style, speed, speaker boost or SSML.
-    result = {"stability": stability, "similarity_boost": 0.75}
+    result = {"stability": stability, "similarity_boost": profile.get("similarity_boost", 0.75)}
     if not model.startswith("eleven_v4"):
         result["speed"] = 0.97 if style in {"conversational", "calm"} else 1.0
     return result

@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class VoiceProfile(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
     name: str = Field(min_length=1, max_length=100)
     voice_id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,200}$")
@@ -18,12 +18,17 @@ class VoiceProfile(BaseModel):
     delivery: Literal["conversational", "calm", "expressive", "neutral"] = "conversational"
     allow_reactions: bool = False
     speech_instructions: str = Field(default="", max_length=1000)
+    stability: float | None = Field(default=None, ge=0, le=1)
+    similarity_boost: float = Field(default=0.75, ge=0, le=1)
+    language_code: str = Field(default="", pattern=r"^(?:[a-z]{2})?$")
     agent_ids: list[str] = Field(default_factory=list, max_length=50)
     schools: list[str] = Field(default_factory=list, max_length=50)
 
     @model_validator(mode="after")
     def assignments(self):
         self.name = self.name.strip()
+        if self.model_id == "eleven_multilingual_v2" and self.language_code:
+            raise ValueError("voice_language_unsupported")
         if not self.name or any(ord(ch) < 32 for ch in self.name):
             raise ValueError("voice_invalid_profile")
         self.agent_ids = [str(UUID(value)) for value in self.agent_ids]

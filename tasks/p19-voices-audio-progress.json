@@ -16,7 +16,9 @@
     "per_conversation_cap",
     "incoming_voice_and_long_reply_modes",
     "estimated_and_actual_duration_limit_zero_disables_duration_limit",
-    "no_manual_model_or_voice_ids"
+    "no_manual_model_or_voice_ids",
+    "stability_similarity_sliders",
+    "language_auto_or_live_model_languages"
   ],
   "units": [
     {
@@ -51,14 +53,15 @@
   "Hermes_in_new_scope": false,
   "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
   "checks": {
-    "backend_passed": 132,
+    "backend_passed": 134,
     "backend_skipped": 2,
-    "frontend_selected_passed": 15,
+    "frontend_selected_passed": 16,
     "types": "passed",
     "lint_modified": "passed",
     "workspace_build": "passed_with_existing_large_bundle_warning"
   },
   "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md",
   "evidence": "artifacts/live/p19-voices-review-20261119.json",
-  "owner_quality_followup": "Complete playback confirmed; second more natural sample requested"
+  "owner_quality_followup": "Complete playback confirmed; second more natural sample requested",
+  "controls": "Implemented per-profile stability/similarity and model-language catalog; pending deployment and live check"
 }

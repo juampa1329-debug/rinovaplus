@@ -110,9 +110,13 @@ async def synthesize(value, profile, text, media_id, gateway_factory=MediaGatewa
     catalog = await catalog_for(value, gateway_factory)
     if profile["voice_id"] not in {v["id"] for v in catalog["voices"]} or profile["model_id"] not in {v["id"] for v in catalog["models"]}:
         raise AiError("voice_catalog_required", 409)
+    language = profile.get("language_code", "")
+    model = next(v for v in catalog["models"] if v["id"] == profile["model_id"])
+    if language and (profile["model_id"] == "eleven_multilingual_v2" or language not in {v["id"] for v in model.get("languages", [])}):
+        raise AiError("voice_language_unsupported", 409)
     metadata = {}
     raw, _ = await gateway.request("elevenlabs", "POST", "v1/text-to-speech/" + profile["voice_id"],
-        {"text": speech_text(profile, text), "model_id": profile["model_id"], "voice_settings": voice_settings(profile)}, params={"output_format": "mp3_44100_128"}, binary=True, metadata=metadata)
+        {"text": speech_text(profile, text), "model_id": profile["model_id"], "voice_settings": voice_settings(profile), **({"language_code": language} if language else {})}, params={"output_format": "mp3_44100_128"}, binary=True, metadata=metadata)
     source = files.path(media_id, ".part")
     try:
         source.write_bytes(raw)
