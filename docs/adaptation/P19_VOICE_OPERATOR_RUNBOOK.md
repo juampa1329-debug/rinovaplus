@@ -1,6 +1,6 @@
 # P19 · Voces y notas de audio
 
-La implementación se valida por separado de su aceptación real. Las llamadas siguen en P20. No requiere tablas nuevas, seeds ni cambios en SIIE.
+Estado vigente: P19 aceptada5/5 en su alcance técnico inicial; evidencia en artifacts/live/p19-close-review-20261119.json. Los apartados de piloto inferiores conservan su historia. La implementación se valida por separado de su aceptación real. Las llamadas siguen en P20. No requiere tablas nuevas, seeds ni cambios en SIIE.
 
 ## Configuración
 
@@ -62,3 +62,9 @@ Actividad y consumo permite escuchar las muestras propias confirmadas de las úl
 5. Revisa consumo: reservados no equivalen a caracteres reportados ni a dólares. Sin recibo no significa gratis. Consultar uso de la cuenta informa toda la cuenta, incluidos otros proyectos, y no modifica plan/sobreconsumo.
 
 Una voz fijada no se reemplaza por asignaciones nuevas; un perfil/modelo cambiado o pausado hace continuar el hilo por texto. Crea otro perfil para conservar los anteriores. Cambiar IA/Humano o redesplegar no reinicia el cupo. Ante resultado incierto, revisa el recibo del proveedor y el historial; no repitas la síntesis ni liberes la reserva suponiendo que no hubo consumo.
+
+## Estado de entrega del cierre
+
+Tres perfiles disponibles: Juampa predeterminada y dos alternativas Sarah/George, sin asignaciones permanentes de escuela decididas por el ensayo. El agente existente volvió a Automática. Política15 conserva el alcance guardado por el propietario y sus topes3audios/60segundos/20000caracteres diarios, modo nota entrante. Para otras voces, crea un perfil desde el catálogo y actualiza la lista en el constructor de agentes.
+
+Cuenta ElevenLabs: la consulta de uso requiere que la clave permita la lectura de usuario/suscripción. Si falta ese permiso, la generación puede seguir funcionando; revisa el permiso de lectura de la clave sin exponerla. El contador puede retrasarse y no equivale a una factura por generación. Las dos muestras de cierre reservaron262caracteres; el proveedor no devolvió conteo facturado individual. No se interpreta un contador inmóvil como consumo gratuito. Las muestras privadas vencen en24h y no se envían automáticamente.

@@ -19,6 +19,8 @@ import {
 } from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { useDraftGuard } from "./drafts";
+import { ErrorFeedback } from "./ErrorFeedback";
+import { explainChannelError } from "./channelErrors";
 import "./voice.css";
 
 export type VoiceProfile = {
@@ -107,6 +109,13 @@ const greetingTones = [
 ] as const;
 
 export function VoiceWorkspace() {
+  return (
+    <ErrorFeedback explain={explainChannelError}>
+      <VoiceWorkspaceContent />
+    </ErrorFeedback>
+  );
+}
+function VoiceWorkspaceContent() {
   const settings = useResource<Setting>("settings/ai");
   if (!settings.value) return <ResourceState error={settings.error} />;
   return (

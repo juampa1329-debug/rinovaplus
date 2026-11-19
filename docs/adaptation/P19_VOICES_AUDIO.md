@@ -1,6 +1,6 @@
 # P19 · Voces y notas de audio con ElevenLabs
 
-Corte: 19 de noviembre de 2026. **Cierre en validación, 3/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
+Corte: 19 de noviembre de 2026. **Aceptada en su alcance técnico inicial, 5/5 unidades (100%).** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
 
 ## Alcance
 
@@ -53,3 +53,13 @@ El propietario solicitó cerrar asignaciones y operación. Se añade selección 
 Comprobar voz y límites es un recorrido de lectura: usa las mismas funciones de selección/reglas, sin proveedor, archivos, reservas ni mensajes. Un chat real conserva su contexto y requiere inbox.read; no acepta agente/programa externos al hilo. La simulación sin chat no confirma control, alcance, catálogo ni credencial. Consumo distingue reservas, conteos reportados por ElevenLabs y ausencia de recibo, incertidumbre y operaciones en curso. Consulta de cuenta sólo GET user/subscription, sin facturas ni datos de pago en la respuesta, con autorización/clave revalidadas. La vista de cupo por chat conserva reservas y perfil fijado.
 
 Pruebas locales cubren selección directa/escuela/predeterminada/fijada, pausa, máximos, saldo interno, duración y resultados inciertos; no se fuerzan fallos de Meta/ElevenLabs en producción. Las pruebas nativas históricas bajo rollback conservan sus límites. La aceptación adicional permanece pendiente del despliegue y las pruebas de UI/catálogo/asignación/consumo reales de este corte. No se declara 100% por completar código o contar tests.
+
+## Cierre técnico aceptado — 2026-11-19
+
+Se aceptan P19.2 y P19.5: **P19 queda5/5,100% en su alcance técnico inicial de notas de voz WhatsApp**. Backend0fd449c saludable, rolling update22:04:43UTC. Tres perfiles reales disponibles: Juampa propia, Sarah y George predeterminadas, todos seleccionados desde el catálogo de la clave. Se guardó una elección directa Juampa en el agente existente, se comprobó su prioridad sobre Salud→Sarah y se restauró Automática. Simulaciones de TIC→George y Salud→Sarah comprobadas; las asignaciones temporales se quitaron. El formulario de creación ofrece los tres perfiles. El hilo real conserva Juampa fijada y1de3reservas, incluso después de recargar.
+
+Pausa/restauración de George sin tráfico verificadas en versiones14/15. La consulta real de cuenta ElevenLabs responde; dos muestras privadas v4 de68caracteres de texto,5segundos cada una, reservan131caracteres cada una incluyendo dirección oral. Reservas+262, sin conteo facturado por generación disponible. El contador inmediato de cuenta no cambió: no significa gratuidad ni coste cero; puede tener retraso e incluye otros proyectos. El reproductor privado se recuperó tras recarga sin sintetizar otra vez y cargó5,2065segundos de audio.
+
+Comprobaciones publicadas sin consumo: Humano bloquea voz; tamaño excesivo y duración estimada120s sobre60s continúan íntegros por texto; entrada sin nota no cumple el modo elegido. Se conservan pruebas nativas PG con rollback y proveedores simulados para agotamiento de cupo, resultado incierto, deduplicación y cambio a Humano durante síntesis. No se provocaron fallos pagados ni caídas de proveedores en producción.242backend y56frontend seleccionadas, tipos/lint/build pasan; advertencia previa de bundle permanece. Evidencia de cierre: [p19-close-review](../../artifacts/live/p19-close-review-20261119.json).
+
+Estado final: política15, predeterminadaJuampa/Tranquila, alcance global previamente guardado por el propietario, modo nota entrante, máximo3audios/60segundos y20000caracteres en24h. No se envió WhatsApp nuevo por este cierre. Calidad contextual y reproducción real ya confirmadas por el titular en P19.3/P19.4; las muestras de Sarah/George no sustituyen esa aceptación ni prometen eficacia comercial. P20 llamadas y las demás fases adicionales siguen pendientes. El historial superior de implementación conserva las condiciones de cada corte.

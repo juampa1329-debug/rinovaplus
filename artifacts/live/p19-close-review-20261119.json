@@ -1,20 +1,110 @@
 {
   "phase": "P19",
   "scope": "WhatsApp voice notes; calls remain P20",
-  "status": "implemented_checks_live_pending",
+  "status": "accepted_technical_initial_scope",
   "accepted_before": 3,
   "target_units": [
     "P19.2",
     "P19.5"
   ],
   "backend_selected_passed": 242,
-  "live_paid_generations_this_review": 0,
+  "live_paid_generations_this_review": 2,
   "production_fault_injection": false,
-  "pending": [
-    "deployment",
-    "three live profiles and assignments",
-    "actual usage and samples",
-    "operator limits/read-only decision checks"
-  ],
-  "academic_reuse": "requirements and financial plans prepared locally with review; separate P13 implementation, no acceptance added"
+  "pending": [],
+  "academic_reuse": {
+    "requirements_and_plans_preview_apply_then_save": true,
+    "plan_append_default_replace_explicit": true,
+    "cash_price_and_siie_identity_not_copied": true,
+    "new_local_plan_ids": true,
+    "live_missing_requirements_and_missing_plans_explained": true,
+    "no_fake_production_requirements_or_prices_saved": true,
+    "local_fixture_copy_and_target_save_test_passed": true,
+    "P13_or_P16_acceptance_added": false
+  },
+  "accepted_after": 5,
+  "total": 5,
+  "acceptance_percent": "100.00%",
+  "canonical_weight_added": 0,
+  "frontend_selected_passed": 56,
+  "types": "passed",
+  "lint_modified": "passed",
+  "workspace_build": "passed_with_existing_large_bundle_warning",
+  "deployment": {
+    "backend_commit": "0fd449c585cafff36a9345d27dd0524faed05f4c",
+    "backend_run": "viqgf2yrnz8ut1dfpotjjxww",
+    "container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T220026",
+    "completed_utc": "2026-11-19T22:04:43Z",
+    "health": "healthy",
+    "rolling_update_completed": true,
+    "frontend_assignment_and_academic_reuse_visible": true
+  },
+  "assignment_acceptance": {
+    "profiles": [
+      "Juampa · Admisiones CBN",
+      "Sarah · Perfil disponible",
+      "George · Perfil disponible"
+    ],
+    "own_and_default_voices_from_authenticated_catalog": true,
+    "school_simulation": {
+      "ESCUELA DE SALUD": "Sarah",
+      "ESCUELA DE TIC": "George"
+    },
+    "direct_agent_choice_saved_and_checked_over_school": "Juampa",
+    "agent_restored_to_automatic": true,
+    "new_agent_form_lists_all_three_profiles": true,
+    "new_live_agent_created": false,
+    "temporary_school_assignments_cleared": true,
+    "default_remains": "Juampa · Admisiones CBN",
+    "existing_owner_thread_keeps_pinned_Juampa": true,
+    "profile_pause_and_restore": "Unused George paused at policy14, restored available at policy15; no traffic or generation while paused"
+  },
+  "operator_checks": {
+    "real_human_thread": "voice_human_control; no synthesis or send",
+    "real_institutional_owner_thread": "1 durable reservation of cap3; Juampa pinned; remaining2",
+    "duration_simulation": "estimated120seconds exceeds60; whole response stays text",
+    "size_simulation": "text over2000 characters stays complete text",
+    "incoming_note_mode": "non-voice input stays text",
+    "readonly_checks_create_no_reservations_or_provider_calls": true,
+    "native_cap_human_uncertainty_recovery": "Reuses earlier real PostgreSQL rollback evidence with mocked Gemini/TTS in p19-voices-review-20261119.json and p19-native-worker-rollback-20261119.py; no new production fault injection",
+    "scope_and_limits_unchanged": "all WhatsApp in IA; incoming voice; max3 automatic audios per thread; max60seconds; text2000; daily20000",
+    "policy_final_revision": 15
+  },
+  "consumption_review": {
+    "short_previews": [
+      {
+        "profile": "Sarah",
+        "model": "eleven_v4",
+        "source_characters": 68,
+        "reserved_characters": 131,
+        "rounded_seconds": 5
+      },
+      {
+        "profile": "George",
+        "model": "eleven_v4",
+        "source_characters": 68,
+        "reserved_characters": 131,
+        "rounded_seconds": 5
+      }
+    ],
+    "reserved_delta": 262,
+    "voice_direction_counts_in_reservation": true,
+    "per_generation_reported_count": null,
+    "missing_reported_count_is_not_zero_or_free": true,
+    "subscription_read_successful": true,
+    "subscription_immediate_followup": "Provider returned same account-wide counter; not evidence of no charge or exact attribution. Financial account figures intentionally omitted.",
+    "private_history_recovered_after_reload_without_synthesis": true,
+    "recovered_audio": {
+      "ready_state": 4,
+      "duration_seconds": 5.2065
+    },
+    "replay_does_not_add_generation": true,
+    "new_outbound_whatsapp_messages_this_review": 0
+  },
+  "limits": [
+    "Technical initial scope; no claim of institutional sales efficacy or perfect human voice",
+    "No exact dollar billing per generation; account balance includes other projects",
+    "No deliberately failed paid Meta/ElevenLabs request or live provider outage",
+    "No calls, new clone, DDL, seeds, SIIE write, or change to original roadmap weights",
+    "Owner previously confirmed Juampa contextual WhatsApp playback; Sarah/George are private samples only"
+  ]
 }
