@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ComponentType, ReactNode } from "react";
 import { Button, Field, Notice, PageHeading, SelectField } from "../shared/ui";
@@ -115,10 +115,10 @@ export function InstitutionApp({
   const [session, setSession] = useState<Session | null>(null),
     [initialized, setInitialized] = useState<boolean | null>(null),
     [error, setError] = useState("");
-  const expire = () => {
+  const expire = useCallback(() => {
     bindInstitutionSession("");
     setSession(null);
-  };
+  }, []);
   useEffect(() => {
     let active = true;
     void send<{ initialized: boolean }>("auth/status")

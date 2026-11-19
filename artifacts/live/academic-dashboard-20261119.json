@@ -1,11 +1,11 @@
 {
   "date": "2026-11-19",
-  "status": "tested_pending_deployment",
+  "status": "live_validated",
   "local_catalog_programs_saved": 25,
   "live_basic_catalog": true,
   "financial_detail": "source_unavailable_1204-n1_no_facts_invented",
   "selected_tests": {
-    "backend": 318,
+    "backend": 319,
     "frontend": 36,
     "types": "passed",
     "changed_eslint": "passed",
@@ -15,19 +15,55 @@
   "dashboard": {
     "readonly": true,
     "timezone": "America/Bogota",
-    "native_aggregate_live": "pending",
-    "mock_tests": "authorization_calendar_and_client_render"
+    "native_aggregate_live": "passed_7_and_30_day_views_rendered_from_production_PG",
+    "mock_tests": "authorization_calendar_and_client_render",
+    "visible_checks": {
+      "daily_incoming_sum": 65,
+      "channel_sum": 65,
+      "unique_received_conversations": 14,
+      "attended": 10,
+      "confirmed_ai_replies": 31,
+      "period": "2026-11-13_to_2026-11-19",
+      "no_campaign_financial_values_recorded": true
+    }
   },
   "voice": {
     "cause": "incoming_audio_not_scheduled_for_Gemini",
     "fix": "schedule_after_media_registration_with_dedup_and_existing_controls",
     "legacy_ui": "one_link_to_Voces_y_audios",
     "global_paid_voice_activated": false,
-    "real_inbound_after_fix": "pending"
+    "real_inbound_after_fix": {
+      "verified": true,
+      "automatic_replies": 2,
+      "duration_seconds_rounded": [
+        18,
+        18
+      ],
+      "receipts": [
+        "read",
+        "delivered"
+      ],
+      "content": "personalized_program_orientation_from_received_voice",
+      "recipient_identifiers_saved": false
+    },
+    "current_configuration_observed": {
+      "revision": 11,
+      "scope": "all",
+      "max_audios_per_conversation": 3,
+      "max_seconds": 60,
+      "model": "eleven_v4",
+      "greeting": "calm",
+      "stability": 0.4,
+      "similarity": 0.91,
+      "changed_by_this_agent": false,
+      "note": "Owner-side saved configuration observed; stale revision9 tab not authoritative"
+    },
+    "owner_confirmed_playback_and_relevance": true,
+    "P19_accepted_units": 3
   },
   "writes_SIIE": false,
   "DDL": false,
-  "roadmap_acceptance_changed": false,
+  "roadmap_acceptance_changed": "P19.3 accepted; original denominator unchanged",
   "production": {
     "backend_commit": "11085da2b0e939adcf1f15b098250a113f6df3ed",
     "deployment": "u8x8bugnj9iljnyazypbdvii",
@@ -35,9 +71,39 @@
     "rolling_update_completed_server_log": "2026-11-19 20:36:45 UTC",
     "software_sync_saved_revision": 2,
     "program_count_after_refresh": 25,
-    "dashboard": "native_query_failed42601_daily_alias_fixed_pending_redeploy"
+    "dashboard": "native_query_failed42601_daily_alias_fixed_pending_redeploy",
+    "final_backend_commit": "4c648414c2736f33c1292ab3737c4d1c477e84c2",
+    "final_deployment": "n14uz61jfplinxnkr9ecaplp",
+    "final_status": "healthy_rolling_update_completed",
+    "final_completed_server_log": "2026-11-19 20:44:03 UTC"
   },
   "failures_preserved": [
     "The first live dashboard query used an unqualified date alias reserved by PostgreSQL. State42601 reproduced with a local PostgreSQL parser; changed to explicit bucket_date and all seven statements parse."
-  ]
+  ],
+  "admissions": {
+    "offered_period": "129 / 2027-A",
+    "programs_and_schedules": "live_loaded",
+    "first_page_items": 25,
+    "remote_writes": false
+  },
+  "responsive_review": {
+    "desktop_actual_width": 1265,
+    "horizontal_overflow": false,
+    "requested_375_override": "IAB viewport override did not change rendered width; do not claim a 375px visual pass",
+    "CSS_mobile_layout_and_reduced_motion": true
+  },
+  "expanded_review": {
+    "status": "local_checks_passed_live_pending",
+    "backend_tests": 320,
+    "frontend_tests": 42,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "workspace_build": "passed_prior_large_bundle_warning",
+    "source_url": "https://cbn.edu.co/escuela-tic/desarrollo-de-software-y-aplicaciones-moviles/",
+    "live_extraction": "pending",
+    "rate_limit_budget_unchanged": 120,
+    "polling": "foreground; coalesced_GET; shared_Retry_After; no_write_retry",
+    "assets": "missing 404; manual update notice; old entry needs reload",
+    "finance": "optional dates; explicit open validity; payment modes; manual preservation"
+  }
 }

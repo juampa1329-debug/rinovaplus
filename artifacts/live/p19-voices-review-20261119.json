@@ -1,8 +1,8 @@
 {
   "phase": "P19",
   "date_local": "2026-11-19",
-  "status": "partial_live_validation_natural_delivery_revision_pending",
-  "accepted": 2,
+  "status": "contextual_generation_accepted_three_of_five",
+  "accepted": 3,
   "total": 5,
   "canonical_weight_added": 0,
   "deployment": {
@@ -64,10 +64,8 @@
     "workspace_build": "passed_with_existing_large_bundle_warning"
   },
   "pending": [
-    "Deploy scoped pilot and greeting tone comparator",
-    "Four greeting variants requested by owner; send to44 in order",
-    "Real automatic voice note and cap pilot, then restore max3",
-    "Final phase acceptance with documented scope"
+    "P19.2: validate multiple voice assignments by agent and school with continuity",
+    "P19.5: final operational quota, pause and recovery acceptance"
   ],
   "security": {
     "no_ddl_or_seed": true,
@@ -203,5 +201,32 @@
     "provider_status": "read",
     "control_after_test": "ai",
     "automatic_pilot_not_yet_verified": true
-  }
+  },
+  "current_automatic_review": {
+    "backend_commit": "11085da2b0e939adcf1f15b098250a113f6df3ed",
+    "scheduler_bug": "Webhook registered audio but did not schedule Gemini. Fixed after media registration; dedup preserved.",
+    "real_incoming_notes": 2,
+    "real_replies": 2,
+    "duration_seconds_rounded": [
+      18,
+      18
+    ],
+    "provider_receipts": [
+      "read",
+      "delivered"
+    ],
+    "personal_data_not_recorded": true,
+    "observed_policy_revision": 11,
+    "observed_scope": "all",
+    "observed_conversation_cap": 3,
+    "agent_changed_activation": false,
+    "greeting": "calm",
+    "similarity": 0.91,
+    "owner_playback_confirmation": "both_complete_and_relevant_confirmed"
+  },
+  "accepted_units": [
+    "P19.1",
+    "P19.3",
+    "P19.4"
+  ]
 }

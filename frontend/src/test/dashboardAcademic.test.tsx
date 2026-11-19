@@ -25,6 +25,50 @@ const sample: DashboardData = {
   comments: { received: 8 },
 };
 
+it("filters the local program library by school without changing any records", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        items: [
+          {
+            program_id: 1,
+            name: "Software ficticio",
+            school: "TIC",
+            schedule: "Diurna",
+          },
+          {
+            program_id: 2,
+            name: "Salud ficticia",
+            school: "Salud",
+            schedule: "Nocturna",
+          },
+        ],
+        has_more: false,
+      }),
+    ),
+  );
+  try {
+    render(<AcademicPrograms />);
+    await screen.findByRole("button", { name: /Software ficticio/ });
+    fireEvent.change(screen.getByLabelText("Filtrar por escuela"), {
+      target: { value: "Salud" },
+    });
+    expect(
+      screen.queryByRole("button", { name: /Software ficticio/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Salud ficticia/ }),
+    ).toBeVisible();
+    expect(
+      fetcher.mock.calls.every(
+        ([, init]) => !init?.method || init.method === "GET",
+      ),
+    ).toBe(true);
+  } finally {
+    fetcher.mockRestore();
+  }
+});
+
 it("fills quiet Bogotá calendar days without inventing activity and exposes chart data", async () => {
   expect(dailySeries(sample)).toHaveLength(7);
   expect(dailySeries(sample)[0]).toEqual({

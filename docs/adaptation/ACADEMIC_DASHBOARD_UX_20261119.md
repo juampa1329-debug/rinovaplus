@@ -28,3 +28,17 @@ En IA general se sustituyen los controles multimedia heredados por un enlace a l
 Copiado real de una página de 25 programas por la UI sobre 5bc9b60; bbaf756 saludable en Coolify, run 0kuhplq4mp1zbbot2eigpqyw terminado 20:09:18Z. Software143 tiene ofertas actuales1204-n1…n4 del período129. Su detalle financiero aún mostró indisponibilidad del proveedor, sin inventar precios. Esto no acredita aceptación integral P16.
 
 Pruebas de UI/contrato/voz y revisión publicada se registran en el artefacto de esta entrega. Los dobles locales no sustituyen SQL nativo; Docker Desktop no estaba activo. No se abrió terminal privilegiada ni SSH tras la revisión automática. Bundle grande previo conservado. P0–P11/P12 auxiliar y P15 mantienen su aceptación; P13/P16 y P19 conservan las unidades realmente aceptadas.
+
+## Comprobación publicada y ampliación — 2026-11-19
+
+Backend 4c64841 saludable en Coolify (n14uz61jfplinxnkr9ecaplp), finalización 20:44:03 UTC. Dashboard 7/30 días y totales comprobados contra PostgreSQL publicado por UI. Software revisión 2, 25 programas conservados. Admisiones: período 129, filtros y primera página de 25 aspirantes. Sin DDL ni escrituras SIIE. El alias SQL reservado falló 42601 y se corrigió a AS bucket_date; parser local no sustituye replay histórico ni SQL nativo local (Docker inactivo).
+
+El titular confirmó dos respuestas de voz personalizadas completas. P19.3 aceptada: P19 3/5 (60%), pendientes asignación múltiple y operación/consumo. Configuración versión 11 global guardada del lado del propietario, no activada por este agente: 3 audios por hilo, 60s, Tranquila, estabilidad 40%, similitud 91%. Tema claro/oscuro comprobado y Sistema restaurado. Override IAB 375 no cambió el ancho: no acreditar revisión visual móvil 375.
+
+La ficha ampliada agrupa contenido académico revisable: presentación, niveles/materias, título, acreditaciones, prácticas y campo ocupacional. Enlace oficial prepara borrador, exige Guardar; no presume alta calidad, prácticas garantizadas ni empleo. Modalidad contado/financiación/ambas, abono, cuotas con fechas opcionales, vigencia hasta fecha o hasta nueva indicación confirmada. Null sin esa confirmación sigue por confirmar. Refresco SIIE preserva correcciones manuales. Catálogos con scroll y filtros de escuela; copia SIIE sigue siendo la página completa de 25.
+
+El cupo 120 solicitudes/minuto/usuario queda intacto. GET concurrentes iguales comparten solicitud; cliente estable; polling sin foco detenido; Retry-After coordinado entre Inbox/notificaciones/agentes y pestañas mediante un timestamp sin datos ni credenciales. Perfil social sólo al abrir hilo, sin ráfaga de toda la lista. Ninguna escritura se reintenta automáticamente.
+
+Nginx devuelve 404 para assets inexistentes en vez de HTML. Identificador de compilación público y aviso con recarga manual/guardia de borradores; entrada detecta fallos antes de React. No conserva assets antiguos entre imágenes: pestañas anteriores al arreglo requieren recarga manual.
+
+Validación: 320 backend/42 frontend seleccionadas, tipos, ESLint modificado y build workspace pasan; advertencia previa de bundle grande conservada. Pendientes al corte: despliegue, extracción real de Software y observación del Inbox después del arreglo.

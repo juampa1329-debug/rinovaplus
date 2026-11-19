@@ -37,3 +37,11 @@ Catálogo autenticado: 22 voces y 9 modelos, incluidos Eleven v4/v4 Turbo. Juamp
 2fd5214 saludable en Coolify. Estabilidad, similitud e idioma elegidos del catálogo funcionan por perfil; Entonación del saludo ofrece Natural, Cálida, Tranquila y Animada para v4/v3. Se generaron cuatro muestras con idéntico texto y voz Juampa y las cuatro figuran entregadas al44 en ese orden. La reproducción desde historial y descarga privada se verificaron sin nuevas generaciones. El propietario aún debe elegir la entonación.
 
 Piloto guardado en revisión8: sólo el hilo institucional del44, modo nota de voz entrante, máximo1audio automático y60segundos. Chat de vuelta en IA después de los envíos manuales. Pendiente nota entrante real, comprobar respuesta Gemini/Eleven, cupo y cierre de asignaciones/operación antes de aceptar P19al100%.143backend y20frontend pasan; dos pruebas locales omitidas por multimedia.
+
+## Audio entrante real y configuración vigente
+
+Se corrigió el webhook: registraba audio pero sólo programaba Gemini para texto. Tras11085da, dos notas entrantes reales generaron respuestas personalizadas con Juampa/v4, de18segundos cada una; recibos Leído y Entregado. No se repitieron los audios antiguos sin respuesta. Controles multimedia heredados de IA general se sustituyen por un enlace a Voces y audios.
+
+La versión11 guardada desde el lado del propietario se observó con alcance todas las conversaciones, máximo3audios por hilo,60segundos, saludo Tranquila, estabilidad40% y similitud91%. Esta revisión no activó alcance global ni reemplazó esos ajustes. Se conserva el historial del piloto44 anterior. P19 mantiene2/5hasta terminar aceptación de asignaciones, cupo/Humano y operación; no confundir entrega de dos respuestas con cierre integral.
+
+El titular confirmó que ambas respuestas automáticas se escuchan completas y responden a sus preguntas. Se acepta P19.3 en alcance técnico: contexto e instrucciones aplicados a notas reales, con guardas de Humano/cupo previamente comprobadas en PG con proveedores simulados y rollback. P19 queda3/5(60%). Pendientes P19.2, asignación de varias voces, yP19.5, aceptación operativa final de consumo/pausa/recuperación. No se declara eficacia comercial, finanzas SIIE completas ni llamadas.

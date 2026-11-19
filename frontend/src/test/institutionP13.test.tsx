@@ -78,6 +78,27 @@ it("saves a local financial plan with unknown dates and accepts a manual due dat
     fireEvent.change(screen.getByLabelText("Plan 1 · Fecha de cuota 1"), {
       target: { value: "2027-03-20" },
     });
+    fireEvent.change(
+      screen.getByLabelText("Modalidades de pago que puede ofrecer la IA"),
+      { target: { value: "financing" } },
+    );
+    fireEvent.click(
+      screen.getByLabelText(
+        "Vigencia del plan 1 confirmada hasta nueva indicación",
+      ),
+    );
+    fireEvent.click(screen.getByText("Contenido académico y fuente oficial"));
+    fireEvent.change(
+      screen.getByLabelText("Enlace oficial guardado del programa"),
+      { target: { value: "https://cbn.edu.co/programa-ficticio/" } },
+    );
+    fireEvent.change(screen.getByLabelText("Semestres, niveles y materias"), {
+      target: { value: "Nivel 1: fundamentos" },
+    });
+    fireEvent.change(
+      screen.getByLabelText("Título o certificación que otorga"),
+      { target: { value: "Certificado de prueba" } },
+    );
     fireEvent.click(screen.getByRole("button", { name: "Guardar programa" }));
     await screen.findByText("Programa guardado.");
     const call = fetched.mock.calls.find(
@@ -86,9 +107,16 @@ it("saves a local financial plan with unknown dates and accepts a manual due dat
     );
     const body = JSON.parse(String(call?.[1]?.body));
     expect(body.commercial.price_valid_until).toBeNull();
+    expect(body.commercial).toMatchObject({
+      payment_mode: "financing",
+      source_url: "https://cbn.edu.co/programa-ficticio/",
+      syllabus: "Nivel 1: fundamentos",
+      certification: "Certificado de prueba",
+    });
     expect(body.commercial.financial_plans[0]).toMatchObject({
       valid_from: null,
       valid_until: null,
+      valid_until_confirmed_open: true,
       initial_payment_due_date: null,
       installments: [{ number: 1, amount_cop: 400000, due_date: "2027-03-20" }],
     });
@@ -145,7 +173,9 @@ it("previews official SIIE finance and only saves after explicit apply and revie
     });
   try {
     mount(<AcademicPrograms />);
-    fireEvent.click(screen.getByText("Otras fuentes · Extraer información de una página"));
+    fireEvent.click(
+      screen.getByText("Otras fuentes · Extraer información de una página"),
+    );
     fireEvent.click(screen.getByText("Importador SIIE anterior por ID"));
     fireEvent.change(screen.getByLabelText("ID de oferta en SIIE"), {
       target: { value: "offer-fixture" },

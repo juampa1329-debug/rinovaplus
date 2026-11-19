@@ -15,6 +15,7 @@ import { useCrmConfiguration } from "../modules/crm-configuration/hooks/useCrmCo
 import { CrmConfiguration } from "../modules/crm-configuration/pages/CrmConfiguration";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { ApiError, operationFailure, useInstitution } from "./api";
+import { foregroundPolling } from "./readCoordinator";
 import { MediaDownload, MediaUpload } from "./ChannelMedia";
 import type { Attachment } from "./ChannelMedia";
 import { useWorkspaceState } from "../shared/workspaceSession";
@@ -274,7 +275,7 @@ function useEntity(key: string) {
   };
 }
 
-function useRead<T>(path: string, refresh: number | string = 0, enabled = true, pollMs = 0, checkRevision = false) {
+export function useRead<T>(path: string, refresh: number | string = 0, enabled = true, pollMs = 0, checkRevision = false) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
       path: string;
@@ -294,7 +295,7 @@ function useRead<T>(path: string, refresh: number | string = 0, enabled = true, 
     let timer: ReturnType<typeof setTimeout>;
     async function load(initial = false) {
       if (!active || running) return;
-      if (!initial && document.hidden) return;
+      if (!initial && !foregroundPolling()) return;
       if (retryAt > Date.now()) {
         timer = setTimeout(() => void load(), retryAt - Date.now());
         return;
@@ -327,22 +328,24 @@ function useRead<T>(path: string, refresh: number | string = 0, enabled = true, 
           });
       } finally {
         running = false;
-        if (active && pollMs && !document.hidden)
+        if (active && pollMs && foregroundPolling())
           timer = setTimeout(() => void load(), Math.max(pollMs, retryAt - Date.now()));
       }
     }
     const visible = () => {
-      if (!document.hidden) {
+      if (foregroundPolling()) {
         clearTimeout(timer);
         void load();
       }
     };
     timer = setTimeout(() => void load(true), 180);
     if (pollMs) document.addEventListener("visibilitychange", visible);
+    if (pollMs) window.addEventListener("focus", visible);
     return () => {
       active = false;
       clearTimeout(timer);
       if (pollMs) document.removeEventListener("visibilitychange", visible);
+      if (pollMs) window.removeEventListener("focus", visible);
     };
   }, [path, refresh, enabled, call, pollMs, checkRevision]);
   return {
@@ -577,25 +580,21 @@ function WorkspaceView({
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
     refresh,
     page !== "settings",
-    inbox && offset === 0 ? 2000 : 0,
+    inbox && offset === 0 ? 3000 : 0,
     inbox && offset === 0,
   );
   const [socialProfiles, setSocialProfiles] = useState<
-    Record<string, SocialProfile>
+    Record<string, SocialProfile | null>
   >({});
-  const [profileAttempts, setProfileAttempts] = useState<Record<string, boolean>>({});
   const selectedChannel = list.value?.items.find(
     (row) => row.conversationId === selected,
   )?.channel;
   const needsProfile = (identity: string, channel?: string) =>
-    !!identity && !socialProfiles[identity] && !profileAttempts[identity] &&
+    !!identity && !(identity in socialProfiles) &&
     (!channel || ["facebook", "messenger", "instagram"].includes(channel));
   const profileTarget = needsProfile(selected, selectedChannel)
     ? selected
-    : list.value?.items.find((row) =>
-        ["facebook", "messenger", "instagram"].includes(row.channel ?? "") &&
-        needsProfile(row.conversationId, row.channel),
-      )?.conversationId ?? "";
+    : "";
   const profile = useRead<{ profile: SocialProfile | null }>(
     `conversations/${profileTarget}/social-profile`,
     0,
@@ -603,13 +602,8 @@ function WorkspaceView({
       !!list.value?.socialProfiles &&
       !!profileTarget,
   );
-  useEffect(() => {
-    if (!profile.value || !profileTarget) return;
-    const current = profile.value.profile;
-    if (current)
-      setSocialProfiles((values) => ({ ...values, [profileTarget]: current }));
-    setProfileAttempts((values) => ({ ...values, [profileTarget]: true }));
-  }, [profile.value, profileTarget]);
+  if (profile.value && profileTarget && !(profileTarget in socialProfiles))
+    setSocialProfiles({ ...socialProfiles, [profileTarget]: profile.value.profile });
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =
     inbox &&
@@ -839,7 +833,7 @@ function WorkspaceView({
                   {list.value.items.map((row) =>
                     inbox ? (
                       <ConversationRow
-                        profile={socialProfiles[row.conversationId]}
+                        profile={socialProfiles[row.conversationId] ?? undefined}
                         key={row.conversationId}
                         row={row}
                         selected={selected === row.conversationId}
@@ -926,7 +920,7 @@ function WorkspaceView({
               <Person
                 key={selected}
                 receivingAccount={list.value?.items.find((row) => row.conversationId === selected)}
-                socialProfile={socialProfiles[selected]}
+                socialProfile={socialProfiles[selected] ?? undefined}
                 conversation={selected}
                 page={page}
                 refresh={refresh}

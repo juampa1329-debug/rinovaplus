@@ -10,6 +10,12 @@ import { sourceGaps } from "./siieGaps";
 import "./operations-design.css";
 
 type Commercial = {
+  presentation?: string;
+  certification?: string;
+  accreditation?: string;
+  internships?: string;
+  career_outcomes?: string;
+  payment_mode?: "cash" | "financing" | "both";
   price_valid_from?: string | null;
   full_cost_cash_cop?: number | null;
   cost_inclusions?: string;
@@ -25,6 +31,7 @@ type Commercial = {
     name: string;
     valid_from: string | null;
     valid_until: string | null;
+    valid_until_confirmed_open?: boolean;
     initial_payment_cop: number | null;
     initial_payment_due_date: string | null;
     total_cost_cop: number | null;
@@ -54,7 +61,12 @@ type Draft = {
   schedule: string;
   commercial: Commercial;
 };
-type Item = { program_id: number; name: string; school: string; schedule?: string };
+type Item = {
+  program_id: number;
+  name: string;
+  school: string;
+  schedule?: string;
+};
 type Program = {
   exists: boolean;
   revision: number;
@@ -73,6 +85,12 @@ const empty: Draft = {
   school: "",
   schedule: "",
   commercial: {
+    presentation: "",
+    certification: "",
+    accreditation: "",
+    internships: "",
+    career_outcomes: "",
+    payment_mode: "both",
     aliases: "",
     duration: "",
     modality: "",
@@ -106,6 +124,11 @@ function mergeImport(draft: Draft, result: Draft): Draft {
     "modality",
     "syllabus",
     "requirements",
+    "presentation",
+    "certification",
+    "accreditation",
+    "internships",
+    "career_outcomes",
     "source_url",
     "source_checked_at",
   ] as const)
@@ -161,6 +184,19 @@ function importChanges(draft: Draft, result: Draft) {
     ],
     ["Materias o módulos", before.syllabus, after.syllabus],
     ["Requisitos", before.requirements, after.requirements],
+    ["Presentación", before.presentation ?? null, after.presentation ?? null],
+    [
+      "Certificación",
+      before.certification ?? null,
+      after.certification ?? null,
+    ],
+    ["Acreditación", before.accreditation ?? null, after.accreditation ?? null],
+    ["Prácticas", before.internships ?? null, after.internships ?? null],
+    [
+      "Campo ocupacional",
+      before.career_outcomes ?? null,
+      after.career_outcomes ?? null,
+    ],
     [
       "Costo total de contado",
       before.full_cost_cash_cop ?? null,
@@ -191,8 +227,11 @@ export function AcademicPrograms() {
       explain={(failure) => ({
         title: "No se pudo completar la ficha académica",
         detail: failure.message,
-        nextStep:
-          "Revisa los campos señalados. Las fechas pueden quedar vacías. Si informas abono, cuotas y total, sus valores deben coincidir. Si SIIE cambió, vuelve a preparar la sincronización; tus datos locales se conservan.",
+        nextStep: /SIIE no pudo entregar|respuesta de SIIE|SIIE devolvió/.test(
+          failure.message,
+        )
+          ? "La ficha local se conserva. Entrega la referencia de consulta al equipo de SIIE para revisar la oferta financiera. Cuando el servicio vuelva a entregar datos, prepara la sincronización y revisa el borrador. Las fechas ausentes pueden quedar por confirmar."
+          : "Revisa los campos señalados. Las fechas pueden quedar vacías. Si informas abono, cuotas y total, sus valores deben coincidir. Si SIIE cambió, vuelve a preparar la sincronización; tus datos locales se conservan.",
       })}
     >
       <AcademicProgramsContent />
@@ -526,7 +565,17 @@ function AcademicProgramsContent() {
               type="url"
               maxLength={1000}
               value={url}
-              onChange={(event) => setUrl(event.target.value)}
+              onChange={(event) => {
+                setUrl(event.target.value);
+                setDraft((current) => ({
+                  ...current,
+                  commercial: {
+                    ...current.commercial,
+                    source_url: event.target.value,
+                    source_checked_at: "",
+                  },
+                }));
+              }}
             />
             <Button
               type="button"
@@ -768,48 +817,109 @@ function AcademicProgramsContent() {
                 setCommercial("price_valid_until", event.target.value || null)
               }
             />
-            <Field
-              id="program-source"
-              label="Fuente de la ficha"
-              type="url"
-              maxLength={1000}
-              value={commercial.source_url}
-              hint={
-                commercial.source_checked_at
-                  ? `Consultada el ${new Date(commercial.source_checked_at).toLocaleDateString("es-CO")}`
-                  : undefined
-              }
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  commercial: {
-                    ...current.commercial,
-                    source_url: event.target.value,
-                    source_checked_at: "",
-                  },
-                }))
-              }
-            />
-            <TextArea
-              id="program-syllabus"
-              label="Materias o módulos"
-              maxLength={2500}
-              rows={5}
-              value={commercial.syllabus}
-              onChange={(event) =>
-                setCommercial("syllabus", event.target.value)
-              }
-            />
-            <TextArea
-              id="program-requirements"
-              label="Requisitos"
-              maxLength={1600}
-              rows={5}
-              value={commercial.requirements}
-              onChange={(event) =>
-                setCommercial("requirements", event.target.value)
-              }
-            />
+            <details className="program-source-content">
+              <summary>Contenido académico y fuente oficial</summary>
+              <div className="program-fields">
+                <Field
+                  id="program-source"
+                  label="Enlace oficial guardado del programa"
+                  type="url"
+                  maxLength={1000}
+                  value={commercial.source_url}
+                  hint={
+                    commercial.source_checked_at
+                      ? `Consultada el ${new Date(commercial.source_checked_at).toLocaleDateString("es-CO")}`
+                      : undefined
+                  }
+                  onChange={(event) => {
+                    setUrl(event.target.value);
+                    setDraft((current) => ({
+                      ...current,
+                      commercial: {
+                        ...current.commercial,
+                        source_url: event.target.value,
+                        source_checked_at: "",
+                      },
+                    }));
+                  }}
+                />
+                <p>
+                  Usa este enlace en «Otras fuentes → Extraer con IA» para
+                  preparar contenido académico. Revisa y guarda el borrador para
+                  que lo consulten los agentes asignados a este programa.
+                </p>
+                <TextArea
+                  id="program-presentation"
+                  label="Presentación y objetivos del programa"
+                  maxLength={2000}
+                  rows={4}
+                  value={commercial.presentation ?? ""}
+                  onChange={(event) =>
+                    setCommercial("presentation", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-syllabus"
+                  label="Semestres, niveles y materias"
+                  maxLength={2500}
+                  rows={5}
+                  value={commercial.syllabus}
+                  onChange={(event) =>
+                    setCommercial("syllabus", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-certification"
+                  label="Título o certificación que otorga"
+                  maxLength={1600}
+                  rows={3}
+                  value={commercial.certification ?? ""}
+                  onChange={(event) =>
+                    setCommercial("certification", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-accreditation"
+                  label="Acreditaciones verificadas del programa"
+                  maxLength={1600}
+                  rows={3}
+                  value={commercial.accreditation ?? ""}
+                  onChange={(event) =>
+                    setCommercial("accreditation", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-internships"
+                  label="Prácticas y sus condiciones"
+                  maxLength={2000}
+                  rows={4}
+                  value={commercial.internships ?? ""}
+                  onChange={(event) =>
+                    setCommercial("internships", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-career"
+                  label="Campo ocupacional y salidas laborales"
+                  maxLength={1600}
+                  rows={3}
+                  value={commercial.career_outcomes ?? ""}
+                  onChange={(event) =>
+                    setCommercial("career_outcomes", event.target.value)
+                  }
+                />
+                <TextArea
+                  id="program-requirements"
+                  label="Requisitos"
+                  maxLength={1600}
+                  rows={5}
+                  value={commercial.requirements}
+                  onChange={(event) =>
+                    setCommercial("requirements", event.target.value)
+                  }
+                />
+              </div>
+            </details>
           </fieldset>
           <FinancialEditor
             commercial={commercial}
@@ -849,7 +959,23 @@ function FinancialEditor({
   const amount = (value: string) => (value === "" ? null : Number(value));
   return (
     <fieldset disabled={disabled} className="program-fields">
-      <legend>Contado, planes y fechas locales</legend>
+      <legend>Contado y financiación</legend>
+      <SelectField
+        id="program-payment-mode"
+        label="Modalidades de pago que puede ofrecer la IA"
+        value={commercial.payment_mode ?? "both"}
+        options={[
+          { value: "both", label: "Contado y financiación" },
+          { value: "cash", label: "Sólo contado" },
+          { value: "financing", label: "Sólo financiación" },
+        ]}
+        onChange={(event) =>
+          change(
+            "payment_mode",
+            event.target.value as Commercial["payment_mode"],
+          )
+        }
+      />
       <p>
         Completa sólo los datos confirmados. Deja vacías las fechas
         desconocidas: no se inventan ni se calculan a partir del período
@@ -924,8 +1050,22 @@ function FinancialEditor({
             label={`Vigencia hasta del plan ${i + 1}`}
             type="date"
             value={plan.valid_until ?? ""}
+            disabled={plan.valid_until_confirmed_open === true}
             onChange={(e) => update(i, { valid_until: e.target.value || null })}
           />
+          <label className="institution-check">
+            <input
+              type="checkbox"
+              checked={plan.valid_until_confirmed_open === true}
+              onChange={(event) =>
+                update(i, {
+                  valid_until_confirmed_open: event.target.checked,
+                  ...(event.target.checked ? { valid_until: null } : {}),
+                })
+              }
+            />
+            Vigencia del plan {i + 1} confirmada hasta nueva indicación
+          </label>
           {plan.installments.map((part, j) => (
             <div className="program-fields" key={part.number}>
               <Field

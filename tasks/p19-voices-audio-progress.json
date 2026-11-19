@@ -2,8 +2,8 @@
   "phase": "P19",
   "title": "Voces y notas de audio con ElevenLabs",
   "date": "2026-11-19",
-  "status": "selected_calm_greeting_saved_real_automatic_pilot_pending",
-  "accepted": 2,
+  "status": "contextual_generation_accepted_three_of_five",
+  "accepted": 3,
   "total": 5,
   "canonical_weight_added": 0,
   "scope_amendment": "All calls, live voice agents, call followups and call supervision moved to P20 by owner before acceptance",
@@ -37,7 +37,7 @@
     {
       "id": "P19.3",
       "title": "Generación contextual",
-      "state": "implemented_pending_live_acceptance"
+      "state": "accepted_technical_real_incoming_contextual_replies_owner_confirmed_native_human_guard"
     },
     {
       "id": "P19.4",
@@ -52,7 +52,7 @@
   ],
   "reference": "docs/adaptation/P19_VOICES_AUDIO.md",
   "calls_phase": "P20",
-  "live_audio_generated": 8,
+  "live_audio_generated": 10,
   "Hermes_in_new_scope": false,
   "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
   "checks": {
@@ -65,8 +65,23 @@
   },
   "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md",
   "evidence": "artifacts/live/p19-voices-review-20261119.json",
-  "owner_quality_followup": "Complete playback confirmed; second more natural sample requested",
+  "owner_quality_followup": "Owner confirmed both new automatic replies play completely and answer what was asked",
   "controls": "Verified deployed sliders, catalog languages, greeting tones, private history replay and explicit download",
-  "activation_scope": "Enabled only for authorized owner44 institutional conversation: one audio, incoming-note mode, 60 seconds. Real incoming pilot awaiting owner; other conversations remain text",
-  "greeting_samples": "Owner chose 3 Tranquila; saved greeting_tone calm at policy revision9. Eighth real preview generated and read at44."
+  "activation_scope": "Latest owner-side saved policy revision11 observed: all WhatsApp chats in IA, incoming-note mode, max3 audios per conversation, 60seconds. Agent did not activate global scope.",
+  "greeting_samples": "Owner chose 3 Tranquila; saved greeting_tone calm at policy revision9. Eighth real preview generated and read at44.",
+  "automatic_validation": {
+    "incoming_audio_scheduling_fixed": true,
+    "two_real_replies": true,
+    "seconds": [
+      18,
+      18
+    ],
+    "receipts": [
+      "read",
+      "delivered"
+    ],
+    "owner_playback_confirmation": "both_complete_and_answer_questions_confirmed",
+    "voice_specific_human_and_quota_live_acceptance": "native_rollback_guards_passed_final_operational_live_acceptance_pending"
+  },
+  "acceptance_percent": "60.00%"
 }

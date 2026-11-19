@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useLayoutEffect,
   useRef,
@@ -13,6 +14,7 @@ import {
 import { Button, Field, Notice } from "../shared/ui";
 import { ErrorFeedbackContext } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
+import { coordinatedRead, readRetrySeconds, observeReadLimit } from "./readCoordinator";
 
 export type User = {
   id: string;
@@ -358,6 +360,14 @@ export async function send<T>(
   body?: unknown,
   csrf = "",
 ): Promise<T> {
+  if (method === "GET") {
+    const seconds = readRetrySeconds();
+    if (seconds) throw new ApiError(429, "rate_limited", seconds);
+    return coordinatedRead(`${csrf}:${path}`, () => request<T>(path, method, body, csrf));
+  }
+  return request<T>(path, method, body, csrf);
+}
+async function request<T>(path: string, method: string, body: unknown, csrf: string): Promise<T> {
   const response = await fetch(`/api/institution/${path}`, {
     method,
     credentials: "same-origin",
@@ -375,6 +385,7 @@ export async function send<T>(
     if (response.status === 401 && result.detail === "session_required")
       institutionUnauthorized(401);
     const retryAfter = Number(response.headers.get("Retry-After"));
+    if (response.status === 429) observeReadLimit(response.headers.get("Retry-After"));
     throw new ApiError(
       response.status,
       result.detail ?? "request_failed",
@@ -411,12 +422,12 @@ export function SessionBoundary({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const pending = useRef<((accepted: boolean) => void) | null>(null);
-  const ask = () =>
+  const ask = useCallback(() =>
     new Promise<boolean>((resolve) => {
       if (pending.current) return resolve(false);
       pending.current = resolve;
       setConfirm(true);
-    });
+    }), []);
   const close = (accepted: boolean) => {
     pending.current?.(accepted);
     pending.current = null;
@@ -433,7 +444,7 @@ export function SessionBoundary({
       pending.current = null;
     };
   }, [session.csrf_token, expire]);
-  const call: Call = async (path, method, body) => {
+  const call = useCallback<Call>(async (path, method, body) => {
     try {
       return await send(path, method, body, session.csrf_token);
     } catch (failure) {
@@ -453,7 +464,7 @@ export function SessionBoundary({
       }
       throw failure;
     }
-  };
+  }, [session.csrf_token, ask, expire]);
   const refresh = async () => {
     const next = await call<Session>("auth/me");
     setSession(next);

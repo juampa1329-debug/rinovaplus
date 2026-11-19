@@ -1,3 +1,21 @@
+## Académico y consultas Inbox — 2026-11-19
+
+Ficha ampliada: contenido académico desde URL oficial revisable, modalidad contado/financiación, vigencia abierta explícita; null por confirmar, sin inventar precios. Filtros escuela y scroll. Cliente reduce polling sin foco, coalesce GET y comparte Retry-After sin cambiar 120 solicitudes/minuto. Assets ausentes 404 y recarga manual protegida. 320 backend/42 frontend seleccionadas, tipos/ESLint modificado/build pasan; despliegue y extracción real pendientes al corte. Evidencia: artifacts/live/academic-dashboard-20261119.json.
+
+P19: 3/5 (60%), voz personalizada confirmada por titular. Original P0–P11/P12 auxiliar 100% alcance aceptado; P15 correo 7/7. P13 Académico/agentes parcial 0/4; P14 entrenamiento comercial plan; P16 SIIE parcial 0/5, fallo financiero origen; P17 TikTok diferida 0/5; P18 seguridad plan 0/8; P20 llamadas WhatsApp plan 0/8. No modificar denominadores históricos ni cerrar por cantidad de pruebas.
+
+## P19 generación contextual aceptada — 2026-11-19
+
+El titular confirmó las dos respuestas automáticas reales: completas y pertinentes. Se acepta P19.3 en alcance técnico con contexto/system prompt real y guardas Humano/cupo antes verificadas en PG bajo rollback/proveedores simulados. P19 queda3/5(60%):P19.1,3,4aceptadas. PendientesP19.2asignación de varias voces yP19.5operación/consumo final. No realizar pruebas pagadas adicionales ni cambiar la política11 por este registro. Roadmap original P0–P11/P12auxiliar100%,P15correo100%,P13Académico/agentes0/4,P14entrenamientoplan,P16APIacadémica/financieraSIIE0/5,P17TikTokdiferida0/5,P18seguridadplan0/8,P20llamadasplan0/8. Límites OPS intactos.
+
+## Dashboard y audio entrante comprobados — 2026-11-19
+
+4c64841 saludable en Coolify, runn14uz61jfplinxnkr9ecaplp completado20:44:03Zsegúnlogdelservidor. Dashboard7/30días probado sobre PG real; sumas de entradas por día/canal coinciden, estados pendientes no cuentan como enviados. Inicio explícito redirige aDashboard en regresiónUI, restaurar sesión conserva ruta. Admisiones carga período ofrecido129/2027-A, programas/jornadas y25aspirantes. Software sincronizó catálogo base y guardó revisión2; no se inventaron finanzas ni hubo DDL/SIIEwrites.
+
+Dos notas entrantes reales generaron respuesta personalizada Juampa/v4 de18s, unaLeídaal44 yotraEntregadaal segundo chat. Se encontró la política vigente guardada desde el lado del propietario en versión11: alcanceall, máximo3audios por conversación,60s, Tranquila,estabilidad40%,similitud91%. No fue activación global por este agente; no revertirla al piloto44 sólo porque cortes antiguos lo indiquen. Los dos controles heredados de voz se consolidaron visualmente enVoces y audios. Falta confirmación auditiva del titular y aceptación específica de asignaciones/cupo/Humano antes del100%P19.
+
+319backend seleccionadas,36frontend,tipos/lintmodificado/build pasan. ParserPG de desarrollo valida siete sentencias tras detectar/corregir42601en alias diario; Docker Desktop no estaba activo. Tema claro/oscuro y escritorio sin desborde comprobados; el override375delIAB no cambió el ancho real, no afirmar validación visual móvil375. Movimiento reducido implementado enCSS. Evidencia:artifacts/live/academic-dashboard-20261119.json. P0–P11/P12auxiliar100%;P13Académico/agentes0/4,P14entrenamientoplan,P15correo100%7/7,P16SIIE0/5confinanzasdeorigenpendientes,P17TikTokdiferida0/5,P18seguridadplan0/8,P19voces2/5,P20llamadasplan0/8. Original56criterios/279hitosintacto.
+
 ## Revisi�n publicada de Acad�mico y audio � 2026-11-19
 
 11085da saludable, runu8x8bugnj9iljnyazypbdvii completado20:36:45Zseg�nCoolify. UI nueva visible; Software sincroniz� cat�logo base y guard� revisi�n2, total25fichas. Dashboard encontr�42601por alias diario: reproducido y corregido con parser PostgreSQL local en siete consultas; redespliegue de esa correcci�n pendiente. Audio entrante ahora se programa tras registrar medio; falta nota nueva del44para acreditar respuesta real. Controles heredados de multimedia retirados de IA general; enlace �nico aVoces y audios. No voz global ni aceptaci�n adicional por estas comprobaciones.

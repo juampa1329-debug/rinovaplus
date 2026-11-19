@@ -31,6 +31,26 @@ def test_nullable_dates_keep_known_prices_and_explicit_agent_uncertainty():
     assert 'por confirmar' in facts['financial_guidance']
 
 
+def test_manual_payment_modes_and_open_validity_survive_source_refresh():
+    old = draft_from_source(offer()); current = deepcopy(old['values'])
+    current['commercial'].update(payment_mode='financing', presentation='Presentación revisada',
+                                  certification='Certificado de prueba', internships='Prácticas sujetas a confirmación')
+    current['commercial']['financial_plans'][0]['valid_until_confirmed_open'] = True
+    result, _ = reviewed_draft(current, old, draft_from_source(offer()))
+    facts = agent_facts(result.commercial.model_dump())
+    assert 'price_cop' not in facts and 'full_cost_cash_cop' not in facts
+    assert facts['financial_plans'][0]['initial_payment_cop'] == 200000
+    assert facts['presentation'] == 'Presentación revisada'
+    assert not any('valid_until' in item for item in facts['pending_confirmation'])
+    assert any('fecha cuota' in item for item in facts['pending_confirmation'])
+    cash = agent_facts({**result.commercial.model_dump(), 'payment_mode': 'cash'})
+    assert cash['price_cop'] == 600000 and 'financial_plans' not in cash
+    with pytest.raises(ValidationError, match='financial_validity_open_conflict'):
+        FinancialPlan.model_validate({**current['commercial']['financial_plans'][0], 'valid_until': '2099-01-01'})
+    with pytest.raises(ValidationError):
+        CommercialProfile(payment_mode='unknown')
+
+
 def test_known_invalid_dates_and_money_totals_still_rejected():
     plan = draft_from_source(offer())['values']['commercial']['financial_plans'][0]
     for change in ({'initial_payment_due_date': '2026-02-30'}, {'total_cost_cop': 1}, {'initial_payment_cop': True}):

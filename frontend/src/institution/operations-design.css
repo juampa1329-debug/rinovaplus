@@ -266,6 +266,16 @@
   color: var(--muted);
 }
 /* Academic master/detail: source tools above, a compact scrollable library. */
+.siie-program-scroll { max-block-size: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-inline-end: .5rem; scrollbar-gutter: stable; }
+.program-source-content { grid-column: 1 / -1; }
+.program-source-content summary { padding: 1rem 0; cursor: pointer; font-weight: 700; }
+.version-notice {
+  position: fixed; z-index: 10000; inset: auto 1rem 1rem auto;
+  max-inline-size: 30rem; display: grid; gap: .65rem;
+  padding: 1rem; border: 1px solid #c4f04d;
+  background: #12343b; color: #f5f7f2;
+  border-radius: 1rem; box-shadow: 0 8px 32px #0004;
+}
 .program-workspace {
   grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 2.5fr);
   gap: 1.25rem;

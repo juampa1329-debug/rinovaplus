@@ -4,6 +4,7 @@ import { Button } from "../shared/ui";
 import { useInstitution, useIntent, useTask } from "./api";
 import { ChannelLabel } from "./InboxPresentation";
 import { useResource } from "./Settings";
+import { foregroundPolling, readRetrySeconds } from "./readCoordinator";
 
 type NewComments = {
   total: number;
@@ -31,19 +32,28 @@ export function CommentNotifications() {
   useEffect(() => {
     let timer: number | undefined;
     let disposed = false;
+    let running = false;
     async function poll() {
+      if (disposed || running || !foregroundPolling()) return;
+      running = true;
+      window.clearTimeout(timer);
       try {
-        if (!document.hidden) await reload();
+        if (!readRetrySeconds()) await reload();
       } catch {
         // The resource keeps the last successful count and exposes its error.
       } finally {
-        if (!disposed) timer = window.setTimeout(() => void poll(), 15000);
+        running = false;
+        if (!disposed) timer = window.setTimeout(() => void poll(), Math.max(15000, readRetrySeconds() * 1000));
       }
     }
     timer = window.setTimeout(() => void poll(), 15000);
+    window.addEventListener("focus", poll);
+    document.addEventListener("visibilitychange", poll);
     return () => {
       disposed = true;
       window.clearTimeout(timer);
+      window.removeEventListener("focus", poll);
+      document.removeEventListener("visibilitychange", poll);
     };
   }, [reload]);
 

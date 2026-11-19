@@ -111,6 +111,7 @@ function SiieWorkspaceContent({
   const [connection, setConnection] = useState<Connection | null>(null);
   const [tab, setTab] = useState(admissions ? "admissions" : "catalog");
   const [programs, setPrograms] = useState<Row | null>(null);
+  const [catalogSchool, setCatalogSchool] = useState("");
   const [programCursor, setProgramCursor] = useState<string[]>([""]);
   const [catalogPeriod, setCatalogPeriod] = useState("");
   const [selectedProgram, setSelectedProgram] = useState("");
@@ -171,6 +172,7 @@ function SiieWorkspaceContent({
     stack: string[],
     requestedPeriod = catalogPeriod,
   ) => {
+    setCatalogSchool("");
     setOffers(null);
     setInspection(null);
     setSelectedProgram("");
@@ -395,46 +397,95 @@ function SiieWorkspaceContent({
                   <div className="siie-split">
                     <div>
                       <h3>Programas oficiales</h3>
-                      <ul className="siie-list">
-                        {list(programs.items).map((p, i) => (
-                          <li key={text(p.program_id) + i}>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              disabled={!p.program_id}
-                              aria-pressed={
-                                selectedProgram === text(p.program_id)
-                              }
-                              onClick={() => openOffers(text(p.program_id))}
-                            >
-                              <strong>{text(p.name)}</strong>
-                              <span>
-                                {text(p.code)} · {text(p.school)}
-                              </span>
-                              <span>
-                                {text(p.schedule)} · {text(p.modality)} ·{" "}
-                                {text(p.duration_levels)} niveles
-                              </span>
-                            </Button>
-                            {onImport && (
+                      <label>
+                        Escuela de los programas de SIIE
+                        <select
+                          value={catalogSchool}
+                          onChange={(event) => {
+                            changeContext();
+                            setCatalogSchool(event.target.value);
+                            setSelectedProgram("");
+                            setOffers(null);
+                            setInspection(null);
+                          }}
+                        >
+                          <option value="">
+                            Todas las escuelas de esta página
+                          </option>
+                          {[
+                            ...new Set(
+                              list(programs.items).map((program) =>
+                                typeof program.school === "string" &&
+                                program.school.trim()
+                                  ? program.school.trim()
+                                  : "Sin escuela informada",
+                              ),
+                            ),
+                          ]
+                            .sort((a, b) => a.localeCompare(b, "es"))
+                            .map((school) => (
+                              <option key={school} value={school}>
+                                {school}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                      <p className="scope-text">
+                        El filtro muestra los programas de la escuela en la
+                        página consultada. Más programas carga otra página y
+                        restablece este filtro. La acción Copiar esta página
+                        conserva todos los programas de esa página, sin aplicar
+                        este filtro visual.
+                      </p>
+                      <ul className="siie-list siie-program-scroll">
+                        {list(programs.items)
+                          .filter(
+                            (program) =>
+                              !catalogSchool ||
+                              (typeof program.school === "string" &&
+                              program.school.trim()
+                                ? program.school.trim()
+                                : "Sin escuela informada") === catalogSchool,
+                          )
+                          .map((p, i) => (
+                            <li key={text(p.program_id) + i}>
                               <Button
                                 type="button"
-                                variant="quiet"
-                                disabled={task.busy}
-                                onClick={() =>
-                                  prepareLocal({
-                                    program_id: text(p.program_id),
-                                    cursor:
-                                      programCursor[programCursor.length - 1],
-                                    period_id: catalogPeriod,
-                                  })
+                                variant="secondary"
+                                disabled={!p.program_id}
+                                aria-pressed={
+                                  selectedProgram === text(p.program_id)
                                 }
+                                onClick={() => openOffers(text(p.program_id))}
                               >
-                                Preparar ficha local
+                                <strong>{text(p.name)}</strong>
+                                <span>
+                                  {text(p.code)} · {text(p.school)}
+                                </span>
+                                <span>
+                                  {text(p.schedule)} · {text(p.modality)} ·{" "}
+                                  {text(p.duration_levels)} niveles
+                                </span>
                               </Button>
-                            )}
-                          </li>
-                        ))}
+                              {onImport && (
+                                <Button
+                                  type="button"
+                                  variant="quiet"
+                                  disabled={task.busy}
+                                  onClick={() =>
+                                    prepareLocal({
+                                      program_id: text(p.program_id),
+                                      cursor:
+                                        programCursor[programCursor.length - 1],
+                                      period_id: catalogPeriod,
+                                    })
+                                  }
+                                >
+                                  Preparar ficha local
+                                </Button>
+                              )}
+                            </li>
+                          ))}
                       </ul>
                       {!list(programs.items).length && (
                         <p>No hay programas en esta página.</p>

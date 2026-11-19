@@ -1,4 +1,5 @@
 import type { AiProvider } from "../../shared/aiSettings";
+import { coordinatedRead, observeReadLimit, readRetrySeconds } from "../../institution/readCoordinator";
 import {
   institutionHeaders,
   institutionUnauthorized,
@@ -452,6 +453,14 @@ export async function api<T>(
   method = "GET",
   body?: unknown,
 ): Promise<T> {
+  if (method === "GET") {
+    const seconds = readRetrySeconds();
+    if (seconds) throw new Error(`Las consultas están en pausa durante ${seconds} segundos para respetar el límite temporal. Tu borrador se conserva.`);
+    return coordinatedRead(`agents:${institutionHeaders()["X-CSRF-Token"] ?? ""}:${path}`, () => request<T>(path, method, body));
+  }
+  return request<T>(path, method, body);
+}
+async function request<T>(path: string, method: string, body?: unknown): Promise<T> {
   let signature = "";
   if (body && typeof body === "object" && "operation_id" in body) {
     const { operation_id, ...fields } = body as Record<string, unknown>;
@@ -474,6 +483,7 @@ export async function api<T>(
     throw failure;
   });
   const result = await response.json().catch(() => null);
+  if (response.status === 429) observeReadLimit(response.headers.get("Retry-After"));
   institutionUnauthorized(response.status);
   if (signature && response.status < 500) pendingMutations.delete(signature);
   if (!response.ok) {
@@ -483,8 +493,10 @@ export async function api<T>(
         : message(result?.code ?? result?.detail),
     );
     const reference = response.headers.get("X-SIIE-Correlation-ID");
-    if (reference && /^[A-Za-z0-9_-]{1,100}$/.test(reference))
+    if (reference && /^[A-Za-z0-9_-]{1,100}$/.test(reference)) {
       Object.assign(failure, { correlationId: reference });
+      failure.message += ` Referencia SIIE: ${reference}.`;
+    }
     throw failure;
   }
   return result as T;

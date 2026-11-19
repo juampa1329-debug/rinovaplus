@@ -9,6 +9,25 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Recover an entry asset failure even when React could not start.
+      window.addEventListener("error", function (event) {
+        var target = event.target;
+        if (!(target instanceof HTMLElement) || !["SCRIPT", "LINK"].includes(target.tagName)) return;
+        var url = target.getAttribute("src") || target.getAttribute("href") || "";
+        if (!url.startsWith("/assets/") || document.getElementById("rinova-asset-recovery")) return;
+        var notice = document.createElement("aside");
+        notice.id = "rinova-asset-recovery";
+        notice.setAttribute("role", "alert");
+        notice.textContent = "RinovaPlus se actualizó o no pudo cargar sus archivos. Guarda tus cambios y recarga la página. ";
+        var button = document.createElement("button");
+        button.textContent = "Recargar RinovaPlus";
+        button.type = "button";
+        button.onclick = function () { window.location.reload(); };
+        notice.append(button);
+        document.body.prepend(notice);
+      }, true);
+    </script>
     <script type="module" src="/src/institution/workspace-main.tsx"></script>
   </body>
 </html>

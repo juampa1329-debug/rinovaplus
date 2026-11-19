@@ -17,12 +17,18 @@ def test_import_proposes_fields_from_only_the_permitted_program_url(monkeypatch)
     def scrape(request):
         hits.append(request.url.host)
         assert request.headers["Authorization"] == "Bearer fixture-key"
+        import json
+        specification = json.loads(request.content)['formats'][0]
+        assert 'certification' in str(specification['schema'])
+        assert 'accreditation' in str(specification['schema'])
         return httpx.Response(200, json={"success": True, "data": {
             "metadata": {"sourceURL": url, "url": url, "statusCode": 200},
             "json": {
                 "name": "Auxiliar de Enfermería",
                 "school": "Salud",
-                "commercial": {"duration": "Tres semestres", "price_cop": 420000},
+                "commercial": {"duration": "Tres semestres", "price_cop": 420000,
+                               "syllabus": "Nivel 1: fundamentos", "presentation": "Formación práctica",
+                               "certification": "Certificado de prueba", "internships": "Prácticas supervisadas"},
             },
         }})
 
@@ -35,6 +41,11 @@ def test_import_proposes_fields_from_only_the_permitted_program_url(monkeypatch)
     assert result.commercial.source_url == url and result.commercial.source_checked_at
     assert result.commercial.duration == "Tres semestres"
     assert result.commercial.price_cop == 420000
+    facts = agent_facts(result.commercial.model_dump())
+    assert facts['certification'] == 'Certificado de prueba'
+    assert facts['syllabus'] == 'Nivel 1: fundamentos'
+    assert 'accreditation' not in facts
+    assert 'No afirmes acreditaciones' in facts['program_presentation_guidance']
     assert "price_cop" not in agent_facts(result.commercial.model_dump())
     assert agent_facts({
         "price_cop": 0, "price_concept": "Matrícula", "price_valid_until": "2099-12-31",

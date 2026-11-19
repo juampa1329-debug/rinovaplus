@@ -15,6 +15,44 @@ const response = (data: unknown) =>
 const click = (name: string) =>
   fireEvent.click(screen.getByRole("button", { name }));
 
+it("filters source programs by their school and clears offers from a previously selected school", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: string) => {
+      if (input.includes("/siie/programs"))
+        return response({
+          items: [
+            { program_id: "1", name: "Software ficticio", school: "TIC" },
+            { program_id: "2", name: "Salud ficticia", school: "Salud" },
+          ],
+          next_cursor: null,
+        });
+      if (input.includes("/siie/offers"))
+        return response({
+          items: [
+            { offer_id: "1-n1", period_name: "Oferta ficticia TIC", level: 1 },
+          ],
+        });
+      throw new Error("Unexpected request");
+    }),
+  );
+  render(<SiieWorkspace />);
+  click("Abrir SIIE");
+  click("Obtener programas de SIIE");
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Software ficticio/ }),
+  );
+  await screen.findByText(/Oferta ficticia TIC/);
+  fireEvent.change(screen.getByLabelText("Escuela de los programas de SIIE"), {
+    target: { value: "Salud" },
+  });
+  expect(
+    screen.queryByRole("button", { name: /Software ficticio/ }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Salud ficticia/ })).toBeVisible();
+  expect(screen.queryByText(/Oferta ficticia TIC/)).not.toBeInTheDocument();
+});
+
 it("copies a reviewed page with missing period metadata only after the explicit local-copy action", async () => {
   const saved = vi.fn(async () => {});
   const writes: Record<string, unknown>[] = [];

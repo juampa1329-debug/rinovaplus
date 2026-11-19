@@ -2,7 +2,7 @@
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
   "date": "2026-11-19",
-  "status": "local_catalog_25_programs_verified_ux_and_dashboard_pending_deployment",
+  "status": "local_catalog_and_ui_verified_financial_detail_source_unavailable",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -195,13 +195,15 @@
     "deployment": "0kuhplq4mp1zbbot2eigpqyw",
     "status": "healthy_finished",
     "writes_to_SIIE": false,
-    "DDL": false
+    "DDL": false,
+    "software_sync_saved_revision": 2,
+    "final_backend_commit": "4c648414c2736f33c1292ab3737c4d1c477e84c2"
   },
   "current_enhancement": {
     "program_sync_button": true,
     "source_gap_report": "local_copy_only_no_automatic_notification",
-    "dashboard": "real_aggregates_in_validation",
-    "admissions": "ASPX_read_workspace",
+    "dashboard": "live_7_and_30_day_aggregates_verified",
+    "admissions": "offered_period_filters_25_applicants_live_verified",
     "acceptance_changed": false
   }
 }

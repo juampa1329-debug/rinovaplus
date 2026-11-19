@@ -5,6 +5,7 @@ import os
 import re
 from datetime import date, datetime, timedelta, timezone
 from urllib.parse import urlsplit
+from typing import Literal
 
 import httpx2 as httpx
 from fastapi import HTTPException
@@ -32,6 +33,7 @@ class FinancialPlan(Strict):
     name: str = Field(min_length=1, max_length=160)
     valid_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     valid_until: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    valid_until_confirmed_open: bool = False
     initial_payment_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
     initial_payment_due_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     total_cost_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
@@ -40,6 +42,8 @@ class FinancialPlan(Strict):
 
     @model_validator(mode="after")
     def reconcile(self):
+        if self.valid_until_confirmed_open and self.valid_until is not None:
+            raise ValueError("financial_validity_open_conflict")
         for value in (self.valid_from, self.valid_until, self.initial_payment_due_date):
             if value is not None:
                 date.fromisoformat(value)
@@ -61,6 +65,12 @@ class CommercialProfile(Strict):
     duration: str = Field(default="", max_length=150)
     modality: str = Field(default="", max_length=100)
     syllabus: str = Field(default="", max_length=2500)
+    presentation: str = Field(default="", max_length=2000)
+    certification: str = Field(default="", max_length=1600)
+    accreditation: str = Field(default="", max_length=1600)
+    internships: str = Field(default="", max_length=2000)
+    career_outcomes: str = Field(default="", max_length=1600)
+    payment_mode: Literal["cash", "financing", "both"] = "both"
     requirements: str = Field(default="", max_length=1600)
     price_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
     price_concept: str = Field(default="", max_length=150)
@@ -145,6 +155,11 @@ def agent_facts(profile):
         for field in ("price_cop", "price_concept", "price_valid_until", "price_valid_from", "full_cost_cash_cop"):
             facts.pop(field, None)
     facts["financial_plans"] = [] if unavailable else [v for v in facts.get("financial_plans", []) if (not v.get("valid_from") or v["valid_from"] <= today) and (not v.get("valid_until") or today <= v["valid_until"])]
+    if profile.get("payment_mode") == "cash":
+        facts["financial_plans"] = []
+    elif profile.get("payment_mode") == "financing":
+        for field in ("price_cop", "price_concept", "price_valid_until", "price_valid_from", "full_cost_cash_cop"):
+            facts.pop(field, None)
     if not facts["financial_plans"]:
         facts.pop("financial_plans", None)
     missing = []
@@ -153,7 +168,7 @@ def agent_facts(profile):
     if "price_cop" in facts or "full_cost_cash_cop" in facts:
         missing.extend(k for k in ("price_valid_from", "price_valid_until") if not facts.get(k))
     for plan in facts.get("financial_plans", []):
-        missing.extend(f"plan {plan['external_id']}: {k}" for k in ("valid_from", "valid_until", "initial_payment_due_date", "conditions") if not plan.get(k))
+        missing.extend(f"plan {plan['external_id']}: {k}" for k in ("valid_from", "valid_until", "initial_payment_due_date", "conditions") if not plan.get(k) and not (k == "valid_until" and plan.get("valid_until_confirmed_open") is True))
         missing.extend(f"plan {plan['external_id']}: fecha cuota {v['number']}" for v in plan.get("installments", []) if not v.get("due_date"))
         missing.extend(f"plan {plan['external_id']}: {k}" for k in ("initial_payment_cop", "total_cost_cop") if plan.get(k) is None)
         missing.extend(f"plan {plan['external_id']}: valor cuota {v['number']}" for v in plan.get("installments", []) if v.get("amount_cop") is None)
@@ -162,6 +177,7 @@ def agent_facts(profile):
     if missing:
         facts["pending_confirmation"] = missing
         facts["financial_guidance"] = "Informa sólo los importes y conceptos disponibles, con su alcance documentado; la enseñanza del nivel no equivale al costo de todo el programa. Las fechas, vigencia o condiciones ausentes están por confirmar con un asesor; no inventes plazos ni afirmes que ya fueron confirmados. No anuncies acciones o confirmaciones realizadas sin evidencia."
+    facts["program_presentation_guidance"] = "Presenta el programa usando sólo los datos guardados de su ficha. Distingue el certificado o título de una acreditación de alta calidad. No afirmes acreditaciones, convenios, prácticas garantizadas, empleos ni salarios si no están documentados. Las prácticas y sus condiciones se explican sólo con la información disponible. Una vigencia financiera abierta sólo está confirmada si el plan tiene valid_until_confirmed_open=true; un null sin esa confirmación sigue por confirmar."
     return facts
 
 
@@ -208,6 +224,11 @@ def import_program(raw, *, transport=None):
                             "Si hay varios programas, no mezcles información. Omite los campos ausentes. "
                             "Solo extrae price_cop si la página declara inequívocamente un precio en COP. "
                             "No deduzcas la vigencia, la moneda, los requisitos ni la escuela."
+                            " Extrae presentation como descripción/objetivos, syllabus conservando semestres o niveles y sus materias, "
+                            "certification como título o certificado otorgado, accreditation sólo si hay acreditación explícita de ese programa, "
+                            "internships con las prácticas y sus condiciones, career_outcomes con el campo ocupacional expresamente descrito. "
+                            "No confundas publicidad institucional con acreditación de alta calidad del programa; no prometas prácticas, empleo ni salario. "
+                            "Omite cualquier dato no publicado. No decidas payment_mode ni valid_until_confirmed_open; los confirma un operador."
                         ),
                     }],
                 },
