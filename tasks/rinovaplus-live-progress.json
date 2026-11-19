@@ -171,7 +171,9 @@
     "scope": "SIIE_academic_and_financial_API",
     "blocks_P13": false,
     "details": "docs/adaptation/P16_SIIE_INTEGRATION.md",
-    "evidence": "artifacts/live/p16-siie-read-checks-20261118.json"
+    "evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
+    "requirements": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
+    "required_scope": "aspirants_students_enrollment_active_period_offerings_cash_and_financed_plan_prices"
   },
   "P17": {
     "status": "deferred_by_owner",

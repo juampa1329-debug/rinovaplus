@@ -1,3 +1,11 @@
+## Estado actual: contrato recibido y solicitud consolidada — 2026-11-18
+
+P16 fue retomada. El Catálogo ASPX real está autenticado y sus listados funcionan; falta clave General para Admisiones y el detalle de ofertas devuelve503en SIIE. Estudiantes aún no tiene rutas entregadas. La [solicitud consolidada y matriz de las once operaciones](../adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md) es la referencia actual para aspirantes, estudiantes/matrículas, programas ofrecidos en el período activo, contado y planes financiados. También distingue lo que debe ampliar SIIE de lo que falta construir en RinovaPlus.
+
+La propuesta REST y los nombres de variables/rutas del documento inferior son **históricos, anteriores al contrato ASPX recibido**. Para configurar la integración actual usar `SIIE_API_BASE_URL`, `SIIE_API_HOSTS`, `SIIE_CATALOG_API_TOKEN` y, cuando se entregue, `SIIE_ADMISSIONS_API_TOKEN`, según el manual P16. No interpretar la afirmación histórica de «diferida» como estado vigente ni aquella exclusión de estudiantes como límite del alcance ahora solicitado por el propietario.
+
+## Propuesta inicial conservada — 2026-11-17
+
 # API SIIE → RinovaPlus: catálogo académico y financiero
 
 **Estado vigente:** integración trasladada a [P16 y diferida por el propietario](../adaptation/P16_SIIE_INTEGRATION.md). Este contrato y la base implementada se conservan para retomarla; no bloquean P13 ni autorizan configurar credenciales ahora.

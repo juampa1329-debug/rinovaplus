@@ -51,7 +51,8 @@
   "individual_balances_endpoint_in_contract": false,
   "documents": [
     "docs/adaptation/P16_SIIE_INTEGRATION.md",
-    "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md"
+    "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md",
+    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md"
   ],
   "source_guide_sha256": "372aea8859806988d0192557279b59cbf6e001b0abd2efd363374215b0b1dfb7",
   "source_postman_sha256": "951c5e9e7ad5772519079a817e2daf42e704482c60e11eb69e2cca047db9fef8",
@@ -121,5 +122,19 @@
     "runtime_only": true,
     "secret_values_in_repo": false
   },
-  "live_evidence": "artifacts/live/p16-siie-read-checks-20261118.json"
+  "live_evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
+  "required_scope_review": {
+    "date": "2026-11-18",
+    "owner_scope": "aspirantes, estudiantes/matrículas, programas ofrecidos del período activo, contado y cada plan financiado",
+    "consolidated_request": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
+    "operations_documented": 11,
+    "student_list_and_detail_delivered": false,
+    "program_catalog_period_filter_delivered": false,
+    "applicant_contact_phone_email_delivered": false,
+    "personal_balances_required_for_this_scope": false,
+    "acceptance_changed": false,
+    "existing_offers_period_filter_available": true,
+    "active_period_consumer_flow_pending": true,
+    "aggregated_period_programs_endpoint": "optional_optimization_not_mandatory_for_pilot"
+  }
 }
