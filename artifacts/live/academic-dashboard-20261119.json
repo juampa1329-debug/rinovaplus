@@ -9,7 +9,8 @@
     "frontend": 36,
     "types": "passed",
     "changed_eslint": "passed",
-    "workspace_build": "passed_existing_chunk_warning"
+    "workspace_build": "passed_existing_chunk_warning",
+    "new_dashboard_parser": "passed; optional development-only pglast8.9"
   },
   "dashboard": {
     "readonly": true,
@@ -26,5 +27,17 @@
   },
   "writes_SIIE": false,
   "DDL": false,
-  "roadmap_acceptance_changed": false
+  "roadmap_acceptance_changed": false,
+  "production": {
+    "backend_commit": "11085da2b0e939adcf1f15b098250a113f6df3ed",
+    "deployment": "u8x8bugnj9iljnyazypbdvii",
+    "status": "healthy",
+    "rolling_update_completed_server_log": "2026-11-19 20:36:45 UTC",
+    "software_sync_saved_revision": 2,
+    "program_count_after_refresh": 25,
+    "dashboard": "native_query_failed42601_daily_alias_fixed_pending_redeploy"
+  },
+  "failures_preserved": [
+    "The first live dashboard query used an unqualified date alias reserved by PostgreSQL. State42601 reproduced with a local PostgreSQL parser; changed to explicit bucket_date and all seven statements parse."
+  ]
 }

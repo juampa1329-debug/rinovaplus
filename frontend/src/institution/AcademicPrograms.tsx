@@ -54,7 +54,7 @@ type Draft = {
   schedule: string;
   commercial: Commercial;
 };
-type Item = { program_id: number; name: string; school: string };
+type Item = { program_id: number; name: string; school: string; schedule?: string };
 type Program = {
   exists: boolean;
   revision: number;
@@ -400,7 +400,8 @@ function AcademicProgramsContent() {
                     disabled={task.busy}
                     onClick={() => open(item.program_id)}
                   >
-                    {item.name}
+                    <span>{item.name}</span>
+                    {item.schedule && <small>{item.schedule}</small>}
                   </Button>
                 ))}
             </section>
@@ -691,16 +692,6 @@ function AcademicProgramsContent() {
                 ))}
             </datalist>
             <Field
-              id="program-price-from"
-              label="Tarifa válida desde"
-              type="date"
-              hint="Opcional. Si falta, la IA indicará que está por confirmar."
-              value={commercial.price_valid_from ?? ""}
-              onChange={(event) =>
-                setCommercial("price_valid_from", event.target.value || null)
-              }
-            />
-            <Field
               id="program-aliases"
               label="Otros nombres o alias"
               maxLength={400}
@@ -756,6 +747,16 @@ function AcademicProgramsContent() {
               value={commercial.price_concept}
               onChange={(event) =>
                 setCommercial("price_concept", event.target.value)
+              }
+            />
+            <Field
+              id="program-price-from"
+              label="Tarifa válida desde"
+              type="date"
+              hint="Opcional. Si falta, la IA indicará que está por confirmar."
+              value={commercial.price_valid_from ?? ""}
+              onChange={(event) =>
+                setCommercial("price_valid_from", event.target.value || null)
               }
             />
             <Field

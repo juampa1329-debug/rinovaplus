@@ -1,5 +1,6 @@
 """Dashboard boundary fixtures. Native aggregate SQL is verified separately live."""
 import json
+import re
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from types import SimpleNamespace
@@ -8,6 +9,8 @@ import pytest
 from fastapi import HTTPException
 
 from app.institutional import dashboard
+from app.institutional import operations_policy
+from app.institutional.postgres_dialect import postgres_sql
 
 
 def test_bogota_window_crosses_utc_midnight_without_an_extra_local_day():
@@ -56,3 +59,33 @@ def test_auth_failure_stops_before_reading_any_data(monkeypatch):
     with pytest.raises(HTTPException) as error:
         dashboard.read(SimpleNamespace(), 7)
     assert error.value.status_code == 401
+
+
+def test_all_dashboard_statements_parse_as_postgresql_including_daily_buckets(monkeypatch):
+    # Development-only parser, not a runtime dependency or a live database claim.
+    parser = pytest.importorskip("pglast")
+    mapping = operations_policy.layout()['tables']
+    parsed = []
+    class Cursor:
+        def native(self, sql, *args):
+            self.sql = sql
+            indexes = iter(range(1, 100))
+            parser.parse_sql(re.sub(r'%s', lambda _: '$'+str(next(indexes)), sql))
+            parsed.append(sql)
+            return self
+        def execute(self, sql, *args):
+            return self.native(postgres_sql(sql, mapping), *args)
+        def fetchval(self):
+            return json.dumps({'enabled': {'overview': True, 'inbox': True, 'clients': True}})
+        def fetchone(self):
+            return (0, 0, 0, 0, 0) if 'WITH activity AS' in self.sql else (0, 0, 0) if 'FILTER' in self.sql else (0,)
+        def fetchall(self):
+            return []
+    @contextmanager
+    def transaction(*args, **kwargs):
+        yield Cursor()
+    monkeypatch.setattr(dashboard, 'transaction', transaction)
+    monkeypatch.setattr(dashboard, 'authorize', lambda *args: {'Actions': '["crm.read","inbox.read"]'})
+    data = dashboard.read(SimpleNamespace(ticket={'table_map': mapping, 'context': [[1, '00000000-0000-0000-0000-000000000001']]}))
+    assert len(parsed) == 7
+    assert data['inbox']['conversations'] == 0

@@ -1,3 +1,7 @@
+## Revisión publicada de Académico y audio — 2026-11-19
+
+11085da saludable, runu8x8bugnj9iljnyazypbdvii completado20:36:45ZsegúnCoolify. UI nueva visible; Software sincronizó catálogo base y guardó revisión2, total25fichas. Dashboard encontró42601por alias diario: reproducido y corregido con parser PostgreSQL local en siete consultas; redespliegue de esa corrección pendiente. Audio entrante ahora se programa tras registrar medio; falta nota nueva del44para acreditar respuesta real. Controles heredados de multimedia retirados de IA general; enlace único aVoces y audios. No voz global ni aceptación adicional por estas comprobaciones.
+
 ## AcadÃ©mico/Dashboard y correcciÃ³n de audio entrante â€” 2026-11-19
 
 Se verificÃ³ copia local real de25programas por UI, Software143/perÃ­odo129; detalle1204-n1 aÃºn indisponible desde SIIE. bbaf756 saludable, run0kuhplq4mp1zbbot2eigpqyw completado20:09:18Z. Se aÃ±aden sincronizaciÃ³n por ficha, informe local de datos faltantes, Dashboard de agregados PG y rediseÃ±o de biblioteca/Admisiones. Inicio explÃ­cito abre Dashboard; restaurar sesiÃ³n conserva ruta. No nuevas tablas ni escrituras SIIE. ValidaciÃ³n de esta nueva interfaz publicada pendiente al corte.

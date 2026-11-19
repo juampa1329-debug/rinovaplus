@@ -69,10 +69,10 @@ def read(settings, days=7, now=None):
               count(*) FILTER(WHERE direction='outgoing' AND confirmed),
               count(*) FILTER(WHERE direction='outgoing' AND confirmed AND ai)
               FROM activity a""", *args).fetchone()
-            daily = c.native(base + """SELECT (createdat-interval '5 hours')::date day,
+            daily = c.native(base + """SELECT (createdat-interval '5 hours')::date AS bucket_date,
               count(*) FILTER(WHERE direction='incoming'),
               count(*) FILTER(WHERE direction='outgoing' AND confirmed)
-              FROM activity GROUP BY day ORDER BY day""", *args).fetchall()
+              FROM activity GROUP BY bucket_date ORDER BY bucket_date""", *args).fetchall()
             channels = c.native(base + """SELECT channel,count(*) FROM activity
               WHERE direction='incoming' GROUP BY channel ORDER BY count(*) DESC,channel""", *args).fetchall()
             states = c.native(f"SELECT controlmode,count(*) FROM {conversations} GROUP BY controlmode").fetchall()
