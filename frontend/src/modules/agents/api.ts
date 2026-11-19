@@ -182,6 +182,14 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  siie_source_changed_review_again:
+    "SIIE cambió desde la revisión. Vuelve a obtener la página o preparar la ficha antes de guardarla; la copia local se conserva.",
+  siie_local_mapping_ambiguous:
+    "Hay más de una ficha local vinculada al mismo programa de SIIE. Revisa esa vinculación antes de sincronizar para evitar duplicados.",
+  siie_program_binding_mismatch:
+    "La ficha local corresponde a otro programa. Selecciona la ficha correcta antes de vincular los datos.",
+  siie_local_finance_conflict:
+    "Los ajustes manuales y los importes nuevos ya no coinciden con el total del plan. Revisa abono, cuotas y total en la ficha local antes de sincronizar; no se sobrescribió ningún dato.",
   siie_period_contract_required:
     "La respuesta de SIIE no identifica el período consultado. Confirma que se publicó la versión nueva de la API antes de mezclar ofertas históricas con las ofrecidas.",
   siie_offered_period_unavailable:

@@ -38,6 +38,66 @@ function mount(child: React.ReactNode) {
 
 const response = (body: unknown) => new Response(JSON.stringify(body));
 
+it("saves a local financial plan with unknown dates and accepts a manual due date", async () => {
+  const fetched = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (input, init) => {
+      if (String(input).includes("/programs?"))
+        return response({ items: [], has_more: false });
+      if (String(input).endsWith("/programs") && init?.method === "POST")
+        return response({ program_id: 1, revision: 1 });
+      throw new Error("Unexpected request " + String(input));
+    });
+  try {
+    mount(<AcademicPrograms />);
+    fireEvent.change(screen.getByLabelText("Nombre oficial"), {
+      target: { value: "Ficha ficticia" },
+    });
+    fireEvent.change(screen.getByLabelText("Precio en COP"), {
+      target: { value: "600000" },
+    });
+    fireEvent.change(screen.getByLabelText("Concepto de la tarifa"), {
+      target: { value: "Nivel ficticio" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Añadir plan local" }));
+    fireEvent.change(screen.getByLabelText("Abono inicial del plan 1 (COP)"), {
+      target: { value: "200000" },
+    });
+    fireEvent.change(screen.getByLabelText("Total del plan 1 (COP)"), {
+      target: { value: "600000" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Añadir cuota al plan 1" }),
+    );
+    fireEvent.change(screen.getByLabelText("Plan 1 · Cuota 1 (COP)"), {
+      target: { value: "400000" },
+    });
+    expect(
+      screen.getByLabelText("Fecha del abono del plan 1"),
+    ).not.toBeRequired();
+    fireEvent.change(screen.getByLabelText("Plan 1 · Fecha de cuota 1"), {
+      target: { value: "2027-03-20" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar programa" }));
+    await screen.findByText("Programa guardado.");
+    const call = fetched.mock.calls.find(
+      ([url, init]) =>
+        String(url).endsWith("/programs") && init?.method === "POST",
+    );
+    const body = JSON.parse(String(call?.[1]?.body));
+    expect(body.commercial.price_valid_until).toBeNull();
+    expect(body.commercial.financial_plans[0]).toMatchObject({
+      valid_from: null,
+      valid_until: null,
+      initial_payment_due_date: null,
+      installments: [{ number: 1, amount_cop: 400000, due_date: "2027-03-20" }],
+    });
+    expect(body.siie_sync).toBeUndefined();
+  } finally {
+    vi.restoreAllMocks();
+  }
+});
+
 it("previews official SIIE finance and only saves after explicit apply and review", async () => {
   const commercial = {
     price_cop: 500000,

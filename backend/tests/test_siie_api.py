@@ -345,7 +345,7 @@ def test_only_get_routes_installed_and_duplicate_parameters_rejected(monkeypatch
     assert client.get("/api/v1/agents/siie/unknown").status_code == 404
 
 
-def test_legacy_import_cannot_bypass_incomplete_offer_inspection():
+def test_incomplete_offer_without_program_identity_still_cannot_be_imported():
     from app.institutional.siie_catalog import preview
 
     payload = {
@@ -354,7 +354,7 @@ def test_legacy_import_cannot_bypass_incomplete_offer_inspection():
         "partial_offer": stamp(offer_id="1-n1", quotable=False),
         "data_quality": [],
     }
-    with pytest.raises(HTTPException, match="siie_source_incomplete"):
+    with pytest.raises(HTTPException, match="siie_catalog_invalid_response"):
         preview("1-n1", transport=response(payload, 422))
 
 
@@ -387,14 +387,15 @@ def test_offered_period_can_be_future_and_not_academically_active():
         siie.read("programs", {"period_id": "6"}, transport=response(payload))
 
 
-def test_old_catalog_without_effective_period_does_not_silently_include_history():
-    with pytest.raises(HTTPException, match="siie_period_contract_required"):
-        siie.read(
+def test_base_catalog_without_period_is_available_without_claiming_offered_period():
+    result = siie.read(
             "programs",
             transport=response(
                 stamp(items=[], next_cursor=None, pagination="keyset_live_catalog")
             ),
-        )
+        )["data"]
+    assert result["period_id"] is None
+    assert result["period_binding_status"] == "unconfirmed"
 
 
 @pytest.mark.parametrize(

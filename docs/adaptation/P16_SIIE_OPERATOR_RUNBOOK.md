@@ -1,3 +1,7 @@
+# Actualización vigente: copia local y fechas opcionales
+
+Por decisión del propietario del19-11, seguir [el nuevo recorrido de catálogo local](P16_LOCAL_CATALOG_20261119.md). No se exige un período nuevo para copiar programas ni fechas completas para informar importes conocidos con pendientes explícitos. Se conservan fuentes, correcciones manuales y fechas desconocidas; no se modifican datos de SIIE. El corte inferior conserva la política histórica anterior y ya no obliga a completar fechas para orientar.
+
 # P16 · Conexión SIIE desde RinovaPlus
 
 **Actualización vigente del 19-11-2026:** una sola clave original en `SIIE_API_TOKEN`; ya no se solicita otra clave General. Consumidor ampliado a estudiantes/contactos y período ofrecido. Seguir [el procedimiento de clave única](P16_SIIE_SINGLE_KEY_20261119.md). P16 sigue 0/5 aceptadas hasta validar la credencial nueva, el productor público y el recorrido financiero. El texto inferior conserva el corte anterior como historia, incluida su configuración de dos claves; no usarlo para configurar la versión nueva.

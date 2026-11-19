@@ -2,7 +2,7 @@
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
   "date": "2026-11-19",
-  "status": "healthy_deployed_single_key_and_personal_reads_verified_commercial_source_blocked",
+  "status": "local_catalog_optional_dates_implemented_pending_deployment",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -57,7 +57,8 @@
     "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md",
     "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
     "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md",
-    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261119.md"
+    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261119.md",
+    "docs/adaptation/P16_LOCAL_CATALOG_20261119.md"
   ],
   "source_guide_sha256": "0c374e5a51f4423416d3cc291f83d4f8a6bf4c30ee1eb1c750d63532e8133878",
   "source_postman_sha256": "5d29f6fd2ffb38f997bb8e62d85bfc9e1b638a4b1b5ac283374f6397f75e4bce",
@@ -159,5 +160,29 @@
     "admissions_students_public_validated": true,
     "financial_details_available": false
   },
-  "source_inventory_sha256": "5ee628e2cfe45cf26ecb0da38d06fbb4c280756e445e0c9a4f806d3b0c3bfed8"
+  "source_inventory_sha256": "5ee628e2cfe45cf26ecb0da38d06fbb4c280756e445e0c9a4f806d3b0c3bfed8",
+  "scope_amendment_20261119": {
+    "owner_request": "Copy base programs locally without requiring new period metadata; accept missing financial dates, preserve known amounts, allow manual completion and retain edits on refresh",
+    "dates_optional": true,
+    "base_program_period_metadata_required": false,
+    "firm_quotes_from_incomplete_provider_offer": false,
+    "remote_writes_enabled": false,
+    "new_DDL": false
+  },
+  "local_copy": {
+    "page_size": 25,
+    "source_snapshots_separate_from_manual_facts": true,
+    "three_way_merge": true,
+    "offline_local_edits": true,
+    "stable_program_plan_installment_ids": true,
+    "live_verified": false
+  },
+  "tests_current": {
+    "backend_passed": 168,
+    "frontend_passed": 31,
+    "types": "passed",
+    "changed_lint": "passed",
+    "workspace_build": "passed_with_existing_bundle_warning",
+    "data": "fictitious fixtures; transaction tests use in-memory SQL double, not native SQL acceptance"
+  }
 }

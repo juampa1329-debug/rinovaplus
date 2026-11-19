@@ -16,38 +16,41 @@ from app.institutional.models import Strict
 
 class FinancialInstallment(Strict):
     number: int = Field(strict=True, ge=1, le=120)
-    amount_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
-    due_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    amount_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
+    due_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
 
     @field_validator("due_date")
     @classmethod
     def valid_date(cls, value):
-        date.fromisoformat(value)
+        if value is not None:
+            date.fromisoformat(value)
         return value
 
 
 class FinancialPlan(Strict):
     external_id: str = Field(min_length=1, max_length=80)
     name: str = Field(min_length=1, max_length=160)
-    valid_from: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    valid_until: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    initial_payment_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
-    initial_payment_due_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    total_cost_cop: int = Field(strict=True, ge=0, le=1_000_000_000)
-    installments: list[FinancialInstallment] = Field(min_length=1, max_length=120)
+    valid_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    valid_until: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    initial_payment_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
+    initial_payment_due_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    total_cost_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
+    installments: list[FinancialInstallment] = Field(default_factory=list, max_length=120)
     conditions: str = Field(default="", max_length=2000)
 
     @model_validator(mode="after")
     def reconcile(self):
         for value in (self.valid_from, self.valid_until, self.initial_payment_due_date):
-            date.fromisoformat(value)
-        if self.valid_from > self.valid_until:
+            if value is not None:
+                date.fromisoformat(value)
+        if self.valid_from and self.valid_until and self.valid_from > self.valid_until:
             raise ValueError("financial_validity_invalid")
-        if self.initial_payment_cop + sum(v.amount_cop for v in self.installments) != self.total_cost_cop:
+        amounts_known = self.initial_payment_cop is not None and self.total_cost_cop is not None and self.installments and all(v.amount_cop is not None for v in self.installments)
+        if amounts_known and self.initial_payment_cop + sum(v.amount_cop for v in self.installments) != self.total_cost_cop:
             raise ValueError("financial_schedule_total_mismatch")
         if [v.number for v in self.installments] != list(range(1, len(self.installments) + 1)):
             raise ValueError("financial_installment_order_invalid")
-        dates = [self.initial_payment_due_date, *[v.due_date for v in self.installments]]
+        dates = [v for v in [self.initial_payment_due_date, *[v.due_date for v in self.installments]] if v is not None]
         if dates != sorted(dates):
             raise ValueError("financial_dates_invalid")
         return self
@@ -59,7 +62,7 @@ class CommercialProfile(Strict):
     modality: str = Field(default="", max_length=100)
     syllabus: str = Field(default="", max_length=2500)
     requirements: str = Field(default="", max_length=1600)
-    price_cop: int | None = Field(default=None, ge=0, le=1_000_000_000)
+    price_cop: int | None = Field(default=None, strict=True, ge=0, le=1_000_000_000)
     price_concept: str = Field(default="", max_length=150)
     price_valid_until: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     price_valid_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -73,6 +76,8 @@ class CommercialProfile(Strict):
     siie_campus_id: str = Field(default="", max_length=80)
     siie_shift_id: str = Field(default="", max_length=80)
     siie_source_revision: str = Field(default="", max_length=120)
+    siie_offer_active: bool | None = None
+    source_note: str = Field(default="", max_length=1000)
     source_url: str = Field(default="", max_length=1000)
     source_checked_at: str = Field(default="", max_length=35)
 
@@ -135,12 +140,28 @@ def agent_facts(profile):
         return {}
     today = datetime.now(timezone(timedelta(hours=-5))).date().isoformat()
     facts = {k: v for k, v in profile.items() if v is not None and v != "" and k != "aliases"}
-    if not facts.get("price_concept") or facts.get("price_valid_until", "") < today or facts.get("price_valid_from", "") > today:
+    unavailable = profile.get("siie_offer_active") is False
+    if unavailable or not facts.get("price_concept") or (facts.get("price_valid_until") and facts["price_valid_until"] < today) or (facts.get("price_valid_from") and facts["price_valid_from"] > today):
         for field in ("price_cop", "price_concept", "price_valid_until", "price_valid_from", "full_cost_cash_cop"):
             facts.pop(field, None)
-    facts["financial_plans"] = [v for v in facts.get("financial_plans", []) if v["valid_from"] <= today <= v["valid_until"]]
+    facts["financial_plans"] = [] if unavailable else [v for v in facts.get("financial_plans", []) if (not v.get("valid_from") or v["valid_from"] <= today) and (not v.get("valid_until") or today <= v["valid_until"])]
     if not facts["financial_plans"]:
         facts.pop("financial_plans", None)
+    missing = []
+    if profile.get("siie_program_id") and not profile.get("requirements"):
+        missing.append("requirements")
+    if "price_cop" in facts or "full_cost_cash_cop" in facts:
+        missing.extend(k for k in ("price_valid_from", "price_valid_until") if not facts.get(k))
+    for plan in facts.get("financial_plans", []):
+        missing.extend(f"plan {plan['external_id']}: {k}" for k in ("valid_from", "valid_until", "initial_payment_due_date", "conditions") if not plan.get(k))
+        missing.extend(f"plan {plan['external_id']}: fecha cuota {v['number']}" for v in plan.get("installments", []) if not v.get("due_date"))
+        missing.extend(f"plan {plan['external_id']}: {k}" for k in ("initial_payment_cop", "total_cost_cop") if plan.get(k) is None)
+        missing.extend(f"plan {plan['external_id']}: valor cuota {v['number']}" for v in plan.get("installments", []) if v.get("amount_cop") is None)
+        if not plan.get("installments"):
+            missing.append(f"plan {plan['external_id']}: calendario de cuotas")
+    if missing:
+        facts["pending_confirmation"] = missing
+        facts["financial_guidance"] = "Informa sólo los importes y conceptos disponibles, con su alcance documentado; la enseñanza del nivel no equivale al costo de todo el programa. Las fechas, vigencia o condiciones ausentes están por confirmar con un asesor; no inventes plazos ni afirmes que ya fueron confirmados. No anuncies acciones o confirmaciones realizadas sin evidencia."
     return facts
 
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../modules/agents/api";
 import { Button, Field, Notice } from "../shared/ui";
-import { useTask } from "./api";
+import { useIntent, useTask } from "./api";
 import { ErrorFeedback } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
 import { SiieContacts, SiieStudents } from "./SiieStudents";
@@ -16,7 +16,7 @@ type Connection = {
   admissions_configured: boolean;
 };
 const text = (v: unknown) =>
-  v === null || v === undefined ? "Sin dato" : String(v);
+  v === null || v === undefined ? "Por confirmar" : String(v);
 const money = (v: unknown) =>
   typeof v === "number" && Number.isInteger(v)
     ? new Intl.NumberFormat("es-CO", {
@@ -44,16 +44,51 @@ function explainSiie(failure: OperationFailure) {
   };
 }
 
-export function SiieWorkspace() {
+export type SiieLocalDraft = {
+  draft: {
+    name: string;
+    school: string;
+    schedule: string;
+    commercial: Record<string, unknown>;
+  };
+  source: {
+    kind: "program" | "offer";
+    source_revision: string;
+    program_id: string;
+    offer_id: string;
+    request: Record<string, string>;
+    checked_at: string;
+    issues: string[];
+  };
+  local_program_id?: number;
+  local_revision?: number;
+  manual_fields_preserved?: string[];
+};
+
+export function SiieWorkspace({
+  onImport,
+  onSaved,
+}: {
+  onImport?: (value: SiieLocalDraft) => Promise<void>;
+  onSaved?: () => Promise<void>;
+}) {
   return (
     <ErrorFeedback explain={explainSiie}>
-      <SiieWorkspaceContent />
+      <SiieWorkspaceContent onImport={onImport} onSaved={onSaved} />
     </ErrorFeedback>
   );
 }
 
-function SiieWorkspaceContent() {
+function SiieWorkspaceContent({
+  onImport,
+  onSaved,
+}: {
+  onImport?: (value: SiieLocalDraft) => Promise<void>;
+  onSaved?: () => Promise<void>;
+}) {
   const task = useTask();
+  const copyIntent = useIntent();
+  const [copied, setCopied] = useState<number | null>(null);
   const epoch = useRef(0);
   const [opened, setOpened] = useState(false);
   const [connection, setConnection] = useState<Connection | null>(null);
@@ -115,9 +150,19 @@ function SiieWorkspaceContent() {
     setSelectedProgram("");
     load("programs", { cursor, period_id: requestedPeriod }, (row) => {
       setPrograms(row);
-      setCatalogPeriod(text(row.period_id));
+      setCatalogPeriod(row.period_id ? String(row.period_id) : requestedPeriod);
       setProgramCursor(stack);
     });
+  };
+  const prepareLocal = (body: Record<string, string>) => {
+    void task.run(async () => {
+      const value = await api<SiieLocalDraft>(
+        "/programs/import-siie",
+        "POST",
+        body,
+      );
+      await onImport?.(value);
+    }, "Ficha preparada en el editor local. Revisa los datos y pulsa Guardar programa.");
   };
   const openOffers = (program: string, cursor = "", stack = [""]) => {
     setInspection(null);
@@ -252,10 +297,54 @@ function SiieWorkspaceContent() {
                 </Button>
                 {programs && (
                   <Notice>
-                    Período de la consulta: {text(programs.period_id)}. SIIE
-                    selecciona el período ofrecido; puede ser distinto del
-                    académico activo. La paginación conserva este período.
+                    {programs.period_id
+                      ? `Período de la consulta: ${text(programs.period_id)}.`
+                      : "Catálogo base disponible. El período ofrecido está por confirmar; esto no impide copiar los programas."}
                   </Notice>
+                )}
+                {programs && onSaved && (
+                  <div>
+                    <p>
+                      Copia esta página de programas para consultarla sin
+                      depender de SIIE. Una nueva sincronización conserva las
+                      correcciones manuales. Los precios se revisan desde cada
+                      oferta.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={task.busy || !list(programs.items).length}
+                      onClick={() => {
+                        const body = {
+                          revision: 0,
+                          source_revision: String(programs.source_revision),
+                          cursor: programCursor[programCursor.length - 1],
+                          period_id: catalogPeriod,
+                        };
+                        void task.run(async () => {
+                          const result = await api<{ count: number }>(
+                            "/programs/sync-siie-page",
+                            "POST",
+                            { ...body, operation_id: copyIntent.get(body) },
+                          );
+                          copyIntent.clear();
+                          setCopied(result.count);
+                          await onSaved();
+                        }, "Copia local guardada. SIIE no se modificó.");
+                      }}
+                    >
+                      Copiar esta página a RinovaPlus
+                    </Button>
+                    {copied !== null && (
+                      <Notice>
+                        {copied}{" "}
+                        {copied === 1
+                          ? "programa guardado"
+                          : "programas guardados"}{" "}
+                        en el catálogo local.
+                      </Notice>
+                    )}
+                  </div>
                 )}
                 {programs && (
                   <div className="siie-split">
@@ -282,6 +371,23 @@ function SiieWorkspaceContent() {
                                 {text(p.duration_levels)} niveles
                               </span>
                             </Button>
+                            {onImport && (
+                              <Button
+                                type="button"
+                                variant="quiet"
+                                disabled={task.busy}
+                                onClick={() =>
+                                  prepareLocal({
+                                    program_id: text(p.program_id),
+                                    cursor:
+                                      programCursor[programCursor.length - 1],
+                                    period_id: catalogPeriod,
+                                  })
+                                }
+                              >
+                                Preparar ficha local
+                              </Button>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -388,7 +494,21 @@ function SiieWorkspaceContent() {
                     </div>
                   </div>
                 )}
-                {inspection && <OfferInspection inspection={inspection} />}
+                {inspection && (
+                  <OfferInspection
+                    inspection={inspection}
+                    onImport={
+                      onImport
+                        ? () =>
+                            prepareLocal({
+                              offer_id: text(
+                                (inspection.offer as Row).offer_id,
+                              ),
+                            })
+                        : undefined
+                    }
+                  />
+                )}
               </>
             )}
             {tab === "admissions" && (
@@ -765,7 +885,13 @@ function DataFields({
   );
 }
 
-function OfferInspection({ inspection }: { inspection: Row }) {
+function OfferInspection({
+  inspection,
+  onImport,
+}: {
+  inspection: Row;
+  onImport?: () => void;
+}) {
   const offer = inspection.offer as Row;
   const commercial = (offer.commercial ?? {}) as Row;
   return (
@@ -776,9 +902,14 @@ function OfferInspection({ inspection }: { inspection: Row }) {
       <Notice>
         {inspection.quotable === true
           ? "Oferta recibida para revisión humana."
-          : "Oferta incompleta: no disponible para cotizar ni para publicar precios en Gemini."}{" "}
+          : "Hay información por confirmar. Puedes revisar y guardar los datos conocidos para orientar, sin presentar lo pendiente como confirmado."}{" "}
         No se ha guardado ni aplicado al catálogo de agentes.
       </Notice>
+      {onImport && (
+        <Button type="button" variant="secondary" onClick={onImport}>
+          Preparar ficha local con datos disponibles
+        </Button>
+      )}
       <ul>
         {list(inspection.data_quality).map((q, i) => (
           <li key={i}>

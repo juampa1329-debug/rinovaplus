@@ -15,6 +15,44 @@ const response = (data: unknown) =>
 const click = (name: string) =>
   fireEvent.click(screen.getByRole("button", { name }));
 
+it("copies a reviewed page with missing period metadata only after the explicit local-copy action", async () => {
+  const saved = vi.fn(async () => {});
+  const writes: Record<string, unknown>[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: string, init?: RequestInit) => {
+      if (input.includes("/siie/programs"))
+        return response({
+          source_revision: "fixture-revision",
+          period_id: null,
+          next_cursor: null,
+          items: [
+            { program_id: "143", name: "Programa ficticio", school: null },
+          ],
+        });
+      if (input.endsWith("/sync-siie-page")) {
+        writes.push(JSON.parse(String(init?.body)));
+        return new Response(JSON.stringify({ count: 1, saved: true }));
+      }
+      throw new Error("Unexpected request " + input);
+    }),
+  );
+  render(<SiieWorkspace onSaved={saved} />);
+  click("Abrir SIIE");
+  click("Obtener programas de SIIE");
+  await screen.findByText("Programa ficticio");
+  expect(screen.getByText(/Catálogo base disponible/)).toBeVisible();
+  expect(writes).toHaveLength(0);
+  click("Copiar esta página a RinovaPlus");
+  await screen.findByText("1 programa guardado en el catálogo local.");
+  expect(writes[0]).toMatchObject({
+    source_revision: "fixture-revision",
+    cursor: "",
+    period_id: "",
+  });
+  expect(saved).toHaveBeenCalledTimes(1);
+});
+
 it("inspects an incomplete offer and its finance without saving or exposing it to agents", async () => {
   const calls: string[] = [];
   vi.stubGlobal(
@@ -86,7 +124,9 @@ it("inspects an incomplete offer and its finance without saving or exposing it t
     name: "Revisión de oferta SIIE",
   });
   expect(within(review).getByText(/Falta confirmar sede/)).toBeTruthy();
-  expect(within(review).getByText(/no disponible para cotizar/)).toBeTruthy();
+  expect(
+    within(review).getByText(/sin presentar lo pendiente como confirmado/),
+  ).toBeTruthy();
   expect(within(review).getByRole("table")).toBeTruthy();
   expect(within(review).getByText("2025-02-01")).toBeTruthy();
   expect(

@@ -239,7 +239,16 @@ def normalize(route, query, value, code):
             _invalid()
         if value.get("pagination") != "keyset_live_catalog":
             _invalid()
-        period_binding(value.get("period_id"), query.get("period_id"))
+        if value.get("period_id") is not None:
+            period_binding(value["period_id"], query.get("period_id"))
+        else:
+            # A base-program listing is useful without an offered-period claim.
+            # Keep the absence explicit rather than inventing a binding.
+            value = {**value, "period_id": None, "period_binding_status": "unconfirmed", "requested_period_id": query.get("period_id")}
+            if route == "offers" and query.get("period_id"):
+                for item in value["items"]:
+                    if item.get("period_id") is not None:
+                        period_binding(item["period_id"], query["period_id"])
         if route == "offers" and value.get("program_id") != query["program_id"]:
             raise HTTPException(409, "siie_catalog_stale_or_mismatched")
         return value

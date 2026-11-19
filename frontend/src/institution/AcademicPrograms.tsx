@@ -3,7 +3,8 @@ import { api } from "../modules/agents/api";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { useIntent, useTask } from "./api";
 import { allowNavigation, useDraftGuard } from "./drafts";
-import { SiieWorkspace } from "./SiieWorkspace";
+import { SiieWorkspace, type SiieLocalDraft } from "./SiieWorkspace";
+import { ErrorFeedback } from "./ErrorFeedback";
 
 type Commercial = {
   price_valid_from?: string | null;
@@ -19,12 +20,16 @@ type Commercial = {
   financial_plans?: {
     external_id: string;
     name: string;
-    valid_from: string;
-    valid_until: string;
-    initial_payment_cop: number;
-    initial_payment_due_date: string;
-    total_cost_cop: number;
-    installments: { number: number; amount_cop: number; due_date: string }[];
+    valid_from: string | null;
+    valid_until: string | null;
+    initial_payment_cop: number | null;
+    initial_payment_due_date: string | null;
+    total_cost_cop: number | null;
+    installments: {
+      number: number;
+      amount_cop: number | null;
+      due_date: string | null;
+    }[];
     conditions: string;
   }[];
   aliases: string;
@@ -37,6 +42,8 @@ type Commercial = {
   price_valid_until: string | null;
   source_url: string;
   source_checked_at: string;
+  source_note?: string;
+  siie_offer_active?: boolean | null;
 };
 type Draft = {
   name: string;
@@ -55,6 +62,7 @@ type Program = {
     Active: boolean;
   } | null;
   commercial: Commercial | null;
+  siie_source?: SiieLocalDraft["source"] | null;
 };
 
 const empty: Draft = {
@@ -175,6 +183,21 @@ function importChanges(draft: Draft, result: Draft) {
 }
 
 export function AcademicPrograms() {
+  return (
+    <ErrorFeedback
+      explain={(failure) => ({
+        title: "No se pudo completar la ficha académica",
+        detail: failure.message,
+        nextStep:
+          "Revisa los campos señalados. Las fechas pueden quedar vacías. Si informas abono, cuotas y total, sus valores deben coincidir. Si SIIE cambió, vuelve a preparar la sincronización; tus datos locales se conservan.",
+      })}
+    >
+      <AcademicProgramsContent />
+    </ErrorFeedback>
+  );
+}
+
+function AcademicProgramsContent() {
   const task = useTask();
   const intent = useIntent();
   const [items, setItems] = useState<Item[] | null>(null);
@@ -187,6 +210,9 @@ export function AcademicPrograms() {
   const [url, setUrl] = useState("");
   const [siieOffer, setSiieOffer] = useState("");
   const [extracted, setExtracted] = useState<Draft | null>(null);
+  const [sync, setSync] = useState<Record<string, string> | null>(null);
+  const [source, setSource] = useState<SiieLocalDraft["source"] | null>(null);
+  const [manualFields, setManualFields] = useState<string[]>([]);
   useDraftGuard(JSON.stringify(draft) !== JSON.stringify(saved));
 
   useEffect(() => {
@@ -230,6 +256,7 @@ export function AcademicPrograms() {
             "El programa ya no está disponible. Actualiza la lista.",
           );
         nextRevision = entry.revision;
+        setSource(entry.siie_source ?? null);
         selected = {
           name: entry.program.Name,
           school: entry.program.School,
@@ -243,13 +270,59 @@ export function AcademicPrograms() {
       setSaved(selected);
       setUrl(selected.commercial.source_url);
       setExtracted(null);
+      if (next === null) setSource(null);
+      setSync(null);
+      setManualFields([]);
     }, "");
   };
   const commercial = draft.commercial;
   const changes = extracted ? importChanges(draft, extracted) : [];
+  const receiveSiie = async (result: SiieLocalDraft) => {
+    if (!allowNavigation()) return;
+    const entry = result.local_program_id
+      ? await api<Program>(`/programs/${result.local_program_id}`)
+      : null;
+    if (entry && entry.revision !== result.local_revision)
+      throw new Error(
+        "La ficha cambió. Vuelve a preparar la sincronización para revisar la versión nueva.",
+      );
+    const previous = entry?.program
+      ? {
+          name: entry.program.Name,
+          school: entry.program.School,
+          schedule: entry.program.Schedule,
+          commercial: { ...empty.commercial, ...entry.commercial },
+        }
+      : empty;
+    setId(result.local_program_id ?? null);
+    setRevision(entry?.revision ?? 0);
+    setSaved(previous);
+    setDraft({
+      ...result.draft,
+      commercial: {
+        ...empty.commercial,
+        ...result.draft.commercial,
+      } as Commercial,
+    });
+    setSource(result.source);
+    setManualFields(result.manual_fields_preserved ?? []);
+    setExtracted(null);
+    intent.clear();
+    setSync({
+      kind: result.source.kind,
+      source_revision: result.source.source_revision,
+      offer_id: result.source.kind === "offer" ? result.source.offer_id : "",
+      program_id:
+        result.source.kind === "program" ? result.source.program_id : "",
+      ...result.source.request,
+    });
+  };
   return (
     <div className="program-workspace">
-      <SiieWorkspace />
+      <SiieWorkspace
+        onSaved={async () => setItems(await listPrograms())}
+        onImport={receiveSiie}
+      />
       <aside className="panel" aria-label="Programas por escuela">
         <h2>Programas por escuela</h2>
         <Button type="button" onClick={() => open(null)} disabled={task.busy}>
@@ -294,6 +367,25 @@ export function AcademicPrograms() {
       <section className="panel program-editor">
         <h2>{id ? "Ficha del programa" : "Nuevo programa"}</h2>
         {task.notices}
+        {source && (
+          <Notice>
+            Última copia de SIIE:{" "}
+            {new Date(source.checked_at).toLocaleString("es-CO")}. Las
+            correcciones que guardes aquí son locales.{" "}
+            {sync
+              ? "Revisa el borrador y guarda para aplicar esta sincronización."
+              : "Puedes consultar y editar esta ficha aunque SIIE no esté disponible."}
+            {manualFields.length > 0 && (
+              <p>
+                Se conservaron {manualFields.length} campos editados
+                manualmente.
+              </p>
+            )}
+            {source.issues?.map((issue, i) => (
+              <p key={i}>{issue}</p>
+            ))}
+          </Notice>
+        )}
         <fieldset disabled={task.busy}>
           <legend>Importar desde una página oficial</legend>
           <Field
@@ -327,9 +419,9 @@ export function AcademicPrograms() {
             <p>
               Para la API actual usa «Abrir SIIE» en la parte superior: allí
               puedes obtener programas, seleccionar ofertas y consultar
-              aspirantes. Este importador conserva el contrato anterior por ID
-              y requiere una oferta completa revisada. No matricula, no cobra
-              ni guarda datos automáticamente.
+              aspirantes. Este importador conserva el contrato anterior por ID y
+              requiere una oferta completa revisada. No matricula, no cobra ni
+              guarda datos automáticamente.
             </p>
             <Field
               id="program-siie-offer"
@@ -345,12 +437,13 @@ export function AcademicPrograms() {
               onClick={() => {
                 setExtracted(null);
                 void task.run(async () => {
-                  const result = await api<{ draft: Draft }>(
+                  const result = await api<SiieLocalDraft>(
                     "/programs/import-siie",
                     "POST",
                     { offer_id: siieOffer },
                   );
-                  setExtracted(result.draft);
+                  if (result.source?.kind) await receiveSiie(result);
+                  else setExtracted(result.draft as Draft);
                 }, "Datos de SIIE listos para revisar. No se han guardado.");
               }}
             >
@@ -401,8 +494,9 @@ export function AcademicPrograms() {
               school: draft.school.trim(),
               revision,
               active: true,
+              ...(sync ? { siie_sync: sync } : {}),
             };
-            if (!body.name || !body.school) return;
+            if (!body.name) return;
             void task.run(async () => {
               const result = await api<{
                 program_id: number;
@@ -413,8 +507,15 @@ export function AcademicPrograms() {
               });
               setId(result.program_id);
               setRevision(result.revision);
-              setDraft(body);
-              setSaved(body);
+              const savedDraft = {
+                name: body.name,
+                school: body.school,
+                schedule: body.schedule,
+                commercial: body.commercial,
+              };
+              setDraft(savedDraft);
+              setSaved(savedDraft);
+              setSync(null);
               intent.clear();
               try {
                 setItems(await listPrograms());
@@ -442,7 +543,6 @@ export function AcademicPrograms() {
             <Field
               id="program-school"
               label="Escuela"
-              required
               maxLength={100}
               list="program-school-names"
               value={draft.school}
@@ -457,6 +557,16 @@ export function AcademicPrograms() {
                   <option value={label} key={label} />
                 ))}
             </datalist>
+            <Field
+              id="program-price-from"
+              label="Tarifa válida desde"
+              type="date"
+              hint="Opcional. Si falta, la IA indicará que está por confirmar."
+              value={commercial.price_valid_from ?? ""}
+              onChange={(event) =>
+                setCommercial("price_valid_from", event.target.value || null)
+              }
+            />
             <Field
               id="program-aliases"
               label="Otros nombres o alias"
@@ -567,14 +677,17 @@ export function AcademicPrograms() {
               }
             />
           </fieldset>
+          <FinancialEditor
+            commercial={commercial}
+            change={setCommercial}
+            disabled={task.busy}
+          />
           <p className="scope-text">
-            Para que el agente pueda citar una tarifa, completa su concepto y su
-            fecha de vigencia.
+            Las fechas son opcionales. La IA puede informar los importes
+            revisados y aclarará qué fechas o condiciones están por confirmar.
+            Una vigencia conocida ya vencida no se ofrece como actual.
           </p>
-          <Button
-            type="submit"
-            disabled={task.busy || !draft.name.trim() || !draft.school.trim()}
-          >
+          <Button type="submit" disabled={task.busy || !draft.name.trim()}>
             {task.busy ? "Procesando…" : "Guardar programa"}
           </Button>
         </form>
@@ -583,14 +696,203 @@ export function AcademicPrograms() {
   );
 }
 
+function FinancialEditor({
+  commercial,
+  change,
+  disabled,
+}: {
+  commercial: Commercial;
+  change: <K extends keyof Commercial>(key: K, value: Commercial[K]) => void;
+  disabled: boolean;
+}) {
+  type Plan = NonNullable<Commercial["financial_plans"]>[number];
+  const plans = commercial.financial_plans ?? [];
+  const update = (index: number, values: Partial<Plan>) =>
+    change(
+      "financial_plans",
+      plans.map((p, i) => (i === index ? { ...p, ...values } : p)),
+    );
+  const amount = (value: string) => (value === "" ? null : Number(value));
+  return (
+    <fieldset disabled={disabled} className="program-fields">
+      <legend>Contado, planes y fechas locales</legend>
+      <p>
+        Completa sólo los datos confirmados. Deja vacías las fechas
+        desconocidas: no se inventan ni se calculan a partir del período
+        académico. Tus cambios se conservan al volver a sincronizar.
+      </p>
+      <Field
+        id="program-full-cash"
+        label="Contado informado en COP"
+        type="number"
+        min={0}
+        max={1000000000}
+        step={1}
+        value={commercial.full_cost_cash_cop ?? ""}
+        onChange={(e) => change("full_cost_cash_cop", amount(e.target.value))}
+      />
+      {plans.map((plan, i) => (
+        <fieldset key={plan.external_id} className="program-fields">
+          <legend>
+            Plan {i + 1}: {plan.name}
+          </legend>
+          <Field
+            id={`plan-name-${i}`}
+            label={`Nombre del plan ${i + 1}`}
+            maxLength={160}
+            required
+            value={plan.name}
+            onChange={(e) => update(i, { name: e.target.value })}
+          />
+          <Field
+            id={`plan-initial-${i}`}
+            label={`Abono inicial del plan ${i + 1} (COP)`}
+            type="number"
+            min={0}
+            max={1000000000}
+            step={1}
+            value={plan.initial_payment_cop ?? ""}
+            onChange={(e) =>
+              update(i, { initial_payment_cop: amount(e.target.value) })
+            }
+          />
+          <Field
+            id={`plan-initial-date-${i}`}
+            label={`Fecha del abono del plan ${i + 1}`}
+            type="date"
+            hint="Opcional · por confirmar si queda vacía"
+            value={plan.initial_payment_due_date ?? ""}
+            onChange={(e) =>
+              update(i, { initial_payment_due_date: e.target.value || null })
+            }
+          />
+          <Field
+            id={`plan-total-${i}`}
+            label={`Total del plan ${i + 1} (COP)`}
+            type="number"
+            min={0}
+            max={1000000000}
+            step={1}
+            value={plan.total_cost_cop ?? ""}
+            onChange={(e) =>
+              update(i, { total_cost_cop: amount(e.target.value) })
+            }
+          />
+          <Field
+            id={`plan-from-${i}`}
+            label={`Vigencia desde del plan ${i + 1}`}
+            type="date"
+            value={plan.valid_from ?? ""}
+            onChange={(e) => update(i, { valid_from: e.target.value || null })}
+          />
+          <Field
+            id={`plan-until-${i}`}
+            label={`Vigencia hasta del plan ${i + 1}`}
+            type="date"
+            value={plan.valid_until ?? ""}
+            onChange={(e) => update(i, { valid_until: e.target.value || null })}
+          />
+          {plan.installments.map((part, j) => (
+            <div className="program-fields" key={part.number}>
+              <Field
+                id={`plan-part-amount-${i}-${j}`}
+                label={`Plan ${i + 1} · Cuota ${part.number} (COP)`}
+                type="number"
+                min={0}
+                max={1000000000}
+                step={1}
+                value={part.amount_cop ?? ""}
+                onChange={(e) =>
+                  update(i, {
+                    installments: plan.installments.map((v, k) =>
+                      k === j
+                        ? { ...v, amount_cop: amount(e.target.value) }
+                        : v,
+                    ),
+                  })
+                }
+              />
+              <Field
+                id={`plan-part-date-${i}-${j}`}
+                label={`Plan ${i + 1} · Fecha de cuota ${part.number}`}
+                type="date"
+                hint="Opcional · puedes completarla manualmente"
+                value={part.due_date ?? ""}
+                onChange={(e) =>
+                  update(i, {
+                    installments: plan.installments.map((v, k) =>
+                      k === j ? { ...v, due_date: e.target.value || null } : v,
+                    ),
+                  })
+                }
+              />
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={plan.installments.length >= 120}
+            onClick={() =>
+              update(i, {
+                installments: [
+                  ...plan.installments,
+                  {
+                    number: plan.installments.length + 1,
+                    amount_cop: null,
+                    due_date: null,
+                  },
+                ],
+              })
+            }
+          >
+            Añadir cuota al plan {i + 1}
+          </Button>
+          <TextArea
+            id={`plan-conditions-${i}`}
+            label={`Condiciones del plan ${i + 1}`}
+            maxLength={2000}
+            value={plan.conditions}
+            onChange={(e) => update(i, { conditions: e.target.value })}
+          />
+        </fieldset>
+      ))}
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={plans.length >= 12}
+        onClick={() =>
+          change("financial_plans", [
+            ...plans,
+            {
+              external_id: `local-${crypto.randomUUID()}`,
+              name: `Plan local ${plans.length + 1}`,
+              valid_from: null,
+              valid_until: null,
+              initial_payment_cop: null,
+              initial_payment_due_date: null,
+              total_cost_cop: null,
+              installments: [],
+              conditions: "",
+            },
+          ])
+        }
+      >
+        Añadir plan local
+      </Button>
+    </fieldset>
+  );
+}
+
 function FinancialSummary({ commercial }: { commercial: Commercial }) {
   if (!commercial.siie_offer_id) return null;
-  const money = (value: number) =>
-    new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      maximumFractionDigits: 0,
-    }).format(value);
+  const money = (value: number | null) =>
+    value == null
+      ? "Por confirmar"
+      : new Intl.NumberFormat("es-CO", {
+          style: "currency",
+          currency: "COP",
+          maximumFractionDigits: 0,
+        }).format(value);
   return (
     <section aria-label="Información financiera de SIIE">
       <h3>Información financiera importada de SIIE</h3>
@@ -620,11 +922,12 @@ function FinancialSummary({ commercial }: { commercial: Commercial }) {
             {plan.name} · Total {money(plan.total_cost_cop)}
           </summary>
           <p>
-            Vigencia: {plan.valid_from} a {plan.valid_until}
+            Vigencia: {plan.valid_from || "Por confirmar"} a{" "}
+            {plan.valid_until || "Por confirmar"}
           </p>
           <p>
             Abono inicial: {money(plan.initial_payment_cop)} · Fecha:{" "}
-            {plan.initial_payment_due_date}
+            {plan.initial_payment_due_date || "Por confirmar"}
           </p>
           <table>
             <caption>Cuotas y fechas del plan {plan.name}</caption>
@@ -640,7 +943,7 @@ function FinancialSummary({ commercial }: { commercial: Commercial }) {
                 <tr key={part.number}>
                   <td>{part.number}</td>
                   <td>{money(part.amount_cop)}</td>
-                  <td>{part.due_date}</td>
+                  <td>{part.due_date || "Por confirmar"}</td>
                 </tr>
               ))}
             </tbody>

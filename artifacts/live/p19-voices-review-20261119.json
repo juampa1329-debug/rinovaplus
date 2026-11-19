@@ -154,7 +154,7 @@
     "paid_generations": 4,
     "production_configuration_unchanged": true,
     "whatsapp_delivery": "all_four_delivered_to_authorized_owner44_from_institutional_account_in_order",
-    "owner_selection": "pending"
+    "owner_selection": "3 Tranquila / calm"
   },
   "scoped_deployment": {
     "commit": "ee0404cce81f7b31d219ff8eb17be17adb117814",
@@ -192,5 +192,16 @@
     "global_voice_activation": "rejected_before_execution_then_replaced_with_scoped_pilot",
     "root_ssh_file_recovery": "rejected_before_execution_no_ssh_access_attempt_executed",
     "safe_recovery": "existing private samples downloaded through normal RinovaPlus UI in a fresh browser tab"
+  },
+  "chosen_greeting": {
+    "policy_revision": 9,
+    "greeting_tone": "calm",
+    "general_delivery": "conversational",
+    "new_preview_rounded_seconds": 17,
+    "reserved_characters": 359,
+    "recipient": "owner44",
+    "provider_status": "read",
+    "control_after_test": "ai",
+    "automatic_pilot_not_yet_verified": true
   }
 }

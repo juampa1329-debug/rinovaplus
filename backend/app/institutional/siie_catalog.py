@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 import httpx2 as httpx
 from fastapi import HTTPException
-from pydantic import Field, ValidationError
+from pydantic import Field, ValidationError, model_validator
 
 from app.institutional.models import Strict
 from app.institutional.program_commercial import (
@@ -19,7 +19,17 @@ from app.institutional.program_commercial import (
 
 
 class SiieImport(Strict):
-    offer_id: str = Field(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_-]+$")
+    offer_id: str = Field(default="", max_length=80, pattern=r"^[A-Za-z0-9_-]*$")
+    program_id: str = Field(default="", pattern=r"^(?:[1-9][0-9]{0,9})?$")
+    period_id: str = Field(default="", pattern=r"^(?:[1-9][0-9]{0,9})?$")
+    cursor: str = Field(default="", max_length=128)
+    local_program_id: int | None = Field(default=None, strict=True, ge=1, le=2147483647)
+
+    @model_validator(mode="after")
+    def target(self):
+        if bool(self.offer_id) == bool(self.program_id):
+            raise ValueError("siie_invalid_parameter")
+        return self
 
 
 class SiieOffer(Strict):
@@ -51,15 +61,20 @@ def configured():
     )
 
 
-def preview(offer_id, *, transport=None):
+def preview(offer_id="", *, program_id="", period_id="", cursor="", transport=None):
     if os.getenv('SIIE_API_BASE_URL', '').strip():
-        # The delivered ASPX API currently returns incomplete offers. Keep the
-        # legacy reviewed-import path from bypassing the inspection workflow.
         from app.institutional.siie_api import read
-        result = read('offer', {'offer_id': offer_id}, transport=transport)['data']
-        if not result['quotable'] or not result['complete']:
-            raise HTTPException(422, 'siie_source_incomplete')
-        raise HTTPException(409, 'siie_offer_review_required')
+        from app.institutional.siie_local import draft_from_source
+        if program_id:
+            result = read('programs', {'period_id': period_id, 'cursor': cursor}, transport=transport)['data']
+            item = next((v for v in result['items'] if str(v.get('program_id')) == program_id), None)
+            if not item:
+                raise HTTPException(409, 'siie_cursor_changed')
+            source = draft_from_source({**item, 'source_revision': result['source_revision']}, kind='program', request={'program_id': program_id, 'period_id': period_id, 'cursor': cursor})
+        else:
+            result = read('offer', {'offer_id': offer_id}, transport=transport)['data']
+            source = draft_from_source(result['offer'], request={'offer_id': offer_id})
+        return {'draft': ExtractedProgram.model_validate(source['values']), 'source': source, 'review_required': True, 'saved': False, 'siie_written': False}
     if not configured():
         raise HTTPException(409, "siie_catalog_not_configured")
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", offer_id):

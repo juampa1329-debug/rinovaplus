@@ -2,7 +2,7 @@
   "phase": "P19",
   "title": "Voces y notas de audio con ElevenLabs",
   "date": "2026-11-19",
-  "status": "live_owner_selection_and_automatic_pilot_pending",
+  "status": "selected_calm_greeting_saved_real_automatic_pilot_pending",
   "accepted": 2,
   "total": 5,
   "canonical_weight_added": 0,
@@ -52,7 +52,7 @@
   ],
   "reference": "docs/adaptation/P19_VOICES_AUDIO.md",
   "calls_phase": "P20",
-  "live_audio_generated": 7,
+  "live_audio_generated": 8,
   "Hermes_in_new_scope": false,
   "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
   "checks": {
@@ -68,5 +68,5 @@
   "owner_quality_followup": "Complete playback confirmed; second more natural sample requested",
   "controls": "Verified deployed sliders, catalog languages, greeting tones, private history replay and explicit download",
   "activation_scope": "Enabled only for authorized owner44 institutional conversation: one audio, incoming-note mode, 60 seconds. Real incoming pilot awaiting owner; other conversations remain text",
-  "greeting_samples": "All four delivered; owner selection pending"
+  "greeting_samples": "Owner chose 3 Tranquila; saved greeting_tone calm at policy revision9. Eighth real preview generated and read at44."
 }
