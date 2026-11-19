@@ -105,7 +105,7 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
-    "P16_single_key_rotation_public_contract_and_financial_acceptance",
+    "P16_source_Commercial_period_metadata_and_Offer503_fix_then_two_reviewed_offers",
     "AI_API_UX_Scentra_review_without_Hermes",
     "P13_two_reviewed_programs_and_agents"
   ],
@@ -165,15 +165,15 @@
     "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {
-    "status": "single_key_and_students_consumer_tested_pending_rotation_and_live_acceptance",
+    "status": "healthy_deployed_single_key_and_personal_reads_verified_commercial_source_blocked",
     "accepted": 0,
     "total": 5,
     "implementation": "twelve_GET_provider_routes_single_key_students_contacts_and_offered_period_tested",
     "scope": "SIIE_academic_and_financial_API",
     "blocks_P13": false,
     "details": "docs/adaptation/P16_SIIE_INTEGRATION.md",
-    "evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
-    "requirements": "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md",
+    "evidence": "artifacts/live/p16-single-key-review-20261119.json",
+    "requirements": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261119.md",
     "required_scope": "aspirants_students_enrollment_active_period_offerings_cash_and_financed_plan_prices"
   },
   "P17": {

@@ -1,13 +1,13 @@
 # Fases adicionales pendientes
 
-Corte de planificación: 19 de noviembre de 2026. El roadmap original P0–P11 está aceptado al 100% en sus alcances documentados; P12 auxiliar de puesta online está aceptada para PostgreSQL/Meta. Las fases siguientes tienen seguimiento propio y no aportan peso a los 56 criterios originales. P16 conserva la evidencia real del 18 de noviembre; los cambios nuevos del consumidor todavía requieren despliegue y validación.
+Corte: 19 de noviembre de 2026. El roadmap original P0–P11 está aceptado al 100% en sus alcances documentados; P12 auxiliar de puesta online está aceptada para PostgreSQL/Meta. Las fases siguientes tienen seguimiento propio y no aportan peso a los 56 criterios originales. P16 ya tiene despliegue y pruebas reales de clave única, aspirantes y estudiantes; el catálogo/finanzas sigue bloqueado por el productor. La evidencia del18-11 se conserva como historia.
 
 | Fase | De qué trata | Estado |
 |---|---|---|
 | P13 · Académico y agentes de venta por programa | Fichas por escuela con información revisada, importación documental y agentes especializados; completar el piloto y su aceptación. | Implementación parcial, 0/4 unidades aceptadas. |
 | P14 · Entrenamiento y mejora del agente de ventas | Definir datos y evaluación para mejorar orientación comercial a partir del comportamiento de clientes; concretar un plan medible. | Plan pendiente; no se acredita una red neuronal nueva ni eficacia institucional. |
 | P15 · Correos y notificaciones | Recuperación/invitaciones, destinatarios y preferencias por evento, alertas, informes y plantillas HTML con logos y firmas visuales. | Aceptada en alcance inicial, 7/7 (100%). Informes de auditoría y recibos manuales; monitor automático de respaldos sigue OPS-05. |
-| P16 · Integración SIIE | Programas/ofertas y planes financieros; aspirantes y estudiantes con matrículas y contactos nativos. | Parcial, 0/5. Consumidor de12GET probado con clave única, período ofrecido y estudiantes; falta guardar la nueva SIIE_API_TOKEN y validar despliegue/datos reales. Requisitos y condiciones financieras siguen incompletos según la guía. |
+| P16 · Integración SIIE | Programas/ofertas y planes financieros; aspirantes, estudiantes y matrículas con contactos nativos. | Parcial, 0/5. Clave única, dos páginas de25aspirantes y8estudiantes comprobados. Bloquea el productor: Programs omite el período y Offer de Software devuelve503 sin parcial. Falta catálogo/finanzas completos, sincronización revisada y uso por agentes. |
 | P17 · TikTok | Conexión y automatizaciones permitidas por la API, con cuenta y pruebas reales propias. | Diferida por el propietario, 0/5. |
 | P18 · Seguridad y ciberseguridad | Tokens/sesiones, límites por IP y cuenta, 2FA, CAPTCHA, inyecciones, infraestructura y respuesta a incidentes. | Planificada, 0/8; controles previos conservados, auditoría integral pendiente. |
 | [P19 · Voces y notas de audio](P19_VOICES_AUDIO.md) | ElevenLabs, voces por escuela/agente, generación contextual y notas de voz compatibles con WhatsApp. | Planificada, 0/5; implementación 0%. Todas las llamadas pasan a P20. |

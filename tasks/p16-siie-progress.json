@@ -2,7 +2,7 @@
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
   "date": "2026-11-19",
-  "status": "single_key_and_students_consumer_tested_pending_rotation_and_live_acceptance",
+  "status": "healthy_deployed_single_key_and_personal_reads_verified_commercial_source_blocked",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -12,17 +12,17 @@
     {
       "id": "P16.1",
       "title": "Contrato y acceso",
-      "state": "in_progress_single_key_contract_and_tests_ready_new_token_public_access_pending"
+      "state": "in_progress_unified_access_and_rejection_verified_commercial_contract_mismatch_pending"
     },
     {
       "id": "P16.2",
       "title": "Consulta oficial",
-      "state": "pending_live_students_and_two_complete_financial_offers"
+      "state": "personal_and_enrollment_reads_verified_two_complete_financial_offers_blocked_by_source503"
     },
     {
       "id": "P16.3",
       "title": "Catálogo y sincronización revisada",
-      "state": "read_pagination_verified_local_link_changes_and_review_pending"
+      "state": "pagination_verified_local_reviewed_link_sync_and_source_contract_pending"
     },
     {
       "id": "P16.4",
@@ -56,7 +56,8 @@
     "docs/adaptation/P16_SIIE_INTEGRATION.md",
     "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md",
     "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
-    "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md"
+    "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md",
+    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261119.md"
   ],
   "source_guide_sha256": "0c374e5a51f4423416d3cc291f83d4f8a6bf4c30ee1eb1c750d63532e8133878",
   "source_postman_sha256": "5d29f6fd2ffb38f997bb8e62d85bfc9e1b638a4b1b5ac283374f6397f75e4bce",
@@ -66,7 +67,7 @@
     "content_type": "application/json; charset=utf-8",
     "scope": "availability_only_no_credentials_no_data"
   },
-  "source_limit": "New source contract unifies 21 operations under one key and adds native student enrollment/contacts/offered period. Its public deployment is not verified; Offer is still documented422 for missing admission requirements and financial conditions. Previous503 evidence preserved, not reclassified as current success. Personal balances not exposed.",
+  "source_limit": "Single key accepted by CRM and Commercial. Admissions/students/contacts/offered period verified. Public Programs200 omits effective period and is rejected409 by consumer; two current Software129 details1204-n1/n2 return503 catalog_unavailable without partial_offer. No quote/import/agent publication; personal balances remain absent.",
   "tests": {
     "backend_selected_passed": 159,
     "frontend_selected": 25,
@@ -82,21 +83,22 @@
     "The first updated modal assertion matched both explanation paragraphs; scoped the assertion to dialog content, then all25 frontend tests passed."
   ],
   "production": {
-    "backend_commit": "1da0155946d11d82f4ce9bc42cfd028c7b1abbe9",
-    "backend_deployment": "ljtguv9vqdnajytrjhamxvd9",
+    "backend_commit": "e26cef2194b9b809d5633eacf64b1aa2dab042e2",
+    "backend_deployment": "epmoecuqogluktfua8yr8tgl",
     "backend_status": "healthy_rolling_update_completed",
     "native_readiness": "ready_scope_postgres_deployment",
     "frontend_base_commit": "9d2ba41c25ea74c94f4b33dfe89771c72111d776",
     "frontend_base_deployment": "ik1eary4u2qpvzupglnrxnux",
-    "status_route": "authenticated_UI_catalog_configured_admissions_missing",
+    "status_route": "authenticated_UI_single_key_configured_verified_by_native_reads",
     "public_authenticated_SIIE_reads": 11,
     "SQL_DDL_or_academic_writes": 0,
     "modal_improvement": "healthy_deployed_live_missing_key_dialog_verified_and_dismissed",
     "frontend_modal_commit": "68f585d6f79370621233535763b7e0857c213e3f",
     "frontend_modal_deployment": "cmszf7ur0fppp5oawj9xttdq",
     "supervision_tab": "https://app.rinovaplus.com/#/academic",
-    "review_note": "Catalog programs and offer references verified in real source and UI; no General credential and financial detail source503. No CRM import or SIIE writes.",
-    "new_consumer_deployment": "pending_commit_and_deploy; previous production evidence below remains historical"
+    "review_note": "Single key accepted; applicants2pages/students8 and detail verified; commercial programs period metadata missing and current financial details503, no imported or published facts.",
+    "new_consumer_deployment": "healthy_rolling_update_completed",
+    "frontend_live_commit": "e26cef2194b9b809d5633eacf64b1aa2dab042e2"
   },
   "deployment_history": [
     {
@@ -127,16 +129,17 @@
     "runtime_only": true,
     "secret_values_in_repo": false,
     "active_new_variable": "SIIE_API_TOKEN",
-    "new_token_saved_by_owner": false,
+    "new_token_saved_by_owner": true,
     "separate_admissions_key_required": false,
     "legacy_catalog_fallback": "only_if_primary_variable_absent; one token for all reads; invalid primary never falls_back",
     "legacy_admissions_variable_used": false,
     "credential_has_provider_write_capability": true,
     "consumer_methods": [
       "GET"
-    ]
+    ],
+    "active_key_verified": true
   },
-  "live_evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
+  "live_evidence": "artifacts/live/p16-single-key-review-20261119.json",
   "required_scope_review": {
     "date": "2026-11-19",
     "owner_scope": "aspirantes, estudiantes/matrículas, programas ofrecidos del período activo, contado y cada plan financiado",
@@ -152,7 +155,9 @@
     "aggregated_period_programs_endpoint": "optional_optimization_not_mandatory_for_pilot",
     "consumer_GET_routes": 12,
     "offered_period_distinct_from_academic_active": true,
-    "public_new_contract_validated": false
+    "public_new_contract_validated": false,
+    "admissions_students_public_validated": true,
+    "financial_details_available": false
   },
   "source_inventory_sha256": "5ee628e2cfe45cf26ecb0da38d06fbb4c280756e445e0c9a4f806d3b0c3bfed8"
 }

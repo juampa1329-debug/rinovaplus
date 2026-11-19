@@ -1,6 +1,6 @@
 # P16 · Clave única, estudiantes y período ofrecido
 
-Corte del consumidor: 19 de noviembre de 2026. Contrato vigente: [entrega de clave única](../contracts/siie/20261119-single-key/GUIA_API_CRM_SIIE.md), [inventario](../contracts/siie/20261119-single-key/API_INVENTORY.md). Adaptador ampliado a 12 GET; aceptación real pendiente de nueva clave, versión pública y datos completos. P16 conserva 0/5 unidades aceptadas.
+Corte del consumidor: 19 de noviembre de 2026. Contrato vigente: [entrega de clave única](../contracts/siie/20261119-single-key/GUIA_API_CRM_SIIE.md), [inventario](../contracts/siie/20261119-single-key/API_INVENTORY.md). Adaptador de 12 GET desplegado saludable; clave única, aspirantes y estudiantes comprobados en el servidor real y la UI. Catálogo sigue bloqueado por metadatos de período ausentes y detalles financieros503 del productor. No hace falta otra clave: seguir [el diagnóstico y las correcciones pendientes de SIIE](P16_SIIE_PROVIDER_ISSUES_20261119.md). P16 conserva 0/5 unidades completas aceptadas.
 
 ## Una clave en Coolify
 

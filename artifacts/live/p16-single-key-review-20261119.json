@@ -2,7 +2,7 @@
   "date": "2026-11-19",
   "phase": "P16",
   "scope": "Single-key CRM read consumer, offered period, native applicant contacts and student enrollment inspection",
-  "status": "local_checks_passed_credential_entry_and_live_validation_pending",
+  "status": "healthy_deployed_single_key_and_personal_reads_verified_commercial_source_blocked",
   "accepted_units": 0,
   "total_units": 5,
   "provider_contract": "docs/contracts/siie/20261119-single-key/",
@@ -17,11 +17,18 @@
     "legacy_admissions_variable_used": false,
     "source_token_has_write_capability": true,
     "new_secret_saved_by_agent": false,
-    "real_secret_in_artifacts_or_git": false
+    "real_secret_in_artifacts_or_git": false,
+    "new_secret_saved_by_owner": true
   },
   "checks": {
-    "backend_selected": {"passed": 159, "failed": 0},
-    "frontend_selected": {"passed": 25, "failed": 0},
+    "backend_selected": {
+      "passed": 159,
+      "failed": 0
+    },
+    "frontend_selected": {
+      "passed": 25,
+      "failed": 0
+    },
     "types": "passed",
     "modified_ESLint": "passed",
     "workspace_build": "passed",
@@ -41,19 +48,164 @@
     "Final format check flagged the edited test; formatted it before repeating frontend tests, types, lint and build."
   ],
   "production": {
-    "new_consumer_deployed": false,
-    "new_token_entry": "pending_owner",
-    "new_source_version_checked": false,
-    "new_authenticated_personal_data_read": false,
+    "new_consumer_deployed": true,
+    "new_token_entry": "saved_by_owner_runtime_only",
+    "new_source_version_checked": true,
+    "new_authenticated_personal_data_read": true,
     "previous_source_evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
-    "previous_source503_reclassified_as_current_success": false
+    "previous_source503_reclassified_as_current_success": false,
+    "backend_commit": "e26cef2194b9b809d5633eacf64b1aa2dab042e2",
+    "backend_deployment": "epmoecuqogluktfua8yr8tgl",
+    "backend_status": "healthy_rolling_update_completed",
+    "backend_completed_UTC": "2026-11-19T14:59:44Z",
+    "native_readiness": {
+      "status": "ready",
+      "scope": "postgres_deployment"
+    },
+    "frontend_commit": "e26cef2194b9b809d5633eacf64b1aa2dab042e2",
+    "frontend_status": "Success_observed_in_Coolify",
+    "personal_rows_or_identifiers_exported": false,
+    "manual_diagnostic_process": "exited_terminal_closed_no_remote_script_persisted",
+    "supervision_url": "https://app.rinovaplus.com/#/academic"
   },
   "provider_documented_remaining_limits": [
     "remote_publication_not_confirmed_by_provider_documents",
     "Offer422_missing_admission_requirements_and_financial_conditions",
     "no_personal_balances_endpoint",
-    "no_verified_student_applicant_person_link"
+    "no_verified_student_applicant_person_link",
+    "public_Programs_missing_effective_period",
+    "public_Offer503_without_partial_for_two_current_Software_levels"
   ],
-  "effects": {"SIIE_writes": 0, "DDL": 0, "seeds": 0, "messages_or_emails_sent": 0},
-  "runbook": "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md"
+  "effects": {
+    "SIIE_writes": 0,
+    "DDL": 0,
+    "seeds": 0,
+    "messages_or_emails_sent": 0
+  },
+  "runbook": "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md",
+  "live_checks": {
+    "periods": {
+      "offered_period_id": 129,
+      "offered_name": "2027-A",
+      "academic_active_id": 128,
+      "default_rows": 1,
+      "historical_rows": 34,
+      "correlation": "fbbe53a5293c44b9bb2f8f6b397180e2"
+    },
+    "states": {
+      "rows": 11,
+      "correlation": "db939251fa0044e3a53d66b0f7acf47a"
+    },
+    "admissions_filters": {
+      "rows": 31,
+      "correlation": "f369c4fe02354622a2667cb8597934be"
+    },
+    "applicants": {
+      "page1_rows": 25,
+      "page2_rows": 25,
+      "rows_with_native_contact_each_page": 25,
+      "detail_native_identity_matches": true,
+      "selected_history_rows": 0,
+      "correlations": [
+        "c174d5691fe443128796ad2c189784cf",
+        "952cc26885b9470884a1de47656800bb",
+        "e93a1732bf4541f3ad963a9b06191292",
+        "095bd5c4840249699f19397a0ac60f55"
+      ]
+    },
+    "student_filters": {
+      "programs": 6,
+      "shifts": 3,
+      "levels": 3,
+      "states": 1,
+      "correlation": "93be5d1553214743b55bf8e285bd588e"
+    },
+    "students": {
+      "period_id": 129,
+      "rows": 8,
+      "rows_with_native_contact": 8,
+      "more": false,
+      "detail_native_identity_matches": true,
+      "detail_enrollments": 1,
+      "correlations": [
+        "6f4b435e3f9243d9a599ada662fb20a8",
+        "2e40429fc8e6446b82d1a7c0f4d0cb37"
+      ]
+    },
+    "programs": {
+      "upstream_HTTP": 200,
+      "rows": 25,
+      "consumer_status": 409,
+      "consumer_code": "siie_period_contract_required",
+      "missing_root_fields": [
+        "period_id",
+        "offered_period_id",
+        "offered_period_source"
+      ],
+      "tested_default_and_explicit_period129": true,
+      "correlations": [
+        "e39362247032433a859cf11ba2b72d83",
+        "6cb5c083de954a2b911a672d0aa2c4cf"
+      ]
+    },
+    "offers": {
+      "program_id": 143,
+      "period_id": 129,
+      "rows": 4,
+      "consumer_read_passed": true,
+      "missing_new_metadata": [
+        "offered_period_id",
+        "offered_period_source"
+      ],
+      "correlation": "4e05ee371eed4b4b8927aa786dfe8113"
+    },
+    "financial_details": [
+      {
+        "offer_id": "1204-n1",
+        "HTTP": 503,
+        "code": "catalog_unavailable",
+        "quotable": false,
+        "has_partial": false,
+        "correlation": "899ca4ff10a040c2a4901613ea0b62f0",
+        "consumer_status": 502,
+        "consumer_code": "siie_catalog_unavailable"
+      },
+      {
+        "offer_id": "1204-n2",
+        "HTTP": 503,
+        "code": "catalog_unavailable",
+        "quotable": false,
+        "has_partial": false,
+        "correlation": "d0015fd1fa2b47c1b182c34278b88c0b"
+      },
+      {
+        "offer_id": "1080-n1",
+        "HTTP": 503,
+        "code": "catalog_unavailable",
+        "has_partial": false,
+        "correlation": "c40748f711e24e7b8ace7981b44be423"
+      }
+    ],
+    "invalid_key": {
+      "Periodos_HTTP": 401,
+      "Commercial_Programs_HTTP": 401,
+      "real_credential_rotated_or_revoked_for_test": false
+    }
+  },
+  "UI_checks": {
+    "configured_single_key_label": true,
+    "offered_period_selected": "2027-A",
+    "applicants_page1_rows": 25,
+    "applicants_page2_rows": 25,
+    "previous_page_enabled_on_page2": true,
+    "catalog_contract_modal_shown_and_dismissed": true,
+    "students_rendered": 8,
+    "student_detail_and_native_contact_labels_visible": true,
+    "student_detail_offered_period_matches": true,
+    "student_filters_programs": 6,
+    "student_filters_shifts": 3,
+    "student_filters_states": 1,
+    "active_key_Runtime_only_and_Literal_options_observed_without_reading_value": true
+  },
+  "provider_issues_report": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261119.md"
 }
