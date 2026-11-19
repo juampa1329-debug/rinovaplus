@@ -85,6 +85,10 @@
     "status_route": "authenticated_UI_passed_both_keys_missing",
     "public_authenticated_SIIE_reads": 0,
     "SQL_DDL_or_academic_writes": 0,
-    "modal_improvement": "following_commit_frontend_only"
+    "modal_improvement": "healthy_deployed_live_missing_key_dialog_verified_and_dismissed",
+    "frontend_modal_commit": "68f585d6f79370621233535763b7e0857c213e3f",
+    "frontend_modal_deployment": "cmszf7ur0fppp5oawj9xttdq",
+    "supervision_tab": "https://app.rinovaplus.com/#/academic",
+    "review_note": "Read consumer deployed; both credentials absent. No authenticated SIIE data, student enrollment, individual finance, or remote follow-up writes verified."
   }
 }
