@@ -97,6 +97,14 @@ class Workspace(Parent):
 
     def conversation_risk(self, c, contact, conversation):
         current = super().conversation_risk(c, contact, conversation)
+        if current["status"] == "not_applicable":
+            return current
+        from app.institutional.sales_memory import read as sales_read, risk as sales_risk
+        document, _ = sales_read(c, self.profile, conversation)
+        sequence = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=? AND Direction='incoming'", conversation).fetchval()
+        commercial = sales_risk(document, sequence)
+        if commercial and (current.get("score") is None or commercial["score"] >= current["score"]):
+            return {**current, **commercial}
         if current["status"] != "unknown":
             return current
         key = str(conversation).lower()
@@ -105,6 +113,12 @@ class Workspace(Parent):
 
     def populate_inbox_risk(self, c, items):
         super().populate_inbox_risk(c, items)
+        from app.institutional.sales_memory import risks as sales_risks
+        commercial = sales_risks(c, self.profile, [str(row["conversationId"]) for row in items if row.get("conversationId")])
+        for row in items:
+            found = commercial.get(str(row.get("conversationId", "")).lower())
+            if found and row["risk"]["status"] != "not_applicable" and (row["risk"].get("score") is None or found["score"] >= row["risk"]["score"]):
+                row["risk"] = {**row["risk"], **found}
         candidates = {
             str(row["conversationId"]).lower(): row
             for row in items if row["risk"]["status"] == "unknown" and row["channel"] != "local"

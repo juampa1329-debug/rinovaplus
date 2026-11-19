@@ -189,6 +189,8 @@ def source(c, settings, integration, data):
 
 
 def model_config(c, settings, data):
+    from app.institutional.sales_context import configure as configure_sales
+    configure_sales(c, settings)
     preferred = setting(c, settings, "ai")["document"]
     channel = data.get("channel", "whatsapp")
     selected = resolve_conversation(
@@ -260,6 +262,8 @@ def dispatch_authorized(c, settings, job, payload):
 
 
 def reply_context(c, settings, data, source_value):
+    from app.institutional.sales_context import configure as configure_sales
+    configure_sales(c, settings)
     channel = data.get("channel", "whatsapp")
     selected = resolve_conversation(c, data["conversation"], "facebook" if channel == "messenger" else channel)
     result = grounded_replies.context(c, settings, source_value["Body"], selection=selected,
@@ -400,6 +404,7 @@ class Worker:
             if c.rowcount != 1:
                 raise HTTPException(409, "gemini_whatsapp_claim_changed")
         state, code, generated = "confirmed", None, None
+        observations = []
 
         def before_attempt():
             with transaction(settings, anonymous=True) as c:
@@ -428,6 +433,9 @@ class Worker:
                 )
             )
             generated = grounded_replies.parse(result)
+            # Optional observations never become instructions or arbitrary field writes.
+            raw = json.loads("".join(part.get("text", "") for part in result["candidates"][0]["content"]["parts"] if not part.get("thought")))
+            observations = raw.get("crm_observations", [])
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
         except HTTPException as error:
@@ -532,4 +540,8 @@ class Worker:
             c.execute(
                 "UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1"
             )
+            from app.institutional.sales_memory import record as record_sales_memory
+            selected = resolve_conversation(c, data["conversation"], "facebook" if data.get("channel") == "messenger" else data.get("channel", "whatsapp")) if reply and config.get("sales_memory_enabled") else None
+            if selected:
+                record_sales_memory(c, settings, data, selected, observations, reply)
         return True

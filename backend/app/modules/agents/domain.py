@@ -56,6 +56,10 @@ def digest(value):
 
 class Configuration(StrictModel):
     provider: Provider = "openrouter"
+    sales_skill_ids: list[str] = Field(default_factory=list, max_length=20)
+    sales_routing_enabled: bool = False
+    sales_memory_enabled: bool = False
+    auto_sales_crm: bool = False
     voice_profile_id: str = Field(default="", max_length=64, pattern=r"^[A-Za-z0-9_-]*$")
     description: str = ""
     operating_style: str = ""
@@ -118,6 +122,11 @@ class Configuration(StrictModel):
 
     @model_validator(mode="after")
     def available(self):
+        from app.modules.agents.sales_skills import IDS
+        if len(self.sales_skill_ids) != len(set(self.sales_skill_ids)) or set(self.sales_skill_ids) - IDS:
+            raise ValueError("Unsupported sales skill")
+        if self.auto_sales_crm and not self.sales_memory_enabled:
+            raise ValueError("Commercial CRM updates require conversation memory")
         if any(
             not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key)
             or key
@@ -351,6 +360,8 @@ def effective_configuration(chain, *, validate_variables=True):
             current["instructions"] = (
                 result["instructions"] + "\n" + current["instructions"]
             )
+            current["sales_memory_enabled"] = current["sales_memory_enabled"] and result["sales_memory_enabled"]
+            current["auto_sales_crm"] = current["auto_sales_crm"] and result["auto_sales_crm"]
             current["rules"] = [*result["rules"], *current["rules"]]
             current["objectives"] = [*result["objectives"], *current["objectives"]]
             current["max_tokens"] = min(result["max_tokens"], current["max_tokens"])

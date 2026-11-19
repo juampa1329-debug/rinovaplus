@@ -96,7 +96,7 @@ def test_gemini_resolves_the_agent_for_the_actual_channel(monkeypatch, channel, 
     monkeypatch.setattr(whatsapp_gemini, "one", lambda *_: {"SecretId": str(uuid4())})
     settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     data = {"conversation": str(uuid4()), **({"channel": channel} if channel else {})}
-    assert whatsapp_gemini.model_config(None, settings, data)[2]["model"] == "gemini-test"
+    assert whatsapp_gemini.model_config(SimpleNamespace(), settings, data)[2]["model"] == "gemini-test"
 
 
 def test_instagram_preview_includes_carousel_images_and_video(monkeypatch):

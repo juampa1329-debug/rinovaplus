@@ -1,0 +1,147 @@
+{
+  "count": 20,
+  "method": "find-skills discovery and skills add -g -a codex -y",
+  "installed_for_codex_and_adapted_for_crm": true,
+  "items": [
+    {
+      "id": "lead-triage",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "ce7a14c84a2dffeb11db80af34c77f53f7f7dfd32da4c155efa4567ba4818f01",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "route-lead",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "ee4598f014ec38374143ff37ee5fe12d4accb51b6a9b5c4417199ae827a59f26",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "close-plan",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "354ebb20e7e48d84e6408cb195887025ee37d2cd12da5451a978be43991e7c77",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "handle-objection",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "8c173038533cc12791b266d52e9293e829abe36b84434f41a3f3f54e04768698",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "customer-voice",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "de4f6417e2865b3d0cbe49e9c0c460469da423299c9aa8d3f5388e81e763163d",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "draft-outreach",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "7076162d97165f035d2c5ade5ce0c5a4a2318e9471dbbc79c9692eac214b84a1",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "call-summary",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "abf4509dd1596615cb0847a42b1a1dcad3ea039ede543eb9658bb5683de3f4cb",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "deal-review",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "40e6b9faea82683c772b539f2644230fd86087e588f0535ce22a86629e1d0910",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "deal-signals",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "0d1c67cd10209b27bb6028df12cf1eea3b80af073bdf582890b747a807e5fbc8",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "log-activity",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "c348d78c253a17bb170ba333ff956da66cba56db11c2f739e4d0984676b5eea1",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "customer-escalation",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "836571d8300892eaa78b4145d86995fa002703e4ad0d40e5ab4d9a7a759be4af",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "win-loss-review",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "installed_globally": true,
+      "sha256": "393f5f472d746ac4c837a8a35408a99e606a1ae0389a1d2badebcd5d8c2e4951",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "sales-enablement",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "installed_globally": true,
+      "sha256": "5460cb49fe1c8f5fab04a5a7c937503ee608cdf0e3607f43ac426cfeade8b876",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "copywriting",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "installed_globally": true,
+      "sha256": "dea513c7a24c5eec72a1061ad02f7739406de0f40e61b39208b83a7b53d926a7",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "copy-editing",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "installed_globally": true,
+      "sha256": "c16f2087b34529f306ad33bf8ded1506afee5ac7e12fcc717fb4eb78e17f1db2",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "marketing-psychology",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "installed_globally": true,
+      "sha256": "7ec7742477000e81342c17dae538a5993916811ebbdf702dc1bcc44934a9a294",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "graphify",
+      "source": "https://github.com/graphify-labs/graphify",
+      "installed_globally": true,
+      "sha256": "4c253dd85a1434a4acd4e6b190e04274dcbe86857a2adbfea4d0588f9a908f4b",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "recall",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "installed_globally": true,
+      "sha256": "6d4fdee1de1390de4e19bdf4747b9545ddf4d7f7c296daf77e48192bc2926831",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "commit-context",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "installed_globally": true,
+      "sha256": "6e8cf0386b4f5119ae11ebd5466c8e9135fdf3fb70a12155d6648d13fdafba3e",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    },
+    {
+      "id": "handoff",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "installed_globally": true,
+      "sha256": "ae4abcf86bdad42ee2342b44b76d1adc04ea8f73d206bba1b10eed24f19d45e5",
+      "runtime": "reviewed_native_procedure_not_upstream_executor"
+    }
+  ]
+}

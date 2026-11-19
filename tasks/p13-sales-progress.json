@@ -1,0 +1,58 @@
+{
+  "phase": "P13",
+  "name": "Académico y agentes de venta por programa",
+  "updated": "2026-11-19",
+  "status": "implementation_in_validation",
+  "accepted_units": 0,
+  "total_units": 4,
+  "original_roadmap_percent": 100,
+  "units": [
+    {
+      "id": "P13.1",
+      "name": "Ficha comercial",
+      "status": "pending_review",
+      "pending": "Revisión de Admisiones de las fichas piloto; no publicar tarifas ausentes."
+    },
+    {
+      "id": "P13.2",
+      "name": "Fuentes institucionales revisadas",
+      "status": "in_validation",
+      "pending": "Enfermería revisión2 y Software revisión4 con fuente oficial guardadas. Verificar consultas reales y revisión de Admisiones."
+    },
+    {
+      "id": "P13.3",
+      "name": "Enrutamiento y venta",
+      "status": "in_validation",
+      "pending": "Desplegar y verificar agentes, derivación y simulaciones reales. Pruebas locales de alias, ambigüedad, memoria, citas y permisos completas."
+    },
+    {
+      "id": "P13.4",
+      "name": "Piloto real WhatsApp",
+      "status": "pending",
+      "pending": "Dos programas en el mismo hilo, continuidad de memoria, control Humano, pausa y aceptación del propietario."
+    }
+  ],
+  "skills": "artifacts/live/p13-skills-20261119.json",
+  "runbook": "docs/adaptation/P13_SALES_OPERATOR_RUNBOOK.md",
+  "public_comments": {
+    "post_topic_priority": true,
+    "live_prompt_saved": true,
+    "real_gemini_suggestion": "PreICFES identified; unknown prices and dates left pending; no repeated program question",
+    "old_comments_resent": false
+  },
+  "limits": [
+    "No DDL, seeds, SIIE writes or new containers",
+    "Native bounded memory graph, not execution of external Graphify",
+    "Commercial qualification is not admission eligibility or trained probability",
+    "No automatic claims of pending acceptances"
+  ],
+  "verification": {
+    "backend_selected": 347,
+    "frontend_selected": 31,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "workspace_build": "passed",
+    "existing_bundle_warning": true,
+    "postgres_filter_parser": "passed_3_levels"
+  }
+}

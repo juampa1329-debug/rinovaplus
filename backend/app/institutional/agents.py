@@ -220,6 +220,13 @@ class Agents(AgentsService):
             ).decode().rstrip("=")
             c.agent_user, c.agent_session = actor["UserId"], actor["SessionId"]
             c.agent_catalog = self.catalog_adapter
+            from app.institutional.sales_context import configure as configure_sales
+            configure_sales(c, self.profile)
+            def validate_sales(config, previous):
+                if config.auto_sales_crm and not previous.get("auto_sales_crm"):
+                    authorize(c, self.profile, authority, "crm.write")
+                    authorize(c, self.profile, authority, "inbox.write")
+            c.agent_sales_profile = validate_sales
             from app.institutional.voice_audio import policy as voice_policy
             def validate_voice(chosen, previous):
                 if chosen and chosen != previous and not any(
@@ -292,7 +299,7 @@ class Agents(AgentsService):
             state = self.conversation_state(c, conversation)
             if selected["assignment"]["revision"] != body.revision:
                 raise AiError("agents_revision_conflict", 409)
-            context = selected["context"] or {}
+            context = selected["context"] or selected.get("commercial_interest") or {}
             request = SimulationRequest(
                 agent_id=selected["agent_id"],
                 config_version=selected["version"],

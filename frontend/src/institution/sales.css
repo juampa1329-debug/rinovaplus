@@ -1,0 +1,151 @@
+.sales-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.sales-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.6rem;
+  margin-block: 1rem;
+  max-height: 28rem;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.sales-skills-grid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.sales-skills-grid label:has(input:checked) {
+  border-color: var(--accent, #c4f04d);
+  background: color-mix(in srgb, var(--accent, #c4f04d) 7%, transparent);
+}
+.sales-skills-grid small,
+.sales-program-review small {
+  display: block;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+.sales-switch {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  margin-block: 1rem;
+  line-height: 1.6;
+}
+.sales-switch input,
+.sales-skills-grid input {
+  flex-shrink: 0;
+  margin-top: 0.3rem;
+  accent-color: var(--accent, #c4f04d);
+}
+.sales-setup > summary,
+.sales-ad-links > summary {
+  font-weight: 750;
+  cursor: pointer;
+}
+.sales-setup {
+  margin-block: 1rem;
+}
+.sales-setup > *,
+.sales-ad-links > * {
+  max-width: 100%;
+}
+.sales-program-review {
+  display: grid;
+  gap: 0.75rem;
+  max-height: 31rem;
+  overflow: auto;
+  scrollbar-width: thin;
+  margin-block: 1rem;
+}
+.sales-program-review article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  animation: sales-reveal 0.2s ease-out both;
+}
+.sales-program-review article > span {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--accent, #c4f04d);
+}
+.sales-ad-links {
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+.sales-memory {
+  min-width: 0;
+}
+.sales-memory summary {
+  font-weight: 750;
+  cursor: pointer;
+}
+.sales-memory dl {
+  display: grid;
+  gap: 0.8rem;
+}
+.sales-memory dl > div {
+  border-left: 3px solid var(--accent, #c4f04d);
+  padding-left: 0.75rem;
+}
+.sales-memory dt {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.sales-memory dd {
+  margin: 0.25rem 0;
+  overflow-wrap: anywhere;
+}
+.sales-memory small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.sales-memory-graph {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-block: 1rem;
+}
+.sales-memory-graph line {
+  stroke: var(--accent, #c4f04d);
+  opacity: 0.35;
+}
+.sales-memory-graph circle {
+  fill: var(--surface);
+  stroke: var(--accent, #c4f04d);
+  stroke-width: 2;
+}
+.sales-memory-graph text {
+  fill: var(--text);
+  font-size: 11px;
+}
+.sales-memory-graph g {
+  animation: sales-reveal 0.25s ease-out both;
+}
+@keyframes sales-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sales-program-review article,
+  .sales-memory-graph g {
+    animation: none;
+  }
+}

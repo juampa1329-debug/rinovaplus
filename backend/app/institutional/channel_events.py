@@ -22,6 +22,7 @@ from app.modules.crm_configuration.application.service import (
 )
 from app.modules.inbox.application.state import control
 from app.sql_workspace import Contact
+from app.institutional.sales_referrals import sanitize as sanitize_referral
 
 
 def valid_external(value):
@@ -92,6 +93,7 @@ def bounded_provider(value, depth=0):
         "name",
         "media",
         "context",
+        "referral", "source_id", "source_type", "source_url", "headline", "ctwa_clid",
     }
     if depth > 5:
         return None
@@ -504,7 +506,8 @@ def incoming(c, settings, item, effect):
         integration,
         effect["external"],
         message,
-        json.dumps({"whatsappUserId": user_id, "whatsappPhone": phone or None}) if user_id else "{}",
+        json.dumps({**({"whatsappUserId": user_id, "whatsappPhone": phone or None} if user_id else {}),
+                    **({"referral": referral} if item["Channel"] == "whatsapp" and (referral := sanitize_referral(effect["provider"].get("referral"))) else {})}),
     )
     c.execute(
         (

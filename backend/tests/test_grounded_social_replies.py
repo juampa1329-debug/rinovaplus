@@ -176,6 +176,33 @@ def test_context_uses_saved_prompts_history_and_reviewed_programs_without_privat
     assert private["fingerprint"] != public["fingerprint"]
 
 
+@pytest.mark.parametrize("post", [
+    "Conoce cómo funciona el PreICFES Alta Competencia de CBN. Prepara Saber 11.",
+    "Conoce Cocina Nacional de CBN.",
+    "",
+])
+def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeypatch, post):
+    monkeypatch.setattr(grounding, "setting", lambda *_: {"revision": 8, "document": {
+        "comment_prompt": "Pregunta qué programa interesa.",
+        "comment_auto_reply": "¿Qué programa te interesa?"}})
+    monkeypatch.setattr(grounding, "Catalog", lambda *_: SimpleNamespace(
+        read_context=lambda *_: {"material": {"queried_programs": []}}))
+    monkeypatch.setattr(grounding, "search", lambda *_: [])
+    monkeypatch.setattr(grounding, "effective", lambda *_: {"shared": []})
+    value = grounding.context(None, SimpleNamespace(), "Más información", public=True, post=post)
+    data = json.loads(value["query"])
+    assert data["publicacion"] == post
+    assert data["contexto_publicacion"]["available"] == bool(post)
+    assert "Esta regla prevalece sobre una bienvenida" in value["system"]
+    assert "aunque su curso o actividad no exista aún" in value["system"]
+    assert "en automático usa revisar" in value["system"]
+    assert data["historial"] == []
+    assert "memoria_privada_del_hilo" not in data
+    draft = grounding.context(None, SimpleNamespace(), "Más información", public=True, post=post, structured=False)
+    assert grounding.PUBLICATION_RULES in draft["system"]
+    assert draft["fingerprint"] != value["fingerprint"]
+
+
 @pytest.mark.parametrize(
     "answer", ["Software dura tres semestres según la ficha vigente.", None]
 )

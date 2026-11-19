@@ -763,6 +763,30 @@ class Workspace:
                     )
                 )
                 params.append(riskLevel or "high")
+                if self.operational_channels:
+                    # The visible badge uses the greater of a current verified
+                    # assessment and a current quoted commercial signal.
+                    assessment = where.pop()
+                    level = params.pop()
+                    signal = (
+                        " FROM crm_access.Setting sm WHERE sm.InstitutionId=? "
+                        "AND JSON_VALUE(sm.Document,'$.conversation_id')=CONVERT(nvarchar(36),v.ConversationId) "
+                        "AND v.State<>'closed' AND TRY_CONVERT(bigint,JSON_VALUE(sm.Document,'$.source_sequence'))="
+                        "(SELECT MAX(Sequence) FROM crm.Message WHERE ConversationId=v.ConversationId AND Direction='incoming') "
+                        "AND JSON_VALUE(sm.Document,'$.commercial_risk.source')='commercial_signals' "
+                    )
+                    higher_signal = (
+                        "EXISTS(SELECT 1" + signal
+                        + "AND TRY_CONVERT(int,JSON_VALUE(sm.Document,'$.commercial_risk.score'))>?)"
+                    )
+                    requested_signal = (
+                        "EXISTS(SELECT 1" + signal
+                        + "AND JSON_VALUE(sm.Document,'$.commercial_risk.level')=? AND NOT "
+                        + assessment.replace("x.RiskLevel=?", "x.RiskScore>TRY_CONVERT(int,JSON_VALUE(sm.Document,'$.commercial_risk.score'))")
+                        + ")"
+                    )
+                    where.append("((" + assessment + " AND NOT " + higher_signal + ") OR " + requested_signal + ")")
+                    params.extend([level, db.institution(self.profile), {"low": 39, "medium": 69, "high": 100}[level], db.institution(self.profile), level])
             if state:
                 where.append("v.State=?")
                 params.append(state)

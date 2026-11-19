@@ -60,6 +60,8 @@ class Draft(Strict):
 def install(app, settings, gateway_factory=None):
     service = Agents(app, settings, gateway_factory)
     install_agents(app, service)
+    from app.institutional.sales_agents import install as install_sales
+    install_sales(app, service, settings)
     from app.institutional.siie_api import install as install_siie
     install_siie(app, service)
 

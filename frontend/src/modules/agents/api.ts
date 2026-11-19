@@ -8,6 +8,10 @@ import {
 export type Configuration = {
   provider: AiProvider;
   voice_profile_id?: string;
+  sales_skill_ids?: string[];
+  sales_routing_enabled?: boolean;
+  sales_memory_enabled?: boolean;
+  auto_sales_crm?: boolean;
   description?: string;
   operating_style?: string;
   risk_posture?: "balanced" | "cautious";
@@ -365,6 +369,13 @@ const errors: Record<string, string> = {
     "La conversación está cerrada o ya no está disponible.",
   agents_not_found: "El agente ya no está disponible.",
   voice_profile_unavailable: "El perfil de voz está pausado o ya no está disponible. Actualiza las voces del agente y selecciona un perfil activo, o elige Automática.",
+  sales_active_guide_required: "Selecciona un orientador de Admisiones activo antes de crear especialistas.",
+  sales_guide_not_ready: "El orientador necesita un modelo, permisos de respuesta y configuración completa. Revísalo en Agentes.",
+  sales_specialist_ambiguous: "Hay varios especialistas para un mismo programa. Revisa y conserva uno activo antes de preparar la creación.",
+  sales_preview_changed: "Cambió el catálogo o la configuración. Prepara nuevamente la vista previa antes de guardar.",
+  sales_ad_binding_invalid: "Revisa el ID del anuncio y el programa activo. Cada anuncio debe tener una única vinculación.",
+  sales_review_required: "Revisa los especialistas y marca la confirmación antes de crearlos.",
+  sales_memory_revision_conflict: "La memoria cambió durante la operación. Actualiza el hilo antes de reintentar.",
   voice_institutional_only: "Los perfiles de voz se administran en el entorno institucional de RinovaPlus.",
   agents_channel_not_allowed:
     "El canal seleccionado no está permitido por esta configuración.",

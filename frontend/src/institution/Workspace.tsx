@@ -21,6 +21,7 @@ import type { Attachment } from "./ChannelMedia";
 import { useWorkspaceState } from "../shared/workspaceSession";
 import "./workspace.css";
 import { AgentConversationPanel } from "../modules/agents/AgentConversationPanel";
+import { ConversationSalesMemory } from "./ConversationSalesMemory";
 import { PrivateMemory } from "./KnowledgeWorkspace";
 import { Icon } from "../shared/Icon";
 import { ErrorFeedback, ErrorFeedbackContext } from "./ErrorFeedback";
@@ -415,6 +416,7 @@ export function RiskSummary({ risk }: { risk: Risk }) {
   const known = risk.status === "known" && risk.fresh;
   const source = risk.source === "channel_activity"
     ? "Actividad del canal"
+    : risk.source === "commercial_signals" ? "Señales comerciales con evidencia"
     : "Rúbrica de seguimiento";
   return (
     <section className="p3-risk" data-level={known ? risk.level : undefined} aria-label="Riesgo de abandono">
@@ -1199,6 +1201,7 @@ function Person({
           <SlaSummary sla={detail.value.sla} canConfigure={session.actions.includes("settings.crm.write")} />
         )}
         <RiskSummary risk={detail.value.risk} />
+        {page === "inbox" && detail.value.agentOperations && <ConversationSalesMemory conversation={conversation} refresh={refresh} />}
         {page === "inbox" && detail.value.agentOperations && (
           <section className="panel">
             <AgentConversationPanel

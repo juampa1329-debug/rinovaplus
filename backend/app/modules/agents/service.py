@@ -3,6 +3,7 @@
 import json
 import logging
 from datetime import date
+from contextlib import nullcontext
 
 from pydantic import Field
 
@@ -530,7 +531,12 @@ def resolve_conversation(cursor, conversation_id, channel, *, for_draft=False):
         draft_assignment = {**assignment, "mode": "automatic"}
     # Only the explicit draft endpoint may resolve under human control. It has
     # no send path and binds the result to the real, unchanged control epoch.
-    resolution = resolve(agents, stages, draft_assignment, context, channel, "ai" if for_draft else conversation[0])
+    commercial = getattr(cursor, "agent_commercial_resolution", None)
+    resolution = None
+    if callable(commercial) and context is None and draft_assignment["mode"] == "automatic" and (for_draft or conversation[0] == "ai"):
+        resolution = commercial(agents, stages, draft_assignment, channel, conversation_id)
+    if resolution is None:
+        resolution = resolve(agents, stages, draft_assignment, context, channel, "ai" if for_draft else conversation[0])
     selected = agents[resolution["agent_id"]]
     check = preflight(cursor, selected, agents, stages)
     if not check["ready"]:
@@ -551,7 +557,7 @@ def runtime_context(cursor, conversation_id, question, channel):
         raise AiError("agents_reply_not_allowed", 409)
     context = selection["context"]
     # An unconfirmed program never becomes confirmed by a keyword in a question.
-    program_id = context["program_id"] if context else None
+    program_id = context["program_id"] if context else (selection.get("commercial_interest") or {}).get("program_id")
     institutional, sources = public_sources(
         cursor, question, program_id, context["stage_id"] if context else None, config
     )
@@ -617,6 +623,8 @@ def policy_for(selection):
         "\nPrograma y etapa sólo cambian por confirmación humana. No declares "
         "cambios institucionales."
     )
+    from app.modules.agents.sales_skills import prompt as sales_prompt
+    instructions += sales_prompt(config)
     instructions += "\nRuta operativa: " + config.get("route", "admissions")
     instructions += "\nPolíticas complementarias: " + ", ".join(
         config.get("industry_policies", ["academy"])
@@ -735,9 +743,9 @@ class AgentsService:
                 "academic_accuracy": "not_evaluated",
             }
 
-    def save_agent(self, key, request, *, restore_version=None, restore_request=None):
-        options = provider_options(self.ai)
-        with self.transaction(True) as cursor:
+    def save_agent(self, key, request, *, restore_version=None, restore_request=None, _cursor=None, _options=None):
+        options = _options if _options is not None else provider_options(self.ai)
+        with (nullcontext(_cursor) if _cursor is not None else self.transaction(True)) as cursor:
             agents, stages = load(cursor)
             kind = (
                 "agent_config"
@@ -748,6 +756,11 @@ class AgentsService:
             if repeated:
                 return {"confirmed": True, "replayed": True}
             old = agents.get(key)
+            sales_validator = getattr(cursor, "agent_sales_profile", None)
+            if callable(sales_validator):
+                sales_validator(request.configuration, (old or {}).get("configuration", {}))
+            elif request.configuration.sales_routing_enabled or request.configuration.sales_memory_enabled or request.configuration.auto_sales_crm:
+                raise AiError("sales_institutional_only", 409)
             previous_configuration = old["configuration"] if old else None
             if restore_version is not None:
                 from app.modules.agents.runtime import historical_profile

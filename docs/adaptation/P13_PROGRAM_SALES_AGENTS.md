@@ -1,5 +1,13 @@
 # P13 · Agentes de venta por programa
 
+## Corte vigente · 19 de noviembre de 2026
+
+P13 sigue en validación, **0/4 unidades aceptadas**. Se incorporan alta revisada de especialistas por programa/jornada,20procedimientos comerciales y de memoria, derivación por interés, memoria privada con citas/grafo nativo, calificación comercial y referencia de anuncios. Comentarios prioriza la publicación sobre la bienvenida general: una sugerencia real de PreICFES lo confirmó, sin nueva publicación al cliente. Falta validar el despliegue, las dos fichas y el piloto real antes de aceptar las unidades. [Manual actual](P13_SALES_OPERATOR_RUNBOOK.md) · [Seguimiento](../../tasks/p13-sales-progress.json).
+
+Original P0–P11:100%, P12auxiliar:100% en PostgreSQL/Meta. SIIE fue retomada en P16 y ya copia25programas; el fallo financiero de origen no autoriza inventar precios ni bloquea probar P13 con datos revisados y ausencias explícitas. Los cortes inferiores son historia y no prevalecen sobre esta actualización.
+
+## Historia conservada
+
 Actualización del 17 de noviembre: la ampliación actual permite consulta informativa de programas por nombre/alias y contexto de historial, sin asignar ni confirmar programa académico. Gemini genera mensajes y comentarios desde prompts y hechos vigentes; las sugerencias usan el mismo catálogo. Esto implementa parte del contexto comercial de P13.3, pero no acredita todavía enrutamiento automático a un especialista ni el piloto de dos programas. Ver [estado actualizado y pendientes por fase](RINOVAPLUS_LIVE_STATUS.md).
 
 **Decisión vigente del propietario:** la API académica/financiera SIIE se separa en [P16, diferida](P16_SIIE_INTEGRATION.md). No bloquea P13: las fichas y agentes se pueden aceptar con información revisada manualmente o publicada por la institución. Sin precio vigente revisado, el agente informa que falta confirmarlo. La base SIIE existente se conserva desactivada. Esta separación no cambia los 56 criterios/279 hitos originales.

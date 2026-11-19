@@ -29,6 +29,8 @@ import { AgentGuide } from "./AgentGuide";
 import { ProgramSelector } from "./ProgramSelector";
 import { useDraftGuard } from "../../institution/drafts";
 import { AgentVoiceSelect } from "../../institution/AgentVoiceSelect";
+import { AgentSalesSkills } from "../../institution/AgentSalesSkills";
+import { ProgramSalesSetup } from "../../institution/ProgramSalesSetup";
 import "./agents.css";
 
 type Tab =
@@ -524,6 +526,7 @@ export function AgentsPanel() {
       {guideOpen && <AgentGuide />}
       {error && <Notice error>{error}</Notice>}
       {feedback && <Notice>{feedback}</Notice>}
+      {catalog?.institutional && <ProgramSalesSetup catalog={catalog} disabled={busy || draftChanged || (!!draft && !saved && !!draft.name.trim())} onSaved={refresh} />}
       {!catalog && !error && <Notice>Cargando agentes…</Notice>}
       {catalog && !catalog.installed && (
         <Notice>
@@ -1305,6 +1308,7 @@ export function AgentsPanel() {
                         versions={consoleData?.versions ?? []}
                       />
                       {catalog.institutional && <AgentVoiceSelect value={draft.configuration.voice_profile_id ?? ""} onChange={value=>configure({voice_profile_id:value})} />}
+                      {catalog.institutional && <AgentSalesSkills configuration={draft.configuration} guide={draft.level === "guide"} onChange={configure} />}
                       <section
                         className="agents-editor-section"
                         aria-labelledby="agent-sources-heading"
