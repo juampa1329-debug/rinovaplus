@@ -252,6 +252,12 @@ def preview_response(row):
             "audio_url": "/api/institution/voice/previews/" + uid(str(row["OperationId"])) + "/audio" if row["Status"] == "confirmed" else None}
 
 
+def history_audio_url(row, actor):
+    if row["Action"] == PREVIEW and row["Status"] == "confirmed" and row["PreviewFresh"] and str(row["ActorRef"]).lower() == str(actor["UserId"]).lower():
+        return "/api/institution/voice/previews/" + uid(str(row["OperationId"])) + "/audio"
+    return None
+
+
 def preview(settings, authority, body, gateway_factory=MediaGateway):
     operation = uid(body.operation_id)
     media_id = str(uuid5(NAMESPACE_URL, "rinova:voice-preview:" + operation))
@@ -343,10 +349,10 @@ def install(app, settings):
     @app.get("/api/institution/voice/usage")
     def live_usage(request: Request, conversation: str = ""):
         with transaction(settings, anonymous=True) as c:
-            authorize(c, settings, request.state.authority, "settings.ai.read")
+            actor = authorize(c, settings, request.state.authority, "settings.ai.read")
             state = usage(c, settings, conversation or None)
-            latest = rows(c, "SELECT TOP(40) OperationId,Status,ResultCode,ResultMetadata,CreatedAt FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND Action IN(?,?) ORDER BY CreatedAt DESC,OperationId", institution(settings), ACTION, PREVIEW)
-            return {**state, "history": [{"id": str(v["OperationId"]), "state": v["Status"], "code": v["ResultCode"], "at": utc(v["CreatedAt"]), "profile": json.loads(v["ResultMetadata"]).get("profile", {}).get("name"), "characters": json.loads(v["ResultMetadata"]).get("characters", 0)} for v in latest]}
+            latest = rows(c, "SELECT TOP(40) OperationId,Action,ActorRef,Status,ResultCode,ResultMetadata,CreatedAt,CASE WHEN CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) THEN 1 ELSE 0 END AS PreviewFresh FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND Action IN(?,?) ORDER BY CreatedAt DESC,OperationId", institution(settings), ACTION, PREVIEW)
+            return {**state, "history": [{"id": str(v["OperationId"]), "state": v["Status"], "code": v["ResultCode"], "at": utc(v["CreatedAt"]), "profile": json.loads(v["ResultMetadata"]).get("profile", {}).get("name"), "characters": json.loads(v["ResultMetadata"]).get("characters", 0), "greeting_tone": json.loads(v["ResultMetadata"]).get("profile", {}).get("greeting_tone", "inherit"), "audio_url": history_audio_url(v, actor)} for v in latest]}
 
     @app.post("/api/institution/voice/previews")
     def create_preview(request: Request, body: Preview):

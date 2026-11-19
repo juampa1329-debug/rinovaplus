@@ -48,3 +48,7 @@ La voz automática usa por defecto Sólo conversaciones seleccionadas. Marca el 
 Entonación del saludo permite Natural, Cálida, Tranquila o Animada en v4/v3. Sólo dirige el primer saludo y conserva las palabras. Probar saludos genera cuatro muestras del mismo texto sin cambiar la voz guardada ni enviar mensajes. Cada muestra consume caracteres; repetir la comparación en la misma vista reutiliza sus intentos. Una respuesta incierta detiene el resto; navegar fuera impide iniciar las generaciones siguientes. El servidor vuelve a comprobar autoridad/control y clave después del catálogo, inmediatamente antes de la síntesis de pago.
 
 La prueba integral nativa usa SQL real y ffmpeg, con Gemini/TTS simulados y rollback. Comprueba entrada de voz, respuesta contextual ligada a outbox, rechazo de archivo cambiado, respuesta por texto tras agotar cupo y cancelación por Humano durante síntesis. Fuente reproducible: artifacts/live/p19-native-worker-rollback-20261119.py. No acredita una conversación comercial real de Gemini por sustituir los proveedores.
+
+## Recuperar una muestra
+
+Actividad y consumo permite escuchar las muestras propias confirmadas de las últimas 24 horas y descargarlas como nota-de-voz.ogg, sin volver a generar ni consumir caracteres. El acceso sigue siendo privado y comprueba usuario, vigencia, archivo y huella. El reproductor se ajusta al ancho de su tarjeta. No se comparten muestras de otro operador mediante este historial.

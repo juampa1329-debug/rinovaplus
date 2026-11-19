@@ -26,6 +26,14 @@ def policy(**values):
     return VoicePolicy(enabled=True, scope="all", default_profile_id="admisiones", profiles=[profile()], **values)
 
 
+def test_history_audio_only_links_confirmed_fresh_previews_of_the_owner():
+    actor = {"UserId": str(uuid4())}
+    row = {"OperationId": str(uuid4()), "ActorRef": actor["UserId"], "Action": voice.PREVIEW, "Status": "confirmed", "PreviewFresh": 1}
+    assert voice.history_audio_url(row, actor).endswith("/audio")
+    for change in [{"ActorRef": str(uuid4())}, {"Action": voice.ACTION}, {"Status": "uncertain"}, {"PreviewFresh": 0}]:
+        assert voice.history_audio_url({**row, **change}, actor) is None
+
+
 @pytest.mark.parametrize("mode,voice_note,long,expected", [
     ("voice_notes", True, False, True), ("voice_notes", False, True, False),
     ("long_explanations", True, False, False), ("long_explanations", False, True, True),

@@ -52,13 +52,13 @@
   ],
   "reference": "docs/adaptation/P19_VOICES_AUDIO.md",
   "calls_phase": "P20",
-  "live_audio_generated": 3,
+  "live_audio_generated": 7,
   "Hermes_in_new_scope": false,
   "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
   "checks": {
-    "backend_passed": 142,
+    "backend_passed": 143,
     "backend_skipped": 2,
-    "frontend_selected_passed": 19,
+    "frontend_selected_passed": 20,
     "types": "passed",
     "lint_modified": "passed",
     "workspace_build": "passed_with_existing_large_bundle_warning"
@@ -66,6 +66,6 @@
   "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md",
   "evidence": "artifacts/live/p19-voices-review-20261119.json",
   "owner_quality_followup": "Complete playback confirmed; second more natural sample requested",
-  "controls": "Implemented per-profile stability/similarity and model-language catalog; pending deployment and live check",
+  "controls": "Sliders, language and four greeting tones verified live; private historical replay/download pending deployment",
   "activation_scope": "Global activation blocked by automatic browser review; implement recipient44-only pilot before tests"
 }

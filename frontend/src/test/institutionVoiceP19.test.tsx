@@ -374,6 +374,10 @@ it("reuses the preview intent to avoid duplicate charges and renders a private a
   expect(
     await screen.findByLabelText("Muestra de voz generada"),
   ).toHaveAttribute("src", "blob:private-preview");
+  expect(screen.getByRole("link", { name: "Descargar audio" })).toHaveAttribute(
+    "download",
+    "nota-de-voz.ogg",
+  );
   await waitFor(() =>
     expect(
       screen.getByRole("button", { name: "Generar muestra" }),
@@ -382,6 +386,41 @@ it("reuses the preview intent to avoid duplicate charges and renders a private a
   fireEvent.click(screen.getByRole("button", { name: "Generar muestra" }));
   await waitFor(() => expect(ids).toHaveLength(2));
   expect(ids[0]).toBe(ids[1]);
+});
+
+it("reopens a stored private preview without another paid generation", async () => {
+  let paid = 0;
+  mock((url) => {
+    if (url.endsWith("/stored/audio"))
+      return new Response(new Blob(["OggS"], { type: "audio/ogg" }));
+    if (url.endsWith("/voice/usage"))
+      return respond({
+        daily_characters: 50,
+        daily_attempts: 1,
+        history: [
+          {
+            id: "stored",
+            state: "confirmed",
+            code: null,
+            at: "2026-11-19T17:33:00Z",
+            profile: "Juampa",
+            characters: 50,
+            greeting_tone: "warm",
+            audio_url: "/api/institution/voice/previews/stored/audio",
+          },
+        ],
+      });
+    if (url.endsWith("/voice/previews")) paid++;
+  });
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Escuchar muestra" }),
+  );
+  expect(
+    await screen.findByRole("link", { name: "Descargar audio" }),
+  ).toHaveAttribute("href", "blob:private-preview");
+  expect(screen.getByText("Saludo: Cálida")).toBeVisible();
+  expect(paid).toBe(0);
 });
 
 it("explains insufficient balance in the shared error popup", async () => {

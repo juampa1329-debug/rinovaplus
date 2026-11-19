@@ -1,3 +1,7 @@
+## P19: cuatro saludos generados, recuperación privada de muestras — 2026-11-19
+
+ee0404c desplegado saludable en Coolify a17:32:47Z. Ensayos nativos de worker, cuota, OGG y Humano pasan con rollback y cero llamadas pagadas. Cuatro muestras reales v4 de Juampa con el mismo texto de242caracteres: Natural15,37s, Cálida14,89s, Tranquila14,89s y Animada14,41s. Cuatro generaciones, sin cambiar el perfil. Pendiente enviarlas y recibir elección. Se añade descarga explícita y recuperación privada desde el historial para evitar regenerarlas;143backend/20frontend pasan. P19 conserva2/5aceptadas hasta piloto automático y operación real. General originalP0–P11:100%;P12auxiliar100%;P15correo100%;P13/P14/P16/P17/P18/P20 conservan alcance/estado.
+
 ## P19: piloto acotado y comparación de saludos — 2026-11-19
 
 Controlesfa30cc5 saludables en Coolify, runlmgtqgtajygotvtzncxxqjcf completado16:50:56UTC. Estabilidad40%, similitud75% e idioma español guardados en UI, revisión7. Tres muestras reales Juampa: v2completa25s, v4de23s más natural según titular y v4con inicio directo entregada. El propietario aclara que quiere controlar la entonación del saludo y autoriza probar cada opción al44. Se implementan Natural/Cálida/Tranquila/Animada y comparador de cuatro muestras, con identidades de intento reutilizadas y parada por incertidumbre/navegación.

@@ -124,5 +124,43 @@
     "global_activation": "Automatic browser review rejected enabling institution-wide voice; not executed",
     "reason": "Existing authorization covers test recipient44, not all institutional conversations",
     "resolution": "Implement explicit conversation allowlist enforced at generation and dispatch; default selected-conversation pilot; all-conversation activation remains unauthorised"
-  }
+  },
+  "greeting_comparison": {
+    "model": "eleven_v4",
+    "voice": "owner_saved_Juampa",
+    "same_source_characters": 242,
+    "variants": [
+      {
+        "tone": "inherit",
+        "seconds": 15.3665,
+        "reserved_characters": 280
+      },
+      {
+        "tone": "warm",
+        "seconds": 14.8865,
+        "reserved_characters": 306
+      },
+      {
+        "tone": "calm",
+        "seconds": 14.8865,
+        "reserved_characters": 305
+      },
+      {
+        "tone": "upbeat",
+        "seconds": 14.4065,
+        "reserved_characters": 308
+      }
+    ],
+    "paid_generations": 4,
+    "production_configuration_unchanged": true,
+    "whatsapp_delivery": "pending"
+  },
+  "scoped_deployment": {
+    "commit": "ee0404cce81f7b31d219ff8eb17be17adb117814",
+    "backend_run": "rsksdgy4ozkednhjwudm4d10",
+    "healthy_completed_utc": "2026-11-19T17:32:47Z",
+    "native_worker_and_reservations_rollback_passed": true,
+    "paid_io_in_native_checks": 0
+  },
+  "preview_followup": "Explicit private blob download, replay own confirmed previews from history without synthesis, and fit players inside narrow cards"
 }

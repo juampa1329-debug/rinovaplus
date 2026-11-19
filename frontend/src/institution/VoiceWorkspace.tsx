@@ -80,6 +80,8 @@ type Usage = {
     at: string;
     profile: string;
     characters: number;
+    audio_url?: string | null;
+    greeting_tone?: string;
   }[];
 };
 type Preview = {
@@ -139,6 +141,7 @@ function VoiceEditor({
   );
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewBusy, setPreviewBusy] = useState(false);
+  const [historyPreview, setHistoryPreview] = useState("");
   const [comparisons, setComparisons] = useState<
     { tone: string; result: Preview }[]
   >([]);
@@ -1009,6 +1012,14 @@ function VoiceEditor({
                 <div>
                   <strong>{v.profile}</strong>
                   <small>{new Date(v.at).toLocaleString("es-CO")}</small>
+                  {v.audio_url && (
+                    <small>
+                      Saludo:{" "}
+                      {greetingTones.find(
+                        (tone) => tone.value === v.greeting_tone,
+                      )?.label ?? "Natural"}
+                    </small>
+                  )}
                 </div>
                 <span>{v.characters} caracteres</span>
                 <Badge>
@@ -1023,6 +1034,22 @@ function VoiceEditor({
                   )[v.state] ?? v.state}
                 </Badge>
                 {v.code && <small>{voiceReason(v.code)}</small>}
+                {v.audio_url && (
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={() =>
+                      setHistoryPreview(historyPreview === v.id ? "" : v.id)
+                    }
+                  >
+                    {historyPreview === v.id
+                      ? "Ocultar muestra"
+                      : "Escuchar muestra"}
+                  </Button>
+                )}
+                {v.audio_url && historyPreview === v.id && (
+                  <PreviewPlayer url={v.audio_url} />
+                )}
               </article>
             ))}
           </div>
@@ -1064,12 +1091,17 @@ function PreviewPlayer({ url }: { url: string }) {
   return error ? (
     <Notice error>{error}</Notice>
   ) : source ? (
-    <audio
-      controls
-      preload="metadata"
-      src={source}
-      aria-label="Muestra de voz generada"
-    />
+    <div className="voice-preview-player">
+      <audio
+        controls
+        preload="metadata"
+        src={source}
+        aria-label="Muestra de voz generada"
+      />
+      <a href={source} download="nota-de-voz.ogg">
+        Descargar audio
+      </a>
+    </div>
   ) : (
     <span role="status">Cargando muestra privada…</span>
   );

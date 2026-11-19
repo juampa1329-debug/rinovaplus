@@ -198,6 +198,21 @@
 .voice-workspace button {
   min-height: 44px;
 }
+.voice-preview-player {
+  display: grid;
+  min-width: 0;
+  gap: 0.5rem;
+}
+.voice-preview-player audio {
+  width: 100%;
+  min-width: 0;
+}
+.voice-preview-player a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+}
 @media (prefers-reduced-motion: no-preference) {
   .voice-hero,
   .voice-summary article,
