@@ -60,6 +60,13 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  voice_greeting_model_required: "Las entonaciones del saludo requieren un modelo Eleven v4 o v3. Selecciona uno del catálogo y guarda el perfil antes de comparar.",
+  voice_preview_result_review: "Una muestra quedó en curso o con resultado incierto. La comparación se detuvo para evitar más consumo. Revisa su actividad antes de iniciar otro intento.",
+  voice_pilot_conversation_required: "Marca al menos una conversación de WhatsApp en el modo piloto antes de activar la voz. Sólo esos hilos usarán ElevenLabs.",
+  voice_default_profile_missing: "Crea un perfil de voz activo y selecciónalo como predeterminado antes de activar la generación.",
+  voice_duplicate_assignment: "Un agente o una escuela está asignado a más de un perfil activo. Deja una única voz para cada asignación.",
+  voice_duplicate_profile: "Hay dos perfiles con el mismo identificador. Actualiza la configuración guardada y crea un perfil nuevo desde Añadir perfil.",
+  voice_invalid_threshold: "El máximo de caracteres por audio debe ser igual o mayor que el umbral de explicación larga. Ajusta ambos valores y guarda.",
   voice_language_unsupported: "El modelo no admite fijar ese idioma o ya no lo incluye en su catálogo. Elige Automático o un idioma disponible para el modelo seleccionado.",
   voice_duration_estimated_exceeded: "El texto de la muestra duraría más que el máximo configurado. No se generó audio. Reduce el texto, aumenta la duración máxima o usa 0 para desactivar ese límite.",
   voice_duration_actual_exceeded: "El audio generado excedió la duración máxima. Se descartó sin cortarlo. La generación pudo consumir caracteres; revisa la actividad y reduce el texto antes de otra prueba.",

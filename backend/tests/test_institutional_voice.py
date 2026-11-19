@@ -23,7 +23,7 @@ def profile(id="admisiones", **values):
 
 
 def policy(**values):
-    return VoicePolicy(enabled=True, default_profile_id="admisiones", profiles=[profile()], **values)
+    return VoicePolicy(enabled=True, scope="all", default_profile_id="admisiones", profiles=[profile()], **values)
 
 
 @pytest.mark.parametrize("mode,voice_note,long,expected", [
@@ -54,7 +54,7 @@ def test_duration_estimated_before_generation_zero_unlimited_and_text_never_trun
 
 def test_profile_agent_precedence_authoritative_school_and_pinned_voice():
     agent = str(uuid4())
-    options = VoicePolicy(enabled=True, default_profile_id="default", profiles=[
+    options = VoicePolicy(enabled=True, scope="all", default_profile_id="default", profiles=[
         profile("default"), profile("school", schools=["Salud"], voice_id="health"),
         profile("agent", agent_ids=[agent], voice_id="agent-voice"),
     ])
@@ -202,6 +202,35 @@ def test_manual_voice_controls_are_bounded_and_v3_is_quantized():
         with pytest.raises(ValidationError): VoiceProfile(**profile(**patch))
 
 
+def test_pilot_requires_an_explicit_conversation_and_excludes_every_other_thread():
+    first, other = str(uuid4()), str(uuid4())
+    p = policy().model_dump()
+    p.update(scope="selected_conversations", conversation_ids=[first])
+    selected = VoicePolicy.model_validate(p)
+    assert selected.allows(first) and not selected.allows(other)
+    p["conversation_ids"] = []
+    with pytest.raises(ValidationError): VoicePolicy.model_validate(p)
+
+
+def test_invalid_pilot_is_an_explanatory_422_before_any_storage():
+    from app.institutional.models import AI, SettingEdit
+    from app.institutional.settings import Settings
+    document = AI(enabled=False).model_dump(mode="json")
+    document["voice"]["enabled"] = True
+    with pytest.raises(HTTPException) as error:
+        Settings(SimpleNamespace(ticket={})).save({}, "ai", SettingEdit(operation_id=str(uuid4()), revision=1, document=document))
+    assert error.value.status_code == 422 and error.value.detail == "voice_pilot_conversation_required"
+
+
+def test_pilot_excluded_thread_never_reserves_or_calls_provider(runtime, monkeypatch):
+    options, record, _, data, item = runtime
+    options.scope = "selected_conversations"
+    options.conversation_ids = [str(uuid4())]
+    monkeypatch.setattr(voice, "synthesize", lambda *_: pytest.fail("No paid IO outside pilot"))
+    assert voice.generate(None, item, data, "Hola", None, [], lambda: None, incoming_voice=True) == (None, "voice_scope_text_only")
+    assert not record
+
+
 def test_language_must_come_from_selected_model_before_paid_io(monkeypatch):
     class Gateway:
         def __init__(self, *_): pass
@@ -209,6 +238,28 @@ def test_language_must_come_from_selected_model_before_paid_io(monkeypatch):
         async def request(self, *_a, **_k): pytest.fail("Unsupported language cannot cause paid IO")
     with pytest.raises(AiError, match="voice_language_unsupported"):
         asyncio.run(voice.synthesize("fake", profile(model_id="eleven_v4", language_code="es"), "Hola", str(uuid4()), Gateway))
+
+
+def test_control_is_rechecked_after_catalog_immediately_before_paid_synthesis():
+    class Gateway:
+        def __init__(self,*_):pass
+        async def catalog(self,*_):return {"voices":[{"id":"voice-id"}],"models":[{"id":"model-id"}]}
+        async def request(self,*_a,**_k):pytest.fail("No paid POST after authority/control changed")
+    def revoked():raise HTTPException(409,"gemini_whatsapp_control_or_history_changed")
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(voice.synthesize("fake",profile(),"Hola",str(uuid4()),Gateway,revoked))
+    assert error.value.detail=="gemini_whatsapp_control_or_history_changed"
+
+
+@pytest.mark.parametrize("tone", ["inherit", "warm", "calm", "upbeat"])
+def test_greeting_direction_changes_only_delivery_and_preserves_every_word(tone):
+    import re
+    text = "Hola, Juan Pablo... Estudiar marketing puede ayudarte a comunicar ideas. ¿Qué área te interesa?"
+    rendered = speech_text(profile(model_id="eleven_v4", greeting_tone=tone), text)
+    assert re.sub(r"\[[^]]+\]\s*", "", rendered) == text
+    if tone != "inherit":
+        assert rendered.index("greeting]") < rendered.index("Hola")
+        assert rendered.index("conversational tone]") > rendered.index("Juan Pablo...")
 
 
 def test_catalog_rechecks_authority_after_network_and_never_returns_key(monkeypatch):

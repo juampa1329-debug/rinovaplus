@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+GreetingTone = Literal["inherit", "warm", "calm", "upbeat"]
+
 
 class VoiceProfile(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
@@ -21,6 +23,7 @@ class VoiceProfile(BaseModel):
     stability: float | None = Field(default=None, ge=0, le=1)
     similarity_boost: float = Field(default=0.75, ge=0, le=1)
     language_code: str = Field(default="", pattern=r"^(?:[a-z]{2})?$")
+    greeting_tone: GreetingTone = "inherit"
     agent_ids: list[str] = Field(default_factory=list, max_length=50)
     schools: list[str] = Field(default_factory=list, max_length=50)
 
@@ -43,6 +46,8 @@ class VoiceProfile(BaseModel):
 class VoicePolicy(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     enabled: bool = False
+    scope: Literal["selected_conversations", "all"] = "selected_conversations"
+    conversation_ids: list[str] = Field(default_factory=list, max_length=50)
     max_audios_per_conversation: int = Field(default=3, ge=0, le=100)
     mode: Literal["voice_notes", "long_explanations", "voice_notes_or_long", "voice_notes_and_long"] = "voice_notes_or_long"
     long_reply_min_chars: int = Field(default=400, ge=120, le=2000)
@@ -54,6 +59,11 @@ class VoicePolicy(BaseModel):
 
     @model_validator(mode="after")
     def valid_profiles(self):
+        self.conversation_ids = [str(UUID(value)) for value in self.conversation_ids]
+        if len(set(self.conversation_ids)) != len(self.conversation_ids):
+            raise ValueError("voice_duplicate_conversation")
+        if self.enabled and self.scope == "selected_conversations" and not self.conversation_ids:
+            raise ValueError("voice_pilot_conversation_required")
         ids, agents, schools = set(), set(), set()
         for profile in self.profiles:
             if profile.id in ids:
@@ -72,6 +82,9 @@ class VoicePolicy(BaseModel):
         if self.max_text_chars < self.long_reply_min_chars:
             raise ValueError("voice_invalid_threshold")
         return self
+
+    def allows(self, conversation):
+        return self.scope == "all" or str(conversation).lower() in self.conversation_ids
 
 
 def reason(policy: VoicePolicy, text: str, incoming_voice: bool, used: int):

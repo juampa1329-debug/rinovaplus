@@ -40,3 +40,11 @@ Cada perfil incorpora estilo conversado, calmado, expresivo o neutro; instruccio
 ## Controles de ElevenLabs en RinovaPlus
 
 Cada perfil incorpora deslizadores Estabilidad (creativo→robusto) y Similitud (baja→alta), con valores0–100% y teclado nativo. El estilo propone valores iniciales; el operador puede ajustarlos. v3 adapta estabilidad a sus niveles0/0.5/1. Idioma ofrece Automático o los idiomas de la lista del modelo, sin escribir códigos. Multilingualv2 conserva automático porque su API no permite imponer idioma. Cambiar de modelo vuelve el idioma a automático. El backend valida la selección contra el catálogo antes de un POST de síntesis. No modifica permanentemente la voz en ElevenLabs: los controles se aplican a cada generación.
+
+## Piloto delimitado y saludos
+
+La voz automática usa por defecto Sólo conversaciones seleccionadas. Marca el hilo por cuenta y últimos cuatro dígitos: el servidor comprueba esta lista antes de generar y en la salida. Activarla para toda la institución cambia respuestas reales fuera del piloto y requiere autorización explícita del propietario. La revisión automática rechazó esa activación global durante el ensayo; no se ejecutó ni se sortea con comandos. El piloto autorizado se limita al44.
+
+Entonación del saludo permite Natural, Cálida, Tranquila o Animada en v4/v3. Sólo dirige el primer saludo y conserva las palabras. Probar saludos genera cuatro muestras del mismo texto sin cambiar la voz guardada ni enviar mensajes. Cada muestra consume caracteres; repetir la comparación en la misma vista reutiliza sus intentos. Una respuesta incierta detiene el resto; navegar fuera impide iniciar las generaciones siguientes. El servidor vuelve a comprobar autoridad/control y clave después del catálogo, inmediatamente antes de la síntesis de pago.
+
+La prueba integral nativa usa SQL real y ffmpeg, con Gemini/TTS simulados y rollback. Comprueba entrada de voz, respuesta contextual ligada a outbox, rechazo de archivo cambiado, respuesta por texto tras agotar cupo y cancelación por Humano durante síntesis. Fuente reproducible: artifacts/live/p19-native-worker-rollback-20261119.py. No acredita una conversación comercial real de Gemini por sustituir los proveedores.

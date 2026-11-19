@@ -56,20 +56,18 @@
     "automatic_voice_enabled": false
   },
   "tests": {
-    "backend_passed": 134,
+    "backend_passed": 142,
     "backend_skipped_environment": 2,
-    "frontend_selected_passed": 16,
+    "frontend_selected_passed": 19,
     "types": "passed",
     "lint_modified": "passed",
     "workspace_build": "passed_with_existing_large_bundle_warning"
   },
   "pending": [
-    "Deploy natural per-profile delivery and model-compatible settings",
-    "Second Juampa sample with v4; owner quality review",
-    "Native full Gemini/voice/outbox frontier with mocked paid providers and rollback",
-    "Automatic incoming voice, long reply, cap and Human pilot",
-    "Profile assignment and final operation acceptance",
-    "Deploy and verify native stability/similarity/language controls requested from owner screenshot"
+    "Deploy scoped pilot and greeting tone comparator",
+    "Four greeting variants requested by owner; send to44 in order",
+    "Real automatic voice note and cap pilot, then restore max3",
+    "Final phase acceptance with documented scope"
   ],
   "security": {
     "no_ddl_or_seed": true,
@@ -83,5 +81,48 @@
     "container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T163757",
     "completed_utc": "2026-11-19T16:42:17Z",
     "status": "healthy_rolling_update_completed"
+  },
+  "controls_deployment": {
+    "commit": "fa30cc5d12606315a50b0f52b8421504be3bcc1b",
+    "run": "lmgtqgtajygotvtzncxxqjcf",
+    "container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T164637",
+    "completed_utc": "2026-11-19T16:50:56Z",
+    "ready": true
+  },
+  "native_worker": {
+    "actual_postgres": true,
+    "gemini_and_tts_mocked": true,
+    "paid_provider_calls": 0,
+    "voice_input_to_grounded_reply_ogg_outbox_frontier": true,
+    "forged_media_rejected": true,
+    "cap_text_fallback_without_tts": true,
+    "human_during_synthesis_no_enqueue": true,
+    "rollback_and_exact_files_cleaned": true,
+    "fixture_setup_correction": "First fixture rejected external MessageRoute with ControlEpoch; corrected fixture to match external route constraint. No production defect or persistent change."
+  },
+  "real_additional_previews": [
+    {
+      "version": 2,
+      "model": "eleven_v4",
+      "raw_text_characters": 368,
+      "reserved_characters_including_direction": 406,
+      "duration_seconds_rounded": 23,
+      "delivery": "read_receipt_in_owner_44_institutional_chat",
+      "owner_quality": "Much more natural except greeting intonation"
+    },
+    {
+      "version": 3,
+      "model": "eleven_v4",
+      "raw_text_characters": 363,
+      "reserved_characters_including_direction": 401,
+      "greeting": "direct Mira opening",
+      "delivery": "delivered_to_owner_44",
+      "owner_quality": "Owner clarified only greeting intonation needs adjustment; requested frontend controls and four tone tests"
+    }
+  ],
+  "scope_review": {
+    "global_activation": "Automatic browser review rejected enabling institution-wide voice; not executed",
+    "reason": "Existing authorization covers test recipient44, not all institutional conversations",
+    "resolution": "Implement explicit conversation allowlist enforced at generation and dispatch; default selected-conversation pilot; all-conversation activation remains unauthorised"
   }
 }

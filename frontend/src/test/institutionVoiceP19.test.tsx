@@ -69,6 +69,15 @@ function mock(
         return new Response(new Blob(["OggS"], { type: "audio/ogg" }));
       if (url.endsWith("/voice/usage"))
         return respond({ daily_characters: 0, daily_attempts: 0, history: [] });
+      if (url.endsWith("/voice/conversations"))
+        return respond({
+          items: [
+            {
+              id: "10000000-0000-4000-8000-000000000001",
+              label: "WhatsApp · CBN · termina en 5144 · Humano",
+            },
+          ],
+        });
       if (url.endsWith("/api/v1/agents")) return respond({ agents: [] });
       if (url.endsWith("/settings/ai")) return respond(base);
       if (url.endsWith("/voice/catalog"))
@@ -221,6 +230,128 @@ it("loads the catalog automatically and saves stability, similarity and a catalo
   expect(
     fetch.mock.calls.some(([url]) => String(url).endsWith("/voice/catalog")),
   ).toBe(true);
+});
+
+it("requires selecting the authorized pilot chat before enabling voice", async () => {
+  let saved: {
+    voice: { scope: string; conversation_ids: string[]; enabled: boolean };
+  } | null = null;
+  mock((url, init) => {
+    if (url.endsWith("/settings/ai") && init?.method === "PUT") {
+      saved = JSON.parse(String(init.body)).document;
+      return respond(base);
+    }
+  });
+  mount([...session.actions, "inbox.read"]);
+  fireEvent.click(await screen.findByLabelText(/Activar audios automáticos/));
+  expect(
+    screen.getByRole("button", { name: "Guardar configuración de voz" }),
+  ).toBeDisabled();
+  fireEvent.click(
+    await screen.findByLabelText("WhatsApp · CBN · termina en 5144 · Humano"),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar configuración de voz" }),
+  );
+  await waitFor(() => expect(saved).not.toBeNull());
+  expect(saved!.voice).toMatchObject({
+    enabled: true,
+    scope: "selected_conversations",
+    conversation_ids: ["10000000-0000-4000-8000-000000000001"],
+  });
+});
+
+it("compares four greeting tones without changing the saved voice and reuses paid intents", async () => {
+  const requests: { greeting_tone: string; operation_id: string }[] = [];
+  const fetch = mock((url, init) => {
+    if (url.endsWith("/settings/ai"))
+      return respond({
+        ...base,
+        document: {
+          ...base.document,
+          voice: {
+            ...base.document.voice,
+            profiles: [
+              { ...base.document.voice.profiles[0], model_id: "eleven_v4" },
+            ],
+          },
+        },
+      });
+    if (url.endsWith("/voice/catalog"))
+      return respond({
+        voices: [{ id: "voice1", name: "Juampa" }],
+        models: [{ id: "eleven_v4", name: "Eleven v4" }],
+      });
+    if (url.endsWith("/voice/previews")) {
+      requests.push(JSON.parse(String(init?.body)));
+      return respond({
+        state: "confirmed",
+        audio_url: "/api/institution/voice/previews/private/audio",
+        duration: 5,
+        characters: 20,
+      });
+    }
+  });
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Generar cuatro saludos" }),
+  );
+  await waitFor(() => expect(requests).toHaveLength(4));
+  await screen.findByRole("heading", { name: "Animada" });
+  expect(requests.map((v) => v.greeting_tone)).toEqual([
+    "inherit",
+    "warm",
+    "calm",
+    "upbeat",
+  ]);
+  const firstIds = requests.map((v) => v.operation_id);
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Generar cuatro saludos" }),
+    ).toBeEnabled(),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Generar cuatro saludos" }),
+  );
+  await waitFor(() => expect(requests).toHaveLength(8));
+  expect(requests.slice(4).map((v) => v.operation_id)).toEqual(firstIds);
+  expect(fetch.mock.calls.some(([, init]) => init?.method === "PUT")).toBe(
+    false,
+  );
+});
+
+it("stops the comparison after an uncertain result to avoid additional paid generations", async () => {
+  let paid = 0;
+  mock((url) => {
+    if (url.endsWith("/settings/ai"))
+      return respond({
+        ...base,
+        document: {
+          ...base.document,
+          voice: {
+            ...base.document.voice,
+            profiles: [
+              { ...base.document.voice.profiles[0], model_id: "eleven_v4" },
+            ],
+          },
+        },
+      });
+    if (url.endsWith("/voice/catalog"))
+      return respond({
+        voices: [],
+        models: [{ id: "eleven_v4", name: "Eleven v4" }],
+      });
+    if (url.endsWith("/voice/previews")) {
+      paid++;
+      return respond({ state: "uncertain", audio_url: null, characters: 20 });
+    }
+  });
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Generar cuatro saludos" }),
+  );
+  await screen.findByRole("heading", { name: "No se pudo generar el audio" });
+  expect(paid).toBe(1);
 });
 
 it("reuses the preview intent to avoid duplicate charges and renders a private audio player", async () => {

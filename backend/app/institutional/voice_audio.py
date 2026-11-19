@@ -23,8 +23,8 @@ from app.institutional.models import Strict
 from app.institutional.provider_catalog import credential
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.institutional.voice_policy import VoicePolicy, choose_profile, estimate_seconds, reason
-from app.institutional.voice_delivery import speech_text, voice_settings
+from app.institutional.voice_policy import GreetingTone, VoicePolicy, choose_profile, estimate_seconds, reason
+from app.institutional.voice_delivery import expressive_model, speech_text, voice_settings
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
 from app.modules.inbox.infrastructure import media_files as files
@@ -38,6 +38,7 @@ class Preview(Strict):
     operation_id: str
     profile_id: str = Field(min_length=1, max_length=64)
     text: str = Field(min_length=1, max_length=400)
+    greeting_tone: GreetingTone | None = None
 
 
 def policy(c, settings):
@@ -105,7 +106,7 @@ async def catalog_for(value, gateway_factory=MediaGateway):
         raise AiError("voice_catalog_timeout", 504) from None
 
 
-async def synthesize(value, profile, text, media_id, gateway_factory=MediaGateway):
+async def synthesize(value, profile, text, media_id, gateway_factory=MediaGateway, before_synthesis=None):
     gateway = gateway_factory({"elevenlabs": value}, files.root())
     catalog = await catalog_for(value, gateway_factory)
     if profile["voice_id"] not in {v["id"] for v in catalog["voices"]} or profile["model_id"] not in {v["id"] for v in catalog["models"]}:
@@ -114,6 +115,8 @@ async def synthesize(value, profile, text, media_id, gateway_factory=MediaGatewa
     model = next(v for v in catalog["models"] if v["id"] == profile["model_id"])
     if language and (profile["model_id"] == "eleven_multilingual_v2" or language not in {v["id"] for v in model.get("languages", [])}):
         raise AiError("voice_language_unsupported", 409)
+    if before_synthesis:
+        before_synthesis()
     metadata = {}
     raw, _ = await gateway.request("elevenlabs", "POST", "v1/text-to-speech/" + profile["voice_id"],
         {"text": speech_text(profile, text), "model_id": profile["model_id"], "voice_settings": voice_settings(profile), **({"language_code": language} if language else {})}, params={"output_format": "mp3_44100_128"}, binary=True, metadata=metadata)
@@ -166,6 +169,8 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
         guard()
         with transaction(settings, True, anonymous=True) as c:
             options = policy(c, settings)
+            if not options.allows(data["conversation"]):
+                return None, "voice_scope_text_only"
             state = usage(c, settings, data["conversation"])
             why = reason(options, text, incoming_voice, state["used"])
             if why:
@@ -186,7 +191,12 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
             reserved = True
         # Recheck after durable reservation, immediately before paid network IO.
         guard()
-        info, receipt = asyncio.run(synthesize(value, record["profile"], text, media_id, gateway_factory))
+        def before_post():
+            guard()
+            with transaction(settings, anonymous=True) as c:
+                if policy(c, settings) != options or stored_key(c, settings)[1] != secret_id:
+                    raise HTTPException(409, "voice_configuration_changed")
+        info, receipt = asyncio.run(synthesize(value, record["profile"], text, media_id, gateway_factory, before_post))
         record.update({"duration": info["duration"], "receipt": receipt})
         if options.max_audio_seconds and info["duration"] > options.max_audio_seconds:
             raise HTTPException(409, "voice_duration_actual_exceeded")
@@ -231,14 +241,14 @@ def authorize_dispatch(c, settings, data, payload):
         value = json.loads(row["ResultMetadata"]) if row else {}
         profile = value.get("profile", {})
         options = policy(c, settings)
-        if not options.enabled or value.get("media") != payload["mediaId"] or value.get("conversation") != data["conversation"] or not choose_profile(options, None, pinned=profile) or stored_key(c, settings)[1] != value.get("credential"):
+        if not options.enabled or not options.allows(data["conversation"]) or value.get("media") != payload["mediaId"] or value.get("conversation") != data["conversation"] or not choose_profile(options, None, pinned=profile) or stored_key(c, settings)[1] != value.get("credential"):
             raise HTTPException(409, "voice_configuration_changed")
 
 
 def preview_response(row):
     value = json.loads(row["ResultMetadata"])
     return {"id": uid(str(row["OperationId"])), "state": row["Status"], "code": row["ResultCode"],
-            "characters": value["characters"], "duration": value.get("duration"),
+            "characters": value["characters"], "duration": value.get("duration"), "greeting_tone": value.get("profile", {}).get("greeting_tone", "inherit"),
             "audio_url": "/api/institution/voice/previews/" + uid(str(row["OperationId"])) + "/audio" if row["Status"] == "confirmed" else None}
 
 
@@ -258,6 +268,10 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         profile = next((p for p in options.profiles if p.id == body.profile_id and p.active), None)
         if not profile:
             raise HTTPException(409, "voice_profile_unavailable")
+        if body.greeting_tone is not None:
+            if not expressive_model(profile.model_id):
+                raise HTTPException(409, "voice_greeting_model_required")
+            profile = profile.model_copy(update={"greeting_tone": body.greeting_tone})
         if options.max_audio_seconds and estimate_seconds(body.text) > options.max_audio_seconds:
             raise HTTPException(409, "voice_duration_estimated_exceeded")
         value, secret_id = stored_key(c, settings)
@@ -269,7 +283,13 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         if not reserve(c, settings, operation, application, None, uid(str(actor["UserId"])), record, preview=True):
             return preview_response(one(c, "SELECT * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=?", institution(settings), operation))
     try:
-        info, receipt = asyncio.run(synthesize(value, record["profile"], body.text, media_id, gateway_factory))
+        def before_post():
+            with transaction(settings, anonymous=True) as c:
+                authorize(c, settings, authority, "settings.ai.write")
+                authorize(c, settings, authority, "settings.providers.read")
+                if policy(c, settings) != options or stored_key(c, settings)[1] != secret_id:
+                    raise HTTPException(409, "voice_configuration_changed")
+        info, receipt = asyncio.run(synthesize(value, record["profile"], body.text, media_id, gateway_factory, before_post))
         record.update({"duration": info["duration"], "receipt": receipt})
         if options.max_audio_seconds and info["duration"] > options.max_audio_seconds:
             raise HTTPException(409, "voice_duration_actual_exceeded")
@@ -286,10 +306,18 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         with transaction(settings, True, anonymous=True) as c:
             complete(c, settings, operation, "uncertain", code, record)
         files.path(media_id).unlink(missing_ok=True)
-        raise HTTPException(502, code) from None
+        raise HTTPException(error.status_code if isinstance(error, HTTPException) else 502, code) from None
 
 
 def install(app, settings):
+    @app.get("/api/institution/voice/conversations")
+    def pilot_conversations(request: Request):
+        with transaction(settings, anonymous=True) as c:
+            authorize(c, settings, request.state.authority, "settings.ai.write")
+            authorize(c, settings, request.state.authority, "inbox.read")
+            values = rows(c, "SELECT TOP(100) v.ConversationId,a.DisplayName,RIGHT(i.ExternalId,4) AS Ending,v.ControlMode FROM crm_channels2.ExternalIdentity i JOIN crm_channels2.Integration a ON a.InstitutionId=i.InstitutionId AND a.IntegrationId=i.IntegrationId JOIN crm.Conversation v ON v.ConversationId=i.ConversationId WHERE i.InstitutionId=? AND a.Channel='whatsapp' AND v.State<>'closed' ORDER BY v.UpdatedAt DESC,v.ConversationId", institution(settings))
+            return {"items": [{"id": str(v["ConversationId"]), "label": v["DisplayName"] + " · termina en " + v["Ending"] + (" · Humano" if v["ControlMode"] == "human" else " · IA")} for v in values]}
+
     @app.get("/api/institution/voice/catalog")
     async def live_catalog(request: Request, provider: Literal["elevenlabs", "google_tts", "piper"] = "elevenlabs"):
         authority = request.state.authority

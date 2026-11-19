@@ -3,6 +3,7 @@
 import json
 
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from app.institutional.auth import authorize
 from app.institutional.crypto import password_matches
@@ -109,9 +110,14 @@ class Settings:
         ):
             raise HTTPException(409, "webhooks_managed_by_channel")
         action = scope(section, True)
-        document = (
-            SECTIONS[section].model_validate(body.document).model_dump(mode="json")
-        )
+        try:
+            document = SECTIONS[section].model_validate(body.document).model_dump(mode="json")
+        except ValidationError as error:
+            if section != "ai":
+                raise
+            allowed = {"voice_pilot_conversation_required", "voice_default_profile_missing", "voice_duplicate_assignment", "voice_duplicate_profile", "voice_invalid_threshold", "voice_language_unsupported"}
+            reason = next((str(v.get("ctx", {}).get("error")) for v in error.errors(include_input=False) if str(v.get("ctx", {}).get("error")) in allowed), "invalid_request")
+            raise HTTPException(422, reason) from None
         with transaction(self.settings, True, anonymous=True) as c:
             actor = authorize(
                 c,

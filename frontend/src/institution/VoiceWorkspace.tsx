@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -33,11 +33,14 @@ export type VoiceProfile = {
   stability?: number | null;
   similarity_boost?: number;
   language_code?: string;
+  greeting_tone?: string;
   agent_ids: string[];
   schools: string[];
 };
 export type VoicePolicy = {
   enabled: boolean;
+  scope: "selected_conversations" | "all";
+  conversation_ids: string[];
   max_audios_per_conversation: number;
   mode: string;
   long_reply_min_chars: number;
@@ -49,6 +52,8 @@ export type VoicePolicy = {
 };
 const defaults: VoicePolicy = {
   enabled: false,
+  scope: "selected_conversations",
+  conversation_ids: [],
   max_audios_per_conversation: 3,
   mode: "voice_notes_or_long",
   long_reply_min_chars: 400,
@@ -84,6 +89,12 @@ type Preview = {
   duration: number;
   characters: number;
 };
+const greetingTones = [
+  { value: "inherit", label: "Natural" },
+  { value: "warm", label: "Cálida" },
+  { value: "calm", label: "Tranquila" },
+  { value: "upbeat", label: "Animada" },
+] as const;
 
 export function VoiceWorkspace() {
   const settings = useResource<Setting>("settings/ai");
@@ -116,6 +127,10 @@ function VoiceEditor({
   const [catalog, setCatalog] = useState<VoiceCatalog | null>(null);
   const [catalogError, setCatalogError] = useState("");
   const [assignments, setAssignments] = useState<Catalog | null>(null);
+  const [pilotConversations, setPilotConversations] = useState<
+    { id: string; label: string }[]
+  >([]);
+  const [pilotError, setPilotError] = useState("");
   const [previewProfile, setPreviewProfile] = useState(
     saved.default_profile_id,
   );
@@ -124,10 +139,44 @@ function VoiceEditor({
   );
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewBusy, setPreviewBusy] = useState(false);
+  const [comparisons, setComparisons] = useState<
+    { tone: string; result: Preview }[]
+  >([]);
+  const comparisonIntents = useRef(new Map<string, string>());
+  const previewMounted = useRef(true);
+  useEffect(() => {
+    previewMounted.current = true;
+    return () => {
+      previewMounted.current = false;
+    };
+  }, []);
   const usage = useResource<Usage>("voice/usage");
   const changed = JSON.stringify(saved) !== JSON.stringify(draft);
   useDraftGuard(changed);
   const writable = session.actions.includes("settings.ai.write");
+  const pilotAllowed = writable && session.actions.includes("inbox.read");
+  useEffect(() => {
+    let active = true;
+    if (pilotAllowed)
+      void send<{ items: { id: string; label: string }[] }>(
+        "voice/conversations",
+        "GET",
+        undefined,
+        session.csrf_token,
+      )
+        .then((value) => {
+          if (active) {
+            setPilotConversations(value.items);
+            setPilotError("");
+          }
+        })
+        .catch((error) => {
+          if (active) setPilotError((error as Error).message);
+        });
+    return () => {
+      active = false;
+    };
+  }, [pilotAllowed, session.csrf_token]);
   useEffect(() => {
     let active = true;
     void api<Catalog>("")
@@ -245,6 +294,61 @@ function VoiceEditor({
               />{" "}
               Activar audios automáticos de los agentes en WhatsApp
             </label>
+            <SelectField
+              id="voice-scope"
+              label="Dónde aplicar la voz automática"
+              value={draft.scope}
+              onChange={(event) =>
+                update("scope", event.target.value as VoicePolicy["scope"])
+              }
+              options={[
+                {
+                  value: "selected_conversations",
+                  label: "Sólo conversaciones seleccionadas · piloto",
+                },
+                { value: "all", label: "Todas las conversaciones de WhatsApp" },
+              ]}
+            />
+            {draft.scope === "selected_conversations" ? (
+              <div className="voice-pilot">
+                <p>
+                  El piloto sólo genera voz para los hilos que marques. Las
+                  demás conversaciones continúan por texto. El modo Humano sigue
+                  teniendo prioridad.
+                </p>
+                {pilotError && <Notice error>{pilotError}</Notice>}
+                {pilotConversations.map((target) => (
+                  <label className="voice-check" key={target.id}>
+                    <input
+                      type="checkbox"
+                      checked={draft.conversation_ids.includes(target.id)}
+                      onChange={(event) =>
+                        update(
+                          "conversation_ids",
+                          event.target.checked
+                            ? [...draft.conversation_ids, target.id]
+                            : draft.conversation_ids.filter(
+                                (id) => id !== target.id,
+                              ),
+                        )
+                      }
+                    />
+                    {target.label}
+                  </label>
+                ))}
+                {!draft.conversation_ids.length && (
+                  <p className="voice-note">
+                    Selecciona un chat antes de activar el piloto.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <Notice>
+                Al guardar con la voz activada, esta política se aplicará a
+                todos los hilos de WhatsApp que estén en IA, incluidos los
+                nuevos.
+              </Notice>
+            )}
             <div className="voice-fields">
               <SelectField
                 id="voice-mode"
@@ -534,6 +638,22 @@ function VoiceEditor({
                   <details>
                     <summary>Naturalidad e interpretación</summary>
                     <SelectField
+                      id={`voice-greeting-${p.id}`}
+                      label="Entonación del saludo"
+                      value={p.greeting_tone ?? "inherit"}
+                      onChange={(event) =>
+                        profile(p.id, { greeting_tone: event.target.value })
+                      }
+                      disabled={!/^(eleven_v3|eleven_v4)/.test(p.model_id)}
+                      options={greetingTones.map((v) => ({ ...v }))}
+                    />
+                    <small>
+                      La entonación elegida se aplica al saludo inicial; después
+                      continúa el estilo general. Requiere Eleven v4 o v3.
+                      Puedes compararlas en Probar saludos, sin cambiar la voz
+                      guardada.
+                    </small>
+                    <SelectField
                       id={`voice-delivery-${p.id}`}
                       label="Estilo de voz"
                       value={p.delivery ?? "conversational"}
@@ -672,7 +792,15 @@ function VoiceEditor({
                 ? "Tienes cambios sin guardar"
                 : `Configuración guardada · versión ${initial.revision}`}
             </span>
-            <Button type="submit" disabled={!changed}>
+            <Button
+              type="submit"
+              disabled={
+                !changed ||
+                (draft.enabled &&
+                  draft.scope === "selected_conversations" &&
+                  !draft.conversation_ids.length)
+              }
+            >
               Guardar configuración de voz
             </Button>
           </div>
@@ -690,6 +818,7 @@ function VoiceEditor({
         <SelectField
           id="voice-preview-profile"
           label="Perfil para la muestra"
+          disabled={task.busy || previewBusy}
           value={previewProfile}
           onChange={(event) => {
             setPreviewProfile(event.target.value);
@@ -705,6 +834,7 @@ function VoiceEditor({
         <TextArea
           id="voice-sample"
           label="Texto de muestra"
+          disabled={task.busy || previewBusy}
           maxLength={400}
           value={sample}
           onChange={(event) => {
@@ -755,6 +885,94 @@ function VoiceEditor({
             Esta generación quedó {preview.state}. No se reintenta
             automáticamente para evitar otro consumo. Revisa el historial.
           </Notice>
+        )}
+        <div className="voice-section-heading">
+          <div>
+            <h4>Probar saludos</h4>
+            <p>
+              Compara el mismo texto en cuatro entonaciones con la voz guardada.
+              Cada muestra consume caracteres; no se envían mensajes ni cambia
+              tu configuración. Empieza el texto con un saludo para escuchar la
+              diferencia.
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            disabled={
+              !writable ||
+              task.busy ||
+              previewBusy ||
+              changed ||
+              !previewProfile ||
+              !sample.trim() ||
+              !/^(eleven_v3|eleven_v4)/.test(
+                saved.profiles.find((p) => p.id === previewProfile)?.model_id ??
+                  "",
+              )
+            }
+            onClick={() => {
+              setPreviewBusy(true);
+              setComparisons([]);
+              void task
+                .run(async () => {
+                  for (const tone of greetingTones) {
+                    if (!previewMounted.current) break;
+                    const body = {
+                      profile_id: previewProfile,
+                      text: sample,
+                      greeting_tone: tone.value,
+                    };
+                    const key = JSON.stringify(body);
+                    let id = comparisonIntents.current.get(key);
+                    if (!id) {
+                      id = crypto.randomUUID();
+                      comparisonIntents.current.set(key, id);
+                    }
+                    const result = await call<Preview>(
+                      "voice/previews",
+                      "POST",
+                      { ...body, operation_id: id },
+                    );
+                    if (previewMounted.current)
+                      setComparisons((current) => [
+                        ...current,
+                        { tone: tone.label, result },
+                      ]);
+                    if (!result.audio_url)
+                      throw new ApiError(409, "voice_preview_result_review");
+                  }
+                  if (previewMounted.current) await usage.reload();
+                }, "Comparación de saludos lista. Escucha cada opción y elige la entonación del perfil.")
+                .finally(() => {
+                  if (previewMounted.current) setPreviewBusy(false);
+                });
+            }}
+          >
+            {previewBusy ? "Generando muestras…" : "Generar cuatro saludos"}
+          </Button>
+        </div>
+        {comparisons.length > 0 && (
+          <div className="voice-profiles">
+            {comparisons.map((c) => (
+              <article className="voice-profile" key={c.tone}>
+                <h4>{c.tone}</h4>
+                {c.result.audio_url ? (
+                  <>
+                    <PreviewPlayer url={c.result.audio_url} />
+                    <small>
+                      {Math.round(c.result.duration)} segundos ·{" "}
+                      {c.result.characters} caracteres
+                    </small>
+                  </>
+                ) : (
+                  <Notice error>
+                    Resultado pendiente de revisión. No generamos otra muestra
+                    automáticamente.
+                  </Notice>
+                )}
+              </article>
+            ))}
+          </div>
         )}
       </section>
       <section className="panel">

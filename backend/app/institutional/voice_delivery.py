@@ -19,12 +19,13 @@ def expressive_model(model):
 
 
 def speech_text(profile, text):
-    if not expressive_model(profile["model_id"]) or profile.get("delivery", "conversational") == "neutral":
+    if not expressive_model(profile["model_id"]):
         return text
     direction = {
         "conversational": "[warm, conversational tone] ",
         "calm": "[calm, reassuring] ",
         "expressive": "[friendly, enthusiastic] ",
+        "neutral": "",
     }[profile.get("delivery", "conversational")]
     # Reactions are optional and require an empathetic context. Never append a
     # sigh to sales information or a generic greeting merely to sound human.
@@ -32,8 +33,17 @@ def speech_text(profile, text):
         direction += "[sighs] "
     # A different delivery for the final question adds variation without adding words.
     position = text.rfind("¿")
-    if position > 0:
+    if position > 0 and profile.get("delivery") != "neutral":
         text = text[:position] + "[curious] " + text[position:]
+    greeting = profile.get("greeting_tone", "inherit")
+    if greeting != "inherit" and re.match(r'^\s*[¡¿“"]*(?:hola|buenos d[ií]as|buenas tardes|buenas noches|buenas|qu[eé] tal|hey|mira|oye)\b', text, re.I):
+        opening = {"warm": "[warm, friendly greeting] ", "calm": "[calm, relaxed greeting] ", "upbeat": "[upbeat, friendly greeting] "}[greeting]
+        end = re.search(r"[.!?]+", text)
+        if end:
+            first, rest = text[:end.end()], text[end.end():]
+            gap = rest[:len(rest) - len(rest.lstrip())]
+            return opening + first + gap + (direction + rest.lstrip() if rest.strip() else "")
+        return opening + text
     return direction + text
 
 

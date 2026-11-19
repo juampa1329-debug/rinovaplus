@@ -272,7 +272,7 @@ def reply_context(c, settings, data, source_value):
         result["fingerprint"] = grounded_replies.digest([result["fingerprint"], voice_audio.audio_fingerprint(audio)])
         result["input_audio"] = audio
     options = voice_audio.policy(c, settings)
-    if options.enabled and channel == "whatsapp":
+    if options.enabled and options.allows(data["conversation"]) and channel == "whatsapp":
         from app.institutional.voice_delivery import SPEECH_GUIDANCE
         state = voice_audio.usage(c, settings, data["conversation"])
         profile = voice_audio.choose_profile(options, selected.get("agent_id"), result["voice_schools"], state["pinned"])
