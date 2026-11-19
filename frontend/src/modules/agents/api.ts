@@ -7,6 +7,7 @@ import {
 
 export type Configuration = {
   provider: AiProvider;
+  voice_profile_id?: string;
   description?: string;
   operating_style?: string;
   risk_posture?: "balanced" | "cautious";
@@ -363,6 +364,8 @@ const errors: Record<string, string> = {
   agents_conversation_unavailable:
     "La conversación está cerrada o ya no está disponible.",
   agents_not_found: "El agente ya no está disponible.",
+  voice_profile_unavailable: "El perfil de voz está pausado o ya no está disponible. Actualiza las voces del agente y selecciona un perfil activo, o elige Automática.",
+  voice_institutional_only: "Los perfiles de voz se administran en el entorno institucional de RinovaPlus.",
   agents_channel_not_allowed:
     "El canal seleccionado no está permitido por esta configuración.",
   agents_input_before_assignment:
@@ -394,6 +397,7 @@ function validationMessage(fields: unknown) {
     primary_model: "Modelo principal",
     fallback_model: "Modelo alternativo",
     max_tokens: "Máximo de tokens de salida",
+    voice_profile_id: "Perfil de voz del agente",
     monthly_token_limit: "Límite mensual de tokens",
     allow_reply: "Permiso de respuesta",
     instructions: "Instrucciones",
@@ -483,7 +487,7 @@ async function request<T>(path: string, method: string, body?: unknown): Promise
     throw failure;
   });
   const result = await response.json().catch(() => null);
-  if (response.status === 429) observeReadLimit(response.headers.get("Retry-After"));
+  if (response.status === 429) observeReadLimit(response.headers?.get("Retry-After") ?? null);
   institutionUnauthorized(response.status);
   if (signature && response.status < 500) pendingMutations.delete(signature);
   if (!response.ok) {
@@ -492,7 +496,7 @@ async function request<T>(path: string, method: string, body?: unknown): Promise
         ? validationMessage(result.fields)
         : message(result?.code ?? result?.detail),
     );
-    const reference = response.headers.get("X-SIIE-Correlation-ID");
+    const reference = response.headers?.get("X-SIIE-Correlation-ID");
     if (reference && /^[A-Za-z0-9_-]{1,100}$/.test(reference)) {
       Object.assign(failure, { correlationId: reference });
       failure.message += ` Referencia SIIE: ${reference}.`;

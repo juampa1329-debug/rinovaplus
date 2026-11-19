@@ -272,10 +272,11 @@ def reply_context(c, settings, data, source_value):
         result["fingerprint"] = grounded_replies.digest([result["fingerprint"], voice_audio.audio_fingerprint(audio)])
         result["input_audio"] = audio
     options = voice_audio.policy(c, settings)
+    result["voice_profile_id"] = selected.get("configuration", {}).get("voice_profile_id", "")
     if options.enabled and options.allows(data["conversation"]) and channel == "whatsapp":
         from app.institutional.voice_delivery import SPEECH_GUIDANCE
         state = voice_audio.usage(c, settings, data["conversation"])
-        profile = voice_audio.choose_profile(options, selected.get("agent_id"), result["voice_schools"], state["pinned"])
+        profile = voice_audio.choose_profile(options, selected.get("agent_id"), result["voice_schools"], state["pinned"], result["voice_profile_id"])
         if profile:
             result["system"] += "\n" + SPEECH_GUIDANCE
             if profile.speech_instructions:
@@ -440,7 +441,7 @@ class Worker:
             # The grounded text is the sole speech source; no second model invents facts.
             schools = grounded.get("voice_schools", [])
             audio, voice_reason = voice_audio.generate(settings, item, data, generated, binding.get("agent"), schools, before_attempt,
-                incoming_voice=bool(grounded.get("input_audio", {}).get("voice")))
+                incoming_voice=bool(grounded.get("input_audio", {}).get("voice")), selected_profile=grounded.get("voice_profile_id", ""))
         with transaction(settings, True, anonymous=True) as c:
             if state != "confirmed":
                 finish(c, settings, operation, state, code, data, lease)

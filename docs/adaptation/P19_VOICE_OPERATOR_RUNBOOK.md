@@ -52,3 +52,13 @@ La prueba integral nativa usa SQL real y ffmpeg, con Gemini/TTS simulados y roll
 ## Recuperar una muestra
 
 Actividad y consumo permite escuchar las muestras propias confirmadas de las últimas 24 horas y descargarlas como nota-de-voz.ogg, sin volver a generar ni consumir caracteres. El acceso sigue siendo privado y comprueba usuario, vigencia, archivo y huella. El reproductor se ajusta al ancho de su tarjeta. No se comparten muestras de otro operador mediante este historial.
+
+## Asignar voces desde el constructor
+
+1. En Voces y audios, carga el catálogo autenticado y prepara un perfil para cada voz que quieras ofrecer (propia o predeterminada de ElevenLabs). El modelo y la voz se eligen del catálogo, nunca se escriben IDs.
+2. En Agentes, al crear o editar, elige Perfil de voz para WhatsApp y Guarda configuración. Automática usa las asignaciones centrales/escuela/predeterminada. Los perfiles nuevos aparecen con Actualizar voces disponibles.
+3. Para escuelas, abre Asignar agentes y escuelas del perfil y elige las escuelas que existen en Académico; Actualizar agentes y escuelas trae las recién creadas.
+4. Comprueba la voz y los límites sin generar audio. Sin chat es una simulación de asignación; con chat usa control/contexto/reservas reales. No confirma que el proveedor vaya a aceptar la siguiente generación.
+5. Revisa consumo: reservados no equivalen a caracteres reportados ni a dólares. Sin recibo no significa gratis. Consultar uso de la cuenta informa toda la cuenta, incluidos otros proyectos, y no modifica plan/sobreconsumo.
+
+Una voz fijada no se reemplaza por asignaciones nuevas; un perfil/modelo cambiado o pausado hace continuar el hilo por texto. Crea otro perfil para conservar los anteriores. Cambiar IA/Humano o redesplegar no reinicia el cupo. Ante resultado incierto, revisa el recibo del proveedor y el historial; no repitas la síntesis ni liberes la reserva suponiendo que no hubo consumo.

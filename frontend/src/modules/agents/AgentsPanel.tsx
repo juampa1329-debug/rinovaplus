@@ -28,6 +28,7 @@ import { AgentOperatingConsole } from "./AgentOperatingConsole";
 import { AgentGuide } from "./AgentGuide";
 import { ProgramSelector } from "./ProgramSelector";
 import { useDraftGuard } from "../../institution/drafts";
+import { AgentVoiceSelect } from "../../institution/AgentVoiceSelect";
 import "./agents.css";
 
 type Tab =
@@ -1303,6 +1304,7 @@ export function AgentsPanel() {
                         configure={configure}
                         versions={consoleData?.versions ?? []}
                       />
+                      {catalog.institutional && <AgentVoiceSelect value={draft.configuration.voice_profile_id ?? ""} onChange={value=>configure({voice_profile_id:value})} />}
                       <section
                         className="agents-editor-section"
                         aria-labelledby="agent-sources-heading"

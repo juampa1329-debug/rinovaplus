@@ -1,0 +1,42 @@
+import {fireEvent,render,screen,waitFor} from "@testing-library/react";
+import {afterEach,expect,it,vi} from "vitest";
+import {AcademicPrograms} from "../institution/AcademicPrograms";
+import {SessionBoundary} from "../institution/api";
+afterEach(()=>vi.restoreAllMocks());
+
+it("reviews reusable requirements and finance locally before saving, without copying SIIE identifiers or cash prices",async()=>{
+ const plan={external_id:"source-siie-plan",name:"Plan ficticio",initial_payment_cop:200000,initial_payment_due_date:null,total_cost_cop:600000,valid_from:null,valid_until:"2099-12-31",valid_until_confirmed_open:false,conditions:"Condiciones de prueba",installments:[{number:1,amount_cop:400000,due_date:"2099-11-01"}]};
+ const base={aliases:"",duration:"",modality:"",syllabus:"",requirements:"Requisitos actuales",price_cop:500000,price_concept:"Nivel de prueba",price_valid_until:null,source_url:"",source_checked_at:"",siie_offer_id:"target-offer",financial_plans:[{...plan,external_id:"existing-local"}]};
+ const entries=[{program_id:1,name:"Programa origen ficticio",school:"Escuela TIC"},{program_id:2,name:"Programa destino ficticio",school:"Escuela Salud"}];
+ const fetched=vi.spyOn(globalThis,"fetch").mockImplementation(async(input,init)=>{
+  const url=String(input);const reply=(value:unknown)=>new Response(JSON.stringify(value));
+  if(url.includes("/programs?"))return reply({items:entries,has_more:false});
+  if(init?.method==="PUT")return reply({program_id:2,revision:4});
+  if(url.endsWith("/programs/2"))return reply({revision:3,program:{Name:entries[1].name,School:entries[1].school,Schedule:"DIURNA",Active:true},commercial:base});
+  if(url.endsWith("/programs/1"))return reply({revision:1,program:{Name:entries[0].name,School:entries[0].school,Schedule:"NOCTURNA",Active:true},commercial:{...base,requirements:"Documentos ficticios del programa de origen",price_cop:999999,siie_offer_id:"source-offer",financial_plans:[plan]}});
+  throw new Error("Unexpected "+url);
+ });
+ render(<SessionBoundary initial={{session_id:"fixture",csrf_token:"fixture",actions:["agents.manage"],user:{id:"u",full_name:"Test",email:"test@example.invalid",role:"test",active:true,revision:1,profile:{},mfa_state:"disabled"}}} expire={()=>{}}><AcademicPrograms/></SessionBoundary>);
+ fireEvent.click(await screen.findByRole("button",{name:"Programa destino ficticio"}));
+ await screen.findByDisplayValue("Programa destino ficticio");
+ fireEvent.click(screen.getByText("Copiar requisitos o planes de otro programa"));
+ fireEvent.change(screen.getByLabelText("Copiar desde el programa"),{target:{value:"1"}});
+ fireEvent.change(screen.getByLabelText("Contenido que quieres copiar"),{target:{value:"both"}});
+ fireEvent.click(screen.getByRole("button",{name:"Preparar copia"}));
+ await screen.findByRole("heading",{name:"Copia propuesta desde Programa origen ficticio"});
+ expect(fetched.mock.calls.some(([,init])=>init?.method==="PUT")).toBe(false);
+ fireEvent.click(screen.getByRole("button",{name:"Aplicar copia al borrador"}));
+ await screen.findByText(/Copia aplicada al borrador/);
+ expect(fetched.mock.calls.some(([,init])=>init?.method==="PUT")).toBe(false);
+ fireEvent.click(screen.getByRole("button",{name:"Guardar programa"}));
+ await waitFor(()=>expect(fetched.mock.calls.some(([,init])=>init?.method==="PUT")).toBe(true));
+ const call=fetched.mock.calls.find(([,init])=>init?.method==="PUT");const saved=JSON.parse(String(call?.[1]?.body));
+ expect(String(call?.[0])).toContain("/programs/2");
+ expect(saved.commercial.requirements).toBe("Documentos ficticios del programa de origen");
+ expect(saved.commercial.price_cop).toBe(500000);
+ expect(saved.commercial.siie_offer_id).toBe("target-offer");
+ expect(saved.commercial.financial_plans).toHaveLength(2);
+ expect(saved.commercial.financial_plans[1]).toMatchObject({...plan,external_id:expect.stringMatching(/^local-/)});
+ expect(saved.commercial.financial_plans[0].external_id).toBe("existing-local");
+ expect(saved.siie_sync).toBeUndefined();
+});

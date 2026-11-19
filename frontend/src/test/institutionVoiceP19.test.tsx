@@ -163,6 +163,109 @@ it("shows explicit duration, conversation cap, fallback and existing profile wit
   );
 });
 
+it("assigns a school from the academic catalog without typing its name", async () => {
+  let saved: { document: typeof base.document } | null = null;
+  mock((url, init) => {
+    if (url.endsWith("/api/v1/agents"))
+      return respond({
+        agents: [],
+        programs: {
+          items: [
+            { program_id: 1, school: "ESCUELA DE TIC" },
+            { program_id: 2, school: "ESCUELA DE TIC" },
+          ],
+        },
+      });
+    if (url.endsWith("/settings/ai") && init?.method === "PUT") {
+      saved = JSON.parse(String(init.body));
+      return respond({ ...saved, revision: 4 });
+    }
+  });
+  mount();
+  await screen.findByText("Asignar agentes y escuelas");
+  fireEvent.click(screen.getByText("Asignar agentes y escuelas"));
+  fireEvent.click(await screen.findByLabelText("ESCUELA DE TIC"));
+  expect(
+    screen.queryByLabelText("Escuelas (separadas por coma)"),
+  ).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar configuración de voz" }),
+  );
+  await waitFor(() => expect(saved).not.toBeNull());
+  expect(saved!.document.voice.profiles[0].schools).toEqual(["ESCUELA DE TIC"]);
+});
+
+it("shows reported usage separately from reservations and reads account usage on demand", async () => {
+  const fetched = mock((url) => {
+    if (url.endsWith("/voice/usage"))
+      return respond({
+        daily_characters: 100,
+        daily_attempts: 2,
+        reported_characters: 40,
+        reported_attempts: 1,
+        uncertain_attempts: 1,
+        running_attempts: 0,
+        history: [],
+      });
+    if (url.endsWith("/voice/balance"))
+      return respond({
+        used: 120,
+        limit: 1000,
+        remaining: 880,
+        tier: "starter",
+        checked_at: "2026-11-19T15:00:00Z",
+        reset_at: null,
+      });
+  });
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Consultar uso de la cuenta ElevenLabs",
+    }),
+  );
+  await screen.findByText(/880 disponibles/);
+  expect(
+    screen.getByText(/La ausencia de recibo no significa consumo cero/),
+  ).toBeVisible();
+  expect(
+    fetched.mock.calls.some(([url]) => String(url).endsWith("/voice/balance")),
+  ).toBe(true);
+  expect(fetched.mock.calls.some(([, init]) => init?.method === "POST")).toBe(
+    false,
+  );
+});
+
+it("checks local voice rules without generating or sending an audio", async () => {
+  const fetched = mock((url, init) => {
+    if (url.endsWith("/voice/check") && init?.method === "POST")
+      return respond({
+        eligible: false,
+        reason: "voice_conversation_limit",
+        profile: "Juampa",
+        estimated_seconds: 8,
+        used: 3,
+        cap: 3,
+        conversation_checked: false,
+        pinned: true,
+        network_called: false,
+        persisted: false,
+      });
+  });
+  mount([...session.actions, "agents.manage"]);
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Comprobar sin generar audio" }),
+  );
+  await screen.findByText(/Se alcanzó el máximo del hilo/);
+  const writes = fetched.mock.calls.filter(
+    ([, init]) => init?.method === "POST",
+  );
+  expect(writes).toHaveLength(1);
+  expect(String(writes[0][0])).toContain("/voice/check");
+  expect(
+    screen.getByText(/No confirma el control ni el alcance de un chat real/),
+  ).toBeVisible();
+});
+
 it("saves zero duration and the chosen mode while preserving the agent system prompt", async () => {
   let saved: { document: typeof base.document } | null = null;
   mock((url, init) => {

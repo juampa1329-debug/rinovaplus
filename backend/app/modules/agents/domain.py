@@ -56,6 +56,7 @@ def digest(value):
 
 class Configuration(StrictModel):
     provider: Provider = "openrouter"
+    voice_profile_id: str = Field(default="", max_length=64, pattern=r"^[A-Za-z0-9_-]*$")
     description: str = ""
     operating_style: str = ""
     risk_posture: Literal["balanced", "cautious"] = "balanced"

@@ -220,6 +220,13 @@ class Agents(AgentsService):
             ).decode().rstrip("=")
             c.agent_user, c.agent_session = actor["UserId"], actor["SessionId"]
             c.agent_catalog = self.catalog_adapter
+            from app.institutional.voice_audio import policy as voice_policy
+            def validate_voice(chosen, previous):
+                if chosen and chosen != previous and not any(
+                    p.id == chosen and p.active for p in voice_policy(c, self.profile).profiles
+                ):
+                    raise AiError("voice_profile_unavailable", 409)
+            c.agent_voice_profile = validate_voice
             from app.institutional.email_notifications import emit as emit_email
             c.agent_email_event = lambda event, resource: emit_email(c, self.profile, event, resource, module="agents")
             c.agent_invalidate = invalidate

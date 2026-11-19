@@ -1,6 +1,6 @@
 # P19 · Voces y notas de audio con ElevenLabs
 
-Corte: 19 de noviembre de 2026. **En implementación y validación, 2/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
+Corte: 19 de noviembre de 2026. **Cierre en validación, 3/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
 
 ## Alcance
 
@@ -45,3 +45,11 @@ Se corrigió el webhook: registraba audio pero sólo programaba Gemini para text
 La versión11 guardada desde el lado del propietario se observó con alcance todas las conversaciones, máximo3audios por hilo,60segundos, saludo Tranquila, estabilidad40% y similitud91%. Esta revisión no activó alcance global ni reemplazó esos ajustes. Se conserva el historial del piloto44 anterior. P19 mantiene2/5hasta terminar aceptación de asignaciones, cupo/Humano y operación; no confundir entrega de dos respuestas con cierre integral.
 
 El titular confirmó que ambas respuestas automáticas se escuchan completas y responden a sus preguntas. Se acepta P19.3 en alcance técnico: contexto e instrucciones aplicados a notas reales, con guardas de Humano/cupo previamente comprobadas en PG con proveedores simulados y rollback. P19 queda3/5(60%). Pendientes P19.2, asignación de varias voces, yP19.5, aceptación operativa final de consumo/pausa/recuperación. No se declara eficacia comercial, finanzas SIIE completas ni llamadas.
+
+## Revisión de cierre P19 — 2026-11-19
+
+El propietario solicitó cerrar asignaciones y operación. Se añade selección del perfil de voz al crear/editar un agente institucional, persistida en su configuración versionada; se elige entre perfiles activos, preparados con voces propias o predeterminadas del catálogo autenticado. Actualizar voces disponibles incorpora perfiles nuevos sin perder el borrador. Cambiar voz no activa IA ni amplia cupos. Selección directa del agente prevalece sobre asignación central del agente, escuela y predeterminada; voz/modelo fijados en el hilo tienen prioridad. Un perfil fijado pausado o cambiado conduce a texto, sin cambiar silenciosamente la voz. Escuelas elegidas del catálogo Académico, sin nombres manuales.
+
+Comprobar voz y límites es un recorrido de lectura: usa las mismas funciones de selección/reglas, sin proveedor, archivos, reservas ni mensajes. Un chat real conserva su contexto y requiere inbox.read; no acepta agente/programa externos al hilo. La simulación sin chat no confirma control, alcance, catálogo ni credencial. Consumo distingue reservas, conteos reportados por ElevenLabs y ausencia de recibo, incertidumbre y operaciones en curso. Consulta de cuenta sólo GET user/subscription, sin facturas ni datos de pago en la respuesta, con autorización/clave revalidadas. La vista de cupo por chat conserva reservas y perfil fijado.
+
+Pruebas locales cubren selección directa/escuela/predeterminada/fijada, pausa, máximos, saldo interno, duración y resultados inciertos; no se fuerzan fallos de Meta/ElevenLabs en producción. Las pruebas nativas históricas bajo rollback conservan sus límites. La aceptación adicional permanece pendiente del despliegue y las pruebas de UI/catálogo/asignación/consumo reales de este corte. No se declara 100% por completar código o contar tests.

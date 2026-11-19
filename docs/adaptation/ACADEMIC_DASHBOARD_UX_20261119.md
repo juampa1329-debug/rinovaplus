@@ -54,3 +54,7 @@ Biblioteca completa: clientHeight966, scrollHeight2747, scroll propio verificado
 Ajuste final: informe de faltantes incluye los nuevos campos académicos; Retry-After numérico y HTTP-date, incluso600s, sin reintentar escrituras.320backend/43frontend seleccionadas, tipos/lint modificado/build pasan. Esta nota no acepta nuevas unidades deP13/P16; P19sigue3/5.
 
 Frontend25f2f18 verificado Success/Running en Coolify, runzbisachc81zspamnv7swph7u. El aviso real de actualización apareció sin forzar recarga; Recargar conservó la sesión. Software revisión4 muestra cuatro datos locales ausentes en la copia base (presentación, materias, prácticas, campo ocupacional) y permite copiar el informe. No se envió el informe a SIIE.
+
+## Reutilización solicitada de requisitos y planes
+
+Cada ficha mantiene sus requisitos propios. Copiar desde otro programa consulta sólo la ficha local, prepara una propuesta y exige Aplicar copia al borrador y Guardar programa. Permite requisitos, planes o ambos; añade planes o los reemplaza expresamente. Clona cuotas/fechas/condiciones/vigencia con IDs locales nuevos; conserva identidad, precio de contado y referencias SIIE del destino. Revisa los importes y su alcance para el programa destino; copiar no acredita que SIIE los haya informado para ese programa. Sin escrituras a SIIE ni publicaciones masivas. Validación publicada pendiente de este corte.

@@ -113,11 +113,14 @@ def estimate_seconds(text: str):
     return math.ceil(max(words / 2, len(text) / 12) + pauses * 0.4 + 2)
 
 
-def choose_profile(policy: VoicePolicy, agent: str | None, schools=(), pinned=None):
+def choose_profile(policy: VoicePolicy, agent: str | None, schools=(), pinned=None, selected_profile=""):
     active = [p for p in policy.profiles if p.active]
     if pinned:
         # Pin the actual voice/model too, not just an editable display name.
         return next((p for p in active if p.id == pinned.get("id") and p.voice_id == pinned.get("voice_id") and p.model_id == pinned.get("model_id")), None)
+    if selected_profile:
+        # A missing explicit choice falls back to text, never a surprise voice.
+        return next((p for p in active if p.id == selected_profile), None)
     assigned = next((p for p in active if agent in p.agent_ids), None)
     if assigned:
         return assigned

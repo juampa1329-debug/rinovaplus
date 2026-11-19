@@ -767,6 +767,12 @@ class AgentsService:
                 raise AiError("agents_archived_read_only", 409)
             if request.revision != (old["revision"] if old else 0):
                 raise AiError("agents_revision_conflict", 409)
+            voice_validator = getattr(cursor, "agent_voice_profile", None)
+            if callable(voice_validator):
+                voice_validator(request.configuration.voice_profile_id,
+                                (old or {}).get("configuration", {}).get("voice_profile_id", ""))
+            elif request.configuration.voice_profile_id:
+                raise AiError("voice_institutional_only", 409)
             if not request.name.strip():
                 raise AiError("agents_name_required")
             check_program(cursor, request.program_id)

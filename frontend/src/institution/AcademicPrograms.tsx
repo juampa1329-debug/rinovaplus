@@ -258,6 +258,14 @@ function AcademicProgramsContent() {
   const [sync, setSync] = useState<Record<string, string> | null>(null);
   const [source, setSource] = useState<SiieLocalDraft["source"] | null>(null);
   const [manualFields, setManualFields] = useState<string[]>([]);
+  const [copyFrom, setCopyFrom] = useState("");
+  const [copyPart, setCopyPart] = useState("requirements");
+  const [replacePlans, setReplacePlans] = useState(false);
+  const [copyReady, setCopyReady] = useState<{
+    id: number;
+    name: string;
+    commercial: Commercial;
+  } | null>(null);
   useDraftGuard(JSON.stringify(draft) !== JSON.stringify(saved));
 
   useEffect(() => {
@@ -318,6 +326,9 @@ function AcademicProgramsContent() {
       if (next === null) setSource(null);
       setSync(null);
       setManualFields([]);
+      setCopyFrom("");
+      setCopyReady(null);
+      setReplacePlans(false);
     }, "");
   };
   const commercial = draft.commercial;
@@ -660,6 +671,186 @@ function AcademicProgramsContent() {
                   }}
                 >
                   Aplicar al borrador
+                </Button>
+              </div>
+            )}
+          </fieldset>
+        </details>
+        <details className="academic-import-tools academic-copy-tools">
+          <summary>Copiar requisitos o planes de otro programa</summary>
+          <p>
+            Reutiliza información guardada localmente. Se aplica primero al
+            borrador; revisa los requisitos, importes, cuotas y vigencias del
+            programa destino antes de Guardar programa. No se copian el precio
+            de contado ni los identificadores de SIIE.
+          </p>
+          <fieldset disabled={task.busy}>
+            <legend>Programa de origen y contenido</legend>
+            <SelectField
+              id="program-copy-from"
+              label="Copiar desde el programa"
+              value={copyFrom}
+              onChange={(event) => {
+                setCopyFrom(event.target.value);
+                setCopyReady(null);
+              }}
+              options={[
+                { value: "", label: "Selecciona un programa de origen" },
+                ...(items ?? [])
+                  .filter((p) => p.program_id !== id)
+                  .map((p) => ({
+                    value: String(p.program_id),
+                    label: `${p.name} · ${p.school || "Sin escuela"}${p.schedule ? " · " + p.schedule : ""}`,
+                  })),
+              ]}
+            />
+            <SelectField
+              id="program-copy-part"
+              label="Contenido que quieres copiar"
+              value={copyPart}
+              onChange={(event) => {
+                setCopyPart(event.target.value);
+                setCopyReady(null);
+              }}
+              options={[
+                { value: "requirements", label: "Sólo requisitos" },
+                { value: "plans", label: "Sólo planes de financiación" },
+                { value: "both", label: "Requisitos y planes de financiación" },
+              ]}
+            />
+            {copyPart !== "requirements" && (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={replacePlans}
+                  onChange={(event) => setReplacePlans(event.target.checked)}
+                />
+                Reemplazar los planes existentes; sin marcar, se añaden al final
+              </label>
+            )}
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!copyFrom}
+              onClick={() =>
+                void task.run(async () => {
+                  setCopyReady(null);
+                  const source = await api<Program>(
+                    `/programs/${Number(copyFrom)}`,
+                  );
+                  if (!source.program || !source.commercial)
+                    throw new Error(
+                      "El programa de origen no tiene una ficha disponible para copiar.",
+                    );
+                  if (
+                    copyPart !== "plans" &&
+                    !source.commercial.requirements?.trim()
+                  )
+                    throw new Error(
+                      "El programa de origen no tiene requisitos guardados. Complétalos allí o selecciona otro programa.",
+                    );
+                  if (
+                    copyPart !== "requirements" &&
+                    !source.commercial.financial_plans?.length
+                  )
+                    throw new Error(
+                      "El programa de origen no tiene planes de financiación guardados. Añade un plan en su ficha o selecciona otro programa.",
+                    );
+                  setCopyReady({
+                    id: Number(copyFrom),
+                    name: source.program.Name,
+                    commercial: source.commercial,
+                  });
+                }, "")
+              }
+            >
+              Preparar copia
+            </Button>
+            {copyReady && (
+              <div className="panel">
+                <h3>Copia propuesta desde {copyReady.name}</h3>
+                {copyPart !== "plans" && (
+                  <>
+                    <h4>Requisitos</h4>
+                    <p style={{ whiteSpace: "pre-wrap" }}>
+                      {copyReady.commercial.requirements}
+                    </p>
+                    <p>Reemplazará los requisitos actuales del borrador.</p>
+                  </>
+                )}
+                {copyPart !== "requirements" && (
+                  <>
+                    <h4>Planes de financiación</h4>
+                    <ul>
+                      {copyReady.commercial.financial_plans?.map((plan) => (
+                        <li key={plan.external_id}>
+                          {plan.name} · abono:{" "}
+                          {plan.initial_payment_cop == null
+                            ? "por confirmar"
+                            : `${plan.initial_payment_cop.toLocaleString("es-CO")} COP`}{" "}
+                          · {plan.installments.length} cuotas · total:{" "}
+                          {plan.total_cost_cop == null
+                            ? "por confirmar"
+                            : `${plan.total_cost_cop.toLocaleString("es-CO")} COP`}
+                        </li>
+                      ))}
+                    </ul>
+                    <p>
+                      Se copiarán también fechas, condiciones y vigencia;
+                      confirma que correspondan al programa destino.
+                    </p>
+                  </>
+                )}
+                <Button
+                  type="button"
+                  onClick={() =>
+                    void task.run(async () => {
+                      const plans =
+                        copyReady.commercial.financial_plans?.map((plan) => ({
+                          ...plan,
+                          external_id: `local-${crypto.randomUUID()}`,
+                          installments: plan.installments.map((part) => ({
+                            ...part,
+                          })),
+                        })) ?? [];
+                      if (
+                        copyPart !== "requirements" &&
+                        (replacePlans
+                          ? 0
+                          : (commercial.financial_plans?.length ?? 0)) +
+                          plans.length >
+                          12
+                      )
+                        throw new Error(
+                          "Una ficha admite hasta 12 planes. Revisa los planes actuales o marca Reemplazar antes de aplicar la copia.",
+                        );
+                      setDraft((current) => ({
+                        ...current,
+                        commercial: {
+                          ...current.commercial,
+                          ...(copyPart !== "plans"
+                            ? {
+                                requirements: copyReady.commercial.requirements,
+                              }
+                            : {}),
+                          ...(copyPart !== "requirements"
+                            ? {
+                                financial_plans: [
+                                  ...(replacePlans
+                                    ? []
+                                    : (current.commercial.financial_plans ??
+                                      [])),
+                                  ...plans,
+                                ],
+                              }
+                            : {}),
+                        },
+                      }));
+                      setCopyReady(null);
+                    }, "Copia aplicada al borrador. Revisa los requisitos y los planes para este programa y pulsa Guardar programa.")
+                  }
+                >
+                  Aplicar copia al borrador
                 </Button>
               </div>
             )}

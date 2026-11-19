@@ -8,6 +8,8 @@ import asyncio
 import base64
 import hashlib
 import json
+from datetime import datetime, timezone
+from uuid import UUID
 from uuid import NAMESPACE_URL, uuid5
 from typing import Literal
 
@@ -20,6 +22,7 @@ from app.institutional.auth import authorize
 from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, rows, uid, utc
 from app.institutional.models import Strict
+from app.modules.agents.domain import JsonUUID
 from app.institutional.provider_catalog import credential
 from app.institutional.settings import setting
 from app.institutional.store import transaction
@@ -39,6 +42,14 @@ class Preview(Strict):
     profile_id: str = Field(min_length=1, max_length=64)
     text: str = Field(min_length=1, max_length=400)
     greeting_tone: GreetingTone | None = None
+
+
+class VoiceCheck(Strict):
+    text: str = Field(min_length=1, max_length=3000)
+    incoming_voice: bool = False
+    conversation_id: JsonUUID | None = None
+    agent_id: JsonUUID | None = None
+    program_id: int | None = Field(default=None, gt=0)
 
 
 def policy(c, settings):
@@ -158,7 +169,7 @@ def request_with_audio(body, audio):
     return body
 
 
-def generate(settings, item, data, text, agent, schools, guard, *, incoming_voice=False, gateway_factory=MediaGateway):
+def generate(settings, item, data, text, agent, schools, guard, *, incoming_voice=False, selected_profile="", gateway_factory=MediaGateway):
     """Called outside the Gemini transaction. Failure returns text, never a retry."""
     if data.get("channel", "whatsapp") != "whatsapp":
         return None, "voice_channel_text_only"
@@ -175,7 +186,7 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
             why = reason(options, text, incoming_voice, state["used"])
             if why:
                 return None, why
-            profile = choose_profile(options, agent, schools, state["pinned"])
+            profile = choose_profile(options, agent, schools, state["pinned"], selected_profile)
             if not profile:
                 return None, "voice_profile_unavailable"
             value, secret_id = stored_key(c, settings)
@@ -278,6 +289,8 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
             if not expressive_model(profile.model_id):
                 raise HTTPException(409, "voice_greeting_model_required")
             profile = profile.model_copy(update={"greeting_tone": body.greeting_tone})
+        if len(body.text) > options.max_text_chars:
+            raise HTTPException(409, "voice_text_too_large")
         if options.max_audio_seconds and estimate_seconds(body.text) > options.max_audio_seconds:
             raise HTTPException(409, "voice_duration_estimated_exceeded")
         value, secret_id = stored_key(c, settings)
@@ -315,7 +328,121 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         raise HTTPException(error.status_code if isinstance(error, HTTPException) else 502, code) from None
 
 
+def assignment_options(c, settings):
+    configured = policy(c, settings)
+    schools = rows(c, "SELECT DISTINCT School FROM crm_agents5.Program WHERE InstitutionId=? AND Active=1 AND School<>'' ORDER BY School", institution(settings))
+    return {"profiles": [{"id": p.id, "name": p.name, "active": p.active, "schools": p.schools} for p in configured.profiles],
+            "schools": [v["School"] for v in schools]}
+
+
+def metered_usage(c, settings):
+    value = c.execute(
+        "SELECT COUNT(CASE WHEN JSON_VALUE(ResultMetadata,'$.receipt.billed_characters') IS NOT NULL THEN 1 END),"
+        "SUM(CAST(JSON_VALUE(ResultMetadata,'$.receipt.billed_characters') AS bigint)),"
+        "SUM(CASE WHEN Status='uncertain' THEN 1 ELSE 0 END),SUM(CASE WHEN Status='running' THEN 1 ELSE 0 END) "
+        "FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND Action IN(?,?) AND CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME())",
+        institution(settings), ACTION, PREVIEW,
+    ).fetchone()
+    return {"reported_attempts": int(value[0]), "reported_characters": int(value[1]) if value[1] is not None else None,
+            "uncertain_attempts": int(value[2] or 0), "running_attempts": int(value[3] or 0)}
+
+
+def public_balance(value):
+    # Exclude invoices, payment details, user identifiers and keys.
+    if not isinstance(value, dict) or any(type(value.get(k)) is not int or value[k] < 0 for k in ("character_count", "character_limit")):
+        raise AiError("provider_invalid_response", 502)
+    return {"used": value["character_count"], "limit": value["character_limit"],
+            "remaining": max(0, value["character_limit"] - value["character_count"]),
+            "tier": str(value.get("tier", ""))[:80],
+            "reset_at": value.get("next_character_count_reset_unix") if type(value.get("next_character_count_reset_unix")) is int else None,
+            "checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+
+
+def check_decision(c, settings, body):
+    """Read-only operator rehearsal of the same policy; no provider or writes."""
+    from app.modules.agents.service import load, resolve_conversation
+    options = policy(c, settings)
+    state = usage(c, settings, str(body.conversation_id) if body.conversation_id else None)
+    selected_profile, agent_id, program_id, human = "", str(body.agent_id) if body.agent_id else None, body.program_id, False
+    if body.conversation_id:
+        if body.agent_id or body.program_id:
+            raise HTTPException(422, "voice_check_context_immutable")
+        thread = one(c, "SELECT v.ControlMode,v.State FROM crm.Conversation v JOIN crm_channels2.ExternalIdentity i ON i.ConversationId=v.ConversationId JOIN crm_channels2.Integration a ON a.InstitutionId=i.InstitutionId AND a.IntegrationId=i.IntegrationId WHERE i.InstitutionId=? AND v.ConversationId=? AND a.Channel='whatsapp'", institution(settings), str(body.conversation_id))
+        if not thread:
+            raise HTTPException(404, "conversation_not_found")
+        human = thread['ControlMode'] == 'human' or thread['State'] == 'closed'
+        if not human:
+            selected = resolve_conversation(c, str(body.conversation_id), 'whatsapp')
+            agent_id = selected.get('agent_id')
+            selected_profile = selected.get('configuration', {}).get('voice_profile_id', '')
+            program_id = (selected.get('context') or {}).get('program_id')
+    elif agent_id:
+        agents, _ = load(c)
+        agent = agents.get(agent_id)
+        if not agent or agent['state'] == 'archived':
+            raise HTTPException(404, "agents_not_found")
+        if agent.get('program_id') and program_id and agent['program_id'] != program_id:
+            raise HTTPException(422, "voice_check_program_mismatch")
+        program_id = agent.get('program_id') or program_id
+        selected_profile = agent['configuration'].get('voice_profile_id', '')
+    schools = []
+    if program_id:
+        program = one(c, "SELECT School FROM crm_agents5.Program WHERE InstitutionId=? AND ProgramId=? AND Active=1", institution(settings), program_id)
+        if not program:
+            raise HTTPException(404, 'invalid_program_id')
+        schools = [program['School']] if program['School'] else []
+    profile = choose_profile(options, agent_id, schools, state['pinned'], selected_profile)
+    code = 'voice_human_control' if human else reason(options, body.text, body.incoming_voice, state['used'])
+    if not code and body.conversation_id and not options.allows(str(body.conversation_id)):
+        code = 'voice_scope_text_only'
+    if not code and not profile:
+        code = 'voice_profile_unavailable'
+    count = len(speech_text(profile.model_dump(), body.text)) if profile else len(body.text)
+    if not code and options.daily_character_limit and state['daily_characters'] + count > options.daily_character_limit:
+        code = 'voice_daily_limit'
+    return {'eligible': code is None, 'reason': code, 'profile': profile.name if profile else None,
+            'profile_id': profile.id if profile else None, 'estimated_seconds': estimate_seconds(body.text),
+            'reserved_characters_if_generated': count, 'used': state['used'], 'cap': options.max_audios_per_conversation,
+            'conversation_checked': bool(body.conversation_id), 'pinned': bool(state['pinned']),
+            'network_called': False, 'persisted': False}
+
+
 def install(app, settings):
+    @app.post("/api/institution/voice/check")
+    def check_voice(request: Request, body: VoiceCheck):
+        with transaction(settings, anonymous=True) as c:
+            authorize(c, settings, request.state.authority, "settings.ai.read")
+            authorize(c, settings, request.state.authority, "agents.manage")
+            if body.conversation_id:
+                authorize(c, settings, request.state.authority, "inbox.read")
+            return check_decision(c, settings, body)
+
+    @app.get("/api/institution/voice/options")
+    def voice_options(request: Request):
+        with transaction(settings, anonymous=True) as c:
+            authorize(c, settings, request.state.authority, "agents.manage")
+            return assignment_options(c, settings)
+
+    @app.get("/api/institution/voice/balance")
+    async def balance(request: Request):
+        authority = request.state.authority
+        def access():
+            with transaction(settings, anonymous=True) as c:
+                authorize(c, settings, authority, "settings.ai.read")
+                authorize(c, settings, authority, "settings.providers.read")
+            return credential(settings, authority, "elevenlabs")
+        value = await run_in_threadpool(access)
+        try:
+            async with asyncio.timeout(20):
+                result = public_balance(await MediaGateway({"elevenlabs": value}, files.root()).request("elevenlabs", "GET", "v1/user/subscription"))
+        except TimeoutError:
+            raise HTTPException(504, "voice_catalog_timeout") from None
+        except AiError as error:
+            raise HTTPException(error.status, error.code) from None
+        if await run_in_threadpool(access) != value:
+            raise HTTPException(409, "voice_configuration_changed")
+        return result
+
     @app.get("/api/institution/voice/conversations")
     def pilot_conversations(request: Request):
         with transaction(settings, anonymous=True) as c:
@@ -350,9 +477,16 @@ def install(app, settings):
     def live_usage(request: Request, conversation: str = ""):
         with transaction(settings, anonymous=True) as c:
             actor = authorize(c, settings, request.state.authority, "settings.ai.read")
+            if conversation:
+                try:
+                    conversation = str(UUID(conversation))
+                except ValueError:
+                    raise HTTPException(422, "invalid_request") from None
+                authorize(c, settings, request.state.authority, "inbox.read")
             state = usage(c, settings, conversation or None)
+            metered = metered_usage(c, settings)
             latest = rows(c, "SELECT TOP(40) OperationId,Action,ActorRef,Status,ResultCode,ResultMetadata,CreatedAt,CASE WHEN CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) THEN 1 ELSE 0 END AS PreviewFresh FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND Action IN(?,?) ORDER BY CreatedAt DESC,OperationId", institution(settings), ACTION, PREVIEW)
-            return {**state, "history": [{"id": str(v["OperationId"]), "state": v["Status"], "code": v["ResultCode"], "at": utc(v["CreatedAt"]), "profile": json.loads(v["ResultMetadata"]).get("profile", {}).get("name"), "characters": json.loads(v["ResultMetadata"]).get("characters", 0), "greeting_tone": json.loads(v["ResultMetadata"]).get("profile", {}).get("greeting_tone", "inherit"), "audio_url": history_audio_url(v, actor)} for v in latest]}
+            return {**state, **metered, "history": [{"id": str(v["OperationId"]), "state": v["Status"], "code": v["ResultCode"], "at": utc(v["CreatedAt"]), "profile": json.loads(v["ResultMetadata"]).get("profile", {}).get("name"), "characters": json.loads(v["ResultMetadata"]).get("characters", 0), "reported_characters": json.loads(v["ResultMetadata"]).get("receipt", {}).get("billed_characters"), "duration": json.loads(v["ResultMetadata"]).get("duration"), "greeting_tone": json.loads(v["ResultMetadata"]).get("profile", {}).get("greeting_tone", "inherit"), "audio_url": history_audio_url(v, actor)} for v in latest]}
 
     @app.post("/api/institution/voice/previews")
     def create_preview(request: Request, body: Preview):

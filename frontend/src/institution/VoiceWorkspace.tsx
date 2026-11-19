@@ -71,8 +71,14 @@ type CatalogItem = {
 };
 type VoiceCatalog = { voices: CatalogItem[]; models: CatalogItem[] };
 type Usage = {
+  used?: number;
+  pinned?: { name: string } | null;
   daily_characters: number;
   daily_attempts: number;
+  reported_attempts?: number;
+  reported_characters?: number | null;
+  uncertain_attempts?: number;
+  running_attempts?: number;
   history: {
     id: string;
     state: string;
@@ -80,6 +86,8 @@ type Usage = {
     at: string;
     profile: string;
     characters: number;
+    reported_characters?: number | null;
+    duration?: number | null;
     audio_url?: string | null;
     greeting_tone?: string;
   }[];
@@ -142,6 +150,14 @@ function VoiceEditor({
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewBusy, setPreviewBusy] = useState(false);
   const [historyPreview, setHistoryPreview] = useState("");
+  const [balance, setBalance] = useState<{
+    used: number;
+    limit: number;
+    remaining: number;
+    tier: string;
+    checked_at: string;
+    reset_at: number | null;
+  } | null>(null);
   const [comparisons, setComparisons] = useState<
     { tone: string; result: Preview }[]
   >([]);
@@ -153,7 +169,13 @@ function VoiceEditor({
       previewMounted.current = false;
     };
   }, []);
-  const usage = useResource<Usage>("voice/usage");
+  const [usageConversation, setUsageConversation] = useState("");
+  const usage = useResource<Usage>(
+    "voice/usage" +
+      (usageConversation
+        ? `?conversation=${encodeURIComponent(usageConversation)}`
+        : ""),
+  );
   const changed = JSON.stringify(saved) !== JSON.stringify(draft);
   useDraftGuard(changed);
   const writable = session.actions.includes("settings.ai.write");
@@ -230,6 +252,13 @@ function VoiceEditor({
       value: v.id,
       label: `${v.name}${v.language ? " · " + v.language : ""}`,
     })) ?? [];
+  const schoolNames = [
+    ...new Set(
+      (assignments?.programs?.items ?? [])
+        .map((p) => p.school?.trim())
+        .filter((s): s is string => !!s),
+    ),
+  ].sort((a, b) => a.localeCompare(b, "es"));
 
   return (
     <div className="voice-workspace">
@@ -460,6 +489,11 @@ function VoiceEditor({
                 <p>
                   Elige voces disponibles en tu cuenta. La primera voz utilizada
                   permanece asociada al hilo.
+                </p>
+                <p>
+                  Para ofrecer otra voz en conversaciones nuevas, crea otro
+                  perfil. Si pausas un perfil o cambias su voz/modelo, los hilos
+                  que lo tenían fijado continúan por texto.
                 </p>
               </div>
               <Button
@@ -715,11 +749,28 @@ function VoiceEditor({
                       asignado en CRM. Preguntar por un programa no cambia la
                       asignación.
                     </p>
+                    <Button
+                      type="button"
+                      variant="quiet"
+                      onClick={() =>
+                        void task.run(async () => {
+                          setAssignments(await api<Catalog>(""));
+                        }, "Agentes y escuelas actualizados.")
+                      }
+                    >
+                      Actualizar agentes y escuelas
+                    </Button>
+                    <p>
+                      La voz elegida al crear o editar el agente tiene
+                      prioridad. Estas casillas son asignaciones automáticas
+                      para agentes sin una elección directa.
+                    </p>
                     {assignments?.agents.map((agent) => (
                       <label className="voice-check" key={agent.id}>
                         <input
                           type="checkbox"
                           checked={p.agent_ids.includes(agent.id)}
+                          disabled={!!agent.configuration?.voice_profile_id}
                           onChange={(event) =>
                             profile(p.id, {
                               agent_ids: event.target.checked
@@ -729,22 +780,42 @@ function VoiceEditor({
                           }
                         />
                         {agent.name}
+                        {agent.configuration?.voice_profile_id
+                          ? " · voz elegida en el agente"
+                          : ""}
                       </label>
                     ))}
-                    <Field
-                      id={`voice-schools-${p.id}`}
-                      label="Escuelas (separadas por coma)"
-                      defaultValue={p.schools.join(", ")}
-                      onBlur={(event) =>
-                        profile(p.id, {
-                          schools: event.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean),
-                        })
-                      }
-                      hint="Usa el nombre de escuela guardado en Académico. Una escuela o agente sólo puede tener un perfil activo."
-                    />
+                    <fieldset>
+                      <legend>Escuelas de este perfil</legend>
+                      {[...new Set([...schoolNames, ...p.schools])].map(
+                        (school) => (
+                          <label className="voice-check" key={school}>
+                            <input
+                              type="checkbox"
+                              checked={p.schools.includes(school)}
+                              onChange={(event) =>
+                                profile(p.id, {
+                                  schools: event.target.checked
+                                    ? [...p.schools, school]
+                                    : p.schools.filter((s) => s !== school),
+                                })
+                              }
+                            />
+                            {school}
+                            {!schoolNames.includes(school)
+                              ? " · ya no está en el catálogo"
+                              : ""}
+                          </label>
+                        ),
+                      )}
+                      {!schoolNames.length && (
+                        <p>
+                          Las escuelas aparecen al registrar programas en
+                          Académico. Actualiza la lista cuando hayas creado una
+                          escuela.
+                        </p>
+                      )}
+                    </fieldset>
                   </details>
                 </article>
               ))}
@@ -810,6 +881,12 @@ function VoiceEditor({
           {catalogError && <Notice error>{catalogError}</Notice>}
         </fieldset>
       </form>
+      {session.actions.includes("agents.manage") && (
+        <VoiceRuleCheck
+          assignments={assignments}
+          conversations={pilotConversations}
+        />
+      )}
       <section className="panel voice-preview">
         <div>
           <h3>Escucha antes de activar</h3>
@@ -986,6 +1063,21 @@ function VoiceEditor({
               Caracteres reservados antes de generar. ElevenLabs determina el
               coste según tu plan y modelo; aquí no se estiman dólares.
             </p>
+            <p>
+              Reportados por el proveedor en las últimas 24 horas:{" "}
+              <strong>
+                {usage.value?.reported_characters?.toLocaleString("es-CO") ??
+                  "Sin recibos disponibles"}
+              </strong>
+              {!!usage.value?.reported_attempts &&
+                ` · ${usage.value.reported_attempts} recibos`}
+              . La ausencia de recibo no significa consumo cero.
+            </p>
+            <p>
+              {usage.value?.uncertain_attempts ?? 0} resultados inciertos ·{" "}
+              {usage.value?.running_attempts ?? 0} en curso o pendientes de
+              revisión. Conservan su reserva y no se reintentan automáticamente.
+            </p>
           </div>
           <Button
             variant="quiet"
@@ -999,6 +1091,66 @@ function VoiceEditor({
             Actualizar actividad
           </Button>
         </div>
+        {pilotAllowed && (
+          <SelectField
+            id="voice-usage-conversation"
+            label="Consultar cupo de conversación"
+            value={usageConversation}
+            onChange={(event) => setUsageConversation(event.target.value)}
+            options={[
+              { value: "", label: "Actividad de toda la institución" },
+              ...pilotConversations.map((c) => ({
+                value: c.id,
+                label: c.label,
+              })),
+            ]}
+          />
+        )}
+        {usageConversation && usage.value && (
+          <Notice>
+            Este hilo conserva {usage.value.used ?? 0} reservas de audio
+            automático. Cupo vigente: {draft.max_audios_per_conversation};
+            quedan{" "}
+            {Math.max(
+              0,
+              draft.max_audios_per_conversation - (usage.value.used ?? 0),
+            )}
+            . Voz fijada:{" "}
+            {usage.value.pinned?.name ?? "Se decidirá en el primer audio"}. El
+            historial de abajo corresponde a toda la institución.
+          </Notice>
+        )}
+        {catalogAllowed && (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={task.busy}
+            onClick={() =>
+              void task.run(async () => {
+                setBalance(await call("voice/balance"));
+              }, "Uso de la cuenta consultado.")
+            }
+          >
+            Consultar uso de la cuenta ElevenLabs
+          </Button>
+        )}
+        {balance && (
+          <Notice>
+            Cuenta ElevenLabs · {balance.tier}:{" "}
+            {balance.used.toLocaleString("es-CO")} de{" "}
+            {balance.limit.toLocaleString("es-CO")} unidades del plan
+            utilizadas; {balance.remaining.toLocaleString("es-CO")} disponibles.
+            <p>
+              Consulta de toda la cuenta, incluidos otros proyectos; no sólo
+              RinovaPlus. Consultado:{" "}
+              {new Date(balance.checked_at).toLocaleString("es-CO")}.
+              {balance.reset_at
+                ? ` Renovación informada: ${new Date(balance.reset_at * 1000).toLocaleString("es-CO")}.`
+                : ""}{" "}
+              No modifica tu plan ni autoriza sobreconsumo.
+            </p>
+          </Notice>
+        )}
         {usage.error && <Notice error>{usage.error}</Notice>}
         {!usage.value?.history.length ? (
           <p className="voice-note">
@@ -1022,6 +1174,14 @@ function VoiceEditor({
                   )}
                 </div>
                 <span>{v.characters} caracteres</span>
+                <small>
+                  {v.reported_characters == null
+                    ? "Sin conteo confirmado por ElevenLabs"
+                    : `${v.reported_characters} reportados por ElevenLabs`}
+                  {v.duration != null
+                    ? ` · ${Math.round(v.duration)} segundos`
+                    : ""}
+                </small>
                 <Badge>
                   {(
                     {
@@ -1122,6 +1282,150 @@ function stabilityFor(profile: VoiceProfile) {
     : value;
 }
 
+function VoiceRuleCheck({
+  assignments,
+  conversations,
+}: {
+  assignments: Catalog | null;
+  conversations: { id: string; label: string }[];
+}) {
+  const { call } = useInstitution();
+  const task = useTask();
+  const [text, setText] = useState(
+    "Hola, quisiera conocer los programas de CBN.",
+  );
+  const [incoming, setIncoming] = useState(true),
+    [conversation, setConversation] = useState(""),
+    [agent, setAgent] = useState(""),
+    [program, setProgram] = useState("");
+  type Result = {
+    eligible: boolean;
+    reason: string | null;
+    profile: string | null;
+    estimated_seconds: number;
+    used: number;
+    cap: number;
+    conversation_checked: boolean;
+    pinned: boolean;
+    network_called: boolean;
+    persisted: boolean;
+  };
+  const [result, setResult] = useState<{ key: string; value: Result } | null>(
+    null,
+  );
+  const body = {
+    text,
+    incoming_voice: incoming,
+    ...(conversation
+      ? { conversation_id: conversation }
+      : {
+          ...(agent ? { agent_id: agent } : {}),
+          ...(program ? { program_id: Number(program) } : {}),
+        }),
+  };
+  const signature = JSON.stringify(body);
+  const visible = result?.key === signature ? result.value : null;
+  return (
+    <section className="panel" aria-labelledby="voice-check-heading">
+      <h3 id="voice-check-heading">Comprueba la voz y los límites</h3>
+      <p>
+        Prueba la selección y las reglas locales sin generar audio, enviar
+        mensajes ni consumir ElevenLabs. Selecciona un chat para usar su
+        control, contexto y reservas reales.
+      </p>
+      <SelectField
+        id="voice-check-conversation"
+        label="Conversación para comprobar"
+        value={conversation}
+        onChange={(e) => setConversation(e.target.value)}
+        options={[
+          { value: "", label: "Simulación de asignación · sin conversación" },
+          ...conversations.map((v) => ({ value: v.id, label: v.label })),
+        ]}
+      />
+      <div className="voice-fields">
+        <SelectField
+          id="voice-check-agent"
+          label="Agente de la simulación"
+          disabled={!!conversation}
+          value={agent}
+          onChange={(e) => setAgent(e.target.value)}
+          options={[
+            { value: "", label: "Sin elección directa de agente" },
+            ...(assignments?.agents ?? [])
+              .filter((a) => a.state !== "archived")
+              .map((a) => ({ value: a.id, label: a.name })),
+          ]}
+        />
+        <SelectField
+          id="voice-check-program"
+          label="Programa y escuela de la simulación"
+          disabled={!!conversation}
+          value={program}
+          onChange={(e) => setProgram(e.target.value)}
+          options={[
+            { value: "", label: "Sin programa confirmado" },
+            ...(assignments?.programs?.items ?? []).map((p) => ({
+              value: String(p.program_id),
+              label: `${p.name} · ${p.school ?? "Sin escuela"}`,
+            })),
+          ]}
+        />
+      </div>
+      <label className="voice-check">
+        <input
+          type="checkbox"
+          checked={incoming}
+          onChange={(e) => setIncoming(e.target.checked)}
+        />
+        El mensaje del cliente es una nota de voz
+      </label>
+      <TextArea
+        id="voice-check-text"
+        label="Respuesta de ejemplo para comprobar"
+        value={text}
+        maxLength={3000}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={task.busy || !text.trim()}
+        onClick={() =>
+          void task.run(async () => {
+            setResult({
+              key: signature,
+              value: await call<Result>("voice/check", "POST", body),
+            });
+          }, "")
+        }
+      >
+        Comprobar sin generar audio
+      </Button>
+      {task.notices}
+      {visible && (
+        <Notice>
+          {visible.eligible
+            ? "Las reglas locales permiten audio; el catálogo, la credencial y el proveedor se validan al generar."
+            : voiceReason(visible.reason ?? "")}
+          <p>
+            Voz: {visible.profile ?? "No disponible"}
+            {visible.pinned ? " · fijada en el hilo" : ""}. Duración estimada:{" "}
+            {visible.estimated_seconds} segundos. Reservas del hilo:{" "}
+            {visible.used} de {visible.cap}.
+          </p>
+          {!visible.conversation_checked && (
+            <p>
+              Simulación de asignación. No confirma el control ni el alcance de
+              un chat real.
+            </p>
+          )}
+        </Notice>
+      )}
+    </section>
+  );
+}
+
 export function voiceReason(code: string) {
   return (
     (
@@ -1134,6 +1438,16 @@ export function voiceReason(code: string) {
           "Se alcanzó el máximo del hilo; continúa por texto.",
         voice_daily_limit: "Se alcanzó el cupo diario; continúa por texto.",
         voice_paused: "Voz pausada; continúa por texto.",
+        voice_human_control:
+          "La conversación está en Humano o cerrada; la IA no genera ni envía audio.",
+        voice_scope_text_only:
+          "Este hilo no está incluido en el alcance de voz; continúa por texto.",
+        voice_profile_unavailable:
+          "La voz del hilo está pausada o ya no está disponible; continúa por texto. Revisa el perfil de voz.",
+        voice_text_preferred:
+          "El mensaje no cumple el modo de audio elegido; la respuesta continúa por texto.",
+        voice_text_too_large:
+          "El texto supera el máximo por audio; continúa completo por texto, sin recortes.",
         voice_insufficient_credits:
           "ElevenLabs no tiene saldo suficiente. Revisa el saldo; la conversación continúa por texto.",
         voice_payment_required:
