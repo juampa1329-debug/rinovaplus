@@ -179,5 +179,10 @@
     "external_SMTP": 0,
     "rollback": true,
     "published_selectors_UI": true
+  },
+  "frontend_closure_deployment": {
+    "commit": "9b7227e7038d8e5fa8005797a8d30b611b3adec8",
+    "deployment": "ohkhnhm6tgesliqkdzqcp9fn",
+    "status": "success_healthy_observed"
   }
 }

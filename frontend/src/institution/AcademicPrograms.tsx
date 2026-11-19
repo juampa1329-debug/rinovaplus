@@ -323,12 +323,13 @@ export function AcademicPrograms() {
             Extraer con IA
           </Button>
           <details>
-            <summary>Consultar catálogo comercial de SIIE</summary>
+            <summary>Importador SIIE anterior por ID</summary>
             <p>
-              Consulta de sólo lectura por oferta: programa, sede, jornada y
-              período. Requiere que el equipo de SIIE entregue la API y se
-              configure en el servidor. La consulta no matricula, no cobra y no
-              guarda datos automáticamente.
+              Para la API actual usa «Abrir SIIE» en la parte superior: allí
+              puedes obtener programas, seleccionar ofertas y consultar
+              aspirantes. Este importador conserva el contrato anterior por ID
+              y requiere una oferta completa revisada. No matricula, no cobra
+              ni guarda datos automáticamente.
             </p>
             <Field
               id="program-siie-offer"
