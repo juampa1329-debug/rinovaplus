@@ -526,7 +526,11 @@ export function AgentsPanel() {
       {guideOpen && <AgentGuide />}
       {error && <Notice error>{error}</Notice>}
       {feedback && <Notice>{feedback}</Notice>}
-      {catalog?.institutional && <ProgramSalesSetup catalog={catalog} disabled={busy || draftChanged || (!!draft && !saved && !!draft.name.trim())} onSaved={refresh} />}
+      {catalog?.institutional && <ProgramSalesSetup catalog={catalog} disabled={busy || draftChanged || (!!draft && !saved && !!draft.name.trim())} onSaved={async () => {
+        const value = await refresh();
+        const current = value.agents.find((agent) => agent.id === draft?.id);
+        if (current) select(current);
+      }} />}
       {!catalog && !error && <Notice>Cargando agentes…</Notice>}
       {catalog && !catalog.installed && (
         <Notice>

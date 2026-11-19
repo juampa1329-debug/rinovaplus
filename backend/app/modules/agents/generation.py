@@ -154,15 +154,16 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                     )
                     schema = ADMISSIONS_RESPONSE_SCHEMA
                     if preview:
+                        system += (
+                            "\nSALIDA DE SIMULACIÓN SIN PERSISTENCIA: devuelve únicamente "
+                            "answer, handoff y references. No devuelvas memory ni source_message_id: "
+                            "esta prueba no tiene un mensaje entrante con UUID válido. "
+                            "Esta restricción prevalece sobre los procedimientos de registro de memoria."
+                        )
                         schema = {
                             **schema,
-                            "properties": {
-                                **schema["properties"],
-                                "memory": {
-                                    **schema["properties"]["memory"],
-                                    "maxItems": 0,
-                                },
-                            },
+                            "properties": {key: value for key, value in schema["properties"].items() if key != "memory"},
+                            "required": [key for key in schema["required"] if key != "memory"],
                         }
                     text = await ai.gateway.generate(
                         provider,

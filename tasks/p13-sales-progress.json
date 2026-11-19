@@ -23,7 +23,7 @@
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "Desplegar y verificar agentes, derivación y simulaciones reales. Pruebas locales de alias, ambigüedad, memoria, citas y permisos completas."
+      "pending": "25 especialistas creados y enrutamiento observado en el hilo institucional. Corregir el contrato de simulación que solicitaba memoria sin UUID entrante y repetir las dos pruebas reales."
     },
     {
       "id": "P13.4",
@@ -48,11 +48,27 @@
   ],
   "verification": {
     "backend_selected": 347,
-    "frontend_selected": 31,
+    "frontend_selected": 32,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",
     "existing_bundle_warning": true,
-    "postgres_filter_parser": "passed_3_levels"
+    "postgres_filter_parser": "passed_3_levels",
+    "simulator_fix_regressions": 91
+  },
+  "deployment": {
+    "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
+    "backend": "wm1rzwzel80eywkl3qfqvg9s",
+    "backend_health": "healthy",
+    "agents_created": 25,
+    "active_total": 26,
+    "guide_version": 7,
+    "selected_skills_per_new_agent": 20
+  },
+  "simulator_rejection": {
+    "cause": "Model emitted a memory item in a manual simulation without a valid incoming message UUID",
+    "memory_saved": false,
+    "fix": "Simulation schema omits memory; validation still rejects unexpected memory",
+    "live_retest": "pending_deployment"
   }
 }

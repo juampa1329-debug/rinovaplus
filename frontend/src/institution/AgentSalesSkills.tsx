@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api, type Configuration } from "../modules/agents/api";
 import { Button, Notice } from "../shared/ui";
 import "./sales.css";
+import { OperationDialog } from "./ErrorFeedback";
 
 export type SalesSkill = {
   id: string;
@@ -21,12 +22,19 @@ export function AgentSalesSkills({
 }) {
   const [skills, setSkills] = useState<SalesSkill[]>([]);
   const [error, setError] = useState("");
+  const [reload, setReload] = useState(0);
   useEffect(() => {
     let live = true;
     void api<{ items: SalesSkill[] }>("/sales/skills")
       .then((value) => {
-        if (!Array.isArray(value.items)) throw new Error("No se pudo validar el catálogo de skills. Actualiza esta vista antes de guardar.");
-        if (live) setSkills(value.items);
+        if (!Array.isArray(value.items))
+          throw new Error(
+            "No se pudo validar el catálogo de skills. Actualiza esta vista antes de guardar.",
+          );
+        if (live) {
+          setSkills(value.items);
+          setError("");
+        }
       })
       .catch((failure: Error) => {
         if (live) setError(failure.message);
@@ -34,7 +42,7 @@ export function AgentSalesSkills({
     return () => {
       live = false;
     };
-  }, []);
+  }, [reload]);
   const selected = configuration.sales_skill_ids ?? [];
   return (
     <section
@@ -47,10 +55,28 @@ export function AgentSalesSkills({
         su programa. Las skills no conceden permisos adicionales.
       </p>
       {error && <Notice error>{error}</Notice>}
+      {error && (
+        <OperationDialog
+          guidance={{
+            title: "No se pudieron cargar las skills",
+            detail: error,
+            nextStep:
+              "Conservamos la configuración del agente. Cierra este aviso y pulsa Actualizar skills cuando termine el despliegue o se restablezca la conexión.",
+          }}
+          dismiss={() => setError("")}
+        />
+      )}
       <div className="sales-toolbar">
         <strong>
           {selected.length} de {skills.length} activas
         </strong>
+        <Button
+          type="button"
+          variant="quiet"
+          onClick={() => setReload((value) => value + 1)}
+        >
+          Actualizar skills
+        </Button>
         <Button
           type="button"
           variant="quiet"

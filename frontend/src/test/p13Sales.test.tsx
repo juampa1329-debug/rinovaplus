@@ -76,6 +76,51 @@ test("skills are selectable and disabling memory also stops automatic CRM writes
   ).toBeDisabled();
 });
 
+test("skill catalog can recover after a deployment without changing the saved selection", async () => {
+  Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    },
+  });
+  Object.defineProperty(HTMLDialogElement.prototype, "close", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.removeAttribute("open");
+    },
+  });
+  mocks.api
+    .mockRejectedValueOnce(new Error("Servicio en actualización"))
+    .mockResolvedValue({
+      items: [
+        {
+          id: "recall",
+          name: "Recuperar contexto",
+          category: "Memoria",
+          procedure: "Sólo hechos",
+        },
+      ],
+    });
+  const change = vi.fn();
+  render(
+    <AgentSalesSkills
+      configuration={{ ...blankConfiguration(), sales_skill_ids: ["recall"] }}
+      guide
+      onChange={change}
+    />,
+  );
+  await screen.findByRole("alertdialog", {
+    name: "No se pudieron cargar las skills",
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
+  fireEvent.click(screen.getByRole("button", { name: "Actualizar skills" }));
+  await screen.findByText("1 de 1 activas");
+  expect(
+    screen.getByRole("checkbox", { name: /Recuperar contexto/ }),
+  ).toBeChecked();
+  expect(change).not.toHaveBeenCalled();
+});
+
 test("specialists require a reviewed preview, and preserve existing agents", async () => {
   const guide = {
     id: "guide",

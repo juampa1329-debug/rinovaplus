@@ -188,3 +188,29 @@ def test_commercial_risk_filter_keeps_bound_current_conversation_and_valid_sql(m
     assert query.count("x.RiskLevel=?") == 1
     converted = postgres_sql(query, layout()["tables"])
     parse_sql(converted.replace("%s", "NULL"))
+
+
+def test_manual_simulation_does_not_request_invented_message_ids_or_memory(monkeypatch):
+    import asyncio
+    from app.modules.agents import generation
+    from app.modules.ai.application.admissions_prompt import validate_reply
+    from app.modules.ai.domain.models import AiSettings
+    from app.modules.ai.infrastructure.providers import AiError
+    captured = []
+    class Gateway:
+        last_usage = None
+        last_response_metadata = {}
+        async def generate(self, *args, **kwargs):
+            captured.append((args, kwargs))
+            return '{"answer":"Confirma el precio con Admisiones.","handoff":true,"references":[]}'
+    ai = SimpleNamespace(busy=False, gateway=Gateway(), repository=SimpleNamespace(read=lambda: SimpleNamespace(settings=AiSettings())))
+    monkeypatch.setattr(generation, "require_provider", lambda *_: None)
+    policy = SimpleNamespace(primary_model="gemini-test", fallback_model="", max_tokens=1200, temperature=.3)
+    value = asyncio.run(generation.complete(ai, {"configuration": {"provider": "gemini"}}, policy,
+        [{"role": "system", "content": "Conserva memoria comercial."}, {"role": "user", "content": "Me interesa enfermería"}], lambda: None, preview=True))
+    schema = captured[0][1]["response_schema"]
+    assert "memory" not in schema["properties"] and "memory" not in schema["required"]
+    assert "SALIDA DE SIMULACIÓN SIN PERSISTENCIA" in captured[0][0][3]
+    validate_reply(value["content"], [], [], allow_memory=False)
+    with pytest.raises(AiError, match="admissions_invalid_memory"):
+        validate_reply('{"answer":"Hola","handoff":true,"references":[],"memory":[{"field":"program_interest","value":"enfermería","quote":"enfermería","source_message_id":"12345678-1234-1234-1234-123456789012"}]}', [], [], allow_memory=False)
