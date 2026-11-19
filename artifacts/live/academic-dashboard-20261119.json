@@ -93,7 +93,7 @@
     "CSS_mobile_layout_and_reduced_motion": true
   },
   "expanded_review": {
-    "status": "backend_published_and_real_UI_verified_frontend_report_followup_pending",
+    "status": "published_and_verified",
     "backend_tests": 320,
     "frontend_tests": 43,
     "types": "passed",
@@ -125,6 +125,11 @@
     },
     "missing_asset_UI": "404 Not Found; never SPA",
     "inbox_UI": "list and selected WhatsApp chat opened; no errors in observed browser console; no production load benchmark or forced 429",
-    "followup": "include new academic fields in source-gap report and honor Retry-After up to one day"
+    "followup": "include new academic fields in source-gap report and honor Retry-After up to one day",
+    "frontend_commit": "25f2f18355db421943f4d682f580198e4ab4f4e4",
+    "frontend_deployment": "zbisachc81zspamnv7swph7u",
+    "frontend_status": "Success in Coolify; Running",
+    "version_notice": "real update detected; manual Reload restored same session and revision4",
+    "source_gap_report": "4 items: presentation; syllabus; practices; career outcomes; copied report available"
   }
 }

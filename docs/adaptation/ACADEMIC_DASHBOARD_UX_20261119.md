@@ -52,3 +52,5 @@ Firecrawl extrajo del enlace oficial de Software los cuatro semestres/materias, 
 Biblioteca completa: clientHeight966, scrollHeight2747, scroll propio verificado; escuela TIC filtra3registros. Inbox abrió listado y chat del44; sin errores en la consola observada. No se forzó un429 en producción ni se acredita benchmark de carga: coalescencia, pausa compartida, foco y Retry-After se verifican con pruebas controladas. Las pestañas previas al arreglo requieren recarga manual.
 
 Ajuste final: informe de faltantes incluye los nuevos campos académicos; Retry-After numérico y HTTP-date, incluso600s, sin reintentar escrituras.320backend/43frontend seleccionadas, tipos/lint modificado/build pasan. Esta nota no acepta nuevas unidades deP13/P16; P19sigue3/5.
+
+Frontend25f2f18 verificado Success/Running en Coolify, runzbisachc81zspamnv7swph7u. El aviso real de actualización apareció sin forzar recarga; Recargar conservó la sesión. Software revisión4 muestra cuatro datos locales ausentes en la copia base (presentación, materias, prácticas, campo ocupacional) y permite copiar el informe. No se envió el informe a SIIE.
