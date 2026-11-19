@@ -47,6 +47,16 @@ def credential(settings, authority, provider):
 def install(app, settings):
     @app.get("/api/institution/provider-catalog/{provider}/{category}")
     async def live_models(request: Request, provider: str, category: str):
+        if provider == "elevenlabs" and category == "voice":
+            from app.institutional.voice_audio import catalog_for
+            value = await run_in_threadpool(credential, settings, request.state.authority, provider)
+            try:
+                catalog = await catalog_for(value)
+            except AiError as error:
+                raise HTTPException(error.status, error.code) from None
+            if await run_in_threadpool(credential, settings, request.state.authority, provider) != value:
+                raise HTTPException(409, "voice_configuration_changed")
+            return {"items": catalog["models"]}
         if provider not in CATALOG_PROVIDERS or category not in PROVIDER_CATEGORIES[provider]:
             raise HTTPException(404, "provider_catalog_unavailable")
         secret = await run_in_threadpool(credential, settings, request.state.authority, provider)

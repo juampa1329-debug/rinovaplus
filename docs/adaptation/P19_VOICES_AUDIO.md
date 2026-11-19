@@ -1,6 +1,6 @@
 # P19 · Voces y notas de audio con ElevenLabs
 
-Corte: 19 de noviembre de 2026. **Planificada, 0/5 unidades aceptadas; implementación 0%.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
+Corte: 19 de noviembre de 2026. **En implementación y validación, 0/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
 
 ## Alcance
 
@@ -23,3 +23,7 @@ Corte: 19 de noviembre de 2026. **Planificada, 0/5 unidades aceptadas; implement
 Requisitos: proyecto/clave ElevenLabs guardada directamente en el producto, voces elegidas, alcance de generación autorizado y destinatario de prueba. Se prepara después de SIIE y la revisión de IA/APIs contra Scentra. No se generó audio por crear este plan.
 
 Referencia oficial: [ElevenLabs, texto a voz](https://elevenlabs.io/docs/overview/capabilities/text-to-speech). Llamadas: [P20](P20_WHATSAPP_CALLS.md).
+
+## Implementación del 19-11
+
+El propietario autorizó iniciar P19 sin esperar el arreglo del productor SIIE y guardó la clave de ElevenLabs. Se implementaron catálogo, perfiles, cuota durable por conversación, cuatro modos de voz, duración estimada/real sin recorte y muestras privadas. Pruebas locales seleccionadas: 130 backend y 15 frontend; dos pruebas de multimedia omitidas por su entorno. Aceptación real pendiente: catálogo Juampa, envío al 44, reproducción, límite y Humano. Manual: [operación P19](P19_VOICE_OPERATOR_RUNBOOK.md).

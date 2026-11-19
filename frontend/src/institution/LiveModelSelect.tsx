@@ -1,9 +1,64 @@
 import { useState } from "react";
-import { Button, Notice } from "../shared/ui";
+import { Button, Notice, SelectField } from "../shared/ui";
 import { useTask } from "./api";
 import { useAdsResource } from "./adsResource";
 
 type Model = { id: string; name: string };
+
+export function LiveVoiceSelect({
+  value,
+  onChange,
+  provider = "elevenlabs",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  provider?: string;
+}) {
+  const data = useAdsResource<{ voices: Model[] }>(
+    `voice/catalog?provider=${provider}`,
+  );
+  const task = useTask();
+  return (
+    <div className="institution-model-catalog">
+      <SelectField
+        id={`${provider}-live-voice`}
+        label="Seleccionar voz disponible"
+        value={value}
+        disabled={!data.value}
+        onChange={(event) => onChange(event.target.value)}
+        options={[
+          {
+            value: "",
+            label: data.value ? "Selecciona una voz" : "Consultando voces…",
+          },
+          ...(value && !data.value?.voices.some((v) => v.id === value)
+            ? [{ value, label: "Voz guardada · comprueba su disponibilidad" }]
+            : []),
+          ...(data.value?.voices.map((v) => ({ value: v.id, label: v.name })) ??
+            []),
+        ]}
+      />
+      {data.error && <Notice error>{data.error}</Notice>}
+      <Button
+        variant="quiet"
+        disabled={task.busy}
+        onClick={() =>
+          void task.run(async () => {
+            await data.reload();
+          }, "Catálogo de voces actualizado.")
+        }
+      >
+        Actualizar voces
+      </Button>
+      {task.notices}
+      <p>
+        <a href="#/settings/voice">
+          Configurar perfiles, duración y máximo de audios por conversación
+        </a>
+      </p>
+    </div>
+  );
+}
 
 export const catalogProviders = new Set([
   "gemini",

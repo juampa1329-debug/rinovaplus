@@ -204,7 +204,7 @@ class MediaGateway:
         self.keys, self.root, self.transport = keys, root, transport
 
     async def request(
-        self, provider, method, path, body=None, params=None, binary=False
+        self, provider, method, path, body=None, params=None, binary=False, metadata=None
     ):
         key = self.keys.get(provider)
         if not key:
@@ -302,6 +302,13 @@ class MediaGateway:
                                 data.startswith(b"ID3") or data[0] == 255
                             ):
                                 raise AiError("provider_invalid_audio", 502)
+                            if metadata is not None:
+                                count = response.headers.get("x-character-count", "")
+                                request_id = response.headers.get("request-id", "")
+                                if count.isdigit() and len(count) <= 10:
+                                    metadata["billed_characters"] = int(count)
+                                if re.fullmatch(r"[A-Za-z0-9_-]{1,160}", request_id):
+                                    metadata["provider_request_id"] = request_id
                             return bytes(data), "audio/mpeg"
                         result = json.loads(data)
                         if not isinstance(result, dict) and not (

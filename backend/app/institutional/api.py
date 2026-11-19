@@ -419,6 +419,8 @@ def create_app(
         from app.institutional.provider_catalog import install as install_provider_catalog
 
         install_provider_catalog(app, settings)
+        from app.institutional.voice_audio import install as install_voice_audio
+        install_voice_audio(app, settings)
 
     @app.put("/api/institution/credentials")
     def secret(request: Request, body: models.SecretEdit):

@@ -35,6 +35,7 @@ import { AdsWorkspace } from "./AdsWorkspace";
 import { LearningWorkspace } from "./LearningWorkspace";
 import { OperationsWorkspace } from "./OperationsWorkspace";
 import { EmailPreferences, EmailWorkspace } from "./EmailWorkspace";
+import { VoiceWorkspace } from "./VoiceWorkspace";
 import { BroadcastWorkspace } from "./BroadcastWorkspace";
 import "./knowledge.css";
 import { AssistantChat as AgentAssistantChat } from "../modules/ai/pages/AgentAssistantChat";
@@ -64,6 +65,7 @@ const settingsTabs = [
   ["profile", "Mi perfil", "self"],
   ["ai", "Inteligencia artificial", "settings.ai.read"],
   ["models", "APIs y modelos", "settings.providers.read"],
+  ["voice", "Voces y audios", "settings.ai.read"],
   ["channels", "Canales", "settings.channels.read"],
   ["webhooks", "Webhooks", "settings.webhooks.read"],
   ["modules", "Módulos", "settings.modules.read"],
@@ -826,6 +828,8 @@ function Shell({
                     )
                   ) : location.tab === "notifications" ? (
                     <EmailWorkspace />
+                  ) : location.tab === "voice" ? (
+                    <VoiceWorkspace />
                   ) : location.tab === "profile" ? (
                     <>
                       <Profile key={session.user.revision} contract={contract.value} />

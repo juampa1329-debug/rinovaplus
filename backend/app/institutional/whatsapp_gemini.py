@@ -15,7 +15,7 @@ from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.institutional import grounded_replies
+from app.institutional import grounded_replies, voice_audio
 from app.modules.agents.service import resolve_conversation
 from app.modules.ai.infrastructure.providers import AiError
 
@@ -256,13 +256,22 @@ def dispatch_authorized(c, settings, job, payload):
         _, current, _ = source(c, settings, job["IntegrationId"], data)
         if reply_context(c, settings, data, current)["fingerprint"] != data["contextBinding"]:
             raise HTTPException(409, "gemini_reply_context_changed")
+    voice_audio.authorize_dispatch(c, settings, data, payload)
 
 
 def reply_context(c, settings, data, source_value):
     channel = data.get("channel", "whatsapp")
     selected = resolve_conversation(c, data["conversation"], "facebook" if channel == "messenger" else channel)
-    return grounded_replies.context(c, settings, source_value["Body"], selection=selected,
-                                    conversation=data["conversation"], sequence=source_value["Sequence"])
+    result = grounded_replies.context(c, settings, source_value["Body"], selection=selected,
+                                     conversation=data["conversation"], sequence=source_value["Sequence"])
+    material = json.loads(result["query"]).get("catalogo", {})
+    selected_program = material.get("selected") if isinstance(material, dict) else None
+    result["voice_schools"] = [selected_program["school"]] if isinstance(selected_program, dict) and selected_program.get("school") else []
+    audio = voice_audio.input_audio(c, settings, data)
+    if audio:
+        result["fingerprint"] = grounded_replies.digest([result["fingerprint"], voice_audio.audio_fingerprint(audio)])
+        result["input_audio"] = audio
+    return result
 
 
 def finish(c, settings, operation, state, code, data, lease=None):
@@ -331,6 +340,8 @@ class Worker:
                     secret["Ciphertext"],
                 )
                 input_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
+                if grounded.get("input_audio"):
+                    input_tokens += 10_240  # Conservative reserve for the inspected <=300s asset.
                 output_tokens = min(2000, config["max_tokens"])
                 cost_micros = max(
                     1,
@@ -355,6 +366,8 @@ class Worker:
                 )
             except (HTTPException, AiError) as error:
                 c.execute("ROLLBACK TRANSACTION whatsapp_gemini")
+                if isinstance(error, HTTPException) and error.detail == "voice_input_pending":
+                    return False  # Wait for the existing media downloader, without claiming/generating.
                 finish(
                     c,
                     settings,
@@ -367,7 +380,7 @@ class Worker:
             c.execute(
                 "UPDATE crm_channels2.ProviderOperation SET Status='running',"
                 "Attempts=Attempts+1,LeaseId=?,"
-                "LeaseUntil=DATEADD(second,90,SYSUTCDATETIME()) "
+                "LeaseUntil=DATEADD(second,180,SYSUTCDATETIME()) "
                 "WHERE InstitutionId=? AND OperationId=? AND Status='pending'",
                 lease,
                 institution(settings),
@@ -399,7 +412,7 @@ class Worker:
             result = asyncio.run(
                 self.gateway_factory({"gemini": secret_value}).gemini_generation(
                     binding["model"],
-                    grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
+                    voice_audio.request_with_audio(grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)), grounded.get("input_audio")),
                     before_attempt=before_attempt,
                 )
             )
@@ -412,6 +425,12 @@ class Worker:
             state, code = "failed", "gemini_whatsapp_invalid_response"
         except Exception:
             state, code = "uncertain", "gemini_whatsapp_result_unknown"
+        audio, voice_reason = None, None
+        if state == "confirmed" and generated:
+            # The grounded text is the sole speech source; no second model invents facts.
+            schools = grounded.get("voice_schools", [])
+            audio, voice_reason = voice_audio.generate(settings, item, data, generated, binding.get("agent"), schools, before_attempt,
+                incoming_voice=bool(grounded.get("input_audio", {}).get("voice")))
         with transaction(settings, True, anonymous=True) as c:
             if state != "confirmed":
                 finish(c, settings, operation, state, code, data, lease)
@@ -441,7 +460,9 @@ class Worker:
                 "confirmed",
                 "gemini_handoff" if not reply else None,
                 {**data, "reply": reply, "generation": "grounded-v1", "generated_text": generated,
-                 "modelBinding": binding, "contextBinding": grounded["fingerprint"]},
+                 "modelBinding": binding, "contextBinding": grounded["fingerprint"],
+                 "voiceMedia": audio["media_id"] if audio else None,
+                 "voiceOperation": audio["operation"] if audio else None, "voiceReason": voice_reason},
                 lease,
             ):
                 return True
@@ -465,6 +486,7 @@ class Worker:
                     data["conversation"],
                     body,
                 )
+                media_id = voice_audio.attach(c, settings, item, data, reply, audio) if audio else None
                 queue = enqueue(
                     c,
                     settings,
@@ -475,6 +497,7 @@ class Worker:
                         "origin": ORIGIN,
                         "automationId": uid(str(operation)),
                         "body": body,
+                        **({"mediaId": media_id} if media_id else {}),
                     },
                     identity=data["identity"],
                     message=reply,

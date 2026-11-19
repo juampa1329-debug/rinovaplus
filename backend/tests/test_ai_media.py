@@ -141,7 +141,9 @@ def test_elevenlabs_saved_voice_pagination_models_and_one_synthesis(tmp_path):
         calls.append(request)
         assert request.headers["xi-api-key"] == "fake-key"
         if request.url.path == "/v2/voices":
-            assert request.url.params["voice_type"] == "saved"
+            assert request.url.params["voice_type"] in {"saved", "default"}
+            if request.url.params["voice_type"] == "default":
+                return httpx.Response(200, json={"voices": [], "has_more": False})
             page = request.url.params.get("next_page_token")
             return httpx.Response(
                 200,
@@ -183,7 +185,7 @@ def test_elevenlabs_saved_voice_pagination_models_and_one_synthesis(tmp_path):
         )
     )
     assert audio == b"ID3fakeaudio" and mime == "audio/mpeg"
-    assert len(calls) == 4
+    assert len(calls) == 5
 
 
 def test_google_voice_selection_and_key_header(tmp_path):
@@ -367,7 +369,7 @@ def test_voice_rule_precedence_and_server_quota(
     service = make_service(tmp_path, media)
     calls = []
 
-    async def generate(provider, model, settings, system, messages):
+    async def generate(provider, model, settings, system, messages, **kwargs):
         assert "asistente virtual" in system
         return (
             json.dumps({"text": "Hola", "use_voice": decision})
@@ -422,7 +424,7 @@ def test_failed_synthesis_reserves_budget_and_rejects_retry(tmp_path):
         ),
     )
 
-    async def generate(*args):
+    async def generate(*args, **kwargs):
         return "Texto conservado"
 
     async def fail(*args):
@@ -494,7 +496,7 @@ def test_attachment_context_not_lost_when_history_disabled(tmp_path):
     service.repository.save(current)
     captured = []
 
-    async def generate(*args):
+    async def generate(*args, **kwargs):
         captured.append(args[-1])
         return "Contexto leído"
 
@@ -528,7 +530,7 @@ def test_invalid_decision_never_spends_voice(tmp_path):
         MediaSettings(voice_enabled=True, voice_provider="piper", voice_id="test"),
     )
 
-    async def generate(*args):
+    async def generate(*args, **kwargs):
         return '{"text":"Hola","use_voice":"yes"}'
 
     service.gateway.generate = generate
@@ -598,7 +600,7 @@ def test_singleflight_and_reservation_precede_paid_attempt(tmp_path):
         )
         started, finish = asyncio.Event(), asyncio.Event()
 
-        async def generate(*args):
+        async def generate(*args, **kwargs):
             started.set()
             await finish.wait()
             return "Hola"

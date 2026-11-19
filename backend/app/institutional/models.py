@@ -17,6 +17,7 @@ from pydantic import (
 )
 
 from app.institutional.policy import ACTIONS, MODULES
+from app.institutional.voice_policy import VoicePolicy
 from app.modules.ai.domain.models import (
     AiSettings,
     CredentialProvider,
@@ -113,6 +114,7 @@ class InstitutionMedia(MediaSettings):
 
 
 class AI(AiSettings):
+    voice: VoicePolicy = Field(default_factory=VoicePolicy)
     media: InstitutionMedia = Field(default_factory=InstitutionMedia)
     voice_models: dict[Literal["elevenlabs", "google_tts", "piper"], MediaChoice] = (
         Field(default_factory=dict, max_length=3)

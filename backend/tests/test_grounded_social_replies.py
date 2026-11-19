@@ -181,6 +181,7 @@ def test_context_uses_saved_prompts_history_and_reviewed_programs_without_privat
 )
 def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     from app.institutional import channel_outbox
+    monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     operation, integration, conversation = [str(uuid4()) for _ in range(3)]

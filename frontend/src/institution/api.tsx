@@ -60,6 +60,27 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  voice_duration_estimated_exceeded: "El texto de la muestra duraría más que el máximo configurado. No se generó audio. Reduce el texto, aumenta la duración máxima o usa 0 para desactivar ese límite.",
+  voice_duration_actual_exceeded: "El audio generado excedió la duración máxima. Se descartó sin cortarlo. La generación pudo consumir caracteres; revisa la actividad y reduce el texto antes de otra prueba.",
+  voice_key_required: "Guarda primero la clave de ElevenLabs en Ajustes → APIs y modelos → Credenciales.",
+  voice_profile_unavailable: "El perfil de voz no está disponible o está desactivado. Elige un perfil activo y guarda la configuración.",
+  voice_conversation_limit: "Este hilo ya alcanzó su máximo de audios. Las siguientes respuestas continúan por texto.",
+  voice_daily_limit: "Se alcanzó el tope de caracteres de las últimas 24 horas. Espera o ajusta el límite de voz; las conversaciones continúan por texto.",
+  voice_preview_limit: "Se alcanzó el límite de 100 intentos de voz en 24 horas para las muestras. Revisa la actividad antes de volver a generar.",
+  voice_configuration_changed: "La configuración o la clave cambió durante la generación. El audio se canceló para respetar la configuración vigente. Revisa el historial antes de iniciar otra muestra.",
+  voice_catalog_timeout: "ElevenLabs no terminó de devolver el catálogo. Conservamos tus perfiles; vuelve a cargar las voces cuando se recupere la conexión.",
+  voice_catalog_required: "La voz o el modelo ya no están disponibles para esta clave. Carga el catálogo de ElevenLabs y elige de nuevo en el perfil.",
+  voice_insufficient_credits: "ElevenLabs no tiene saldo suficiente. Revisa tu saldo en ElevenLabs. La conversación puede continuar por texto.",
+  voice_payment_required: "ElevenLabs requiere revisar el plan o el pago. Comprueba tu cuenta antes de generar otra muestra.",
+  voice_model_access_denied: "Tu cuenta no tiene acceso a este modelo de voz. Carga el catálogo y elige un modelo permitido por tu plan.",
+  voice_account_restricted: "ElevenLabs restringió temporalmente esta cuenta. Revisa los avisos de seguridad del proveedor antes de repetir la generación.",
+  voice_invalid_key: "ElevenLabs rechazó la clave. Reemplázala directamente en APIs y modelos → Credenciales → ElevenLabs.",
+  voice_insufficient_permissions: "La clave no permite esta operación. En ElevenLabs habilita lectura de voces y modelos y generación de texto a voz; luego guarda la clave en RinovaPlus.",
+  voice_forbidden: "ElevenLabs denegó el acceso. Revisa los permisos de lectura de voces/modelos y generación de audio, además del acceso al modelo y la voz elegidos.",
+  voice_access_denied: "La voz elegida no está disponible para tu cuenta. Actualiza el catálogo y selecciona otra voz.",
+  voice_invalid_parameters: "ElevenLabs rechazó la combinación de voz y modelo. Actualiza el catálogo y selecciona valores compatibles.",
+  voice_preview_unavailable: "La muestra venció, cambió de usuario o su archivo ya no está disponible. Genera una muestra nueva desde tu sesión.",
+  voice_channel_required: "Configura primero un canal de Meta para vincular el registro de generación institucional.",
   ads_meta_permission_required:
     "Meta no concedió acceso de lectura a Publicidad (ads_read). Activa ese permiso en la configuración de la app y vuelve a Conectar con Meta desde Publicidad.",
   ads_meta_login_source_required:

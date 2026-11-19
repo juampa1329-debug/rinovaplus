@@ -2,22 +2,61 @@
   "phase": "P19",
   "title": "Voces y notas de audio con ElevenLabs",
   "date": "2026-11-19",
-  "status": "planned_after_SIIE_and_AI_API_UX_review",
+  "status": "implemented_local_checks_pending_live",
   "accepted": 0,
   "total": 5,
-  "implementation_percent": 0,
   "canonical_weight_added": 0,
   "scope_amendment": "All calls, live voice agents, call followups and call supervision moved to P20 by owner before acceptance",
-  "requested": ["two_or_three_voice_profiles", "voice_assignment_by_school_and_agent", "consistent_voice_per_conversation", "contextual_WhatsApp_voice_notes", "preview_and_usage"],
+  "requested": [
+    "two_or_three_voice_profiles",
+    "voice_assignment_by_school_and_agent",
+    "consistent_voice_per_conversation",
+    "contextual_WhatsApp_voice_notes",
+    "preview_and_usage",
+    "per_conversation_cap",
+    "incoming_voice_and_long_reply_modes",
+    "estimated_and_actual_duration_limit_zero_disables_duration_limit",
+    "no_manual_model_or_voice_ids"
+  ],
   "units": [
-    {"id": "P19.1", "title": "Proveedor y catálogo", "state": "planned"},
-    {"id": "P19.2", "title": "Asignación de voces", "state": "planned"},
-    {"id": "P19.3", "title": "Generación contextual", "state": "planned"},
-    {"id": "P19.4", "title": "Nota de voz", "state": "planned"},
-    {"id": "P19.5", "title": "Operación y consumo", "state": "planned"}
+    {
+      "id": "P19.1",
+      "title": "Proveedor y catálogo",
+      "state": "implemented_pending_live_acceptance"
+    },
+    {
+      "id": "P19.2",
+      "title": "Asignación de voces",
+      "state": "implemented_pending_live_acceptance"
+    },
+    {
+      "id": "P19.3",
+      "title": "Generación contextual",
+      "state": "implemented_pending_live_acceptance"
+    },
+    {
+      "id": "P19.4",
+      "title": "Nota de voz",
+      "state": "implemented_pending_live_acceptance"
+    },
+    {
+      "id": "P19.5",
+      "title": "Operación y consumo",
+      "state": "implemented_pending_live_acceptance"
+    }
   ],
   "reference": "docs/adaptation/P19_VOICES_AUDIO.md",
   "calls_phase": "P20",
   "live_audio_generated": 0,
-  "Hermes_in_new_scope": false
+  "Hermes_in_new_scope": false,
+  "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
+  "checks": {
+    "backend_passed": 130,
+    "backend_skipped": 2,
+    "frontend_selected_passed": 15,
+    "types": "passed",
+    "lint_modified": "passed",
+    "workspace_build": "passed_with_existing_large_bundle_warning"
+  },
+  "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md"
 }

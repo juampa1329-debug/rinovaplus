@@ -1,0 +1,208 @@
+.voice-workspace {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 1280px;
+  margin-inline: auto;
+}
+.voice-workspace .panel {
+  margin: 0;
+}
+.voice-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  border-top: 3px solid var(--accent, #c4f04d);
+}
+.voice-hero h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1.8rem;
+  margin: 0.5rem 0;
+}
+.voice-hero svg {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+.voice-hero p {
+  max-width: 65ch;
+}
+.voice-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  color: var(--text-muted);
+}
+.voice-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.voice-summary article {
+  display: grid;
+  gap: 0.6rem;
+}
+.voice-summary strong {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.voice-summary span,
+.voice-note,
+.voice-workspace small {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.voice-workspace fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+.voice-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.voice-check {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.voice-check input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #8daf20;
+}
+.voice-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.voice-section-heading h3,
+.voice-section-heading h4 {
+  margin: 0;
+}
+.voice-profiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.voice-profile {
+  border: 1px solid var(--border, #52666b);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  min-width: 0;
+}
+.voice-profile summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+}
+.voice-actions,
+.voice-save {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.voice-save {
+  padding: 1rem 0;
+}
+.voice-preview {
+  display: grid;
+  gap: 0.75rem;
+}
+.voice-player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, #c4f04d 8%, transparent);
+}
+.voice-player audio {
+  max-width: 100%;
+  width: 360px;
+}
+.voice-history {
+  display: grid;
+  gap: 0.5rem;
+}
+.voice-history article {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border, #52666b);
+  padding: 1rem 0;
+}
+.voice-history article > div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 160px;
+  margin-right: auto;
+}
+.voice-history article > small {
+  flex-basis: 100%;
+}
+.voice-workspace button {
+  min-height: 44px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .voice-hero,
+  .voice-summary article,
+  .voice-profile {
+    animation: voice-enter 0.25s ease-out both;
+  }
+  .voice-summary article:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .voice-summary article:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  @keyframes voice-enter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+@media (max-width: 720px) {
+  .voice-hero,
+  .voice-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .voice-summary,
+  .voice-fields {
+    grid-template-columns: 1fr;
+  }
+  .voice-summary strong {
+    font-size: 1.25rem;
+  }
+  .voice-workspace .panel {
+    padding: 1.1rem;
+  }
+  .voice-hero h2 {
+    font-size: 1.5rem;
+  }
+}

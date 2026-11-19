@@ -134,6 +134,8 @@ class Settings:
             current = setting(c, self.settings, section)
             if current["revision"] != body.revision:
                 raise HTTPException(409, "revision_conflict")
+            if section == "ai" and document.get("voice", {}).get("enabled") and document.get("voice") != current["document"].get("voice"):
+                authorize(c, self.settings, authority, action, recent=True)
             if section == "ai" and document["comment_mode"] == "auto":
                 changed_policy = any(
                     document[field] != current["document"].get(field)
