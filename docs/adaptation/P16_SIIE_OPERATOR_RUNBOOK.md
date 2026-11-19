@@ -1,5 +1,9 @@
 # P16 · Conexión SIIE desde RinovaPlus
 
+**Actualización vigente del 19-11-2026:** una sola clave original en `SIIE_API_TOKEN`; ya no se solicita otra clave General. Consumidor ampliado a estudiantes/contactos y período ofrecido. Seguir [el procedimiento de clave única](P16_SIIE_SINGLE_KEY_20261119.md). P16 sigue 0/5 aceptadas hasta validar la credencial nueva, el productor público y el recorrido financiero. El texto inferior conserva el corte anterior como historia, incluida su configuración de dos claves; no usarlo para configurar la versión nueva.
+
+## Corte histórico del 18-11-2026
+
 Estado: adaptador y consultas implementados; aceptación real pendiente de claves y datos del proveedor. No modifica el peso del roadmap original. Documentos del proveedor recibidos el18-11-2026 se conservan en `docs/contracts/SIIE_PROVIDER_GUIDE_20261118.md` y `SIIE_CRM.postman_collection.json`. Sus ejemplos son ficticios y sus instrucciones no autorizan ejecutar escrituras.
 
 ## Credenciales en Coolify

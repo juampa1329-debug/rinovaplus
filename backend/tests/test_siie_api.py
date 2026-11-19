@@ -15,8 +15,9 @@ from app.institutional import siie_api as siie
 def configuration(monkeypatch):
     monkeypatch.setenv("SIIE_API_BASE_URL", "https://siie.example.test/SIIEWebPlus")
     monkeypatch.setenv("SIIE_API_HOSTS", "siie.example.test")
-    monkeypatch.setenv("SIIE_CATALOG_API_TOKEN", "catalog-fixture-not-a-real-key-12345")
-    monkeypatch.setenv("SIIE_ADMISSIONS_API_TOKEN", "admissions-fixture-not-a-real-key")
+    monkeypatch.setenv("SIIE_API_TOKEN", "single-fixture-not-a-real-key-12345678")
+    monkeypatch.delenv("SIIE_CATALOG_API_TOKEN", raising=False)
+    monkeypatch.delenv("SIIE_ADMISSIONS_API_TOKEN", raising=False)
 
 
 def stamp(**fields):
@@ -33,18 +34,16 @@ def response(value, status=200):
     return httpx.MockTransport(lambda r: httpx.Response(status, json=value))
 
 
-def test_disabled_scopes_are_separate_and_never_send_other_key(monkeypatch):
-    monkeypatch.delenv("SIIE_CATALOG_API_TOKEN")
-    assert siie.status()["admissions_configured"] is True
-    with pytest.raises(HTTPException, match="siie_catalog_not_configured"):
-        siie.read(
-            "programs", transport=httpx.MockTransport(lambda r: pytest.fail("network"))
-        )
-    monkeypatch.delenv("SIIE_ADMISSIONS_API_TOKEN")
-    with pytest.raises(HTTPException, match="siie_admissions_not_configured"):
-        siie.read(
-            "periods", transport=httpx.MockTransport(lambda r: pytest.fail("network"))
-        )
+def test_missing_single_key_disables_all_reads_and_ignores_old_admissions_key(monkeypatch):
+    monkeypatch.delenv("SIIE_API_TOKEN")
+    monkeypatch.setenv("SIIE_ADMISSIONS_API_TOKEN", "old-key-must-not-be-used-1234567890")
+    assert siie.status()["api_configured"] is False
+    assert siie.status()["admissions_configured"] is False
+    for route in ("programs", "periods", "students"):
+        with pytest.raises(HTTPException, match="siie_not_configured"):
+            siie.read(
+                route, transport=httpx.MockTransport(lambda r: pytest.fail("network"))
+            )
 
 
 def test_real_aspx_path_header_and_opaque_cursor_are_preserved():
@@ -52,13 +51,19 @@ def test_real_aspx_path_header_and_opaque_cursor_are_preserved():
         assert request.method == "GET"
         assert request.url.path == "/SIIEWebPlus/Api/CRM/v1/Commercial/Programs.aspx"
         assert request.url.params["cursor"] == "opaque+/=cursor"
-        assert request.headers["X-API-Key"].startswith("catalog-fixture")
+        assert request.headers["X-API-Key"].startswith("single-fixture")
         assert (
             "Authorization" not in request.headers and "Origin" not in request.headers
         )
         return httpx.Response(
             200,
-            json=stamp(items=[], next_cursor=None, pagination="keyset_live_catalog"),
+            json=stamp(
+                items=[],
+                next_cursor=None,
+                pagination="keyset_live_catalog",
+                period_id="2",
+                offered_period_id="2",
+            ),
             headers={"X-Correlation-ID": "fixture-request"},
         )
 
@@ -69,10 +74,56 @@ def test_real_aspx_path_header_and_opaque_cursor_are_preserved():
     assert result["saved"] is False
 
 
+@pytest.mark.parametrize("route", ["programs", "periods", "students"])
+def test_single_key_is_used_for_every_scope_without_second_credential(monkeypatch, route):
+    monkeypatch.setenv("SIIE_CATALOG_API_TOKEN", "old-catalog-never-send-123456789012345")
+    monkeypatch.setenv("SIIE_ADMISSIONS_API_TOKEN", "old-admissions-never-send-1234567890")
+    seen = []
+
+    def remote(request):
+        seen.append(request)
+        assert request.method == "GET"
+        assert request.headers["X-API-Key"] == "single-fixture-not-a-real-key-12345678"
+        assert "Authorization" not in request.headers
+        # An access refusal must not cause a retry with either old credential.
+        return httpx.Response(401)
+
+    with pytest.raises(HTTPException, match="siie_catalog_access_rejected"):
+        siie.read(route, transport=httpx.MockTransport(remote))
+    assert len(seen) == 1
+    state = siie.status()
+    assert state["api_configured"] and state["admissions_configured"]
+    assert state["credential_mode"] == "unified"
+    assert "fixture" not in str(state) and "never-send" not in str(state)
+
+
+@pytest.mark.parametrize("key", ["", "short", "x" * 31, "x" * 32 + "\ninside"])
+def test_invalid_primary_key_cannot_fall_back_to_old_credentials(monkeypatch, key):
+    monkeypatch.setenv("SIIE_API_TOKEN", key)
+    monkeypatch.setenv("SIIE_CATALOG_API_TOKEN", "old-fixture-key-never-send-1234567890")
+    expected = "siie_not_configured" if not key else "siie_credential_invalid"
+    with pytest.raises(HTTPException, match=expected):
+        siie.read(
+            "periods", transport=httpx.MockTransport(lambda r: pytest.fail("network"))
+        )
+
+
+def test_old_catalog_variable_is_temporary_single_key_compatibility(monkeypatch):
+    monkeypatch.delenv("SIIE_API_TOKEN")
+    monkeypatch.setenv("SIIE_CATALOG_API_TOKEN", "legacy-fixture-original-key-1234567890")
+
+    def remote(request):
+        assert request.headers["X-API-Key"] == "legacy-fixture-original-key-1234567890"
+        return httpx.Response(200, json={"status": "ok", "data": {"items": []}})
+
+    assert siie.read("periods", transport=httpx.MockTransport(remote))["data"]["items"] == []
+    assert siie.status()["credential_mode"] == "legacy_catalog"
+
+
 @pytest.mark.parametrize(
     "route,values",
     [
-        ("applicants", {}),
+        ("student", {}),
         ("applicant", {"idPeriodo": "1"}),
         ("offers", {"program_id": True}),
         ("offers", {"program_id": "2147483648"}),
@@ -184,7 +235,7 @@ def test_catalog_pagination_bound_to_program_and_period():
 
 def test_admissions_envelope_and_current_period_binding():
     def remote(request):
-        assert request.headers["X-API-Key"].startswith("admissions-fixture")
+        assert request.headers["X-API-Key"].startswith("single-fixture")
         assert request.url.params["idPeriodo"] == "1"
         return httpx.Response(
             200,
@@ -305,3 +356,224 @@ def test_legacy_import_cannot_bypass_incomplete_offer_inspection():
     }
     with pytest.raises(HTTPException, match="siie_source_incomplete"):
         preview("1-n1", transport=response(payload, 422))
+
+
+def test_offered_period_can_be_future_and_not_academically_active():
+    payload = stamp(
+        period_id="7",
+        offered_period_id="7",
+        offered_period_source="GEParametros:38",
+        items=[],
+        next_cursor=None,
+        pagination="keyset_live_catalog",
+    )
+    assert (
+        siie.read("programs", transport=response(payload))["data"]["period_id"] == "7"
+    )
+    periods = {
+        "status": "ok",
+        "data": {
+            "items": [{"id": 7, "nombre": "Ofrecido fixture", "activo": False}],
+            "idPeriodoOfrecido": 7,
+            "idPeriodoActivo": 6,
+            "requiereSeleccion": False,
+        },
+    }
+    assert (
+        siie.read("periods", transport=response(periods))["data"]["idPeriodoOfrecido"]
+        == 7
+    )
+    with pytest.raises(HTTPException, match="siie_catalog_stale_or_mismatched"):
+        siie.read("programs", {"period_id": "6"}, transport=response(payload))
+
+
+def test_old_catalog_without_effective_period_does_not_silently_include_history():
+    with pytest.raises(HTTPException, match="siie_period_contract_required"):
+        siie.read(
+            "programs",
+            transport=response(
+                stamp(items=[], next_cursor=None, pagination="keyset_live_catalog")
+            ),
+        )
+
+
+@pytest.mark.parametrize(
+    "route", ["applicants", "students", "filters", "student_filters"]
+)
+def test_offered_period_may_be_omitted_in_new_reads(route):
+    assert siie.parameters(route, {}) == {}
+
+
+def test_students_preserve_state_zero_contacts_and_use_single_key():
+    item = {
+        "idEstudiante": 9,
+        "idMatricula": 8,
+        "idPeriodo": 7,
+        "nombre": "Persona fixture",
+        "telefono": None,
+        "celular": None,
+        "correo": "fixture@example.invalid",
+        "idEstadoMatricula": 0,
+        "estadoMatricula": "Inscrito",
+        "idPersona": None,
+        "idAspirante": None,
+    }
+
+    def remote(request):
+        assert request.url.path.endswith("/Estudiantes.aspx")
+        assert request.url.params["idEstadoMatricula"] == "0"
+        assert request.headers["X-API-Key"].startswith("single-fixture")
+        return httpx.Response(
+            200,
+            json={
+                "status": "ok",
+                "data": {
+                    "idPeriodo": 7,
+                    "items": [item],
+                    "offset": 0,
+                    "limit": 25,
+                    "hasMore": False,
+                },
+            },
+        )
+
+    result = siie.read(
+        "students",
+        {"idEstadoMatricula": "0", "idPeriodo": "7"},
+        transport=httpx.MockTransport(remote),
+    )
+    assert result["data"]["items"][0] == item
+    assert siie.status()["students_supported"] is True
+
+
+@pytest.mark.parametrize("value", ["-1", "2147483648", True, "x"])
+def test_invalid_student_state_rejected_before_io(value):
+    with pytest.raises(HTTPException, match="siie_invalid_parameter"):
+        siie.read(
+            "students",
+            {"idEstadoMatricula": value},
+            transport=httpx.MockTransport(lambda r: pytest.fail("network")),
+        )
+
+
+def test_unknown_student_state_not_rewritten_as_active():
+    item = {
+        "idEstudiante": 9,
+        "idMatricula": 8,
+        "idPeriodo": 7,
+        "idEstadoMatricula": 91,
+        "estadoMatricula": None,
+        "requiereRevisionEstado": True,
+    }
+    payload = {
+        "status": "ok",
+        "data": {
+            "idPeriodo": 7,
+            "items": [item],
+            "offset": 0,
+            "limit": 25,
+            "hasMore": False,
+        },
+    }
+    result = siie.read("students", {"idPeriodo": "7"}, transport=response(payload))
+    assert result["data"]["items"][0] == item
+
+
+@pytest.mark.parametrize("change", [{"idPeriodo": 8}, {"idEstudiante": 10}])
+def test_student_detail_rejects_foreign_identity_or_period(change):
+    enrollment = {"idMatricula": 8, "idPeriodo": 7, "idEstudiante": 9, **change}
+    payload = {
+        "status": "ok",
+        "data": {
+            "idPeriodo": 7,
+            "estudiante": {"idEstudiante": 9},
+            "matriculas": [enrollment],
+        },
+    }
+    with pytest.raises(HTTPException, match="siie_catalog_stale_or_mismatched"):
+        siie.read(
+            "student",
+            {"idEstudiante": "9", "idPeriodo": "7"},
+            transport=response(payload),
+        )
+
+
+def test_student_detail_and_filters_keep_missing_person_links_null():
+    payload = {
+        "status": "ok",
+        "data": {
+            "idPeriodo": 7,
+            "estudiante": {"idEstudiante": 9, "idPersona": None, "idAspirante": None},
+            "matriculas": [{"idMatricula": 8, "idPeriodo": 7, "jornada": None}],
+        },
+    }
+    result = siie.read("student", {"idEstudiante": "9"}, transport=response(payload))
+    assert result["data"]["estudiante"]["idAspirante"] is None
+    filters = {
+        "status": "ok",
+        "data": {
+            "idPeriodo": 7,
+            "programas": [],
+            "jornadas": [],
+            "niveles": [],
+            "estadosMatricula": [{"idEstadoMatricula": 0, "nombre": "Inscrito"}],
+        },
+    }
+    assert (
+        siie.read("student_filters", {"idPeriodo": "7"}, transport=response(filters))[
+            "data"
+        ]["estadosMatricula"][0]["idEstadoMatricula"]
+        == 0
+    )
+
+
+@pytest.mark.parametrize(
+    "code,expected",
+    [
+        ("offered_period_unavailable", "siie_offered_period_unavailable"),
+        ("invalid_cursor", "siie_cursor_changed"),
+        ("students_unavailable", "siie_students_unavailable"),
+        ("api_credential_not_configured", "siie_source_credential_configuration"),
+        ("api_credential_config_invalid", "siie_source_credential_configuration"),
+        ("api_credential_config_conflict", "siie_source_credential_configuration"),
+    ],
+)
+def test_updated_source_errors_are_explained_without_private_messages(code, expected):
+    with pytest.raises(HTTPException, match=expected):
+        siie.read(
+            "students",
+            transport=response({"code": code, "message": "private SQL detail"}, 503),
+        )
+
+
+def test_offered_offer_with_null_campus_and_validities_stays_inspection_only():
+    partial = stamp(
+        offer_id="8-n1",
+        quotable=False,
+        campus_id=None,
+        active=True,
+        period_active=False,
+        offered_period_id="7",
+        commercial={
+            "price_valid_from": None,
+            "price_valid_until": None,
+            "financial_plans": [],
+        },
+    )
+    payload = {
+        "code": "source_data_incomplete",
+        "quotable": False,
+        "partial_offer": partial,
+        "data_quality": [
+            {
+                "field": "commercial.requirements",
+                "code": "admission_requirements_missing",
+                "message": "Falta fuente",
+            }
+        ],
+    }
+    result = siie.read("offer", {"offer_id": "8-n1"}, transport=response(payload, 422))[
+        "data"
+    ]
+    assert result["offer"]["campus_id"] is None and result["quotable"] is False
+    assert result["saved"] is False and "draft" not in result

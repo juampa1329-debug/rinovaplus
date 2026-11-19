@@ -4,11 +4,14 @@ import { Button, Field, Notice } from "../shared/ui";
 import { useTask } from "./api";
 import { ErrorFeedback } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
+import { SiieContacts, SiieStudents } from "./SiieStudents";
 import "./siie.css";
 
 type Row = Record<string, unknown>;
 type SourceData = { data: Row; correlation_id?: string };
 type Connection = {
+  api_configured?: boolean;
+  credential_mode?: "unified" | "legacy_catalog";
   catalog_configured: boolean;
   admissions_configured: boolean;
 };
@@ -36,7 +39,7 @@ function explainSiie(failure: OperationFailure) {
     title: "No se pudo consultar SIIE",
     detail: failure.message,
     nextStep: /configurad|clave|credencial/i.test(failure.message)
-      ? "En Coolify, configura la URL HTTPS y la clave original del grupo correspondiente: Catálogo o Admisiones. Guarda las variables sólo en Runtime y redespliega el backend. No compartas la clave por el chat."
+      ? "En Coolify, configura la URL HTTPS y la clave original única en SIIE_API_TOKEN. Guarda las variables sólo en Runtime y redespliega el backend. Si el aviso menciona la configuración de SIIE, su administrador debe revisar API_Key y API_CRM en ese servidor. No compartas la clave por el chat."
       : "Revisa el período y la referencia seleccionada. Si SIIE indica un límite, espera antes de consultar; si el aviso persiste, entrega la referencia de consulta al equipo de SIIE. Los datos locales se conservan.",
   };
 }
@@ -57,6 +60,7 @@ function SiieWorkspaceContent() {
   const [tab, setTab] = useState("catalog");
   const [programs, setPrograms] = useState<Row | null>(null);
   const [programCursor, setProgramCursor] = useState<string[]>([""]);
+  const [catalogPeriod, setCatalogPeriod] = useState("");
   const [selectedProgram, setSelectedProgram] = useState("");
   const [offers, setOffers] = useState<Row | null>(null);
   const [offerCursor, setOfferCursor] = useState<string[]>([""]);
@@ -101,12 +105,17 @@ function SiieWorkspaceContent() {
       }
     }, "");
   };
-  const openPrograms = (cursor: string, stack: string[]) => {
+  const openPrograms = (
+    cursor: string,
+    stack: string[],
+    requestedPeriod = catalogPeriod,
+  ) => {
     setOffers(null);
     setInspection(null);
     setSelectedProgram("");
-    load("programs", { cursor }, (row) => {
+    load("programs", { cursor, period_id: requestedPeriod }, (row) => {
       setPrograms(row);
+      setCatalogPeriod(text(row.period_id));
       setProgramCursor(stack);
     });
   };
@@ -115,10 +124,14 @@ function SiieWorkspaceContent() {
     // Do not show the previous program's offers under the newly selected name.
     setOffers(null);
     setSelectedProgram(program);
-    load("offers", { program_id: program, cursor }, (row) => {
-      setOffers(row);
-      setOfferCursor(stack);
-    });
+    load(
+      "offers",
+      { program_id: program, cursor, period_id: catalogPeriod },
+      (row) => {
+        setOffers(row);
+        setOfferCursor(stack);
+      },
+    );
   };
   const search = (
     offset = "0",
@@ -184,28 +197,31 @@ function SiieWorkspaceContent() {
           {connection && (
             <div className="siie-connections" role="status">
               <span>
-                Catálogo:{" "}
-                {connection.catalog_configured
+                API de SIIE:{" "}
+                {(connection.api_configured ??
+                (connection.catalog_configured &&
+                  connection.admissions_configured))
                   ? "clave configurada"
-                  : "falta clave"}
-              </span>
-              <span>
-                Admisiones:{" "}
-                {connection.admissions_configured
-                  ? "clave configurada"
-                  : "falta clave"}
+                  : "falta configurar la clave única"}
               </span>
               <p>
-                Una clave configurada requiere todavía una consulta correcta
-                para validar el acceso.
+                Una sola clave para programas, finanzas, aspirantes y
+                estudiantes. La configuración no confirma el acceso: consulta
+                cada sección para comprobarlo con SIIE.
               </p>
+              {connection.credential_mode === "legacy_catalog" && (
+                <p>
+                  Configuración anterior detectada. Al renovar la clave, usa
+                  SIIE_API_TOKEN en Coolify.
+                </p>
+              )}
             </div>
           )}
           <nav className="siie-tabs" aria-label="Datos de SIIE">
             {[
               ["catalog", "Programas y finanzas"],
               ["admissions", "Aspirantes y seguimiento"],
-              ["pending", "Estudiantes y cartera"],
+              ["students", "Estudiantes y matrículas"],
             ].map(([id, label]) => (
               <Button
                 type="button"
@@ -227,6 +243,20 @@ function SiieWorkspaceContent() {
                 <Button type="button" onClick={() => openPrograms("", [""])}>
                   Obtener programas de SIIE
                 </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => openPrograms("", [""], "")}
+                >
+                  Usar período ofrecido de SIIE
+                </Button>
+                {programs && (
+                  <Notice>
+                    Período de la consulta: {text(programs.period_id)}. SIIE
+                    selecciona el período ofrecido; puede ser distinto del
+                    académico activo. La paginación conserva este período.
+                  </Notice>
+                )}
                 {programs && (
                   <div className="siie-split">
                     <div>
@@ -369,8 +399,8 @@ function SiieWorkspaceContent() {
                     load("periods", {}, (row) => {
                       setPeriods(row);
                       setPeriod(
-                        row.requiereSeleccion === false && row.idPeriodoActivo
-                          ? text(row.idPeriodoActivo)
+                        row.requiereSeleccion === false && row.idPeriodoOfrecido
+                          ? text(row.idPeriodoOfrecido)
                           : "",
                       );
                       setFilters(null);
@@ -382,6 +412,29 @@ function SiieWorkspaceContent() {
                   }
                 >
                   Obtener períodos de admisiones
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    load("periods", { incluirHistoricos: "1" }, (row) => {
+                      setPeriods(row);
+                      setPeriod(
+                        row.requiereSeleccion === false && row.idPeriodoOfrecido
+                          ? text(row.idPeriodoOfrecido)
+                          : "",
+                      );
+                      setFilters(null);
+                      setProgramFilter("");
+                      setShift("");
+                      setApplicants(null);
+                      setApplicant(null);
+                      setHistory(null);
+                      setApplied(null);
+                    })
+                  }
+                >
+                  Consultar períodos históricos de admisiones
                 </Button>
                 {periods && (
                   <>
@@ -405,7 +458,10 @@ function SiieWorkspaceContent() {
                         {list(periods.items).map((p) => (
                           <option key={text(p.id)} value={text(p.id)}>
                             {text(p.nombre)}
-                            {p.activo === true ? " · Activo" : ""}
+                            {text(p.id) === text(periods.idPeriodoOfrecido)
+                              ? " · Ofrecido"
+                              : ""}
+                            {p.activo === true ? " · Académico activo" : ""}
                           </option>
                         ))}
                       </select>
@@ -567,10 +623,11 @@ function SiieWorkspaceContent() {
                             }}
                           />
                           <Notice>
-                            La confirmación de origen no acredita matrícula.
-                            SIIE no entrega teléfono, documento ni correo en
-                            esta ficha.
+                            La confirmación de origen no acredita matrícula. Los
+                            datos de contacto no prueban consentimiento
+                            comercial.
                           </Notice>
+                          <SiieContacts person={applicant.aspirante as Row} />
                           <Button
                             type="button"
                             variant="secondary"
@@ -679,15 +736,7 @@ function SiieWorkspaceContent() {
                 </p>
               </>
             )}
-            {tab === "pending" && (
-              <Notice>
-                La API recibida todavía no expone estudiantes matriculados,
-                matrículas, recibos, pagos ni saldos individuales. Para
-                habilitarlos necesitamos sus rutas, IDs estables, permisos y
-                reglas de actualización. No se deducen del estado de un
-                aspirante.
-              </Notice>
-            )}
+            {tab === "students" && <SiieStudents />}
           </fieldset>
           {task.busy && <p role="status">Consultando SIIE…</p>}
           {correlation && <small>Referencia de consulta: {correlation}</small>}

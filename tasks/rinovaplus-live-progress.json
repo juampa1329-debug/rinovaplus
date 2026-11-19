@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-18",
+  "date": "2026-11-19",
   "current_url": "https://app.rinovaplus.com",
   "broadcasting_editor": {
     "status": "deployed_real_template_submission_and_broadcast_receipts_verified",
@@ -105,8 +105,9 @@
     "contract": "docs/contracts/SIIE_COMMERCIAL_API.md"
   },
   "next": [
-    "P13_two_reviewed_programs_without_SIIE",
-    "P11_P12_institutional_commissioning"
+    "P16_single_key_rotation_public_contract_and_financial_acceptance",
+    "AI_API_UX_Scentra_review_without_Hermes",
+    "P13_two_reviewed_programs_and_agents"
   ],
   "details": "docs/adaptation/RINOVAPLUS_LIVE_STATUS.md",
   "final_frontend_regression": {
@@ -164,15 +165,15 @@
     "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {
-    "status": "catalog_access_verified_admissions_and_financial_detail_pending",
+    "status": "single_key_and_students_consumer_tested_pending_rotation_and_live_acceptance",
     "accepted": 0,
     "total": 5,
-    "implementation": "nine_GET_provider_routes_with_inspection_and_pagination",
+    "implementation": "twelve_GET_provider_routes_single_key_students_contacts_and_offered_period_tested",
     "scope": "SIIE_academic_and_financial_API",
     "blocks_P13": false,
     "details": "docs/adaptation/P16_SIIE_INTEGRATION.md",
     "evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
-    "requirements": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
+    "requirements": "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md",
     "required_scope": "aspirants_students_enrollment_active_period_offerings_cash_and_financed_plan_prices"
   },
   "P17": {
@@ -219,6 +220,34 @@
     "total": 4,
     "evidence": "artifacts/live/p11-postgres-acceptance-20261118.json",
     "residual_improvements": "tasks/operations-hardening-backlog.json"
+  },
+  "P19": {
+    "status": "planned_by_owner_calls_moved_to_P20",
+    "accepted": 0,
+    "total": 5,
+    "implementation_percent": 0,
+    "scope": "ElevenLabs_voice_profiles_and_contextual_voice_notes",
+    "details": "docs/adaptation/P19_VOICES_AUDIO.md",
+    "progress": "tasks/p19-voices-audio-progress.json"
+  },
+  "P20": {
+    "status": "planned_by_owner",
+    "accepted": 0,
+    "total": 8,
+    "implementation_percent": 0,
+    "scope": "WhatsApp_inbound_outbound_voice_agents_CRM_context_human_transfer_and_live_audio_supervision",
+    "number_preference": "existing_CBN_Colombian_WhatsApp_number_if_eligible",
+    "details": "docs/adaptation/P20_WHATSAPP_CALLS.md",
+    "progress": "tasks/p20-whatsapp-calls-progress.json",
+    "calling_routing_verified": false,
+    "live_audio_listening_verified": false
+  },
+  "voice_phase_numbering": {
+    "date": "2026-11-19",
+    "P19": "Voices and voice notes",
+    "P20": "All calls, live voice agents and call supervision",
+    "canonical_weight_added": 0,
+    "owner_amendment_before_any_voice_acceptance": true
   },
   "pending_phase_descriptions": "docs/adaptation/PENDING_PHASES.md",
   "comment_threads": {

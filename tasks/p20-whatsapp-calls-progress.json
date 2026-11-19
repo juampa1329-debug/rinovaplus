@@ -1,0 +1,40 @@
+{
+  "phase": "P20",
+  "title": "Llamadas de WhatsApp, agentes de voz y supervisión humana",
+  "date": "2026-11-19",
+  "status": "planned_by_owner",
+  "accepted": 0,
+  "total": 8,
+  "implementation_percent": 0,
+  "canonical_weight_added": 0,
+  "scope_origin": "All calls moved from the initial unaccepted P19 draft by explicit owner request",
+  "number_preference": "reuse_CBN_Colombian_WhatsApp_number_if_eligible",
+  "Twilio_or_foreign_number_required": false,
+  "new_number_purchase_authorized_by_plan": false,
+  "requested": ["WhatsApp_inbound_calls", "WhatsApp_outbound_followups", "voice_agent_when_answered", "CRM_WhatsApp_notes_followup_context", "human_takeover", "transfer_to_compatible_destination", "live_audio_listening", "summaries_and_next_tasks"],
+  "capability_gates": {
+    "CBN_account_and_current_routing": "not_yet_checked_for_calling",
+    "Meta_calling_eligibility": "pending_actual_account_check",
+    "signaling_and_media": "Graph_WebRTC_or_compatible_SIP_pending_selection_and_test",
+    "live_audio": "not_provided_by_ElevenLabs_monitor_requires_media_path_validation",
+    "ElevenLabs_text_monitor": "Enterprise_only_not_audio",
+    "WhatsApp_to_PSTN": "do_not_offer_rejected_in_official_WhatsApp_calling_provider_documentation",
+    "human_handoff": "pending_transport_specific_proof_not_inferred_from_chat_takeover",
+    "cost": "no_free_service_claim_no_plan_purchase_authorized"
+  },
+  "units": [
+    {"id": "P20.1", "title": "Cuenta y ruteo", "state": "planned"},
+    {"id": "P20.2", "title": "Entrantes", "state": "planned"},
+    {"id": "P20.3", "title": "Salientes y seguimiento", "state": "planned"},
+    {"id": "P20.4", "title": "Contexto CRM", "state": "planned"},
+    {"id": "P20.5", "title": "Atención humana", "state": "planned"},
+    {"id": "P20.6", "title": "Escucha y supervisión", "state": "planned"},
+    {"id": "P20.7", "title": "Resultados", "state": "planned"},
+    {"id": "P20.8", "title": "Operación y coste", "state": "planned"}
+  ],
+  "reference": "docs/adaptation/P20_WHATSAPP_CALLS.md",
+  "voice_profiles_phase": "P19",
+  "live_calls_started": 0,
+  "numbers_purchased_or_migrated": 0,
+  "existing_messaging_routing_changed": false
+}

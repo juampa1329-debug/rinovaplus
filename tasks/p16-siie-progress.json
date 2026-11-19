@@ -1,8 +1,8 @@
 {
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
-  "date": "2026-11-18",
-  "status": "catalog_access_and_UI_verified_admissions_and_source_detail_pending",
+  "date": "2026-11-19",
+  "status": "single_key_and_students_consumer_tested_pending_rotation_and_live_acceptance",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -12,12 +12,12 @@
     {
       "id": "P16.1",
       "title": "Contrato y acceso",
-      "state": "in_progress_catalog_access_verified_general_key_and_contract_acceptance_pending"
+      "state": "in_progress_single_key_contract_and_tests_ready_new_token_public_access_pending"
     },
     {
       "id": "P16.2",
       "title": "Consulta oficial",
-      "state": "pending_source_detail503_no_complete_current_offers"
+      "state": "pending_live_students_and_two_complete_financial_offers"
     },
     {
       "id": "P16.3",
@@ -44,38 +44,42 @@
     "filters",
     "applicants",
     "applicant",
-    "history"
+    "history",
+    "students",
+    "student",
+    "student_filters"
   ],
   "remote_writes_enabled": false,
-  "students_endpoint_in_contract": false,
+  "students_endpoint_in_contract": true,
   "individual_balances_endpoint_in_contract": false,
   "documents": [
     "docs/adaptation/P16_SIIE_INTEGRATION.md",
     "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md",
-    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md"
+    "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
+    "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md"
   ],
-  "source_guide_sha256": "372aea8859806988d0192557279b59cbf6e001b0abd2efd363374215b0b1dfb7",
-  "source_postman_sha256": "951c5e9e7ad5772519079a817e2daf42e704482c60e11eb69e2cca047db9fef8",
+  "source_guide_sha256": "0c374e5a51f4423416d3cc291f83d4f8a6bf4c30ee1eb1c750d63532e8133878",
+  "source_postman_sha256": "5d29f6fd2ffb38f997bb8e62d85bfc9e1b638a4b1b5ac283374f6397f75e4bce",
   "public_HTTPS_probe": {
     "authenticated": false,
     "status": 401,
     "content_type": "application/json; charset=utf-8",
     "scope": "availability_only_no_credentials_no_data"
   },
-  "source_limit": "Provider guide expects422 partial offers; actual detail tests338-n1 and1080-n1 returned503 catalog_unavailable without partial_offer. Catalog token valid, rejected for General Admisiones. Student enrollment/balances not exposed.",
+  "source_limit": "New source contract unifies 21 operations under one key and adds native student enrollment/contacts/offered period. Its public deployment is not verified; Offer is still documented422 for missing admission requirements and financial conditions. Previous503 evidence preserved, not reclassified as current success. Personal balances not exposed.",
   "tests": {
-    "backend_selected_passed": 129,
-    "provider_and_legacy_contract_tests": 50,
-    "frontend_selected": 21,
+    "backend_selected_passed": 159,
+    "frontend_selected": 25,
     "types_and_changed_ESLint": "passed",
     "workspace_build": "passed; retained existing chunk-size warning",
     "no_real_SIIE_credentials_used": true,
-    "scope": "automated_fixture_tests_only; live checks are separate evidence"
+    "scope": "fixture tests only; new-key live acceptance pending"
   },
   "failures_preserved": [
     "Initial Windows fixture ID exceeded temporary-path naming limits; explicit short parametrization IDs fixed it.",
     "Initial interface type checks found pagination-criteria type and unknown React condition; corrected before build.",
-    "First live missing-key test displayed inline guidance only; connected SIIE to the existing RinovaPlus modal and added dismissal regression before follow-up frontend deployment."
+    "First live missing-key test displayed inline guidance only; connected SIIE to the existing RinovaPlus modal and added dismissal regression before follow-up frontend deployment.",
+    "The first updated modal assertion matched both explanation paragraphs; scoped the assertion to dialog content, then all25 frontend tests passed."
   ],
   "production": {
     "backend_commit": "1da0155946d11d82f4ce9bc42cfd028c7b1abbe9",
@@ -91,7 +95,8 @@
     "frontend_modal_commit": "68f585d6f79370621233535763b7e0857c213e3f",
     "frontend_modal_deployment": "cmszf7ur0fppp5oawj9xttdq",
     "supervision_tab": "https://app.rinovaplus.com/#/academic",
-    "review_note": "Catalog programs and offer references verified in real source and UI; no General credential and financial detail source503. No CRM import or SIIE writes."
+    "review_note": "Catalog programs and offer references verified in real source and UI; no General credential and financial detail source503. No CRM import or SIIE writes.",
+    "new_consumer_deployment": "pending_commit_and_deploy; previous production evidence below remains historical"
   },
   "deployment_history": [
     {
@@ -120,21 +125,34 @@
     "catalog_verified": true,
     "admissions_token_saved": false,
     "runtime_only": true,
-    "secret_values_in_repo": false
+    "secret_values_in_repo": false,
+    "active_new_variable": "SIIE_API_TOKEN",
+    "new_token_saved_by_owner": false,
+    "separate_admissions_key_required": false,
+    "legacy_catalog_fallback": "only_if_primary_variable_absent; one token for all reads; invalid primary never falls_back",
+    "legacy_admissions_variable_used": false,
+    "credential_has_provider_write_capability": true,
+    "consumer_methods": [
+      "GET"
+    ]
   },
   "live_evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
   "required_scope_review": {
-    "date": "2026-11-18",
+    "date": "2026-11-19",
     "owner_scope": "aspirantes, estudiantes/matrículas, programas ofrecidos del período activo, contado y cada plan financiado",
     "consolidated_request": "docs/adaptation/P16_SIIE_PROVIDER_ISSUES_20261118.md",
-    "operations_documented": 11,
-    "student_list_and_detail_delivered": false,
-    "program_catalog_period_filter_delivered": false,
-    "applicant_contact_phone_email_delivered": false,
+    "operations_documented": 21,
+    "student_list_and_detail_delivered": true,
+    "program_catalog_period_filter_delivered": true,
+    "applicant_contact_phone_email_delivered": true,
     "personal_balances_required_for_this_scope": false,
     "acceptance_changed": false,
     "existing_offers_period_filter_available": true,
-    "active_period_consumer_flow_pending": true,
-    "aggregated_period_programs_endpoint": "optional_optimization_not_mandatory_for_pilot"
-  }
+    "active_period_consumer_flow_pending": false,
+    "aggregated_period_programs_endpoint": "optional_optimization_not_mandatory_for_pilot",
+    "consumer_GET_routes": 12,
+    "offered_period_distinct_from_academic_active": true,
+    "public_new_contract_validated": false
+  },
+  "source_inventory_sha256": "5ee628e2cfe45cf26ecb0da38d06fbb4c280756e445e0c9a4f806d3b0c3bfed8"
 }

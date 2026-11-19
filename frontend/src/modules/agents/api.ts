@@ -182,10 +182,18 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  siie_period_contract_required:
+    "La respuesta de SIIE no identifica el período consultado. Confirma que se publicó la versión nueva de la API antes de mezclar ofertas históricas con las ofrecidas.",
+  siie_offered_period_unavailable:
+    "SIIE no pudo identificar el período ofrecido. Su responsable debe revisar el parámetro 38 y los períodos disponibles; no se eligió un período por suposición.",
+  siie_cursor_changed:
+    "El período o la paginación de SIIE cambió. Vuelve a obtener la primera página y selecciona de nuevo el registro.",
+  siie_students_unavailable:
+    "La consulta de estudiantes falló en SIIE. Reintenta más tarde o solicita al responsable revisar sus registros; no se modificaron matrículas.",
   siie_offer_review_required:
     "Abre SIIE en Académico y revisa la oferta recibida. La publicación de precios requiere completar su revisión y vinculación con la ficha local; no se aplican automáticamente.",
   siie_admissions_not_configured:
-    "Falta la clave General de Admisiones de SIIE en el servidor. Es distinta de la clave de Catálogo. Guárdala directamente en Coolify, sólo Runtime.",
+    "Falta configurar el acceso de SIIE. La versión actual usa una sola clave original en SIIE_API_TOKEN de Coolify; actualiza y redespliega el backend.",
   siie_invalid_parameter:
     "Revisa el período, programa, aspirante o la paginación. Usa los identificadores devueltos por SIIE y el ID completo de la oferta.",
   siie_reference_not_found:
@@ -196,12 +204,16 @@ const errors: Record<string, string> = {
     "SIIE no puede completar esta oferta. Solicita al equipo académico revisar el mapeo y sus condiciones financieras; no se publicó ningún precio.",
   siie_credential_invalid:
     "La clave de SIIE tiene un formato no válido. Guarda el token original en Coolify sin saltos de línea; no uses su hash.",
+  siie_not_configured:
+    "Falta configurar la conexión de SIIE. Guarda la URL HTTPS y la clave original única en SIIE_API_TOKEN de Coolify; después redespliega el backend.",
+  siie_source_credential_configuration:
+    "SIIE informa un problema con su configuración de claves. Su administrador debe revisar API_Key y el alias API_CRM: pueden faltar, ser inválidos o no coincidir. Cambiar datos del CRM no resuelve ese fallo.",
   siie_catalog_not_configured:
     "La API de SIIE aún no está configurada. Solicita la URL HTTPS, una credencial de consulta y el ID de la oferta. Guarda la credencial sólo en Coolify.",
   siie_catalog_endpoint_invalid:
     "La dirección de la API de SIIE no coincide con el dominio autorizado del servidor. Revisa la configuración de la integración.",
   siie_catalog_access_rejected:
-    "SIIE rechazó el acceso. Revisa que la credencial tenga permiso de consulta del catálogo comercial.",
+    "SIIE rechazó la clave de acceso. Comprueba que la clave única original esté vigente y que la versión de clave única ya esté publicada en SIIE.",
   siie_offer_not_found:
     "No se encontró esa oferta en SIIE. Verifica programa, sede, jornada y período con el equipo académico.",
   siie_catalog_stale_or_mismatched:

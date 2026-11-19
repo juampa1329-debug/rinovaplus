@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-19",
+  "status": "queued_after_SIIE_implementation",
+  "request": "Compare Scentra IA/APIs structure and adapt provider/model/key/agent organization to RinovaPlus, without Hermes.",
+  "reference_to_inspect": "Scentra in SaaS version; inspect after SIIE as requested",
+  "constraints": ["preserve_current_RinovaPlus_identity","no_tenant_billing_module","live_provider_model_catalogs","protected_credentials","explain_errors_and_remediation","preserve_existing_agents_and_Human_control"],
+  "voice_phase": "P19",
+  "implementation_claimed": false,
+  "canonical_weight_added": 0
+}

@@ -1,3 +1,17 @@
+## P16: contrato de clave única y estudiantes — 2026-11-19
+
+El propietario pidió probar la entrega nueva con una sola clave. Consumidor adaptado: SIIE_API_TOKEN para los12GET de programas/ofertas, períodos, aspirantes/historial y estudiantes/matrículas/filtros. La variable principal presente impide volver a otra clave, incluso vacía o rechazada; SIIE_CATALOG_API_TOKEN sólo es compatibilidad si la principal no existe y SIIE_ADMISSIONS_API_TOKEN no se usa. Clave original sólo Runtime en Coolify, no hash/chat/Git. No nueva credencial guardada ni datos reales de esta versión verificados al corte; falta rotación humana y despliegue. La guía nueva declara21operaciones con clave única, no que RinovaPlus ejecute sus escrituras o todas las lecturas Moodle.
+
+Se respeta período ofrecido GEParametros38 separado del académico activo, estado0, contactos nativos y relaciones null sin fusionar personas. Pasan159backend/25frontend seleccionadas, tipos/ESLint modificado/build. Las ofertas siguen documentadas422 por requisitos/condiciones faltantes; los503 reales anteriores conservan su evidencia. No se publica precio no cotizable ni se debilitan globalmente las validaciones de fichas revisadas. P16 continúa0/5 unidades aceptadas; no confundir código probado con aceptación financiera.
+
+Procedimiento vigente: docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md; entrega inalterada en docs/contracts/siie/20261119-single-key/, colección con claves vacías. No DDL, seeds ni escrituras SIIE. P0–P11:100% cada una; P12online100% PostgreSQL/Meta; P13Académico/agentes parcial0/4; P14entrenamiento comercial plan; P15correo100%7/7; P16SIIE parcial0/5; P17TikTok diferida0/5; P18seguridad plan0/8; P19voces/audio plan0/5; P20llamadas WhatsApp plan0/8. Los cortes inferiores son historia y no exigen ya dos claves para la entrega vigente.
+
+## Planificación P19/P20 — 2026-11-19
+
+Por decisión del propietario, P19 se limita a voces/notas de audio ElevenLabs (plan, 0/5) y P20 reúne llamadas WhatsApp con agentes, contexto CRM, seguimiento y supervisión humana (plan, 0/8). Se prioriza reutilizar el número colombiano de CBN sin exigir Twilio ni número extranjero. Elegibilidad, ruteo, costes y capacidad real de escuchar/tomar/transferir siguen pendientes; monitor de texto no equivale a audio y no se ofrece puente WhatsApp/PSTN. No se habilitó una integración de llamadas ni cambió la aceptación de ninguna fase.
+
+General original P0–P11:100%; P12auxiliar:100% PostgreSQL/Meta; P13parcial0/4; P14plan; P15correo100%7/7; P16SIIEparcial0/5; P17TikTokdiferida0/5; P18seguridadplan0/8; P19voces/audio plan0/5; P20llamadas WhatsApp plan0/8. [Fases y finalidades](PENDING_PHASES.md), [requisitos P20](P20_WHATSAPP_CALLS.md). La integración SIIE continúa como trabajo activo; los cortes inferiores conservan su evidencia.
+
 ## P16: clave de Catálogo validada y fallo financiero de origen — 2026-11-18
 
 La clave guardada por el propietario ya autentica el Catálogo comercial en SIIE. Se verificaron dos páginas de programas y cuatro páginas de ofertas de Software en la UI, además de consultas nativas acotadas. Programa143: Desarrollo de Software y Aplicaciones Móviles, DSAM, Escuela de TIC, cuatro niveles. El mismo token fue rechazado al consultar Periodos de Admisiones; esa prueba sólo usó un proceso temporal y no guardó otra credencial. Falta la clave General de Admisiones.

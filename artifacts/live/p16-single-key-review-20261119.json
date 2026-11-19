@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-19",
+  "phase": "P16",
+  "scope": "Single-key CRM read consumer, offered period, native applicant contacts and student enrollment inspection",
+  "status": "local_checks_passed_credential_entry_and_live_validation_pending",
+  "accepted_units": 0,
+  "total_units": 5,
+  "provider_contract": "docs/contracts/siie/20261119-single-key/",
+  "provider_operations_documented": 21,
+  "consumer_GET_routes": 12,
+  "consumer_remote_writes_enabled": false,
+  "credential": {
+    "primary_variable": "SIIE_API_TOKEN",
+    "same_token_for_catalog_admissions_students": true,
+    "legacy_catalog_only_when_primary_absent": true,
+    "invalid_or_rejected_primary_falls_back": false,
+    "legacy_admissions_variable_used": false,
+    "source_token_has_write_capability": true,
+    "new_secret_saved_by_agent": false,
+    "real_secret_in_artifacts_or_git": false
+  },
+  "checks": {
+    "backend_selected": {"passed": 159, "failed": 0},
+    "frontend_selected": {"passed": 25, "failed": 0},
+    "types": "passed",
+    "modified_ESLint": "passed",
+    "workspace_build": "passed",
+    "existing_chunk_warning": "retained_571_and_949_kB_chunks",
+    "single_key_precedence_and_no_credential_retry": "fixture_verified",
+    "source_credential_config_errors_sanitized": "fixture_verified",
+    "offered_period_distinct_from_academic_active": "fixture_verified",
+    "student_state_zero_and_unknown_state_preservation": "fixture_verified",
+    "cross_period_or_foreign_student_detail": "fixture_rejected",
+    "revoked_authority_after_IO": "fixture_rejected",
+    "incomplete_finances_not_published": "fixture_verified",
+    "provider_collection": "21_requests_credentials_empty_no_automatic_execution",
+    "fixture_tests_used_real_credentials": false
+  },
+  "failures_preserved": [
+    "A modal assertion initially matched both explanatory paragraphs; corrected the test query, then25 frontend tests passed.",
+    "Final format check flagged the edited test; formatted it before repeating frontend tests, types, lint and build."
+  ],
+  "production": {
+    "new_consumer_deployed": false,
+    "new_token_entry": "pending_owner",
+    "new_source_version_checked": false,
+    "new_authenticated_personal_data_read": false,
+    "previous_source_evidence": "artifacts/live/p16-siie-read-checks-20261118.json",
+    "previous_source503_reclassified_as_current_success": false
+  },
+  "provider_documented_remaining_limits": [
+    "remote_publication_not_confirmed_by_provider_documents",
+    "Offer422_missing_admission_requirements_and_financial_conditions",
+    "no_personal_balances_endpoint",
+    "no_verified_student_applicant_person_link"
+  ],
+  "effects": {"SIIE_writes": 0, "DDL": 0, "seeds": 0, "messages_or_emails_sent": 0},
+  "runbook": "docs/adaptation/P16_SIIE_SINGLE_KEY_20261119.md"
+}

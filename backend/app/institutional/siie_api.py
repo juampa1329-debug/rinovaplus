@@ -20,29 +20,41 @@ ROUTES = {
     "applicants": ("admissions", "Aspirantes.aspx"),
     "applicant": ("admissions", "Aspirante.aspx"),
     "history": ("admissions", "HistorialSeguimiento.aspx"),
+    "students": ("admissions", "Estudiantes.aspx"),
+    "student": ("admissions", "Estudiante.aspx"),
+    "student_filters": ("admissions", "FiltrosEstudiantes.aspx"),
 }
-TOKENS = {
-    "catalog": "SIIE_CATALOG_API_TOKEN",
-    "admissions": "SIIE_ADMISSIONS_API_TOKEN",
-}
+TOKEN = "SIIE_API_TOKEN"
+
+
+def credential():
+    # One authority for every CRM read. Presence, including an empty value,
+    # overrides the old Catalog setting so a failed rotation cannot fall back.
+    if TOKEN in os.environ:
+        return os.environ[TOKEN].strip(), "unified"
+    return os.getenv("SIIE_CATALOG_API_TOKEN", "").strip(), "legacy_catalog"
 
 
 def configured(scope):
+    if scope not in {"catalog", "admissions"}:
+        raise ValueError("unknown SIIE scope")
     return bool(
         os.getenv("SIIE_API_BASE_URL", "").strip()
-        and os.getenv(TOKENS[scope], "").strip()
+        and credential()[0]
     )
 
 
 def status():
     return {
+        "api_configured": configured("catalog"),
+        "credential_mode": credential()[1],
         "catalog_configured": configured("catalog"),
         "admissions_configured": configured("admissions"),
         "read_only": True,
-        "students_supported": False,
+        "students_supported": True,
         "student_balances_supported": False,
         "followup_writes_enabled": False,
-        "contract": "siie-crm-commercial-v1 / Admisiones ASPX",
+        "contract": "siie-crm-commercial-v1 / CRM ASPX / single-key 2026-11-19",
     }
 
 
@@ -58,23 +70,32 @@ def positive(value):
 def parameters(route, values):
     """Only documented parameters. Never accept a URL or repeated query keys."""
     allowed = {
-        "programs": {"cursor"},
+        "programs": {"cursor", "period_id"},
         "offers": {"program_id", "period_id", "cursor"},
         "offer": {"offer_id"},
-        "periods": set(),
+        "periods": {"incluirHistoricos"},
         "states": set(),
         "filters": {"idPeriodo"},
         "applicants": {"idPeriodo", "idPrograma", "idJornada", "q", "offset"},
         "applicant": {"idPeriodo", "idAspirante"},
         "history": {"idPeriodo", "idAspirante", "offset"},
+        "students": {
+            "idPeriodo",
+            "idPrograma",
+            "idJornada",
+            "idEstadoMatricula",
+            "q",
+            "offset",
+        },
+        "student": {"idPeriodo", "idEstudiante"},
+        "student_filters": {"idPeriodo"},
     }
     required = {
         "offers": {"program_id"},
         "offer": {"offer_id"},
-        "filters": {"idPeriodo"},
-        "applicants": {"idPeriodo"},
-        "applicant": {"idPeriodo", "idAspirante"},
-        "history": {"idPeriodo", "idAspirante"},
+        "applicant": {"idAspirante"},
+        "history": {"idAspirante"},
+        "student": {"idEstudiante"},
     }
     if route not in ROUTES or set(values) - allowed[route]:
         raise HTTPException(422, "siie_invalid_parameter")
@@ -98,11 +119,14 @@ def parameters(route, values):
             if not isinstance(value, str) or len(value.strip()) > 100:
                 raise HTTPException(422, "siie_invalid_parameter")
             out[key] = value.strip()
-        elif key == "offset":
+        elif key == "incluirHistoricos":
+            if isinstance(value, bool) or str(value) != "1":
+                raise HTTPException(422, "siie_invalid_parameter")
+        elif key in {"offset", "idEstadoMatricula"}:
             if (
                 isinstance(value, bool)
-                or not re.fullmatch(r"[0-9]{1,7}", str(value))
-                or int(value) > 1000000
+                or not re.fullmatch(r"[0-9]{1,10}", str(value))
+                or int(value) > (1000000 if key == "offset" else 2147483647)
             ):
                 raise HTTPException(422, "siie_invalid_parameter")
             out[key] = str(int(value))
@@ -145,6 +169,18 @@ def _quality(value):
         ):
             _invalid()
     return value
+
+
+def period_binding(actual, requested=None):
+    if actual is None:
+        raise HTTPException(409, "siie_period_contract_required")
+    try:
+        canonical = positive(actual)
+    except HTTPException:
+        _invalid()
+    if requested is not None and canonical != str(requested):
+        raise HTTPException(409, "siie_catalog_stale_or_mismatched")
+    return canonical
 
 
 def normalize(route, query, value, code):
@@ -203,32 +239,72 @@ def normalize(route, query, value, code):
             _invalid()
         if value.get("pagination") != "keyset_live_catalog":
             _invalid()
-        if route == "offers" and (
-            value.get("program_id") != query["program_id"]
-            or value.get("period_id") != query.get("period_id")
-        ):
+        period_binding(value.get("period_id"), query.get("period_id"))
+        if route == "offers" and value.get("program_id") != query["program_id"]:
             raise HTTPException(409, "siie_catalog_stale_or_mismatched")
         return value
     data = value.get("data")
     if value.get("status") != "ok" or not isinstance(data, dict):
         _invalid()
-    if route == "applicant":
+    if route == "student_filters":
+        for name in ("programas", "jornadas", "estadosMatricula"):
+            values = data.get(name)
+            if (
+                not isinstance(values, list)
+                or len(values) > 10000
+                or any(not isinstance(v, dict) for v in values)
+            ):
+                _invalid()
+        if not isinstance(data.get("niveles"), list) or len(data["niveles"]) > 1000:
+            _invalid()
+        if data.get("idPeriodo") is not None:
+            period_binding(data["idPeriodo"], query.get("idPeriodo"))
+    elif route == "student":
+        item = data.get("estudiante")
+        enrollments = data.get("matriculas")
+        if (
+            not isinstance(item, dict)
+            or str(item.get("idEstudiante")) != query["idEstudiante"]
+            or not isinstance(enrollments, list)
+            or not enrollments
+            or len(enrollments) > 1000
+        ):
+            _invalid()
+        effective = data.get(
+            "idPeriodo",
+            enrollments[0].get("idPeriodo")
+            if isinstance(enrollments[0], dict)
+            else None,
+        )
+        period_binding(effective, query.get("idPeriodo"))
+        for enrollment in enrollments:
+            if (
+                not isinstance(enrollment, dict)
+                or str(enrollment.get("idPeriodo")) != str(effective)
+                or (
+                    "idEstudiante" in enrollment
+                    and str(enrollment["idEstudiante"]) != query["idEstudiante"]
+                )
+            ):
+                raise HTTPException(409, "siie_catalog_stale_or_mismatched")
+    elif route == "applicant":
         item = data.get("aspirante")
         if (
             not isinstance(item, dict)
             or str(item.get("idAspirante")) != query["idAspirante"]
-            or str(item.get("idPeriodo")) != query["idPeriodo"]
         ):
             raise HTTPException(409, "siie_catalog_stale_or_mismatched")
+        period_binding(item.get("idPeriodo"), query.get("idPeriodo"))
     else:
         items = data.get("items")
         if (
             not isinstance(items, list)
-            or len(items) > (25 if route in {"applicants", "history"} else 10000)
+            or len(items)
+            > (25 if route in {"applicants", "history", "students"} else 10000)
             or any(not isinstance(x, dict) for x in items)
         ):
             _invalid()
-        if route in {"applicants", "history"}:
+        if route in {"applicants", "history", "students"}:
             if (
                 type(data.get("hasMore")) is not bool
                 or type(data.get("limit")) is not int
@@ -236,10 +312,25 @@ def normalize(route, query, value, code):
                 or data.get("offset") != int(query.get("offset", 0))
             ):
                 _invalid()
-        if route == "applicants" and any(
-            str(x.get("idPeriodo")) != query["idPeriodo"] for x in items
-        ):
-            raise HTTPException(409, "siie_catalog_stale_or_mismatched")
+        if route == "students":
+            effective = period_binding(data.get("idPeriodo"), query.get("idPeriodo"))
+            seen = set()
+            for item in items:
+                identity = (
+                    positive(item.get("idEstudiante")),
+                    positive(item.get("idMatricula")),
+                )
+                if (
+                    identity in seen
+                    or str(item.get("idPeriodo", effective)) != effective
+                ):
+                    raise HTTPException(409, "siie_catalog_stale_or_mismatched")
+                seen.add(identity)
+        if route == "applicants":
+            expected = query.get("idPeriodo") or data.get("idPeriodo")
+            for item in items:
+                actual = period_binding(item.get("idPeriodo"), expected)
+                expected = expected or actual
     return data
 
 
@@ -247,7 +338,7 @@ def read(route, values=None, *, transport=None):
     query = parameters(route, values or {})
     scope, path = ROUTES[route]
     if not configured(scope):
-        raise HTTPException(409, "siie_" + scope + "_not_configured")
+        raise HTTPException(409, "siie_not_configured")
     hosts = {
         v.strip().lower()
         for v in os.getenv("SIIE_API_HOSTS", "siieplus.online").split(",")
@@ -257,10 +348,8 @@ def read(route, values=None, *, transport=None):
         base = approved_url(os.environ["SIIE_API_BASE_URL"], hosts).rstrip("/")
     except HTTPException:
         raise HTTPException(409, "siie_catalog_endpoint_invalid") from None
-    key = os.environ[TOKENS[scope]].strip()
-    if any(ord(c) < 33 or ord(c) > 126 for c in key) or (
-        scope == "catalog" and len(key) < 32
-    ):
+    key, _ = credential()
+    if len(key) < 32 or any(ord(c) < 33 or ord(c) > 126 for c in key):
         raise HTTPException(409, "siie_credential_invalid")
     try:
         with httpx.Client(
@@ -286,7 +375,7 @@ def read(route, values=None, *, transport=None):
                         429, "siie_rate_limited", headers={"Retry-After": wait}
                     )
                 if response.status_code not in (
-                    {200, 422} if route == "offer" else {200}
+                    {200, 422, 400, 503} if route == "offer" else {200, 400, 503}
                 ):
                     raise HTTPException(502, "siie_catalog_unavailable")
                 raw = bytearray()
@@ -295,6 +384,19 @@ def read(route, values=None, *, transport=None):
                     if len(raw) > 524288:
                         _invalid()
                 value = json.loads(raw, parse_constant=lambda _: _invalid())
+                if response.status_code in {400, 503}:
+                    source_code = value.get("code") if isinstance(value, dict) else None
+                    known = {
+                        "offered_period_unavailable": "siie_offered_period_unavailable",
+                        "invalid_cursor": "siie_cursor_changed",
+                        "students_unavailable": "siie_students_unavailable",
+                        "api_credential_not_configured": "siie_source_credential_configuration",
+                        "api_credential_config_invalid": "siie_source_credential_configuration",
+                        "api_credential_config_conflict": "siie_source_credential_configuration",
+                    }
+                    raise HTTPException(
+                        502, known.get(source_code, "siie_catalog_unavailable")
+                    )
                 result = normalize(route, query, value, response.status_code)
                 correlation = response.headers.get("X-Correlation-ID", "")
                 correlation = (
