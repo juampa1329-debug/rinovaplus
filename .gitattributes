@@ -17,3 +17,6 @@ backend/tools/p2_es_migrations.py -text
 docs/adaptation/sql/p2-channel-fields.json -text
 # Live acceptance evidence is hashed in the progress ledger.
 artifacts/live/** -text
+
+# Keep delivered provider contracts byte-identical to their recorded hashes.
+docs/contracts/siie/20261119*/** -text
