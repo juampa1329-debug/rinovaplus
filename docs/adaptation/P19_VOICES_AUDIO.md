@@ -1,6 +1,6 @@
 # P19 · Voces y notas de audio con ElevenLabs
 
-Corte: 19 de noviembre de 2026. **En implementación y validación, 0/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
+Corte: 19 de noviembre de 2026. **En implementación y validación, 2/5 unidades aceptadas.** Por decisión del propietario, todas las llamadas, agentes durante llamadas, seguimiento telefónico y supervisión de llamadas pasan a P20. Esta división reemplaza el primer borrador conjunto, aún sin aceptar. No cambia los 56 criterios ni los 279 hitos originales.
 
 ## Alcance
 
@@ -27,3 +27,7 @@ Referencia oficial: [ElevenLabs, texto a voz](https://elevenlabs.io/docs/overvie
 ## Implementación del 19-11
 
 El propietario autorizó iniciar P19 sin esperar el arreglo del productor SIIE y guardó la clave de ElevenLabs. Se implementaron catálogo, perfiles, cuota durable por conversación, cuatro modos de voz, duración estimada/real sin recorte y muestras privadas. Pruebas locales seleccionadas: 130 backend y 15 frontend; dos pruebas de multimedia omitidas por su entorno. Aceptación real pendiente: catálogo Juampa, envío al 44, reproducción, límite y Humano. Manual: [operación P19](P19_VOICE_OPERATOR_RUNBOOK.md).
+
+## Primer piloto real
+
+Catálogo autenticado: 22 voces y 9 modelos, incluidos Eleven v4/v4 Turbo. Juampa disponible. Una muestra de374caracteres,25segundos, convertida a OGG/Opus y enviada manualmente al44 desde WhatsApp institucional: recibo Entregado y reproducción completa confirmada por el propietario. Se aceptan proveedor/catálogo y compatibilidad/reproducción (P19.1 yP19.4). El propietario solicita mejorar la naturalidad: se prepara interpretación por perfil, instrucciones orales y controles compatibles por modelo, con nueva muestra v4. La voz automática sigue apagada hasta el piloto. No se declara P19al100%.

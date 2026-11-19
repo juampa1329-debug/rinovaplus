@@ -2,8 +2,8 @@
   "phase": "P19",
   "title": "Voces y notas de audio con ElevenLabs",
   "date": "2026-11-19",
-  "status": "implemented_local_checks_pending_live",
-  "accepted": 0,
+  "status": "partial_live_validation_natural_delivery_revision",
+  "accepted": 2,
   "total": 5,
   "canonical_weight_added": 0,
   "scope_amendment": "All calls, live voice agents, call followups and call supervision moved to P20 by owner before acceptance",
@@ -22,7 +22,7 @@
     {
       "id": "P19.1",
       "title": "Proveedor y catálogo",
-      "state": "implemented_pending_live_acceptance"
+      "state": "accepted_technical_live_scope"
     },
     {
       "id": "P19.2",
@@ -37,7 +37,7 @@
     {
       "id": "P19.4",
       "title": "Nota de voz",
-      "state": "implemented_pending_live_acceptance"
+      "state": "accepted_technical_live_scope"
     },
     {
       "id": "P19.5",
@@ -47,16 +47,18 @@
   ],
   "reference": "docs/adaptation/P19_VOICES_AUDIO.md",
   "calls_phase": "P20",
-  "live_audio_generated": 0,
+  "live_audio_generated": 1,
   "Hermes_in_new_scope": false,
   "implementation_status": "SQL-backed policy, live catalog, private previews, Gemini input audio and WhatsApp synthesis implemented; live acceptance pending",
   "checks": {
-    "backend_passed": 130,
+    "backend_passed": 132,
     "backend_skipped": 2,
     "frontend_selected_passed": 15,
     "types": "passed",
     "lint_modified": "passed",
     "workspace_build": "passed_with_existing_large_bundle_warning"
   },
-  "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md"
+  "operator_runbook": "docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md",
+  "evidence": "artifacts/live/p19-voices-review-20261119.json",
+  "owner_quality_followup": "Complete playback confirmed; second more natural sample requested"
 }

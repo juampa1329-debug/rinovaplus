@@ -9,7 +9,14 @@ import {
 } from "../shared/ui";
 import { Icon } from "../shared/Icon";
 import { api, type Catalog } from "../modules/agents/api";
-import { ApiError, useInstitution, useIntent, useTask, type Setting } from "./api";
+import {
+  ApiError,
+  send,
+  useInstitution,
+  useIntent,
+  useTask,
+  type Setting,
+} from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { useDraftGuard } from "./drafts";
 import "./voice.css";
@@ -20,6 +27,9 @@ export type VoiceProfile = {
   voice_id: string;
   model_id: string;
   active: boolean;
+  delivery?: string;
+  allow_reactions?: boolean;
+  speech_instructions?: string;
   agent_ids: string[];
   schools: string[];
 };
@@ -96,6 +106,7 @@ function VoiceEditor({
   };
   const [draft, setDraft] = useState<VoicePolicy>(saved);
   const [catalog, setCatalog] = useState<VoiceCatalog | null>(null);
+  const [catalogError, setCatalogError] = useState("");
   const [assignments, setAssignments] = useState<Catalog | null>(null);
   const [previewProfile, setPreviewProfile] = useState(
     saved.default_profile_id,
@@ -120,6 +131,29 @@ function VoiceEditor({
       active = false;
     };
   }, []);
+  const catalogAllowed = session.actions.includes("settings.providers.read");
+  useEffect(() => {
+    let active = true;
+    if (catalogAllowed)
+      void send<VoiceCatalog>(
+        "voice/catalog",
+        "GET",
+        undefined,
+        session.csrf_token,
+      )
+        .then((value) => {
+          if (active) {
+            setCatalog(value);
+            setCatalogError("");
+          }
+        })
+        .catch((error) => {
+          if (active) setCatalogError((error as Error).message);
+        });
+    return () => {
+      active = false;
+    };
+  }, [session.csrf_token, catalogAllowed]);
   const update = <K extends keyof VoicePolicy>(key: K, value: VoicePolicy[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
   const profile = (id: string, patch: Partial<VoiceProfile>) =>
@@ -242,7 +276,7 @@ function VoiceEditor({
                     Number(event.target.value),
                   )
                 }
-                hint="0 = sólo texto. El cupo pertenece al hilo y no se reinicia al pasar a Humano o reiniciar el servidor."
+                hint="0 = sólo texto de IA. El cupo de audios automáticos pertenece al hilo y no se reinicia al pasar a Humano o reiniciar el servidor. Las notas manuales no consumen ese cupo."
               />
               <Field
                 id="voice-long"
@@ -317,11 +351,10 @@ function VoiceEditor({
                 variant="secondary"
                 disabled={!session.actions.includes("settings.providers.read")}
                 onClick={() =>
-                  void task.run(
-                    async () =>
-                      setCatalog(await call<VoiceCatalog>("voice/catalog")),
-                    "Catálogo de ElevenLabs actualizado.",
-                  )
+                  void task.run(async () => {
+                    setCatalog(await call<VoiceCatalog>("voice/catalog"));
+                    setCatalogError("");
+                  }, "Catálogo de ElevenLabs actualizado.")
                 }
               >
                 {catalog ? "Actualizar catálogo" : "Cargar voces y modelos"}
@@ -402,6 +435,57 @@ function VoiceEditor({
                       ...modelOptions,
                     ]}
                   />
+                  <details>
+                    <summary>Naturalidad e interpretación</summary>
+                    <SelectField
+                      id={`voice-delivery-${p.id}`}
+                      label="Estilo de voz"
+                      value={p.delivery ?? "conversational"}
+                      onChange={(event) =>
+                        profile(p.id, { delivery: event.target.value })
+                      }
+                      options={[
+                        {
+                          value: "conversational",
+                          label: "Cercano y conversado",
+                        },
+                        { value: "calm", label: "Calmado y empático" },
+                        { value: "expressive", label: "Expresivo y animado" },
+                        { value: "neutral", label: "Neutro" },
+                      ]}
+                    />
+                    <label className="voice-check">
+                      <input
+                        type="checkbox"
+                        checked={p.allow_reactions ?? false}
+                        onChange={(event) =>
+                          profile(p.id, {
+                            allow_reactions: event.target.checked,
+                          })
+                        }
+                      />{" "}
+                      Permitir reacciones naturales cuando el contexto lo
+                      justifique
+                    </label>
+                    <p>
+                      Eleven v4 y v3 admiten indicaciones de entonación y
+                      reacciones. No insertamos suspiros en cada frase ni
+                      alteramos los hechos de la respuesta. Cada modelo recibe
+                      sólo parámetros compatibles.
+                    </p>
+                    <TextArea
+                      id={`voice-instructions-${p.id}`}
+                      label="Cómo debe hablar este agente"
+                      maxLength={1000}
+                      value={p.speech_instructions ?? ""}
+                      placeholder="Ejemplo: tono colombiano cercano, frases cortas, pausas suaves y una pregunta al final. Evita leer como un anuncio."
+                      onChange={(event) =>
+                        profile(p.id, {
+                          speech_instructions: event.target.value,
+                        })
+                      }
+                    />
+                  </details>
                   <details>
                     <summary>Asignar agentes y escuelas</summary>
                     <p>
@@ -493,6 +577,7 @@ function VoiceEditor({
               Guardar configuración de voz
             </Button>
           </div>
+          {catalogError && <Notice error>{catalogError}</Notice>}
         </fieldset>
       </form>
       <section className="panel voice-preview">
@@ -636,15 +721,41 @@ function PreviewPlayer({ url }: { url: string }) {
   useEffect(() => {
     const abort = new AbortController();
     let objectUrl = "";
-    void fetch(url, { credentials: "same-origin", cache: "no-store", headers: { "X-CRM-Local": "1" }, signal: abort.signal })
-      .then(async response => {
-        if (!response.ok) throw new ApiError(response.status, "voice_preview_unavailable");
+    void fetch(url, {
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { "X-CRM-Local": "1" },
+      signal: abort.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok)
+          throw new ApiError(response.status, "voice_preview_unavailable");
         const blob = await response.blob();
-        if (!abort.signal.aborted) { objectUrl = URL.createObjectURL(blob); setSource(objectUrl); }
-      }).catch(failure => { if (!abort.signal.aborted) setError((failure as Error).message); });
-    return () => { abort.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl); };
+        if (!abort.signal.aborted) {
+          objectUrl = URL.createObjectURL(blob);
+          setSource(objectUrl);
+        }
+      })
+      .catch((failure) => {
+        if (!abort.signal.aborted) setError((failure as Error).message);
+      });
+    return () => {
+      abort.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [url]);
-  return error ? <Notice error>{error}</Notice> : source ? <audio controls preload="metadata" src={source} aria-label="Muestra de voz generada" /> : <span role="status">Cargando muestra privada…</span>;
+  return error ? (
+    <Notice error>{error}</Notice>
+  ) : source ? (
+    <audio
+      controls
+      preload="metadata"
+      src={source}
+      aria-label="Muestra de voz generada"
+    />
+  ) : (
+    <span role="status">Cargando muestra privada…</span>
+  );
 }
 
 export function voiceReason(code: string) {

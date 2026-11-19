@@ -15,6 +15,7 @@ from app.institutional import voice_audio as voice
 from app.institutional.voice_policy import VoicePolicy, choose_profile, estimate_seconds, reason
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
+from app.institutional.voice_delivery import speech_text, voice_settings, SPEECH_GUIDANCE
 
 
 def profile(id="admisiones", **values):
@@ -168,6 +169,28 @@ def test_provider_receipt_is_bounded_without_returning_credentials(tmp_path):
     result = asyncio.run(gateway.request("elevenlabs", "POST", "v1/text-to-speech/id", binary=True, metadata=metadata))
     assert result == (b"ID3sample", "audio/mpeg")
     assert metadata == {"billed_characters": 5, "provider_request_id": "test_123"}
+
+
+def test_v4_natural_direction_keeps_every_word_and_omits_incompatible_parameters():
+    p = profile(model_id="eleven_v4", delivery="conversational", allow_reactions=True)
+    original = "Hola, Juan Pablo. Puedes explorar marketing. ¿Qué área te interesa?"
+    spoken = speech_text(p, original)
+    import re
+    assert re.sub(r"\[[^]]+\]\s*", "", spoken) == original
+    assert "[curious]" in spoken and "[sighs]" not in spoken
+    assert set(voice_settings(p)) == {"stability", "similarity_boost"}
+    assert voice_settings(p)["stability"] == 0.4
+    assert "no prometas empleo" in SPEECH_GUIDANCE
+
+
+def test_reactions_are_opt_in_contextual_and_never_sent_to_unsupported_models():
+    text = "Lamento que hayas tenido esa dificultad. ¿Cómo puedo ayudarte?"
+    p = profile(model_id="eleven_v4", delivery="calm")
+    assert "[sighs]" not in speech_text(p, text)
+    assert "[sighs]" in speech_text({**p, "allow_reactions": True}, text)
+    p["model_id"] = "eleven_multilingual_v2"
+    assert speech_text({**p, "allow_reactions": True}, text) == text
+    assert voice_settings(profile(model_id="eleven_v3"))["stability"] == 0.5
 
 
 def test_catalog_rechecks_authority_after_network_and_never_returns_key(monkeypatch):

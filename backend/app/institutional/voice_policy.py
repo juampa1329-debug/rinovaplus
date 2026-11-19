@@ -15,6 +15,9 @@ class VoiceProfile(BaseModel):
     voice_id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,200}$")
     model_id: str = Field(pattern=r"^[A-Za-z0-9_.-]{1,200}$")
     active: bool = True
+    delivery: Literal["conversational", "calm", "expressive", "neutral"] = "conversational"
+    allow_reactions: bool = False
+    speech_instructions: str = Field(default="", max_length=1000)
     agent_ids: list[str] = Field(default_factory=list, max_length=50)
     schools: list[str] = Field(default_factory=list, max_length=50)
 

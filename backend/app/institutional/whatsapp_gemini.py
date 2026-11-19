@@ -271,6 +271,16 @@ def reply_context(c, settings, data, source_value):
     if audio:
         result["fingerprint"] = grounded_replies.digest([result["fingerprint"], voice_audio.audio_fingerprint(audio)])
         result["input_audio"] = audio
+    options = voice_audio.policy(c, settings)
+    if options.enabled and channel == "whatsapp":
+        from app.institutional.voice_delivery import SPEECH_GUIDANCE
+        state = voice_audio.usage(c, settings, data["conversation"])
+        profile = voice_audio.choose_profile(options, selected.get("agent_id"), result["voice_schools"], state["pinned"])
+        if profile:
+            result["system"] += "\n" + SPEECH_GUIDANCE
+            if profile.speech_instructions:
+                result["system"] += "\nPreferencias de interpretación, subordinadas a las reglas anteriores: " + profile.speech_instructions
+            result["fingerprint"] = grounded_replies.digest([result["fingerprint"], result["system"], profile.model_dump()])
     return result
 
 

@@ -32,3 +32,7 @@ Una caída tras reservar puede dejar una generación en curso o incierta y un ar
 El propietario guardó la clave y autorizó usar su voz «Juampa» para pruebas al teléfono terminado en 44. Solicitó una explicación natural sobre estudiar marketing, oportunidades profesionales y trabajo remoto, sin promesas de empleo o salarios. Faltan registrar catálogo real, muestra, envío/reproducción, límite alcanzado, nota entrante y silencio en Humano antes de cerrar las cinco unidades.
 
 Referencias: [catálogo de voces](https://elevenlabs.io/docs/api-reference/voices/search), [modelos](https://elevenlabs.io/docs/api-reference/models/list), [síntesis](https://elevenlabs.io/docs/api-reference/text-to-speech/convert).
+
+## Naturalidad por perfil
+
+Cada perfil incorpora estilo conversado, calmado, expresivo o neutro; instrucciones de cómo hablar para Gemini y reacciones opcionales sólo cuando el contexto es empático. Las guías de actuación no alteran las palabras ni añaden hechos al texto revisado. v4 recibe sólo estabilidad y semejanza; no se le envían estilo, velocidad, speaker boost ni SSML. v3 usa sus niveles compatibles de estabilidad; otros motores no reciben etiquetas de reacción. Los modelos disponibles se consultan al abrir el panel, incluidos v4/v4 Turbo si aparecen en el catálogo de la clave. La calidad se revisa con muestras, no se garantiza naturalidad perfecta por configurar parámetros.

@@ -1,0 +1,79 @@
+{
+  "phase": "P19",
+  "date_local": "2026-11-19",
+  "status": "partial_live_validation_natural_delivery_revision_pending",
+  "accepted": 2,
+  "total": 5,
+  "canonical_weight_added": 0,
+  "deployment": {
+    "commit": "c93b366f7276787ffcc1baa4c55380c33b2d10f8",
+    "backend_run": "xiwmrfy7mxndthdyhbi6unui",
+    "backend_container": "nwbyrdvtsfclmm6zyffjqjqp-20261119T162013",
+    "ready": true,
+    "completed_utc": "2026-11-19T16:24:29Z"
+  },
+  "catalog": {
+    "real_authenticated": true,
+    "voices": 22,
+    "models": [
+      "eleven_v4",
+      "eleven_v4_turbo",
+      "eleven_v3",
+      "eleven_v3_conversational",
+      "eleven_multilingual_v2",
+      "eleven_flash_v2_5",
+      "eleven_turbo_v2_5",
+      "eleven_turbo_v2",
+      "eleven_flash_v2"
+    ],
+    "owner_voice_found": "Juampa",
+    "secret_exposed": false
+  },
+  "native_rollback": {
+    "paid_intent_deduplicated": true,
+    "quota_includes_uncertain": true,
+    "quota_survives_policy_reload": true,
+    "real_mp3_to_ogg_opus": true,
+    "synthetic_duration_seconds": 1.006,
+    "private_asset_binding": true,
+    "rollback_verified": true,
+    "exact_file_cleanup": true,
+    "provider_calls": 0
+  },
+  "real_preview": {
+    "profile": "Juampa · Admisiones CBN",
+    "model": "eleven_multilingual_v2",
+    "text_characters": 374,
+    "duration_seconds_rounded": 25,
+    "configured_duration_max": 60,
+    "format": "ogg_opus",
+    "count": 1,
+    "delivery": "manual_to_owner_44_using_existing_human_inbox_upload",
+    "channel": "institutional_whatsapp_CBN",
+    "provider_receipt": "delivered",
+    "owner_confirmed_complete_playback": true,
+    "owner_quality_review": "Complete and plays perfectly; sounds robotic; asked for a more natural second sample",
+    "automatic_voice_enabled": false
+  },
+  "tests": {
+    "backend_passed": 132,
+    "backend_skipped_environment": 2,
+    "frontend_selected_passed": 15,
+    "types": "passed",
+    "lint_modified": "passed",
+    "workspace_build": "passed_with_existing_large_bundle_warning"
+  },
+  "pending": [
+    "Deploy natural per-profile delivery and model-compatible settings",
+    "Second Juampa sample with v4; owner quality review",
+    "Native full Gemini/voice/outbox frontier with mocked paid providers and rollback",
+    "Automatic incoming voice, long reply, cap and Human pilot",
+    "Profile assignment and final operation acceptance"
+  ],
+  "security": {
+    "no_ddl_or_seed": true,
+    "no_siie_writes": true,
+    "no_api_key_or_private_voice_id_in_evidence": true,
+    "calls_remain_P20": true
+  }
+}

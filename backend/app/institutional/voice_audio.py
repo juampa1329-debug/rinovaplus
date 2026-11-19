@@ -24,6 +24,7 @@ from app.institutional.provider_catalog import credential
 from app.institutional.settings import setting
 from app.institutional.store import transaction
 from app.institutional.voice_policy import VoicePolicy, choose_profile, estimate_seconds, reason
+from app.institutional.voice_delivery import speech_text, voice_settings
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
 from app.modules.inbox.infrastructure import media_files as files
@@ -111,7 +112,7 @@ async def synthesize(value, profile, text, media_id, gateway_factory=MediaGatewa
         raise AiError("voice_catalog_required", 409)
     metadata = {}
     raw, _ = await gateway.request("elevenlabs", "POST", "v1/text-to-speech/" + profile["voice_id"],
-        {"text": text, "model_id": profile["model_id"]}, params={"output_format": "mp3_44100_128"}, binary=True, metadata=metadata)
+        {"text": speech_text(profile, text), "model_id": profile["model_id"], "voice_settings": voice_settings(profile)}, params={"output_format": "mp3_44100_128"}, binary=True, metadata=metadata)
     source = files.path(media_id, ".part")
     try:
         source.write_bytes(raw)
@@ -172,7 +173,7 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
             from app.institutional.channel_media import quota
             quota(c, settings, data["conversation"])
             record = {"conversation": uid(data["conversation"]), "incoming": uid(data["incoming"]),
-                "profile": profile.model_dump(), "characters": len(text), "media": media_id,
+                "profile": profile.model_dump(), "characters": len(speech_text(profile.model_dump(), text)), "media": media_id,
                 "credential": secret_id, "text_hash": hashlib.sha256(text.encode()).hexdigest(),
                 "estimated_seconds": estimate_seconds(text), "max_audio_seconds": options.max_audio_seconds}
             if not reserve(c, settings, operation, item["ApplicationId"], item["IntegrationId"], ACTOR, record):
@@ -259,7 +260,7 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         application = c.execute("SELECT TOP(1) ApplicationId FROM crm_channels2.Application WHERE InstitutionId=? AND State<>'retired' ORDER BY CreatedAt", institution(settings)).fetchval()
         if not application:
             raise HTTPException(409, "voice_channel_required")
-        record = {"profile": profile.model_dump(), "characters": len(body.text), "media": media_id,
+        record = {"profile": profile.model_dump(), "characters": len(speech_text(profile.model_dump(), body.text)), "media": media_id,
                   "text_hash": hashlib.sha256(body.text.encode()).hexdigest(), "credential": secret_id}
         if not reserve(c, settings, operation, application, None, uid(str(actor["UserId"])), record, preview=True):
             return preview_response(one(c, "SELECT * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=?", institution(settings), operation))
