@@ -65,13 +65,26 @@
   "tests": {
     "backend_selected_passed": 129,
     "provider_and_legacy_contract_tests": 50,
-    "frontend_selected": 20,
+    "frontend_selected": 21,
     "types_and_changed_ESLint": "passed",
     "workspace_build": "passed; retained existing chunk-size warning",
     "no_real_SIIE_credentials_used": true
   },
   "failures_preserved": [
     "Initial Windows fixture ID exceeded temporary-path naming limits; explicit short parametrization IDs fixed it.",
-    "Initial interface type checks found pagination-criteria type and unknown React condition; corrected before build."
-  ]
+    "Initial interface type checks found pagination-criteria type and unknown React condition; corrected before build.",
+    "First live missing-key test displayed inline guidance only; connected SIIE to the existing RinovaPlus modal and added dismissal regression before follow-up frontend deployment."
+  ],
+  "production": {
+    "backend_commit": "7e147bb938edfe20464c1397c12e7dd9982981b0",
+    "backend_deployment": "ayipptdqgukdqcor97ypcny5",
+    "backend_status": "healthy_rolling_update_completed",
+    "native_readiness": "ready_scope_postgres_deployment",
+    "frontend_base_commit": "9d2ba41c25ea74c94f4b33dfe89771c72111d776",
+    "frontend_base_deployment": "ik1eary4u2qpvzupglnrxnux",
+    "status_route": "authenticated_UI_passed_both_keys_missing",
+    "public_authenticated_SIIE_reads": 0,
+    "SQL_DDL_or_academic_writes": 0,
+    "modal_improvement": "following_commit_frontend_only"
+  }
 }

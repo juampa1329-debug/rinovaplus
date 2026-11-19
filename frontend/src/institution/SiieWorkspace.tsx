@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../modules/agents/api";
 import { Button, Field, Notice } from "../shared/ui";
 import { useTask } from "./api";
+import { ErrorFeedback } from "./ErrorFeedback";
+import type { OperationFailure } from "./ErrorFeedback";
 import "./siie.css";
 
 type Row = Record<string, unknown>;
@@ -29,7 +31,25 @@ const params = (values: Record<string, string>) => {
   return q.toString();
 };
 
+function explainSiie(failure: OperationFailure) {
+  return {
+    title: "No se pudo consultar SIIE",
+    detail: failure.message,
+    nextStep: /configurad|clave|credencial/i.test(failure.message)
+      ? "En Coolify, configura la URL HTTPS y la clave original del grupo correspondiente: Catálogo o Admisiones. Guarda las variables sólo en Runtime y redespliega el backend. No compartas la clave por el chat."
+      : "Revisa el período y la referencia seleccionada. Si SIIE indica un límite, espera antes de consultar; si el aviso persiste, entrega la referencia de consulta al equipo de SIIE. Los datos locales se conservan.",
+  };
+}
+
 export function SiieWorkspace() {
+  return (
+    <ErrorFeedback explain={explainSiie}>
+      <SiieWorkspaceContent />
+    </ErrorFeedback>
+  );
+}
+
+function SiieWorkspaceContent() {
   const task = useTask();
   const epoch = useRef(0);
   const [opened, setOpened] = useState(false);

@@ -199,3 +199,60 @@ it("requires explicit period selection when SIIE reports ambiguity", async () =>
       .hasAttribute("disabled"),
   ).toBe(true);
 });
+
+it("explains missing source credentials in the RinovaPlus modal", async () => {
+  const originalShow = Object.getOwnPropertyDescriptor(
+    HTMLDialogElement.prototype,
+    "showModal",
+  );
+  const originalClose = Object.getOwnPropertyDescriptor(
+    HTMLDialogElement.prototype,
+    "close",
+  );
+  Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    },
+  });
+  Object.defineProperty(HTMLDialogElement.prototype, "close", {
+    configurable: true,
+    value: function (this: HTMLDialogElement) {
+      this.removeAttribute("open");
+    },
+  });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify({ code: "siie_catalog_not_configured" }), {
+          status: 409,
+        }),
+    ),
+  );
+  const rendered = render(<SiieWorkspace />);
+  try {
+    click("Abrir SIIE");
+    click("Obtener programas de SIIE");
+    const dialog = await screen.findByRole("alertdialog", {
+      name: "No se pudo consultar SIIE",
+    });
+    expect(
+      within(dialog).getByText(/Guarda las variables sólo en Runtime/),
+    ).toBeTruthy();
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Cerrar aviso" }),
+    );
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+  } finally {
+    rendered.unmount();
+    for (const [key, descriptor] of [
+      ["showModal", originalShow],
+      ["close", originalClose],
+    ] as const) {
+      if (descriptor)
+        Object.defineProperty(HTMLDialogElement.prototype, key, descriptor);
+      else Reflect.deleteProperty(HTMLDialogElement.prototype, key);
+    }
+  }
+});
