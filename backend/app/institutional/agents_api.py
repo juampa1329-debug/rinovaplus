@@ -121,6 +121,8 @@ def install(app, settings, gateway_factory=None):
                 matches = c.execute("SELECT p.ProgramId FROM crm_agents5.Program p JOIN crm_access.Setting s ON s.InstitutionId=p.InstitutionId AND s.Section=CONCAT('program-commercial-',p.ProgramId) WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.siie_program_id')=?", institution(settings), source['program_id']).fetchall()
                 if len(matches) > 1:
                     raise HTTPException(409, 'siie_local_mapping_ambiguous')
+                if matches and program_id is not None and matches[0][0] != program_id:
+                    raise HTTPException(409, 'siie_local_mapping_ambiguous')
                 if program_id is None and matches:
                     program_id = matches[0][0]
                 if program_id is not None:
@@ -206,6 +208,10 @@ def install(app, settings, gateway_factory=None):
             )
             if prior:
                 return prior
+            if body.commercial is not None and body.commercial.siie_program_id:
+                matches = c.execute("SELECT p.ProgramId FROM crm_agents5.Program p JOIN crm_access.Setting s ON s.InstitutionId=p.InstitutionId AND s.Section=CONCAT('program-commercial-',p.ProgramId) WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.siie_program_id')=?", institution(settings), body.commercial.siie_program_id).fetchall()
+                if any(v[0] != program_id for v in matches):
+                    raise HTTPException(409, 'siie_local_mapping_ambiguous')
             if program_id is None:
                 program_id = c.execute(
                     "SELECT COALESCE(MAX(ProgramId),0) FROM crm_agents5.Program WHERE InstitutionId=?",

@@ -116,3 +116,11 @@ def test_copy_failure_rolls_back_program_source_and_operation_together(fixture,m
     monkeypatch.setattr(agents_api,'save_profile',fail)
     assert client.post('/api/v1/agents/programs/sync-siie-page',json=command()).status_code==409
     assert not c.programs and not c.sources and not c.operations
+
+
+def test_two_review_tabs_cannot_create_a_second_program_with_the_same_source_identity(fixture):
+    client,c,_=fixture
+    client.post('/api/v1/agents/programs/sync-siie-page',json=command())
+    body={'operation_id':str(uuid4()),'revision':0,'name':'Segundo borrador ficticio','school':'','commercial':deepcopy(c.profiles[1])}
+    assert client.post('/api/v1/agents/programs',json=body).status_code==409
+    assert len(c.programs)==1

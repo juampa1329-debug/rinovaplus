@@ -1,3 +1,7 @@
+## P16: protección entre pestañas de revisión — 2026-11-19
+
+Se rechaza crear o vincular una segunda ficha al mismo ID de programa SIIE, incluso si dos pestañas prepararon la revisión antes de la primera copia.169backend seleccionadas pasan; las pruebas de transacción siguen siendo un doble aislado, no evidencia SQL nativa.5bc9b60 en despliegue; P16 conserva0/5hasta validación publicada. Alcance local/fechas opcionales y demás fases sin cambios.
+
 ## P16: alcance local y fechas opcionales autorizado — 2026-11-19
 
 El propietario revoca exigir nuevos metadatos de período para el catálogo base y fechas completas para orientar. Se implementan copia local explícita de páginas hasta25programas, revisión de ofertas parciales con importes conocidos, fechas/condiciones por confirmar, edición financiera local y snapshots de fuente separados. Sincronización de tres versiones conserva cambios manuales por plan/cuota; otra oferta no hereda fechas anteriores. Totales contradictorios, moneda incorrecta, fechas imposibles y revocación siguen protegidos. No DDL ni escrituras SIIE.168backend/31frontend, tipos/lint/build pasan con datos ficticios; validación productiva pendiente. P16 conserva0/5hasta evidencia real; manualP16_LOCAL_CATALOG_20261119.md. Revisión automática bloqueó abrir terminal de Coolify para diagnóstico; no se ejecutó ni se eludió. Se probará por UI de aplicación.

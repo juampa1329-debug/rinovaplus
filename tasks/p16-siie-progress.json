@@ -175,10 +175,11 @@
     "three_way_merge": true,
     "offline_local_edits": true,
     "stable_program_plan_installment_ids": true,
-    "live_verified": false
+    "live_verified": false,
+    "concurrent_review_tab_duplicate_guard": true
   },
   "tests_current": {
-    "backend_passed": 168,
+    "backend_passed": 169,
     "frontend_passed": 31,
     "types": "passed",
     "changed_lint": "passed",
