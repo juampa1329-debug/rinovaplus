@@ -933,7 +933,7 @@ function ChannelHistory({ identity }: { identity: string }) {
         created_at?: string;
         body_preview?: string | null;
       }[];
-      operations: { id: string; action: string; status: string }[];
+      operations: { id: string; action: string; status: string; code?: string | null }[];
     }>(`channels/${identity}/history`),
     { call, session } = useInstitution(),
     task = useTask();
@@ -1100,11 +1100,20 @@ function ChannelHistory({ identity }: { identity: string }) {
             </div>
           ))}
           {data.value.operations.length > 0 && (
-            <p>
-              Hay {data.value.operations.length} operaciones que requieren
-              revisión. Un resultado incierto conserva su historial y bloquea la
-              repetición automática.
-            </p>
+            <section aria-label="Operaciones que requieren revisión">
+              <h4>Operaciones que requieren revisión</h4>
+              <p>Un resultado incierto conserva su historial y bloquea la repetición automática.</p>
+              {data.value.operations.map((operation) => (
+                <article key={operation.id}>
+                  <strong>{operation.action === "whatsapp_gemini_intro" ? "Respuesta automática de Gemini" : operation.action}</strong>
+                  <p>{operation.status === "running" ? "En proceso" : operation.status === "uncertain" ? "Resultado sin confirmar; no se repite automáticamente." : "La operación se detuvo antes de completarse."}</p>
+                  {operation.code && <p><code>{operation.code}</code></p>}
+                  {operation.code?.includes("budget") && <p>Revisa el consumo y los topes de IA en Ajustes → Presupuesto. No reenvíes el mensaje del cliente mientras se revisa este intento.</p>}
+                  {operation.code?.startsWith("voice_input_") && <p>No se pudo usar la nota de voz. Comprueba que el archivo se pueda reproducir en el Inbox y revisa su descarga antes de repetir.</p>}
+                  <small>Referencia: {operation.id}</small>
+                </article>
+              ))}
+            </section>
           )}
         </>
       )}

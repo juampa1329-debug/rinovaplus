@@ -218,7 +218,9 @@ function ConversationAgents({
                 ? "Tomar atención humana invalida respuestas automáticas pendientes. El asesor humano asignado se conserva."
                 : mode === "manual"
                   ? "La asignación se conserva hasta que una persona la libere; los conflictos no se resuelven cambiando de agente."
-                  : "La resolución utiliza únicamente el programa y etapa confirmados. Liberar a automático no activa proveedores ni transportes."}
+                  : institutional
+                    ? "La atención automática puede usar el interés comercial o el anuncio identificado cuando la derivación está habilitada. Esto no confirma matrícula ni modifica el programa académico; las asignaciones manuales se conservan."
+                    : "La resolución utiliza únicamente el programa y etapa confirmados. Liberar a automático no activa proveedores ni transportes."}
             </p>
             <TextArea
               id={`agents-assignment-evidence-${conversationId}`}
