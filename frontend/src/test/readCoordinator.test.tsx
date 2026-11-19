@@ -57,6 +57,10 @@ it("pauses all read clients for Retry-After without replaying mutations", async 
   observeReadLimit(new Date(Date.now() + 30_000).toUTCString());
   await expect(send("inbox")).rejects.toMatchObject({ status: 429 });
   await vi.advanceTimersByTimeAsync(30_001);
+  observeReadLimit("600");
+  await vi.advanceTimersByTimeAsync(300_000);
+  await expect(send("inbox")).rejects.toMatchObject({ status: 429, retryAfterSeconds: 300 });
+  await vi.advanceTimersByTimeAsync(300_001);
 });
 
 it("keeps a stable poll across parent rerenders, stops without focus and resumes on focus", async () => {

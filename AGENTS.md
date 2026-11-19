@@ -1,3 +1,7 @@
+## Software revisado y ampliación publicada — 2026-11-19
+
+ccb8928 saludable en Coolify: cju9eqzkkcfdzxsusysaz4ho, rolling update21:19:59UTC. Firecrawl real del enlace oficial: cuatro semestres/materias, presentación y campo ocupacional guardados en Software revisión3; recarga y refresco base SIIE conservan contenido manual en revisión4, total25programas. Identidad y jornadaDIURNA conservadas; extracción mezcló duración/jornada y se corrigió antes de guardar. Sin título/acreditación inventados, prácticas garantizadas, precios ni fechas. Biblioteca con scroll y filtroTIC3 verificados. Asset inexistente404; Inbox listado/chat sin errores en consola observada, sin benchmark ni forzar429 productivo.320backend/43frontend seleccionadas, tipos/lint/build. Informe de faltantes académicos y pausa larga Retry-After van en el ajuste final de frontend. No nuevos criterios aceptados: original100%, P193/5; P13/P16parciales y demás pendientes en docs/adaptation/PENDING_PHASES.md.
+
 ## Académico y consultas Inbox — 2026-11-19
 
 Ficha ampliada: contenido académico desde URL oficial revisable, modalidad contado/financiación, vigencia abierta explícita; null por confirmar, sin inventar precios. Filtros escuela y scroll. Cliente reduce polling sin foco, coalesce GET y comparte Retry-After sin cambiar 120 solicitudes/minuto. Assets ausentes 404 y recarga manual protegida. 320 backend/42 frontend seleccionadas, tipos/ESLint modificado/build pasan; despliegue y extracción real pendientes al corte. Evidencia: artifacts/live/academic-dashboard-20261119.json.

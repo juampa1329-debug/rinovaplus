@@ -42,3 +42,13 @@ El cupo 120 solicitudes/minuto/usuario queda intacto. GET concurrentes iguales c
 Nginx devuelve 404 para assets inexistentes en vez de HTML. Identificador de compilación público y aviso con recarga manual/guardia de borradores; entrada detecta fallos antes de React. No conserva assets antiguos entre imágenes: pestañas anteriores al arreglo requieren recarga manual.
 
 Validación: 320 backend/42 frontend seleccionadas, tipos, ESLint modificado y build workspace pasan; advertencia previa de bundle grande conservada. Pendientes al corte: despliegue, extracción real de Software y observación del Inbox después del arreglo.
+
+## Resultado real de la ampliación
+
+ccb8928 publicado: backend cju9eqzkkcfdzxsusysaz4ho saludable, rolling update completado 21:19:59 UTC según Coolify. Frontend build público 1795122956165, controles y estilos visibles; ruta de asset inexistente muestra 404, no HTML del CRM.
+
+Firecrawl extrajo del enlace oficial de Software los cuatro semestres/materias, presentación y campo ocupacional. Revisión humana operativa conservó identidad/escuela/jornada DIURNA nativas y corrigió una mezcla de duración/jornada en la propuesta. No había título/acreditación de programa explícitos ni precios/fechas: no se inventaron. Prácticas institucionales guardadas como información condicionada a confirmación, sin plaza garantizada. Guardado revisión3, recarga, sincronización base SIIE y guardado revisión4 conservan todo el contenido y los25programas. La fuente financiera no queda validada por esta extracción web.
+
+Biblioteca completa: clientHeight966, scrollHeight2747, scroll propio verificado; escuela TIC filtra3registros. Inbox abrió listado y chat del44; sin errores en la consola observada. No se forzó un429 en producción ni se acredita benchmark de carga: coalescencia, pausa compartida, foco y Retry-After se verifican con pruebas controladas. Las pestañas previas al arreglo requieren recarga manual.
+
+Ajuste final: informe de faltantes incluye los nuevos campos académicos; Retry-After numérico y HTTP-date, incluso600s, sin reintentar escrituras.320backend/43frontend seleccionadas, tipos/lint modificado/build pasan. Esta nota no acepta nuevas unidades deP13/P16; P19sigue3/5.

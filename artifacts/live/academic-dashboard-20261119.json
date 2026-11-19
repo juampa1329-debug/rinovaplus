@@ -93,17 +93,38 @@
     "CSS_mobile_layout_and_reduced_motion": true
   },
   "expanded_review": {
-    "status": "local_checks_passed_live_pending",
+    "status": "backend_published_and_real_UI_verified_frontend_report_followup_pending",
     "backend_tests": 320,
-    "frontend_tests": 42,
+    "frontend_tests": 43,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed_prior_large_bundle_warning",
     "source_url": "https://cbn.edu.co/escuela-tic/desarrollo-de-software-y-aplicaciones-moviles/",
-    "live_extraction": "pending",
+    "live_extraction": {
+      "result": "reviewed_and_saved_revision_3",
+      "provider": "Firecrawl v2 scrape",
+      "program_id_in_SIIE": "143",
+      "semesters": 4,
+      "content": "presentation; semester subjects; career outcomes",
+      "review": "retained native school/name/DIURNA; corrected extracted mixed duration/jornada; institutional practices explicitly conditional",
+      "not_claimed": "program award/accreditation/practice guarantee; no financial amounts or dates supplied",
+      "source_refresh": "basic SIIE refresh then save revision 4; extracted content and manual 4 semestres retained; still 25 local programs"
+    },
     "rate_limit_budget_unchanged": 120,
     "polling": "foreground; coalesced_GET; shared_Retry_After; no_write_retry",
     "assets": "missing 404; manual update notice; old entry needs reload",
-    "finance": "optional dates; explicit open validity; payment modes; manual preservation"
+    "finance": "optional dates; explicit open validity; payment modes; manual preservation",
+    "backend_commit": "ccb89283ed3800abadb2d0ec1056f7c33021a9b8",
+    "backend_deployment": "cju9eqzkkcfdzxsusysaz4ho",
+    "backend_rolling_update_complete_server_time": "2026-11-19 21:19:59 UTC",
+    "frontend_build_observed": "1795122956165",
+    "local_list_scroll": {
+      "clientHeight": 966,
+      "scrollHeight": 2747,
+      "school_filter": "ESCUELA DE TIC:3 records"
+    },
+    "missing_asset_UI": "404 Not Found; never SPA",
+    "inbox_UI": "list and selected WhatsApp chat opened; no errors in observed browser console; no production load benchmark or forced 429",
+    "followup": "include new academic fields in source-gap report and honor Retry-After up to one day"
   }
 }

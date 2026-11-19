@@ -111,6 +111,11 @@ it("does not flag unqueried finance as missing from a basic program snapshot", (
   ]);
 });
 
+it("identifies reviewed local academic content absent from the source snapshot", () => {
+  expect(sourceGaps({commercial:{presentation:"Revisada",certification:"",accreditation:"",internships:"Por confirmar",career_outcomes:"Desarrollo de software"}}, {commercial:{}}, "program"))
+    .toEqual(["Presentación", "Prácticas y condiciones", "Campo ocupacional"]);
+});
+
 it("reports locally completed installment dates and keeps zero amounts valid", () => {
   const local = {
     commercial: {

@@ -18,6 +18,11 @@ const names: Record<string, string> = {
   full_cost_cash_cop: "Costo total de contado",
   syllabus: "Materias",
   requirements: "Requisitos",
+  presentation: "Presentación",
+  certification: "Título o certificación",
+  accreditation: "Acreditaciones",
+  internships: "Prácticas y condiciones",
+  career_outcomes: "Campo ocupacional",
   cost_inclusions: "Incluye",
   cost_exclusions: "No incluye",
   financial_plans: "Planes financieros",
@@ -42,6 +47,7 @@ export function sourceGaps(local: Row, remote: Row, kind: "program" | "offer") {
   compare(local, remote, ["name", "school", "schedule"]);
   const current = (local.commercial ?? {}) as Row;
   const source = (remote.commercial ?? {}) as Row;
+  compare(current, source, ["presentation", "syllabus", "certification", "accreditation", "internships", "career_outcomes", "requirements"]);
   compare(
     current,
     source,
@@ -50,8 +56,6 @@ export function sourceGaps(local: Row, remote: Row, kind: "program" | "offer") {
       : [
           "duration",
           "modality",
-          "syllabus",
-          "requirements",
           "price_cop",
           "price_concept",
           "price_valid_from",

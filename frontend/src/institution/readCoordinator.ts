@@ -10,7 +10,7 @@ channel?.addEventListener("message", (event: MessageEvent<unknown>) => {
     typeof event.data === "number" &&
     Number.isFinite(event.data) &&
     event.data > Date.now() &&
-    event.data <= Date.now() + 300_000
+    event.data <= Date.now() + 86_400_000
   )
     retryAt = Math.max(retryAt, event.data);
 });
@@ -28,7 +28,7 @@ export function observeReadLimit(header: string | null) {
   retryAt = Math.max(
     retryAt,
     Date.now() +
-      Math.min(300, Math.max(1, Number.isFinite(seconds) ? seconds : 60)) *
+      Math.min(86_400, Math.max(1, Number.isFinite(seconds) ? seconds : 60)) *
         1000,
   );
   channel?.postMessage(retryAt);
