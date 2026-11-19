@@ -37,6 +37,7 @@ class CommentAction(Strict):
 
 def public_comment(value):
     from app.institutional.comment_threads import is_account_comment
+    from app.institutional.comment_edits import edit_info
 
     payload = json.loads(value["Payload"])
     state = payload.get("_crm", {})
@@ -80,6 +81,7 @@ def public_comment(value):
         },
         "synthetic_demo": synthetic,
         "is_self": own,
+        "edit": edit_info(value, "meta", value["Channel"], state.get("state", "new")) if own and not synthetic else None,
     }
 
 

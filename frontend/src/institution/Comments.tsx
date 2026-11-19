@@ -8,6 +8,8 @@ import { ResourceState, useResource } from "./Settings";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { MetaAutomationHelp } from "./MetaAutomationHelp";
 import { ChannelLabel } from "./InboxPresentation";
+import { CommentEdit } from "./CommentEdit";
+import type { CommentEditInfo } from "./CommentEdit";
 import "./comments.css";
 
 type PostPreview = {
@@ -36,6 +38,7 @@ type Comment = {
   preview?: PostPreview;
   source?: { status: string; checked_at: string; reason?: string };
   is_self?: boolean;
+  edit?: CommentEditInfo | null;
   thread?: {
     id: string;
     post_id: string | null;
@@ -51,6 +54,7 @@ type Comment = {
     body: string;
     received_at: string;
     state: string;
+    edit?: CommentEditInfo;
   }[];
   capabilities: { public_comment_reply: boolean; comment_like: boolean };
 };
@@ -351,6 +355,12 @@ function ThreadedCommentDetail({
         </Button>
         <h2>Respuesta de {comment.account}</h2>
         <p>{comment.body}</p>
+        <CommentEdit
+          identity={comment.id}
+          body={comment.body}
+          edit={comment.edit}
+          done={done}
+        />
         <Notice>
           El comentario original aún no llegó desde Meta. Conservamos esta
           respuesta, pero no la vinculamos a otra persona sin evidencia.
@@ -380,6 +390,12 @@ function ThreadedCommentDetail({
               {thread.value.total === 1 ? "comentario" : "comentarios"} ·
               Respuestas de {comment.account}
             </p>
+            {comment.channel === "instagram" && (
+              <small>
+                Instagram permite responder, pero su API todavía no permite
+                editar el texto de una respuesta publicada.
+              </small>
+            )}
           </header>
           {thread.error && (
             <Notice error>
@@ -442,6 +458,12 @@ function ThreadedCommentDetail({
                       </div>
                       <p>{response.body}</p>
                       <small>{labels[response.state] || response.state}</small>
+                      <CommentEdit
+                        identity={response.id}
+                        body={response.body}
+                        edit={response.edit}
+                        done={refresh}
+                      />
                     </li>
                   ))}
                 </ol>

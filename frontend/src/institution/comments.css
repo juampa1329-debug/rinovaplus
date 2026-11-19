@@ -292,7 +292,7 @@
   padding: 0.875rem;
   overflow: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--border);
+  border: 1px solid var(--inbox-edge);
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: 0 0.75rem 2rem #00181d47;
@@ -350,4 +350,25 @@
     position: fixed;
     inset: 5rem 1rem auto auto;
   }
+}
+.comment-edit {
+  margin-top: 0.5rem;
+  min-width: 0;
+}
+.comment-edit form {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+.comment-edit details {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+.comment-edit summary {
+  cursor: pointer;
+}
+.comment-edit li {
+  overflow-wrap: anywhere;
 }

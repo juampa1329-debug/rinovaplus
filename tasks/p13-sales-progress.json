@@ -23,7 +23,7 @@
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "25 especialistas creados y enrutamiento observado en el hilo institucional. Corregir el contrato de simulación que solicitaba memoria sin UUID entrante y repetir las dos pruebas reales."
+      "pending": "25 especialistas y20procedimientos por perfil publicados. Simulaciones reales de Enfermería y Software pasan sin memoria inventada; quedan continuidad, cambio de interés y revisión final del propietario."
     },
     {
       "id": "P13.4",
@@ -55,7 +55,9 @@
     "existing_bundle_warning": true,
     "postgres_filter_parser": "passed_3_levels",
     "simulator_fix_regressions": 91,
-    "recovery_endpoint_regressions": 29
+    "recovery_endpoint_regressions": 29,
+    "comment_edit_backend_selected": 228,
+    "comment_edit_frontend_selected": 18
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -64,24 +66,31 @@
     "agents_created": 25,
     "active_total": 26,
     "guide_version": 7,
-    "selected_skills_per_new_agent": 20
+    "selected_skills_per_new_agent": 20,
+    "recovery_code": "0c938feee74fe8a8de389ad08da9a0440dcb6206",
+    "recovery_backend": "unwxdeuom7m3baeo4jbkbe4h",
+    "recovery_health": "healthy_rolling_update_completed"
   },
   "simulator_rejection": {
     "cause": "Model emitted a memory item in a manual simulation without a valid incoming message UUID",
     "memory_saved": false,
     "fix": "Simulation schema omits memory; validation still rejects unexpected memory",
-    "live_retest": "pending_after_audio_recovery_fix"
+    "live_retest": "passed_nursing_and_software_real_gemini"
   },
   "audio_pilot": {
     "incoming_received": true,
-    "response_confirmed": false,
+    "response_confirmed": true,
     "failure": "Legacy save_assessment SQL Server IF batch rejected by PostgreSQL; final enqueue transaction rolled back",
     "fix": "Bound INSERT/UPDATE inside institutional write lock, preserving human assessment",
     "recovery": "Explicit operator review, same generation ID/effect key, no committed reply or newer message; no automatic replay of uncertain generation",
-    "state": "pending_live_retest",
-    "recovery_audit_fix": "Use the permitted reason metadata; positive endpoint regression validates actual audit and SQL, retaining the effect identity."
+    "state": "delivered_owner_confirmation_pending",
+    "recovery_audit_fix": "Use the permitted reason metadata; positive endpoint regression validates actual audit and SQL, retaining the effect identity.",
+    "recovered_at_local": "2026-11-19T18:39:00-05:00",
+    "deployment": "0c938fe",
+    "receipt": "delivered",
+    "new_audio_interpretation_verified_in_reply": true
   },
   "requested_followups": [
-    "Edit own human/AI public replies where official Meta API supports it; inspect sent-DM editing support per provider."
+    "Facebook own-comment editor implemented with history, replay and explicit GET reconciliation; deploy/live review pending. Instagram comment text and sent DM editing not documented by the APIs inspected."
   ]
 }

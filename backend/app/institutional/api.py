@@ -516,6 +516,9 @@ def create_app(
         from app.institutional.comment_effects import install as install_comment_effects
 
         install_comment_effects(app, settings)
+        from app.institutional.comment_edits import install as install_comment_edits
+
+        install_comment_edits(app, settings)
         install_comment_ai(app, settings)
         from app.institutional.channel_media import install as install_media
 

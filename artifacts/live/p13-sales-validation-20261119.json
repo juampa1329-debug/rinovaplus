@@ -37,7 +37,7 @@
     "cause": "Model emitted a memory item in a manual simulation without a valid incoming message UUID",
     "memory_saved": false,
     "fix": "Simulation schema omits memory; validation still rejects unexpected memory",
-    "live_retest": "pending_deployment"
+    "live_retest": "passed_two_real_Gemini_simulations_nursing_and_software"
   },
   "verification": {
     "backend_selected": 347,
@@ -51,5 +51,19 @@
   },
   "no_ddl": true,
   "no_siie_writes": true,
-  "no_new_test_containers": true
+  "no_new_test_containers": true,
+  "audio_pilot": {
+    "incoming_audio_seconds": 11,
+    "incoming_local_time": "18:13",
+    "reply_local_time": "18:39",
+    "recovered_with_operator_confirmation": true,
+    "same_generation_identity": true,
+    "backend_code": "0c938fe",
+    "backend_deployment": "unwxdeuom7m3baeo4jbkbe4h",
+    "backend_healthy": true,
+    "receipt_observed": "delivered",
+    "reply_topic": "Auxiliar en Enfermeria, three semesters, six months practices, subjects, costs and start date pending confirmation",
+    "owner_phone_confirmation": "pending",
+    "literal_audio_transcript_persisted": false
+  }
 }

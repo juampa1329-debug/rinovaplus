@@ -2,6 +2,55 @@ import type { ErrorGuidance, OperationFailure } from "./ErrorFeedback";
 
 const cases = new Map<string, ErrorGuidance>([
   [
+    "comment_edit_source_changed",
+    {
+      title: "El comentario cambió en Facebook",
+      detail: "El texto publicado ya no coincide con la versión que abriste.",
+      nextStep:
+        "Abre la publicación original y actualiza el hilo antes de editar de nuevo.",
+    },
+  ],
+  [
+    "comment_edit_review_required",
+    {
+      title: "Hay una edición por revisar",
+      detail:
+        "Una edición anterior sigue en proceso o Meta no confirmó su resultado.",
+      nextStep:
+        "Comprueba el comentario directamente en Facebook. No repetiremos el cambio automáticamente; conserva la referencia de la operación para revisar el resultado.",
+    },
+  ],
+  [
+    "comment_edit_own_only",
+    {
+      title: "Sólo puedes editar respuestas de tu cuenta",
+      detail:
+        "El comentario debe pertenecer a la Página de Facebook conectada.",
+      nextStep:
+        "Selecciona una respuesta publicada por CBN. Los comentarios de otras personas se conservan tal como los escribieron.",
+    },
+  ],
+  [
+    "comment_edit_unsupported_by_provider",
+    {
+      title: "Este canal no admite editar comentarios",
+      detail:
+        "La API de este proveedor no permite cambiar el texto publicado desde RinovaPlus.",
+      nextStep:
+        "Puedes enviar una aclaración como nueva respuesta o revisar las opciones de la aplicación original.",
+    },
+  ],
+  [
+    "comment_edit_published_required",
+    {
+      title: "La respuesta aún no está publicada",
+      detail:
+        "Necesitamos la confirmación y el identificador de Meta para editarla.",
+      nextStep:
+        "Espera a que finalice el envío y actualiza el hilo. Una respuesta fallida o en cola todavía no se puede editar.",
+    },
+  ],
+  [
     "saved_app_secret_incompatible",
     {
       title: "Esta clave no corresponde a la aplicación",
@@ -173,8 +222,23 @@ const cases = new Map<string, ErrorGuidance>([
 ]);
 
 export function explainChannelError(failure: OperationFailure): ErrorGuidance {
-  if (failure.code?.startsWith("voice_") || failure.code === "provider_timeout_or_network") return { title: "No se pudo generar el audio", detail: failure.message, nextStep: "Revisa Ajustes → Voces y audios y la clave de ElevenLabs en APIs y modelos. Consulta la actividad antes de generar otra muestra; un resultado incierto no se reintenta automáticamente." };
-  if (failure.code?.startsWith("email_")) return { title: "No se pudo completar la operación de correo", detail: failure.message, nextStep: "Abre Ajustes → Correos y notificaciones. Revisa el aviso, la plantilla, los destinatarios y la configuración de Oracle en Coolify antes de repetir el envío." };
+  if (
+    failure.code?.startsWith("voice_") ||
+    failure.code === "provider_timeout_or_network"
+  )
+    return {
+      title: "No se pudo generar el audio",
+      detail: failure.message,
+      nextStep:
+        "Revisa Ajustes → Voces y audios y la clave de ElevenLabs en APIs y modelos. Consulta la actividad antes de generar otra muestra; un resultado incierto no se reintenta automáticamente.",
+    };
+  if (failure.code?.startsWith("email_"))
+    return {
+      title: "No se pudo completar la operación de correo",
+      detail: failure.message,
+      nextStep:
+        "Abre Ajustes → Correos y notificaciones. Revisa el aviso, la plantilla, los destinatarios y la configuración de Oracle en Coolify antes de repetir el envío.",
+    };
   if (failure.code?.startsWith("ads_meta_"))
     return {
       title: "No se pudo completar la operación de Publicidad",

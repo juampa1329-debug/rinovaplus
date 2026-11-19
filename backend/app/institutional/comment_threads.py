@@ -290,7 +290,7 @@ class Threads:
                 value["ReplyState"] = sent[-1]["State"] if sent else None
                 item = public_comment(value)
                 matching = [r for r in replies if r["target"] == value["CommentId"]]
-                item["replies"] = reply_history(matching, sent, value["DisplayName"])
+                item["replies"] = reply_history(matching, sent, value["DisplayName"], value["Channel"])
                 items.append(item)
             return {
                 "items": items,
@@ -301,8 +301,10 @@ class Threads:
             }
 
 
-def reply_history(comments, jobs, account):
+def reply_history(comments, jobs, account, channel=""):
     """A provider echo and its accepted job are one reply, never two bubbles."""
+    from app.institutional.comment_edits import edit_info, presentation
+
     ids = {v["ExternalId"] for v in comments}
     values = [
         {
@@ -317,22 +319,23 @@ def reply_history(comments, jobs, account):
             ),
             "origin": "meta",
             "external_id": v["ExternalId"],
+            "edit": edit_info(v, "meta", channel, json.loads(v.get("Payload") or "{}").get("_crm", {}).get("state", "published")),
         }
         for v in comments
     ]
     for j in jobs:
         if j.get("ExternalId") and j["ExternalId"] in ids:
             continue
-        payload = json.loads(j["Payload"])
         values.append(
             {
                 "id": str(j["QueueId"]).lower(),
-                "body": payload.get("body", ""),
+                "body": presentation(j, "crm")[0],
                 "author": account,
                 "received_at": utc(j["CreatedAt"]),
                 "state": j["State"],
                 "origin": "crm",
                 "external_id": j.get("ExternalId"),
+                "edit": edit_info(j, "crm", channel, j["State"]),
             }
         )
     return sorted(values, key=lambda v: (v["received_at"], v["id"]))

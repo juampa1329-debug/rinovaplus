@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-19",
+  "feature": "own_facebook_comment_edit",
+  "status": "deployment_pending",
+  "official_sources": [
+    "https://developers.facebook.com/docs/graph-api/reference/comment",
+    "https://developers.facebook.com/docs/graph-api/reference/message",
+    "https://developers.facebook.com/documentation/instagram-platform/comment-moderation",
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/message-api"
+  ],
+  "verification": {
+    "backend_selected": 228,
+    "frontend_selected": 18,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "workspace_build": "passed",
+    "postgres_new_statements_parser": "passed",
+    "existing_bundle_warning": true
+  },
+  "no_ddl": true,
+  "no_new_test_containers": true,
+  "provider_live_edit": "not_yet_tested",
+  "unsupported_text_edits": [
+    "instagram_comments",
+    "messenger_dm",
+    "instagram_dm",
+    "whatsapp_cloud_api_no_documented_endpoint"
+  ]
+}
