@@ -214,3 +214,45 @@ def test_manual_simulation_does_not_request_invented_message_ids_or_memory(monke
     validate_reply(value["content"], [], [], allow_memory=False)
     with pytest.raises(AiError, match="admissions_invalid_memory"):
         validate_reply('{"answer":"Hola","handoff":true,"references":[],"memory":[{"field":"program_interest","value":"enfermería","quote":"enfermería","source_message_id":"12345678-1234-1234-1234-123456789012"}]}', [], [], allow_memory=False)
+
+
+@pytest.mark.parametrize("has_profile", [True, False])
+def test_automatic_assessment_insert_and_update_are_portable_postgres(monkeypatch, has_profile):
+    from app.institutional.postgres_dialect import postgres_sql
+    from app.institutional.workspace_policy import layout
+    from pglast import parse_sql
+    conversation, incoming_id = str(uuid4()), str(uuid4())
+    now = datetime.now(timezone.utc)
+    incoming = {"MessageId": incoming_id, "Body": "Me interesa enfermería", "Sequence": 10}
+    before = {"LeadScore": None, "Temperature": None, "UpdatedAt": now} if has_profile else None
+    latest = {"LeadScore": 15, "Temperature": "cold", "UpdatedAt": now}
+    answers = iter([incoming, before, latest])
+    monkeypatch.setattr(sales_memory.db, "one", lambda *_: next(answers))
+    monkeypatch.setattr(sales_memory, "read", lambda *_: ({"observations": []}, 0))
+    monkeypatch.setattr(sales_memory, "save", lambda *_: None)
+    statements = []
+    class Cursor:
+        def execute(self, sql, *args):
+            statements.append(sql)
+            assert sql.count("?") == len(args)
+            parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+    sales_memory.record(Cursor(), object(), {"conversation": conversation, "incoming": incoming_id},
+        {"configuration": {"sales_memory_enabled": True, "auto_sales_crm": True, "memories": ["customer_profile"]}, "commercial_interest": {"program_id": 1}, "agent_id": str(uuid4()), "version": 1}, [], str(uuid4()))
+    assert len(statements) == 1
+    assert statements[0].startswith("UPDATE" if has_profile else "INSERT")
+
+
+def test_generation_recovery_requires_no_committed_reply_expired_lease_and_current_source(monkeypatch):
+    from app.institutional import sales_recovery
+    from fastapi import HTTPException
+    calls = []
+    monkeypatch.setattr(sales_recovery, "source", lambda *args: calls.append(args))
+    row = {"Status": "running", "Expired": 1, "Attempts": 1, "IntegrationId": str(uuid4()), "ResultMetadata": '{"incoming":"same-source"}'}
+    assert sales_recovery.review(None, None, row)["incoming"] == "same-source"
+    for patch in ({"Expired": 0}, {"Status": "confirmed"}, {"Attempts": 3}, {"ResultMetadata": '{"reply":"already-created"}'}, {"ResultMetadata": '{"generated_text":"already-confirmed"}'}):
+        with pytest.raises(HTTPException):
+            sales_recovery.review(None, None, {**row, **patch})
+    assert len(calls) == 1
+    monkeypatch.setattr(sales_recovery, "source", lambda *_: (_ for _ in ()).throw(HTTPException(409, "gemini_whatsapp_control_or_history_changed")))
+    with pytest.raises(HTTPException, match="gemini_whatsapp_control_or_history_changed"):
+        sales_recovery.review(None, None, row)

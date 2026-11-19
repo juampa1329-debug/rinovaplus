@@ -13,6 +13,10 @@ import { ConversationSalesMemory } from "../institution/ConversationSalesMemory"
 import { blankConfiguration, type Catalog } from "../modules/agents/api";
 
 const mocks = vi.hoisted(() => ({ api: vi.fn() }));
+vi.mock("../institution/api", async (original) => ({
+  ...(await original<typeof import("../institution/api")>()),
+  useInstitution: () => ({ call: vi.fn(), session: { actions: ["inbox.read"] } }),
+}));
 vi.mock("../modules/agents/api", async (original) => ({
   ...(await original<typeof import("../modules/agents/api")>()),
   api: mocks.api,

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { api } from "../modules/agents/api";
 import { Button, Notice } from "../shared/ui";
 import "./sales.css";
+import { useInstitution } from "./api";
+import { OperationDialog } from "./ErrorFeedback";
 
 type Fact = {
   field: string;
@@ -10,6 +12,13 @@ type Fact = {
   sequence: number;
 };
 type Memory = {
+  generation?: {
+    id: string;
+    integration: string;
+    status: string;
+    code?: string | null;
+    can_retry: boolean;
+  } | null;
   ad_referral?: {
     source_id: string;
     headline?: string;
@@ -77,6 +86,9 @@ function SalesMemory({
   const [value, setValue] = useState<Memory | null>(null);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const [recover, setRecover] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const { call, session } = useInstitution();
   useEffect(() => {
     let live = true;
     if (open)
@@ -118,8 +130,71 @@ function SalesMemory({
         </Notice>
       )}
       {!value && !error && <p>Cargando contexto…</p>}
+      {recover && value?.generation && (
+        <OperationDialog
+          guidance={{
+            title: "Recuperar respuesta de IA",
+            detail:
+              "La respuesta anterior no quedó guardada para envío. Se comprobará que no exista otra respuesta, que el chat siga en IA y que este sea el último mensaje. Esta nueva generación puede consumir tokens.",
+          }}
+          dismiss={() => setRecover(false)}
+          dismissLabel="Cancelar"
+          confirm={{
+            label: "Recuperar respuesta",
+            run: async () => {
+              if (!value.generation || busy) return;
+              setBusy(true);
+              try {
+                await call(
+                  `channels/${value.generation.integration}/recover-generation`,
+                  "POST",
+                  {
+                    operation_id: crypto.randomUUID(),
+                    generation_id: value.generation.id,
+                    confirmed: true,
+                    acknowledge_consumption: true,
+                  },
+                );
+                setRecover(false);
+                setRetry((v) => v + 1);
+                setError("");
+              } catch (failure) {
+                setError(
+                  failure instanceof Error
+                    ? failure.message
+                    : "No se pudo recuperar la respuesta.",
+                );
+                setRecover(false);
+              } finally {
+                setBusy(false);
+              }
+            },
+          }}
+        />
+      )}
       {value && (
         <>
+          {value.generation &&
+            ["failed", "uncertain", "running"].includes(
+              value.generation.status,
+            ) && (
+              <div role="status">
+                <strong>Revisión de respuesta automática</strong>
+                <p>
+                  {value.generation.status === "running"
+                    ? "La generación no ha confirmado su resultado."
+                    : "La respuesta se detuvo antes de completar el recorrido."}
+                </p>
+                {value.generation.code && <code>{value.generation.code}</code>}
+                {value.generation.can_retry &&
+                  session.actions.includes("settings.channels.write") &&
+                  session.actions.includes("inbox.write") && (
+                    <Button disabled={busy} onClick={() => setRecover(true)}>
+                      Revisar recuperación de respuesta
+                    </Button>
+                  )}
+              </div>
+            )}
           {value.ad_referral && (
             <details>
               <summary>Anuncio de origen</summary>

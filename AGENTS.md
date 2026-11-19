@@ -1,3 +1,9 @@
+## P13: fallo del piloto de audio identificado — 2026-11-19
+
+25especialistas activos con20procedimientos cada uno; orientador versión7. El piloto del44 llegó como audio, pero la calificación automática llamó save_assessment del Inbox reutilizable con un batch IF de SQL Server; PostgreSQL lo rechazó (unported_statement), revirtiendo la transacción final de respuesta. Se sustituye por INSERT/UPDATE parametrizados bajo el lock institucional y se cubren ambas ramas con parser PG. Se añade recuperación explícita por operador, misma generación/EffectKey, sin respuesta comprometida, mensaje todavía actual, IA/epoch/cuenta vigentes y máximo3intentos; no hay reintento automático de resultado incierto ni reenvío de un SendJob existente. Pendiente comprobación publicada, no declarar resuelto ni P13aceptado aún.
+
+351backend/32frontend seleccionadas, tipos/lint/build pasan. PreICFES: segunda sugerencia real publicada con contexto backend nuevo identifica curso y no pregunta programa. No se publicó respuesta duplicada. Evidencia/pendientes: tasks/p13-sales-progress.json; cortes y fases anteriores conservan sus límites.
+
 ## P13 en validación: especialistas, memoria y contexto de anuncios — 2026-11-19
 
 Se implementa alta atómica revisada por programa/jornada,20procedimientos comerciales y de memoria, prompts propios, derivación por interés y referencia firmada de anuncios, memoria privada con citas y grafo nativo, calificación comercial que conserva revisión humana. Graphify/AgentMemory se adaptan como prácticas: no se ejecutan sus motores externos en CRM. Fuente y hashes: artifacts/live/p13-skills-20261119.json. Manual: docs/adaptation/P13_SALES_OPERATOR_RUNBOOK.md.

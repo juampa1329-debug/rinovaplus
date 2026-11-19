@@ -117,8 +117,14 @@ def record(c, settings, data, selection, observations, reply):
         automatic = existing is None or existing["LeadScore"] is None and existing["Temperature"] is None or prior and prior == {
             "score": existing["LeadScore"], "temperature": existing["Temperature"], "updated_at": db.utc(existing["UpdatedAt"])}
         if automatic:
-            from app.modules.inbox.application.state import save_assessment
-            save_assessment(c, data["conversation"], q["score"], q["temperature"])
+            # Institutional writes hold the existing transaction lock. Avoid the
+            # legacy SQL Server IF/JSON tinyint batch in the reusable inbox.
+            if existing is None:
+                c.execute("INSERT crm_channels.ConversationProfile(ConversationId,LeadScore,Temperature,UpdatedAt) VALUES(?,?,?,SYSUTCDATETIME())",
+                          data["conversation"], q["score"], q["temperature"])
+            else:
+                c.execute("UPDATE crm_channels.ConversationProfile SET LeadScore=?,Temperature=?,UpdatedAt=SYSUTCDATETIME() WHERE ConversationId=?",
+                          q["score"], q["temperature"], data["conversation"])
             latest = db.one(c, "SELECT LeadScore,Temperature,UpdatedAt FROM crm_channels.ConversationProfile WHERE ConversationId=?", data["conversation"])
             document["last_auto_assessment"] = {"score": latest["LeadScore"], "temperature": latest["Temperature"], "updated_at": db.utc(latest["UpdatedAt"])}
             document["assessment_authority"] = "automatic_commercial_rubric"
@@ -165,6 +171,7 @@ def risks(c, settings, conversations):
 
 
 def graph(c, settings, conversation):
+    from app.institutional.sales_recovery import summary as generation_summary
     document, revision = read(c, settings, conversation)
     messages = history(c, conversation, limit=24)
     facts = current_facts(document.get("observations", []))
@@ -179,6 +186,7 @@ def graph(c, settings, conversation):
         nodes.append({"id": node, "label": "Intercambio · versión " + str(turn["agent_version"]), "kind": "turn", **turn})
         edges.append({"source": "conversation", "target": node, "relation": "atendida por", "certainty": "EXTRACTED"})
     return {"revision": revision, "facts": facts, "qualification": document.get("qualification"),
+            "generation": generation_summary(c, settings, conversation),
             "assessment_authority": document.get("assessment_authority"), "interest": document.get("commercial_interest"),
             "ad_referral": document.get("ad_referral"),
             "graph": {"nodes": nodes, "edges": edges},
