@@ -83,7 +83,9 @@ function SettingEditor({
   useDraftGuard(JSON.stringify(draft) !== JSON.stringify(initial.document));
   const permission = `settings.${section === "models" ? "providers" : section}.write`,
     writable = session.actions.includes(permission);
-  const specs = contract.fields[section] ?? [];
+  const specs = (contract.fields[section] ?? []).filter((spec) =>
+    !(section === "ai" && liveModels && (spec.path.startsWith("media.") || spec.path === "voice_name")),
+  );
   const groups = [...new Set(specs.map((spec) => spec.group))];
   return (
     <>
@@ -110,6 +112,7 @@ function SettingEditor({
             : "La ejecución de proveedores se habilitará con la integración de canales y agentes."}
         </Notice>
       )}
+      {section === "ai" && liveModels && <section className="panel"><h3>Voz y audios · ElevenLabs</h3><p>Las voces, modelos, estabilidad, similitud, saludo y límites se configuran en un único lugar. Estos ajustes generales no activan otra voz ni sustituyen esa configuración.</p><a className="button secondary" href="#/settings/voice">Abrir Voces y audios</a><p>Gemini interpreta la nota entrante. ElevenLabs genera la respuesta hablada sólo si el hilo está en IA, pertenece al alcance seleccionado y tiene cupo; en los demás casos continúa por texto.</p></section>}
       {section === "budgets" && (
         <Notice>
           Los límites de solicitudes y cantidad de cuentas se aplican

@@ -6,6 +6,7 @@ import { ErrorFeedback } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
 import { SiieContacts, SiieStudents } from "./SiieStudents";
 import "./siie.css";
+import { Icon } from "../shared/Icon";
 
 type Row = Record<string, unknown>;
 type SourceData = { data: Row; correlation_id?: string };
@@ -59,6 +60,7 @@ export type SiieLocalDraft = {
     request: Record<string, string>;
     checked_at: string;
     issues: string[];
+    values?: Record<string, unknown>;
   };
   local_program_id?: number;
   local_revision?: number;
@@ -68,13 +70,22 @@ export type SiieLocalDraft = {
 export function SiieWorkspace({
   onImport,
   onSaved,
+  openRequest = 0,
+  admissions = false,
 }: {
   onImport?: (value: SiieLocalDraft) => Promise<void>;
   onSaved?: () => Promise<void>;
+  openRequest?: number;
+  admissions?: boolean;
 }) {
   return (
     <ErrorFeedback explain={explainSiie}>
-      <SiieWorkspaceContent onImport={onImport} onSaved={onSaved} />
+      <SiieWorkspaceContent
+        onImport={onImport}
+        onSaved={onSaved}
+        openRequest={openRequest}
+        admissions={admissions}
+      />
     </ErrorFeedback>
   );
 }
@@ -82,17 +93,23 @@ export function SiieWorkspace({
 function SiieWorkspaceContent({
   onImport,
   onSaved,
+  openRequest,
+  admissions,
 }: {
   onImport?: (value: SiieLocalDraft) => Promise<void>;
   onSaved?: () => Promise<void>;
+  openRequest: number;
+  admissions: boolean;
 }) {
   const task = useTask();
   const copyIntent = useIntent();
   const [copied, setCopied] = useState<number | null>(null);
   const epoch = useRef(0);
-  const [opened, setOpened] = useState(false);
+  const [localOpened, setOpened] = useState(admissions);
+  const [dismissedRequest, setDismissedRequest] = useState(0);
+  const opened = localOpened || openRequest > dismissedRequest;
   const [connection, setConnection] = useState<Connection | null>(null);
-  const [tab, setTab] = useState("catalog");
+  const [tab, setTab] = useState(admissions ? "admissions" : "catalog");
   const [programs, setPrograms] = useState<Row | null>(null);
   const [programCursor, setProgramCursor] = useState<string[]>([""]);
   const [catalogPeriod, setCatalogPeriod] = useState("");
@@ -129,6 +146,7 @@ function SiieWorkspaceContent({
     done: (row: Row) => void,
   ) => {
     const ticket = ++epoch.current;
+    setCorrelation("");
     void task.run(async () => {
       try {
         const value = await api<SourceData>(`/siie/${route}?${params(values)}`);
@@ -136,7 +154,15 @@ function SiieWorkspaceContent({
         done(value.data);
         setCorrelation(value.correlation_id ?? "");
       } catch (failure) {
-        if (ticket === epoch.current) throw failure;
+        if (ticket === epoch.current) {
+          if (
+            failure &&
+            typeof failure === "object" &&
+            "correlationId" in failure
+          )
+            setCorrelation(String(failure.correlationId));
+          throw failure;
+        }
       }
     }, "");
   };
@@ -196,11 +222,27 @@ function SiieWorkspaceContent({
   };
 
   return (
-    <section className="siie-workspace panel" aria-label="Integración SIIE">
+    <section
+      className={`siie-workspace panel${admissions ? " siie-admissions" : ""}`}
+      aria-label="Integración SIIE"
+    >
       <div className="siie-heading">
         <div>
-          <h2>SIIE</h2>
-          <p>Consulta académica y financiera desde la fuente institucional.</p>
+          <span className="operations-eyebrow">
+            {admissions
+              ? "ADMISIONES · FUENTE INSTITUCIONAL"
+              : "CONECTADO CON TU SISTEMA ACADÉMICO"}
+          </span>
+          <h2>
+            {admissions
+              ? "Aspirantes y estudiantes"
+              : "Sincronización con SIIE"}
+          </h2>
+          <p>
+            {admissions
+              ? "Consulta personas, programas y el historial de su proceso."
+              : "Trae datos oficiales y conserva tu información local."}
+          </p>
         </div>
         <Button
           type="button"
@@ -209,6 +251,7 @@ function SiieWorkspaceContent({
           onClick={() => {
             changeContext();
             setOpened(!opened);
+            setDismissedRequest(openRequest);
           }}
         >
           {opened ? "Ocultar SIIE" : "Abrir SIIE"}
@@ -267,20 +310,22 @@ function SiieWorkspaceContent({
               ["catalog", "Programas y finanzas"],
               ["admissions", "Aspirantes y seguimiento"],
               ["students", "Estudiantes y matrículas"],
-            ].map(([id, label]) => (
-              <Button
-                type="button"
-                key={id}
-                variant="secondary"
-                aria-pressed={tab === id}
-                onClick={() => {
-                  changeContext();
-                  setTab(id);
-                }}
-              >
-                {label}
-              </Button>
-            ))}
+            ]
+              .filter(([id]) => !admissions || id !== "catalog")
+              .map(([id, label]) => (
+                <Button
+                  type="button"
+                  key={id}
+                  variant="secondary"
+                  aria-pressed={tab === id}
+                  onClick={() => {
+                    changeContext();
+                    setTab(id);
+                  }}
+                >
+                  {label}
+                </Button>
+              ))}
           </nav>
           <fieldset disabled={task.busy} aria-busy={task.busy}>
             {tab === "catalog" && (
@@ -662,7 +707,7 @@ function SiieWorkspaceContent({
                 )}
                 {applicants && (
                   <div className="siie-split">
-                    <div>
+                    <div className="siie-person-list">
                       <h3>Aspirantes del período consultado</h3>
                       <ul className="siie-list">
                         {list(applicants.items).map((p) => (
@@ -726,7 +771,20 @@ function SiieWorkspaceContent({
                         </Button>
                       </div>
                     </div>
-                    <div>
+                    <div className="siie-person-detail">
+                      {!applicant && (
+                        <div className="admissions-welcome">
+                          <Icon name="user" />
+                          <span className="operations-eyebrow">
+                            CADA HISTORIA IMPORTA
+                          </span>
+                          <h3>Selecciona un aspirante</h3>
+                          <p>
+                            Su ficha y sus seguimientos aparecerán aquí, junto
+                            al listado.
+                          </p>
+                        </div>
+                      )}
                       {applicant && (
                         <>
                           <h3>{text((applicant.aspirante as Row)?.nombre)}</h3>

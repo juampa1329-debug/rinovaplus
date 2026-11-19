@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useWorkspaceState } from "../../../shared/workspaceSession";
 import type { AdmissionDraft } from "../../../shared/workspaceSession";
+import { Icon } from "../../../shared/Icon";
+import "../../../institution/operations-design.css";
 import { admissionsApi, AdmissionsError } from "../api/admissionsApi";
 import type {
   AdmissionPage,
@@ -206,10 +208,31 @@ export function Admissions() {
   }
   return (
     <div className="admissions-workspace">
+      <header className="operations-hero admissions-hero">
+        <div>
+          <span className="operations-eyebrow">
+            DE LA PRIMERA PREGUNTA AL SIGUIENTE PASO
+          </span>
+          <h2>Admisiones, con contexto.</h2>
+          <p>
+            Encuentra al aspirante, revisa su programa y acompaña su proceso.
+          </p>
+        </div>
+        <span className="operations-source">
+          <Icon name="admissions" /> Fuente institucional · SIIE
+        </span>
+      </header>
       <section
         className="panel admissions-filters"
         aria-label="Filtros de admisiones"
       >
+        <div className="operations-section-heading">
+          <div>
+            <span className="operations-eyebrow">ENCUENTRA A LA PERSONA</span>
+            <h2>Explorar aspirantes</h2>
+          </div>
+          <span className="operations-live">Consulta por período</span>
+        </div>
         <form
           className="form-grid"
           onSubmit={(event) => {
@@ -349,6 +372,12 @@ export function Admissions() {
               <Badge>SIIE</Badge>
             </div>
             {!ready && <Notice>Consultando aspirantes…</Notice>}
+            {ready && !error && (
+              <p className="admissions-result-count">
+                {list.page.items.length} aspirantes en esta página
+                {list.page.hasMore ? " · Hay más resultados" : ""}
+              </p>
+            )}
             {ready && error && (
               <Notice error>
                 {error}{" "}
@@ -407,6 +436,17 @@ export function Admissions() {
               states={states}
               onClose={() => setSelected(null)}
             />
+          )}
+          {!selected && (
+            <section className="panel admissions-welcome">
+              <Icon name="user" />
+              <span className="operations-eyebrow">CADA HISTORIA IMPORTA</span>
+              <h2>Conoce a tu próximo estudiante</h2>
+              <p>
+                Selecciona un aspirante para ver su información, programa y
+                seguimientos, sin perder el contexto de tu búsqueda.
+              </p>
+            </section>
           )}
         </div>
       )}

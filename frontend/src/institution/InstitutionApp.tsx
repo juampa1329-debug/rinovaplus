@@ -41,9 +41,11 @@ import "./knowledge.css";
 import { AssistantChat as AgentAssistantChat } from "../modules/ai/pages/AgentAssistantChat";
 import { BrandMark } from "../shared/BrandMark";
 import { Icon } from "../shared/Icon";
+import { Dashboard } from "./Dashboard";
+import { SiieWorkspace } from "./SiieWorkspace";
 
 const sections = [
-  ["overview", "Resumen"],
+  ["overview", "Dashboard"],
   ["admissions", "Admisiones"],
   ["academic", "Académico"],
   ["inbox", "Inbox"],
@@ -158,6 +160,7 @@ export function InstitutionApp({
         accessLink={accessLink}
         initialized={initialized}
         accepted={(value) => {
+          navigate("overview");
           setInitialized(true);
           setSession(value);
         }}
@@ -711,24 +714,9 @@ function Shell({
                     administrador puede habilitarlo en Ajustes → Módulos.
                   </Notice>
                 ) : location.page === "overview" ? (
-                  <section className="panel">
-                    <h2>Bienvenido, {session.user.full_name}</h2>
-                    <p>
-                      Consulta las conversaciones, organiza contactos y
-                      administra la configuración de la institución desde el
-                      menú.
-                    </p>
-                    <div className="institution-overview">
-                      {runtime.value.modules
-                        .filter((m) => m.operational)
-                        .map((m) => (
-                          <a className="panel" key={m.id} href={`#/${m.id}`}>
-                            {sections.find((row) => row[0] === m.id)?.[1] ??
-                              m.id}
-                          </a>
-                        ))}
-                    </div>
-                  </section>
+                  <Dashboard name={session.user.full_name} />
+                ) : location.page === "admissions" && runtime.value.institutional_operations ? (
+                  allowed("agents.manage") ? <div className="admissions-workspace"><header className="operations-hero"><div><span className="operations-eyebrow">DE LA PRIMERA PREGUNTA AL SIGUIENTE PASO</span><h2>Admisiones, con contexto.</h2><p>Encuentra a la persona y acompaña su proceso académico.</p></div></header><SiieWorkspace admissions /></div> : <Denied />
                 ) : location.page === "academic" &&
                   runtime.value.institutional_operations ? (
                   allowed("agents.manage") ? (

@@ -34,6 +34,13 @@ def response(value, status=200):
     return httpx.MockTransport(lambda r: httpx.Response(status, json=value))
 
 
+def test_failed_query_preserves_only_its_current_safe_provider_reference():
+    transport = httpx.MockTransport(lambda r: httpx.Response(503, json={"code": "catalog_unavailable"}, headers={"X-Correlation-ID": "current-offer-reference"}))
+    with pytest.raises(HTTPException) as failure:
+        siie.read("offer", {"offer_id": "900-n1"}, transport=transport)
+    assert failure.value.headers["X-SIIE-Correlation-ID"] == "current-offer-reference"
+
+
 def test_missing_single_key_disables_all_reads_and_ignores_old_admissions_key(monkeypatch):
     monkeypatch.delenv("SIIE_API_TOKEN")
     monkeypatch.setenv("SIIE_ADMISSIONS_API_TOKEN", "old-key-must-not-be-used-1234567890")

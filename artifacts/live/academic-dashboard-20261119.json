@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-19",
+  "status": "tested_pending_deployment",
+  "local_catalog_programs_saved": 25,
+  "live_basic_catalog": true,
+  "financial_detail": "source_unavailable_1204-n1_no_facts_invented",
+  "selected_tests": {
+    "backend": 318,
+    "frontend": 36,
+    "types": "passed",
+    "changed_eslint": "passed",
+    "workspace_build": "passed_existing_chunk_warning"
+  },
+  "dashboard": {
+    "readonly": true,
+    "timezone": "America/Bogota",
+    "native_aggregate_live": "pending",
+    "mock_tests": "authorization_calendar_and_client_render"
+  },
+  "voice": {
+    "cause": "incoming_audio_not_scheduled_for_Gemini",
+    "fix": "schedule_after_media_registration_with_dedup_and_existing_controls",
+    "legacy_ui": "one_link_to_Voces_y_audios",
+    "global_paid_voice_activated": false,
+    "real_inbound_after_fix": "pending"
+  },
+  "writes_SIIE": false,
+  "DDL": false,
+  "roadmap_acceptance_changed": false
+}

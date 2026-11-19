@@ -32,6 +32,21 @@ def valid_external(value):
     )
 
 
+def replyable_message(channel, provider):
+    """Schedule inspected audio as well as text; the worker waits for download.
+
+    This only queues Gemini input. ElevenLabs output still obeys its own pilot,
+    conversation quota and human-control guards.
+    """
+    if channel == "whatsapp":
+        if provider.get("type") == "text":
+            return True
+        audio = provider.get("audio")
+        return provider.get("type") == "audio" and isinstance(audio, dict) and valid_external(audio.get("id"))
+    text = (provider.get("message") or {}).get("text")
+    return channel in {"messenger", "instagram"} and isinstance(text, str) and bool(text.strip())
+
+
 def bounded_provider(value, depth=0):
     allowed = {
         "id",
@@ -527,12 +542,7 @@ def incoming(c, settings, item, effect):
     from app.institutional.channel_media import register_incoming
 
     register_incoming(c, settings, item, effect, linked, message)
-    if (
-        item["Channel"] == "whatsapp" and effect["provider"].get("type") == "text"
-        or item["Channel"] in {"messenger", "instagram"}
-        and isinstance((effect["provider"].get("message") or {}).get("text"), str)
-        and (effect["provider"]["message"]["text"]).strip()
-    ):
+    if replyable_message(item["Channel"], effect["provider"]):
         from app.institutional.whatsapp_gemini import schedule
 
         schedule(c, settings, item, linked, message)

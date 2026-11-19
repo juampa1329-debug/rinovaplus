@@ -127,6 +127,26 @@ describe("Institutional entry boundary", () => {
       screen.queryByText(/ensayo|planes|woocommerce/i),
     ).not.toBeInTheDocument();
   });
+  it("opens Dashboard after an explicit login instead of returning to an old module", async () => {
+    window.location.hash = "#/academic";
+    const fetcher = vi.fn(async (url: string) => {
+      if (url.endsWith("auth/status")) return ok({ initialized: true });
+      if (url.endsWith("auth/login")) return ok(session);
+      if (url.endsWith("auth/me")) return ok({ detail: "session_required" }, 401);
+      if (url.endsWith("runtime")) return ok({ modules: [{ id: "overview", enabled: true, implemented: true, operational: true }] });
+      if (url.endsWith("contracts")) return ok(contract);
+      if (url.includes("dashboard?")) return ok({ days: 7, inbox: null, followups: null, comments: null, generated_at: "2026-11-19T20:00:00Z", start: "2026-11-13T05:00:00Z", end: "2026-11-19T20:00:00Z" });
+      throw new Error(`Unexpected request ${url}`);
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<InstitutionApp />);
+    await screen.findByRole("button", { name: "Iniciar sesión" });
+    fireEvent.change(screen.getByLabelText("Correo"), { target: { value: "person@cbn.local" } });
+    fireEvent.change(screen.getByLabelText("Contraseña"), { target: { value: "a fixture password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+    await waitFor(() => expect(window.location.hash).toBe("#/overview"));
+    expect(await screen.findByRole("heading", { name: "Hola, Persona." })).toBeVisible();
+  });
   it("never echoes secrets in a failed API response", async () => {
     vi.stubGlobal(
       "fetch",

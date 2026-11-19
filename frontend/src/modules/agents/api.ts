@@ -229,7 +229,7 @@ const errors: Record<string, string> = {
   siie_catalog_invalid_response:
     "La respuesta de SIIE no cumple el contrato o sus cuotas no coinciden con el costo total. Solicita revisar los datos; no se guardó nada.",
   siie_catalog_unavailable:
-    "La API de SIIE no está disponible. El catálogo guardado se conserva. Reintenta cuando el servicio esté disponible.",
+    "SIIE no pudo entregar esta consulta. El catálogo guardado se conserva. Reintenta más tarde o informa al equipo de SIIE.",
   program_import_not_configured:
     "Falta configurar Firecrawl y el dominio oficial en el servidor. Puedes llenar la ficha manualmente.",
   program_source_host_not_allowed:
@@ -476,12 +476,17 @@ export async function api<T>(
   const result = await response.json().catch(() => null);
   institutionUnauthorized(response.status);
   if (signature && response.status < 500) pendingMutations.delete(signature);
-  if (!response.ok)
-    throw new Error(
+  if (!response.ok) {
+    const failure = new Error(
       response.status === 422 && result?.code === "invalid_request"
         ? validationMessage(result.fields)
         : message(result?.code ?? result?.detail),
     );
+    const reference = response.headers.get("X-SIIE-Correlation-ID");
+    if (reference && /^[A-Za-z0-9_-]{1,100}$/.test(reference))
+      Object.assign(failure, { correlationId: reference });
+    throw failure;
+  }
   return result as T;
 }
 export const mutation = (revision: number) => ({

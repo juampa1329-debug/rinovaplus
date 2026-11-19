@@ -5,6 +5,9 @@ import { useIntent, useTask } from "./api";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { SiieWorkspace, type SiieLocalDraft } from "./SiieWorkspace";
 import { ErrorFeedback } from "./ErrorFeedback";
+import { Icon } from "../shared/Icon";
+import { sourceGaps } from "./siieGaps";
+import "./operations-design.css";
 
 type Commercial = {
   price_valid_from?: string | null;
@@ -203,6 +206,9 @@ function AcademicProgramsContent() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [listError, setListError] = useState("");
   const [school, setSchool] = useState("");
+  const [search, setSearch] = useState("");
+  const [reportCopied, setReportCopied] = useState(false);
+  const [openSiie, setOpenSiie] = useState(0);
   const [id, setId] = useState<number | null>(null);
   const [revision, setRevision] = useState(0);
   const [draft, setDraft] = useState(empty);
@@ -276,6 +282,13 @@ function AcademicProgramsContent() {
     }, "");
   };
   const commercial = draft.commercial;
+  const gaps = source?.values
+    ? sourceGaps(
+        draft as unknown as Record<string, unknown>,
+        source.values,
+        source.kind,
+      )
+    : [];
   const changes = extracted ? importChanges(draft, extracted) : [];
   const receiveSiie = async (result: SiieLocalDraft) => {
     if (!allowNavigation()) return;
@@ -319,15 +332,40 @@ function AcademicProgramsContent() {
   };
   return (
     <div className="program-workspace">
+      <header className="operations-hero academic-hero">
+        <div>
+          <span className="operations-eyebrow">CONOCIMIENTO QUE CONECTA</span>
+          <h2>Una ficha. Toda la información.</h2>
+          <p>
+            Programas por escuela, datos financieros y contenido para tus
+            agentes.
+          </p>
+        </div>
+        <div className="academic-count">
+          <strong>{items?.length ?? "—"}</strong>
+          <span>programas locales</span>
+        </div>
+      </header>
       <SiieWorkspace
+        openRequest={openSiie}
         onSaved={async () => setItems(await listPrograms())}
         onImport={receiveSiie}
       />
       <aside className="panel" aria-label="Programas por escuela">
-        <h2>Programas por escuela</h2>
+        <div className="operations-section-heading">
+          <Icon name="academic" />
+          <h2>Biblioteca académica</h2>
+        </div>
         <Button type="button" onClick={() => open(null)} disabled={task.busy}>
           Nuevo programa
         </Button>
+        <Field
+          id="academic-search"
+          label="Buscar programa"
+          placeholder="Nombre del programa…"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
         {schools.length > 1 && (
           <SelectField
             id="program-school-filter"
@@ -347,7 +385,11 @@ function AcademicProgramsContent() {
               <h3>{label}</h3>
               {(items ?? [])
                 .filter(
-                  (item) => (item.school || "Sin escuela asignada") === label,
+                  (item) =>
+                    (item.school || "Sin escuela asignada") === label &&
+                    item.name
+                      .toLocaleLowerCase("es")
+                      .includes(search.trim().toLocaleLowerCase("es")),
                 )
                 .map((item) => (
                   <Button
@@ -365,7 +407,51 @@ function AcademicProgramsContent() {
           ))}
       </aside>
       <section className="panel program-editor">
-        <h2>{id ? "Ficha del programa" : "Nuevo programa"}</h2>
+        <header className="academic-editor-heading">
+          <div>
+            <span className="operations-eyebrow">
+              {id ? `FICHA LOCAL · REVISIÓN ${revision}` : "COMIENZA AQUÍ"}
+            </span>
+            <h2>{draft.name || "Nuevo programa"}</h2>
+            <p>{draft.school || "Organiza este programa por escuela"}</p>
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={task.busy}
+            onClick={() => {
+              setReportCopied(false);
+              if (!source) {
+                setOpenSiie((value) => value + 1);
+                return;
+              }
+              if (!allowNavigation()) return;
+              void task.run(async () => {
+                const result = await api<SiieLocalDraft>(
+                  "/programs/import-siie",
+                  "POST",
+                  {
+                    ...(source.kind === "offer"
+                      ? { offer_id: source.offer_id }
+                      : { program_id: source.program_id }),
+                    ...source.request,
+                    local_program_id: id,
+                  },
+                );
+                await receiveSiie(result);
+              }, "Datos de SIIE preparados. Revisa el borrador y guarda para aplicar; tus correcciones locales se conservan.");
+            }}
+          >
+            <Icon name="channels" />
+            Sincronizar con SIIE
+          </Button>
+        </header>
+        {!source && (
+          <p className="scope-text">
+            Para vincularlo, abre SIIE y elige su programa u oferta. Después
+            podrás sincronizar esta ficha con un clic.
+          </p>
+        )}
         {task.notices}
         {source && (
           <Notice>
@@ -386,104 +472,149 @@ function AcademicProgramsContent() {
             ))}
           </Notice>
         )}
-        <fieldset disabled={task.busy}>
-          <legend>Importar desde una página oficial</legend>
-          <Field
-            id="program-url-import"
-            label="Enlace oficial del programa"
-            placeholder="https://…"
-            type="url"
-            maxLength={1000}
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-          />
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={!url.trim()}
-            onClick={() => {
-              setExtracted(null);
-              void task.run(
-                async () =>
-                  setExtracted(
-                    await api<Draft>("/programs/import", "POST", { url }),
-                  ),
-                "Extracción lista para revisar.",
-              );
-            }}
-          >
-            Extraer con IA
-          </Button>
-          <details>
-            <summary>Importador SIIE anterior por ID</summary>
+        {source && (
+          <details className="academic-source-review">
+            <summary>
+              Calidad de los datos ·{" "}
+              {gaps.length
+                ? `${gaps.length} datos locales ausentes en SIIE`
+                : "Revisar procedencia"}
+            </summary>
             <p>
-              Para la API actual usa «Abrir SIIE» en la parte superior: allí
-              puedes obtener programas, seleccionar ofertas y consultar
-              aspirantes. Este importador conserva el contrato anterior por ID y
-              requiere una oferta completa revisada. No matricula, no cobra ni
-              guarda datos automáticamente.
+              Comparación con la última copia recibida, no con una consulta en
+              tiempo real.{" "}
+              {source.kind === "program"
+                ? "Esta copia es del catálogo base: no confirma precios ni calendario financiero. Consulta una oferta en SIIE para revisarlos."
+                : "Se respetan los valores y fechas completados localmente."}
             </p>
+            {gaps.length > 0 && (
+              <>
+                <ul>
+                  {gaps.map((gap) => (
+                    <li key={gap}>{gap}</li>
+                  ))}
+                </ul>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    void task.run(async () => {
+                      await navigator.clipboard.writeText(
+                        `Revisión para SIIE · ${draft.name}\nPrograma SIIE: ${source.program_id}\nOferta: ${source.offer_id || "Catálogo base"}\nCopia recibida: ${source.checked_at}\nDatos disponibles en RinovaPlus pero ausentes en esta copia:\n${gaps.map((gap) => `- ${gap}`).join("\n")}\nSolicitamos revisar estos campos en la API. No se adjuntan valores personales ni se ha enviado este informe automáticamente.`,
+                      );
+                      setReportCopied(true);
+                    }, "")
+                  }
+                >
+                  {reportCopied
+                    ? "Informe copiado"
+                    : "Copiar informe para SIIE"}
+                </Button>
+              </>
+            )}
+          </details>
+        )}
+        <details className="academic-import-tools">
+          <summary>Otras fuentes · Extraer información de una página</summary>
+          <fieldset disabled={task.busy}>
+            <legend>Importar desde una página oficial</legend>
             <Field
-              id="program-siie-offer"
-              label="ID de oferta en SIIE"
-              value={siieOffer}
-              maxLength={80}
-              onChange={(event) => setSiieOffer(event.target.value)}
+              id="program-url-import"
+              label="Enlace oficial del programa"
+              placeholder="https://…"
+              type="url"
+              maxLength={1000}
+              value={url}
+              onChange={(event) => setUrl(event.target.value)}
             />
             <Button
               type="button"
               variant="secondary"
-              disabled={!/^[A-Za-z0-9_-]{1,80}$/.test(siieOffer)}
+              disabled={!url.trim()}
               onClick={() => {
                 setExtracted(null);
-                void task.run(async () => {
-                  const result = await api<SiieLocalDraft>(
-                    "/programs/import-siie",
-                    "POST",
-                    { offer_id: siieOffer },
-                  );
-                  if (result.source?.kind) await receiveSiie(result);
-                  else setExtracted(result.draft as Draft);
-                }, "Datos de SIIE listos para revisar. No se han guardado.");
+                void task.run(
+                  async () =>
+                    setExtracted(
+                      await api<Draft>("/programs/import", "POST", { url }),
+                    ),
+                  "Extracción lista para revisar.",
+                );
               }}
             >
-              Consultar SIIE
+              Extraer con IA
             </Button>
-          </details>
-          {extracted && (
-            <div className="program-import-preview">
-              <strong>Cambios propuestos</strong>
-              <FinancialSummary commercial={extracted.commercial} />
-              {changes.length ? (
-                <dl>
-                  {changes.map(([label, oldValue, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>
-                        {oldValue !== null && oldValue !== "" && (
-                          <del>{oldValue}</del>
-                        )}
-                        <span>{value ?? "Sin dato"}</span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p>Los datos encontrados coinciden con el borrador.</p>
-              )}
+            <details>
+              <summary>Importador SIIE anterior por ID</summary>
+              <p>
+                Para la API actual usa «Abrir SIIE» en la parte superior: allí
+                puedes obtener programas, seleccionar ofertas y consultar
+                aspirantes. Este importador conserva el contrato anterior por ID
+                y requiere una oferta completa revisada. No matricula, no cobra
+                ni guarda datos automáticamente.
+              </p>
+              <Field
+                id="program-siie-offer"
+                label="ID de oferta en SIIE"
+                value={siieOffer}
+                maxLength={80}
+                onChange={(event) => setSiieOffer(event.target.value)}
+              />
               <Button
                 type="button"
                 variant="secondary"
+                disabled={!/^[A-Za-z0-9_-]{1,80}$/.test(siieOffer)}
                 onClick={() => {
-                  setDraft((current) => mergeImport(current, extracted));
                   setExtracted(null);
+                  void task.run(async () => {
+                    const result = await api<SiieLocalDraft>(
+                      "/programs/import-siie",
+                      "POST",
+                      { offer_id: siieOffer },
+                    );
+                    if (result.source?.kind) await receiveSiie(result);
+                    else setExtracted(result.draft as Draft);
+                  }, "Datos de SIIE listos para revisar. No se han guardado.");
                 }}
               >
-                Aplicar al borrador
+                Consultar SIIE
               </Button>
-            </div>
-          )}
-        </fieldset>
+            </details>
+            {extracted && (
+              <div className="program-import-preview">
+                <strong>Cambios propuestos</strong>
+                <FinancialSummary commercial={extracted.commercial} />
+                {changes.length ? (
+                  <dl>
+                    {changes.map(([label, oldValue, value]) => (
+                      <div key={label}>
+                        <dt>{label}</dt>
+                        <dd>
+                          {oldValue !== null && oldValue !== "" && (
+                            <del>{oldValue}</del>
+                          )}
+                          <span>{value ?? "Sin dato"}</span>
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p>Los datos encontrados coinciden con el borrador.</p>
+                )}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setDraft((current) => mergeImport(current, extracted));
+                    setExtracted(null);
+                  }}
+                >
+                  Aplicar al borrador
+                </Button>
+              </div>
+            )}
+          </fieldset>
+        </details>
         <FinancialSummary commercial={commercial} />
         <form
           onSubmit={(event) => {
@@ -529,7 +660,9 @@ function AcademicProgramsContent() {
           }}
         >
           <fieldset disabled={task.busy} className="program-fields">
-            <legend>Datos de la ficha</legend>
+            <legend>
+              <Icon name="academic" /> Datos del programa
+            </legend>
             <Field
               id="program-name"
               label="Nombre oficial"

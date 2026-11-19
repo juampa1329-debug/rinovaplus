@@ -16,6 +16,48 @@ from app.institutional.voice_policy import VoicePolicy, choose_profile, estimate
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
 from app.institutional.voice_delivery import speech_text, voice_settings, SPEECH_GUIDANCE
+from app.institutional.channel_events import replyable_message
+
+
+@pytest.mark.parametrize("channel,provider,expected", [
+    ("whatsapp", {"type": "audio", "audio": {"id": "meta-media-fixture", "voice": True}}, True),
+    ("whatsapp", {"type": "audio", "audio": {"id": "meta-media-fixture", "voice": False}}, True),
+    ("whatsapp", {"type": "audio", "audio": {}}, False),
+    ("whatsapp", {"type": "sticker", "sticker": {"id": "fixture"}}, False),
+    ("whatsapp", {"type": "text"}, True),
+    ("instagram", {"message": {"text": "Hola"}}, True),
+    ("messenger", {"message": {"attachments": [{"type": "audio"}]}}, False),
+])
+def test_voice_events_reach_gemini_without_enabling_global_paid_voice(channel, provider, expected):
+    assert replyable_message(channel, provider) is expected
+
+
+def test_incoming_voice_registers_media_then_schedules_once_on_webhook_replay(monkeypatch):
+    from app.institutional import channel_events, channel_media, whatsapp_gemini
+    linked = {"IdentityId": str(uuid4()), "ConversationId": str(uuid4()), "ContactId": str(uuid4())}
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]], "version": "fixture"})
+    steps = []
+    class Cursor:
+        saved = False
+        def execute(self, sql, *args):
+            self.sql = sql
+            if sql.startswith("INSERT crm_channels2.ExternalMessage"):
+                self.saved = True
+            return self
+        def fetchone(self):
+            if "SELECT 1 FROM crm_channels2.ExternalMessage" in self.sql:
+                return (1,) if self.saved else None
+            if "SELECT 1 FROM crm.Conversation" in self.sql:
+                return (1,)
+            return None
+    monkeypatch.setattr(channel_events, "one", lambda *args: linked)
+    monkeypatch.setattr(channel_media, "register_incoming", lambda *args: steps.append("media"))
+    monkeypatch.setattr(whatsapp_gemini, "schedule", lambda *args: steps.append("gemini"))
+    event = {"author": "fixture-user", "external": "fixture-message", "text": "[Adjunto]", "provider": {"type": "audio", "audio": {"id": "media-fixture", "voice": True}, "timestamp": "1795118400"}}
+    cursor = Cursor()
+    for _ in range(2):
+        channel_events.incoming(cursor, settings, {"IntegrationId": str(uuid4()), "Channel": "whatsapp"}, event)
+    assert steps == ["media", "gemini"]
 
 
 def profile(id="admisiones", **values):

@@ -542,6 +542,10 @@ def create_app(
             install_webhooks(app, settings)
         install_ui_contract(app, settings)
     if is_workspace:
+        if getattr(settings, "postgres_deployment", False):
+            from app.institutional.dashboard import install as install_dashboard
+
+            install_dashboard(app, settings)
         from app.institutional.workspace import install as install_workspace
 
         if postgres:

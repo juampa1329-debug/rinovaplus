@@ -1,3 +1,11 @@
+## Académico/Dashboard y corrección de audio entrante — 2026-11-19
+
+Se verificó copia local real de25programas por UI, Software143/período129; detalle1204-n1 aún indisponible desde SIIE. bbaf756 saludable, run0kuhplq4mp1zbbot2eigpqyw completado20:09:18Z. Se añaden sincronización por ficha, informe local de datos faltantes, Dashboard de agregados PG y rediseño de biblioteca/Admisiones. Inicio explícito abre Dashboard; restaurar sesión conserva ruta. No nuevas tablas ni escrituras SIIE. Validación de esta nueva interfaz publicada pendiente al corte.
+
+El titular reportó audios de un chat nuevo sin respuesta: webhook guardaba archivos pero sólo programaba Gemini para texto. Se incluye audio WhatsApp con ID válido después de registrar medio, con espera de descarga/deduplicación/Humano conservados. Se eliminan controles heredados de multimedia en IA general para dirigir a Voces y audios. No habilitar voz global: piloto sigue exclusivo44, máximo1; fuera del piloto Gemini contesta por texto. Falta prueba entrante real tras despliegue. P19 conserva2/5.
+
+P0–P11:100% cada una; P12auxiliar100% PostgreSQL/Meta; P13Académico/agentes0/4; P14entrenamiento plan; P15correo100%7/7; P16SIIE0/5; P17TikTok diferida0/5; P18seguridad plan0/8; P19voces2/5; P20llamadas plan0/8. Guía: docs/adaptation/ACADEMIC_DASHBOARD_UX_20261119.md. No convertir cantidad de pruebas en aceptación ni modificar pesos originales.
+
 ## P16: protección entre pestañas de revisión — 2026-11-19
 
 Se rechaza crear o vincular una segunda ficha al mismo ID de programa SIIE, incluso si dos pestañas prepararon la revisión antes de la primera copia.169backend seleccionadas pasan; las pruebas de transacción siguen siendo un doble aislado, no evidencia SQL nativa.5bc9b60 en despliegue; P16 conserva0/5hasta validación publicada. Alcance local/fechas opcionales y demás fases sin cambios.

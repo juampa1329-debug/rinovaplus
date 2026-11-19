@@ -145,6 +145,7 @@ it("previews official SIIE finance and only saves after explicit apply and revie
     });
   try {
     mount(<AcademicPrograms />);
+    fireEvent.click(screen.getByText("Otras fuentes · Extraer información de una página"));
     fireEvent.click(screen.getByText("Importador SIIE anterior por ID"));
     fireEvent.change(screen.getByLabelText("ID de oferta en SIIE"), {
       target: { value: "offer-fixture" },

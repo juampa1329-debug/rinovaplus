@@ -2,7 +2,7 @@
   "phase": "P16",
   "title": "Integración académica y financiera SIIE",
   "date": "2026-11-19",
-  "status": "local_catalog_optional_dates_implemented_pending_deployment",
+  "status": "local_catalog_25_programs_verified_ux_and_dashboard_pending_deployment",
   "accepted": 0,
   "total": 5,
   "acceptance_percent": "0.00%",
@@ -68,7 +68,7 @@
     "content_type": "application/json; charset=utf-8",
     "scope": "availability_only_no_credentials_no_data"
   },
-  "source_limit": "Single key accepted by CRM and Commercial. Admissions/students/contacts/offered period verified. Public Programs200 omits effective period and is rejected409 by consumer; two current Software129 details1204-n1/n2 return503 catalog_unavailable without partial_offer. No quote/import/agent publication; personal balances remain absent.",
+  "source_limit": "Basic Programs page copied locally (25). Current Software143 offers1204-n1..n4, period129 available; detail1204-n1 still unavailable without partial data. Nullable financial dates supported; real financial facts and agent acceptance pending.",
   "tests": {
     "backend_selected_passed": 159,
     "frontend_selected": 25,
@@ -185,5 +185,23 @@
     "changed_lint": "passed",
     "workspace_build": "passed_with_existing_bundle_warning",
     "data": "fictitious fixtures; transaction tests use in-memory SQL double, not native SQL acceptance"
+  },
+  "local_catalog_live": {
+    "programs_copied": 25,
+    "source_program_for_review": "143",
+    "period": "129",
+    "financial_detail_verified": false,
+    "backend_commit": "bbaf75651b357febb25119686f939309b9354308",
+    "deployment": "0kuhplq4mp1zbbot2eigpqyw",
+    "status": "healthy_finished",
+    "writes_to_SIIE": false,
+    "DDL": false
+  },
+  "current_enhancement": {
+    "program_sync_button": true,
+    "source_gap_report": "local_copy_only_no_automatic_notification",
+    "dashboard": "real_aggregates_in_validation",
+    "admissions": "ASPX_read_workspace",
+    "acceptance_changed": false
   }
 }

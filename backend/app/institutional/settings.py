@@ -389,6 +389,8 @@ class Settings:
         learning = self.settings.ticket.get('version') in {'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
         if learning:
             ready |= {'intelligence'}
+        if getattr(self.settings, "postgres_deployment", False):
+            ready |= {"admissions"}
         return {
             "notification_operations": bool(getattr(self.settings, "postgres_deployment", False)),
             "institutional_operations": self.settings.ticket.get("version") == "cbn-institutional-operations-p11-v1",

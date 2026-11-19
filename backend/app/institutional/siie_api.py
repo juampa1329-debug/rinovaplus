@@ -360,6 +360,7 @@ def read(route, values=None, *, transport=None):
     key, _ = credential()
     if len(key) < 32 or any(ord(c) < 33 or ord(c) > 126 for c in key):
         raise HTTPException(409, "siie_credential_invalid")
+    correlation = None
     try:
         with httpx.Client(
             timeout=httpx.Timeout(15, connect=5),
@@ -373,6 +374,8 @@ def read(route, values=None, *, transport=None):
                 params=query,
                 headers={"X-API-Key": key, "Accept": "application/json"},
             ) as response:
+                candidate = response.headers.get("X-Correlation-ID", "")
+                correlation = candidate if re.fullmatch(r"[A-Za-z0-9_-]{1,100}", candidate) else None
                 if response.status_code in {401, 403}:
                     raise HTTPException(502, "siie_catalog_access_rejected")
                 if response.status_code == 404:
@@ -420,6 +423,10 @@ def read(route, values=None, *, transport=None):
                     "source": "SIIE",
                     "saved": False,
                 }
+    except HTTPException as error:
+        if correlation:
+            error.headers = {**(error.headers or {}), "X-SIIE-Correlation-ID": correlation}
+        raise
     except (ValueError, RecursionError, UnicodeError):
         raise HTTPException(502, "siie_catalog_invalid_response") from None
     except httpx.HTTPError:
