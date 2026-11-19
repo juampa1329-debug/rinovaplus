@@ -1,3 +1,13 @@
+## P15 cerrada en su alcance inicial; P16 retomada — 2026-11-18
+
+P15: **7/7 unidades aceptadas, 100% en el alcance inicial documentado**. Oracle SPF/DKIM Active y SMTP TLS verificados; el titular confirmó activación, recuperación, diseño final y copia del aviso operativo en el buzón de supervisión. Ocho correos reales aceptados una vez cada uno; siete al buzón de supervisión con recepción confirmada. El aviso al antiguo correo administrador sólo tiene aceptación SMTP: el titular ya no accede a ese buzón. No se enviarán nuevas pruebas allí ni se cambia su identificador de acceso sin un recorrido específico.
+
+Backend a3f85e6 saludable en Coolify, nueve consumidores frescos. Selectores de plantilla crítica publicados y renderizado nativo de ambos enlaces comprobado con rollback, sin SMTP. Transporte revisión2, plantilla institucional revisión5. Usuario de ensayo inactivo, sin sesiones/desafíos; regla operativa revisión4 desactivada y sin destinatarios. Pasan347 backend seleccionadas (47 correo),33 frontend, tipos/ESLint/build;15 regresiones PG separadas. Escaneo amplio de estilo y advertencia de bundle conservan sus límites históricos.
+
+Recuperación aislada closed-reviewed: siete tablas con huellas iguales, seis envelopes autenticados y dos recursos SHA; sin CONNECT del runtime, sesiones ni correo ejecutable. El corte precede la última alerta y su copia: no acredita recuperar efectos posteriores. Informes iniciales de auditoría diario/semanal y recibos OCI registrados manualmente. OPS-05 continúa pendiente de conexión automática al monitor de respaldos/infraestructura y destinatario administrador accesible; no se declara alertado todo Coolify. OPS01–06 y custodia externa/RPO-RTO conservan sus límites aceptados. Evidencia: artifacts/live/p15-mail-validation-20261118.json; manual: docs/adaptation/P15_ORACLE_OPERATOR_RUNBOOK.md.
+
+General original P0–P11:100% cada una,56/56 criterios y279/279 hitos; P12 auxiliar:100% en PostgreSQL/Meta aceptado. Adicionales sin nuevo peso: P13 Académico/agentes por programa parcial0/4; P14 entrenamiento comercial plan; P15 correos100%7/7; **P16 API académica/financiera SIIE retomada,0/5**, contrato recibido, adaptador en construcción y datos reales pendientes; P17 TikTok diferida0/5; P18 seguridad planificada0/8. La API entregada no expone matrícula/estudiantes ni saldos y marca ofertas422 no cotizables; no se inventan datos. Los cortes inferiores son historia.
+
 # P15 · Oracle Email Delivery y operación de correo
 
 Corte de implementación: 18 de noviembre de 2026. Fase abierta; el código y SMTP aceptado no prueban entrega ni sustituyen la aceptación de sus siete unidades.

@@ -43,7 +43,8 @@
       "requirement": "Configurar destinatarios y probar entrega real de avisos de respaldos y operación; agenda configurada no prueba correo recibido.",
       "follow_up_phase": "P15",
       "state": "pending",
-      "residual_limit_accepted": true
+      "residual_limit_accepted": true,
+      "delivery_validation": "P15 operational template received at supervision mailbox as authorized manual copy. Operator event accepted at former owner mailbox, inaccessible to owner. Rule off/no recipients; automatic backup-monitor hook and permanent reachable administrator recipient still pending."
     },
     {
       "id": "OPS-06",

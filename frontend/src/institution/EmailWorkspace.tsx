@@ -55,7 +55,8 @@ const defaults: Record<string, Record<string, unknown>> = {
     name: "Aviso institucional",
     subject: "{{evento}} · RinovaPlus",
     html: '<div style="font-family:Arial,Helvetica,sans-serif;background-color:#12343B;color:#F5F7F2;padding:32px;border-radius:16px"><h1>{{evento}}</h1><p>Hola {{nombre}},</p><p>{{detalle}}</p><p>{{fecha}}</p><p><a href="{{enlace}}" style="color:#C4F04D">Abrir RinovaPlus</a></p></div>',
-    signature: '<p style="font-family:Arial,Helvetica,sans-serif;color:#52666B">Corporación Bolivariana del Norte — CBN</p>',
+    signature:
+      '<p style="font-family:Arial,Helvetica,sans-serif;color:#52666B">Corporación Bolivariana del Norte — CBN</p>',
     published: false,
   },
   rule: {
@@ -500,9 +501,13 @@ function Editor({
                 options={Object.entries(data.events)
                   .filter(
                     ([id]) =>
-                      !["mail.test", "password.reset", "user.invited"].includes(
-                        id,
-                      ),
+                      ![
+                        "mail.test",
+                        "password.reset",
+                        "user.invited",
+                        "report.daily",
+                        "report.weekly",
+                      ].includes(id),
                   )
                   .map(([value, [label]]) => ({ value, label }))}
                 onChange={(e) => change("event", e.target.value)}

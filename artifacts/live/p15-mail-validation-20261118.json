@@ -1,9 +1,9 @@
 {
   "phase": "P15",
   "date": "2026-11-18",
-  "acceptance": "in_progress",
+  "acceptance": "accepted_initial_documented_scope",
   "original_general": "100.00%",
-  "additional_phase_accepted": "6/7",
+  "additional_phase_accepted": "7/7",
   "DNS": {
     "SPF": "Oracle console Yes",
     "DKIM_selector": "rinova20261118",
@@ -12,7 +12,7 @@
     "DMARC": "existing p=quarantine preserved"
   },
   "mail": {
-    "external_accepted": 5,
+    "external_accepted": 8,
     "recipient_confirmed_received": true,
     "activation_mail_id": "4ce34b41-9b71-4f77-81ad-f88d0a0f8c5d",
     "oracle_event_id": "30203126-2993-4ABD-A865-98549747D3D8",
@@ -21,7 +21,12 @@
     "tls": true,
     "activation": "owner confirmed successful activation and login after0c4afd1",
     "password_recovery": "owner confirmed reset and login",
-    "operator_relay_observation_saved": true
+    "operator_relay_observation_saved": true,
+    "supervision_received_confirmed": 7,
+    "old_owner_delivery": "SMTP accepted; mailbox inaccessible, delivery not confirmed",
+    "final_operational_copy": "owner confirmed received at authorized supervision address",
+    "final_manual_mail_id": "156b3635-e403-4468-9634-d4463a8f2320",
+    "operator_event_mail_id": "7cd825a7-8265-4658-b98e-07ce4c86a262"
   },
   "tests": {
     "backend_selected": 347,
@@ -31,15 +36,15 @@
   },
   "restore": {
     "source": "rinovaplus",
-    "isolated_copy": "rinovaplus_p15_restore_20261118_final",
-    "dump": "/var/lib/postgresql/data/p15-20261118/final-reviewed.dump",
-    "sha256": "4f9865f191b6430bcf66699783bd630d7c8e52bbaf2781dfcd42eb8221a72423",
+    "isolated_copy": "rinovaplus_p15_restore_20261118_closed",
+    "dump": "/var/lib/postgresql/data/p15-20261118/closed-reviewed.dump",
+    "sha256": "c5f958963fd22027f6a462b4ddacbdf2e24f26656b86aab775bb2d42ebea9e96",
     "tables_matched": 7,
     "counts": {
       "version": 1,
       "document": 4,
-      "history": 7,
-      "outbox": 5,
+      "history": 9,
+      "outbox": 6,
       "receipt": 1,
       "asset": 2,
       "cursor": 6
@@ -51,7 +56,7 @@
     "consumed_challenges": 1,
     "asset_sha256_verified": 2,
     "restored_worker_started": false,
-    "scope": "P15 snapshot includes populated config, five encrypted messages, observed relay and two assets. No offsite custody or total-host-loss acceptance."
+    "scope": "Six encrypted envelopes authenticated at source, clone table hashes match; two assets verified. Snapshot precedes last operator alert, its template/rule and forwarded copy. No claim to recover those later effects or total host loss."
   },
   "test_user": {
     "id": "9f304694-b04d-408a-9376-3457b2aa8af4",
@@ -68,7 +73,8 @@
     "Frontend regression preparation had a Windows encoding error; UTF-8 corrected, all32 passed",
     "Native report first run failed42703: audit uses OccurredAt; candidate corrected, schema regression and native rollback passed",
     "Dialog unit test needed native showModal/close support and cleanup before descriptor restore; corrected;33 selected frontend pass",
-    "Extended revocation fixture showed manual test bypassed dispatcher actor recheck; no actual SMTP (stub exhausted, rollback). Bind actor to new manual tests and recheck authority; native expanded verification pending deployment."
+    "Extended revocation fixture showed manual test bypassed dispatcher actor recheck; no actual SMTP (stub exhausted, rollback). Bind actor to new manual tests and recheck authority; native expanded verification pending deployment.",
+    "First operator-event attempt rejected invalid_audit_metadata and rolled back, SMTP0; allowlisted audit metadata corrected before the single authorized event."
   ],
   "native_execution": {
     "candidate_audit_fix": "deployed2972137, actual query verified without patch",
@@ -76,7 +82,7 @@
     "reports_queued_after_two_runs": 1,
     "SMTP_calls": 0,
     "rollback_confirmed": true,
-    "envelopes_authenticated": 3
+    "envelopes_authenticated": 6
   },
   "native_worker": {
     "cases": [
@@ -103,7 +109,7 @@
     "HTML_imported": true,
     "safe_preview": true,
     "restored_unpublished_revision": 3,
-    "clean_published_revision": 4,
+    "clean_published_revision": 5,
     "unsafe_HTML_rejected": true,
     "error_dialog_observed": true,
     "boundary_PNG_bytes_uploaded": 481084
@@ -123,6 +129,55 @@
       "runtime_connect": false,
       "runnable_mail": 0,
       "asset_sha256_verified": 1
+    },
+    {
+      "source": "rinovaplus",
+      "isolated_copy": "rinovaplus_p15_restore_20261118_final",
+      "dump": "/var/lib/postgresql/data/p15-20261118/final-reviewed.dump",
+      "sha256": "4f9865f191b6430bcf66699783bd630d7c8e52bbaf2781dfcd42eb8221a72423",
+      "tables_matched": 7,
+      "counts": {
+        "version": 1,
+        "document": 4,
+        "history": 7,
+        "outbox": 5,
+        "receipt": 1,
+        "asset": 2,
+        "cursor": 6
+      },
+      "runtime_connect": false,
+      "runnable_mail": 0,
+      "live_sessions": 0,
+      "revoked_sessions": 17,
+      "consumed_challenges": 1,
+      "asset_sha256_verified": 2,
+      "restored_worker_started": false,
+      "scope": "P15 snapshot includes populated config, five encrypted messages, observed relay and two assets. No offsite custody or total-host-loss acceptance."
     }
-  ]
+  ],
+  "backend_deployment": {
+    "commit": "a3f85e6dc1fed1bff0b5d8cb4d7f41d6ba430436",
+    "deployment": "xjmpbhijd0qj0v4cya2oxjwo",
+    "status": "healthy",
+    "fresh_workers": 9
+  },
+  "cleanup": {
+    "test_user_inactive": true,
+    "rule_revision": 4,
+    "rule_enabled": false,
+    "rule_users": [],
+    "old_administrator_login_unchanged": true
+  },
+  "limits": [
+    "Initial reports aggregate audit events only, daily/weekly rolling periods with IANA scheduling.",
+    "OCI relay/bounce observations entered manually; no automatic OCI receipt consumer.",
+    "OPS05 stays pending: backup scheduler/infra failure event integration and permanent accessible administrator recipient not yet validated.",
+    "Other accepted OPS01-06 and P18 proxy/client-IP work remain pending."
+  ],
+  "critical_templates": {
+    "native_rendered": 2,
+    "external_SMTP": 0,
+    "rollback": true,
+    "published_selectors_UI": true
+  }
 }

@@ -154,22 +154,23 @@
     "institutional_efficacy_claimed": false
   },
   "P15": {
-    "status": "final_operational_review",
-    "accepted": 6,
+    "status": "accepted_initial_documented_scope",
+    "accepted": 7,
     "total": 7,
     "implementation_percent": null,
     "scope": "email_notifications_templates_and_reports",
     "details": "docs/adaptation/P15_EMAIL_NOTIFICATIONS.md",
-    "acceptance_percent": "85.71%",
+    "acceptance_percent": "100.00%",
     "evidence": "tasks/p15-notifications-progress.json"
   },
   "P16": {
-    "status": "deferred_by_owner",
+    "status": "resumed_by_owner_contract_adapter_in_progress",
     "accepted": 0,
     "total": 5,
-    "implementation": "read_only_base_retained",
+    "implementation": "provider_contract_received_20261118",
     "scope": "SIIE_academic_and_financial_API",
-    "blocks_P13": false
+    "blocks_P13": false,
+    "details": "docs/adaptation/P16_SIIE_INTEGRATION.md"
   },
   "P17": {
     "status": "deferred_by_owner",
