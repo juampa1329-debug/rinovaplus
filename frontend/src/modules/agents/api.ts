@@ -182,6 +182,20 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  siie_offer_review_required:
+    "Abre SIIE en Académico y revisa la oferta recibida. La publicación de precios requiere completar su revisión y vinculación con la ficha local; no se aplican automáticamente.",
+  siie_admissions_not_configured:
+    "Falta la clave General de Admisiones de SIIE en el servidor. Es distinta de la clave de Catálogo. Guárdala directamente en Coolify, sólo Runtime.",
+  siie_invalid_parameter:
+    "Revisa el período, programa, aspirante o la paginación. Usa los identificadores devueltos por SIIE y el ID completo de la oferta.",
+  siie_reference_not_found:
+    "SIIE no encontró esa referencia en el período consultado. Actualiza el listado y vuelve a seleccionarla.",
+  siie_rate_limited:
+    "SIIE alcanzó su límite de consultas. Espera al menos un minuto antes de volver a consultar; los datos ya guardados se conservan.",
+  siie_source_incomplete:
+    "SIIE no puede completar esta oferta. Solicita al equipo académico revisar el mapeo y sus condiciones financieras; no se publicó ningún precio.",
+  siie_credential_invalid:
+    "La clave de SIIE tiene un formato no válido. Guarda el token original en Coolify sin saltos de línea; no uses su hash.",
   siie_catalog_not_configured:
     "La API de SIIE aún no está configurada. Solicita la URL HTTPS, una credencial de consulta y el ID de la oferta. Guarda la credencial sólo en Coolify.",
   siie_catalog_endpoint_invalid:

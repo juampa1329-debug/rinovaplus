@@ -1,0 +1,620 @@
+{
+  "info": {
+    "name": "SIIE · API CRM · Admisiones y Catálogo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección documental de 11 operaciones. Completar claves e IDs manualmente y ejecutar cada solicitud individualmente. Admisiones POST/PUT escriben en SIIE. No contiene scripts, automatismos, claves reales ni IDs asumidos válidos. API_CRM corresponde solo a la huella del token original del catálogo; Admisiones requiere otra credencial general. La URL inicial es documental y no fue comprobada en esta entrega. Consultar GUIA_API_CRM_SIIE.md."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://siieplus.online/SIIEWebPlus",
+      "type": "string",
+      "description": "Raíz documental del ambiente, sin barra final. Su disponibilidad pública no se verificó en esta entrega."
+    },
+    {
+      "key": "admissionsKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "catalogKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idPeriodo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idPrograma",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idJornada",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idAspirante",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idEstadoSeguimiento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "q",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idSeguimiento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idSeguimientoCrm",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createOperationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "updateOperationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "expectedRevision",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ocurridoUtc",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "autorCrmId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "autorCrmNombre",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "programId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commercialPeriodId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commercialOfferId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "programsCursor",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "offersCursor",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "offset",
+      "value": "0",
+      "type": "string",
+      "description": "Desplazamiento de Admisiones. Avanzar 25 cuando hasMore sea true."
+    }
+  ],
+  "item": [
+    {
+      "name": "Admisiones",
+      "description": "Ocho operaciones. Autenticación con la clave GENERAL independiente admissionsKey. Las dos últimas escriben datos; revisar todos los parámetros/campos antes de enviarlas.",
+      "auth": {
+        "type": "apikey",
+        "apikey": [
+          {
+            "key": "key",
+            "value": "X-API-Key",
+            "type": "string"
+          },
+          {
+            "key": "value",
+            "value": "{{admissionsKey}}",
+            "type": "string"
+          },
+          {
+            "key": "in",
+            "value": "header",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "01 · Consultar períodos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Periodos.aspx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Periodos.aspx"
+              ]
+            },
+            "description": "Lectura. Completar admissionsKey. Copiar data.items[].id a idPeriodo. idPeriodoActivo solo existe cuando hay un único período activo; si requiereSeleccion es true, seleccionar explícitamente. No hay parámetros."
+          },
+          "response": []
+        },
+        {
+          "name": "02 · Consultar estados de seguimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/EstadosSeguimiento.aspx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "EstadosSeguimiento.aspx"
+              ]
+            },
+            "description": "Lectura de ACEstadoSeguimiento. Copiar el id real a idEstadoSeguimiento. No usar estados inventados ni interpretar un resultado de seguimiento como matrícula."
+          },
+          "response": []
+        },
+        {
+          "name": "03 · Consultar filtros del período",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/FiltrosAdmisiones.aspx?idPeriodo={{idPeriodo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "FiltrosAdmisiones.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}",
+                  "description": "Obligatorio. Entero positivo obtenido de Periodos."
+                }
+              ]
+            },
+            "description": "Lectura. Devuelve programas y jornadas con aspirantes para el período. Copiar idPrograma/idJornada si se quiere filtrar; no equivalen a selección individual o cupos."
+          },
+          "response": []
+        },
+        {
+          "name": "04 · Listar aspirantes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Aspirantes.aspx?idPeriodo={{idPeriodo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Aspirantes.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}",
+                  "description": "Obligatorio. Período del aspirante."
+                },
+                {
+                  "key": "q",
+                  "value": "{{q}}",
+                  "description": "Opcional. Búsqueda contenida por nombre/apellidos o documento, hasta 100 caracteres.",
+                  "disabled": true
+                },
+                {
+                  "key": "idPrograma",
+                  "value": "{{idPrograma}}",
+                  "description": "Opcional. Entero positivo del catálogo de filtros.",
+                  "disabled": true
+                },
+                {
+                  "key": "idJornada",
+                  "value": "{{idJornada}}",
+                  "description": "Opcional. Entero positivo de jornada del programa.",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "description": "Opcional. 0 a 1000000; predeterminado 0. Avanzar 25 cuando hasMore sea true.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lectura de hasta 25 aspirantes. Solo idPeriodo está activo inicialmente. Habilitar filtros opcionales conscientemente. Copiar data.items[].idAspirante. Orden descendente por fecha de registro e ID."
+          },
+          "response": []
+        },
+        {
+          "name": "05 · Consultar ficha de aspirante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Aspirante.aspx?idAspirante={{idAspirante}}&idPeriodo={{idPeriodo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Aspirante.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idAspirante",
+                  "value": "{{idAspirante}}",
+                  "description": "Obligatorio. ID obtenido del listado."
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}",
+                  "description": "Obligatorio. Debe ser el período del aspirante."
+                }
+              ]
+            },
+            "description": "Lectura de ficha y jornadas de oferta. El estado expuesto es el último seguimiento. El período de la oferta se devuelve separado del período del aspirante. No incluye documento, correo ni teléfono."
+          },
+          "response": []
+        },
+        {
+          "name": "06 · Consultar historial de seguimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/HistorialSeguimiento.aspx?idAspirante={{idAspirante}}&idPeriodo={{idPeriodo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "HistorialSeguimiento.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idAspirante",
+                  "value": "{{idAspirante}}",
+                  "description": "Obligatorio. ID del aspirante."
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}",
+                  "description": "Obligatorio. Período del aspirante."
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "description": "Opcional. 0 a 1000000; predeterminado 0; páginas de 25.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lectura. Consultar antes/después de una escritura. Devuelve revisión, UUID y autoría CRM cuando existen metadatos de integración. Los registros históricos pueden tener estos campos null y no admiten PUT de esta integración. Notas hasta 4000 caracteres con observacionTruncada."
+          },
+          "response": []
+        },
+        {
+          "name": "07 · CREAR seguimiento en SIIE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Seguimientos.aspx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Seguimientos.aspx"
+              ]
+            },
+            "description": "ESCRITURA. Completar manualmente las variables, reemplazar observacion y revisar antes de enviar. Sin idSeguimiento en la URL. Crear createOperationId una sola vez para esta operación y conservarlo junto con todo el cuerpo si se reintenta. No usar {{$guid}} dinámico. idSeguimientoCrm es estable para este seguimiento. expectedRevision=0. Guardar el comprobante 201, su idSeguimiento y revisión. proximoContacto admite null o una fecha entre comillas YYYY-MM-DD. Si las variables numéricas están vacías, la plantilla no es JSON ejecutable.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operationId\": \"{{createOperationId}}\",\n  \"idSeguimientoCrm\": \"{{idSeguimientoCrm}}\",\n  \"idAspirante\": {{idAspirante}},\n  \"idPeriodo\": {{idPeriodo}},\n  \"idEstadoSeguimiento\": {{idEstadoSeguimiento}},\n  \"expectedRevision\": 0,\n  \"observacion\": \"REEMPLAZAR por la observación revisada antes de enviar.\",\n  \"proximoContacto\": null,\n  \"ocurridoUtc\": \"{{ocurridoUtc}}\",\n  \"autorCrmId\": \"{{autorCrmId}}\",\n  \"autorCrmNombre\": \"{{autorCrmNombre}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08 · CORREGIR seguimiento de la integración",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Seguimientos.aspx?idSeguimiento={{idSeguimiento}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Seguimientos.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idSeguimiento",
+                  "value": "{{idSeguimiento}}",
+                  "description": "Obligatorio. ID nativo del comprobante POST o historial de integración."
+                }
+              ]
+            },
+            "description": "ESCRITURA. Solo registros creados por esta integración. Conservar idSeguimientoCrm, idAspirante e idPeriodo. Crear updateOperationId nuevo y fijar expectedRevision a la revisión vigente. PUT recibe cuerpo completo y proximoContacto=null limpia esa fecha. Respuesta 200 con revisión incrementada. Para reintentar, conservar exactamente método/URL/UUID/cuerpo. Un 409 requiere revisión del historial; no sobrescribir automáticamente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operationId\": \"{{updateOperationId}}\",\n  \"idSeguimientoCrm\": \"{{idSeguimientoCrm}}\",\n  \"idAspirante\": {{idAspirante}},\n  \"idPeriodo\": {{idPeriodo}},\n  \"idEstadoSeguimiento\": {{idEstadoSeguimiento}},\n  \"expectedRevision\": {{expectedRevision}},\n  \"observacion\": \"REEMPLAZAR por la corrección revisada antes de enviar.\",\n  \"proximoContacto\": null,\n  \"ocurridoUtc\": \"{{ocurridoUtc}}\",\n  \"autorCrmId\": \"{{autorCrmId}}\",\n  \"autorCrmNombre\": \"{{autorCrmNombre}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catálogo comercial",
+      "description": "Tres consultas GET con token ORIGINAL catalogKey exclusivo de lectura. API_CRM contiene únicamente su hash en SIIE. Offer devuelve actualmente 422 parcial por mapeos pendientes.",
+      "auth": {
+        "type": "apikey",
+        "apikey": [
+          {
+            "key": "key",
+            "value": "X-API-Key",
+            "type": "string"
+          },
+          {
+            "key": "value",
+            "value": "{{catalogKey}}",
+            "type": "string"
+          },
+          {
+            "key": "in",
+            "value": "header",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "09 · Listar programas del catálogo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Commercial/Programs.aspx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "Programs.aspx"
+              ],
+              "query": [
+                {
+                  "key": "cursor",
+                  "value": "{{programsCursor}}",
+                  "description": "Opcional. Copiar next_cursor de esta misma consulta. Omitir en primera página.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lectura con catalogKey ORIGINAL, cuya huella está configurada en API_CRM. Hasta 25 elementos; IDs como strings. Copiar items[].program_id a programId. active=null porque el programa no tiene estado propio. next_cursor=null finaliza la paginación."
+          },
+          "response": []
+        },
+        {
+          "name": "10 · Listar ofertas y niveles del programa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Commercial/ProgramOffers.aspx?program_id={{programId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "ProgramOffers.aspx"
+              ],
+              "query": [
+                {
+                  "key": "program_id",
+                  "value": "{{programId}}",
+                  "description": "Obligatorio. Entero positivo obtenido de Programs."
+                },
+                {
+                  "key": "period_id",
+                  "value": "{{commercialPeriodId}}",
+                  "description": "Opcional. Entero positivo del período.",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{offersCursor}}",
+                  "description": "Opcional. Copiar next_cursor manteniendo programa y período.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lectura con catalogKey. Copiar items[].offer_id completo a commercialOfferId, por ejemplo una referencia ficticia 900006-n1. No elegir una oferta con ID null por falta de nivel. active corresponde al período académico; quotable permanece false. Cursor ligado al programa y filtro de período."
+          },
+          "response": []
+        },
+        {
+          "name": "11 · Consultar oferta académica y comercial parcial",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Api/CRM/v1/Commercial/Offer.aspx?offer_id={{commercialOfferId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "Offer.aspx"
+              ],
+              "query": [
+                {
+                  "key": "offer_id",
+                  "value": "{{commercialOfferId}}",
+                  "description": "Obligatorio. ID completo obtenido de ProgramOffers, con sufijo -nNivel."
+                }
+              ]
+            },
+            "description": "Lectura con catalogKey. El mapeo actual devuelve 422 source_data_incomplete para toda oferta resoluble, con quotable=false y partial_offer. Revisar data_quality. Faltan sede, vigencia comercial, requisitos y condiciones; requiere trabajo de mapeo, no solo configurar una clave. Los importes son enseñanza del semestre/nivel, sin uniformes ni extras. Planes e importes se derivan exclusivamente del calendario almacenado. No importar automáticamente una ficha parcial como cotización completa."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

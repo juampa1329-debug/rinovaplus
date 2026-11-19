@@ -45,6 +45,8 @@ class Draft(Strict):
 def install(app, settings, gateway_factory=None):
     service = Agents(app, settings, gateway_factory)
     install_agents(app, service)
+    from app.institutional.siie_api import install as install_siie
+    install_siie(app, service)
 
     @app.exception_handler(AiError)
     async def agent_error(request: Request, error: AiError):

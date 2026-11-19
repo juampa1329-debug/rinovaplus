@@ -1,0 +1,77 @@
+{
+  "phase": "P16",
+  "title": "Integración académica y financiera SIIE",
+  "date": "2026-11-18",
+  "status": "resumed_adapter_and_read_views_implemented",
+  "accepted": 0,
+  "total": 5,
+  "acceptance_percent": "0.00%",
+  "implementation": "partial_not_measured_as_acceptance",
+  "canonical_weight_added": 0,
+  "units": [
+    {
+      "id": "P16.1",
+      "title": "Contrato y acceso",
+      "state": "in_progress_credentials_and_authorized_read_pending"
+    },
+    {
+      "id": "P16.2",
+      "title": "Consulta oficial",
+      "state": "pending_two_complete_current_offers_source_currently_422"
+    },
+    {
+      "id": "P16.3",
+      "title": "Catálogo y sincronización revisada",
+      "state": "read_pagination_implemented_persistence_change_review_pending"
+    },
+    {
+      "id": "P16.4",
+      "title": "Uso en agentes",
+      "state": "partial_source_not_published_real_acceptance_pending"
+    },
+    {
+      "id": "P16.5",
+      "title": "Operación institucional",
+      "state": "runbook_prepared_real_custody_and_acceptance_pending"
+    }
+  ],
+  "available_reads": [
+    "programs",
+    "offers",
+    "offer",
+    "periods",
+    "states",
+    "filters",
+    "applicants",
+    "applicant",
+    "history"
+  ],
+  "remote_writes_enabled": false,
+  "students_endpoint_in_contract": false,
+  "individual_balances_endpoint_in_contract": false,
+  "documents": [
+    "docs/adaptation/P16_SIIE_INTEGRATION.md",
+    "docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md"
+  ],
+  "source_guide_sha256": "372aea8859806988d0192557279b59cbf6e001b0abd2efd363374215b0b1dfb7",
+  "source_postman_sha256": "951c5e9e7ad5772519079a817e2daf42e704482c60e11eb69e2cca047db9fef8",
+  "public_HTTPS_probe": {
+    "authenticated": false,
+    "status": 401,
+    "content_type": "application/json; charset=utf-8",
+    "scope": "availability_only_no_credentials_no_data"
+  },
+  "source_limit": "All resolvable offers currently422 source_data_incomplete. Original catalog token and General admissions key are distinct. Student enrollment and balances are not exposed.",
+  "tests": {
+    "backend_selected_passed": 129,
+    "provider_and_legacy_contract_tests": 50,
+    "frontend_selected": 20,
+    "types_and_changed_ESLint": "passed",
+    "workspace_build": "passed; retained existing chunk-size warning",
+    "no_real_SIIE_credentials_used": true
+  },
+  "failures_preserved": [
+    "Initial Windows fixture ID exceeded temporary-path naming limits; explicit short parametrization IDs fixed it.",
+    "Initial interface type checks found pagination-criteria type and unknown React condition; corrected before build."
+  ]
+}

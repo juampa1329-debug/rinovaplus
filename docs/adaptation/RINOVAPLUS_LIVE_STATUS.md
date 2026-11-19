@@ -1,3 +1,11 @@
+## P16 retomada: consumidor de la API recibida — 2026-11-18
+
+El propietario autorizó continuar la integración con la guía/colección recibidas. Se implementan nueve consultas GET de programas, ofertas, períodos, filtros, aspirantes y seguimientos, con dos credenciales separadas, paginación y revisión de datos financieros. HTTPS público responde401sin clave. Las pruebas autenticadas reales y cinco unidades de aceptación siguen pendientes: **P16:0/5**, implementación parcial, no0% de código. Todas las ofertas resolubles actualmente devuelven422no cotizable por mapeos incompletos de SIIE; el consumidor lo presenta sin publicar precios ni sobrescribir fichas. Estudiantes matriculados y cartera personal todavía no tienen rutas en el contrato recibido. POST/PUT de seguimiento documentados pero no habilitados en este corte; requieren comprobantes, persistencia de operación y revisión antes de efectos.
+
+Configuración y recorrido: docs/adaptation/P16_SIIE_OPERATOR_RUNBOOK.md. Claves originales sólo en Coolify Runtime; nunca en chat/Git. Evidencia y pendientes: tasks/p16-siie-progress.json. No nuevas tablas, seeds ni escrituras académicas.
+
+General original P0–P11:100% cada una (56/56,279/279), P12auxiliar100% PostgreSQL/Meta. P13 Académico/agentes parcial0/4; P14 entrenamiento comercial plan; P15 correos100%7/7 en alcance inicial documentado; P16 SIIE en implementación0/5; P17 TikTok diferida0/5; P18 seguridad plan0/8. OPS01–06 conservan sus límites. Los cortes inferiores son historia, incluida la anterior decisión de diferir SIIE ahora revocada por el propietario.
+
 ## P15 cerrada en su alcance inicial; P16 retomada — 2026-11-18
 
 P15: **7/7 unidades aceptadas, 100% en el alcance inicial documentado**. Oracle SPF/DKIM Active y SMTP TLS verificados; el titular confirmó activación, recuperación, diseño final y copia del aviso operativo en el buzón de supervisión. Ocho correos reales aceptados una vez cada uno; siete al buzón de supervisión con recepción confirmada. El aviso al antiguo correo administrador sólo tiene aceptación SMTP: el titular ya no accede a ese buzón. No se enviarán nuevas pruebas allí ni se cambia su identificador de acceso sin un recorrido específico.

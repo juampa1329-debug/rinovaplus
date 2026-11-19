@@ -3,6 +3,7 @@ import { api } from "../modules/agents/api";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { useIntent, useTask } from "./api";
 import { allowNavigation, useDraftGuard } from "./drafts";
+import { SiieWorkspace } from "./SiieWorkspace";
 
 type Commercial = {
   price_valid_from?: string | null;
@@ -248,6 +249,7 @@ export function AcademicPrograms() {
   const changes = extracted ? importChanges(draft, extracted) : [];
   return (
     <div className="program-workspace">
+      <SiieWorkspace />
       <aside className="panel" aria-label="Programas por escuela">
         <h2>Programas por escuela</h2>
         <Button type="button" onClick={() => open(null)} disabled={task.busy}>

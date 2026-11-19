@@ -1,0 +1,119 @@
+.siie-workspace {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.siie-workspace .siie-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.siie-heading h2 {
+  margin-block: 0 0.35rem;
+}
+.siie-heading p {
+  margin: 0;
+}
+.siie-workspace fieldset {
+  border: 0;
+  padding: 0;
+  margin: 1rem 0;
+  min-width: 0;
+}
+.siie-tabs,
+.siie-connections,
+.siie-pagination,
+.siie-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.siie-tabs [aria-pressed="true"] {
+  box-shadow: inset 0 -2px var(--lime, #c4f04d);
+}
+.siie-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 1.5rem;
+}
+.siie-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.siie-list button {
+  width: 100%;
+  text-align: start;
+  display: grid;
+  gap: 0.3rem;
+  border-radius: 0.75rem;
+}
+.siie-list span {
+  font-size: 0.87em;
+}
+.siie-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.siie-facts dt {
+  font-size: 0.82em;
+  opacity: 0.8;
+}
+.siie-facts dd {
+  margin: 0.25rem 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.siie-offer {
+  border-inline-start: 3px solid #c4f04d;
+  padding-inline-start: 1rem;
+  margin-block: 1.5rem;
+}
+.siie-offer small {
+  overflow-wrap: anywhere;
+}
+.siie-source-detail {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+.siie-filter-row {
+  align-items: end;
+}
+.siie-filter-row label {
+  flex: 1 1 160px;
+  display: grid;
+  gap: 0.4rem;
+}
+.siie-table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.siie-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.siie-table td,
+.siie-table th {
+  padding: 0.6rem;
+  text-align: start;
+  border-bottom: 1px solid currentColor;
+}
+@media (max-width: 800px) {
+  .siie-split {
+    grid-template-columns: 1fr;
+  }
+  .siie-heading {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .siie-tabs button {
+    transition: box-shadow 140ms ease;
+  }
+}

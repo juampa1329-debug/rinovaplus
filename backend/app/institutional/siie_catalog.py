@@ -52,6 +52,14 @@ def configured():
 
 
 def preview(offer_id, *, transport=None):
+    if os.getenv('SIIE_API_BASE_URL', '').strip():
+        # The delivered ASPX API currently returns incomplete offers. Keep the
+        # legacy reviewed-import path from bypassing the inspection workflow.
+        from app.institutional.siie_api import read
+        result = read('offer', {'offer_id': offer_id}, transport=transport)['data']
+        if not result['quotable'] or not result['complete']:
+            raise HTTPException(422, 'siie_source_incomplete')
+        raise HTTPException(409, 'siie_offer_review_required')
     if not configured():
         raise HTTPException(409, "siie_catalog_not_configured")
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", offer_id):
