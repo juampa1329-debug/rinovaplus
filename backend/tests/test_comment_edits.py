@@ -116,12 +116,13 @@ def test_only_own_published_facebook_content_can_be_edited(monkeypatch, problem,
 
 
 @pytest.mark.parametrize("observed", ["Antes", "Después", "Cambio desde Facebook"])
-def test_uncertain_result_can_be_reconciled_without_another_provider_post(monkeypatch, observed):
+@pytest.mark.parametrize("initial_status", ["uncertain", "failed"])
+def test_uncertain_result_can_be_reconciled_without_another_provider_post(monkeypatch, observed, initial_status):
     inst, integration, identity, operation, actor = [str(uuid4()) for _ in range(5)]
     settings = SimpleNamespace(ticket={"context": [[1, inst]]})
     row = {"CommentId": identity, "Body": "Antes", "Payload": "{}", "RowVersion": b"version1", "ExternalId": "123"}
     item = {"IntegrationId": integration, "ExternalAccountId": "page", "RowVersion": b"version1"}
-    intent = {"Action": "comment_edit", "IntegrationId": integration, "Status": "uncertain", "ResultMetadata": '{"external_id":"123","previous":"Antes","body":"Después"}'}
+    intent = {"Action": "comment_edit", "IntegrationId": integration, "Status": initial_status, "ResultCode": "comment_edit_source_changed", "ResultMetadata": '{"external_id":"123","previous":"Antes","body":"Después"}'}
     writes, calls = [], []
     class Cursor:
         def execute(self, sql, *args):

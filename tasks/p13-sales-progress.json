@@ -56,8 +56,8 @@
     "postgres_filter_parser": "passed_3_levels",
     "simulator_fix_regressions": 91,
     "recovery_endpoint_regressions": 29,
-    "comment_edit_backend_selected": 228,
-    "comment_edit_frontend_selected": 18
+    "comment_edit_backend_selected": 231,
+    "comment_edit_frontend_selected": 19
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",

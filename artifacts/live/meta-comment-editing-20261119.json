@@ -9,8 +9,8 @@
     "https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/message-api"
   ],
   "verification": {
-    "backend_selected": 228,
-    "frontend_selected": 18,
+    "backend_selected": 231,
+    "frontend_selected": 19,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",

@@ -107,7 +107,11 @@ export function CommentEdit({
         { ...request, operation_id: operation },
       );
       if (result.status !== "confirmed") {
-        if (result.status === "uncertain" || result.status === "running")
+        if (
+          result.status === "uncertain" ||
+          result.status === "running" ||
+          result.code === "comment_edit_source_changed"
+        )
           setPending(operation);
         setNotice({
           title:

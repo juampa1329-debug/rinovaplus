@@ -113,12 +113,29 @@ export function OperationDialog({
         </div>
         {guidance.nextStep && (
           <div className="operation-error-next" id={`${id}-next-step`}>
-            <h3>{success ? "Siguiente paso" : "Cómo resolverlo"}</h3>
+            <h3>
+              {success
+                ? "Siguiente paso"
+                : confirm
+                  ? "Antes de confirmar"
+                  : "Cómo resolverlo"}
+            </h3>
             <p>{guidance.nextStep}</p>
           </div>
         )}
-        <Button variant={confirm ? "secondary" : "primary"} onClick={close}>{dismissLabel}</Button>
-        {confirm && <Button onClick={() => { close(); confirm.run(); }}>{confirm.label}</Button>}
+        <Button variant={confirm ? "secondary" : "primary"} onClick={close}>
+          {dismissLabel}
+        </Button>
+        {confirm && (
+          <Button
+            onClick={() => {
+              close();
+              confirm.run();
+            }}
+          >
+            {confirm.label}
+          </Button>
+        )}
       </div>
     </dialog>
   );

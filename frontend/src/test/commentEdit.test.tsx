@@ -135,3 +135,32 @@ it("does not expose editing when the provider capability is absent", () => {
     screen.queryByRole("button", { name: "Editar comentario" }),
   ).toBeNull();
 });
+
+it("finds a pending edit after reopening and reconciles it without resending the edit", async () => {
+  const { fetcher } = setup();
+  fetcher.mockImplementation(
+    async (path) =>
+      new Response(
+        JSON.stringify(
+          String(path).includes("edit-status")
+            ? { pending: { operation_id: "prior-operation" } }
+            : { status: "confirmed" },
+        ),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Editar comentario" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Comprobar texto en Facebook" }),
+  );
+  await screen.findByRole("dialog", { name: "Texto de Facebook comprobado" });
+  const posts = fetcher.mock.calls.filter(
+    ([, init]) => init?.method === "POST",
+  );
+  expect(posts).toHaveLength(1);
+  expect(String(posts[0][0])).toContain("/edit/reconcile");
+  expect(JSON.parse(String(posts[0][1]?.body))).toEqual({
+    source: "crm",
+    operation_id: "prior-operation",
+  });
+});

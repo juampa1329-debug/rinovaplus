@@ -131,7 +131,7 @@ class Edits:
         with transaction(self.settings, anonymous=True) as c:
             authorize(c, self.settings, authority, "inbox.read")
             row, item = load(c, self.settings, identity, source)
-            pending = one(c, "SELECT TOP(1) * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND IntegrationId=? AND Action='comment_edit' AND Status IN ('running','uncertain') AND JSON_VALUE(ResultMetadata,'$.external_id')=? ORDER BY CreatedAt DESC", institution(self.settings), item["IntegrationId"], row["ExternalId"])
+            pending = one(c, "SELECT TOP(1) * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND IntegrationId=? AND Action='comment_edit' AND (Status IN ('running','uncertain') OR (Status='failed' AND ResultCode='comment_edit_source_changed')) AND JSON_VALUE(ResultMetadata,'$.external_id')=? ORDER BY CreatedAt DESC", institution(self.settings), item["IntegrationId"], row["ExternalId"])
             return {"pending": {"operation_id": str(pending["OperationId"]), "status": pending["Status"], "code": pending["ResultCode"]} if pending else None}
 
     def reconcile(self, authority, identity, body):
@@ -143,7 +143,7 @@ class Edits:
             metadata = json.loads(intent["ResultMetadata"]) if intent else {}
             if not intent or intent["Action"] != "comment_edit" or str(intent["IntegrationId"]) != str(item["IntegrationId"]) or metadata.get("external_id") != row["ExternalId"]:
                 raise HTTPException(404, "operation_not_found")
-            if intent["Status"] not in {"running", "uncertain"}:
+            if intent["Status"] not in {"running", "uncertain"} and not (intent["Status"] == "failed" and intent["ResultCode"] == "comment_edit_source_changed"):
                 return {"status": intent["Status"], "code": intent["ResultCode"]}
             if intent["Status"] == "running" and not intent["Expired"]:
                 raise HTTPException(409, "comment_edit_review_required")
@@ -167,9 +167,9 @@ class Edits:
             edit = {"previous": before, "body": observed, "at": now, "actor": str(actor["UserId"]), "operation_id": operation, "reason": "provider_reconciliation"} if before != observed else None
             write_projection(c, self.settings, item, row["ExternalId"], observed, edit)
             confirmed = observed == metadata["body"]
-            status, code = ("confirmed", None) if confirmed else ("failed", "comment_edit_not_applied" if observed == metadata["previous"] else "comment_edit_source_changed")
+            status, code = ("confirmed", None) if confirmed else ("failed", "comment_edit_not_applied" if observed == metadata["previous"] else "comment_edit_reconciled")
             metadata.update(observed_at=now, observed_body=observed)
-            c.execute("UPDATE crm_channels2.ProviderOperation SET Status=?,ResultCode=?,ResultMetadata=?,CompletedAt=SYSUTCDATETIME(),LeaseUntil=NULL WHERE InstitutionId=? AND OperationId=? AND Status IN ('running','uncertain')", status, code, json.dumps(metadata, ensure_ascii=False), institution(self.settings), operation)
+            c.execute("UPDATE crm_channels2.ProviderOperation SET Status=?,ResultCode=?,ResultMetadata=?,CompletedAt=SYSUTCDATETIME(),LeaseUntil=NULL WHERE InstitutionId=? AND OperationId=? AND (Status IN ('running','uncertain') OR (Status='failed' AND ResultCode='comment_edit_source_changed'))", status, code, json.dumps(metadata, ensure_ascii=False), institution(self.settings), operation)
         return {"status": status, "code": code, "body": observed}
 
     def perform(self, authority, identity, body):
