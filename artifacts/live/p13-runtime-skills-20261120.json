@@ -3,12 +3,12 @@
   "status": "deployed_live_pilot_in_progress",
   "accepted_units": 0,
   "total_units": 4,
-  "code": "0a5a81fa8863b3d57d60a11f0514211c5a2ffdfd",
+  "code": "3243459ebb7bbf4005b932cdb6a0d92241861ecf",
   "deployment": {
-    "backend": "yybcyyeaw1qxttc4qogxye1b",
+    "backend": "2gzsy89juqedp1szrzj6dr6d",
     "health": "healthy_rolling_update_completed",
-    "completed_utc": "2026-11-20T14:54:02Z",
-    "frontend": "ztrrevd51vqilyg1d6h7ynfp",
+    "completed_utc": "2026-11-20T15:02:02Z",
+    "frontend": "blxwuuczmssjrk3nwnqeopig",
     "frontend_status": "Success"
   },
   "library": {
@@ -36,13 +36,29 @@
       "payment_conditions_clipped": false
     },
     "second_program_continuity": "owner message pending",
-    "human_silence_v5": "pending",
+    "human_silence_v5": "awaiting owner incoming message after second-program continuity",
     "objection_simulator": "Gemini passed after focused retrieval: preserves program, entrepreneurial goal, complete financing and asks which payment obstacle matters",
     "comparison_simulator": "Gemini passed: preserves program and goal, proposes comparing practice and institutional evidence, no change of career",
-    "mixed_duration_finance": "Classifier correction validated for duration plus minimum initial payment in one question; publication pending"
+    "mixed_duration_finance": {
+      "phase": "financial",
+      "message_characters": [
+        29501,
+        8204,
+        98
+      ],
+      "network_called": false,
+      "full_duration_and_payment_conditions_retained": true
+    },
+    "nursing_simulator": {
+      "result": "provider_response_timeout",
+      "milliseconds": 30738,
+      "provider_usage": "unconfirmed_no_token_report",
+      "automatically_repeated": false,
+      "response_delivered": false
+    }
   },
   "regression": {
-    "backend_selected": 288,
+    "backend_selected": 289,
     "frontend_focused_latest": 25,
     "types": "passed",
     "eslint_modified": "passed",

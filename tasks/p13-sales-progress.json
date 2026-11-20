@@ -149,7 +149,7 @@
     },
     "scope": "general_agents_private_messages_public_comments_suggestions",
     "provider_independent": true,
-    "deployment": "61b5150_healthy_pilot_in_progress",
+    "deployment": "3243459_healthy_commercial_acceptance_pending",
     "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md",
     "evidence": "artifacts/live/p13-runtime-skills-20261119.json",
     "persuasion_principles": 7
@@ -162,7 +162,7 @@
     "routing_fix": "Ignore articles/pronouns and short aliases; preserve Barismo when comparing institutions",
     "crm_fields": "Name/city/schedule/interests exact customer quotes; manual edits protected; canonical contact; private name personalization",
     "checks": {
-      "backend": 286,
+      "backend": 289,
       "frontend": 47,
       "postgres_queries_parsed": 9,
       "database_writes_in_parser": 0
@@ -175,8 +175,17 @@
       "contact_projection": "Real incoming audio: explicit name and city saved and displayed with source provenance; greeting uses name",
       "memory": "Goal and sourced observations visible in native graph; seven full guides consulted",
       "objection": "Isolated Gemini objection and comparison passed after focused context; real WhatsApp also preserved program",
-      "human_silence": "New v5 test pending"
+      "human_silence": "New v5 test pending",
+      "nursing_simulator": "Gemini timeout after 30.738s, usage unconfirmed in activity, not repeated",
+      "mixed_duration_finance": "Published preview identifies financial intent, preserves duration and payment facts; 37803 characters, no provider call"
     },
-    "evidence": "artifacts/live/p13-runtime-skills-20261120.json"
+    "evidence": "artifacts/live/p13-runtime-skills-20261120.json",
+    "deployment": {
+      "code": "3243459",
+      "backend": "2gzsy89juqedp1szrzj6dr6d",
+      "health": "healthy_rolling_update_completed",
+      "frontend": "blxwuuczmssjrk3nwnqeopig",
+      "frontend_status": "Success"
+    }
   }
 }
