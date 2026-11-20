@@ -54,7 +54,21 @@
       "crm_written": false,
       "delivered": false,
       "configuration_changed": false,
-      "replayed": false
+      "replayed": false,
+      "recovered_via_GET": true,
+      "provider_calls_after_recovery": 1
+    },
+    {
+      "operation_id": "b48595a9-8f1a-4437-abdc-273a553d0692",
+      "case": "human",
+      "configuration_revision": 28,
+      "paid_route_configured": true,
+      "allow_paid": false,
+      "state": "passed",
+      "provider_calls": 0,
+      "reserved_usd_micros": 0,
+      "crm_written": false,
+      "delivered": false
     }
   ],
   "deployment": {
@@ -68,5 +82,18 @@
     "Owner must confirm API key credit availability in OpenRouter; card alone does not establish credit. No top-up performed.",
     "Successful paid backup for synthetic503/private and429/public still required; no natural outage induced.",
     "Do not mark P21 100% on blocked supplier requests."
-  ]
+  ],
+  "additional_regression": {
+    "test_agent_providers": "11 passed, 1 failed",
+    "failure": "test_pre_provider_request_keeps_its_original_idempotency_hash",
+    "scope": "Legacy agent-history replay fingerprint; service, configuration and test unchanged from 8fa9097 before this change. No provider request in failing path. Not counted as passing or repaired by P21."
+  },
+  "latest_diagnostic_code": "4b933d4",
+  "latest_diagnostic_backend": "apibs8jyvbrafcrv5lmmpqcf",
+  "latest_diagnostic_frontend": {
+    "deployment": "kne4phkbhxdq0lw7oldian8w",
+    "state": "Success"
+  },
+  "latest_diagnostic_backend_state": "healthy",
+  "latest_diagnostic_backend_rollout_completed_utc": "2026-11-20T17:24:11Z"
 }
