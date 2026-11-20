@@ -114,6 +114,7 @@ function modelFamily(provider: string, model: Model) {
 }
 
 export function LiveModelSelect({
+  id: catalogId,
   provider,
   category,
   value,
@@ -121,6 +122,7 @@ export function LiveModelSelect({
   label = "Seleccionar modelo",
   exclude = [],
 }: {
+  id?: string;
   provider: string;
   category: string;
   value: string;
@@ -137,7 +139,7 @@ export function LiveModelSelect({
   const [company, setCompany] = useState("");
   const [family, setFamily] = useState("");
   const [query, setQuery] = useState("");
-  const id = `model-${provider}-${category}`;
+  const id = catalogId ?? `model-${provider}-${category}`;
   const companies = [
     ...new Set(models?.map((model) => publisher(provider, model))),
   ].sort();

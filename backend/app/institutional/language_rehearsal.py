@@ -20,6 +20,20 @@ from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 ACTION = "ai_resilience_rehearsal"
 
 
+async def free_quota(gateway):
+    """Expose request counts only, never the key label, credits or account IDs."""
+    try:
+        data = await gateway.request("openrouter", "GET", "key")
+        value = data.get("data", {}).get("free_model_daily_requests", {})
+        if not all(type(value.get(k)) is int for k in ("used", "limit", "remaining")):
+            return None
+        if value["used"] < 0 or value["limit"] < 0:
+            return None
+        return {"used": value["used"], "limit": value["limit"], "remaining": max(0, value["remaining"])}
+    except (AiError, TypeError, AttributeError):
+        return None
+
+
 class Rehearsal(Strict):
     operation_id: str = Field(min_length=36, max_length=36)
     revision: int = Field(ge=0)
@@ -142,6 +156,16 @@ def run(settings, authority, body, *, gateway=None):
         result.update(state="uncertain" if result["provider_calls"] and error.status >= 500 and not resilience.can_failover(error) else "failed", code=error.code)
     except Exception:
         result.update(state="uncertain", code="language_rehearsal_result_unknown")
+    if any(a.get("code") == "provider_rate_limited" and a.get("provider") == "openrouter" for a in result["trace"].get("attempts", [])):
+        try:
+            guard()
+            quota = asyncio.run(free_quota(delegate))
+        except HTTPException:
+            quota = None
+        if quota is not None:
+            result["free_quota"] = quota
+            if result["state"] != "passed" and quota["remaining"] == 0:
+                result["code"] = "openrouter_free_daily_limit"
     result["real_backup"] = bool(result["provider_calls"])
     with transaction(settings, True, anonymous=True) as c:
         c.execute("UPDATE crm_access.Operation SET Result=? WHERE InstitutionId=? AND OperationId=? AND ActorId=? "

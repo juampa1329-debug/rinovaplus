@@ -131,7 +131,7 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
         trace["latency_ms"] = round((monotonic() - started) * 1000)
         return result
     except AiError as error:
-        attempts.append({"provider": provider, "model": model, "state": "failed", "code": error.code, "role": "primary"})
+        attempts.append({"provider": provider, "model": model, "state": "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary"})
         if not can_failover(error):
             raise
         original = error
@@ -155,10 +155,12 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
                     trace.update(provider=pair[0], model=pair[1], fallback_used=True)
                     return result
                 except AiError as error:
-                    attempt.update(state="failed", code=error.code)
+                    attempt.update(state="failed", code=error.code, upstream_status=error.upstream_status)
                     # Catalog/capability checks have not performed inference.
                     if not (error.code.startswith("language_backup_") and error.status == 409) and not can_failover(error):
                         raise
+                    if can_failover(error):
+                        original = error  # Report the final real rejection, not only the simulated primary fault.
             raise original
     except TimeoutError:
         raise AiError("language_backup_timeout", 504) from None

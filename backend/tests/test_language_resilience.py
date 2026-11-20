@@ -116,3 +116,13 @@ def test_audio_is_rejected_by_the_text_backup_before_any_request():
     with pytest.raises(AiError, match="language_backup_text_only"):
         asyncio.run(generate(state.gateway, ROUTE, body, lambda: None))
     assert not state.calls
+
+
+def test_first_backup_missing_from_catalog_continues_to_next_compatible_free_model():
+    state = setup()
+    state.saved["routes"].insert(0, {**ROUTE, "model": "missing:free"})
+    response = run(state)
+    assert grounded_replies.parse(response) == "Respuesta fundamentada"
+    assert state.trace["attempts"][1]["code"] == "language_backup_model_unavailable"
+    assert state.trace["attempts"][2]["state"] == "completed"
+    assert len(state.reservations) == 1 and sum(method == "POST" for method, _ in state.calls) == 1

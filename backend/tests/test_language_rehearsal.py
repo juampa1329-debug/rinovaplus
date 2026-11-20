@@ -12,7 +12,7 @@ from app.institutional import language_rehearsal as rehearsal
 from app.modules.ai.infrastructure.providers import ProviderGateway
 
 
-def environment(monkeypatch, *, rotate=False):
+def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False):
     state = {"operation": None, "calls": [], "reserves": [], "revision": 27}
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     actor = {"UserId": str(uuid4())}
@@ -39,6 +39,9 @@ def environment(monkeypatch, *, rotate=False):
     monkeypatch.setattr(rehearsal.resilience, "reservation", lambda *args: state["reserves"].append(args[2]))
     def handler(req):
         state["calls"].append(req.method)
+        if req.url.path == "/api/v1/key":
+            return httpx.Response(200, json={"data": {"label": "NEVER EXPOSE THIS LABEL", "limit_remaining": 99,
+                "free_model_daily_requests": {"used": 50, "limit": 50, "remaining": 0}}})
         if req.method == "GET":
             if rotate:
                 state["revision"] = 28
@@ -46,6 +49,12 @@ def environment(monkeypatch, *, rotate=False):
                 "architecture": {"output_modalities": ["text"]}, "supported_parameters": ["max_tokens", "temperature", "response_format"],
                 "top_provider": {"max_completion_tokens": 8000}, "pricing": {"prompt": "0", "completion": "0"}}]})
         wire = json.loads(req.content)
+        if busy:
+            return httpx.Response(429, json={"error": {"code": 429}})
+        if uncertain:
+            raise httpx.ReadTimeout("fixture", request=req)
+        if revoke_after_post:
+            state["revision"] = 28
         assert wire["provider"]["data_collection"] == "deny" and not wire["provider"]["allow_fallbacks"]
         query = json.loads(wire["messages"][1]["content"])
         prefix = "Alex, " if query["history"] else ""
@@ -103,3 +112,29 @@ def test_paid_backups_and_stale_revision_are_rejected_before_claim(monkeypatch):
     with pytest.raises(HTTPException, match="language_rehearsal_free_backup_required"):
         rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27), gateway=gateway)
     assert not state["operation"] and not state["calls"]
+
+
+def test_unknown_backup_result_is_recoverable_and_never_generated_twice(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, uncertain=True)
+    body = rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27)
+    first = rehearsal.run(profile, {}, body, gateway=gateway)
+    assert first["state"] == "uncertain" and first["provider_calls"] == 1
+    assert "text" not in first
+    assert rehearsal.run(profile, {}, body, gateway=gateway) == first
+    assert state["calls"] == ["GET", "POST"]
+
+
+def test_revocation_after_generation_discards_response_before_any_crm_effect(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, revoke_after_post=True)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27), gateway=gateway)
+    assert result["state"] == "blocked" and result["provider_calls"] == 1
+    assert "text" not in result and not result["delivered"] and not result["crm_written"]
+
+
+def test_backup_429_reports_free_quota_without_leaking_account_metadata_or_repeating_post(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, busy=True)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27), gateway=gateway)
+    assert result["state"] == "failed" and result["code"] == "openrouter_free_daily_limit"
+    assert result["free_quota"] == {"used": 50, "limit": 50, "remaining": 0}
+    assert "NEVER EXPOSE" not in json.dumps(result) and "limit_remaining" not in json.dumps(result)
+    assert state["calls"] == ["GET", "POST", "GET"] and result["provider_calls"] == 1

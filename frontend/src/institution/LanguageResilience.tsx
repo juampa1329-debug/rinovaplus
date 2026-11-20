@@ -67,6 +67,7 @@ export function LanguageResilience({
             }
           />
           <LiveModelSelect
+            id={`language-backup-model-${index}`}
             provider={route.provider}
             category="text"
             value={route.model}

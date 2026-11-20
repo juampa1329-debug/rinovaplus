@@ -12,6 +12,7 @@ type Result = {
   provider_calls: number;
   checks?: Record<string, boolean>;
   usage?: { promptTokenCount?: number; candidatesTokenCount?: number };
+  free_quota?: { used: number; limit: number; remaining: number };
   trace: {
     fallback_used?: boolean;
     latency_ms?: number;
@@ -232,7 +233,33 @@ export function LanguageRehearsal({
               una solicitud incierta.
             </p>
           )}
+          {result.free_quota && (
+            <p>
+              Cupo gratuito diario reportado por OpenRouter:{" "}
+              {result.free_quota.used} usados / {result.free_quota.limit} ·{" "}
+              {result.free_quota.remaining} disponibles. Este contador no
+              informa del límite por minuto ni garantiza capacidad del modelo.
+            </p>
+          )}
+          {result.code === "openrouter_free_daily_limit" && (
+            <Notice error>
+              El proveedor reporta que se agotó el cupo gratuito diario. Espera
+              su renovación o revisa el plan de la cuenta. RinovaPlus conserva
+              la política y no pasa a un modelo de pago.
+            </Notice>
+          )}
+          {result.code === "provider_rate_limited" && (
+            <Notice error>
+              El respaldo también limitó la solicitud. Si queda cupo diario,
+              puede ser saturación temporal o un límite por minuto del modelo.
+              Revisa las alternativas gratuitas antes de preparar otro ensayo.
+            </Notice>
+          )}
           <small>Operación: {result.operation_id}</small>
+          <details>
+            <summary>Traza técnica del ensayo</summary>
+            <pre>{JSON.stringify(result, null, 2)}</pre>
+          </details>
         </section>
       )}
     </section>
