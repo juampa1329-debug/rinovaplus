@@ -62,13 +62,11 @@ it("institutional assistant requires a selected saved profile", async () => {
 it("agent transport preserves institutional CSRF and expires unauthorized session", async () => {
   const expired = vi.fn();
   bindInstitutionSession("csrf-test", expired);
-  const fetcher = vi
-    .spyOn(globalThis, "fetch")
-    .mockResolvedValue(
-      new Response(JSON.stringify({ detail: "session_required" }), {
-        status: 401,
-      }),
-    );
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(JSON.stringify({ detail: "session_required" }), {
+      status: 401,
+    }),
+  );
   await expect(
     api("/simulate", "POST", { request_id: "owned" }),
   ).rejects.toThrow();
@@ -112,14 +110,12 @@ it("read-only Inbox uses the reduced selection contract and disables assignment"
   ).not.toBeInTheDocument();
 });
 it("paused institutional profile cannot consume AI", async () => {
-  const fetcher = vi
-    .spyOn(globalThis, "fetch")
-    .mockResolvedValue(
-      ok({
-        ...catalog,
-        agents: [{ ...catalog.agents[0], state: "paused", enabled: false }],
-      }),
-    );
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    ok({
+      ...catalog,
+      agents: [{ ...catalog.agents[0], state: "paused", enabled: false }],
+    }),
+  );
   render(<AssistantChat active selectedOnly />);
   await screen.findByRole("option", { name: /Guía guardada/ });
   fireEvent.change(screen.getByLabelText("Asistente para conversar"), {
@@ -134,4 +130,56 @@ it("paused institutional profile cannot consume AI", async () => {
       fetcher.mock.calls.every(([, o]) => !o?.method || o.method === "GET"),
     ).toBe(true),
   );
+});
+
+it("live context refresh updates the selected specialist without discarding an assignment draft", async () => {
+  let version = 1;
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (url) =>
+    ok(
+      String(url).endsWith("/selection")
+        ? catalog
+        : {
+            mode: "automatic",
+            revision: version,
+            contexts: [],
+            context_id: null,
+            selection: {
+              agent_id: "chosen",
+              supervisor_id: null,
+              reason: "commercial_interest",
+              version,
+            },
+            blocked: null,
+          },
+    ),
+  );
+  const view = render(
+    <AgentConversationPanel
+      institutional
+      conversationId="live-refresh-test"
+      refresh="one"
+      onConfirmed={() => {}}
+    />,
+  );
+  await screen.findByText(/versión 1\./);
+  fireEvent.change(screen.getByLabelText("Modalidad de atención"), {
+    target: { value: "manual" },
+  });
+  fireEvent.change(screen.getByLabelText("Motivo y evidencia de la decisión"), {
+    target: { value: "Borrador sin confirmar" },
+  });
+  version = 2;
+  view.rerender(
+    <AgentConversationPanel
+      institutional
+      conversationId="live-refresh-test"
+      refresh="two"
+      onConfirmed={() => {}}
+    />,
+  );
+  await screen.findByText(/versión 2\./);
+  expect(screen.getByLabelText("Modalidad de atención")).toHaveValue("manual");
+  expect(
+    screen.getByLabelText("Motivo y evidencia de la decisión"),
+  ).toHaveValue("Borrador sin confirmar");
 });

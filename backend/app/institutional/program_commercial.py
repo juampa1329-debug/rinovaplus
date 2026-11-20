@@ -150,6 +150,7 @@ def agent_facts(profile):
         return {}
     today = datetime.now(timezone(timedelta(hours=-5))).date().isoformat()
     facts = {k: v for k, v in profile.items() if v is not None and v != "" and k != "aliases"}
+    facts["as_of_date_bogota"] = today
     unavailable = profile.get("siie_offer_active") is False
     if unavailable or not facts.get("price_concept") or (facts.get("price_valid_until") and facts["price_valid_until"] < today) or (facts.get("price_valid_from") and facts["price_valid_from"] > today):
         for field in ("price_cop", "price_concept", "price_valid_until", "price_valid_from", "full_cost_cash_cop"):
@@ -168,8 +169,9 @@ def agent_facts(profile):
         entry = min(entry_plans, key=lambda p: (p["initial_payment_cop"], p.get("total_cost_cop") or 1_000_000_001, p["external_id"]))
         facts["entry_payment_offer"] = {
             "currency": "COP", "source_plan_id": entry["external_id"],
+            "price_scope": profile.get("price_concept") or entry.get("conditions"),
             **{k: entry.get(k) for k in ("initial_payment_cop", "initial_payment_due_date", "installments", "total_cost_cop", "conditions", "valid_until")},
-            "guidance": "Presenta primero este abono inicial mínimo como opción para empezar el proceso, seguido de las cuotas pendientes. Es un pago inicial, nunca el precio total del semestre ni de la carrera. No garantiza matrícula o admisión. Di pesos y evita nombres internos como Plan A1/A2. Si preguntan por contado o total, informa directamente el importe revisado correspondiente y su alcance; no ocultes condiciones ni inventes descuentos.",
+            "guidance": "Cuando la conversación requiera precios o financiación, presenta este abono inicial mínimo con las cuotas pendientes y el alcance del precio documentado. Ante una apertura de información general no vuelques las tarifas. Es un pago inicial, no precio total ni garantía de matrícula. Di pesos, sin A1/A2. Explica sólo el calendario real y no inventes períodos sin pagos ni exenciones de otros cargos. Contado, total y alternativas se responden directamente si los piden.",
         }
     missing = []
     if profile.get("siie_program_id") and not profile.get("requirements"):

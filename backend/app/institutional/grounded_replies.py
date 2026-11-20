@@ -90,6 +90,11 @@ def context(
              **({"origin": v["body_origin"]} if v.get("body_origin") else {})}
             for v in history
         ]
+    from app.modules.agents.skill_policy import for_turn, instructions as skill_instructions, project_facts
+    prior_history = history[:-1] if history and history[-1]["direction"] == "incoming" and history[-1]["text"] == redact(question[:1600]) else history
+    skill_policy = for_turn(question, history=prior_history, public=public)
+    if hasattr(c, "__dict__"):
+        c.agent_turn_policy = skill_policy
     retrieval = (
         question
         + " "
@@ -100,7 +105,7 @@ def context(
     catalog = Catalog(settings).read_context(c, retrieval, program)
     capabilities = config.get("capabilities", ["program.read", "sources.read"])
     memories = config.get("memories", ["knowledge", "vertical", "collective"])
-    material = catalog["material"] if "program.read" in capabilities else {}
+    material = project_facts(catalog["material"], skill_policy) if "program.read" in capabilities else {}
     documents = []
     if "sources.read" in capabilities and "knowledge" in memories:
         scopes = list(
@@ -161,8 +166,6 @@ def context(
         if structured
         else "Devuelve sólo el texto del borrador para revisión humana, sin JSON."
     )
-    from app.modules.agents.skill_policy import for_turn, instructions as skill_instructions
-    skill_policy = for_turn(question + " " + post[:1600], history=history, public=public)
     system += skill_instructions(skill_policy)
     system += style_instructions(config)
     if public:

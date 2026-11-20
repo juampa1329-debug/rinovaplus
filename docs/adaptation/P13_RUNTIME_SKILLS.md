@@ -6,7 +6,37 @@ Corte: 19 de noviembre de 2026. P13 sigue en validación, 0/4 unidades aceptadas
 
 El catálogo ejecutable de procedimientos revisados está en `backend/app/modules/agents/sales_skills.py`; la selección por turno está en `skill_policy.py`. Son **34 procedimientos nativos del CRM**, disponibles para la IA general y todos los especialistas. No dependen de una instalación de Codex, de un directorio de skills en el contenedor ni del proveedor del modelo. Las selecciones antiguas de 20 IDs se conservan por compatibilidad histórica y no omiten la política central nueva.
 
-La política se incorpora en el backend antes de invocar al proveedor, tanto por `assemble_prompt` (admisiones, simulador y agentes) como por `grounded_replies.context` (WhatsApp, Messenger, Instagram, comentarios y sugerencias). No hay una llamada adicional a un modelo para seleccionar skills. Un selector determinista considera la consulta y hasta dos mensajes entrantes del contexto autorizado. Siempre incorpora continuidad, presentación, escucha y revisión; añade diagnóstico, precios, objeciones, negociación, cierre o seguimiento cuando corresponde. El tema de la publicación activa la comunicación contextual para comentarios públicos.
+La política v4 se decide **antes de recuperar la ficha comercial**, no después de redactar. `Catalog.read_context` y `grounded_replies.context` preparan el plan por intención actual; `assemble_prompt` lo incorpora también en admisiones, simulador y agentes. No hay una llamada adicional a un modelo para seleccionar skills. La memoria autorizada permite continuar el hilo sin interpretar una comparación de instituciones como cambio de carrera. Siempre incorpora continuidad, presentación, escucha y revisión; añade diagnóstico, precios, objeciones, negociación, cierre o seguimiento cuando corresponde. El tema de la publicación activa la comunicación contextual para comentarios públicos.
+
+```mermaid
+flowchart LR
+  A[Mensaje y control IA] --> B[Transcripción si hay audio]
+  B --> C[Intención y skills pertinentes]
+  C --> D[Plan comercial del turno]
+  D --> E[Recuperar ficha y memoria autorizadas]
+  E --> F[Responder con la estrategia y hechos revisados]
+  F --> G[Validar fuente, control y contexto]
+  G --> H[Cola y recibos del canal]
+```
+
+En una apertura de información general se proyecta la ficha sin tarifas ni planes: se conservan presentación, duración, certificaciones y beneficios. Preguntar sólo cuánto dura no activa precios. Una consulta financiera mantiene los importes y condiciones completos. La fuente original y su huella se conservan; no se borra información ni se oculta un precio solicitado.
+
+| Intención | Conducta esperada |
+|---|---|
+| Información general | Reconocer el interés con una razón concreta; uno o dos beneficios y una pregunta de objetivo. Presentación de Juan después de aportar valor si resulta natural. |
+| Meta de empleo, emprendimiento o viaje | Vincular formación práctica y competencias con esa meta; Inglés opcional cuando corresponda, sin prometer empleo o reconocimiento extranjero. |
+| Precio o financiación | Menor abono, saldo/cuotas y alcance; explicar la siguiente fecha real y la vigencia. No convertir el precio de un semestre en el de toda la carrera. |
+| «Me parece caro» | Conservar el programa; aclarar valor y facilidad real de pago; distinguir dificultad del abono o de las cuotas. No huir ofreciendo otra carrera. |
+| «Voy a ver otras opciones» | Mantener el interés y ofrecer criterios de comparación del mismo programa. No enumerar otras escuelas ni desacreditar a terceros. |
+| Seguimiento | Continuar el objetivo conocido con utilidad y permiso; ejecución sólo en recorridos existentes con consentimiento, ventanas y control Humano. No inventar reservas ni cierres de expediente. |
+
+Las respuestas comerciales habituales usan uno o dos emojis pertinentes, salvo consultas sensibles o preferencia contraria del cliente. El plan pide entre 75 y 110 palabras como referencia, sin cortar respuestas ni omitir lo expresamente solicitado. La ficha y los guiones no deben forzar un listado completo de datos en cada turno.
+
+## Siete principios de persuasión
+
+`marketing-psychology` incluye reciprocidad, compromiso/coherencia, prueba social, autoridad, simpatía, escasez y unidad. El plan registra los disponibles y prioriza algunos por turno; no los recita todos al cliente. Prueba social requiere evidencia revisada. Urgencia/FOMO se apoya en vigencias reales y escasez cuantitativa requiere disponibilidad confirmada. Una tarifa con vencimiento no prueba que se agote una beca o que queden pocos cupos. Se usan la skill metodológica `influence-psychology` (wondelai, v1.4.1, MIT) y `marketing-psychology` como referencias para la adaptación nativa, sin ejecutar sus runtimes.
+
+El propietario aportó un playbook confidencial de 13 páginas y tres simulaciones. Se revisa como referencia de comportamiento, sin copiar sus precios, promesas salariales, validez mundial, reservas preventivas o afirmaciones sobre competidores como hechos. Evaluación cualitativa del corte v3 observado: **3/10**, por exceso de información, dilución de objeciones, desvío al comparar y confusión de alcance financiero/títulos. El objetivo 10/10 exige respuestas contextualizadas y comprobadas por el propietario, no sólo disponer de IDs de skills. La calidad comercial v4 queda abierta hasta pruebas reales.
 
 La instrucción es prioritaria respecto a los prompts editables. Los IDs, versión y motivos se incorporan al contexto y a su huella. Mensajería y comentarios guardan `skill_policy` en su operación; las ejecuciones de agentes lo guardan por intento en `AttemptsJson` y el simulador lo muestra. La memoria comercial conserva la traza del último turno, visible en Inbox → Memoria y contexto → Skills del último turno. Esta traza prueba qué procedimientos se suministraron, **no certifica por sí sola que una respuesta generada sea correcta**.
 

@@ -1284,7 +1284,8 @@ function Person({
         {page === "inbox" && detail.value.agentOperations && (
           <ConversationSalesMemory
             conversation={conversation}
-            refresh={refresh}
+            refresh={`${refresh}:${detail.value.revision}`}
+            onChanged={changed}
           />
         )}
         {page === "inbox" && detail.value.agentOperations && (
@@ -1293,7 +1294,7 @@ function Person({
               institutional
               canWrite={session.actions.includes("inbox.write")}
               conversationId={conversation}
-              refresh={refresh}
+              refresh={`${refresh}:${detail.value.revision}`}
               onConfirmed={changed}
             />
           </section>

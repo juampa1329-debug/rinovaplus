@@ -72,24 +72,29 @@ const labels: Record<string, string> = {
 export function ConversationSalesMemory({
   conversation,
   refresh,
+  onChanged,
 }: {
   conversation: string;
-  refresh: number;
+  refresh: number | string;
+  onChanged?: () => void;
 }) {
   return (
     <SalesMemory
       key={conversation}
       conversation={conversation}
       refresh={refresh}
+      onChanged={onChanged}
     />
   );
 }
 function SalesMemory({
   conversation,
   refresh,
+  onChanged,
 }: {
   conversation: string;
-  refresh: number;
+  refresh: number | string;
+  onChanged?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<Memory | null>(null);
@@ -185,6 +190,7 @@ function SalesMemory({
                 );
                 setResetAction(null);
                 setRetry((v) => v + 1);
+                onChanged?.();
                 setError("");
               } catch (failure) {
                 setError(

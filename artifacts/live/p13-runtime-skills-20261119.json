@@ -1,29 +1,55 @@
 {
   "phase": "P13",
-  "status": "local_verified_deployment_pending",
+  "status": "v3_technical_pass_commercial_fail_v4_local_validation",
   "accepted_units": 0,
   "total_units": 4,
   "policy": {
-    "version": "cbn-sales-skills-v3",
+    "version": "cbn-sales-skills-v4",
     "native_procedures": 34,
     "previous_catalog": 20,
     "owner_requested_ids": 17,
     "overlap": 3,
     "general_ai_and_specialists": true,
     "messages_comments_suggestions": true,
-    "selection": "deterministic_per_turn",
+    "selection": "intent_and_consultative_plan_before_commercial_retrieval",
     "additional_model_call_for_selection": false,
     "permissions_expanded": false,
     "coding_skill_runtime_executed": false,
     "third_party_review": "mbfinotti/sales-skills@b2ed3628695e523919af440eab77648e16c5eea8",
-    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md"
+    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md",
+    "live_registry": "34_available_in_agent_editor",
+    "live_prepared_trace": {
+      "active_count": 25,
+      "version": "cbn-sales-skills-v3",
+      "context_chars": 33034,
+      "network_called": false,
+      "crm_written": false
+    },
+    "previous_live_version": "cbn-sales-skills-v3"
   },
   "audio_routing": {
     "prior_barismo_pilot": "failed_before_this_cut; specialist selected before audio interpretation",
     "new_flow": "bounded_ASR_then_reclaim_and_resolve_specialist",
     "provenance": "institution_conversation_message_asset_SHA256",
     "human_change_during_transcription_test": "abandoned_without_transcript_or_reply",
-    "actual_new_voice_pilot": "pending"
+    "actual_new_voice_pilot": {
+      "source": "new_owner_audio_after_context_reset",
+      "source_intent": "general_information_not_price",
+      "specialist_program_id": 24,
+      "specialist_version": 3,
+      "duration_correct": true,
+      "financing_matched_profile": true,
+      "source_transcription_visible_and_attributed": true,
+      "skills_trace_count": 19,
+      "reply_parts_read": 3,
+      "commercial_style_accepted": false,
+      "failures": [
+        "unsolicited_financial_dump",
+        "additional_scholarship_diploma_conflated_with_main_double_title",
+        "later_price_objection_blurred_first_semester_scope",
+        "comparison_response_offered_other_schools"
+      ]
+    }
   },
   "context_reset": {
     "scope": "one_reviewed_conversation",
@@ -31,7 +57,17 @@
     "history_deleted": false,
     "voice_quota_reset": false,
     "stale_sequence_rejected": true,
-    "actual_owner_44_reset": "pending"
+    "actual_owner_44_reset": {
+      "confirmed_through_native_identity_flow": true,
+      "feedback": "Contexto reiniciado",
+      "facts_empty": true,
+      "restore_available": true,
+      "human_control": false,
+      "visible_history_items_retained": 37,
+      "old_messages_not_replayed": true,
+      "phone_field_masked": true,
+      "thread_identification": "institutional_account_and_previously_confirmed_owner_test_history"
+    }
   },
   "commercial": {
     "entry_offer": "minimum_positive_initial_payment_from_current_permitted_plans",
@@ -42,25 +78,65 @@
     "exact_owner_financial_readbacks": 24,
     "english_prices": "withheld_pending_owner_scope_confirmation",
     "earlier_nursing_live_pilot": "values_match_profile; owner_confirmed_receipt",
-    "exact_financial_data_in_git": false
+    "exact_financial_data_in_git": false,
+    "barismo_real_simulation": {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "program_id": 24,
+      "duration_correct": true,
+      "minimum_initial_correct": true,
+      "remaining_installments_correct": true,
+      "first_semester_scope_and_uniform_exclusion_explained": true,
+      "wording_pesos": true,
+      "tokens_reported": {
+        "input": 8746,
+        "output": 279
+      },
+      "delivered_to_customer": false
+    },
+    "certification_clarification_revisions": {
+      "24": 4,
+      "25": 5
+    }
   },
   "verification": {
-    "backend_selected": 197,
-    "frontend_selected": 28,
+    "backend_selected": 208,
+    "frontend_selected": 47,
     "types": "passed",
     "ruff_modified": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",
-    "existing_large_bundle_warning": true
+    "existing_large_bundle_warning": true,
+    "reset_review_cancel_confirm_and_parent_refresh": "passed",
+    "new_consultative_cases": "orientation_duration_money_objection_comparison_typo_international_goal_persuasion_and_pre_retrieval_policy"
   },
   "database_schema_changes": false,
   "siie_writes": false,
   "new_containers": false,
-  "deployment": "pending",
+  "deployment": {
+    "backend_commit": "e54ae86dac0a10ebc690ccce1922b8edd6a77b2f",
+    "backend": "3ojr8eo98ds6lnpynf0xmwzt",
+    "backend_health": "healthy_first_check_2026-11-20T03:39:38Z",
+    "backend_rollout_completed": "2026-11-20T03:39:44Z",
+    "frontend_commit": "e54ae86dac0a10ebc690ccce1922b8edd6a77b2f",
+    "frontend": "zwiydrezajhrcvanp5r5ltnj",
+    "frontend_status": "Success_24s",
+    "frontend_reset_refresh_followup": "local_verified_pending_push",
+    "v4": "pending"
+  },
   "remaining": [
-    "Deploy and verify both Coolify resources",
-    "Reset only the institutional owner test conversation through the reviewed UI",
-    "Repeat real audio routing and financing, continuity and Human silence",
-    "P19 office ambience and faders extension remains pending"
-  ]
+    "Deploy v4 and verify consultative simulations",
+    "Owner WhatsApp evaluation of opening, objections and comparison",
+    "Continuity and Human silence for v4",
+    "P19 ambient extension"
+  ],
+  "owner_playbook_review": {
+    "pages": 13,
+    "cases": 3,
+    "confidential_content_in_git": false,
+    "sha256": "3604e27526a5c3e760b94c0567a8dc4e402b938a5b5e6d8f4e342ec716928f88",
+    "scope": "behavior_reference_not_financial_or_accreditation_authority",
+    "qualitative_previous_score": "3/10; not measured conversion efficacy",
+    "v4_live_quality": "pending"
+  }
 }

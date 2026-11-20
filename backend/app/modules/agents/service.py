@@ -1520,6 +1520,9 @@ class AgentsService:
                 cursor, selection, agents, key, explicit_variant=request.variant
             )
             check_program(cursor, request.program_id)
+            from app.modules.agents.skill_policy import for_turn
+            if hasattr(cursor, "__dict__"):
+                cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
             institutional, sources = public_sources(
                 cursor,
                 request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
@@ -1616,6 +1619,8 @@ class AgentsService:
                     str(request.agent_id),
                     explicit_variant=request.variant,
                 )
+                if hasattr(cursor, "__dict__"):
+                    cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
                 sql, new_sources = public_sources(
                     cursor,
                     request.question,

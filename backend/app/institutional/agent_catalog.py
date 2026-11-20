@@ -108,6 +108,8 @@ class Catalog:
         }
 
     def read_context(self, c, question, program_id=None, semester=None):
+        from app.modules.agents.skill_policy import for_turn, project_facts
+        skill_policy = getattr(c, "agent_turn_policy", None) or for_turn(question)
         catalog = self.programs(c, 0, 300)
         if getattr(self.settings, "postgres_deployment", False):
             catalog["items"] = [v for v in catalog["items"] if v["authority"] != "synthetic_demo"]
@@ -147,7 +149,9 @@ class Catalog:
             commercial = agent_facts(read_profile(c, self.settings, program_id))
             if commercial:
                 selected["commercial"] = commercial
-        fingerprint = digest([catalog, selected, informational])
+        fingerprint = digest([catalog, selected, informational, skill_policy])
+        selected = project_facts(selected, skill_policy)
+        informational = project_facts(informational, skill_policy)
         selected, informational = bounded_commercial_context(selected, informational)
         # Never infer assignment/program from the question, names or phone.
         sources = []

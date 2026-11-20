@@ -12,12 +12,16 @@ import { ProgramSalesSetup } from "../institution/ProgramSalesSetup";
 import { ConversationSalesMemory } from "../institution/ConversationSalesMemory";
 import { blankConfiguration, type Catalog } from "../modules/agents/api";
 
-const mocks = vi.hoisted(() => ({ api: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  api: vi.fn(),
+  call: vi.fn(),
+  actions: ["inbox.read"],
+}));
 vi.mock("../institution/api", async (original) => ({
   ...(await original<typeof import("../institution/api")>()),
   useInstitution: () => ({
-    call: vi.fn(),
-    session: { actions: ["inbox.read"] },
+    call: mocks.call,
+    session: { actions: mocks.actions },
   }),
 }));
 vi.mock("../modules/agents/api", async (original) => ({
@@ -25,7 +29,11 @@ vi.mock("../modules/agents/api", async (original) => ({
   api: mocks.api,
 }));
 afterEach(cleanup);
-beforeEach(() => mocks.api.mockReset());
+beforeEach(() => {
+  mocks.api.mockReset();
+  mocks.call.mockReset();
+  mocks.actions = ["inbox.read"];
+});
 
 test("central skills are always available while memory writes remain independently controlled", async () => {
   mocks.api.mockResolvedValue({
@@ -249,6 +257,95 @@ test("private graph loads only when opened and never carries the previous conver
   expect(screen.getByText(/La calificación manual se conserva/)).toBeVisible();
   view.rerender(<ConversationSalesMemory conversation="two" refresh={1} />);
   expect(screen.queryByText("Prefiero de noche")).toBeNull();
+});
+
+test("reviewed reset uses the identity-aware institutional route and bound revision", async () => {
+  mocks.actions = ["inbox.read", "inbox.write"];
+  mocks.call.mockResolvedValue({ saved: true });
+  mocks.api.mockResolvedValue({
+    revision: 3,
+    facts: [],
+    qualification: null,
+    graph: { nodes: [], edges: [] },
+    recent_history: [],
+    memory_limit: "Acotada",
+    reset_target_sequence: 9,
+    can_restore_context: true,
+  });
+  const changed = vi.fn();
+  render(
+    <ConversationSalesMemory
+      conversation="owner-test"
+      refresh={1}
+      onChanged={changed}
+    />,
+  );
+  fireEvent.click(screen.getByText("Memoria y contexto del agente"));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Empezar desde cero con IA" }),
+  );
+  expect(mocks.call).not.toHaveBeenCalled();
+  expect(
+    screen.getByText(
+      /El historial, la ficha CRM, los recibos y el consumo de voz se conservan/,
+    ),
+  ).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: /^Cancelar$/ }));
+  expect(mocks.call).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Empezar desde cero con IA" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: /^Reiniciar contexto$/ }));
+  await waitFor(() =>
+    expect(mocks.call).toHaveBeenCalledWith(
+      "conversation-memory/owner-test/reset",
+      "POST",
+      expect.objectContaining({
+        revision: 3,
+        sequence: 9,
+        confirmed: true,
+        action: "reset",
+      }),
+    ),
+  );
+  await screen.findByText(/Contexto reiniciado/);
+  expect(changed).toHaveBeenCalledOnce();
+});
+
+test("live revision refreshes an open memory without adding a polling timer", async () => {
+  const data = {
+    revision: 1,
+    facts: [],
+    qualification: null,
+    graph: { nodes: [], edges: [] },
+    recent_history: [],
+    memory_limit: "Acotada",
+  };
+  mocks.api.mockResolvedValue(data);
+  const view = render(
+    <ConversationSalesMemory conversation="live-memory" refresh="one" />,
+  );
+  fireEvent.click(screen.getByText("Memoria y contexto del agente"));
+  await screen.findByText(/Aún no hay datos comerciales extraídos/);
+  mocks.api.mockResolvedValue({
+    ...data,
+    revision: 2,
+    facts: [
+      {
+        field: "goal",
+        value: "Quiero emprender",
+        sequence: 2,
+        source_message_id: "incoming-two",
+        origin: "automatic_audio_transcription",
+      },
+    ],
+  });
+  view.rerender(
+    <ConversationSalesMemory conversation="live-memory" refresh="two" />,
+  );
+  await screen.findByText("Quiero emprender");
+  expect(mocks.api).toHaveBeenCalledTimes(2);
+  expect(screen.getByText(/Transcripción automática/)).toBeVisible();
 });
 
 test("ad binding uses local PUT and the selected program without publishing to Meta", async () => {

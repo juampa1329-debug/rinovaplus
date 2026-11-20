@@ -1,3 +1,19 @@
+## P13: piloto técnico pasó; conducta comercial v3 rechazada por propietario — 2026-11-19
+
+El audio nuevo del propietario se transcribió con procedencia automática y eligió Barismo24v3,2semestres y financiación correcta;3partes leídas,19skills trazadas y objetivo en grafo. NO es aceptación comercial: el propietario rechazó el volcado de información/precios ante una consulta general, la debilidad ante 'es caro' y el cambio a otras escuelas ante comparación. También se observó confusión entre precio semestral/carrera y entre doble título principal/tercer diploma opcional. Certificación aclarada en fichas24r4y25r5, sin cambiar tarifas.
+
+Se revisó el playbook confidencial del propietario:13páginas/3casos, fuente de conducta y no de precios/acreditaciones/garantías. v4 local: intención y skills antes de ficha comercial, apertura sin tarifas no solicitadas, preservación de interés ante objeción/competencia, calendario real como beneficio, siete principios de Cialdini con evidencia, presentación después de valor y1–2emojis. La actualización viva de memoria/agente preserva borradores manuales.208backend seleccionadas pasan; publicación y pruebas comerciales v4 pendientes. No copiar el PDF, sus precios ni datos personales en Git. Evidencia: artifacts/live/p13-runtime-skills-20261119.json; guía: docs/adaptation/P13_RUNTIME_SKILLS.md.
+
+P13Académico/agentes continúa0/4aceptadas. GeneralP0–P11:100%,P12online100%PostgreSQL/Meta; P14entrenamiento comercial plan; P15correos7/7inicial100%; P16SIIE0/5parcial; P17TikTok0/5diferida; P18seguridad0/8plan; P19voces5/5inicial100%,ambiente/faderspendiente; P20llamadasWhatsApp0/8plan; OPS01–06abiertas. Los cortes inferiores conservan la historia, no suplantan esta evaluación.
+
+## P13: 34 skills publicadas; contexto del propietario reiniciado — 2026-11-19
+
+Backend e54ae86 saludable en 3ojr8eo98ds6lnpynf0xmwzt, primer chequeo03:39:38Z y rollout03:39:44Z; frontend e54ae86 Success24s en zwiydrezajhrcvanp5r5ltnj. UI34skills por política central, contexto preparado33034caracteres con25procedimientos pertinentes y sin llamada al proveedor. Simulación real de Gemini para Barismo24:2semestres, menor abono y cuotas coinciden con ficha; pesos y alcance del primer semestre/uniforme explicados. No se enviaron mensajes de esa simulación.
+
+Reinicio reversible del contexto del hilo institucional del propietario confirmado por identidad nativa: memoria comercial vacía, restauración disponible,37mensajes visibles conservados e IA activa. El teléfono de ficha está enmascarado; se identificó el hilo por cuenta e historial de pruebas previamente confirmadas, sin reconstruir datos ocultos. Se solicita nuevo audio de WhatsApp; no acreditar aún ese piloto ni cierre P13.197backend/29frontend seleccionadas; tipos/lint/build verificados; ajuste de actualización visual tras reset en validación final. Evidencia: artifacts/live/p13-runtime-skills-20261119.json.
+
+GeneralP0–P11:100%cada una,56/56y279/279; P12online100%PostgreSQL/Meta. P13Académico/agentes0/4validación; P14entrenamiento comercial plan; P15correo7/7inicial100%; P16SIIE0/5parcial; P17TikTok0/5diferida; P18seguridad0/8plan; P19voces5/5inicial100%, ambiente/faderspendientes; P20llamadasWhatsApp0/8plan; OPS01–06abiertos. Cortes inferiores históricos.
+
 ## P13: política central de 34 skills y audio antes del especialista — 2026-11-19
 
 Por petición expresa del propietario, los procedimientos de venta, presentación, comunicación, seguimiento, calificación, grafos y continuidad son política nativa del backend para la IA general, agentes, mensajes y comentarios. Catálogo34: unión de20anteriores y17solicitados con3repetidos. Selección determinista por turno, traza versionada en contexto/operaciones/ejecuciones; no depende de Codex ni concede permisos. Ver docs/adaptation/P13_RUNTIME_SKILLS.md.

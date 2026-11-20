@@ -23,13 +23,13 @@
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "34 procedimientos por política central para IA general y especialistas. Transcripción previa al enrutamiento, menor abono y reset reversible implementados; despliegue y piloto del nuevo corte pendientes."
+      "pending": "Enrutamiento real de audio a Barismo24 y memoria/traza comprobados. El propietario rechazó la conducta comercial v3: exceso de datos y desvío ante comparación. v4 planifica antes de recuperar la ficha y adapta Cialdini; falta publicación y aceptación real."
     },
     {
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Enfermería real coincidió con su ficha. Barismo por audio falló por selección previa a transcripción; repetir tras el nuevo corte. Cita/pausas confirmadas; continuidad y silencio Humano pendientes."
+      "pending": "P13 sigue 0/4. No aceptar por el acierto de precios: repetir apertura consultiva, objeción, competencia, continuidad y silencio Humano con v4."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -131,15 +131,27 @@
     },
     "incident": "Traducción de milisegundos desplegada en 691edf0; recuperación explícita de la generación sin respuesta, tres partes leídas y cita/pausas confirmadas por propietario.",
     "quote_phone_confirmation": true,
-    "context_budget": "Comparaciones grandes probadas localmente: ficha seleccionada íntegra, sin repetirla, perfiles adicionales completos o marcados como omitidos. Despliegue pendiente."
+    "context_budget": "b9fa5b9 publicado y comprobado; ficha seleccionada íntegra. v4 añade proyección de apertura sin tarifas no solicitadas, conservando finanzas completas ante consulta expresa."
   },
   "program_review": "artifacts/live/p13-program-review-20261119.json",
   "runtime_policy": {
-    "version": "cbn-sales-skills-v3",
+    "version": "cbn-sales-skills-v4",
     "available": 34,
+    "verification_v4": {
+      "backend_selected": 208,
+      "frontend_selected": 47,
+      "types": "passed",
+      "ruff_modified": "passed",
+      "eslint_modified": "passed",
+      "workspace_build": "passed",
+      "existing_bundle_warning": true,
+      "real_commercial_acceptance": "pending"
+    },
     "scope": "general_agents_private_messages_public_comments_suggestions",
     "provider_independent": true,
-    "deployment": "pending",
-    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md"
+    "deployment": "v3_healthy_v4_pending",
+    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md",
+    "evidence": "artifacts/live/p13-runtime-skills-20261119.json",
+    "persuasion_principles": 7
   }
 }

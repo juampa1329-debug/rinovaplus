@@ -56,7 +56,7 @@ def test_large_comparisons_keep_selected_financing_whole_and_mark_omissions(monk
         "Schedule": "Diurna", "Revision": 1, "Authority": "declared_CRM_catalog",
     })
     monkeypatch.setattr(agent_catalog, "read_profile", lambda *_: profiles[1])
-    question = "Compara " + " y ".join(p["name"] for p in programs)
+    question = "Compara precios y condiciones de financiación de " + " y ".join(p["name"] for p in programs)
     context = catalog.read_context(object(), question, 1)
     material = context["material"]
     assert material["selected"]["commercial"]["financial_plans"] == profiles[1]["financial_plans"]

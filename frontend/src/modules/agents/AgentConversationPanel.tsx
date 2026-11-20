@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -21,7 +21,7 @@ import { ProgramSelector } from "./ProgramSelector";
 
 type Props = {
   conversationId: string;
-  refresh: number;
+  refresh: number | string;
   onConfirmed: () => void;
   institutional?: boolean;
   canWrite?: boolean;
@@ -54,6 +54,29 @@ function ConversationAgents({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState("");
+  const received = useRef<Conversation | null>(null);
+  const receive = useCallback((result: Conversation, preserveDraft = true) => {
+    const previous = received.current;
+    setDetail(result);
+    setMode((value) =>
+      !preserveDraft || !previous || value === previous.mode
+        ? result.mode
+        : value,
+    );
+    setContextId((value) =>
+      !preserveDraft || !previous || value === (previous.context_id ?? "")
+        ? (result.context_id ?? "")
+        : value,
+    );
+    setAgentId((value) =>
+      !preserveDraft ||
+      !previous ||
+      value === (previous.selection?.agent_id ?? "")
+        ? (result.selection?.agent_id ?? "")
+        : value,
+    );
+    received.current = result;
+  }, []);
   async function load() {
     const config = await api<Catalog>(institutional ? "/selection" : "");
     setCatalog(config);
@@ -61,10 +84,7 @@ function ConversationAgents({
       const result = await api<Conversation>(
         `/conversations/${conversationId}`,
       );
-      setDetail(result);
-      setMode(result.mode);
-      setContextId(result.context_id ?? "");
-      setAgentId(result.selection?.agent_id ?? "");
+      receive(result, false);
     }
   }
   useEffect(() => {
@@ -79,17 +99,14 @@ function ConversationAgents({
         );
         if (live) {
           setError("");
-          setDetail(result);
-          setMode(result.mode);
-          setContextId(result.context_id ?? "");
-          setAgentId(result.selection?.agent_id ?? "");
+          receive(result);
         }
       })
       .catch((e) => live && setError(e.message));
     return () => {
       live = false;
     };
-  }, [conversationId, refresh, institutional]);
+  }, [conversationId, refresh, institutional, receive]);
   async function act(work: () => Promise<void>) {
     setBusy(true);
     setError("");
