@@ -423,6 +423,7 @@ export function AgentsPanel() {
   }
   async function simulate(call: boolean) {
     if (!saved) return;
+    if (call) setSimulation(null);
     setSimulation(
       await api<Simulation>("/simulate", "POST", {
         agent_id: saved.id,

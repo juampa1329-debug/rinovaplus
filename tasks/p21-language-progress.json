@@ -6,13 +6,29 @@
   "accepted": 0,
   "total": 4,
   "milestones": [
-    { "id": "P21.1", "title": "Catálogo autenticado y prueba gratuita aislada", "status": "live_test_pending" },
-    { "id": "P21.2", "title": "Respaldo compatible y límites sin duplicados", "status": "local_tests_passed" },
-    { "id": "P21.3", "title": "Mensajes/comentarios y reservas por intento", "status": "local_tests_passed" },
-    { "id": "P21.4", "title": "Publicación y comprobación operativa", "status": "deployment_pending" }
+    {
+      "id": "P21.1",
+      "title": "Catálogo autenticado y prueba gratuita aislada",
+      "status": "live_verified"
+    },
+    {
+      "id": "P21.2",
+      "title": "Respaldo compatible y límites sin duplicados",
+      "status": "local_tests_passed"
+    },
+    {
+      "id": "P21.3",
+      "title": "Mensajes/comentarios y reservas por intento",
+      "status": "deployed_enabled_by_owner"
+    },
+    {
+      "id": "P21.4",
+      "title": "Publicación y comprobación operativa",
+      "status": "deployed_healthy_live_failover_pending"
+    }
   ],
   "limitations": [
-    "Activación con contexto CRM requiere autorización específica para OpenRouter.",
+    "Respaldo gratuito y transferencia de contexto autorizados por el propietario y guardados; no se indujo una caída productiva.",
     "Respaldo automático institucional Gemini/OpenRouter; el simulador conserva las rutas del agente.",
     "Audio previo a transcripción, monitor proactivo y circuito distribuido fuera de esta entrega.",
     "No reintentar resultados inciertos ni inducir fallos pagados."
