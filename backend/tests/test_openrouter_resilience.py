@@ -1,4 +1,5 @@
 import asyncio
+import json
 from types import SimpleNamespace
 
 import httpx2 as httpx
@@ -35,3 +36,30 @@ def test_explicit_busy_response_can_select_another_configured_route_without_wait
             SimpleNamespace(primary_model="fixture:free", fallback_model="", temperature=0.3, max_tokens=100),
             [{"role": "user", "content": "Hola"}], lambda: None))
     assert len(calls) == 1 and can_failover(failure.value)
+
+
+@pytest.mark.parametrize("status", [200, 429, 503])
+def test_trial_preserves_privacy_and_price_ceiling_with_one_post(status):
+    calls = []
+    def respond(req):
+        calls.append(json.loads(req.content))
+        return httpx.Response(status, json={"model": "fixture", "choices": [{"finish_reason": "stop", "message": {"content": "{}"}}], "usage": {"prompt_tokens": 10, "completion_tokens": 2}})
+    work = OpenRouterClient("fixture", httpx.MockTransport(respond)).complete(
+        SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=100),
+        [{"role": "user", "content": "Hola"}], lambda: None,
+        price_limits={"prompt": 0.4, "completion": 1.6}, max_attempts=1)
+    if status == 200:
+        assert asyncio.run(work)["usage"]["prompt_tokens"] == 10
+    else:
+        with pytest.raises(AiError, match="openrouter_retry_exhausted"):
+            asyncio.run(work)
+    assert len(calls) == 1
+    assert calls[0]["provider"] == {"require_parameters": True, "data_collection": "deny", "max_price": {"prompt": 0.4, "completion": 1.6}}
+
+
+@pytest.mark.parametrize("limits", [{"prompt": -1, "completion": 1}, {"prompt": float("inf"), "completion": 1}, {"prompt": True, "completion": 1}, {"prompt": 1}])
+def test_invalid_price_limits_never_contact_provider(limits):
+    with pytest.raises(AiError, match="agents_pricing_required"):
+        asyncio.run(OpenRouterClient("fixture").complete(
+            SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=100),
+            [], lambda: None, price_limits=limits))

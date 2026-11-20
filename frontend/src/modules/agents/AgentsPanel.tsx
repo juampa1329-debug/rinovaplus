@@ -33,6 +33,7 @@ import { AgentSalesSkills } from "../../institution/AgentSalesSkills";
 import { ProgramSalesSetup } from "../../institution/ProgramSalesSetup";
 import { OperationDialog } from "../../institution/ErrorFeedback";
 import { LiveModelSelect } from "../../institution/LiveModelSelect";
+import { simulationHistory } from "./simulationHistory";
 import "./agents.css";
 
 type Tab =
@@ -140,6 +141,7 @@ export function AgentsPanel() {
   const [confirmed, setConfirmed] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const [question, setQuestion] = useState("");
+  const [historyText, setHistoryText] = useState("");
   const [channel, setChannel] = useState("local");
   const [consoleData, setConsoleData] = useState<AgentConsole | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
@@ -423,6 +425,7 @@ export function AgentsPanel() {
   }
   async function simulate(call: boolean) {
     if (!saved) return;
+    const history = tab === "Simulador" ? simulationHistory(historyText) : [];
     if (call) setSimulation(null);
     setSimulation(
       await api<Simulation>("/simulate", "POST", {
@@ -431,6 +434,7 @@ export function AgentsPanel() {
         program_id: saved.program_id,
         stage_id: saved.stage_id,
         question,
+        history,
         channel,
         call_provider: call,
         acknowledge_consumption: call,
@@ -1848,8 +1852,26 @@ export function AgentsPanel() {
                         .
                       </p>
                       <p>
-                        La simulación usa un contexto vacío y aislado, sin
-                        mensajes ni expedientes reales.
+                        La simulación está aislada de las conversaciones reales.
+                        Puedes añadir un historial ficticio y conservarlo al
+                        cambiar de modelo para comparar la continuidad.
+                      </p>
+                      <TextArea
+                        id="simulation-history"
+                        label="Historial ficticio de la prueba"
+                        value={historyText}
+                        maxLength={19200}
+                        rows={5}
+                        onChange={(e) => {
+                          setHistoryText(e.target.value);
+                          setSimulation(null);
+                        }}
+                      />
+                      <p>
+                        Empieza cada intervención con Cliente: o Asesor:. Hasta
+                        12 intervenciones de 1600 caracteres cada una. Este
+                        historial no se guarda en la ficha CRM. Utiliza datos
+                        ficticios.
                       </p>
                       <TextArea
                         id="simulation-question"

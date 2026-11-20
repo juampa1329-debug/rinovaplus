@@ -96,6 +96,12 @@ it.each([false, true])(
     fireEvent.change(screen.getByLabelText("Mensaje de prueba"), {
       target: { value: "Información del programa" },
     });
+    fireEvent.change(screen.getByLabelText("Historial ficticio de la prueba"), {
+      target: {
+        value:
+          "Cliente: Soy Alex y quiero emprender.\nAsesor: Podemos orientarte.",
+      },
+    });
     if (override) {
       fireEvent.change(screen.getByLabelText("Proveedor para esta prueba"), {
         target: { value: "openrouter" },
@@ -124,6 +130,10 @@ it.each([false, true])(
     expect(sent.model_override).toBe(
       override ? "google/fixture:free" : undefined,
     );
+    expect(sent.history).toEqual([
+      { role: "user", content: "Soy Alex y quiero emprender." },
+      { role: "assistant", content: "Podemos orientarte." },
+    ]);
     expect(
       request.mock.calls.filter(([, method]) => method === "PUT"),
     ).toHaveLength(0);

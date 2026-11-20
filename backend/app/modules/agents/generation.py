@@ -142,6 +142,8 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                     }
                 )
                 if provider == "openrouter":
+                    prefix = "fallback_" if index else ""
+                    rates = [configuration.get(prefix + field) for field in ("input_usd_per_million", "output_usd_per_million")]
                     result = await OpenRouterClient(
                         ai.gateway.keys[provider], ai.gateway.transport
                     ).complete(
@@ -150,6 +152,8 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         ),
                         messages,
                         guard,
+                        price_limits=dict(zip(("prompt", "completion"), rates, strict=True)) if all(v is not None for v in rates) else None,
+                        max_attempts=1 if preview else 3,
                     )
                 else:
                     system = "\n".join(

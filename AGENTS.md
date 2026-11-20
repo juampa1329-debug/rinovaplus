@@ -1,3 +1,7 @@
+## P22 en preparacion: comparativa autorizada hastaUSD5 — 2026-11-20
+
+Propietario pide comparar candidatos adicionales, ventas/memoria/latencia/consumo y recomendar por etapa; autorizaUSD5 total, sin recargas ni cambios de agentes activos. Cinco casos ficticios y rubrica en tasks/p22-evaluation-cases.json. UI añade historial aislado (API ya lo admite), conserva contexto al cambiar modelo; no afecta CRM. OpenRouter de agentes aplica max_price revisado y simulaciones un unico POST, sin modificar reintentos productivos.137backend/21frontend,tipos/lint/build pasan; publicacion/pruebas reales pendientes. Catalogo autenticado incluye extensiones Haiku5.5/Sonnet5.5/DeepSeekV4.1Flash/Qwen3.6Plus/MistralSmall4; falta preflight de compatibilidad y evaluacion, no afirmar superioridad. P22 sigue0/5; P13/P21 aceptadas en alcance inicial; otras fases/OPS sin cambios.
+
 ## P13 y P21 aceptadas en alcance inicial — 2026-11-20
 
 Propietario pidio cierreP13 condicionado a entrada real/silencioHumano y reanudoOpenRouter. Entrada nueva del44 recibida18:06; tras refrescar hasta18:10 no hay salida automatica, switchHumano persistido. IA restaurada despues. Software8v2 conserva nombre/ciudad/objetivo y cuatro semestres; grafo concreto5eb697c comprobado. Fuentes/fichas, finanzas/objeciones y skills mantienen evidencia previa. P13 queda4/4 alcance inicial; no garantia de conversion. Ingles sin precio confirmado, SLA sin umbral y traspasos/modelos por etapa siguenP22.

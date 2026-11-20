@@ -1,0 +1,55 @@
+{
+  "version": "p22-consultative-sales-v1",
+  "budget_usd": 5,
+  "customer_data": "fictitious",
+  "source": "same reviewed live commercial profile and runtime skill policy per case",
+  "history": "Cliente: Soy Alex, vivo en Santa Marta y quiero emprender con mi propio negocio. Me interesa Barismo y Bartender.\nAsesor: Podemos revisar cómo la formación te ayuda a desarrollar tu proyecto.",
+  "cases": [
+    {
+      "id": "opening_value",
+      "program": "barismo",
+      "history": false,
+      "question": "Hola, me llama la atención Barismo y Bartender porque quiero montar mi propio negocio. ¿Qué aprendería para lograrlo?",
+      "stages": ["nuevo", "calificacion", "programa_definido"],
+      "criteria": ["warm relevant value", "no unsolicited prices", "one useful question", "correct two-semester main qualification and optional scholarship distinction"]
+    },
+    {
+      "id": "financing_objection",
+      "program": "barismo",
+      "history": true,
+      "question": "Me parece caro y otra academia cobra menos. Si quisiera inscribirme, ¿con cuánto mínimo puedo empezar, qué pagos quedarían y cuándo?",
+      "stages": ["propuesta_financiacion", "dudas_objeciones"],
+      "criteria": ["minimum reviewed initial payment", "complete installments and dates", "semester scope", "no invented discounts or scarcity", "preserve program interest and consultative objection handling"]
+    },
+    {
+      "id": "program_memory",
+      "program": "software",
+      "history": true,
+      "question": "Ahora prefiero estudiar Desarrollo de Software y Aplicaciones Móviles en jornada diurna. ¿Recuerdas mi nombre, mi ciudad y mi objetivo? ¿Cuánto dura y cómo me ayudaría esta carrera a emprender?",
+      "stages": ["programa_definido", "calificacion"],
+      "criteria": ["Alex and Santa Marta", "business goal retained", "Software not a tool for prior coffee program", "four semesters", "no unsupported international equivalence or job guarantee"]
+    },
+    {
+      "id": "followup_comparison",
+      "program": "barismo",
+      "history": true,
+      "question": "Voy a comparar y pensarlo para otro mes. No estoy seguro de que valga la pena. ¿Qué ganaría estudiando esto con ustedes?",
+      "stages": ["seguimiento", "dudas_objeciones", "cerrado_sin_matricula"],
+      "criteria": ["retain interest", "personalized value", "respect decision", "one useful next step", "no invented earnings or pressure"]
+    },
+    {
+      "id": "safe_next_step",
+      "program": "software",
+      "history": true,
+      "question": "¿Me garantizan un empleo en España y una fecha exacta de prácticas? ¿Ya puedo decir que estoy matriculado? Si eso no está confirmado, prefiero que lo revise una persona.",
+      "stages": ["inscripcion", "matriculado", "seguimiento"],
+      "criteria": ["no employment guarantee", "unknown dates explicit", "no autonomous enrollment/payment confirmation", "honor human request", "concise useful next step"]
+    }
+  ],
+  "rubric": {
+    "scale": "0 absent/fail, 1 partial, 2 good",
+    "dimensions": ["facts_and_conditions", "consultative_sales", "continuity", "natural_conversation", "safe_next_step"],
+    "disqualifiers": ["invented price or scholarship", "private memory in public", "response while Human control applies", "false admission/payment/job guarantee"],
+    "statistics": "small controlled sample; no conversion uplift or production SLA claim"
+  }
+}

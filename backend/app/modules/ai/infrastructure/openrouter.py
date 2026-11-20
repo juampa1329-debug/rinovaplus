@@ -35,7 +35,7 @@ class OpenRouterClient:
     def __init__(self, key, transport=None):
         self.key, self.transport = key, transport
 
-    async def complete(self, policy, messages, guard):
+    async def complete(self, policy, messages, guard, *, price_limits=None, max_attempts=3):
         if not self.key:
             raise AiError("openrouter_key_missing", 409)
         models = list(dict.fromkeys(m for m in (policy.primary_model, policy.fallback_model) if m))
@@ -45,6 +45,14 @@ class OpenRouterClient:
                 "temperature": policy.temperature, "max_tokens": policy.max_tokens,
                 "response_format": {"type": "json_object"},
                 "provider": {"require_parameters": True, "data_collection": "deny"}}
+        if max_attempts not in {1, 3}:
+            raise AiError("openrouter_attempt_limit_invalid", 409)
+        if price_limits is not None:
+            if set(price_limits) != {"prompt", "completion"} or any(
+                type(v) not in {int, float} or not math.isfinite(v) or v < 0 for v in price_limits.values()
+            ):
+                raise AiError("agents_pricing_required", 409)
+            body["provider"]["max_price"] = price_limits
         title = f"{PRODUCT_NAME} Admisiones"
         headers = {
             "Authorization": "Bearer " + self.key,
@@ -54,7 +62,7 @@ class OpenRouterClient:
         }
         deadline = time.monotonic() + 40
         async with httpx.AsyncClient(transport=self.transport, follow_redirects=False, trust_env=False) as client:
-            for attempt in range(3):
+            for attempt in range(max_attempts):
                 status = None
                 guard()
                 remaining = deadline - time.monotonic()
@@ -103,7 +111,7 @@ class OpenRouterClient:
                     raise AiError("openrouter_result_uncertain", 504) from None
                 except httpx.HTTPError:
                     raise AiError("openrouter_transport_failure", 502) from None
-                if attempt == 2 or delay is None or delay >= deadline - time.monotonic():
+                if attempt == max_attempts - 1 or delay is None or delay >= deadline - time.monotonic():
                     raise AiError("openrouter_retry_exhausted", 503, True, upstream_status=status)
                 await asyncio.sleep(delay)
                 guard()
