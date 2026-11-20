@@ -434,7 +434,14 @@ export function AgentsPanel() {
         request_id: crypto.randomUUID(),
       }),
     );
-    await loadConsole();
+    try {
+      await loadConsole();
+    } catch {
+      setConsoleData(null);
+      setFeedback(
+        "La prueba terminó y su resultado se conserva. No se pudo actualizar el panel de actividad; pulsa Actualizar para consultarlo. No repitas la generación sólo por este aviso.",
+      );
+    }
   }
   const filteredAgents =
     catalog?.agents.filter(

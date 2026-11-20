@@ -1249,12 +1249,21 @@ function VoiceEditor({
                     variant="secondary"
                     type="button"
                     disabled={!writable || task.busy || previewBusy || changed}
-                    onClick={() => void task.run(async () => {
-                      const recovered = await call<Preview>(`voice/previews/${v.id}`);
-                      setPreview(recovered);
-                      if (recovered.profile_id && saved.profiles.some((p) => p.id === recovered.profile_id))
-                        setPreviewProfile(recovered.profile_id);
-                    }, "Muestra recuperada sin generar voz ni consumir caracteres.")}
+                    onClick={() =>
+                      void task.run(async () => {
+                        const recovered = await call<Preview>(
+                          `voice/previews/${v.id}`,
+                        );
+                        setPreview(recovered);
+                        if (
+                          recovered.profile_id &&
+                          saved.profiles.some(
+                            (p) => p.id === recovered.profile_id,
+                          )
+                        )
+                          setPreviewProfile(recovered.profile_id);
+                      }, "Muestra recuperada sin generar voz ni consumir caracteres.")
+                    }
                   >
                     Preparar mezcla sin generar
                   </Button>

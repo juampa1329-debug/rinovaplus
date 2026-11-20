@@ -64,7 +64,7 @@ def test_orientation_retrieves_benefits_without_dumping_financing_but_price_ques
     assert opening["selected"]["commercial"]["duration"] == "Dos semestres"
     assert "financial_plans" not in opening["selected"]["commercial"]
     assert opening["selected"]["commercial"]["financial_details_available_on_request"] is True
-    assert project_facts(facts, for_turn("¿Cuánto cuesta?")) is facts
+    assert project_facts(facts, for_turn("¿Cuánto cuesta?")) == facts
     assert facts["selected"]["commercial"]["price_cop"] == 150  # source remains whole
 
 

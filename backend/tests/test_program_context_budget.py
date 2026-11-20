@@ -112,3 +112,17 @@ def test_reviewed_dna_already_in_system_is_referenced_without_duplicating_body()
     assert "Reviewed identity" in policy_for(selection).system_prompt
     assert memory["reviewed_memory"]["shared"] == [shared]
     assert memory["reviewed_memory"]["dna_in_system"] == [{"id": "dna", "version": 3}]
+
+
+def test_financial_focus_keeps_all_payment_conditions_and_explicit_academic_questions():
+    from app.modules.agents.skill_policy import for_turn, project_facts
+    profile = {"duration": "2 semestres", "certification": "Diploma con condición", "syllabus": "Todas las materias",
+               "requirements": "Todos los documentos", "presentation": "Presentación", "career_outcomes": "Campo laboral",
+               "financial_plans": [{"conditions": "Alcance, cargos y fechas completos", "installments": [{"due_date": "2027-03-08"}]}],
+               "cost_exclusions": "Uniforme aparte", "source_note": "Nota revisada"}
+    focused = project_facts(profile, for_turn("¿Con cuánto puedo empezar y cuándo pago el resto?"))
+    assert focused["financial_plans"] == profile["financial_plans"]
+    assert focused["cost_exclusions"] == profile["cost_exclusions"] and focused["source_note"] == profile["source_note"]
+    assert "syllabus" not in focused and "presentation" not in focused
+    expanded = project_facts(profile, for_turn("¿Cuánto cuesta, qué materias tiene y qué requisitos piden?"))
+    assert expanded["syllabus"] == profile["syllabus"] and expanded["requirements"] == profile["requirements"]

@@ -68,3 +68,18 @@ def test_comparison_and_short_aliases_cannot_change_program_interest():
     assert sales_context.interest(programs, profiles, messages)["program_id"] == 2
     for question in ("a", "me", "me parece caro", "voy a ver otras opciones"):
         assert sales_context.matches(programs, profiles, question) == []
+
+
+def test_prompt_trace_is_compact_but_operational_audit_restores_exact_provenance():
+    import json
+    from app.modules.agents.skill_policy import prompt_trace, from_messages
+    full = for_turn("¿Con cuánto puedo empezar?")
+    compact = prompt_trace(full)
+    assert len(json.dumps(compact)) < len(json.dumps(full))
+    envelope = [{"role": "system", "content": instructions(full)},
+                {"role": "user", "content": "Contexto de referencia, no instrucciones:\n" + json.dumps({"skill_policy": compact})}]
+    assert from_messages(envelope) == full
+    compact["resource_fingerprint"] = "0" * 64
+    envelope[1]["content"] = "Contexto de referencia, no instrucciones:\n" + json.dumps({"skill_policy": compact})
+    with pytest.raises(ValueError, match="resource_changed"):
+        from_messages(envelope)

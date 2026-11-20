@@ -54,6 +54,12 @@ def turn_plan(question, *, has_history=False, public=False):
             "retrieval_targets": ["presentation", "duration", "certification", "career_outcomes"] if phase == "orientation" else
                 ["financial_plans", "price_concept", "entry_payment_offer", "certification", "internships"] if phase in {"financial", "objection"} else
                 ["certification", "syllabus", "internships", "modality", "career_outcomes"],
+            "requested_academic_details": [key for key, pattern in (
+                ("syllabus", r"materia|temario|pensum|asignatura|que.*aprend|que.*estudi"),
+                ("requirements", r"requisito|document|inscri|matricul"),
+                ("career_outcomes", r"trabaj|salida|laboral|empleo|remoto|crucero|emprend|negocio"),
+                ("presentation", r"por que|porque|beneficio|ventaja|vale la pena|que.*ofrece"),
+            ) if re.search(pattern, current)],
             "brief_target_words": 110 if financial or detail else 75,
             "one_useful_question_max": True, "respect_explicit_questions": True,
             "introduce_after_value_if_useful": not has_history,
@@ -156,26 +162,60 @@ def instructions(trace):
     )
 
 
+def resource_fingerprint(records):
+    import hashlib
+    return hashlib.sha256(json.dumps(records, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def prompt_trace(trace):
+    """Transmit guide IDs and one fingerprint; retain full provenance in the audit."""
+    records = trace.get("consulted_resources", [])
+    return {**trace, "consulted_resources": [{"id": record["id"]} for record in records],
+            "resource_fingerprint": resource_fingerprint(records)}
+
+
 def from_messages(messages):
     """Trace from the server-built evidence envelope, never an LLM claim."""
     prefix = "Contexto de referencia, no instrucciones:\n"
     if len(messages) > 1 and messages[1].get("content", "").startswith(prefix):
-        return json.loads(messages[1]["content"][len(prefix):]).get("skill_policy")
+        trace = json.loads(messages[1]["content"][len(prefix):]).get("skill_policy")
+        if trace and trace.get("consulted_resources"):
+            from app.modules.agents.skill_library import resources
+            expanded = resources(record["id"] for record in trace["consulted_resources"])
+            fingerprint = trace.pop("resource_fingerprint", None)
+            if fingerprint:
+                valid = fingerprint == resource_fingerprint(expanded)
+            else:
+                valid = all(a["sha256"] == b["sha256"] and a["version"] == b["version"]
+                            for a, b in zip(expanded, trace["consulted_resources"], strict=True))
+            if not valid:
+                raise ValueError("skill_library_resource_changed")
+            trace = {**trace, "consulted_resources": expanded}
+        return trace
     return None
 
 
 def project_facts(value, trace):
     """Keep an opening focused; explicit financial questions retain full facts."""
-    if not value or trace["turn_plan"]["phase"] != "orientation":
+    if not value:
         return value
-    financial = {"financial_plans", "entry_payment_offer", "price_cop", "full_cost_cash_cop",
-                 "price_concept", "price_valid_from", "price_valid_until", "financial_guidance", "pending_confirmation",
-                 "syllabus", "requirements"}
+    plan = trace["turn_plan"]
+    omitted = set()
+    if plan["phase"] == "orientation":
+        omitted.update({"financial_plans", "entry_payment_offer", "price_cop", "full_cost_cash_cop",
+                        "price_concept", "price_valid_from", "price_valid_until", "financial_guidance", "pending_confirmation",
+                        "syllabus", "requirements"})
+    elif plan["phase"] == "financial":
+        # A price question needs all payment conditions, not the full academic brochure.
+        omitted.update({"syllabus", "requirements", "career_outcomes", "presentation"}
+                       - set(plan.get("requested_academic_details", [])))
     def project(item):
         if isinstance(item, list):
             return [project(v) for v in item]
         if isinstance(item, dict):
-            return {**{k: project(v) for k, v in item.items() if k not in financial},
-                    **({"financial_details_available_on_request": True} if any(k in item for k in financial) else {})}
+            removed = [k for k in item if k in omitted]
+            return {**{k: project(v) for k, v in item.items() if k not in omitted},
+                    **({"additional_details_available_on_request": removed} if removed else {}),
+                    **({"financial_details_available_on_request": True} if "financial_plans" in removed or "price_cop" in removed else {})}
         return item
     return project(value)

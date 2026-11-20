@@ -50,7 +50,9 @@ def bounded_commercial_context(selected, informational, limit=20_000):
             bounded[-1]["commercial_in_selected"] = True
             continue
         size = len(json.dumps(item, ensure_ascii=False))
-        if used + size <= limit:
+        # Leave room for the required system prompt, full skill guides and provenance.
+        # The selected profile remains complete; only additional profiles can defer.
+        if used + size <= min(limit, 12_000):
             bounded.append(item)
             used += size
         else:

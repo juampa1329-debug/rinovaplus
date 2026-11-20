@@ -76,10 +76,10 @@ Cada afirmación institucional requiere references. Memoria sólo hechos expreso
 
 
 def assemble_prompt(policy, question, memory, sources, history, *, structured=True):
-    from app.modules.agents.skill_policy import for_turn, instructions as skill_instructions
+    from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history])
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
-                "skill_policy": skill_policy,
+                "skill_policy": prompt_trace(skill_policy),
                 "history": [{"id": h["id"], "role": h["role"], "text": h["text"][-1600:]} for h in history[-12:]]}
     safety = SAFETY if structured else INSTITUTIONAL_SAFETY + """Esta es una prueba manual local del operador, sin envío al aspirante, sin modificar memoria ni tareas.
 Devuelve texto dirigido al usuario, nunca JSON de memoria/handoff. Puedes orientar de forma general sin presentar como oficiales requisitos, precios, programas u horarios no documentados.

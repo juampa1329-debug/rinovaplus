@@ -159,3 +159,17 @@ su cuerpo y fichas secundarias dominadas por una coincidencia más específica
 excluidas de recuperación. La apertura no necesita temario/requisitos extensos;
 se recuperan al preguntar. Finanzas expresas mantienen planes y condiciones
 completos.93regresiones seleccionadas pasan; simulación publicada pendiente.
+
+## Contexto financiero y traza compacta
+
+La apertura real de Barismo pasó con Gemini; el modelo no presentó precios ante
+una consulta general. La prueba financiera detectó aún exceso de contexto antes
+de llamar al proveedor. Se mantienen importes/cuotas/fechas/condiciones y se
+reservan presentación extensa, temario, requisitos o campo laboral cuando no
+fueron preguntados; las peticiones combinadas vuelven a incluirlos. Las fichas
+adicionales se difieren completas cuando no caben, sin cortar la seleccionada.
+La traza que ve el modelo usa IDs y una huella única; la auditoría nativa restaura
+las rutas, fuentes, SHA y versiones verificándolas contra la biblioteca. No se
+reducen las guías de razonamiento ni se amplía el límite40000. Reproducción
+privada local:38178financiación,39281objeción,39331comparación.286backend pasan.
+P13continúa0/4hasta las comprobaciones publicadas y aceptación comercial.

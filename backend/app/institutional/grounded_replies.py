@@ -90,7 +90,7 @@ def context(
              **({"origin": v["body_origin"]} if v.get("body_origin") else {})}
             for v in history
         ]
-    from app.modules.agents.skill_policy import for_turn, instructions as skill_instructions, project_facts
+    from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions, project_facts
     prior_history = history[:-1] if history and history[-1]["direction"] == "incoming" and history[-1]["text"] == redact(question[:1600]) else history
     skill_policy = for_turn(question, history=prior_history, public=public)
     if hasattr(c, "__dict__"):
@@ -181,7 +181,7 @@ def context(
         + instructions
     )
     payload = {
-        "skill_policy": skill_policy,
+        "skill_policy": prompt_trace(skill_policy),
         "consulta": redact(question[:2000]),
         "catalogo": material,
         "institucion_revisada": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},

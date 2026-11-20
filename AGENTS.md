@@ -1,3 +1,9 @@
+## P13: apertura real pasó; finanzas y objeciones se validan con contexto exacto — 2026-11-20
+
+Gemini real del especialista24respondió con calidez/emojis,2semestres,2títulos y tercer diploma opcional, sin precios no solicitados. Vista previa36790caracteres; no es aceptación del propietario. Financiación aún excedía40000antes de consumo: reproducción privada local del contexto vivo identificó metadatos repetidos y contenido académico no solicitado. Se envían IDs+huella única de recursos; auditoría restaura y valida SHA/versiones/rutas completas. Guías íntegras y financieras completas conservadas; fuentes adicionales acotadas sin cortar la elegida. Reproducción:38178financiero,39281objeción,39331comparación.286backend pasan. UI conserva resultado exitoso si sólo falla refrescar actividad, evitando sugerir repetir una llamada pagada. Pendientes publicación de este ajuste y pruebas reales restantes/nombre/ficha/Humano; P13continúa0/4.
+
+P19recuperación de muestras ddf0a2a saludable en fqechkdoaiak1morpswajfjm, rollout14:31:15Z. Falta escuchar la mezcla v2 en frontend y aprobación sonora, política23preservada.
+
 ## P19: recuperación de muestras para volver a mezclar — 2026-11-20
 
 Se añade GET privado de metadatos de muestra (mismo actor, permiso settings.ai.read,24horas) y Preparar mezcla sin generar desde historial. No TTS, envíos ni guardado de política; se reutiliza el original inspeccionado y el mezclador existente.54backend (incluido FFmpeg real),14frontend,tipos/lint pasan. La política viva ya es23guardada por el propietario, con6761caracteres observados antes de esta comprobación; no revertirla a22ni inferir activación global por este agente. Publicación de recuperación y escucha v2pendientes.
