@@ -335,6 +335,15 @@ def tiktok_subscribe(account):
     return result
 
 
+def whatsapp_reply_context(payload):
+    reference = payload.get("replyToMessageId")
+    if reference is None:
+        return {}
+    if not isinstance(reference, str) or not reference.startswith("wamid.") or len(reference) > 512:
+        raise ProviderFailure("whatsapp_reply_reference_invalid")
+    return {"context": {"message_id": reference}}
+
+
 def send(account, payload, media=None, before_send=None):
     if payload.get("origin") == "broadcast":
         if before_send is None:
@@ -393,6 +402,7 @@ def send(account, payload, media=None, before_send=None):
                 **whatsapp_recipient(payload["target"]),
                 "type": "text",
                 "text": {"body": text},
+                **whatsapp_reply_context(payload),
             },
         )
         external = (result.get("messages") or [{}])[0].get("id")
@@ -519,6 +529,7 @@ def send_meta_media(account, payload, media, before_send):
                     **whatsapp_recipient(payload["target"]),
                     "type": kind,
                     kind: part,
+                    **whatsapp_reply_context(payload),
                 },
             )
             external = (result.get("messages") or [{}])[0].get("id")

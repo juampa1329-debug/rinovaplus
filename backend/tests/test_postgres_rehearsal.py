@@ -100,6 +100,17 @@ def test_rate_limit_cleanup_is_bounded_and_local():
     assert converted.count("%s") == 1
 
 
+@pytest.mark.parametrize("amount", ["?", "-1500", "3000"])
+def test_reply_millisecond_deadline_is_a_real_interval_not_a_column(amount):
+    query = f"SELECT DATEADD(millisecond,{amount},SYSUTCDATETIME())"
+    converted = postgres_sql(query, MAP)
+    assert "DATEADD" not in converted
+    assert "INTERVAL '1 millisecond'" in converted
+    assert converted.count("%s") == int(amount == "?")
+    with pytest.raises(ValueError, match="unported_statement"):
+        postgres_sql("SELECT DATEADD(unknown_unit,?,SYSUTCDATETIME())", MAP)
+
+
 def test_postgres_worker_sql_keeps_outer_scope_and_query_binding():
     query = "UPDATE c SET c.Name=? FROM crm.Contact c JOIN crm_access.RateBucket r ON c.Id=r.SubjectId WHERE r.Name=?"
     assert postgres_sql(query, MAP) == (

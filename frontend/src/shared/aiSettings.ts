@@ -93,6 +93,7 @@ export type AiConfig = {
   recent_messages: number;
   history_chars: number;
   show_typing: boolean;
+  quote_first_reply?: boolean;
 };
 export type AiSnapshot = {
   revision: number;
@@ -135,16 +136,14 @@ const messages: Record<string, string> = {
     "El contexto del modelo venció. Inicie una conversación nueva.",
   provider_context_full:
     "El contexto del modelo alcanzó su límite seguro. Inicie una conversación nueva.",
-  provider_endpoint_missing:
-    "Falta completar la configuración del proveedor.",
+  provider_endpoint_missing: "Falta completar la configuración del proveedor.",
   provider_history_unsupported:
     "Este modelo requiere un contrato de historial que no está habilitado. No se envió la conversación.",
   model_selection_not_saved:
     "Guarde el modelo seleccionado antes de revisar su estado.",
   model_selection_required:
     "Seleccione y guarde un modelo antes de revisar su estado.",
-  ai_sql_schema_required:
-    "Falta completar la configuración de proveedores IA.",
+  ai_sql_schema_required: "Falta completar la configuración de proveedores IA.",
   audio_catalog_required:
     "Carga el catálogo de transcripción Groq y selecciona un modelo de audio disponible.",
   audio_model_unsupported:
@@ -159,8 +158,7 @@ const messages: Record<string, string> = {
     "Cargue las voces y seleccione una voz existente de su cuenta en Ajustes > APIs.",
   voice_model_required:
     "Seleccione un modelo de voz disponible en Ajustes > APIs.",
-  piper_unavailable:
-    "Piper no está disponible. Revise la configuración.",
+  piper_unavailable: "Piper no está disponible. Revise la configuración.",
   conversation_expired:
     "La conversación venció. Inicie una conversación nueva.",
   conversation_configuration_changed:
@@ -177,8 +175,7 @@ const messages: Record<string, string> = {
   search_query_invalid:
     "La búsqueda admite hasta 400 caracteres y 50 palabras.",
 
-  local_access_required:
-    "No tiene acceso a esta configuración.",
+  local_access_required: "No tiene acceso a esta configuración.",
   invalid_request:
     "Revise los campos: hay un valor vacío, incompatible o fuera de rango.",
   settings_revision_conflict:
@@ -189,8 +186,7 @@ const messages: Record<string, string> = {
     "Autorice las consultas externas en Ajustes > APIs antes de cargar modelos o probar IA.",
   provider_key_missing:
     "Guarde la API key de este proveedor en Ajustes > APIs.",
-  credential_storage_unsupported:
-    "No se pudo guardar la credencial.",
+  credential_storage_unsupported: "No se pudo guardar la credencial.",
   credential_storage_unavailable:
     "No se pudo acceder al almacén de credenciales. Revise sus permisos.",
   credential_revision_conflict:
@@ -257,23 +253,30 @@ export async function aiRequest<T>(
           ? data.code
           : undefined;
       throw Object.assign(
-        new Error(code ? messages[code] : `No se pudo completar la operación IA (HTTP ${response.status}).`),
+        new Error(
+          code
+            ? messages[code]
+            : `No se pudo completar la operación IA (HTTP ${response.status}).`,
+        ),
         { code: code ?? "ai_request_failed", httpStatus: response.status },
       );
     }
     if (data === null) {
-      throw Object.assign(new Error("El backend devolvió una respuesta no válida."), { httpStatus: response.status });
+      throw Object.assign(
+        new Error("El backend devolvió una respuesta no válida."),
+        { httpStatus: response.status },
+      );
     }
     return data as T;
   } catch (error) {
     if (
       error instanceof Error &&
-      (Object.values(messages).includes(error.message) || Number.isInteger((error as Error & { httpStatus?: number }).httpStatus))
+      (Object.values(messages).includes(error.message) ||
+        Number.isInteger((error as Error & { httpStatus?: number }).httpStatus))
     )
       throw error;
-    throw new Error(
-      "No se pudo acceder al servicio. Inténtelo de nuevo.",
-      { cause: error },
-    );
+    throw new Error("No se pudo acceder al servicio. Inténtelo de nuevo.", {
+      cause: error,
+    });
   }
 }

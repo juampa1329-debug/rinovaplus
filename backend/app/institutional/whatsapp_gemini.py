@@ -269,6 +269,10 @@ def dispatch_authorized(c, settings, job, payload):
         and (
             payload.get("replyPartIndex") != part["index"]
             or payload.get("typingMessageId") != data.get("external_incoming")
+            or any(
+                payload.get(field) != reply_delivery.quote_reference(data, part).get(field)
+                for field in ("replyToMessageId", "replyToInternalId")
+            )
         )
     ):
         raise HTTPException(409, "gemini_whatsapp_intent_mismatch")
@@ -421,6 +425,7 @@ class Worker:
                 return False
             integration = row["IntegrationId"]
             operation, data = row["OperationId"], json.loads(row["ResultMetadata"])
+            data["quote_first_reply"] = delivery_options.get("quote_first_reply", False)
             c.execute("SAVE TRANSACTION whatsapp_gemini")
             try:
                 item, context, budget = source(c, settings, integration, data)
@@ -686,6 +691,7 @@ class Worker:
                             "replyPartIndex": part["index"],
                             "typingMessageId": data.get("external_incoming"),
                             "showTyping": part["typing"],
+                            **reply_delivery.quote_reference(data, part),
                             **({"mediaId": media_id} if media_id else {}),
                         },
                         identity=data["identity"],

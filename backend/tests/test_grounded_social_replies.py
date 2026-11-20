@@ -208,7 +208,7 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 )
 def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     from app.institutional import channel_outbox
-    monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0}})
+    monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0, "quote_first_reply": True}})
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
@@ -226,6 +226,12 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
 
         def execute(self, *args):
             statements.append(args)
+            if "DATEADD(millisecond" in args[0]:
+                from app.institutional.postgres_dialect import postgres_sql
+                from app.institutional.operations_policy import layout
+                translated = postgres_sql(args[0], layout()["tables"])
+                assert "DATEADD" not in translated
+                assert "INTERVAL '1 millisecond'" in translated
             return self
 
         def fetchone(self):
@@ -236,7 +242,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     monkeypatch.setattr(
         messaging,
         "one",
-        lambda _c, sql, *_args: None if "SELECT ExternalId" in sql else {
+        lambda _c, sql, *_args: ({"ExternalId": "wamid.incoming"} if "ExternalMessage" in sql else None) if "SELECT ExternalId" in sql else {
             "OperationId": operation,
             "IntegrationId": integration,
             "ResultMetadata": json.dumps(data),
@@ -280,14 +286,14 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     monkeypatch.setattr(messaging, "unseal", lambda *_: "test-only")
     monkeypatch.setattr(messaging, "key", lambda *_: b"test-only")
     monkeypatch.setattr(messaging, "reserve_budget", lambda *_: None)
-    recorded, sent, handoffs = [], [], []
+    recorded, sent, handoffs, intents = [], [], [], []
     monkeypatch.setattr(
         messaging, "finish", lambda *args: recorded.append(args[5]) or True
     )
     monkeypatch.setattr(
         channel_outbox,
         "enqueue",
-        lambda *args, **_kw: sent.append(args[5]["body"]) or str(uuid4()),
+        lambda *args, **_kw: intents.append(args[5]) or sent.append(args[5]["body"]) or str(uuid4()),
     )
     from app.modules.inbox.application import state
 
@@ -309,6 +315,10 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
     assert [part["text"] for part in recorded[-1]["response_parts"]] == sent
     assert len([v for v in statements if v[0].startswith("UPDATE crm_channels2.SendJob SET DueAt=")]) == len(sent)
+    if sent:
+        assert intents[0]["replyToMessageId"] == "wamid.incoming"
+        assert intents[0]["replyToInternalId"] == operation
+        assert all("replyToMessageId" not in value for value in intents[1:])
 
 
 def test_meta_native_reply_does_not_silence_gemini_but_crm_send_does(monkeypatch):

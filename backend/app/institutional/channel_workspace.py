@@ -425,6 +425,7 @@ class Workspace(Parent):
                     c,
                     (
                         "SELECT q.MessageId,q.QueueId,q.State,q.LastErrorCode,i.DisplayName,"
+                        "quoted.MessageId AS ReplyId,quoted.Body AS ReplyBody,quoted.Direction AS ReplyDirection,"
                         "(SELECT TOP(1) e.CreatedAt FROM crm_channels2.WebhookEvent e "
                         "WHERE q.State='read' AND e.InstitutionId=q.InstitutionId "
                         "AND e.IntegrationId=q.IntegrationId "
@@ -436,7 +437,9 @@ class Workspace(Parent):
                         ".Integration i ON i.InstitutionId=q.In"
                         "stitutionId AND i.IntegrationId=q.Inte"
                         "grationId JOIN crm.Message m ON m.Mess"
-                        "ageId=q.MessageId WHERE q.InstitutionI"
+                        "ageId=q.MessageId LEFT JOIN crm.Message quoted ON "
+                        "quoted.MessageId=TRY_CONVERT(uniqueidentifier,JSON_VALUE(q.Payload,'$.replyToInternalId')) "
+                        "AND quoted.ConversationId=m.ConversationId WHERE q.InstitutionI"
                         "d=? AND m.ConversationId=? AND q.Messa"
                         "geId IN("
                     )
@@ -466,6 +469,12 @@ class Workspace(Parent):
                             channelAccount=value["DisplayName"],
                             readReceiptAt=db.utc(value["readReceiptAt"]),
                         )
+                        if value.get("ReplyId"):
+                            message["replyTo"] = {
+                                "id": str(value["ReplyId"]).lower(),
+                                "body": value["ReplyBody"][:600],
+                                "direction": value["ReplyDirection"],
+                            }
                 media = db.rows(
                     c,
                     (

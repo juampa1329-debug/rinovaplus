@@ -77,7 +77,13 @@ type Row = {
   risk: Risk;
 };
 type Sla = {
-  status: "not_configured" | "disabled" | "closed" | "no_incoming" | "on_time" | "overdue";
+  status:
+    | "not_configured"
+    | "disabled"
+    | "closed"
+    | "no_incoming"
+    | "on_time"
+    | "overdue";
   startedAt: string | null;
   dueAt: string | null;
   thresholdMinutes: number | null;
@@ -124,6 +130,7 @@ type Detail = {
 };
 type Message = {
   attachments?: Attachment[];
+  replyTo?: { id: string; body: string; direction: string };
   id: string;
   body: string;
   direction: string;
@@ -276,7 +283,13 @@ function useEntity(key: string) {
   };
 }
 
-export function useRead<T>(path: string, refresh: number | string = 0, enabled = true, pollMs = 0, checkRevision = false) {
+export function useRead<T>(
+  path: string,
+  refresh: number | string = 0,
+  enabled = true,
+  pollMs = 0,
+  checkRevision = false,
+) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
       path: string;
@@ -303,8 +316,11 @@ export function useRead<T>(path: string, refresh: number | string = 0, enabled =
       }
       running = true;
       try {
-        const conditional = checkRevision && lastRevision && Date.now() - lastFullRead < 60_000;
-        const value = await call<T & { revision?: string; unchanged?: boolean }>(
+        const conditional =
+          checkRevision && lastRevision && Date.now() - lastFullRead < 60_000;
+        const value = await call<
+          T & { revision?: string; unchanged?: boolean }
+        >(
           prefix + path + (conditional ? `&afterRevision=${lastRevision}` : ""),
         );
         if (active) {
@@ -330,7 +346,10 @@ export function useRead<T>(path: string, refresh: number | string = 0, enabled =
       } finally {
         running = false;
         if (active && pollMs && foregroundPolling())
-          timer = setTimeout(() => void load(), Math.max(pollMs, retryAt - Date.now()));
+          timer = setTimeout(
+            () => void load(),
+            Math.max(pollMs, retryAt - Date.now()),
+          );
       }
     }
     const visible = () => {
@@ -414,20 +433,34 @@ function useCommand(onSaved: () => void) {
 }
 export function RiskSummary({ risk }: { risk: Risk }) {
   const known = risk.status === "known" && risk.fresh;
-  const source = risk.source === "channel_activity"
-    ? "Actividad del canal"
-    : risk.source === "commercial_signals" ? "Señales comerciales con evidencia"
-    : "Rúbrica de seguimiento";
+  const source =
+    risk.source === "channel_activity"
+      ? "Actividad del canal"
+      : risk.source === "commercial_signals"
+        ? "Señales comerciales con evidencia"
+        : "Rúbrica de seguimiento";
   return (
-    <section className="p3-risk" data-level={known ? risk.level : undefined} aria-label="Riesgo de abandono">
+    <section
+      className="p3-risk"
+      data-level={known ? risk.level : undefined}
+      aria-label="Riesgo de abandono"
+    >
       <div className="inbox-risk-heading">
         <h3>Riesgo de abandono</h3>
         <RiskBadge risk={risk} />
       </div>
       {known && risk.score !== null && (
         <div className="inbox-risk-score">
-          <strong>{risk.score}<small> / 100</small></strong>
-          <meter aria-label="Puntaje de abandono" min={0} max={100} value={risk.score} />
+          <strong>
+            {risk.score}
+            <small> / 100</small>
+          </strong>
+          <meter
+            aria-label="Puntaje de abandono"
+            min={0}
+            max={100}
+            value={risk.score}
+          />
           <span>{source}</span>
         </div>
       )}
@@ -439,7 +472,11 @@ export function RiskSummary({ risk }: { risk: Risk }) {
             <li key={index}>{reason}</li>
           ))}
         </ul>
-        {risk.asOf && <small>Evaluado <DateText value={risk.asOf} /></small>}
+        {risk.asOf && (
+          <small>
+            Evaluado <DateText value={risk.asOf} />
+          </small>
+        )}
       </details>
     </section>
   );
@@ -454,7 +491,13 @@ const slaLabels = {
   overdue: "Vencido",
 };
 
-export function SlaSummary({ sla, canConfigure }: { sla: Sla; canConfigure: boolean }) {
+export function SlaSummary({
+  sla,
+  canConfigure,
+}: {
+  sla: Sla;
+  canConfigure: boolean;
+}) {
   const [now, setNow] = useState(Date.now);
   const due = sla.dueAt ? Date.parse(sla.dueAt) : NaN;
   useEffect(() => {
@@ -464,25 +507,53 @@ export function SlaSummary({ sla, canConfigure }: { sla: Sla; canConfigure: bool
     const interval = window.setInterval(update, 15_000);
     return () => window.clearInterval(interval);
   }, [due]);
-  const status = sla.status === "on_time" && due <= now ? "overdue" : sla.status;
+  const status =
+    sla.status === "on_time" && due <= now ? "overdue" : sla.status;
   const minutes = Math.ceil(Math.abs(due - now) / 60_000);
   const hours = Math.floor(minutes / 60);
-  const duration = hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
+  const duration =
+    hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
   return (
-    <section className="p3-risk inbox-sla" aria-label="Tiempo de respuesta (SLA)">
+    <section
+      className="p3-risk inbox-sla"
+      aria-label="Tiempo de respuesta (SLA)"
+    >
       <div className="inbox-risk-heading">
         <h3>Tiempo de respuesta (SLA)</h3>
-        <span className="inbox-signal" data-sla={status}>{slaLabels[status]}</span>
+        <span className="inbox-signal" data-sla={status}>
+          {slaLabels[status]}
+        </span>
       </div>
       {sla.dueAt && Number.isFinite(due) && (
         <dl>
-          {sla.startedAt && <div><dt>En espera desde</dt><dd><DateText value={sla.startedAt} /></dd></div>}
-          <div><dt>{status === "overdue" ? "Venció" : "Vence"}</dt><dd><DateText value={sla.dueAt} /></dd></div>
-          <div><dt>{status === "overdue" ? "Tiempo de atraso" : "Tiempo restante"}</dt><dd>{duration}</dd></div>
+          {sla.startedAt && (
+            <div>
+              <dt>En espera desde</dt>
+              <dd>
+                <DateText value={sla.startedAt} />
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt>{status === "overdue" ? "Venció" : "Vence"}</dt>
+            <dd>
+              <DateText value={sla.dueAt} />
+            </dd>
+          </div>
+          <div>
+            <dt>
+              {status === "overdue" ? "Tiempo de atraso" : "Tiempo restante"}
+            </dt>
+            <dd>{duration}</dd>
+          </div>
         </dl>
       )}
-      {sla.thresholdMinutes != null && <small>Plazo institucional de {sla.thresholdMinutes} min</small>}
-      {canConfigure && <a href="#/settings/crm">Configurar plazo institucional</a>}
+      {sla.thresholdMinutes != null && (
+        <small>Plazo institucional de {sla.thresholdMinutes} min</small>
+      )}
+      {canConfigure && (
+        <a href="#/settings/crm">Configurar plazo institucional</a>
+      )}
     </section>
   );
 }
@@ -592,20 +663,20 @@ function WorkspaceView({
     (row) => row.conversationId === selected,
   )?.channel;
   const needsProfile = (identity: string, channel?: string) =>
-    !!identity && !(identity in socialProfiles) &&
+    !!identity &&
+    !(identity in socialProfiles) &&
     (!channel || ["facebook", "messenger", "instagram"].includes(channel));
-  const profileTarget = needsProfile(selected, selectedChannel)
-    ? selected
-    : "";
+  const profileTarget = needsProfile(selected, selectedChannel) ? selected : "";
   const profile = useRead<{ profile: SocialProfile | null }>(
     `conversations/${profileTarget}/social-profile`,
     0,
-    inbox &&
-      !!list.value?.socialProfiles &&
-      !!profileTarget,
+    inbox && !!list.value?.socialProfiles && !!profileTarget,
   );
   if (profile.value && profileTarget && !(profileTarget in socialProfiles))
-    setSocialProfiles({ ...socialProfiles, [profileTarget]: profile.value.profile });
+    setSocialProfiles({
+      ...socialProfiles,
+      [profileTarget]: profile.value.profile,
+    });
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =
     inbox &&
@@ -835,7 +906,9 @@ function WorkspaceView({
                   {list.value.items.map((row) =>
                     inbox ? (
                       <ConversationRow
-                        profile={socialProfiles[row.conversationId] ?? undefined}
+                        profile={
+                          socialProfiles[row.conversationId] ?? undefined
+                        }
                         key={row.conversationId}
                         row={row}
                         selected={selected === row.conversationId}
@@ -921,12 +994,16 @@ function WorkspaceView({
             ) : selected ? (
               <Person
                 key={selected}
-                receivingAccount={list.value?.items.find((row) => row.conversationId === selected)}
+                receivingAccount={list.value?.items.find(
+                  (row) => row.conversationId === selected,
+                )}
                 socialProfile={socialProfiles[selected] ?? undefined}
                 conversation={selected}
                 page={page}
                 refresh={refresh}
-                liveRevision={inbox && offset === 0 ? list.value?.revision : undefined}
+                liveRevision={
+                  inbox && offset === 0 ? list.value?.revision : undefined
+                }
                 changed={changed}
                 config={cfg.config}
                 drafts={drafts}
@@ -1198,10 +1275,18 @@ function Person({
       >
         {page === "inbox" && <h2 className="inbox-crm-title">Ficha CRM</h2>}
         {page === "inbox" && detail.value.sla && (
-          <SlaSummary sla={detail.value.sla} canConfigure={session.actions.includes("settings.crm.write")} />
+          <SlaSummary
+            sla={detail.value.sla}
+            canConfigure={session.actions.includes("settings.crm.write")}
+          />
         )}
         <RiskSummary risk={detail.value.risk} />
-        {page === "inbox" && detail.value.agentOperations && <ConversationSalesMemory conversation={conversation} refresh={refresh} />}
+        {page === "inbox" && detail.value.agentOperations && (
+          <ConversationSalesMemory
+            conversation={conversation}
+            refresh={refresh}
+          />
+        )}
         {page === "inbox" && detail.value.agentOperations && (
           <section className="panel">
             <AgentConversationPanel
@@ -1303,7 +1388,7 @@ function Conversation({
       hasMore: boolean;
     }>(
       `conversations/${conversation}/messages${before ? `?before=${before}` : ""}`,
-      `${refresh}:${before ? "" : liveRevision ?? ""}`,
+      `${refresh}:${before ? "" : (liveRevision ?? "")}`,
       true,
       channel && !before && liveRevision === undefined ? 4000 : 0,
     ),
@@ -1433,9 +1518,13 @@ function Conversation({
               <ChannelLabel channel="local" />
             )}
           </div>
-          {(receivingAccount?.accountName || receivingAccount?.accountPhone) && (
+          {(receivingAccount?.accountName ||
+            receivingAccount?.accountPhone) && (
             <p className="inbox-receiving-account">
-              Cuenta receptora: {[receivingAccount.accountName, receivingAccount.accountPhone].filter(Boolean).join(" · ")}
+              Cuenta receptora:{" "}
+              {[receivingAccount.accountName, receivingAccount.accountPhone]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
           )}
         </div>
@@ -1472,7 +1561,9 @@ function Conversation({
       </header>
       <details className="inbox-thread-options">
         <summary>Gestión de conversación</summary>
-        {(channel === "messenger" || channel === "instagram" || channel === "facebook") && <MetaAutomationHelp />}
+        {(channel === "messenger" ||
+          channel === "instagram" ||
+          channel === "facebook") && <MetaAutomationHelp />}
         <fieldset
           disabled={!session.actions.includes("inbox.write") || command.busy}
         >
@@ -1555,6 +1646,23 @@ function Conversation({
       >
         {data.value?.items.map((message) => (
           <li key={message.id} data-direction={message.direction}>
+            {message.replyTo && (
+              <blockquote
+                className="inbox-quoted-message"
+                aria-label="Mensaje citado"
+              >
+                <strong>
+                  {message.replyTo.direction === "incoming"
+                    ? "Mensaje del contacto"
+                    : "Tú"}
+                </strong>
+                <span>
+                  {message.replyTo.body === "[Adjunto]"
+                    ? "Archivo adjunto"
+                    : message.replyTo.body}
+                </span>
+              </blockquote>
+            )}
             {(!message.attachments?.length ||
               !/^\[(Adjunto|image|audio|video|document|sticker)\]$/i.test(
                 message.body,
@@ -1581,16 +1689,26 @@ function Conversation({
       {data.value && data.value.items.length === 0 && (
         <p>Sin mensajes registrados.</p>
       )}
-      {detail.agentOperations && canWrite && detail.thread.State !== "closed" && (
-        <InboxSuggestion
-          conversation={conversation}
-          channel={channel}
-          epoch={detail.controlEpoch}
-          question={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.body ?? ""}
-          incoming={data.value?.items.filter((message) => message.direction === "incoming").at(-1)?.id ?? ""}
-          onUseReply={setMessage}
-        />
-      )}
+      {detail.agentOperations &&
+        canWrite &&
+        detail.thread.State !== "closed" && (
+          <InboxSuggestion
+            conversation={conversation}
+            channel={channel}
+            epoch={detail.controlEpoch}
+            question={
+              data.value?.items
+                .filter((message) => message.direction === "incoming")
+                .at(-1)?.body ?? ""
+            }
+            incoming={
+              data.value?.items
+                .filter((message) => message.direction === "incoming")
+                .at(-1)?.id ?? ""
+            }
+            onUseReply={setMessage}
+          />
+        )}
       <form
         className="inbox-composer"
         onSubmit={(e) => {

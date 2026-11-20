@@ -17,7 +17,7 @@ JSON_CAST = re.compile(
 TSQL_UPDATE = re.compile(r"^UPDATE\s+(\w+)\s+SET\s+(.+?)\s+FROM\s+(\w+\.\w+)\s+(\w+)\s+(.*)$", re.I | re.S)
 UPDATE_JOIN = re.compile(r"^JOIN\s+(\w+\.\w+)\s+(\w+)\s+ON\s+(.+?)\s+WHERE\s+(.+)$", re.I | re.S)
 NOW = "(statement_timestamp() AT TIME ZONE 'UTC')"
-UNIT = r"(second|minute|hour|day)"
+UNIT = r"(millisecond|second|minute|hour|day)"
 NESTED_TOP = re.compile(r"\(\s*SELECT\s+(TOP\s*\((\d+)\)\s*)", re.I)
 OUTER_APPLY = re.compile(r"\bOUTER\s+APPLY\s*(?=\()", re.I)
 DATE_COLUMN = re.compile(
@@ -198,7 +198,7 @@ def postgres_sql(statement, table_map):
         part = re.sub(r"CONVERT\(bigint,\s*([\w.]+)\)", r"(\1)::bigint", part, flags=re.I)
         part = re.sub(r"CONVERT\(int,\s*(FallbackUsed)\)", r"(\1)::integer", part, flags=re.I)
         part = re.sub(r"\bSYSUTCDATETIME\(\)", NOW, part, flags=re.I)
-        if re.search(r"(?:--|/\*|;)|\b(?:OPENJSON|OUTPUT|JSON_VALUE|OUTER APPLY|OBJECT_ID)\b", part, re.I):
+        if re.search(r"(?:--|/\*|;)|\b(?:DATEADD|OPENJSON|OUTPUT|JSON_VALUE|OUTER APPLY|OBJECT_ID)\b", part, re.I):
             raise ValueError("unported_statement")
         fragments[index] = part.replace("%", "%%").replace("?", "%s")
     statement = "".join(fragments)

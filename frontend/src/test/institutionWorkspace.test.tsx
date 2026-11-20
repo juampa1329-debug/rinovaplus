@@ -8,7 +8,10 @@ import {
 import { beforeEach, expect, it, vi } from "vitest";
 import { WorkspaceSessionProvider } from "../shared/workspaceSession";
 import { WorkspaceP3, RiskSummary } from "../institution/Workspace";
-import { ConversationRow, inboxProgramCode } from "../institution/InboxPresentation";
+import {
+  ConversationRow,
+  inboxProgramCode,
+} from "../institution/InboxPresentation";
 import { explainInboxError } from "../institution/InboxDelivery";
 import type { Risk } from "../institution/Workspace";
 import { SessionBoundary } from "../institution/api";
@@ -52,24 +55,72 @@ it.each([
 ])(
   "shows the media icon and readable preview for %s: %s",
   (previewKind, preview, expected) => {
-    const { container } = render(<ConversationRow selected={false} onSelect={() => {}}
-      row={{ name: "Contacto", phone: "", stage: "Nuevo", state: "open", unread: false,
-        assignee: null, risk, previewKind, preview }} />);
+    const { container } = render(
+      <ConversationRow
+        selected={false}
+        onSelect={() => {}}
+        row={{
+          name: "Contacto",
+          phone: "",
+          stage: "Nuevo",
+          state: "open",
+          unread: false,
+          assignee: null,
+          risk,
+          previewKind,
+          preview,
+        }}
+      />,
+    );
     expect(screen.getByText(expected)).toBeVisible();
-    expect(container.querySelector('.inbox-row-preview svg')).toBeInTheDocument();
-    expect(container.querySelector('.inbox-row-preview')).not.toHaveTextContent("[Adjunto]");
+    expect(
+      container.querySelector(".inbox-row-preview svg"),
+    ).toBeInTheDocument();
+    expect(container.querySelector(".inbox-row-preview")).not.toHaveTextContent(
+      "[Adjunto]",
+    );
   },
 );
 it("keeps voice-note duration beside the microphone", () => {
-  render(<ConversationRow selected={false} onSelect={() => {}}
-    row={{ name: "Contacto", phone: "", stage: "Nuevo", state: "open", unread: false,
-      assignee: null, risk, previewKind: "audio", preview: "[Adjunto]", previewDuration: "65" }} />);
+  render(
+    <ConversationRow
+      selected={false}
+      onSelect={() => {}}
+      row={{
+        name: "Contacto",
+        phone: "",
+        stage: "Nuevo",
+        state: "open",
+        unread: false,
+        assignee: null,
+        risk,
+        previewKind: "audio",
+        preview: "[Adjunto]",
+        previewDuration: "65",
+      }}
+    />,
+  );
   expect(screen.getByText("1:05")).toBeVisible();
 });
 it("distinguishes the receiving account from the sender's phone", () => {
-  render(<ConversationRow selected={false} onSelect={() => {}}
-    row={{ name: "Mismo contacto", phone: "+573001112244", stage: "Nuevo", state: "open", unread: false,
-      assignee: null, risk, channel: "whatsapp", accountName: "WhatsApp · CBN", accountPhone: "+57 311 7207294" }} />);
+  render(
+    <ConversationRow
+      selected={false}
+      onSelect={() => {}}
+      row={{
+        name: "Mismo contacto",
+        phone: "+573001112244",
+        stage: "Nuevo",
+        state: "open",
+        unread: false,
+        assignee: null,
+        risk,
+        channel: "whatsapp",
+        accountName: "WhatsApp · CBN",
+        accountPhone: "+57 311 7207294",
+      }}
+    />,
+  );
   expect(screen.getByTitle("Cuenta receptora: WhatsApp · CBN")).toBeVisible();
   expect(screen.queryByText(/311 7207294/)).not.toBeInTheDocument();
 });
@@ -114,6 +165,7 @@ let failWrite = 0;
 let agentOperations = false;
 let serverRevision = "1";
 let failedDelivery = false;
+let quotedReply = false;
 let threadMode = "human";
 let controlEpoch: string | undefined;
 let emptyInbox = false;
@@ -122,8 +174,12 @@ let firstUnread = true;
 let socialProfileEnabled = false;
 let followupSignals = false;
 const assessedRisk: Risk = {
-  ...risk, status: "known", level: "medium", score: 50,
-  source: "channel_activity", fresh: true,
+  ...risk,
+  status: "known",
+  level: "medium",
+  score: 50,
+  source: "channel_activity",
+  fresh: true,
 };
 const calls: {
   path: string;
@@ -158,6 +214,7 @@ beforeEach(() => {
   agentOperations = false;
   serverRevision = "1";
   failedDelivery = false;
+  quotedReply = false;
   threadMode = "human";
   controlEpoch = undefined;
   emptyInbox = false;
@@ -238,6 +295,29 @@ beforeEach(() => {
               createdAt: "2026-10-26T12:00:00Z",
               sequence: "1",
             },
+            ...(quotedReply
+              ? [
+                  {
+                    id: "first-part",
+                    body: "Primera idea completa",
+                    direction: "outgoing",
+                    createdAt: "2026-10-26T12:01:00Z",
+                    sequence: "2",
+                    replyTo: {
+                      id: ids[1],
+                      body: "Mensaje registrado",
+                      direction: "incoming",
+                    },
+                  },
+                  {
+                    id: "next-part",
+                    body: "Segunda idea completa",
+                    direction: "outgoing",
+                    createdAt: "2026-10-26T12:01:03Z",
+                    sequence: "3",
+                  },
+                ]
+              : []),
             ...(failedDelivery
               ? [
                   {
@@ -297,12 +377,14 @@ beforeEach(() => {
             UserId: null,
           },
           risk: followupSignals ? assessedRisk : risk,
-          sla: followupSignals ? {
-            status: "overdue",
-            startedAt: "2026-10-26T12:00:00Z",
-            dueAt: "2026-10-26T12:30:00Z",
-            thresholdMinutes: 30,
-          } : undefined,
+          sla: followupSignals
+            ? {
+                status: "overdue",
+                startedAt: "2026-10-26T12:00:00Z",
+                dueAt: "2026-10-26T12:30:00Z",
+                thresholdMinutes: 30,
+              }
+            : undefined,
           manual: null,
           members: [client(index)],
           notes: [],
@@ -373,6 +455,18 @@ function open(page = "clients", actions = session.actions) {
     showWorkspace: (shownPage: string | null) => view.rerender(tree(shownPage)),
   };
 }
+it("shows a quote only on the reply part that includes the source reference", async () => {
+  quotedReply = true;
+  open("inbox");
+  await select();
+  expect(await screen.findByLabelText("Mensaje citado")).toHaveTextContent(
+    "Mensaje registrado",
+  );
+  expect(screen.getAllByLabelText("Mensaje citado")).toHaveLength(1);
+  expect(screen.getByText("Primera idea completa")).toBeVisible();
+  expect(screen.getByText("Segunda idea completa")).toBeVisible();
+});
+
 it("combines Inbox filters on the server and explains a failed delivery in plain Spanish", async () => {
   const dialog = HTMLDialogElement.prototype;
   if (!dialog.showModal) {
@@ -567,14 +661,23 @@ async function select(index = 0) {
 it("shows the same measured risk beside the chat and the SLA in its CRM panel", async () => {
   followupSignals = true;
   open("inbox");
-  expect(await screen.findByText("Abandono medio · 50/100")).toHaveAttribute("data-risk", "medium");
+  expect(await screen.findByText("Abandono medio · 50/100")).toHaveAttribute(
+    "data-risk",
+    "medium",
+  );
   expect(screen.getByText("SLA vencido")).toBeInTheDocument();
   await select();
-  const sla = within(screen.getByRole("region", { name: "Tiempo de respuesta (SLA)" }));
+  const sla = within(
+    screen.getByRole("region", { name: "Tiempo de respuesta (SLA)" }),
+  );
   expect(sla.getByText("Vencido")).toHaveAttribute("data-sla", "overdue");
   expect(sla.getByText("Plazo institucional de 30 min")).toBeInTheDocument();
-  expect(sla.getByRole("link", { name: "Configurar plazo institucional" })).toHaveAttribute("href", "#/settings/crm");
-  expect(screen.getByRole("meter", { name: "Puntaje de abandono" })).toHaveAttribute("value", "50");
+  expect(
+    sla.getByRole("link", { name: "Configurar plazo institucional" }),
+  ).toHaveAttribute("href", "#/settings/crm");
+  expect(
+    screen.getByRole("meter", { name: "Puntaje de abandono" }),
+  ).toHaveAttribute("value", "50");
 });
 
 it("mounts the P5 agent selector in the actual institutional Inbox", async () => {
@@ -607,12 +710,18 @@ it("shows unknown safely and identifies a current rule without probability", () 
   );
   expect(screen.getByText("Alto")).toBeInTheDocument();
   expect(screen.getByText("Rúbrica de seguimiento")).toBeInTheDocument();
-  expect(screen.getByRole("meter", { name: "Puntaje de abandono" })).toHaveAttribute("value", "80");
+  expect(
+    screen.getByRole("meter", { name: "Puntaje de abandono" }),
+  ).toHaveAttribute("value", "80");
   expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
 });
 
 it("explains RinovaPlus request throttling without blaming the channel", () => {
-  const guidance = explainInboxError({ code: "rate_limited", status: 429, message: "" });
+  const guidance = explainInboxError({
+    code: "rate_limited",
+    status: 429,
+    message: "",
+  });
   expect(guidance.title).toBe("Límite temporal de solicitudes");
   expect(guidance.nextStep).toMatch(/pulsa Enviar de nuevo/);
 });

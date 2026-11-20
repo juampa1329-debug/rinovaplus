@@ -15,8 +15,8 @@
   ],
   "firecrawl": "CLI public scrape blocked for proxy IP; official pages reviewed through web fallback; no server credential retrieval",
   "verification": {
-    "backend_selected": 327,
-    "frontend_selected": 44,
+    "backend_selected": 333,
+    "frontend_selected": 84,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",
@@ -47,7 +47,7 @@
       "nursing": "not accepted: one read_timeout and two upstream HTTP 503 failures; no simulated reply sent externally",
       "provider_notice_fix": "verified live: descriptive shared modal appeared for provider_temporary_failure; dismissed normally; no automatic replay"
     },
-    "real_typing_and_parts": "owner pilot requested; no phone confirmation received at this cut",
+    "real_typing_and_parts": "Owner saw official typing, but no reply. Runtime logged PostgreSQL 42703 followed by channel_gemini_worker_retry_required; generation da40d9a0-8640-429c-acc4-bb67038cb818 became operation_lease_expired without a queued reply.",
     "notice_frontend": {
       "code": "7fe7a47d7ab335b4047b9833c46b903d281ab0ac",
       "deployment": "qih5zrmwcjggcjywqfxmwtcr",
@@ -58,5 +58,29 @@
   "no_siie_writes": true,
   "no_new_test_containers": true,
   "acceptance_units": 0,
-  "financial_document_received": false
+  "financial_document_received": true,
+  "typing_without_reply_fix": {
+    "cause": "DATEADD(millisecond,...) remained unconverted; PostgreSQL interprets millisecond as an undefined column",
+    "fix": "Translate millisecond into bound INTERVAL arithmetic; reject leftover unsupported DATEADD; regression now verifies interval semantics, not only SQL parsing",
+    "status": "validated_deployment_pending"
+  },
+  "quote_first_reply": {
+    "default": false,
+    "scope": "WhatsApp automatic reply groups, first part only, including one-part audio",
+    "ui": "Ajustes / Inteligencia artificial / Mensajes y contexto",
+    "provider_contract": "https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/message-api",
+    "guards": "reference and internal source bound to confirmed generation, same conversation/account, remaining parts have no reference",
+    "inbox": "bounded source preview; same-conversation join; no extra per-message API requests",
+    "status": "validated_deployment_pending"
+  },
+  "financial_intake": {
+    "status": "received_and_validated_locally_not_published",
+    "programs": [
+      "Barismo y Bartender (joint two-semester program)",
+      "Auxiliar en Enfermeria",
+      "Auxiliar Administrativo en Salud"
+    ],
+    "owner_clarification": "100% scholarship is for Negocios del Sector Gastronomico upon enrollment in the gastronomy sheet offer; joint Barismo y Bartender can yield three titles with the benefit",
+    "exact_values": "private local intake; not copied to Git"
+  }
 }

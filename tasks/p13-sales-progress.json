@@ -58,8 +58,8 @@
     "recovery_endpoint_regressions": 29,
     "comment_edit_backend_selected": 231,
     "comment_edit_frontend_selected": 20,
-    "conversation_style_backend_selected": 327,
-    "conversation_style_frontend_selected": 44
+    "conversation_style_backend_selected": 333,
+    "conversation_style_frontend_selected": 84
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -107,7 +107,8 @@
       "target_chars": 350,
       "maximum_parts": 6,
       "drops_tail": false,
-      "voice_split": false
+      "voice_split": false,
+      "quote_first_reply": "optional false by default; first part only; new control in AI settings"
     },
     "group_guards": [
       "same source and control epoch",
@@ -115,7 +116,7 @@
       "same account/model/context",
       "no automatic replay of uncertain POST"
     ],
-    "financial_information": "awaiting_owner_document_before_pilot_acceptance",
+    "financial_information": "Owner sheets received for joint Barismo/Bartender and two health programs; requirements and benefit clarified; UI publication pending.",
     "runbook": "docs/adaptation/P13_CONVERSATION_STYLE.md",
     "published": {
       "code": "c2dcd4a",
@@ -127,6 +128,7 @@
       "prompts_updated": 26,
       "simulator": "institution and transparent identity passed; nursing new review pending upstream timeout/503",
       "notice_frontend": "7fe7a47 / qih5zrmwcjggcjywqfxmwtcr Success; descriptive failure modal verified live"
-    }
+    },
+    "incident": "Owner saw typing with no reply: unconverted millisecond DATEADD caused PostgreSQL 42703. Interval translation and regression corrected; deployment/recovery pending."
   }
 }

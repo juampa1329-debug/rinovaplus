@@ -257,6 +257,47 @@ def test_unaccepted_bot_parts_are_not_presented_as_spoken_history():
     parse_sql(postgres_sql(sql, layout()["tables"]))
 
 
+@pytest.mark.parametrize("enabled", [False, True])
+def test_quote_only_first_whatsapp_part_and_allow_disabling(enabled):
+    data = {
+        "quote_first_reply": enabled,
+        "channel": "whatsapp",
+        "incoming": str(uuid4()),
+        "external_incoming": "wamid.source",
+    }
+    parts = delivery.plan(
+        "Primera idea. Segunda idea. " * 20, {"chars_per_message": 80}, "whatsapp"
+    )
+    quotes = [delivery.quote_reference(data, p) for p in parts]
+    assert sum(bool(q) for q in quotes) == int(enabled)
+    if enabled:
+        assert quotes[0] == {
+            "replyToMessageId": "wamid.source",
+            "replyToInternalId": data["incoming"],
+        }
+    assert not delivery.quote_reference({**data, "channel": "instagram"}, parts[0])
+    assert not delivery.quote_reference({**data, "external_incoming": None}, parts[0])
+
+
+def test_whatsapp_provider_preserves_context_only_when_requested(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        providers,
+        "request",
+        lambda _a, _m, _p, body: calls.append(body)
+        or {"messages": [{"id": "wamid.sent"}]},
+    )
+    account = {"channel": "whatsapp", "configuration": {"phoneNumberId": "123"}}
+    payload = {"kind": "message", "target": "573000000000", "body": "Idea completa"}
+    providers.send(account, {**payload, "replyToMessageId": "wamid.source"})
+    providers.send(account, payload)
+    assert calls[0]["context"] == {"message_id": "wamid.source"}
+    assert "context" not in calls[1]
+    with pytest.raises(providers.ProviderFailure):
+        providers.send(account, {**payload, "replyToMessageId": "not-a-message"})
+    assert len(calls) == 2
+
+
 def test_cbn_style_preview_preserves_custom_prompts_models_voice_budgets_and_versions(
     monkeypatch,
 ):

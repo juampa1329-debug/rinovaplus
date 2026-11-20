@@ -156,6 +156,7 @@ class AI(AiSettings):
         list[Annotated[str, Field(max_length=240, pattern=r"^[A-Za-z0-9._:/-]+$")]],
     ] = Field(default_factory=dict, max_length=10)
     reply_min_chunk_delay_ms: int = Field(default=9000, ge=0, le=240000)
+    quote_first_reply: bool = False
 
     @model_validator(mode="after")
     def coherent_models(self):

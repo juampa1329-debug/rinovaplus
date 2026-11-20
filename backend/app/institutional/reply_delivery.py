@@ -96,6 +96,22 @@ def part_for(data, message):
     )
 
 
+def quote_reference(data, part):
+    """Quote only the verified incoming message on the group's first part."""
+    if (
+        data.get("quote_first_reply")
+        and data.get("channel", "whatsapp") == "whatsapp"
+        and part["index"] == 0
+        and isinstance(data.get("external_incoming"), str)
+        and data["external_incoming"].startswith("wamid.")
+    ):
+        return {
+            "replyToMessageId": data["external_incoming"],
+            "replyToInternalId": data["incoming"],
+        }
+    return {}
+
+
 def require_previous(c, settings, integration, data, part):
     if part["index"] == 0:
         return
