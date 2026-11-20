@@ -29,7 +29,7 @@
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Financieros anunciados por el propietario; publicar/revisar estilo CBN y probar dos programas en el mismo hilo, continuidad de memoria y silencio en Humano. No cerrar por pruebas sintéticas."
+      "pending": "Financieros anunciados por el propietario; estilo CBN publicado. Probar dos programas en el mismo hilo, memoria, partes/indicador en teléfono y silencio Humano. Nueva Enfermería limitada por timeout/503 externo; no cerrar por pruebas sintéticas."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -125,7 +125,8 @@
       "guide_version": 8,
       "specialist_version": 2,
       "prompts_updated": 26,
-      "simulator": "institution and transparent identity passed; nursing new review pending upstream timeout/503"
+      "simulator": "institution and transparent identity passed; nursing new review pending upstream timeout/503",
+      "notice_frontend": "7fe7a47 / qih5zrmwcjggcjywqfxmwtcr Success; descriptive failure modal verified live"
     }
   }
 }

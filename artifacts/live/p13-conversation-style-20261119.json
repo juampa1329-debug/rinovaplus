@@ -44,10 +44,15 @@
       "provider": "gemini-3.1-flash-lite",
       "institution": "passed real call: CBN, quality and conditional practices; no guaranteed placement",
       "identity": "passed real call: Juan explicitly identified as AI when asked",
-      "nursing": "not accepted: read_timeout followed by upstream HTTP 503 provider_temporary_failure; no external message sent",
-      "provider_notice_fix": "specific cause/remedy mappings and shared modal added; frontend publication pending"
+      "nursing": "not accepted: one read_timeout and two upstream HTTP 503 failures; no simulated reply sent externally",
+      "provider_notice_fix": "verified live: descriptive shared modal appeared for provider_temporary_failure; dismissed normally; no automatic replay"
     },
-    "real_typing_and_parts": "pending_owner_pilot"
+    "real_typing_and_parts": "owner pilot requested; no phone confirmation received at this cut",
+    "notice_frontend": {
+      "code": "7fe7a47d7ab335b4047b9833c46b903d281ab0ac",
+      "deployment": "qih5zrmwcjggcjywqfxmwtcr",
+      "result": "success_41_seconds"
+    }
   },
   "no_ddl": true,
   "no_siie_writes": true,
