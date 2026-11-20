@@ -1,6 +1,7 @@
 """Durable, conversation-bound commercial observations with quoted provenance."""
 
 import json
+import re
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -23,6 +24,16 @@ def read(c, settings, conversation):
     return (json.loads(value["Document"]), value["Revision"]) if value else ({"observations": []}, 0)
 
 
+def concrete_goal(value):
+    """A reference to a remembered goal is not a new statement of that goal."""
+    words = normalized(value).split()
+    references = {"el", "mi", "mis", "los", "la", "las", "un", "una", "mismo", "misma", "ese", "esa", "este", "esta",
+                  "objetivo", "objetivos", "meta", "metas", "proposito", "propositos", "recuerda", "recuerdas", "recuerde",
+                  "recordar", "recuerdame", "sabes", "sabe", "ya", "tu", "tengo", "tenia", "sigue", "siendo", "cual", "es",
+                  "era", "que", "te", "dije", "he", "dicho", "antes", "anterior", "anteriormente", "sobre", "hablamos", "del", "de", "lo"}
+    return any(word not in references for word in re.findall(r"\w+", " ".join(words)))
+
+
 def validated(observations, incoming, previous_reply=""):
     """Model labels are inferences; the stored value is always an exact incoming quote."""
     clean = []
@@ -33,6 +44,8 @@ def validated(observations, incoming, previous_reply=""):
             continue
         field, quote = item.get("field"), item.get("quote")
         if field in FIELDS and isinstance(quote, str) and 2 <= len(quote.strip()) <= 300 and quote in incoming["Body"]:
+            if field == "goal" and not concrete_goal(quote):
+                continue
             from app.institutional.sales_contact import declared_value
             declared = declared_value(item, incoming, previous_reply)
             if field in {"name", "city", "interests"} and not declared:
@@ -49,6 +62,10 @@ def validated(observations, incoming, previous_reply=""):
 def current_facts(observations, before=None):
     facts = {}
     for item in observations:
+        # Keep legacy evidence intact, but never let an empty reference replace
+        # the last concrete goal in prompts, the graph or qualification.
+        if item["field"] == "goal" and not concrete_goal(item["value"]):
+            continue
         if before is None or item["sequence"] < before:
             facts[item["field"]] = item
     return list(facts.values())

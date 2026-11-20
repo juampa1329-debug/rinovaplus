@@ -75,6 +75,28 @@ def test_memory_corrections_and_current_turn_do_not_rewrite_bound_prior_context(
     assert sales_memory.current_facts(facts, before=1) == []
 
 
+@pytest.mark.parametrize("quote", ["el objetivo", "mi meta", "recuerda el objetivo", "el mismo objetivo que te dije antes", "¿Cuál era mi objetivo?"])
+def test_goal_reference_does_not_replace_concrete_goal_or_rewrite_evidence(quote):
+    incoming = {"Body": quote, "MessageId": str(uuid4()), "Sequence": 9}
+    assert sales_memory.validated([{"field": "goal", "quote": quote}], incoming) == []
+    original = {"field": "goal", "value": "abrir mi propio negocio", "sequence": 2}
+    legacy = {"field": "goal", "value": quote, "sequence": 9}
+    evidence = [original.copy(), legacy.copy()]
+    assert sales_memory.current_facts(evidence) == [original]
+    assert evidence == [original, legacy]
+    assert sales_memory.current_facts(evidence, before=2) == []
+
+
+@pytest.mark.parametrize("quote", ["emprender", "crear aplicaciones", "mi objetivo es trabajar remoto", "ahora quiero abrir una panadería"])
+def test_concrete_goal_correction_is_preserved_with_exact_source(quote):
+    incoming = {"Body": quote, "MessageId": str(uuid4()), "Sequence": 9}
+    found = sales_memory.validated([{"field": "goal", "quote": quote}], incoming)
+    assert found[0]["value"] == quote
+    assert found[0]["source_message_id"] == incoming["MessageId"]
+    previous = {"field": "goal", "value": "trabajar en una empresa", "sequence": 2}
+    assert sales_memory.current_facts([previous, *found]) == found
+
+
 def test_qualification_uses_declared_intent_not_budget_wealth_or_demographics():
     a = sales_memory.qualification([{"field": "budget", "value": "no tengo dinero"}])
     b = sales_memory.qualification([{"field": "budget", "value": "tengo millones"}])
