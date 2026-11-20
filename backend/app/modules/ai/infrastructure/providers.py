@@ -137,6 +137,8 @@ class ProviderGateway:
                             )
                             if provider == "gemini" and response.status_code == 404:
                                 code = "provider_model_unavailable"
+                            if provider == "openrouter" and response.status_code == 402:
+                                code = "openrouter_payment_required"
                             raise failure(code, transient=transient)
                         data = bytearray()
                         async for chunk in response.aiter_bytes():

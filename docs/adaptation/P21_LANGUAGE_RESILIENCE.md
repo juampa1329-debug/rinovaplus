@@ -111,3 +111,18 @@ guardado sigue bloqueada. La reserva no equivale al cargo final del proveedor.
 GPT-4.1 mini se revisa como alternativa económica: USD 0,40/M de entrada y
 USD 1,60/M de salida según el [catálogo oficial](https://openrouter.ai/openai/gpt-4.1-mini).
 La disponibilidad y el precio se validan de nuevo en cada intento.
+
+### Resultado operativo del 20 de noviembre
+
+Gemini se conservó como principal y el titular autorizó GPT-4.1 mini de pago
+como respaldo. El principal saludable y Humano pasaron con cero consultas
+externas. La caída503 ficticia sí consultó una vez OpenRouter: rechazo402 por
+crédito de cuenta/API key insuficiente, sin respuesta y sin reintento. La
+reserva USD0,006314 no es cargo confirmado. El intento anterior gratuito429
+se conserva como evidencia. P21 continúa en validación; no está al100%.
+
+El titular debe revisar [Credits](https://openrouter.ai/settings/credits) y el
+límite de su [API key](https://openrouter.ai/settings/keys). El adaptador no
+lee ni expone el cuerpo de error del proveedor, no recarga saldo y no hace
+reintentos automáticos por402. Tener tarjeta guardada no acredita saldo.
+Referencia: [errores oficiales](https://github.com/OpenRouterTeam/docs/blob/main/api_reference/errors-and-debugging.mdx).

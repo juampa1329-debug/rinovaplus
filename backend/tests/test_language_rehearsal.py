@@ -12,7 +12,7 @@ from app.institutional import language_rehearsal as rehearsal
 from app.modules.ai.infrastructure.providers import ProviderGateway
 
 
-def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False, paid=False, expensive=False):
+def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False, paid=False, expensive=False, payment=False):
     state = {"operation": None, "calls": [], "reserves": [], "revision": 27}
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     actor = {"UserId": str(uuid4())}
@@ -54,6 +54,8 @@ def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post
                     "prompt": str(saved["routes"][0]["input_usd_per_million"] / 1000000),
                     "completion": str(saved["routes"][0]["output_usd_per_million"] / 1000000)}}]})
         wire = json.loads(req.content)
+        if payment:
+            return httpx.Response(402, json={"error": {"code": 402, "message": "DO NOT EXPOSE"}})
         if busy:
             return httpx.Response(429, json={"error": {"code": 429}})
         if uncertain:
@@ -174,6 +176,30 @@ def test_paid_rate_limit_does_not_misreport_free_quota(monkeypatch):
     result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True), gateway=gateway)
     assert result["code"] == "provider_rate_limited" and "free_quota" not in result
     assert state["calls"] == ["GET", "POST"]
+
+
+def test_payment_rejection_is_known_failure_without_automatic_retry_or_private_error_body(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True, payment=True)
+    body = rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True)
+    result = rehearsal.run(profile, {}, body, gateway=gateway)
+    assert result["state"] == "failed" and result["code"] == "openrouter_payment_required"
+    assert result["trace"]["attempts"][-1]["upstream_status"] == 402
+    assert "DO NOT EXPOSE" not in json.dumps(result)
+    assert rehearsal.run(profile, {}, body, gateway=gateway) == result
+    assert state["calls"] == ["GET", "POST"] and result["provider_calls"] == 1
+
+
+def test_rehearsal_cost_cap_accumulates_across_rejected_paid_routes(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True, busy=True)
+    saved = rehearsal.resilience.snapshot(None, None)
+    saved["routes"].append({**saved["routes"][0], "model": "second-paid"})
+    async def large_context(*_):
+        return 60000, 700  # Each attempt would reserve USD 0.025120.
+    monkeypatch.setattr(rehearsal.resilience, "compatible", large_context)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True), gateway=gateway)
+    assert result["code"] == "language_rehearsal_cost_limit" and result["state"] == "blocked"
+    assert result["reserved_usd_micros"] == 25120 and len(state["reserves"]) == 1
+    assert state["calls"] == ["POST"] and result["provider_calls"] == 1
 
 
 @pytest.mark.parametrize("scenario", ["healthy", "human"])

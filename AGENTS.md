@@ -1,3 +1,7 @@
+## P21: ensayo de pago llegó a OpenRouter, rechazo402 — 2026-11-20
+
+Código c31fdf3 saludable en Coolify (yntfjpotpndanu5qjo4touni, rollout17:15:13Z), frontend Success wxpijv2csvmwna6jtpxh7yya. AI revisión28 mantiene Gemini y guarda GPT-4.1 mini OpenRouter, topes0,40/1,60USD/M, pago autorizado por titular.503 ficticio→1POST real→402 por crédito insuficiente de cuenta/clave. Reserva6314microusd, sin uso reportado ni mensaje/CRM. Histórico c98ea07d permanece uncertain; diagnóstico nuevo distingue rechazo conocido402, sin reintento ni recarga. Humano e47a88a4 y saludable ed0733ae pasaron0IO.159backend/7frontend y3SQL parseadas; P21 sigue0/4, no100%, hasta respuesta real503/429. Se pidió al titular revisar saldo/límite. P13/P19 y OPS intactos. Evidencia artifacts/live/p21-failover-rehearsal-20261120.json.
+
 ## P21: respaldo de pago autorizado, ensayo acotado — 2026-11-20
 
 El titular permite modelos de pago en OpenRouter tras el rechazo 429 del gratuito. Se amplía el ensayo con autorización explícita, tope acumulado USD0,05 y presupuestos diarios intactos. Gemini principal no se interrumpe, datos ficticios, sin CRM/outbox/configuraciones mutadas por el ensayo. Humano y saludable ya pasaron con cero IO; paid/private/public aún pendientes de publicación y resultado real. P21 conserva0/4 hasta completar la prueba. P13/P19 y OPS conservan sus límites históricos.

@@ -78,6 +78,8 @@ class OpenRouterClient:
                                 embedded = result["error"].get("code")
                                 status = embedded if type(embedded) is int else 502
                             if status >= 300:
+                                if status == 402:
+                                    raise AiError("openrouter_payment_required", 502, upstream_status=status)
                                 if status not in TRANSIENT:
                                     raise AiError("openrouter_rejected_request", 502, upstream_status=status)
                                 delay = retry_delay(response.headers.get("retry-after"), attempt)

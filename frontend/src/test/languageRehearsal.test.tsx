@@ -68,3 +68,40 @@ it("blocks a rehearsal while the AI settings draft is unsaved", () => {
     screen.getByRole("button", { name: "Ejecutar simulación controlada" }),
   ).toBeDisabled();
 });
+
+it("explains a known OpenRouter credit rejection and does not repeat inference", async () => {
+  api.mockReset();
+  api.mockResolvedValue({
+    state: "failed",
+    operation_id: "payment-fixture",
+    code: "openrouter_payment_required",
+    real_backup: true,
+    provider_calls: 1,
+    trace: {
+      attempts: [
+        {
+          provider: "openrouter",
+          model: "paid-fixture",
+          state: "failed",
+          role: "fallback",
+          upstream_status: 402,
+        },
+      ],
+    },
+  });
+  render(<LanguageRehearsal revision={28} enabled dirty={false} />);
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: /Autorizar respaldo de pago/ }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Ejecutar simulación controlada" }),
+  );
+  await screen.findByText(/una tarjeta guardada no garantiza saldo/);
+  expect(api.mock.calls).toHaveLength(1);
+  expect(
+    screen.getByRole("button", { name: "Ejecutar simulación controlada" }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "Preparar otra simulación" }),
+  ).toBeEnabled();
+});

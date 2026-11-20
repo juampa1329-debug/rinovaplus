@@ -24,6 +24,7 @@ type Result = {
       state: string;
       role: string;
       code?: string;
+      upstream_status?: number;
     }[];
   };
 };
@@ -256,6 +257,20 @@ export function LanguageRehearsal({
               Diagnóstico: {result.code}. Consulta el resultado antes de repetir
               una solicitud incierta.
             </p>
+          )}
+          {(result.code === "openrouter_payment_required" ||
+            result.trace.attempts?.some(
+              (attempt) =>
+                attempt.provider === "openrouter" &&
+                attempt.upstream_status === 402,
+            )) && (
+            <Notice error>
+              OpenRouter rechazó la consulta por crédito insuficiente en la
+              cuenta o en esta API key. Revisa el saldo en Credits y el límite
+              de la clave en OpenRouter; una tarjeta guardada no garantiza saldo
+              disponible. El ensayo no se reintentará automáticamente. Después
+              de resolverlo puedes preparar una prueba nueva.
+            </Notice>
           )}
           {result.free_quota && (
             <p>

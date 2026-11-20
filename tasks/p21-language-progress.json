@@ -24,13 +24,13 @@
     {
       "id": "P21.4",
       "title": "Publicación y comprobación operativa",
-      "status": "controlled_rehearsal_prepared"
+      "status": "blocked_by_openrouter_credit_402"
     }
   ],
   "limitations": [
-    "Respaldo gratuito autorizado y guardado. El propietario solicita aceptación mediante caída simulada aislada, sin interrumpir producción.",
+    "Respaldo de pago autorizado por el propietario. Gemini principal conservado; GPT-4.1 mini guardado en revisión28. Ensayo aislado503 recibió402 por crédito de cuenta/clave insuficiente. Pendiente disponibilidad de crédito y respuesta real.",
     "Respaldo automático institucional Gemini/OpenRouter; el simulador conserva las rutas del agente.",
     "Audio previo a transcripción, monitor proactivo y circuito distribuido fuera de esta entrega.",
-    "No reintentar resultados inciertos ni inducir fallos pagados."
+    "No reintentar resultados inciertos ni inducir fallos pagados del principal; cada ensayo de respaldo tiene tope USD0,05."
   ]
 }

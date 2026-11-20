@@ -8,7 +8,7 @@ from app.modules.ai.infrastructure.openrouter import OpenRouterClient
 from app.modules.ai.infrastructure.providers import AiError
 
 
-@pytest.mark.parametrize("status", [401, 408, 500, 502, 504])
+@pytest.mark.parametrize("status", [401, 402, 408, 500, 502, 504])
 def test_ambiguous_or_auth_http_status_never_repeats_post(status):
     calls = []
     def respond(req):
@@ -20,6 +20,8 @@ def test_ambiguous_or_auth_http_status_never_repeats_post(status):
             [{"role": "user", "content": "Hola"}], lambda: None))
     assert len(calls) == 1
     assert failure.value.upstream_status == status
+    if status == 402:
+        assert failure.value.code == "openrouter_payment_required"
 
 
 def test_explicit_busy_response_can_select_another_configured_route_without_waiting_past_retry_after():

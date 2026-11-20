@@ -1,11 +1,11 @@
 {
   "date": "2026-11-20",
-  "status": "first_live_backup_rate_limited",
+  "status": "blocked_by_openrouter_credit_402",
   "primary_fault": "synthetic exception, no paid primary request and no global configuration mutation",
-  "backup": "real configured free route after live catalog/cost/capability checks",
+  "backup": "Owner authorized paid OpenRouter backup; GPT-4.1 mini selected from authenticated catalog, price ceilings USD0.40/1.60 per million tokens, AI revision28.",
   "local_checks": {
-    "backend_passed": 150,
-    "frontend_passed": 6,
+    "backend_passed": 159,
+    "frontend_passed": 7,
     "types_lint_build": "passed",
     "postgres_queries_parsed": 3
   },
@@ -21,6 +21,52 @@
       "crm_written": false,
       "delivered": false,
       "configuration_changed": false
+    },
+    {
+      "operation_id": "e47a88a4-e662-4025-9b8a-1c0a90b344e6",
+      "case": "human",
+      "state": "passed",
+      "provider_calls": 0,
+      "crm_written": false,
+      "delivered": false
+    },
+    {
+      "operation_id": "ed0733ae-8097-4cf6-8548-945be9d62e5c",
+      "case": "healthy",
+      "state": "passed",
+      "provider_calls": 0,
+      "crm_written": false,
+      "delivered": false
+    },
+    {
+      "operation_id": "c98ea07d-8d48-4c01-b4b7-10957c736c09",
+      "case": "unavailable",
+      "audience": "message",
+      "primary": "synthetic503",
+      "backup": "openrouter/openai/gpt-4.1-mini",
+      "backup_result": "HTTP402",
+      "recorded_state": "uncertain",
+      "interpretation": "Known credit rejection; subsequent implementation classifies new HTTP402 results as failed, not ambiguous. Historical record not rewritten.",
+      "provider_calls": 1,
+      "reserved_usd_micros": 6314,
+      "cost_cap_usd_micros": 50000,
+      "reported_usage": null,
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false,
+      "replayed": false
     }
+  ],
+  "deployment": {
+    "code": "c31fdf3",
+    "backend": "yntfjpotpndanu5qjo4touni",
+    "backend_rollout_completed_utc": "2026-11-20T17:15:13Z",
+    "frontend": "wxpijv2csvmwna6jtpxh7yya",
+    "frontend_state": "Success"
+  },
+  "pending": [
+    "Owner must confirm API key credit availability in OpenRouter; card alone does not establish credit. No top-up performed.",
+    "Successful paid backup for synthetic503/private and429/public still required; no natural outage induced.",
+    "Do not mark P21 100% on blocked supplier requests."
   ]
 }

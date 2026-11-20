@@ -165,7 +165,9 @@ def run(settings, authority, body, *, gateway=None):
     except HTTPException as error:
         result.update(state="passed" if error.detail == "language_rehearsal_human_control" else "blocked", code=error.detail)
     except AiError as error:
-        result.update(state="uncertain" if result["provider_calls"] and error.status >= 500 and not resilience.can_failover(error) else "failed", code=error.code)
+        known_rejection = error.upstream_status in {400, 401, 402, 403, 404, 405, 413, 422, 429}
+        result.update(state="uncertain" if result["provider_calls"] and error.status >= 500
+                      and not known_rejection and not resilience.can_failover(error) else "failed", code=error.code)
     except Exception:
         result.update(state="uncertain", code="language_rehearsal_result_unknown")
     if any(a.get("code") == "provider_rate_limited" and a.get("provider") == "openrouter"
