@@ -1,3 +1,9 @@
+## P13: estilo CBN publicado; financieros y piloto pendientes — 2026-11-19
+
+Backend c2dcd4a saludable (rla42xbuh9g8mnb1serm4m6w), frontend ft8ovodkobf1asrebzdtlsga Success. Ajustes IA revisión18 publicados:3s de agrupación,1500ms iniciales,3000ms entre partes,350caracteres como referencia sin cortar ideas. Orientador versión8 y25especialistas versión2:26prompts revisados, nombre de atención Juan editable. No identidad humana falsa; transparencia si preguntan por IA. Modelos, voces, permisos y presupuestos conservados. Dos simulaciones reales del orientador pasaron; nueva Enfermería pendiente por timeout y HTTP503 de Gemini. Aviso genérico corregido a causa/solución con modal.327backend/44frontend seleccionadas, tipos/lint modificado/build pasan. Partes e indicador reales pendientes del teléfono; financieros anunciados aún no recibidos. P13 sigue0/4aceptadas.
+
+General original P0–P11:100% cada una; P12 auxiliar online100%; P15 correos7/7 yP19voz5/5 en alcance inicial. P13Académico/agentes parcial0/4; P14entrenamiento comercial plan; P16SIIE parcial0/5; P17TikTok diferida0/5; P18seguridad plan0/8; P20llamadas WhatsApp plan0/8; OPS01–06abiertas. No DDL, seeds ni escrituras SIIE. Evidencia: artifacts/live/p13-conversation-style-20261119.json. Los cortes inferiores se conservan como historia.
+
 ## P13: estilo CBN y grupos de respuesta en validación — 2026-11-19
 
 Se prepara nombre de atención editable (Juan por defecto para el perfil actual), tono colombiano profesional, emojis discretos y prompts institucionales revisados. Sin presentaciones repetitivas de asistente virtual, sin afirmar identidad humana y con transparencia si preguntan por IA. Actualización revisada conserva especialistas personalizados y permisos/modelos/voces/presupuestos. Preset de Ajustes sólo prepara borrador; se publica por el guardado normal.

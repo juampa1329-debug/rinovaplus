@@ -1,7 +1,7 @@
 {
   "date": "2026-11-19",
   "phase": "P13",
-  "status": "implementation_validated_deploy_pending",
+  "status": "deployed_settings_published_pilot_pending",
   "sources": [
     "https://cbn.edu.co/institucion/",
     "https://cbn.edu.co/",
@@ -16,7 +16,7 @@
   "firecrawl": "CLI public scrape blocked for proxy IP; official pages reviewed through web fallback; no server credential retrieval",
   "verification": {
     "backend_selected": 327,
-    "frontend_selected": 40,
+    "frontend_selected": 44,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",
@@ -24,10 +24,29 @@
     "bundle_warning": "existing"
   },
   "live": {
-    "deployment": "pending",
-    "global_prompt": "pending",
-    "agent_prompts": "pending",
-    "simulator": "pending",
+    "deployment": {
+      "code": "c2dcd4a388f538de6a9be25a32d1ab7f86f15731",
+      "backend": "rla42xbuh9g8mnb1serm4m6w",
+      "backend_result": "healthy_rolling_update_completed",
+      "frontend": "ft8ovodkobf1asrebzdtlsga",
+      "frontend_result": "success_43_seconds"
+    },
+    "global_prompt": "AI settings revision 18 published; saved version consulted",
+    "agent_prompts": {
+      "updated": 26,
+      "preserved": 0,
+      "guide_version": 8,
+      "specialist_version": 2,
+      "advisor_name": "Juan",
+      "models_voices_permissions_budgets": "preserved by reviewed update"
+    },
+    "simulator": {
+      "provider": "gemini-3.1-flash-lite",
+      "institution": "passed real call: CBN, quality and conditional practices; no guaranteed placement",
+      "identity": "passed real call: Juan explicitly identified as AI when asked",
+      "nursing": "not accepted: read_timeout followed by upstream HTTP 503 provider_temporary_failure; no external message sent",
+      "provider_notice_fix": "specific cause/remedy mappings and shared modal added; frontend publication pending"
+    },
     "real_typing_and_parts": "pending_owner_pilot"
   },
   "no_ddl": true,

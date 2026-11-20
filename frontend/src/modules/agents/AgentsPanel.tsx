@@ -31,6 +31,7 @@ import { useDraftGuard } from "../../institution/drafts";
 import { AgentVoiceSelect } from "../../institution/AgentVoiceSelect";
 import { AgentSalesSkills } from "../../institution/AgentSalesSkills";
 import { ProgramSalesSetup } from "../../institution/ProgramSalesSetup";
+import { OperationDialog } from "../../institution/ErrorFeedback";
 import "./agents.css";
 
 type Tab =
@@ -524,13 +525,33 @@ export function AgentsPanel() {
         </div>
       </div>
       {guideOpen && <AgentGuide />}
-      {error && <Notice error>{error}</Notice>}
+      {error && (
+        <OperationDialog
+          guidance={{
+            title: "No se pudo completar la operación del agente",
+            detail: error,
+            nextStep:
+              "Conserva tu borrador y revisa Actividad para conocer el resultado y el consumo. Corrige la causa indicada antes de volver a intentarlo; no se repetirá la operación automáticamente.",
+          }}
+          dismiss={() => setError("")}
+        />
+      )}
       {feedback && <Notice>{feedback}</Notice>}
-      {catalog?.institutional && <ProgramSalesSetup catalog={catalog} disabled={busy || draftChanged || (!!draft && !saved && !!draft.name.trim())} onSaved={async () => {
-        const value = await refresh();
-        const current = value.agents.find((agent) => agent.id === draft?.id);
-        if (current) select(current);
-      }} />}
+      {catalog?.institutional && (
+        <ProgramSalesSetup
+          catalog={catalog}
+          disabled={
+            busy || draftChanged || (!!draft && !saved && !!draft.name.trim())
+          }
+          onSaved={async () => {
+            const value = await refresh();
+            const current = value.agents.find(
+              (agent) => agent.id === draft?.id,
+            );
+            if (current) select(current);
+          }}
+        />
+      )}
       {!catalog && !error && <Notice>Cargando agentes…</Notice>}
       {catalog && !catalog.installed && (
         <Notice>
@@ -1311,8 +1332,21 @@ export function AgentsPanel() {
                         configure={configure}
                         versions={consoleData?.versions ?? []}
                       />
-                      {catalog.institutional && <AgentVoiceSelect value={draft.configuration.voice_profile_id ?? ""} onChange={value=>configure({voice_profile_id:value})} />}
-                      {catalog.institutional && <AgentSalesSkills configuration={draft.configuration} guide={draft.level === "guide"} onChange={configure} />}
+                      {catalog.institutional && (
+                        <AgentVoiceSelect
+                          value={draft.configuration.voice_profile_id ?? ""}
+                          onChange={(value) =>
+                            configure({ voice_profile_id: value })
+                          }
+                        />
+                      )}
+                      {catalog.institutional && (
+                        <AgentSalesSkills
+                          configuration={draft.configuration}
+                          guide={draft.level === "guide"}
+                          onChange={configure}
+                        />
+                      )}
                       <section
                         className="agents-editor-section"
                         aria-labelledby="agent-sources-heading"

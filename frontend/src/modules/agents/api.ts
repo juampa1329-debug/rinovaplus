@@ -340,6 +340,14 @@ const errors: Record<string, string> = {
     "Revise la asignación anterior antes de adoptar los agentes de admisiones.",
   agents_configuration_changed:
     "La configuración cambió durante la prueba. El resultado quedó invalidado.",
+  provider_response_timeout:
+    "El proveedor de IA tardó demasiado y no confirmó una respuesta. Revisa Actividad y el consumo registrado antes de iniciar otra prueba; no se envió una respuesta al contacto desde el simulador.",
+  provider_timeout_or_network:
+    "No se pudo completar la conexión con el proveedor de IA. Revisa Actividad y su disponibilidad antes de repetir; tu configuración se conserva.",
+  provider_temporary_failure:
+    "El proveedor de IA está temporalmente indisponible. Espera unos minutos y revisa Actividad antes de probar otra vez. No necesitas cambiar el prompt ni la clave por este aviso.",
+  provider_rate_limited:
+    "El proveedor de IA alcanzó un límite temporal de solicitudes o de su cuenta. Revisa el cupo del proveedor en APIs y modelos y espera antes de repetir; aumentar el cupo del CRM no elimina ese límite externo.",
   admissions_invalid_structured_response:
     "El proveedor no devolvió el formato de respuesta requerido. Revise el modelo y el límite de respuesta; el consumo reportado se conserva en Actividad.",
   admissions_response_truncated:

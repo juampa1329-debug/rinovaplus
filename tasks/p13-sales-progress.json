@@ -59,7 +59,7 @@
     "comment_edit_backend_selected": 231,
     "comment_edit_frontend_selected": 20,
     "conversation_style_backend_selected": 327,
-    "conversation_style_frontend_selected": 40
+    "conversation_style_frontend_selected": 44
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -96,7 +96,7 @@
     "Own Facebook reply edited and restored in production, two exact Meta readbacks confirmed; two history entries survive reload. Final backend f80dd89 healthy. Instagram comment text and sent DM editing not documented by the official APIs inspected."
   ],
   "conversation_style": {
-    "status": "implementation_validated_deploy_pending",
+    "status": "deployed_settings_published_pilot_pending",
     "advisor_name": "Juan by default; editable and inherited",
     "identity": "presentation name, transparent AI if asked; no false human identity",
     "general_prompt": "reviewed CBN institutional sources",
@@ -116,6 +116,16 @@
       "no automatic replay of uncertain POST"
     ],
     "financial_information": "awaiting_owner_document_before_pilot_acceptance",
-    "runbook": "docs/adaptation/P13_CONVERSATION_STYLE.md"
+    "runbook": "docs/adaptation/P13_CONVERSATION_STYLE.md",
+    "published": {
+      "code": "c2dcd4a",
+      "backend": "rla42xbuh9g8mnb1serm4m6w",
+      "health": "healthy_rolling_update_completed",
+      "ai_settings_revision": 18,
+      "guide_version": 8,
+      "specialist_version": 2,
+      "prompts_updated": 26,
+      "simulator": "institution and transparent identity passed; nursing new review pending upstream timeout/503"
+    }
   }
 }

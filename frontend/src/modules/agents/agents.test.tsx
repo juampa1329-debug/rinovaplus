@@ -12,7 +12,7 @@ import { AgentsPanel } from "./AgentsPanel";
 import { WorkspaceSessionProvider } from "../../shared/workspaceSession";
 import { AgentConversationPanel } from "./AgentConversationPanel";
 import { ProgramSelector, filterPrograms } from "./ProgramSelector";
-import { api } from "./api";
+import { api, message } from "./api";
 import type { Catalog, Program, ProviderOptions } from "./api";
 
 const programs: Program[] = [
@@ -45,6 +45,19 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
+
+it.each([
+  ["provider_response_timeout", "tardó demasiado"],
+  ["provider_temporary_failure", "temporalmente indisponible"],
+  ["provider_rate_limited", "límite temporal"],
+  ["provider_timeout_or_network", "conexión"],
+])(
+  "explains the provider failure %s without blaming the prompt",
+  (code, reason) => {
+    expect(message(code)).toContain(reason);
+    expect(message(code)).not.toContain("No se pudo completar la operación.");
+  },
+);
 
 it.each([
   {

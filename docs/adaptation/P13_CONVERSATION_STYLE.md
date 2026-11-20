@@ -45,6 +45,12 @@ Referencia leída: `C:/verane-whatsapp-ai/saas-version/backend/app_saas/ai_agent
 
 ## Evidencia y cierre
 
-327pruebas backend seleccionadas y40frontend seleccionadas; tipos, ESLint de archivos modificados y build workspace pasan. Ruff funcional de módulos nuevos pasa; no es una recertificación global de estilo Python. Advertencia histórica del bundle conservada. Las pruebas de orden, incertidumbre, límites y SQL traducido usan proveedores/dobles controlados; no acreditan una prueba productiva de todas las carreras ni una recuperación nativa adicional.
+327pruebas backend seleccionadas y44frontend seleccionadas; tipos, ESLint de archivos modificados y build workspace pasan. Ruff funcional de módulos nuevos pasa; no es una recertificación global de estilo Python. Advertencia histórica del bundle conservada. Las pruebas de orden, incertidumbre, límites y SQL traducido usan proveedores/dobles controlados; no acreditan una prueba productiva de todas las carreras ni una recuperación nativa adicional.
 
 Despliegue, prompts realmente publicados y simulación/prueba posterior se registran en `artifacts/live/p13-conversation-style-20261119.json`. P13 continúa0/4unidades aceptadas hasta revisión de las fichas, financieros, continuidad entre programas, memoria y control Humano del piloto. La reproducción de una nota previa no cierra estos criterios.
+
+## Publicación y prueba real
+
+Backend c2dcd4a saludable en Coolify (rla42xbuh9g8mnb1serm4m6w); frontend ft8ovodkobf1asrebzdtlsga Success. Ajustes IA revisión18 guardada y consultada; orientador versión8 y25especialistas versión2,26prompts actualizados, nombre Juan. Cadencia3s/1500ms/3000ms/350caracteres confirmada.
+
+Dos llamadas reales del orientador a Gemini verificaron información institucional y transparencia al preguntar por IA. La nueva simulación de Enfermería no se acepta: primero timeout y después HTTP503 del proveedor. Se añaden avisos específicos de causa/solución y modal compartido en Agentes; no se reintenta automáticamente ni se envían mensajes desde el simulador. La prueba de partes e indicador en teléfono y los financieros del propietario siguen pendientes. P13 conserva0/4unidades aceptadas.
