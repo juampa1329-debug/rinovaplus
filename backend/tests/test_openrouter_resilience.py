@@ -63,3 +63,18 @@ def test_invalid_price_limits_never_contact_provider(limits):
         asyncio.run(OpenRouterClient("fixture").complete(
             SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=100),
             [], lambda: None, price_limits=limits))
+
+
+def test_trial_output_schema_has_no_memory_or_tool_access():
+    from app.modules.agents.generation import SIMULATION_SCHEMA
+    calls = []
+    def respond(request):
+        calls.append(json.loads(request.content))
+        return httpx.Response(200, json={"model": "fixture", "choices": [{"finish_reason": "stop", "message": {"content": '{"answer":"Hola","handoff":true,"references":[]}'}}], "usage": {"prompt_tokens": 10, "completion_tokens": 2}})
+    asyncio.run(OpenRouterClient("fixture", httpx.MockTransport(respond)).complete(
+        SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=100),
+        [], lambda: None, response_schema=SIMULATION_SCHEMA, max_attempts=1))
+    fmt = calls[0]["response_format"]
+    assert fmt["type"] == "json_schema" and fmt["json_schema"]["strict"]
+    assert set(fmt["json_schema"]["schema"]["properties"]) == {"answer", "handoff", "references"}
+    assert "tools" not in calls[0]

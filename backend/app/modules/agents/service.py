@@ -1568,7 +1568,7 @@ class AgentsService:
                 max_chars=60000 if getattr(cursor, "agent_catalog", None) else 40000,
             )
             messages[0]["content"] += (
-                "\nEsta es una prueba manual sin escritura de memoria del aspirante. No hay UUID de mensaje entrante admisible: devuelve memory=[] y no inventes identificadores ni hechos declarados."
+                "\nEsta es una prueba manual sin escritura de memoria del aspirante. Devuelve sólo answer, handoff y references; omite memory. No hay UUID de mensaje entrante admisible: no inventes identificadores ni hechos declarados."
             )
             check_context(trial, messages, policy.max_tokens)
             proof = digest(

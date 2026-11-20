@@ -1,3 +1,7 @@
+## P22: ensayos preliminares y contrato manual uniforme — 2026-11-20
+
+Cuatro llamadas preliminares: Sonnet4.6 obtuvo apertura util; Gemini/GPTmini fueron rechazados por referencia de memoria en contrato manual y Haiku tuvo rechazo sin respuesta util. No atribuir esos fallos del contrato a calidad comercial, ni afirmar consumo0. Registros privados en.local/p22-review-20261120.json ignorado porGit; topeUSD5 conserva reservas desconocidas. Se fija json_schema estricto de simulacion (answer/handoff/references, sin memory), misma instruccion manual para proveedores, sin relajar validacion ni rutas productivas.97backend/Ruff pasan; publicacion y comparativa uniforme pendientes. P22 sigue0/5, no modelos activos cambiados.
+
 ## P22: historial ligado a la misma consulta de fuentes — 2026-11-20
 
 Antes de consumir se corrigio la guarda del simulador: preparacion incluia historial y validacion posterior usaba solo la ultima pregunta. Ambas usan ahora la misma consulta ligada; cambio real de fuente sigue invalidando. Prueba integral con proveedor simulado y51regresiones pasan. P22 sigue en comparacion pendiente, presupuestoUSD5 autorizado; no se cuentan metadatos sin consumo como calidad de candidato.

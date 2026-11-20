@@ -9,6 +9,11 @@ from app.modules.ai.infrastructure.providers import AiError
 from app.modules.ai.application.admissions_prompt import ADMISSIONS_RESPONSE_SCHEMA
 from app.modules.ai.domain.resilience import can_failover
 
+SIMULATION_SCHEMA = {"type": "object", "additionalProperties": False,
+    "properties": {"answer": {"type": "string"}, "handoff": {"type": "boolean"},
+                   "references": {"type": "array", "items": {"type": "string"}, "maxItems": 5}},
+    "required": ["answer", "handoff", "references"]}
+
 
 def provider_options(ai):
     """Read metadata only; never call load_models or a provider endpoint."""
@@ -111,6 +116,13 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
     configuration = selection["configuration"]
     from app.modules.agents.skill_policy import from_messages
     skill_policy = from_messages(messages)
+    if preview:
+        messages = [dict(m) for m in messages]
+        messages[0]["content"] += (
+            "\nSALIDA DE SIMULACIÓN SIN PERSISTENCIA: devuelve únicamente answer, handoff y references. "
+            "No devuelvas memory ni source_message_id: no existe un mensaje entrante real con UUID válido. "
+            "Esta restricción prevalece sobre los procedimientos de registro de memoria."
+        )
     if ai.busy:
         raise AiError("operation_busy", 429)
     ai.busy = True
@@ -154,6 +166,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         guard,
                         price_limits=dict(zip(("prompt", "completion"), rates, strict=True)) if all(v is not None for v in rates) else None,
                         max_attempts=1 if preview else 3,
+                        response_schema=SIMULATION_SCHEMA if preview else None,
                     )
                 else:
                     system = "\n".join(
