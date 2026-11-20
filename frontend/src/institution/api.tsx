@@ -325,6 +325,10 @@ const messages: Record<string, string> = {
   permission_denied: "Tu rol no permite esta operación.",
   session_required: "Tu sesión terminó. Inicia sesión de nuevo.",
   module_disabled: "Este módulo está deshabilitado por la institución.",
+  server_temporarily_unavailable:
+    "El servidor tardó demasiado o no pudo completar la consulta. Tu configuración se conserva. Espera unos segundos y vuelve a cargar RinovaPlus.",
+  invalid_server_response:
+    "El servidor devolvió una respuesta incompleta. Tu configuración se conserva; vuelve a cargar RinovaPlus cuando termine la actualización.",
   rate_limit: "Alcanzaste el límite temporal. Espera antes de reintentar.",
   rate_limited: "RinovaPlus alcanzó el límite temporal de solicitudes.",
   last_active_owner: "Debe quedar al menos un propietario activo con acceso.",
@@ -388,15 +392,16 @@ async function request<T>(path: string, method: string, body: unknown, csrf: str
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(45000),
   });
-  const result = (await response.json()) as { detail?: string };
+  const result = (await response.json().catch(() => null)) as { detail?: string } | null;
+  if (response.ok && result === null) throw new ApiError(502, "invalid_server_response");
   if (!response.ok) {
-    if (response.status === 401 && result.detail === "session_required")
+    if (response.status === 401 && result?.detail === "session_required")
       institutionUnauthorized(401);
     const retryAfter = Number(response.headers.get("Retry-After"));
     if (response.status === 429) observeReadLimit(response.headers.get("Retry-After"));
     throw new ApiError(
       response.status,
-      result.detail ?? "request_failed",
+      result?.detail ?? ([502, 503, 504].includes(response.status) ? "server_temporarily_unavailable" : "request_failed"),
       retryAfter > 0 ? retryAfter : undefined,
     );
   }
