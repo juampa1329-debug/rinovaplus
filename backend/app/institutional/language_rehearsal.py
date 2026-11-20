@@ -1,7 +1,8 @@
-"""Operator-only P21 rehearsal: synthetic principal, real free backup, no outbox."""
+"""Operator-only P21 rehearsal: synthetic principal, capped real backup, no outbox."""
 
 import asyncio
 import json
+import math
 import re
 from typing import Literal
 
@@ -18,6 +19,7 @@ from app.modules.agents.skill_policy import for_turn, instructions, prompt_trace
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 ACTION = "ai_resilience_rehearsal"
+MAX_REHEARSAL_USD_MICROS = 50000
 
 
 async def free_quota(gateway):
@@ -39,6 +41,7 @@ class Rehearsal(Strict):
     revision: int = Field(ge=0)
     case: Literal["unavailable", "rate_limited", "healthy", "human"] = "unavailable"
     audience: Literal["message", "comment"] = "message"
+    allow_paid: bool = False
 
 
 def context(audience):
@@ -93,12 +96,16 @@ def run(settings, authority, body, *, gateway=None):
         if not ai["document"]["enabled"]:
             raise HTTPException(409, "language_rehearsal_ai_disabled")
         saved = resilience.snapshot(c, settings)
-        if not saved["routes"] or any(r["provider"] != "openrouter" or not r["model"].endswith(":free")
-            or r["input_usd_per_million"] != 0 or r["output_usd_per_million"] != 0 for r in saved["routes"]):
+        if not saved["routes"] or any(r["provider"] != "openrouter" for r in saved["routes"]):
             raise HTTPException(409, "language_rehearsal_free_backup_required")
+        paid = any(not r["model"].endswith(":free") or r["input_usd_per_million"] != 0
+                   or r["output_usd_per_million"] != 0 for r in saved["routes"])
+        if paid and body.case not in {"healthy", "human"} and not body.allow_paid:
+            raise HTTPException(409, "language_rehearsal_paid_confirmation_required")
         result = {"operation_id": operation, "state": "running", "case": body.case, "audience": body.audience,
                   "synthetic_primary": True, "real_backup": False, "provider_calls": 0, "reservations": [],
-                  "published_configuration_changed": False, "crm_written": False, "delivered": False, "trace": {}}
+                  "published_configuration_changed": False, "crm_written": False, "delivered": False, "trace": {},
+                  "cost_cap_usd_micros": MAX_REHEARSAL_USD_MICROS, "reserved_usd_micros": 0}
         record_operation(c, settings, actor["UserId"], operation, ACTION, resource, digest, result)
 
     def guard():
@@ -114,8 +121,13 @@ def run(settings, authority, body, *, gateway=None):
                 raise HTTPException(409, "language_rehearsal_claim_changed")
 
     def reserve(route, incoming, outgoing):
+        micros = max(1, math.ceil(incoming * route["input_usd_per_million"] + outgoing * route["output_usd_per_million"]))
+        if result["reserved_usd_micros"] + micros > MAX_REHEARSAL_USD_MICROS:
+            raise HTTPException(429, "language_rehearsal_cost_limit")
         resilience.reservation(settings, saved, route, incoming, outgoing)
-        result["reservations"].append({"provider": route["provider"], "model": route["model"], "tokens": incoming + outgoing})
+        result["reserved_usd_micros"] += micros
+        result["reservations"].append({"provider": route["provider"], "model": route["model"], "tokens": incoming + outgoing,
+                                       "usd_micros": micros})
 
     async def primary():
         if body.case == "healthy":
@@ -156,7 +168,8 @@ def run(settings, authority, body, *, gateway=None):
         result.update(state="uncertain" if result["provider_calls"] and error.status >= 500 and not resilience.can_failover(error) else "failed", code=error.code)
     except Exception:
         result.update(state="uncertain", code="language_rehearsal_result_unknown")
-    if any(a.get("code") == "provider_rate_limited" and a.get("provider") == "openrouter" for a in result["trace"].get("attempts", [])):
+    if any(a.get("code") == "provider_rate_limited" and a.get("provider") == "openrouter"
+           and a.get("model", "").endswith(":free") for a in result["trace"].get("attempts", [])):
         try:
             guard()
             quota = asyncio.run(free_quota(delegate))

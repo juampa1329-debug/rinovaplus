@@ -62,7 +62,9 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
-  language_rehearsal_free_backup_required: "Este ensayo sólo admite respaldos gratuitos de OpenRouter, con topes de tarifa en cero. Revisa y guarda la política antes de probar.",
+  language_rehearsal_free_backup_required: "Este ensayo necesita respaldos de OpenRouter guardados. Revisa la política antes de probar.",
+  language_rehearsal_paid_confirmation_required: "Hay un modelo de pago guardado. Autoriza su uso en el ensayo con el control de máximo USD 0,05 antes de ejecutar.",
+  language_rehearsal_cost_limit: "El costo máximo reservado supera USD 0,05. El ensayo se detuvo antes de consultar ese modelo. Elige un respaldo más económico o revisa sus topes de tarifa.",
   language_rehearsal_ai_disabled: "Habilita la IA antes de probar su respaldo. No se consultó ningún proveedor.",
   language_rehearsal_not_found: "No se encontró ese ensayo para tu usuario. Conserva el identificador y revisa la sesión; no generes otra respuesta para recuperar la anterior.",
   language_rehearsal_claim_changed: "El ensayo cambió o venció. Consulta su resultado antes de preparar otra prueba.",

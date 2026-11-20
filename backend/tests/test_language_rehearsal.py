@@ -12,7 +12,7 @@ from app.institutional import language_rehearsal as rehearsal
 from app.modules.ai.infrastructure.providers import ProviderGateway
 
 
-def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False):
+def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False, paid=False, expensive=False):
     state = {"operation": None, "calls": [], "reserves": [], "revision": 27}
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     actor = {"UserId": str(uuid4())}
@@ -31,6 +31,9 @@ def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post
     monkeypatch.setattr(rehearsal, "one", lambda *_: {"OperationId": "fixture"} if state["operation"]["state"] == "running" else None)
     saved = {"revision": 27, "credentials": {}, "keys": {"openrouter": "fixture"}, "routes": [{
         "provider": "openrouter", "model": "fixture:free", "input_usd_per_million": 0, "output_usd_per_million": 0}]}
+    if paid:
+        saved["routes"][0].update(model="fixture-paid", input_usd_per_million=10 if expensive else 0.4,
+                                  output_usd_per_million=20 if expensive else 1.6)
     monkeypatch.setattr(rehearsal.resilience, "snapshot", lambda *_: saved)
     def check(*_):
         if state["revision"] != 27:
@@ -45,9 +48,11 @@ def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post
         if req.method == "GET":
             if rotate:
                 state["revision"] = 28
-            return httpx.Response(200, json={"data": [{"id": "fixture:free", "context_length": 500000,
+            return httpx.Response(200, json={"data": [{"id": saved["routes"][0]["model"], "context_length": 500000,
                 "architecture": {"output_modalities": ["text"]}, "supported_parameters": ["max_tokens", "temperature", "response_format"],
-                "top_provider": {"max_completion_tokens": 8000}, "pricing": {"prompt": "0", "completion": "0"}}]})
+                "top_provider": {"max_completion_tokens": 8000}, "pricing": {
+                    "prompt": str(saved["routes"][0]["input_usd_per_million"] / 1000000),
+                    "completion": str(saved["routes"][0]["output_usd_per_million"] / 1000000)}}]})
         wire = json.loads(req.content)
         if busy:
             return httpx.Response(429, json={"error": {"code": 429}})
@@ -138,3 +143,41 @@ def test_backup_429_reports_free_quota_without_leaking_account_metadata_or_repea
     assert result["free_quota"] == {"used": 50, "limit": 50, "remaining": 0}
     assert "NEVER EXPOSE" not in json.dumps(result) and "limit_remaining" not in json.dumps(result)
     assert state["calls"] == ["GET", "POST", "GET"] and result["provider_calls"] == 1
+
+
+def test_paid_route_requires_explicit_acknowledgment_before_claim_or_io(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True)
+    with pytest.raises(HTTPException, match="language_rehearsal_paid_confirmation_required"):
+        rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27), gateway=gateway)
+    assert not state["operation"] and not state["calls"] and not state["reserves"]
+
+
+def test_authorized_paid_route_has_conservative_total_cost_cap_and_replay(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True)
+    body = rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True)
+    result = rehearsal.run(profile, {}, body, gateway=gateway)
+    assert result["state"] == "passed" and result["provider_calls"] == 1
+    assert 0 < result["reserved_usd_micros"] <= result["cost_cap_usd_micros"] == 50000
+    assert rehearsal.run(profile, {}, body, gateway=gateway) == result
+    assert state["calls"] == ["GET", "POST"] and len(state["reserves"]) == 1
+
+
+def test_cost_cap_stops_expensive_route_before_inference_or_daily_reservation(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True, expensive=True)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True), gateway=gateway)
+    assert result["state"] == "blocked" and result["code"] == "language_rehearsal_cost_limit"
+    assert state["calls"] == ["GET"] and not state["reserves"] and result["provider_calls"] == 0
+
+
+def test_paid_rate_limit_does_not_misreport_free_quota(monkeypatch):
+    state, profile, gateway = environment(monkeypatch, paid=True, busy=True)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, allow_paid=True), gateway=gateway)
+    assert result["code"] == "provider_rate_limited" and "free_quota" not in result
+    assert state["calls"] == ["GET", "POST"]
+
+
+@pytest.mark.parametrize("scenario", ["healthy", "human"])
+def test_paid_configuration_can_check_zero_io_guards_without_paid_acknowledgment(monkeypatch, scenario):
+    state, profile, gateway = environment(monkeypatch, paid=True)
+    result = rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, case=scenario), gateway=gateway)
+    assert result["state"] == "passed" and not state["calls"] and not state["reserves"]

@@ -1,3 +1,7 @@
+## P21: respaldo de pago autorizado, ensayo acotado — 2026-11-20
+
+El titular permite modelos de pago en OpenRouter tras el rechazo 429 del gratuito. Se amplía el ensayo con autorización explícita, tope acumulado USD0,05 y presupuestos diarios intactos. Gemini principal no se interrumpe, datos ficticios, sin CRM/outbox/configuraciones mutadas por el ensayo. Humano y saludable ya pasaron con cero IO; paid/private/public aún pendientes de publicación y resultado real. P21 conserva0/4 hasta completar la prueba. P13/P19 y OPS conservan sus límites históricos.
+
 ## P21: conmutación real alcanzó respaldo; gratuito respondió429 — 2026-11-20
 
 5630600publicado para ensayo aislado. Operación5ae84446-d9a8-4a26-b3cd-18125c5365a8: principal503simulado →OpenRouterGemma26Breal, unPOST y ninguna salidaCRM; respaldo rechazó429. No declarar P21al100%. Se corrige diagnóstico para conservar el último rechazo real; el ensayo consulta sólo contadores gratuitos GET/key tras429, nunca muestra label, saldo, IDs ni clave. Se corrigen IDsduplicados al elegir varias alternativas del mismo proveedor. Se añaden pruebas de segunda ruta, incertidumbre, revocación y cuotas.150backend/6frontend,tipos/lint/build pasan. Nueva publicación/consulta real de cupo y alternativa pendientes. Política activa del titular se conserva, sin modelos pagados ni mutación del principal. P13/P19mantienen estados.

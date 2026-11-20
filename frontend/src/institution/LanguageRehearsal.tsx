@@ -13,6 +13,8 @@ type Result = {
   checks?: Record<string, boolean>;
   usage?: { promptTokenCount?: number; candidatesTokenCount?: number };
   free_quota?: { used: number; limit: number; remaining: number };
+  reserved_usd_micros?: number;
+  cost_cap_usd_micros?: number;
   trace: {
     fallback_used?: boolean;
     latency_ms?: number;
@@ -39,6 +41,7 @@ export function LanguageRehearsal({
   const task = useTask();
   const [scenario, setScenario] = useState("unavailable");
   const [audience, setAudience] = useState("message");
+  const [allowPaid, setAllowPaid] = useState(false);
   const [operation, setOperation] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const reset = () => {
@@ -58,7 +61,9 @@ export function LanguageRehearsal({
       <p>
         El principal se simula dentro del ensayo; Gemini y los chats reales
         siguen funcionando. Ante un rechazo 503 o 429 se consulta el respaldo
-        gratuito guardado con información ficticia. No se envían mensajes, no se
+        guardado con información ficticia. Los modelos de pago requieren tu
+        autorización y el ensayo reserva como máximo USD 0,05 en total, además
+        de respetar los presupuestos diarios. No se envían mensajes, no se
         modifica la ficha CRM ni la configuración.
       </p>
       <fieldset disabled={task.busy}>
@@ -112,9 +117,18 @@ export function LanguageRehearsal({
             Guarda o descarta los cambios antes de probar la política publicada.
           </Notice>
         )}
+        <label>
+          <input
+            type="checkbox"
+            checked={allowPaid}
+            disabled={!!operation}
+            onChange={(event) => setAllowPaid(event.target.checked)}
+          />
+          Autorizar respaldo de pago · máximo USD 0,05 por ensayo
+        </label>
         {!enabled && (
           <Notice>
-            Habilita y guarda un respaldo gratuito antes de realizar el ensayo.
+            Habilita y guarda un respaldo antes de realizar el ensayo.
           </Notice>
         )}
         <Button
@@ -129,6 +143,7 @@ export function LanguageRehearsal({
                   revision,
                   case: scenario,
                   audience,
+                  allow_paid: allowPaid,
                 }),
               );
             }, "Ensayo registrado. Revisa el resultado y los intentos.")
@@ -227,6 +242,15 @@ export function LanguageRehearsal({
               {result.usage.candidatesTokenCount ?? "sin reporte"} salida.
             </p>
           )}
+          {result.reserved_usd_micros !== undefined && (
+            <p>
+              Reserva máxima calculada: USD{" "}
+              {(result.reserved_usd_micros / 1000000).toFixed(6)} · tope del
+              ensayo: USD{" "}
+              {((result.cost_cap_usd_micros ?? 50000) / 1000000).toFixed(2)}. Es
+              una reserva conservadora, no la factura del proveedor.
+            </p>
+          )}
           {result.code && (
             <p>
               Diagnóstico: {result.code}. Consulta el resultado antes de repetir
@@ -245,14 +269,15 @@ export function LanguageRehearsal({
             <Notice error>
               El proveedor reporta que se agotó el cupo gratuito diario. Espera
               su renovación o revisa el plan de la cuenta. RinovaPlus conserva
-              la política y no pasa a un modelo de pago.
+              la política; sólo consulta las alternativas de pago guardadas
+              cuando están autorizadas para este ensayo.
             </Notice>
           )}
           {result.code === "provider_rate_limited" && (
             <Notice error>
               El respaldo también limitó la solicitud. Si queda cupo diario,
               puede ser saturación temporal o un límite por minuto del modelo.
-              Revisa las alternativas gratuitas antes de preparar otro ensayo.
+              Revisa los modelos y límites antes de preparar otro ensayo.
             </Notice>
           )}
           <small>Operación: {result.operation_id}</small>

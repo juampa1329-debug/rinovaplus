@@ -34,6 +34,9 @@ it("runs one synthetic-failure rehearsal then recovers its result only with GET"
   });
   render(<LanguageRehearsal revision={27} enabled dirty={false} />);
   fireEvent.click(
+    screen.getByRole("checkbox", { name: /Autorizar respaldo de pago/ }),
+  );
+  fireEvent.click(
     screen.getByRole("button", { name: "Ejecutar simulación controlada" }),
   );
   await screen.findByText("Ensayo superado");
@@ -44,6 +47,7 @@ it("runs one synthetic-failure rehearsal then recovers its result only with GET"
       revision: 27,
       case: "unavailable",
       audience: "message",
+      allow_paid: true,
     }),
   );
   expect(
