@@ -397,6 +397,13 @@ def create_app(
     def read_setting(request: Request, section: str):
         return configuration.read(request.state.authority, section)
 
+    @app.get("/api/institution/settings/ai/cbn-style")
+    def cbn_style(request: Request):
+        configuration.read(request.state.authority, "ai")
+        from app.institutional.cbn_profile import general_instructions, recommended_delivery, FACTS, REVIEWED
+        return {"document": {"system_prompt": general_instructions(), **recommended_delivery()},
+                "reviewed_at": REVIEWED, "sources": list(dict.fromkeys(v["source"] for v in FACTS))}
+
     @app.put("/api/institution/settings/{section}")
     def save_setting(request: Request, section: str, body: models.SettingEdit):
         return configuration.save(request.state.authority, section, body)

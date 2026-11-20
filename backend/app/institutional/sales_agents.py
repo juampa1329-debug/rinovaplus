@@ -61,6 +61,8 @@ def preview(c, settings, guide_id):
 
 
 def install(app, service, settings):
+    from app.institutional.sales_style import install as install_style
+    install_style(app, service, settings, Provision)
     from app.institutional.sales_recovery import install as install_recovery
     install_recovery(app, service, settings)
     @app.get("/api/v1/agents/sales/ad-links")

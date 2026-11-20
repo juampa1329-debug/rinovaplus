@@ -1,5 +1,9 @@
 import type { AiProvider } from "../../shared/aiSettings";
-import { coordinatedRead, observeReadLimit, readRetrySeconds } from "../../institution/readCoordinator";
+import {
+  coordinatedRead,
+  observeReadLimit,
+  readRetrySeconds,
+} from "../../institution/readCoordinator";
 import {
   institutionHeaders,
   institutionUnauthorized,
@@ -8,6 +12,7 @@ import {
 export type Configuration = {
   provider: AiProvider;
   voice_profile_id?: string;
+  advisor_name?: string;
   sales_skill_ids?: string[];
   sales_routing_enabled?: boolean;
   sales_memory_enabled?: boolean;
@@ -368,15 +373,24 @@ const errors: Record<string, string> = {
   agents_conversation_unavailable:
     "La conversación está cerrada o ya no está disponible.",
   agents_not_found: "El agente ya no está disponible.",
-  voice_profile_unavailable: "El perfil de voz está pausado o ya no está disponible. Actualiza las voces del agente y selecciona un perfil activo, o elige Automática.",
-  sales_active_guide_required: "Selecciona un orientador de Admisiones activo antes de crear especialistas.",
-  sales_guide_not_ready: "El orientador necesita un modelo, permisos de respuesta y configuración completa. Revísalo en Agentes.",
-  sales_specialist_ambiguous: "Hay varios especialistas para un mismo programa. Revisa y conserva uno activo antes de preparar la creación.",
-  sales_preview_changed: "Cambió el catálogo o la configuración. Prepara nuevamente la vista previa antes de guardar.",
-  sales_ad_binding_invalid: "Revisa el ID del anuncio y el programa activo. Cada anuncio debe tener una única vinculación.",
-  sales_review_required: "Revisa los especialistas y marca la confirmación antes de crearlos.",
-  sales_memory_revision_conflict: "La memoria cambió durante la operación. Actualiza el hilo antes de reintentar.",
-  voice_institutional_only: "Los perfiles de voz se administran en el entorno institucional de RinovaPlus.",
+  voice_profile_unavailable:
+    "El perfil de voz está pausado o ya no está disponible. Actualiza las voces del agente y selecciona un perfil activo, o elige Automática.",
+  sales_active_guide_required:
+    "Selecciona un orientador de Admisiones activo antes de crear especialistas.",
+  sales_guide_not_ready:
+    "El orientador necesita un modelo, permisos de respuesta y configuración completa. Revísalo en Agentes.",
+  sales_specialist_ambiguous:
+    "Hay varios especialistas para un mismo programa. Revisa y conserva uno activo antes de preparar la creación.",
+  sales_preview_changed:
+    "Cambió el catálogo o la configuración. Prepara nuevamente la vista previa antes de guardar.",
+  sales_ad_binding_invalid:
+    "Revisa el ID del anuncio y el programa activo. Cada anuncio debe tener una única vinculación.",
+  sales_review_required:
+    "Revisa los especialistas y marca la confirmación antes de crearlos.",
+  sales_memory_revision_conflict:
+    "La memoria cambió durante la operación. Actualiza el hilo antes de reintentar.",
+  voice_institutional_only:
+    "Los perfiles de voz se administran en el entorno institucional de RinovaPlus.",
   agents_channel_not_allowed:
     "El canal seleccionado no está permitido por esta configuración.",
   agents_input_before_assignment:
@@ -470,12 +484,22 @@ export async function api<T>(
 ): Promise<T> {
   if (method === "GET") {
     const seconds = readRetrySeconds();
-    if (seconds) throw new Error(`Las consultas están en pausa durante ${seconds} segundos para respetar el límite temporal. Tu borrador se conserva.`);
-    return coordinatedRead(`agents:${institutionHeaders()["X-CSRF-Token"] ?? ""}:${path}`, () => request<T>(path, method, body));
+    if (seconds)
+      throw new Error(
+        `Las consultas están en pausa durante ${seconds} segundos para respetar el límite temporal. Tu borrador se conserva.`,
+      );
+    return coordinatedRead(
+      `agents:${institutionHeaders()["X-CSRF-Token"] ?? ""}:${path}`,
+      () => request<T>(path, method, body),
+    );
   }
   return request<T>(path, method, body);
 }
-async function request<T>(path: string, method: string, body?: unknown): Promise<T> {
+async function request<T>(
+  path: string,
+  method: string,
+  body?: unknown,
+): Promise<T> {
   let signature = "";
   if (body && typeof body === "object" && "operation_id" in body) {
     const { operation_id, ...fields } = body as Record<string, unknown>;
@@ -498,7 +522,8 @@ async function request<T>(path: string, method: string, body?: unknown): Promise
     throw failure;
   });
   const result = await response.json().catch(() => null);
-  if (response.status === 429) observeReadLimit(response.headers?.get("Retry-After") ?? null);
+  if (response.status === 429)
+    observeReadLimit(response.headers?.get("Retry-After") ?? null);
   institutionUnauthorized(response.status);
   if (signature && response.status < 500) pendingMutations.delete(signature);
   if (!response.ok) {
@@ -708,7 +733,7 @@ export type AgentConsole = {
 
 export const instructionTemplates = {
   admissions:
-    "Eres {agent_name}, asistente virtual de admisiones. Tu especialidad es {agent_specialty}.\n{agent_description}\nOrienta sobre la oferta del período activo usando las fuentes institucionales suministradas. Si el aspirante no ha confirmado su programa, ayúdalo a identificarlo sin elegir por él. Conserva sus preferencias ya declaradas y deriva al asesor ante solicitudes humanas, información insuficiente, pagos o decisiones de matrícula.",
+    "Atiendes Admisiones de CBN con el nombre de atención configurado. Tu especialidad es {agent_specialty}.\n{agent_description}\nOrienta sobre la oferta vigente usando las fuentes institucionales suministradas. Si el aspirante no ha confirmado su programa, ayúdalo a identificarlo sin elegir por él. Conserva sus preferencias ya declaradas y deriva al equipo ante solicitudes humanas, información insuficiente, pagos o decisiones de matrícula. Habla en español colombiano cercano y profesional, con ideas breves completas y emojis discretos. Si preguntan si eres IA, responde con transparencia.",
   program:
-    "Eres {agent_name}, asistente virtual especializado en admisiones del programa con identificador {program_id}.\n{agent_description}\nAtiende únicamente el programa y la jornada confirmados en el contexto institucional. Explica tarifas, asignaturas y requisitos con sus fuentes vigentes. No inventes información ni asumas que otro programa tiene las mismas condiciones. Conserva las preferencias declaradas y deriva al asesor cuando soliciten una persona o falte evidencia.",
+    "Atiendes el programa con identificador {program_id} de CBN con el nombre de atención configurado.\n{agent_description}\nAtiende el programa y la jornada confirmados en el contexto institucional, o aclara el interés comercial recibido. Explica tarifas, asignaturas y requisitos con sus fuentes vigentes. No inventes información ni asumas que otro programa tiene las mismas condiciones. Conserva las preferencias declaradas y deriva al equipo cuando soliciten una persona o falte evidencia. Usa ideas breves completas y español colombiano profesional. Si preguntan si eres IA, responde con transparencia.",
 };

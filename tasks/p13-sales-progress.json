@@ -29,7 +29,7 @@
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Dos programas en el mismo hilo, continuidad de memoria, control Humano, pausa y aceptación del propietario."
+      "pending": "Financieros anunciados por el propietario; publicar/revisar estilo CBN y probar dos programas en el mismo hilo, continuidad de memoria y silencio en Humano. No cerrar por pruebas sintéticas."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -57,7 +57,9 @@
     "simulator_fix_regressions": 91,
     "recovery_endpoint_regressions": 29,
     "comment_edit_backend_selected": 231,
-    "comment_edit_frontend_selected": 20
+    "comment_edit_frontend_selected": 20,
+    "conversation_style_backend_selected": 327,
+    "conversation_style_frontend_selected": 40
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -92,5 +94,28 @@
   },
   "requested_followups": [
     "Own Facebook reply edited and restored in production, two exact Meta readbacks confirmed; two history entries survive reload. Final backend f80dd89 healthy. Instagram comment text and sent DM editing not documented by the official APIs inspected."
-  ]
+  ],
+  "conversation_style": {
+    "status": "implementation_validated_deploy_pending",
+    "advisor_name": "Juan by default; editable and inherited",
+    "identity": "presentation name, transparent AI if asked; no false human identity",
+    "general_prompt": "reviewed CBN institutional sources",
+    "delivery": {
+      "wait_seconds": 3,
+      "typing_ms": 1500,
+      "gap_ms": 3000,
+      "target_chars": 350,
+      "maximum_parts": 6,
+      "drops_tail": false,
+      "voice_split": false
+    },
+    "group_guards": [
+      "same source and control epoch",
+      "previous acceptance and actual gap",
+      "same account/model/context",
+      "no automatic replay of uncertain POST"
+    ],
+    "financial_information": "awaiting_owner_document_before_pilot_acceptance",
+    "runbook": "docs/adaptation/P13_CONVERSATION_STYLE.md"
+  }
 }

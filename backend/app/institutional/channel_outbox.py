@@ -614,7 +614,7 @@ class Dispatcher:
                 discarded = (
                     origin == "gemini_whatsapp" and (
                         str(error.detail).startswith(("gemini_whatsapp_", "agents_"))
-                        or error.detail == "messaging_response_window_closed"
+                        or error.detail in {"messaging_response_window_closed", "gemini_reply_context_changed"}
                     ) or origin == "gemini_comment" and str(error.detail).startswith("comment_auto_")
                 )
                 if discarded:
@@ -638,7 +638,7 @@ class Dispatcher:
                         "ND QueueId=?"
                     ),
                     str(error.detail)[:64],
-                    900 if error.detail == "queued_actor_authority_revoked" else 30,
+                    1 if error.detail == "reply_group_waiting_previous" else 900 if error.detail == "queued_actor_authority_revoked" else 30,
                     inst,
                     job["QueueId"],
                 )
@@ -695,6 +695,9 @@ class Dispatcher:
                         media["public_url"] = delivery_url(
                             c, self.settings, job, payload["mediaId"]
                         )
+            if payload.get("origin") == "gemini_whatsapp" and payload.get("showTyping"):
+                from app.institutional.reply_delivery import typing
+                typing(adapter, payload["target"], payload.get("typingMessageId"), before=lambda: self.frontier(job["QueueId"], lease))
             external = (
                 self.transport(
                     adapter,
@@ -849,6 +852,9 @@ class Dispatcher:
             if state in {"accepted", "failed", "uncertain"}:
                 from app.institutional.email_notifications import observe_service
                 observe_service(c, self.settings, "channel-send:" + str(job["IntegrationId"]), failed=state != "accepted", module="channels", account=str(job["IntegrationId"]))
+        if state == "accepted":
+            from app.institutional.reply_delivery import next_typing
+            next_typing(self.settings, job, payload)
         return True
 
 

@@ -26,7 +26,7 @@ from app.modules.ai.domain.models import AiSettings
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 SYSTEM = (
-    f"Eres el asistente virtual de {PRODUCT_NAME}. Redacta "
+    f"Eres el agente de atención de {PRODUCT_NAME}. Redacta "
     "sólo un borrador breve en español para un come"
     "ntario público de una institución educativa. N"
     "o tomes decisiones de matrícula o pagos ni inv"

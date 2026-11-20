@@ -5,6 +5,8 @@ import "./sales.css";
 import { OperationDialog } from "./ErrorFeedback";
 
 type Plan = {
+  mode?: "style";
+  global_system_prompt?: string;
   guide_name: string;
   guide_id: string;
   digest: string;
@@ -12,7 +14,8 @@ type Plan = {
   model: string;
   guide_changes: string[];
   items: {
-    program_id: number;
+    program_id: number | null;
+    agent_id?: string;
     name: string;
     school: string;
     schedule: string;
@@ -122,10 +125,29 @@ export function ProgramSalesSetup({
       >
         Preparar especialistas de todos los programas
       </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={blocked || !guide}
+        onClick={() =>
+          void act(async () => {
+            setPlan(
+              await api<Plan>(
+                "/sales/style-preview?guide_id=" + encodeURIComponent(guide),
+              ),
+            );
+            setConfirmed(false);
+          })
+        }
+      >
+        Revisar actualización de prompts y tono CBN
+      </Button>
       {plan && (
         <section aria-label="Revisión de especialistas">
           <h3>
-            {plan.items.length} programas · {plan.provider} / {plan.model}
+            {plan.items.length}{" "}
+            {plan.mode === "style" ? "perfiles" : "programas"} · {plan.provider}{" "}
+            / {plan.model}
           </h3>
           <p>
             El orientador incorporará: {plan.guide_changes.join(", ")}. Cada
@@ -148,7 +170,7 @@ export function ProgramSalesSetup({
             {plan.items
               .filter((v) => !school || v.school === school)
               .map((item) => (
-                <article key={item.program_id}>
+                <article key={item.agent_id || item.program_id || item.name}>
                   <div>
                     <strong>{item.name}</strong>
                     <small>
@@ -156,16 +178,20 @@ export function ProgramSalesSetup({
                     </small>
                   </div>
                   <span>
-                    {item.action === "create"
-                      ? "Crear especialista"
-                      : "Conservar agente existente"}
+                    {item.action === "update"
+                      ? "Actualizar prompt generado"
+                      : item.action === "create"
+                        ? "Crear especialista"
+                        : "Conservar agente existente"}
                   </span>
-                  <p>
-                    {item.price_pending ? "Precio por confirmar. " : ""}
-                    {item.missing.length
-                      ? `Pendientes de ficha: ${item.missing.join(", ")}.`
-                      : "Contenido académico disponible."}
-                  </p>
+                  {plan.mode !== "style" && (
+                    <p>
+                      {item.price_pending ? "Precio por confirmar. " : ""}
+                      {item.missing.length
+                        ? `Pendientes de ficha: ${item.missing.join(", ")}.`
+                        : "Contenido académico disponible."}
+                    </p>
+                  )}
                   <details>
                     <summary>Ver system prompt del especialista</summary>
                     <p>{item.system_prompt}</p>
@@ -180,8 +206,9 @@ export function ProgramSalesSetup({
               disabled={blocked}
               onChange={(event) => setConfirmed(event.target.checked)}
             />
-            Revisé la creación de especialistas, las 20 skills y la
-            actualización comercial automática del orientador
+            {plan.mode === "style"
+              ? "Revisé los prompts. Se conservarán modelos, voces, presupuestos y permisos; los especialistas personalizados se mantienen."
+              : "Revisé la creación de especialistas, las 20 skills y la actualización comercial automática del orientador"}
           </label>
           <Button
             type="button"
@@ -191,14 +218,21 @@ export function ProgramSalesSetup({
                 const result = await api<{
                   created: number;
                   preserved: number;
-                }>("/sales/provision", "POST", {
-                  operation_id: crypto.randomUUID(),
-                  guide_id: plan.guide_id,
-                  preview_digest: plan.digest,
-                  confirmed: true,
-                });
+                  updated?: number;
+                }>(
+                  plan.mode === "style" ? "/sales/style" : "/sales/provision",
+                  "POST",
+                  {
+                    operation_id: crypto.randomUUID(),
+                    guide_id: plan.guide_id,
+                    preview_digest: plan.digest,
+                    confirmed: true,
+                  },
+                );
                 setFeedback(
-                  `${result.created} especialistas creados; ${result.preserved} existentes conservados. Puedes ajustar el prompt y la voz en cada agente.`,
+                  plan.mode === "style"
+                    ? `${result.updated} prompts actualizados; ${result.preserved} conservados. Revisa también el prompt general y la cadencia en Ajustes → Inteligencia artificial.`
+                    : `${result.created} especialistas creados; ${result.preserved} existentes conservados. Puedes ajustar el prompt y la voz en cada agente.`,
                 );
                 setPlan(null);
                 setConfirmed(false);
@@ -206,7 +240,9 @@ export function ProgramSalesSetup({
               })
             }
           >
-            Crear especialistas revisados
+            {plan.mode === "style"
+              ? "Actualizar prompts revisados"
+              : "Crear especialistas revisados"}
           </Button>
         </section>
       )}

@@ -8,6 +8,9 @@ from app.institutional.db import rows
 from app.institutional.knowledge import effective, search
 from app.institutional.settings import setting
 from app.modules.agents.domain import digest
+from app.modules.agents.conversation_style import instructions as style_instructions
+from app.institutional.cbn_profile import FACTS, REVIEWED
+from app.institutional.reply_delivery import pending_bot_history
 
 RULES = (
     "Responde de forma personalizada a la consulta usando exclusivamente los hechos "
@@ -70,7 +73,7 @@ def context(
             reversed(
                 rows(
                     c,
-                    "SELECT TOP(12) Direction,Body FROM crm.Message WHERE ConversationId=? "
+                    "SELECT TOP(12) m.Direction,m.Body FROM crm.Message m WHERE m.ConversationId=? AND " + pending_bot_history() + " "
                     + ("AND Sequence<=? " if sequence is not None else "")
                     + "ORDER BY Sequence DESC",
                     conversation,
@@ -155,6 +158,7 @@ def context(
         if structured
         else "Devuelve sólo el texto del borrador para revisión humana, sin JSON."
     )
+    system += style_instructions(config)
     if public:
         system += PUBLICATION_RULES
     system += (
@@ -164,6 +168,7 @@ def context(
     payload = {
         "consulta": redact(question[:2000]),
         "catalogo": material,
+        "institucion_revisada": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
         "fuentes_revisadas": documents,
         "memoria_institucional": shared,
         "historial": history,

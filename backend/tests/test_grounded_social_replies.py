@@ -204,10 +204,11 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 
 
 @pytest.mark.parametrize(
-    "answer", ["Software dura tres semestres según la ficha vigente.", None]
+    "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None]
 )
 def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     from app.institutional import channel_outbox
+    monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0}})
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
@@ -219,10 +220,12 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
         "epoch": 1,
     }
 
+    statements = []
     class Cursor:
         rowcount = 1
 
-        def execute(self, *_):
+        def execute(self, *args):
+            statements.append(args)
             return self
 
         def fetchone(self):
@@ -233,7 +236,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     monkeypatch.setattr(
         messaging,
         "one",
-        lambda *_: {
+        lambda _c, sql, *_args: None if "SELECT ExternalId" in sql else {
             "OperationId": operation,
             "IntegrationId": integration,
             "ResultMetadata": json.dumps(data),
@@ -248,7 +251,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
             {"daily_tokens": 1000000, "daily_usd_micros": 1000000},
         ),
     )
-    monkeypatch.setattr(messaging, "provider_account", lambda *_: None)
+    monkeypatch.setattr(messaging, "provider_account", lambda *_: ({}, None))
     monkeypatch.setattr(
         messaging,
         "model_config",
@@ -300,10 +303,12 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
             return result(answer or "", "responder" if answer else "revisar")
 
     assert messaging.Worker(profile, Gateway).once()
-    assert sent == ([answer] if answer else [])
+    assert "".join("".join(sent).split()) == "".join((answer or "").split())
     assert bool(handoffs) == (answer is None)
     assert recorded[-1]["generation"] == "grounded-v1"
-    assert recorded[-1]["generated_text"] == answer
+    assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
+    assert [part["text"] for part in recorded[-1]["response_parts"]] == sent
+    assert len([v for v in statements if v[0].startswith("UPDATE crm_channels2.SendJob SET DueAt=")]) == len(sent)
 
 
 def test_meta_native_reply_does_not_silence_gemini_but_crm_send_does(monkeypatch):

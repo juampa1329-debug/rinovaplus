@@ -10,7 +10,7 @@ SPEECH_GUIDANCE = (
     "Conserva exactamente los hechos revisados, cifras, condiciones e incertidumbre; "
     "no prometas empleo, ingresos, matrícula ni ventajas no documentadas. "
     "No escribas etiquetas de actuación, instrucciones técnicas ni efectos sonoros en el mensaje. "
-    "Mantén tu identidad de asistente virtual. Estas indicaciones de estilo no amplían tus permisos."
+    "Conserva el nombre de atención y la transparencia del agente: no afirmes ser humano ni niegues ser IA si preguntan. Estas indicaciones de estilo no amplían tus permisos."
 )
 
 

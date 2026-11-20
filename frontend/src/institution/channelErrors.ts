@@ -2,6 +2,36 @@ import type { ErrorGuidance, OperationFailure } from "./ErrorFeedback";
 
 const cases = new Map<string, ErrorGuidance>([
   [
+    "gemini_whatsapp_previous_part_not_sent",
+    {
+      title: "La respuesta por partes se detuvo",
+      detail:
+        "Una parte anterior falló o quedó sin confirmación. Detuvimos las siguientes para evitar un mensaje incompleto o fuera de orden.",
+      nextStep:
+        "Revisa qué partes llegaron en el chat y el motivo del envío anterior. Un resultado incierto no se repite automáticamente; puedes continuar en Humano con el contexto conservado.",
+    },
+  ],
+  [
+    "gemini_whatsapp_segment_too_long",
+    {
+      title: "La respuesta necesita revisión",
+      detail:
+        "Una idea completa supera el tamaño permitido por este canal. No cortamos sus palabras ni enviamos sólo una parte.",
+      nextStep:
+        "Prepara una explicación más breve o revisa el borrador antes de enviarlo. El texto y la consulta originales se conservan.",
+    },
+  ],
+  [
+    "reply_group_waiting_previous",
+    {
+      title: "Esperando la parte anterior",
+      detail:
+        "La siguiente parte se enviará cuando Meta confirme la anterior y termine la pausa configurada.",
+      nextStep:
+        "No hace falta pulsar Enviar otra vez. Si una parte falla o cambias a Humano, se detienen las partes pendientes.",
+    },
+  ],
+  [
     "comment_edit_source_changed",
     {
       title: "El comentario cambió en Facebook",

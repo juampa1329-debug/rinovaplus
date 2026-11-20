@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAdsResource } from "./adsResource";
 import { Badge, Button, Field, Notice, SelectField } from "../shared/ui";
 import { TypedFields } from "./Fields";
+import { CBNConversationPreset } from "./CBNConversationPreset";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -118,6 +119,12 @@ function SettingEditor({
               : "Los borradores de comentarios requieren un modelo, credencial y presupuesto válidos. Su envío necesita revisión humana."
             : "La ejecución de proveedores se habilitará con la integración de canales y agentes."}
         </Notice>
+      )}
+      {section === "ai" && liveModels && (
+        <CBNConversationPreset
+          disabled={!writable || task.busy}
+          apply={(value) => setDraft({ ...draft, ...value })}
+        />
       )}
       {section === "ai" && liveModels && (
         <section className="panel">

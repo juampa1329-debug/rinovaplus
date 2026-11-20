@@ -344,7 +344,7 @@ def send(account, payload, media=None, before_send=None):
         return send_broadcast(account, payload, before_send=before_send)
     if media:
         return send_media(account, payload, media, before_send)
-    if (payload.get("origin") == "bot" or "controlEpoch" in payload) and before_send:
+    if (payload.get("origin") in {"bot", "gemini_whatsapp"} or "controlEpoch" in payload) and before_send:
         before_send()
     channel = account["channel"]
     config = account["configuration"]

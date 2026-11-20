@@ -652,6 +652,9 @@ def policy_for(selection):
         instructions += "\nPrioriza próximos pasos, sin afirmar seguimientos enviados o acciones no ejecutadas."
     elif config.get("route") == "institutional":
         instructions += "\nPrioriza orientación general y comparación de oferta, sin elegir programa por el aspirante."
+    if config.get("sales_skill_ids"):
+        from app.modules.agents.conversation_style import instructions as conversation_style
+        instructions += conversation_style(config)
     return AgentPolicy(
         primary_model=config["primary_model"],
         fallback_model=config["fallback_model"],

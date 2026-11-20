@@ -15,14 +15,14 @@ from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.institutional import grounded_replies, voice_audio
+from app.institutional import grounded_replies, voice_audio, reply_delivery
 from app.modules.agents.service import resolve_conversation
 from app.modules.ai.infrastructure.providers import AiError
 
 ACTION = "whatsapp_gemini_intro"
 ACTOR = "system:gemini-whatsapp"
 ORIGIN = "gemini_whatsapp"
-GREETING = "Hola, soy el asistente virtual de admisiones. "
+GREETING = "Hola, soy Juan, de atención CBN. "
 REPLIES = {
     "programas": GREETING + "¿Qué programa te interesa? Así podemos orientarte.",
     "requisitos": GREETING + "¿De qué programa quieres conocer los requisitos?",
@@ -102,7 +102,8 @@ def schedule(c, settings, item, linked, message):
     if c.execute(
         "SELECT 1 FROM crm_channels2.ProviderOperation WITH(UPDLOCK,HOLDLOCK) "
         "WHERE InstitutionId=? AND OperationId=?",
-        inst, message,
+        inst,
+        message,
     ).fetchone():
         return
     data = {
@@ -155,6 +156,9 @@ def source(c, settings, integration, data):
     ) or item["ApplicationState"] == "retired":
         raise HTTPException(409, "account_paused_or_unverified")
     reply = data.get("reply")
+    reply_ids = [part["id"] for part in data.get("response_parts", [])] or (
+        [reply] if reply else []
+    )
     context = one(
         c,
         "SELECT m.Body,m.Sequence,ctrl.Epoch FROM crm.Message m "
@@ -174,14 +178,18 @@ def source(c, settings, integration, data):
         "AND NOT EXISTS(SELECT 1 FROM crm.Message other "
         "WHERE other.ConversationId=v.ConversationId "
         "AND other.Sequence>m.Sequence"
-        + (" AND other.MessageId<>?" if reply else "")
+        + (
+            " AND other.MessageId NOT IN(" + ",".join("?" for _ in reply_ids) + ")"
+            if reply_ids
+            else ""
+        )
         + ")",
         institution(settings),
         integration,
         data["identity"],
         data["conversation"],
         data["incoming"],
-        *((reply,) if reply else ()),
+        *reply_ids,
     )
     if not context or context["Epoch"] != data.get("epoch", 0):
         raise HTTPException(409, "gemini_whatsapp_control_or_history_changed")
@@ -190,11 +198,14 @@ def source(c, settings, integration, data):
 
 def model_config(c, settings, data):
     from app.institutional.sales_context import configure as configure_sales
+
     configure_sales(c, settings)
     preferred = setting(c, settings, "ai")["document"]
     channel = data.get("channel", "whatsapp")
     selected = resolve_conversation(
-        c, data["conversation"], "facebook" if channel == "messenger" else channel,
+        c,
+        data["conversation"],
+        "facebook" if channel == "messenger" else channel,
     )
     config = selected["configuration"]
     if (
@@ -240,14 +251,30 @@ def dispatch_authorized(c, settings, job, payload):
     if not operation:
         raise HTTPException(409, "gemini_whatsapp_intent_required")
     data = json.loads(operation["ResultMetadata"])
+    part = reply_delivery.part_for(data, job["MessageId"])
     if (
-        data.get("reply") != uid(str(job["MessageId"]))
+        (not part and data.get("reply") != uid(str(job["MessageId"])))
         or data.get("identity") != uid(str(job["IdentityId"]))
-        or (data.get("generated_text") if data.get("generation") == "grounded-v1" else
-            (FOLLOWUPS if data.get("continued") else REPLIES).get(data.get("intent"))) != payload.get("body")
+        or (
+            part["text"]
+            if part
+            else data.get("generated_text")
+            if data.get("generation") == "grounded-v1"
+            else (FOLLOWUPS if data.get("continued") else REPLIES).get(
+                data.get("intent")
+            )
+        )
+        != payload.get("body")
+        or part
+        and (
+            payload.get("replyPartIndex") != part["index"]
+            or payload.get("typingMessageId") != data.get("external_incoming")
+        )
     ):
         raise HTTPException(409, "gemini_whatsapp_intent_mismatch")
     source(c, settings, job["IntegrationId"], data)
+    if part:
+        reply_delivery.require_previous(c, settings, job["IntegrationId"], data, part)
     try:
         _, _, binding = model_config(c, settings, data)
     except AiError as error:
@@ -256,36 +283,72 @@ def dispatch_authorized(c, settings, job, payload):
         raise HTTPException(409, "gemini_whatsapp_model_changed")
     if data.get("generation") == "grounded-v1":
         _, current, _ = source(c, settings, job["IntegrationId"], data)
-        if reply_context(c, settings, data, current)["fingerprint"] != data["contextBinding"]:
+        if (
+            reply_context(c, settings, data, current)["fingerprint"]
+            != data["contextBinding"]
+        ):
             raise HTTPException(409, "gemini_reply_context_changed")
     voice_audio.authorize_dispatch(c, settings, data, payload)
 
 
 def reply_context(c, settings, data, source_value):
     from app.institutional.sales_context import configure as configure_sales
+
     configure_sales(c, settings)
     channel = data.get("channel", "whatsapp")
-    selected = resolve_conversation(c, data["conversation"], "facebook" if channel == "messenger" else channel)
-    result = grounded_replies.context(c, settings, source_value["Body"], selection=selected,
-                                     conversation=data["conversation"], sequence=source_value["Sequence"])
+    selected = resolve_conversation(
+        c, data["conversation"], "facebook" if channel == "messenger" else channel
+    )
+    result = grounded_replies.context(
+        c,
+        settings,
+        source_value["Body"],
+        selection=selected,
+        conversation=data["conversation"],
+        sequence=source_value["Sequence"],
+    )
     material = json.loads(result["query"]).get("catalogo", {})
     selected_program = material.get("selected") if isinstance(material, dict) else None
-    result["voice_schools"] = [selected_program["school"]] if isinstance(selected_program, dict) and selected_program.get("school") else []
+    result["voice_schools"] = (
+        [selected_program["school"]]
+        if isinstance(selected_program, dict) and selected_program.get("school")
+        else []
+    )
     audio = voice_audio.input_audio(c, settings, data)
     if audio:
-        result["fingerprint"] = grounded_replies.digest([result["fingerprint"], voice_audio.audio_fingerprint(audio)])
+        result["fingerprint"] = grounded_replies.digest(
+            [result["fingerprint"], voice_audio.audio_fingerprint(audio)]
+        )
         result["input_audio"] = audio
     options = voice_audio.policy(c, settings)
-    result["voice_profile_id"] = selected.get("configuration", {}).get("voice_profile_id", "")
-    if options.enabled and options.allows(data["conversation"]) and channel == "whatsapp":
+    result["voice_profile_id"] = selected.get("configuration", {}).get(
+        "voice_profile_id", ""
+    )
+    if (
+        options.enabled
+        and options.allows(data["conversation"])
+        and channel == "whatsapp"
+    ):
         from app.institutional.voice_delivery import SPEECH_GUIDANCE
+
         state = voice_audio.usage(c, settings, data["conversation"])
-        profile = voice_audio.choose_profile(options, selected.get("agent_id"), result["voice_schools"], state["pinned"], result["voice_profile_id"])
+        profile = voice_audio.choose_profile(
+            options,
+            selected.get("agent_id"),
+            result["voice_schools"],
+            state["pinned"],
+            result["voice_profile_id"],
+        )
         if profile:
             result["system"] += "\n" + SPEECH_GUIDANCE
             if profile.speech_instructions:
-                result["system"] += "\nPreferencias de interpretación, subordinadas a las reglas anteriores: " + profile.speech_instructions
-            result["fingerprint"] = grounded_replies.digest([result["fingerprint"], result["system"], profile.model_dump()])
+                result["system"] += (
+                    "\nPreferencias de interpretación, subordinadas a las reglas anteriores: "
+                    + profile.speech_instructions
+                )
+            result["fingerprint"] = grounded_replies.digest(
+                [result["fingerprint"], result["system"], profile.model_dump()]
+            )
     return result
 
 
@@ -307,29 +370,52 @@ def finish(c, settings, operation, state, code, data, lease=None):
         *((lease,) if lease else ()),
     )
     changed = c.rowcount == 1
-    from app.institutional.email_notifications import enabled as email_enabled, observe_service
-    if changed and email_enabled(settings) and state in {"confirmed", "failed", "uncertain"}:
-        account_id = c.execute("SELECT IntegrationId FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=?", institution(settings), operation).fetchval()
+    from app.institutional.email_notifications import (
+        enabled as email_enabled,
+        observe_service,
+    )
+
+    if (
+        changed
+        and email_enabled(settings)
+        and state in {"confirmed", "failed", "uncertain"}
+    ):
+        account_id = c.execute(
+            "SELECT IntegrationId FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=?",
+            institution(settings),
+            operation,
+        ).fetchval()
         scope = "automatic-model:" + str(account_id)
-        observe_service(c, settings, scope, failed=state != "confirmed", module="ai", channel=data.get("channel", ""), account=str(account_id))
+        observe_service(
+            c,
+            settings,
+            scope,
+            failed=state != "confirmed",
+            module="ai",
+            channel=data.get("channel", ""),
+            account=str(account_id),
+        )
     return changed
 
 
 class Worker:
-    def __init__(self, settings, gateway_factory=DraftGateway):
+    def __init__(self, settings, gateway_factory=DraftGateway, typing_transport=None):
         self.settings, self.gateway_factory = settings, gateway_factory
+        self.typing_transport = typing_transport or reply_delivery.typing
 
     def once(self):
         settings, lease = self.settings, str(uuid4())
         with transaction(settings, True, anonymous=True) as c:
+            delivery_options = setting(c, settings, "ai")["document"]
             row = one(
                 c,
                 "SELECT TOP(1) OperationId,IntegrationId,ResultMetadata "
                 "FROM crm_channels2.ProviderOperation WHERE InstitutionId=? "
-                "AND Action=? AND Status='pending' "
+                "AND Action=? AND Status='pending' AND CreatedAt<=DATEADD(second,?,SYSUTCDATETIME()) "
                 "ORDER BY CreatedAt,OperationId",
                 institution(settings),
                 ACTION,
+                -delivery_options.get("wait_seconds", 3),
             )
             if not row:
                 return False
@@ -338,7 +424,24 @@ class Worker:
             c.execute("SAVE TRANSACTION whatsapp_gemini")
             try:
                 item, context, budget = source(c, settings, integration, data)
-                provider_account(c, settings, item)
+                typing_adapter, _ = provider_account(c, settings, item)
+                incoming_external = one(
+                    c,
+                    "SELECT ExternalId FROM crm_channels2.ExternalMessage WHERE InstitutionId=? AND IntegrationId=? AND MessageId=?",
+                    institution(settings),
+                    integration,
+                    data["incoming"],
+                )
+                recipient = one(
+                    c,
+                    "SELECT ExternalId FROM crm_channels2.ExternalIdentity WHERE InstitutionId=? AND IntegrationId=? AND IdentityId=?",
+                    institution(settings),
+                    integration,
+                    data["identity"],
+                )
+                data["external_incoming"] = (
+                    incoming_external["ExternalId"] if incoming_external else None
+                )
                 config, secret, binding = model_config(c, settings, data)
                 grounded = reply_context(c, settings, data, context)
                 secret_value = unseal(
@@ -354,9 +457,13 @@ class Worker:
                     secret["Nonce"],
                     secret["Ciphertext"],
                 )
-                input_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
+                input_tokens = (
+                    len((grounded["system"] + grounded["query"]).encode()) + 512
+                )
                 if grounded.get("input_audio"):
-                    input_tokens += 10_240  # Conservative reserve for the inspected <=300s asset.
+                    input_tokens += (
+                        10_240  # Conservative reserve for the inspected <=300s asset.
+                    )
                 output_tokens = min(2000, config["max_tokens"])
                 cost_micros = max(
                     1,
@@ -381,7 +488,10 @@ class Worker:
                 )
             except (HTTPException, AiError) as error:
                 c.execute("ROLLBACK TRANSACTION whatsapp_gemini")
-                if isinstance(error, HTTPException) and error.detail == "voice_input_pending":
+                if (
+                    isinstance(error, HTTPException)
+                    and error.detail == "voice_input_pending"
+                ):
                     return False  # Wait for the existing media downloader, without claiming/generating.
                 finish(
                     c,
@@ -421,20 +531,42 @@ class Worker:
                 _, latest_context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
                     raise HTTPException(409, "gemini_whatsapp_model_changed")
-                if reply_context(c, settings, data, latest_context)["fingerprint"] != grounded["fingerprint"]:
+                if (
+                    reply_context(c, settings, data, latest_context)["fingerprint"]
+                    != grounded["fingerprint"]
+                ):
                     raise HTTPException(409, "gemini_reply_context_changed")
 
         try:
+            if recipient and data.get("external_incoming"):
+                data["typing_status"] = self.typing_transport(
+                    typing_adapter,
+                    recipient["ExternalId"],
+                    data["external_incoming"],
+                    before=before_attempt,
+                    enabled=delivery_options.get("show_typing", True),
+                )
             result = asyncio.run(
                 self.gateway_factory({"gemini": secret_value}).gemini_generation(
                     binding["model"],
-                    voice_audio.request_with_audio(grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)), grounded.get("input_audio")),
+                    voice_audio.request_with_audio(
+                        grounded_replies.request_body(
+                            grounded, output_tokens, config.get("temperature", 0.3)
+                        ),
+                        grounded.get("input_audio"),
+                    ),
                     before_attempt=before_attempt,
                 )
             )
             generated = grounded_replies.parse(result)
             # Optional observations never become instructions or arbitrary field writes.
-            raw = json.loads("".join(part.get("text", "") for part in result["candidates"][0]["content"]["parts"] if not part.get("thought")))
+            raw = json.loads(
+                "".join(
+                    part.get("text", "")
+                    for part in result["candidates"][0]["content"]["parts"]
+                    if not part.get("thought")
+                )
+            )
             observations = raw.get("crm_observations", [])
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
@@ -445,11 +577,30 @@ class Worker:
         except Exception:
             state, code = "uncertain", "gemini_whatsapp_result_unknown"
         audio, voice_reason = None, None
+        parts = []
         if state == "confirmed" and generated:
             # The grounded text is the sole speech source; no second model invents facts.
             schools = grounded.get("voice_schools", [])
-            audio, voice_reason = voice_audio.generate(settings, item, data, generated, binding.get("agent"), schools, before_attempt,
-                incoming_voice=bool(grounded.get("input_audio", {}).get("voice")), selected_profile=grounded.get("voice_profile_id", ""))
+            audio, voice_reason = voice_audio.generate(
+                settings,
+                item,
+                data,
+                generated,
+                binding.get("agent"),
+                schools,
+                before_attempt,
+                incoming_voice=bool(grounded.get("input_audio", {}).get("voice")),
+                selected_profile=grounded.get("voice_profile_id", ""),
+            )
+            try:
+                parts = reply_delivery.plan(
+                    generated,
+                    delivery_options,
+                    data.get("channel", "whatsapp"),
+                    audio=bool(audio),
+                )
+            except HTTPException as error:
+                state, code = "failed", error.detail
         with transaction(settings, True, anonymous=True) as c:
             if state != "confirmed":
                 finish(c, settings, operation, state, code, data, lease)
@@ -458,7 +609,10 @@ class Worker:
                 item, context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
                     raise HTTPException(409, "gemini_whatsapp_model_changed")
-                if reply_context(c, settings, data, context)["fingerprint"] != grounded["fingerprint"]:
+                if (
+                    reply_context(c, settings, data, context)["fingerprint"]
+                    != grounded["fingerprint"]
+                ):
                     raise HTTPException(409, "gemini_reply_context_changed")
             except (HTTPException, AiError) as error:
                 finish(
@@ -471,17 +625,25 @@ class Worker:
                     lease,
                 )
                 return True
-            reply = str(uuid4()) if generated else None
+            reply = parts[0]["id"] if parts else None
             if not finish(
                 c,
                 settings,
                 operation,
                 "confirmed",
                 "gemini_handoff" if not reply else None,
-                {**data, "reply": reply, "generation": "grounded-v1", "generated_text": generated,
-                 "modelBinding": binding, "contextBinding": grounded["fingerprint"],
-                 "voiceMedia": audio["media_id"] if audio else None,
-                 "voiceOperation": audio["operation"] if audio else None, "voiceReason": voice_reason},
+                {
+                    **data,
+                    "reply": reply,
+                    "response_parts": parts,
+                    "generation": "grounded-v1",
+                    "generated_text": generated,
+                    "modelBinding": binding,
+                    "contextBinding": grounded["fingerprint"],
+                    "voiceMedia": audio["media_id"] if audio else None,
+                    "voiceOperation": audio["operation"] if audio else None,
+                    "voiceReason": voice_reason,
+                },
                 lease,
             ):
                 return True
@@ -497,41 +659,55 @@ class Worker:
             else:
                 from app.institutional.channel_outbox import enqueue
 
-                body = generated
-                c.execute(
-                    "INSERT crm.Message(MessageId,ConversationId,Body,Direction) "
-                    "VALUES(?,?,?,'outgoing')",
-                    reply,
-                    data["conversation"],
-                    body,
-                )
-                media_id = voice_audio.attach(c, settings, item, data, reply, audio) if audio else None
-                queue = enqueue(
-                    c,
-                    settings,
-                    item,
-                    None,
-                    reply,
-                    {
-                        "origin": ORIGIN,
-                        "automationId": uid(str(operation)),
-                        "body": body,
-                        **({"mediaId": media_id} if media_id else {}),
-                    },
-                    identity=data["identity"],
-                    message=reply,
-                )
-                c.execute(
-                    "INSERT crm_channels2.MessageRoute(InstitutionId,MessageId,"
-                    "IntegrationId,IdentityId,QueueId,ActorKind,ControlEpoch) "
-                    "VALUES(?,?,?,?,?,'bot',?)",
-                    institution(settings),
-                    reply,
-                    integration,
-                    data["identity"],
-                    queue,
-                    context["Epoch"],
-                )
+                for part in parts:
+                    reply_id, body = part["id"], part["text"]
+                    c.execute(
+                        "INSERT crm.Message(MessageId,ConversationId,Body,Direction) "
+                        "VALUES(?,?,?,'outgoing')",
+                        reply_id,
+                        data["conversation"],
+                        body,
+                    )
+                    media_id = (
+                        voice_audio.attach(c, settings, item, data, reply_id, audio)
+                        if audio
+                        else None
+                    )
+                    queue = enqueue(
+                        c,
+                        settings,
+                        item,
+                        None,
+                        reply_id,
+                        {
+                            "origin": ORIGIN,
+                            "automationId": uid(str(operation)),
+                            "body": body,
+                            "replyPartIndex": part["index"],
+                            "typingMessageId": data.get("external_incoming"),
+                            "showTyping": part["typing"],
+                            **({"mediaId": media_id} if media_id else {}),
+                        },
+                        identity=data["identity"],
+                        message=reply_id,
+                    )
+                    c.execute(
+                        "UPDATE crm_channels2.SendJob SET DueAt=DATEADD(millisecond,?,SYSUTCDATETIME()) WHERE InstitutionId=? AND QueueId=? AND State='queued'",
+                        part["delay_ms"],
+                        institution(settings),
+                        queue,
+                    )
+                    c.execute(
+                        "INSERT crm_channels2.MessageRoute(InstitutionId,MessageId,"
+                        "IntegrationId,IdentityId,QueueId,ActorKind,ControlEpoch) "
+                        "VALUES(?,?,?,?,?,'bot',?)",
+                        institution(settings),
+                        reply_id,
+                        integration,
+                        data["identity"],
+                        queue,
+                        context["Epoch"],
+                    )
                 c.execute(
                     "UPDATE crm.Conversation SET UpdatedAt=SYSUTCDATETIME() "
                     "WHERE ConversationId=?",
@@ -541,7 +717,18 @@ class Worker:
                 "UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1"
             )
             from app.institutional.sales_memory import record as record_sales_memory
-            selected = resolve_conversation(c, data["conversation"], "facebook" if data.get("channel") == "messenger" else data.get("channel", "whatsapp")) if reply and config.get("sales_memory_enabled") else None
+
+            selected = (
+                resolve_conversation(
+                    c,
+                    data["conversation"],
+                    "facebook"
+                    if data.get("channel") == "messenger"
+                    else data.get("channel", "whatsapp"),
+                )
+                if reply and config.get("sales_memory_enabled")
+                else None
+            )
             if selected:
                 record_sales_memory(c, settings, data, selected, observations, reply)
         return True

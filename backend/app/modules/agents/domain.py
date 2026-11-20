@@ -102,6 +102,7 @@ class Configuration(StrictModel):
     allow_safe_actions: bool = False
     allow_crm_update: bool = False
     instructions: str = ""
+    advisor_name: str = Field(default="", max_length=50, pattern=r"^[^\x00-\x1f\x7f]*$")
     objectives: list[str] = Field(default_factory=list)
     rules: list[str] = Field(default_factory=list)
     tone: str = ""
@@ -119,6 +120,14 @@ class Configuration(StrictModel):
     max_tokens: int = Field(default=700, ge=128, le=2000)
     monthly_token_limit: int = Field(default=0, ge=0, le=100000000)
     allow_reply: bool = False
+
+    @field_validator("advisor_name")
+    @classmethod
+    def valid_advisor_name(cls, value):
+        value = value.strip()
+        if value and (not any(ch.isalpha() for ch in value) or any(not (ch.isalpha() or ch in " .'-’") for ch in value)):
+            raise ValueError("Invalid presentation name")
+        return value
 
     @model_validator(mode="after")
     def available(self):
@@ -334,7 +343,7 @@ def effective_configuration(chain, *, validate_variables=True):
         current["instructions"] = (
             render_instructions(agent, current, validate_variables)
             if current["customized"]
-            else "Identifícate como asistente virtual de admisiones. Usa sólo las fuentes vigentes y deriva dudas sin evidencia o solicitudes humanas al asesor."
+            else "Usa el nombre de atención configurado sin repetir presentaciones. Si preguntan si eres IA, responde con transparencia. Usa sólo las fuentes vigentes y deriva dudas sin evidencia o solicitudes humanas al equipo."
         )
         if result is not None:
             if (
@@ -360,6 +369,7 @@ def effective_configuration(chain, *, validate_variables=True):
             current["instructions"] = (
                 result["instructions"] + "\n" + current["instructions"]
             )
+            current["advisor_name"] = current["advisor_name"] or result["advisor_name"]
             current["sales_memory_enabled"] = current["sales_memory_enabled"] and result["sales_memory_enabled"]
             current["auto_sales_crm"] = current["auto_sales_crm"] and result["auto_sales_crm"]
             current["rules"] = [*result["rules"], *current["rules"]]

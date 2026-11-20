@@ -11,6 +11,7 @@ __pycache__/
 .local/
 .uv-cache/
 .npm-cache/
+.firecrawl/
 .atl/
 
 # Local environment files, backups and compiler metadata
