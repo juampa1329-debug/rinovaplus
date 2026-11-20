@@ -545,10 +545,8 @@ async function request<T>(
   if (!response.ok) {
     // Log only bounded machine codes/status, never payloads, credentials or CRM text.
     const code = result?.code ?? result?.detail;
-    console.warn("RinovaPlus: fallo en Agentes " + JSON.stringify({
-      status: response.status,
-      code: typeof code === "string" && /^[a-z][a-z0-9_]{0,99}$/.test(code) ? code : "unclassified",
-    }));
+    const safeReason = typeof code === "string" && /^[a-z][a-z0-9_]{0,99}$/.test(code) ? code : "unclassified";
+    console.warn(`RinovaPlus: Agentes HTTP ${response.status}; motivo ${safeReason}`);
     const failure = new Error(
       response.status === 422 && result?.code === "invalid_request"
         ? validationMessage(result.fields)
