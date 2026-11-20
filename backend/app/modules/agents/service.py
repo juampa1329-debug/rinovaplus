@@ -1537,10 +1537,11 @@ class AgentsService:
             from app.modules.agents.skill_policy import for_turn
             if hasattr(cursor, "__dict__"):
                 cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
+            source_question = request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
+                if getattr(cursor, "agent_catalog", None) else "")
             institutional, sources = public_sources(
                 cursor,
-                request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
-                    if getattr(cursor, "agent_catalog", None) else ""),
+                source_question,
                 request.program_id,
                 identifier(request.stage_id),
                 selection["configuration"],
@@ -1648,7 +1649,7 @@ class AgentsService:
                     cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
                 sql, new_sources = public_sources(
                     cursor,
-                    request.question,
+                    source_question,
                     request.program_id,
                     identifier(request.stage_id),
                     fresh["configuration"],

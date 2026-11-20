@@ -1,3 +1,7 @@
+## P22: historial ligado a la misma consulta de fuentes — 2026-11-20
+
+Antes de consumir se corrigio la guarda del simulador: preparacion incluia historial y validacion posterior usaba solo la ultima pregunta. Ambas usan ahora la misma consulta ligada; cambio real de fuente sigue invalidando. Prueba integral con proveedor simulado y51regresiones pasan. P22 sigue en comparacion pendiente, presupuestoUSD5 autorizado; no se cuentan metadatos sin consumo como calidad de candidato.
+
 ## P22: preflight amplio sin truncar skills — 2026-11-20
 
 Primer contexto sin consumo fue rechazado por40000caracteres (system29841/evidence11173,2fuentes); no fallo de modelo ni POST pagado. Simulador nativo institucional admite ahora60000caracteres explicitos, preserva fuentes/skills completas y valida antes deIO bytes conservadores+salida contra context_length autenticado de OpenRouter; otros recorridos conservan40000.112backend adicionales/Ruff pasan. Trial_bounds expone tarifas/max_tokens/contexto para controlarUSD5 total. Publicacion/compatibilidad/pruebas reales pendientes; P22 no aceptada. No se borran hechos ni se atribuye una prueba bloqueada a los modelos.

@@ -387,6 +387,41 @@ def test_simulation_pins_draft_and_version_without_network_or_mutation(
         )
 
 
+def test_simulation_history_uses_identical_source_query_before_and_after_generation(monkeypatch, hierarchy):
+    from app.modules.agents import runtime
+    agents, stages = hierarchy
+    guide = agents["guide"]
+    key = str(uuid4())
+    guide.update(id=key)
+    cursor = Cursor()
+    cursor.agent_catalog = object()
+    queries = []
+    monkeypatch.setattr(service, "load", lambda _: ({key: guide}, stages))
+    monkeypatch.setattr(service, "check_program", lambda *_: None)
+    monkeypatch.setattr(runtime, "experiment", lambda c, selection, *args, **kwargs: selection)
+    monkeypatch.setattr(runtime, "scoped_memory", lambda *_: {})
+    def sources(c, question, *args):
+        queries.append(question)
+        return {"fingerprint": digest(question)}, []
+    monkeypatch.setattr(service, "public_sources", sources)
+    async def generate(ai, selection, policy, messages, guard, **kwargs):
+        guard()
+        return {"content": '{"answer":"Orientación de prueba","handoff":true,"references":[],"memory":[]}',
+                "model": "fixture", "usage": {"prompt_tokens": 10, "completion_tokens": 2}, "provider": "openrouter"}
+    monkeypatch.setattr(service, "complete", generate)
+    ai = SimpleNamespace(refresh_credentials=lambda: None, outbound=True,
+        gateway=SimpleNamespace(keys={"openrouter": "fixture", "gemini": "fixture"}),
+        repository=SimpleNamespace(read=lambda: SimpleNamespace(revision=1, settings=SimpleNamespace(enabled=True))),
+        credentials=SimpleNamespace(read=lambda: SimpleNamespace(revision=1, outbound=True)))
+    target = SimpleNamespace(transaction=lambda write=False: transaction(cursor), ai=ai, reserve=lambda *_: None, settle=lambda *_: None)
+    request = SimulationRequest(agent_id=UUID(key), config_version=1, question="Ahora Software", request_id=uuid4(),
+        history=[{"role": "user", "content": "Soy Alex y me interesa Barismo"}], call_provider=True, acknowledge_consumption=True)
+    result = asyncio.run(service.AgentsService.simulate(target, request))
+    assert result["network_called"] and not result["crm_written"] and not result["delivered"]
+    assert len(queries) >= 2 and len(set(queries)) == 1
+    assert "Ahora Software" in queries[0] and "Soy Alex y me interesa Barismo" in queries[0]
+
+
 def test_source_date_and_assignment_unknown_modes_are_rejected():
     with pytest.raises(ValueError):
         SourceWrite(
