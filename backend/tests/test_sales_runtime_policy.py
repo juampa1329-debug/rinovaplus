@@ -78,6 +78,23 @@ def test_all_seven_persuasion_principles_are_available_with_real_evidence_gates(
     assert turn_plan("Quiero trabajar en el extranjero", public=True)["cross_sell_english"] is False
 
 
+@pytest.mark.parametrize("question", ["Barismo me parece caro para emprender", "Voy a mirar otras opciones de Barismo"])
+def test_objection_comparison_focus_preserves_value_and_complete_financing(question):
+    commercial = {"presentation": "Practical training", "career_outcomes": "Entrepreneurship",
+                  "syllabus": "Long academic brochure", "requirements": "Full document checklist",
+                  "financial_plans": [{"initial_payment_cop": 100, "installments": [{"amount_cop": 200, "due_date": None}]}],
+                  "financial_guidance": "Date to confirm", "cost_exclusions": "Uniform not included"}
+    result = project_facts({"commercial": commercial}, for_turn(question))["commercial"]
+    for field in ("career_outcomes", "financial_plans", "financial_guidance", "cost_exclusions"):
+        assert result[field] == commercial[field]
+    assert "presentation" not in result and "syllabus" not in result and "requirements" not in result
+    requested = project_facts({"commercial": commercial}, for_turn(question + "; ¿qué materias y requisitos tiene, y qué beneficios ofrece?"))["commercial"]
+    assert requested["presentation"] == commercial["presentation"]
+    assert requested["syllabus"] == commercial["syllabus"]
+    assert requested["requirements"] == commercial["requirements"]
+    assert "syllabus" in commercial  # never mutate the reviewed source
+
+
 def test_social_skill_plan_is_computed_before_retrieval_and_post_price_does_not_override_comment_intent(monkeypatch):
     from app.institutional import grounded_replies as replies
     c = SimpleNamespace()

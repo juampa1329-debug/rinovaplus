@@ -209,6 +209,11 @@ def project_facts(value, trace):
         # A price question needs all payment conditions, not the full academic brochure.
         omitted.update({"syllabus", "requirements", "career_outcomes", "presentation"}
                        - set(plan.get("requested_academic_details", [])))
+    elif plan["phase"] in {"objection", "comparison"}:
+        # Keep outcomes, certification and every payment condition. Long-form
+        # presentation, syllabus and checklists remain available on explicit request.
+        omitted.update({"presentation", "syllabus", "requirements"}
+                       - set(plan.get("requested_academic_details", [])))
     def project(item):
         if isinstance(item, list):
             return [project(v) for v in item]
