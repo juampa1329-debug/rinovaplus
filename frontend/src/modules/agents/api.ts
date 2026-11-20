@@ -324,6 +324,12 @@ const errors: Record<string, string> = {
     "Complete instrucciones, modelo principal, canales y presupuesto.",
   agents_guide_scope_occupied:
     "Ya existe un orientador institucional sin archivar. Su sustitución debe conservar primero los agentes de programa dependientes; no se puede restaurar un segundo orientador.",
+  agents_model_structured_output_required:
+    "Este modelo no declara la salida estructurada que necesitan los agentes. Selecciona otro modelo del catálogo; no se llamó a la generación.",
+  agents_model_temperature_unsupported:
+    "Este modelo no admite los parámetros del agente. Selecciona otro modelo compatible para la prueba.",
+  agents_simulation_route_only:
+    "La selección temporal de proveedor sólo está disponible en el simulador aislado, sin conversación real.",
   agents_program_scope_occupied:
     "Ya existe un agente sin archivar para este programa. Revise el responsable vigente antes de restaurar o crear otro.",
   agents_stage_scope_occupied:

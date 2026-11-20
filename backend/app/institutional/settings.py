@@ -115,7 +115,7 @@ class Settings:
         except ValidationError as error:
             if section != "ai":
                 raise
-            allowed = {"voice_pilot_conversation_required", "voice_default_profile_missing", "voice_duplicate_assignment", "voice_duplicate_profile", "voice_invalid_threshold", "voice_language_unsupported"}
+            allowed = {"voice_pilot_conversation_required", "voice_default_profile_missing", "voice_duplicate_assignment", "voice_duplicate_profile", "voice_invalid_threshold", "voice_language_unsupported", "language_backup_required", "language_backup_duplicate", "language_backup_interactive_model_required"}
             reason = next((str(v.get("ctx", {}).get("error")) for v in error.errors(include_input=False) if str(v.get("ctx", {}).get("error")) in allowed), "invalid_request")
             raise HTTPException(422, reason) from None
         with transaction(self.settings, True, anonymous=True) as c:
@@ -140,6 +140,8 @@ class Settings:
             current = setting(c, self.settings, section)
             if current["revision"] != body.revision:
                 raise HTTPException(409, "revision_conflict")
+            if section == "ai" and document.get("language_resilience", {}).get("enabled") and document.get("language_resilience") != current["document"].get("language_resilience"):
+                authorize(c, self.settings, authority, action, recent=True)
             if section == "ai" and document.get("voice", {}).get("enabled") and document.get("voice") != current["document"].get("voice"):
                 authorize(c, self.settings, authority, action, recent=True)
             if section == "ai" and document["comment_mode"] == "auto":

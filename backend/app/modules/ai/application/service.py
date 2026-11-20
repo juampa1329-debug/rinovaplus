@@ -822,7 +822,8 @@ class AiService:
                         attempts.append(
                             {"provider": provider, "model": model, "status": error.code}
                         )
-                        if not error.transient:
+                        from app.modules.ai.domain.resilience import can_failover
+                        if not can_failover(error):
                             raise
                 if last_error is not None:
                     raise last_error

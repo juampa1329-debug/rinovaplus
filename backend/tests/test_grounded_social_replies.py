@@ -208,6 +208,7 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 )
 def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     from app.institutional import channel_outbox
+    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": []})
     monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0, "quote_first_reply": True}})
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 

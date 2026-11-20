@@ -275,6 +275,14 @@ class SimulationRequest(StrictModel):
     request_id: JsonUUID
     channel: Literal["local", "whatsapp", "instagram", "facebook", "tiktok"] = "local"
     variant: Literal["current", "comparison"] = "current"
+    provider_override: Literal["openrouter"] | None = None
+    model_override: str | None = Field(default=None, max_length=200, pattern=r"^[A-Za-z0-9._:/-]+$")
+
+    @model_validator(mode="after")
+    def paired_simulation_route(self):
+        if bool(self.provider_override) != bool(self.model_override):
+            raise ValueError("simulation_route_incomplete")
+        return self
 
 
 class SourceWrite(ReviewWrite):

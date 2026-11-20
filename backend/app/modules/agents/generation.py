@@ -7,6 +7,7 @@ from app.modules.ai.domain.models import ModelInfo, Provider
 from app.modules.ai.infrastructure.openrouter import OpenRouterClient
 from app.modules.ai.infrastructure.providers import AiError
 from app.modules.ai.application.admissions_prompt import ADMISSIONS_RESPONSE_SCHEMA
+from app.modules.ai.domain.resilience import can_failover
 
 
 def provider_options(ai):
@@ -229,17 +230,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                 }
                 # Only a known rejection before inference may use another model.
                 # A timeout/5xx can already have consumed the previous route.
-                recoverable = (
-                    error.code
-                    in {
-                        "provider_model_unavailable",
-                        "provider_rate_limited",
-                        "provider_connection_failed",
-                        "agents_provider_not_configured",
-                    }
-                    or error.code == "openrouter_rejected_request"
-                    and error.upstream_status == 404
-                )
+                recoverable = can_failover(error)
                 if index + 1 == len(candidates) or not recoverable:
                     raise
         raise AiError("all_models_unavailable", 502)

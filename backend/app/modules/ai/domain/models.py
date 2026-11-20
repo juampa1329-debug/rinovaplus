@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.branding import PRODUCT_NAME
+from app.modules.ai.domain.resilience import LanguageResilience
 
 Provider = Literal[
     "gemini",
@@ -128,6 +129,7 @@ class ProviderSelection(StrictModel):
 
 
 class AiSettings(StrictModel):
+    language_resilience: LanguageResilience = Field(default_factory=LanguageResilience)
     provider_models: dict[Provider, str] = Field(default_factory=dict, max_length=10)
     voice_models: dict[
         Literal["elevenlabs", "google_tts", "piper"], ProviderSelection

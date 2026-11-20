@@ -17,6 +17,7 @@ from app.institutional.store import transaction
 from app.institutional.whatsapp_gemini import finish
 from app.institutional import grounded_replies
 from app.modules.ai.infrastructure.providers import AiError
+from app.institutional import language_resilience
 
 ACTION = "comment_auto_gemini"
 ACTOR = "system:gemini-comments"
@@ -218,6 +219,7 @@ class Worker:
                 item, ai, text, reply = current(c, settings, integration, data)
                 adapter, _ = provider_account(c, settings, item)
                 document = ai["document"]
+                backup = language_resilience.snapshot(c, settings)
                 pricing = policy(c, settings, integration, document)
                 spent = c.execute(
                     "SELECT COUNT(*) FROM crm_channels2.ProviderOperation "
@@ -296,6 +298,8 @@ class Worker:
 
         def assert_current():
             with transaction(settings, anonymous=True) as c:
+                if backup["routes"]:
+                    language_resilience.assert_snapshot(c, settings, backup)
                 if not c.execute(
                     "SELECT 1 FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? "
@@ -336,13 +340,16 @@ class Worker:
                     reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
                     reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
                                    budget["daily_usd_micros"] / 1_000_000)
-            result = asyncio.run(
-                self.gateway_factory({"gemini": secret}).gemini_generation(
-                    document["model"],
-                    grounded_replies.request_body(grounded, out, document.get("temperature", 0.3)),
-                    before_attempt=assert_current,
-                )
-            )
+            request_body = grounded_replies.request_body(grounded, out, document.get("temperature", 0.3))
+            async def primary():
+                return await self.gateway_factory({"gemini": secret}).gemini_generation(
+                    document["model"], request_body, before_attempt=assert_current)
+            result = asyncio.run(language_resilience.execute(
+                primary, "gemini", document["model"], request_body, backup, assert_current,
+                lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
+                data.setdefault("language_execution", {}),
+                gateway=self.gateway_factory(backup["keys"]),
+            )) if backup["routes"] else asyncio.run(primary())
             reply = grounded_replies.parse(result, public=True)
             publish = bool(reply)
             code = None if publish else "comment_auto_review_required"

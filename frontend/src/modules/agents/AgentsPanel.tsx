@@ -32,6 +32,7 @@ import { AgentVoiceSelect } from "../../institution/AgentVoiceSelect";
 import { AgentSalesSkills } from "../../institution/AgentSalesSkills";
 import { ProgramSalesSetup } from "../../institution/ProgramSalesSetup";
 import { OperationDialog } from "../../institution/ErrorFeedback";
+import { LiveModelSelect } from "../../institution/LiveModelSelect";
 import "./agents.css";
 
 type Tab =
@@ -143,6 +144,8 @@ export function AgentsPanel() {
   const [consoleData, setConsoleData] = useState<AgentConsole | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
   const [simulationVariant, setSimulationVariant] = useState("current");
+  const [simulationProvider, setSimulationProvider] = useState("");
+  const [simulationModel, setSimulationModel] = useState("");
   const [simulation, setSimulation] = useState<Simulation | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [eventOffset, setEventOffset] = useState(0);
@@ -432,6 +435,10 @@ export function AgentsPanel() {
         acknowledge_consumption: call,
         variant: simulationVariant,
         request_id: crypto.randomUUID(),
+        ...(simulationProvider && {
+          provider_override: simulationProvider,
+          model_override: simulationModel,
+        }),
       }),
     );
     try {
@@ -1852,6 +1859,52 @@ export function AgentsPanel() {
                         onChange={(e) => setQuestion(e.target.value)}
                       />
                       <SelectField
+                        id="simulation-provider"
+                        label="Proveedor para esta prueba"
+                        value={simulationProvider}
+                        options={[
+                          {
+                            value: "",
+                            label: "Configuración guardada del agente",
+                          },
+                          ...(providers?.providers.some(
+                            (p) => p.id === "openrouter" && p.configured,
+                          )
+                            ? [
+                                {
+                                  value: "openrouter",
+                                  label: "OpenRouter · prueba aislada",
+                                },
+                              ]
+                            : []),
+                        ]}
+                        onChange={(event) => {
+                          setSimulationProvider(event.target.value);
+                          setSimulationModel("");
+                          setSimulation(null);
+                        }}
+                      />
+                      {simulationProvider && (
+                        <>
+                          <p>
+                            Esta selección sólo afecta al simulador. Conserva
+                            las skills, fuentes y límites del agente; no cambia
+                            su modelo publicado ni envía mensajes al contacto.
+                            Las tarifas de reserva se consultan al proveedor.
+                          </p>
+                          <LiveModelSelect
+                            provider={simulationProvider}
+                            category="text"
+                            value={simulationModel}
+                            onChange={(model) => {
+                              setSimulationModel(model);
+                              setSimulation(null);
+                            }}
+                            label="Modelo para esta prueba"
+                          />
+                        </>
+                      )}
+                      <SelectField
                         id="simulation-channel"
                         label="Canal a simular"
                         value={channel}
@@ -1865,7 +1918,11 @@ export function AgentsPanel() {
                         onChange={(e) => setChannel(e.target.value)}
                       />
                       <Button
-                        disabled={busy || !question.trim()}
+                        disabled={
+                          busy ||
+                          !question.trim() ||
+                          (!!simulationProvider && !simulationModel)
+                        }
                         onClick={() => void act(() => simulate(false))}
                       >
                         Ver contexto sin consumir IA
@@ -1893,7 +1950,11 @@ export function AgentsPanel() {
                       </p>
                       <Button
                         disabled={
-                          busy || !question.trim() || draftChanged || archived
+                          busy ||
+                          !question.trim() ||
+                          draftChanged ||
+                          archived ||
+                          (!!simulationProvider && !simulationModel)
                         }
                         onClick={() => void act(() => simulate(true))}
                       >

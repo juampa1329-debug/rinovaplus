@@ -437,6 +437,8 @@ class Agents(AgentsService):
         )
 
     async def simulate(self, request, *, conversation_binding=None):
+        if conversation_binding and request.provider_override:
+            raise AiError("agents_simulation_route_only", 409)
         # Each paid request has its own gateway and usage metadata. A concurrent
         # metadata request cannot replace the first request's gateway.
         runtime = Agents(self.application, self.profile, self.gateway_factory)

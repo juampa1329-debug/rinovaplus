@@ -40,6 +40,7 @@ class ProviderGateway:
         self.last_response_metadata = {}
         self.last_assistant = None
         self.no_temperature = set()
+        self.catalog_details = {}
         endpoint = os.environ.get("HERMES_BASE_URL", "").strip()
         try:
             parsed = urlsplit(endpoint)
@@ -207,6 +208,7 @@ class ProviderGateway:
                 raise AiError("provider_response_timeout", 504) from None
 
     async def models(self, provider: str, kind="text", *, account_catalog=False) -> list[ModelInfo]:
+        self.catalog_details[provider] = {}
         items = []
         token = ""
         account_openrouter = provider == "openrouter" and account_catalog
@@ -297,7 +299,27 @@ class ProviderGateway:
                     top.get("max_completion_tokens") if isinstance(top, dict) else None
                 )
                 temperature = "temperature" in params
+                from decimal import Decimal, InvalidOperation
+                prices = {}
+                for field, source in (("input_usd_per_million", "prompt"), ("output_usd_per_million", "completion")):
+                    try:
+                        raw = Decimal(str((item.get("pricing") or {}).get(source))) * 1000000
+                        prices[field] = float(raw) if raw.is_finite() and 0 <= raw <= 100000 else None
+                    except (InvalidOperation, TypeError, ValueError, AttributeError):
+                        prices[field] = None
+                try:
+                    request_price = float((item.get("pricing") or {}).get("request", "0"))
+                    if not math.isfinite(request_price) or request_price < 0:
+                        request_price = math.inf
+                except (ValueError, TypeError, AttributeError):
+                    request_price = math.inf
+                self.catalog_details[provider][model_id] = {**prices, "request_usd": request_price, "supported_parameters": params,
+                    "context_length": item.get("context_length") if type(item.get("context_length")) is int else None}
             else:
+                if provider == "gemini":
+                    self.catalog_details[provider][model_id] = {
+                        "context_length": item.get("inputTokenLimit") if type(item.get("inputTokenLimit")) is int else None,
+                    }
                 if provider == "openai" and any(
                     k in model_id.lower()
                     for k in (

@@ -1494,6 +1494,8 @@ class AgentsService:
                 raise AiError("agents_usage_settlement_final_conflict", 503)
 
     async def simulate(self, request):
+        from app.modules.agents.simulation_route import prepare, apply as trial_selection
+        trial = await prepare(self.ai, request) if request.provider_override else None
         key = str(request.agent_id)
         with self.transaction() as cursor:
             agents, stages = load(cursor)
@@ -1519,6 +1521,7 @@ class AgentsService:
             selection = experiment(
                 cursor, selection, agents, key, explicit_variant=request.variant
             )
+            selection = trial_selection(selection, trial)
             check_program(cursor, request.program_id)
             from app.modules.agents.skill_policy import for_turn
             if hasattr(cursor, "__dict__"):
@@ -1578,6 +1581,8 @@ class AgentsService:
             "usage": None,
             "provider": selection["configuration"].get("provider", "openrouter"),
             "variant": selection.get("variant"),
+            "simulation_override": {"provider": trial["provider"], "model": trial["primary_model"]} if trial else None,
+            "published_configuration_changed": False,
             **({"effective_context": {"fingerprint":selection["knowledge_context"]["fingerprint"],"versions":[{"id":v["id"],"version":v["version"],"kind":v["kind"]} for v in selection["knowledge_context"]["shared"]]}} if "knowledge_context" in selection else {}),
         }
         if not request.call_provider:
@@ -1587,6 +1592,8 @@ class AgentsService:
         self.ai.refresh_credentials()
         config = self.ai.repository.read()
         credentials = self.ai.credentials.read()
+        if trial and credentials.revision != trial["credential_revision"]:
+            raise AiError("agents_configuration_changed", 409)
         if not config.settings.enabled or not credentials.outbound:
             raise AiError("agents_global_ai_gate_closed", 409)
         require_provider(self.ai, selection["configuration"])
@@ -1619,6 +1626,7 @@ class AgentsService:
                     str(request.agent_id),
                     explicit_variant=request.variant,
                 )
+                fresh = trial_selection(fresh, trial)
                 if hasattr(cursor, "__dict__"):
                     cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
                 sql, new_sources = public_sources(

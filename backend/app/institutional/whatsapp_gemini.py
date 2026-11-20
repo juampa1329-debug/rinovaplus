@@ -18,6 +18,7 @@ from app.institutional.store import transaction
 from app.institutional import grounded_replies, voice_audio, reply_delivery
 from app.modules.agents.service import resolve_conversation
 from app.modules.ai.infrastructure.providers import AiError
+from app.institutional import language_resilience
 
 ACTION = "whatsapp_gemini_intro"
 ACTOR = "system:gemini-whatsapp"
@@ -454,6 +455,7 @@ class Worker:
                     incoming_external["ExternalId"] if incoming_external else None
                 )
                 config, secret, binding = model_config(c, settings, data)
+                backup = language_resilience.snapshot(c, settings)
                 grounded = reply_context(c, settings, data, context)
                 data["skill_policy"] = grounded.get("skill_policy")
                 secret_value = unseal(
@@ -542,6 +544,8 @@ class Worker:
                 ).fetchone()
                 if not active:
                     raise HTTPException(409, "gemini_whatsapp_claim_changed")
+                if backup["routes"]:
+                    language_resilience.assert_snapshot(c, settings, backup)
                 _, latest_context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
                     raise HTTPException(409, "gemini_whatsapp_model_changed")
@@ -588,15 +592,19 @@ class Worker:
                 generated = "No alcancé a entender bien esa nota de voz. ¿Me la repites o me escribes tu pregunta para poder orientarte con precisión?"
                 result = None
             else:
-                result = asyncio.run(
-                    self.gateway_factory({"gemini": secret_value}).gemini_generation(
-                        binding["model"],
-                        voice_audio.request_with_audio(
-                            grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
-                            None if grounded.get("audio_transcribed") else grounded.get("input_audio"),
-                        ), before_attempt=before_attempt,
-                    )
+                request_body = voice_audio.request_with_audio(
+                    grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
+                    None if grounded.get("audio_transcribed") else grounded.get("input_audio"),
                 )
+                async def primary():
+                    return await self.gateway_factory({"gemini": secret_value}).gemini_generation(
+                        binding["model"], request_body, before_attempt=before_attempt)
+                result = asyncio.run(language_resilience.execute(
+                    primary, "gemini", binding["model"], request_body, backup, before_attempt,
+                    lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
+                    data.setdefault("language_execution", {}),
+                    gateway=self.gateway_factory(backup["keys"]),
+                )) if backup["routes"] else asyncio.run(primary())
             if result is not None:
                 generated = grounded_replies.parse(result)
             # Optional observations never become instructions or arbitrary field writes.

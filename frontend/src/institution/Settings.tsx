@@ -3,6 +3,7 @@ import { useAdsResource } from "./adsResource";
 import { Badge, Button, Field, Notice, SelectField } from "../shared/ui";
 import { TypedFields } from "./Fields";
 import { CBNConversationPreset } from "./CBNConversationPreset";
+import { LanguageResilience } from "./LanguageResilience";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -197,6 +198,14 @@ function SettingEditor({
         }}
       >
         <fieldset disabled={task.busy || !writable}>
+          {section === "ai" && liveModels && (
+            <LanguageResilience
+              value={draft.language_resilience}
+              onChange={(value) =>
+                setDraft({ ...draft, language_resilience: value })
+              }
+            />
+          )}
           {groups.map((group) => (
             <section className="panel" key={group}>
               <h3>
