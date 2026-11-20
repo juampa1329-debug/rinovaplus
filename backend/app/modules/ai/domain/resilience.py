@@ -38,5 +38,5 @@ def can_failover(error):
     return error.code in {"provider_model_unavailable", "provider_rate_limited",
                           "provider_connection_failed", "agents_provider_not_configured"} or (
         error.upstream_status in {404, 429, 503}
-        and error.code in {"provider_rejected_request", "provider_temporary_failure", "openrouter_rejected_request"}
+        and error.code in {"provider_rejected_request", "provider_temporary_failure", "openrouter_rejected_request", "openrouter_retry_exhausted"}
     )

@@ -218,6 +218,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         "state": "failed",
                         "skill_policy": skill_policy,
                         "code": error.code,
+                        "upstream_status": error.upstream_status,
                         "latency_ms": round((monotonic() - attempt_start) * 1000),
                     }
                 )

@@ -14,7 +14,8 @@ from app.branding import PRODUCT_NAME
 
 from .providers import AiError
 
-TRANSIENT = {408, 429, 500, 502, 503, 504, 529}
+# Only explicit rejection responses can safely repeat inference.
+TRANSIENT = {429, 503}
 
 
 def retry_delay(value, attempt):
@@ -54,6 +55,7 @@ class OpenRouterClient:
         deadline = time.monotonic() + 40
         async with httpx.AsyncClient(transport=self.transport, follow_redirects=False, trust_env=False) as client:
             for attempt in range(3):
+                status = None
                 guard()
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
@@ -100,6 +102,6 @@ class OpenRouterClient:
                 except httpx.HTTPError:
                     raise AiError("openrouter_transport_failure", 502) from None
                 if attempt == 2 or delay is None or delay >= deadline - time.monotonic():
-                    raise AiError("openrouter_retry_exhausted", 503, True)
+                    raise AiError("openrouter_retry_exhausted", 503, True, upstream_status=status)
                 await asyncio.sleep(delay)
                 guard()

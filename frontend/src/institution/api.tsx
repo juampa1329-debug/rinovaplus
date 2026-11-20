@@ -62,6 +62,10 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  language_backup_required: "Añade al menos un modelo de respaldo del catálogo antes de habilitar esta función.",
+  language_backup_duplicate: "Hay un modelo de respaldo repetido. Elige alternativas diferentes.",
+  language_backup_interactive_model_required: "Elige un modelo de conversación del catálogo; las variantes batch no sirven para atención en tiempo real.",
+  language_backup_configuration_changed: "La política o una clave de respaldo cambió. Actualiza la configuración antes de continuar.",
   voice_mix_busy: "El mezclador está ocupado. Espera unos segundos y vuelve a escuchar la misma muestra; no se generará otra voz.",
   voice_mix_failed: "No se pudo mezclar el ambiente con la voz. El administrador debe revisar FFmpeg y las pistas de ambiente.",
   voice_mix_unavailable: "El mezclador de audio no está disponible en el backend. Pide al administrador revisar FFmpeg.",

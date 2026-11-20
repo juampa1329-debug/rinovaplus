@@ -206,9 +206,16 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 @pytest.mark.parametrize(
     "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None]
 )
-def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
+@pytest.mark.parametrize("with_backup", [False, True])
+def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup):
     from app.institutional import channel_outbox
-    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": []})
+    from app.modules.ai.domain.models import ModelInfo
+    from app.modules.ai.infrastructure.providers import AiError
+    route = {"provider": "openrouter", "model": "fixture:free", "input_usd_per_million": 0, "output_usd_per_million": 0}
+    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": [route] if with_backup else [], "keys": {"openrouter": "fixture"}})
+    monkeypatch.setattr(messaging.language_resilience, "assert_snapshot", lambda *_: None)
+    backup_reservations = []
+    monkeypatch.setattr(messaging.language_resilience, "reservation", lambda *_: backup_reservations.append(1))
     monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0, "quote_first_reply": True}})
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 
@@ -302,11 +309,20 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
 
     class Gateway:
         def __init__(self, *_):
-            pass
+            self.catalog_details = {"openrouter": {"fixture:free": {"context_length": 100000, "supported_parameters": ["response_format"], "input_usd_per_million": 0, "output_usd_per_million": 0}}}
+
+        async def models(self, *_a, **_kw):
+            return [ModelInfo(id="fixture:free", name="Prueba", temperature=True, output_limit=8000)]
+
+        async def request(self, provider, method, path, body):
+            assert provider == "openrouter" and method == "POST" and path == "chat/completions"
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision": "responder" if answer else "revisar", "text": answer or ""})}}]}
 
         async def gemini_generation(self, model, body, before_attempt):
             before_attempt()
             assert body["systemInstruction"]["parts"][0]["text"] == "Prompt de ventas"
+            if with_backup:
+                raise AiError("provider_model_unavailable", 502, upstream_status=404)
             return result(answer or "", "responder" if answer else "revisar")
 
     assert messaging.Worker(profile, Gateway).once()
@@ -314,6 +330,9 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer):
     assert bool(handoffs) == (answer is None)
     assert recorded[-1]["generation"] == "grounded-v1"
     assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
+    assert len(backup_reservations) == int(with_backup)
+    if with_backup:
+        assert recorded[-1]["language_execution"]["fallback_used"]
     assert [part["text"] for part in recorded[-1]["response_parts"]] == sent
     assert len([v for v in statements if v[0].startswith("UPDATE crm_channels2.SendJob SET DueAt=")]) == len(sent)
     if sent:

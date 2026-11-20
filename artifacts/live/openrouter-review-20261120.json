@@ -1,6 +1,6 @@
 {
   "date": "2026-11-20",
-  "status": "catalog_verified_interactive_filter_deployment_pending",
+  "status": "p21_published_free_inference_not_yet_successful",
   "credential": "Saved directly by owner, version 1; secret never read or copied",
   "live_catalog_before_filter": {
     "text_models": 408,
@@ -29,9 +29,35 @@
       "test_invalid_catalog_sanitized[None]",
       "test_enabled_save_requires_catalog_and_supported_params",
       "test_pre_provider_request_keeps_its_original_idempotency_hash"
-    ]
+    ],
+    "p21_backend_selected_passed": 137,
+    "p21_frontend_passed": 3,
+    "types_lint_build": "passed; historical bundle warning"
   },
-  "generation": "Model family choice requested from owner; no OpenRouter inference performed yet",
+  "generation": {
+    "provider": "openrouter",
+    "model": "google/gemma-4-31b-it:free",
+    "preview": "passed; skills and context preserved; no agent published change",
+    "state": "openrouter_retry_exhausted",
+    "latency_ms": 3480,
+    "tokens": "not reported",
+    "consumption": "unconfirmed; never assert zero invoice",
+    "response_sent_to_contact": false
+  },
   "live_conversations_provider_changed": false,
-  "phase_acceptance_changed": false
+  "phase_acceptance_changed": false,
+  "live_catalog_interactive": {
+    "text_models": 347,
+    "free_models": 12,
+    "batch_variants": 0,
+    "manual_model_ids_entered": false
+  },
+  "deployment": {
+    "runtime_commit": "3ace35e",
+    "backend_run": "7ndp7l3wd8okqno1n0shjbez",
+    "healthy_at": "2026-11-20T16:17:48Z",
+    "rolling_update_completed_at": "2026-11-20T16:17:54Z",
+    "frontend": "Success"
+  },
+  "p21": "New phase implemented, live validation and context authorization pending; no P13/P19 acceptance inferred"
 }

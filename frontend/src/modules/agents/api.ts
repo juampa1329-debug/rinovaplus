@@ -330,6 +330,12 @@ const errors: Record<string, string> = {
     "Este modelo no admite los parámetros del agente. Selecciona otro modelo compatible para la prueba.",
   agents_simulation_route_only:
     "La selección temporal de proveedor sólo está disponible en el simulador aislado, sin conversación real.",
+  openrouter_retry_exhausted:
+    "OpenRouter no confirmó una respuesta tras los rechazos temporales del proveedor. Revisa Actividad y la cuota de tu cuenta; puedes elegir otro modelo disponible para una prueba nueva. No se envió nada al contacto.",
+  openrouter_result_uncertain:
+    "Se perdió la confirmación de OpenRouter. La solicitud podría haberse procesado: revisa el consumo antes de repetirla. RinovaPlus no la reenvió automáticamente.",
+  openrouter_rejected_request:
+    "OpenRouter rechazó la solicitud. Revisa los permisos de la clave, la disponibilidad del modelo, sus parámetros y la configuración de privacidad de tu cuenta.",
   agents_program_scope_occupied:
     "Ya existe un agente sin archivar para este programa. Revise el responsable vigente antes de restaurar o crear otro.",
   agents_stage_scope_occupied:
