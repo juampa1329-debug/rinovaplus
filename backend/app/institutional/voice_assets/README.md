@@ -1,11 +1,24 @@
-# Ambiente de RinovaPlus
+# Ambiente de RinovaPlus — grabaciones v2
 
-Dos pistas originales sintetizadas por `backend/tools/build_voice_ambience.py`:
-aire/ventilación de oficina y pulsaciones irregulares de teclado. No contienen
-conversaciones, grabaciones personales ni audio de terceros. Duración: 20 segundos,
-PCM mono 16 kHz. Se repiten únicamente hasta la duración de la voz.
+Sustituye las pistas procedurales v1 rechazadas por el propietario.
 
-No son sonidos generados por ElevenLabs y no consumen caracteres del proveedor.
-La compresión lateral de FFmpeg reduce ambas pistas cuando detecta la voz antes
-de aplicar su volumen. La mezcla final conserva la duración, mono OGG/Opus y un
-limitador de picos. Referencia: https://ffmpeg.org/ffmpeg-filters.html#sidechaincompress
+- **Oficina:** Busy Office No People Loop, Fupicat, CC0 1.0.
+  https://freesound.org/people/Fupicat/sounds/534123/
+  Teléfonos, impresora y actividad de oficina; sin diálogos. Es una composición
+  de fuentes CC0 relacionadas por su autor en la página original.
+- **Tecleo:** Keyboard Typing.wav, se2001, CC0 1.0.
+  https://freesound.org/people/se2001/sounds/523907/
+  Grabación de teclado de portátil con Zoom H4N.
+
+Licencia: https://creativecommons.org/publicdomain/zero/1.0/
+Procedencia, URLs públicas y SHA-256 de las descargas en `sources.json`.
+Se utilizan las versiones de escucha de alta calidad publicadas por Freesound.
+Conversión completa a PCM mono 16 kHz, normalización a -24 LUFS/-3 dBTP.
+`backend/tools/build_voice_ambience.py` reproduce los WAV desde esas descargas
+verificadas; no descarga nada ni se ejecuta en el contenedor.
+
+No requiere ElevenLabs para las pistas ni para volver a mezclarlas. Los faders,
+reducción durante la voz, limitador y duración del mensaje se conservan.
+No contiene diálogos de usuarios ni se usa para entrenar modelos.
+La percepción de realismo requiere la escucha del propietario; no se infiere de
+las mediciones técnicas.

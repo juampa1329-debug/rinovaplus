@@ -1,3 +1,7 @@
+## P19: pistas grabadas en sustitución de la v1 sintética — 2026-11-20
+
+El titular acepta mezcla/faders/generador y rechaza la calidad de oficina/tecleo sintéticos. Se reemplazan por Busy Office No People Loop deFupicat y Keyboard Typing.wav dese2001, CC0, con teléfonos/impresora y teclado real de portátil. Procedencia/URLs/SHA en voice_assets/sources.json; conversión reproducible local sin llamadas pagadas ni red en ejecución. Duraciones24.14875s/29.878313s, picos -6.9/-6.7dBFS;11pruebas con FFmpeg real pasan. Se conserva ducking, faders, política22 y ambiente apagado. Publicación, escucha en frontend y aceptación sonora v2 pendientes. No declarar P13 cerrado.
+
 ## P13: causa del modal de Agentes identificada — 2026-11-20
 
 El prompt institucional guardado tiene11044caracteres, válido en AI institucional (máximo20000), pero AgentAI.read lo pasaba por AiSettings compartido (máximo8000). PostgreSQL capturaba ValidationError como general_storage_unavailable503: no era una caída de la base ni una clave inválida. Se reutiliza AI institucional y una configuración realmente inválida obtiene agents_ai_settings_invalid409. Cinco regresiones nuevas y59pruebas seleccionadas pasan; publicación y verificación UI pendientes. Backend9e54d40 ya saludable en yoihu3daf8etcgsamq0ffk1h, rollout13:59:57Z. No cerrar P13 por este ajuste.

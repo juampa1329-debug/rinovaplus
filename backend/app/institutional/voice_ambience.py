@@ -13,7 +13,7 @@ from app.modules.inbox.infrastructure import media_files as files
 
 ASSETS = Path(__file__).with_name("voice_assets")
 SLOTS = threading.BoundedSemaphore(2)
-VERSION = "office-keyboard-v1"
+VERSION = "office-keyboard-recordings-v2"
 
 
 def filter_graph(options, duration):

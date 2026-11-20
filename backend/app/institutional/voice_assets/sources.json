@@ -1,0 +1,26 @@
+{
+  "version": "office-keyboard-recordings-v2",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "tracks": {
+    "office": {
+      "title": "Busy Office No People Loop",
+      "author": "Fupicat",
+      "page": "https://freesound.org/people/Fupicat/sounds/534123/",
+      "source_url": "https://cdn.freesound.org/previews/534/534123_7724198-hq.mp3",
+      "source_sha256": "4cae1bf9eaeacb775b101d0cb202d86ead3c1eca950e2802bb66c4c2692db9a1",
+      "content": "Office phones, printing and working sounds. No spoken dialogue. Original is a CC0 composite with sources listed on its page.",
+      "packaged_sha256": "cb7c122db02e812abeea6e8183c1c10f796a43899d5214fc05bb69b581d16520"
+    },
+    "typing": {
+      "title": "Keyboard Typing.wav",
+      "author": "se2001",
+      "page": "https://freesound.org/people/se2001/sounds/523907/",
+      "source_url": "https://cdn.freesound.org/previews/523/523907_8472935-hq.mp3",
+      "source_sha256": "23614b1aeb8027f521f3e3cfe2726d5d043b9086c2f3cfc54f4f4c93447d027c",
+      "content": "Laptop typing recorded with a Zoom H4N.",
+      "packaged_sha256": "ff9778262afe4a9dc29d9fdcb2218aa1495d5a1d9dfb02c0f5469b7bd76d5404"
+    }
+  },
+  "processing": "Mono PCM 16-bit 16 kHz; loudness target -24 LUFS, true peak -3 dBTP. Full source duration; no new synthesized clicks or noise."
+}

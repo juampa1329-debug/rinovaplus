@@ -14,3 +14,11 @@ Corte: 19 de noviembre de 2026. El roadmap original P0–P11 está aceptado al 1
 | [P20 · Llamadas de WhatsApp y agentes de voz](P20_WHATSAPP_CALLS.md) | Número colombiano institucional, entrantes/salientes, seguimiento con contexto CRM, tomar/transferir y escuchar en vivo por un recorrido compatible. | Planificada, 0/8; implementación 0%. Cuenta/ruteo, audio en vivo, transferencia y coste pendientes de validar; sin exigir Twilio ni otro número. |
 
 Además siguen abiertas OPS-01–OPS-06: copia externa, custodia independiente de clave, RPO/RTO, retención/espacio, alertas entregadas y conciliación adicional DB/archivos. Se registran en `tasks/operations-hardening-backlog.json`; fueron aceptadas como límites del alcance actual y no se declaran implementadas.
+
+### Revisión de audio20-11-2026
+
+P19controles y muestras aceptados por el titular. Las pistas sintéticas fueron
+rechazadas; se sustituyen por fuentes CC0 con teléfonos/impresora y teclado
+grabado, manteniendo la mezcla. Publicación y nueva escucha de lav2 pendientes.
+P13sigue en validación comercial y de actualización de ficha, sin aceptación
+por el mero despliegue de biblioteca o corrección del catálogo.

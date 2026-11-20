@@ -30,8 +30,8 @@ export function VoiceAmbience({
     <fieldset className="voice-ambience" disabled={disabled}>
       <legend>Ambiente de oficina y tecleo</legend>
       <p>
-        Sonidos sintéticos de ventilación y teclado, sin conversaciones de otras
-        personas.
+        Oficina con teléfonos e impresora, y tecleo grabado. Pistas CC0, sin
+        diálogos ni conversaciones de clientes.
       </p>
       <label className="voice-check">
         <input

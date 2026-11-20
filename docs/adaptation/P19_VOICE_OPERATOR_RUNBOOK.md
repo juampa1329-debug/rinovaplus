@@ -76,8 +76,11 @@ Los perfiles anteriores conservan el ambiente apagado. Tres volúmenes separados
 voz 20–150%, oficina 0–100% y tecleo 0–100%; cero silencia una pista de fondo.
 La reducción automática está activada por defecto: detecta la voz original,
 reduce ambas pistas durante el habla y las recupera suavemente en las pausas.
-Son pistas originales sintéticas de ventilación y teclado; no incluyen personas
-hablando ni grabaciones privadas. No se promete simular una ubicación real.
+Versión v2: oficina con teléfonos e impresora y tecleo de portátil grabado;
+fuentes CC0 empaquetadas, sin diálogos ni conversaciones de clientes. Las fuentes
+y su licencia están en backend/app/institutional/voice_assets/sources.json.
+La v1 sintética fue rechazada por su sonido; se conserva esa evaluación histórica.
+No se promete que sea una grabación del lugar real donde opera el asesor.
 
 Prueba antes de guardar:
 1. Selecciona Juampa en Escucha antes de activar y genera una muestra corta.
@@ -117,3 +120,11 @@ confirmó Entregado. Falta su escucha y elección de balance; no afirmar calidad
 aceptada por el recibo. La política vigente conserva máximo5audios,60segundos,
 20000caracteres diarios y Juampa/Tranquila. No se activó ambiente global.
 P13 permanece fuera de esta entrega, pendiente para otra petición.
+
+### Revisión sonora v2 — 20-11-2026
+
+El titular confirmó mezcla, faders y generador, pero rechazó la oficina y el
+teclado sintéticos. Se sustituyen por fuentes CC0 de Fupicat y se2001, con
+procedencia y SHA-256 verificables. No hay nuevas llamadas al proveedor para
+crear el fondo, ni se modifica la política de audios. Publicación y escucha
+comparada pendientes de esta revisión; no aceptar automáticamente su realismo.

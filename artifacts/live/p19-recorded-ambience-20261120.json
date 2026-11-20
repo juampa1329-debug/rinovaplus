@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-20",
+  "status": "local_validated_deployment_pending",
+  "owner_feedback": {
+    "mix_controls": "accepted",
+    "sample_generator": "accepted",
+    "synthetic_beds_v1": "rejected",
+    "recorded_beds_v2": "listening_pending"
+  },
+  "sources_manifest": "backend/app/institutional/voice_assets/sources.json",
+  "technical": {
+    "office_seconds": 24.14875,
+    "typing_seconds": 29.878313,
+    "office_peak_dbfs": -6.9,
+    "typing_peak_dbfs": -6.7,
+    "ffmpeg_tests": 11,
+    "types_lint_build": "passed"
+  },
+  "safety": {
+    "external_provider_calls": 0,
+    "policy_changed": false,
+    "global_ambience_activated": false
+  },
+  "acceptance": "P19 initial 5/5 retained; replacement quality not accepted yet"
+}
