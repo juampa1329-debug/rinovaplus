@@ -1,0 +1,25 @@
+{
+  "phase": "P22",
+  "name": "Pruebas de modelos candidatos para agentes de RinovaPlus",
+  "updated": "2026-11-20",
+  "status": "planned_by_owner",
+  "accepted": 0,
+  "total": 5,
+  "candidates": [
+    {"provider": "gemini", "model": "gemini-3.1-flash-lite", "role": "current_baseline"},
+    {"provider": "openrouter", "model": "anthropic/claude-sonnet-4.6", "role": "consultative_sales_candidate"},
+    {"provider": "openrouter", "model": "anthropic/claude-haiku-4.5", "role": "frequent_attention_candidate"},
+    {"provider": "openrouter", "model": "openai/gpt-4.1-mini", "role": "economic_backup_candidate"}
+  ],
+  "milestones": [
+    {"id": "P22.1", "name": "Casos y rúbrica revisados", "status": "planned"},
+    {"id": "P22.2", "name": "Catálogo, compatibilidad, privacidad y presupuesto", "status": "planned"},
+    {"id": "P22.3", "name": "Comparación aislada de calidad, latencia y consumo", "status": "planned"},
+    {"id": "P22.4", "name": "Selección por función y enlace al pipeline", "status": "planned"},
+    {"id": "P22.5", "name": "Piloto supervisado, reversión y publicación", "status": "planned"}
+  ],
+  "paid_trials_executed": false,
+  "active_model_assignments_changed": false,
+  "dependencies": ["P21 deferred until owner recharges OpenRouter", "P13 program continuity and Human controls retained"],
+  "runbook": "docs/adaptation/P22_MODEL_CANDIDATES.md"
+}

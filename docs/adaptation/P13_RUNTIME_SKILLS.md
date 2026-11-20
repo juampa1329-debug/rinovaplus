@@ -205,3 +205,12 @@ sin mover contactos. No son todavía agentes automáticos de etapa ni se han
 cambiado sus modelos; esa asignación y los criterios de traspaso requieren su
 configuración y pruebas. Matriculado exige verificación humana o académica.
 P21 queda diferida expresamente hasta la recarga de crédito.
+
+Publicación e058493 saludable en Coolify, rollout20:24:04Z; frontend Success43s.
+Nueva simulación Gemini de objeción/financiación Barismo:9755entrada/241salida,
+guías completas de objeciones/precio/memoria trazadas; importe mínimo, cuotas,
+fechas y alcance conservados. No emoji en esa respuesta: el estilo sigue en
+revisión, sin aceptación inferida. La retoma de dos notas y el silencio Humano
+reales requieren todavía la entrada del propietario. No fabricar esos eventos.
+El propietario separa en P22 la comparación de modelos y el enlace evaluado
+con las etapas CRM, sin activar modelos de pago por este trabajo.

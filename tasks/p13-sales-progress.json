@@ -10,14 +10,14 @@
     {
       "id": "P13.1",
       "name": "Ficha comercial",
-      "status": "pending_review",
-      "pending": "26 fichas locales guardadas con requisitos y planes del propietario; Inglés sin tarifa hasta confirmar su alcance. Revisión del piloto comercial pendiente."
+      "status": "live_reviewed_acceptance_pending",
+      "pending": "Nursing and Software reviewed in current Academic UI, including duration, source, curriculum, requirements and first-semester finance. English remains deliberately unpriced pending owner confirmation."
     },
     {
       "id": "P13.2",
       "name": "Fuentes institucionales revisadas",
-      "status": "in_validation",
-      "pending": "26 fichas con contenido académico revisado; distribución conjunta de Barismo/Bartender y Ventas/Marketing no inventada. Consultas reales del nuevo corte pendientes."
+      "status": "live_reviewed_acceptance_pending",
+      "pending": "Nursing response matches the current reviewed source; Software has four semesters and practices subject to confirmation. Program-switch retake still pending."
     },
     {
       "id": "P13.3",
@@ -195,6 +195,7 @@
     "status": "crm_stages_created_agent_stage_rules_pending",
     "stage_count": 9,
     "automatic_model_handoffs": false,
-    "paid_models": "pending P21 recharge and validation"
+    "paid_models": "pending P21 recharge and validation",
+    "model_selection_phase": "P22"
   }
 }

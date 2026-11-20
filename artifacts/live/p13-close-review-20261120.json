@@ -1,7 +1,7 @@
 {
   "date": "2026-11-20",
   "phase": "P13",
-  "status": "fixes_ready_for_deployment_retest_pending",
+  "status": "deployed_retest_pending",
   "accepted": 0,
   "total": 4,
   "local_checks": {
@@ -24,7 +24,35 @@
     },
     "barismo_whatsapp": "Specialist24v3, seven full guides traced, named customer, entrepreneurship relevance, optional scholarship distinguished; read receipts observed.",
     "program_switch": "Failed before patch: two consecutive voice messages; first remained untranscribed, second was generic; prior Barismo interest persisted. Retake required.",
-    "human_silence": "Pending real incoming after patch."
+    "human_silence": "Pending real incoming after patch.",
+    "academic_profiles": "Current Nursing and Software UI reviewed: durations and reviewed sources present; finance retained with semester scope and optional dates. No edits or price changes.",
+    "objection_finance_simulator": {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "phase": "objection",
+      "full_guides_consulted": [
+        "sales-objection-handling",
+        "pricing",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "context_characters": [
+        30565,
+        9167,
+        115
+      ],
+      "usage": {
+        "input": 9755,
+        "output": 241
+      },
+      "review": "Preserved program and business goal, minimum reviewed abono, three installments/dates, semester scope and uniform exclusion. No A1/A2 terms. No emoji in this financing answer; style acceptance remains open.",
+      "crm_written": false,
+      "delivered": false
+    },
+    "post_deployment_program_switch": "Requested from owner, still awaiting two new notes; no fabricated incoming event."
   },
   "fixes": [
     "Chronological interpretation of up to six unanswered voice assets, per-source ID/hash proof, context cutoff, latest conversation/epoch/lease guard, rerouting after each stored transcript.",
@@ -75,7 +103,7 @@
     ],
     "probabilities": "unset",
     "contacts_moved": 0,
-    "stage_agent_model_handoffs": "Not activated; existing specialist routing by program remains. Paid models await credit and validation."
+    "stage_agent_model_handoffs": "Not activated. Candidate selection and pipeline-link validation planned explicitly in P22."
   },
   "P21": "Deferred by owner until credit recharge; no new OpenRouter inference.",
   "limits": [
@@ -83,5 +111,17 @@
     "No DDL, seed scripts, new test containers or SIIE writes.",
     "Stages organize commercial attention; enrollment is not an autonomous LLM decision.",
     "Public/private memory isolation, Human mode and existing budgets retained."
-  ]
+  ],
+  "deployment": {
+    "code": "e058493",
+    "backend": "ik3j1gfqr8psswkxm82uhan0",
+    "backend_health": "healthy",
+    "backend_rollout_completed_utc": "2026-11-20T20:24:04Z",
+    "frontend": {
+      "id": "kkmugmbprvtzin1isobvdpqh",
+      "state": "Success",
+      "code": "e058493"
+    }
+  },
+  "followup_phase": "P22 model candidates plan requested; paid benchmarks deferred."
 }
