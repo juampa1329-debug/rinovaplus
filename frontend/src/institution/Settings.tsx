@@ -4,6 +4,7 @@ import { Badge, Button, Field, Notice, SelectField } from "../shared/ui";
 import { TypedFields } from "./Fields";
 import { CBNConversationPreset } from "./CBNConversationPreset";
 import { LanguageResilience } from "./LanguageResilience";
+import { LanguageRehearsal } from "./LanguageRehearsal";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -286,6 +287,18 @@ function SettingEditor({
           </Button>
         </fieldset>
       </form>
+      {section === "ai" && liveModels && writable && (
+        <LanguageRehearsal
+          revision={initial.revision}
+          enabled={
+            !!(
+              initial.document.language_resilience as
+                { enabled?: boolean } | undefined
+            )?.enabled
+          }
+          dirty={JSON.stringify(draft) !== JSON.stringify(initial.document)}
+        />
+      )}
       <section className="panel">
         <h3>Historial de configuración</h3>
         <Button

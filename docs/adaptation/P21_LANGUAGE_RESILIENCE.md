@@ -79,5 +79,21 @@ de Gemini en producción. No provocar fallos pagados ni duplicar consultas cuyo
 consumo esté por confirmar. La prueba gratuita real y la activación de respaldo
 con contexto CRM se registran por separado en el artefacto de esta fase.
 
+### Ensayo controlado solicitado por el titular
+
+En Ajustes → Inteligencia artificial → Simular una caída se puede representar un
+503 o 429 del principal sin efectuar su petición ni modificar su configuración.
+El respaldo gratuito sí se consulta mediante el mismo ejecutor de mensajes y
+comentarios, con fuente e historial ficticios. Se comprueban programa, duración,
+jornada y continuidad privada, o exclusión de memoria privada en público.
+Los casos principal saludable y Humano no hacen consultas externas.
+
+Cada ensayo se registra antes de ejecutar. Consultar resultado utiliza GET;
+repetir el mismo identificador recupera el registro, sin generar de nuevo.
+No se crea ninguna entrada de Inbox, comentario, SendJob ni ficha CRM. La prueba
+es diagnóstico, no una caída real de Gemini. Por solicitud del titular, este
+ensayo publicado y satisfactorio puede completar la aceptación técnica inicial
+sin esperar una caída natural. Evidencia: `artifacts/live/p21-failover-rehearsal-20261120.json`.
+
 Referencias oficiales: [catálogo de cuenta de OpenRouter](https://openrouter.ai/docs/api/api-reference/models/list-models-filtered-by-user-provider-preferences-privacy-settings-and-guardrails)
 y [API Batch separada](https://openrouter.ai/docs/batch-quickstart).

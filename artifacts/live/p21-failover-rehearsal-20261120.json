@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-20",
+  "status": "prepared_live_test_pending",
+  "primary_fault": "synthetic exception, no paid primary request and no global configuration mutation",
+  "backup": "real configured free route after live catalog/cost/capability checks",
+  "local_checks": {
+    "backend_passed": 146,
+    "frontend_passed": 5,
+    "types_lint_build": "passed",
+    "postgres_queries_parsed": 3
+  },
+  "live_results": []
+}

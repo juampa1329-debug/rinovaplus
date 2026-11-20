@@ -35,6 +35,8 @@ PUBLIC = {
 
 
 def core_permission(path, method):
+    if path.startswith("/api/institution/language-rehearsals"):
+        return "settings.ai." + ("read" if method == "GET" else "write"), "settings"
     if path.startswith("/api/institution/notifications"):
         return "self", None
     if path == "/api/institution/operations":
@@ -620,6 +622,8 @@ def create_app(
         install_operations(app, settings)
 
     if getattr(settings, "postgres_deployment", False):
+        from app.institutional.language_rehearsal import install as install_language_rehearsal
+        install_language_rehearsal(app, settings)
         from app.institutional.email_notifications import install as install_notifications
         install_notifications(app, settings)
 

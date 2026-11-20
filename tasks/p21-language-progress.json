@@ -24,11 +24,11 @@
     {
       "id": "P21.4",
       "title": "Publicación y comprobación operativa",
-      "status": "deployed_healthy_live_failover_pending"
+      "status": "controlled_rehearsal_prepared"
     }
   ],
   "limitations": [
-    "Respaldo gratuito y transferencia de contexto autorizados por el propietario y guardados; no se indujo una caída productiva.",
+    "Respaldo gratuito autorizado y guardado. El propietario solicita aceptación mediante caída simulada aislada, sin interrumpir producción.",
     "Respaldo automático institucional Gemini/OpenRouter; el simulador conserva las rutas del agente.",
     "Audio previo a transcripción, monitor proactivo y circuito distribuido fuera de esta entrega.",
     "No reintentar resultados inciertos ni inducir fallos pagados."
