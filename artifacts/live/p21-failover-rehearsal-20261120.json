@@ -1,6 +1,6 @@
 {
   "date": "2026-11-20",
-  "status": "blocked_by_openrouter_credit_402",
+  "status": "private_503_passed_further_tests_deferred_by_owner",
   "primary_fault": "synthetic exception, no paid primary request and no global configuration mutation",
   "backup": "Owner authorized paid OpenRouter backup; GPT-4.1 mini selected from authenticated catalog, price ceilings USD0.40/1.60 per million tokens, AI revision28.",
   "local_checks": {
@@ -69,6 +69,35 @@
       "reserved_usd_micros": 0,
       "crm_written": false,
       "delivered": false
+    },
+    {
+      "operation_id": "f4e75e02-f016-4f6b-9be5-9b85b81c2f2b",
+      "configuration_revision": 29,
+      "state": "passed",
+      "case": "unavailable",
+      "audience": "message",
+      "primary": "synthetic503",
+      "backup": "openrouter/openai/gpt-4.1-mini",
+      "provider_calls": 1,
+      "reported_usage": {
+        "input": 2739,
+        "output": 173
+      },
+      "reserved_usd_micros": 6314,
+      "reserve_is_invoice": false,
+      "recovered_via_GET": true,
+      "provider_calls_after_recovery": 1,
+      "configuration_changed": false,
+      "crm_written": false,
+      "delivered": false,
+      "latency_ms": 7076,
+      "cost_cap_usd_micros": 50000,
+      "checks": {
+        "program_preserved": true,
+        "duration_preserved": true,
+        "schedule_preserved": true,
+        "name_preserved": true
+      }
     }
   ],
   "deployment": {
@@ -79,9 +108,9 @@
     "frontend_state": "Success"
   },
   "pending": [
-    "Owner must confirm API key credit availability in OpenRouter; card alone does not establish credit. No top-up performed.",
-    "Successful paid backup for synthetic503/private and429/public still required; no natural outage induced.",
-    "Do not mark P21 100% on blocked supplier requests."
+    "Further P21 trials paused by owner pending renewed confirmation.",
+    "Public synthetic429/real backup response pending. No productive Gemini outage induced.",
+    "Private503 success does not close the full phase."
   ],
   "additional_regression": {
     "test_agent_providers": "11 passed, 1 failed",
@@ -95,5 +124,11 @@
     "state": "Success"
   },
   "latest_diagnostic_backend_state": "healthy",
-  "latest_diagnostic_backend_rollout_completed_utc": "2026-11-20T17:24:11Z"
+  "latest_diagnostic_backend_rollout_completed_utc": "2026-11-20T17:24:11Z",
+  "additional_regression_resolution": {
+    "code": "e058493",
+    "test_agent_providers": "19 passed",
+    "closing_regression": "264 passed after memory fix",
+    "historical_failure_preserved": true
+  }
 }

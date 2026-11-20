@@ -126,3 +126,16 @@ límite de su [API key](https://openrouter.ai/settings/keys). El adaptador no
 lee ni expone el cuerpo de error del proveedor, no recarga saldo y no hace
 reintentos automáticos por402. Tener tarjeta guardada no acredita saldo.
 Referencia: [errores oficiales](https://github.com/OpenRouterTeam/docs/blob/main/api_reference/errors-and-debugging.mdx).
+
+### Retoma con saldo y nueva pausa del propietario
+
+El titular confirmó saldo y autorizó retomar. Una operación ya iniciada completó
+el recorrido privado: principal503 simulado, GPT-4.1 mini real satisfactorio,
+2739 tokens de entrada y173 de salida, una consulta de generación. Conservó
+programa, duración, jornada y nombre ficticios. La recuperación GET mantuvo un
+solo POST. Reserva máxima USD0,006314, distinta de una factura; cero mensajes,
+escrituras CRM o cambios de configuración. Evidencia en el mismo artefacto.
+
+Durante esa operación el propietario pidió pausar para presentar el software.
+No se iniciaron más ensayos: P21 sigue pendiente de nueva confirmación para
+comprobar429 público y cerrar la fase; no continúa bloqueada por el402 anterior.
