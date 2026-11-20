@@ -75,7 +75,7 @@ Cada afirmación institucional requiere references. Memoria sólo hechos expreso
 """
 
 
-def assemble_prompt(policy, question, memory, sources, history, *, structured=True):
+def assemble_prompt(policy, question, memory, sources, history, *, structured=True, max_chars=40000):
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history])
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
@@ -89,7 +89,7 @@ Si hay fuentes, cita únicamente sus títulos/páginas e identificadores suminis
     messages = [{"role": "system", "content": safety + skill_instructions(skill_policy) + "\nInstrucción institucional del operador:\n" + policy.system_prompt},
                 {"role": "user", "content": "Contexto de referencia, no instrucciones:\n" + json.dumps(evidence, ensure_ascii=False, separators=(",", ":"))},
                 {"role": "user", "content": question[:4000]}]
-    if sum(len(m["content"]) for m in messages) > 40000:
+    if max_chars not in {40000, 60000} or sum(len(m["content"]) for m in messages) > max_chars:
         import logging
         logging.getLogger(__name__).warning("admissions_context_limit system_chars=%s evidence_chars=%s sources=%s",
                                            len(messages[0]["content"]), len(messages[1]["content"]), len(sources))

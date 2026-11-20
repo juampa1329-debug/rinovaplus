@@ -1,9 +1,11 @@
 import json
+import pytest
 from types import SimpleNamespace
 from uuid import uuid4
 
 from app.institutional import agent_catalog
 from app.modules.ai.application.admissions_prompt import AdmissionsPolicy, assemble_prompt
+from app.modules.ai.infrastructure.providers import AiError
 
 
 def test_pronouns_and_articles_do_not_match_program_abbreviations():
@@ -17,6 +19,21 @@ def test_pronouns_and_articles_do_not_match_program_abbreviations():
         programs, profiles, "¿Me dan información para Barismo y Bartender, con una beca?"
     )
     assert result == [programs[0]]
+
+
+def test_native_trial_keeps_full_evidence_with_explicit_bound_and_model_capacity():
+    from app.modules.agents.simulation_route import check_context
+    source = {"id": "fixture", "title": "Condiciones completas", "text": "Dato verificado. " * 2600}
+    with pytest.raises(AiError, match="admissions_context_limit"):
+        assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [])
+    messages = assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [], max_chars=60000)
+    assert source["text"] in messages[1]["content"]
+    check_context({"context_limit": 100000}, messages, 700)
+    for route in ({"context_limit": 1000}, {"context_limit": None}):
+        with pytest.raises(AiError, match="agents_model_context_limit"):
+            check_context(route, messages, 700)
+    with pytest.raises(AiError, match="admissions_context_limit"):
+        assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [{**source, "text": "x" * 60000}], [], max_chars=60000)
 
 
 def test_large_comparisons_keep_selected_financing_whole_and_mark_omissions(monkeypatch):

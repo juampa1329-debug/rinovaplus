@@ -193,6 +193,8 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  agents_model_context_limit:
+    "Este modelo no dispone de capacidad confirmada para todo el contexto de la prueba. Elige otro modelo del catálogo o reduce el historial; no se llamó al proveedor.",
   agents_ai_settings_invalid:
     "Los ajustes generales de IA guardados no son compatibles. Abre Ajustes → Inteligencia artificial, revisa los campos indicados y guarda la configuración antes de recargar Agentes.",
   general_storage_unavailable:

@@ -1,3 +1,7 @@
+## P22: preflight amplio sin truncar skills — 2026-11-20
+
+Primer contexto sin consumo fue rechazado por40000caracteres (system29841/evidence11173,2fuentes); no fallo de modelo ni POST pagado. Simulador nativo institucional admite ahora60000caracteres explicitos, preserva fuentes/skills completas y valida antes deIO bytes conservadores+salida contra context_length autenticado de OpenRouter; otros recorridos conservan40000.112backend adicionales/Ruff pasan. Trial_bounds expone tarifas/max_tokens/contexto para controlarUSD5 total. Publicacion/compatibilidad/pruebas reales pendientes; P22 no aceptada. No se borran hechos ni se atribuye una prueba bloqueada a los modelos.
+
 ## P22 en preparacion: comparativa autorizada hastaUSD5 — 2026-11-20
 
 Propietario pide comparar candidatos adicionales, ventas/memoria/latencia/consumo y recomendar por etapa; autorizaUSD5 total, sin recargas ni cambios de agentes activos. Cinco casos ficticios y rubrica en tasks/p22-evaluation-cases.json. UI añade historial aislado (API ya lo admite), conserva contexto al cambiar modelo; no afecta CRM. OpenRouter de agentes aplica max_price revisado y simulaciones un unico POST, sin modificar reintentos productivos.137backend/21frontend,tipos/lint/build pasan; publicacion/pruebas reales pendientes. Catalogo autenticado incluye extensiones Haiku5.5/Sonnet5.5/DeepSeekV4.1Flash/Qwen3.6Plus/MistralSmall4; falta preflight de compatibilidad y evaluacion, no afirmar superioridad. P22 sigue0/5; P13/P21 aceptadas en alcance inicial; otras fases/OPS sin cambios.

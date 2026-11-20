@@ -28,14 +28,24 @@ async def prepare(ai, request):
     return {"provider": provider, "primary_model": model.id, "fallback_provider": None, "fallback_model": "",
             "input_usd_per_million": details["input_usd_per_million"],
             "output_usd_per_million": details["output_usd_per_million"],
-            "output_limit": model.output_limit, "credential_revision": before}
+            "output_limit": model.output_limit, "credential_revision": before, "context_limit": details.get("context_length")}
 
 
 def apply(selection, route):
     if not route:
         return selection
-    changes = {k: v for k, v in route.items() if k not in {"output_limit", "credential_revision"}}
+    changes = {k: v for k, v in route.items() if k not in {"output_limit", "credential_revision", "context_limit"}}
     config = {**selection["configuration"], **changes}
     if route["output_limit"]:
         config["max_tokens"] = min(config["max_tokens"], route["output_limit"])
     return {**selection, "configuration": config, "binding": digest([selection["binding"], route])}
+
+
+def check_context(route, messages, output_tokens):
+    if not route:
+        return
+    limit = route.get("context_limit")
+    # UTF-8 bytes bound the input conservatively; do not guess tokenization.
+    required = sum(len(m["content"].encode("utf-8")) for m in messages) + output_tokens + 256
+    if type(limit) is not int or limit <= 0 or required > limit:
+        raise AiError("agents_model_context_limit", 409)

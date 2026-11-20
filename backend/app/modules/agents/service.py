@@ -1505,7 +1505,7 @@ class AgentsService:
                 raise AiError("agents_usage_settlement_final_conflict", 503)
 
     async def simulate(self, request):
-        from app.modules.agents.simulation_route import prepare, apply as trial_selection
+        from app.modules.agents.simulation_route import prepare, apply as trial_selection, check_context
         trial = await prepare(self.ai, request) if request.provider_override else None
         key = str(request.agent_id)
         with self.transaction() as cursor:
@@ -1564,10 +1564,12 @@ class AgentsService:
                 {"operational_context": scoped_memory(cursor, selection)},
                 sources,
                 history,
+                max_chars=60000 if getattr(cursor, "agent_catalog", None) else 40000,
             )
             messages[0]["content"] += (
                 "\nEsta es una prueba manual sin escritura de memoria del aspirante. No hay UUID de mensaje entrante admisible: devuelve memory=[] y no inventes identificadores ni hechos declarados."
             )
+            check_context(trial, messages, policy.max_tokens)
             proof = digest(
                 [
                     selection["binding"],
@@ -1593,6 +1595,10 @@ class AgentsService:
             "provider": selection["configuration"].get("provider", "openrouter"),
             "variant": selection.get("variant"),
             "simulation_override": {"provider": trial["provider"], "model": trial["primary_model"]} if trial else None,
+            "trial_bounds": {"max_tokens": policy.max_tokens,
+                             "context_limit": trial["context_limit"],
+                             "input_usd_per_million": trial["input_usd_per_million"],
+                             "output_usd_per_million": trial["output_usd_per_million"]} if trial else None,
             "published_configuration_changed": False,
             **({"effective_context": {"fingerprint":selection["knowledge_context"]["fingerprint"],"versions":[{"id":v["id"],"version":v["version"],"kind":v["kind"]} for v in selection["knowledge_context"]["shared"]]}} if "knowledge_context" in selection else {}),
         }
