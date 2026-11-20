@@ -51,6 +51,7 @@ it.each([
   ["provider_temporary_failure", "temporalmente indisponible"],
   ["provider_rate_limited", "límite temporal"],
   ["provider_timeout_or_network", "conexión"],
+  ["admissions_context_limit", "un programa concreto"],
 ])(
   "explains the provider failure %s without blaming the prompt",
   (code, reason) => {

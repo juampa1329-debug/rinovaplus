@@ -18,6 +18,8 @@ def normalized(value):
 def relevant_programs(items, profiles, question):
     words = set(re.findall(r"[a-z0-9]+", normalized(question))) - {
         "programa", "programas", "tecnico", "tecnica", "laboral", "auxiliar", "de", "en", "y", "el", "la", "del", "los",
+        "a", "al", "las", "un", "una", "unos", "unas", "me", "mi", "mis", "se", "su", "sus",
+        "con", "sin", "por", "para", "que", "como", "cuanto", "cuantos", "cual", "cuales",
     }
     ranked = []
     for item in items:
@@ -27,6 +29,37 @@ def relevant_programs(items, profiles, question):
         if score:
             ranked.append((score, item))
     return [item for _, item in sorted(ranked, key=lambda pair: (-pair[0], pair[1]["program_id"]))[:6]]
+
+
+def bounded_commercial_context(selected, informational, limit=20_000):
+    """Keep whole financial facts; never cut a quote or payment condition midway.
+
+    Other matches may be catalog-only when their complete profiles do not fit.
+    The selected profile has priority and is not repeated in queried_programs.
+    """
+    used = len(json.dumps(selected, ensure_ascii=False)) if selected else 0
+    if used > limit:
+        raise AiError("admissions_context_limit", 413)
+    bounded = []
+    for item in informational:
+        if selected and item["program_id"] == selected["program_id"]:
+            bounded.append({k: v for k, v in item.items() if k != "commercial"})
+            bounded[-1]["commercial_in_selected"] = True
+            continue
+        size = len(json.dumps(item, ensure_ascii=False))
+        if used + size <= limit:
+            bounded.append(item)
+            used += size
+        else:
+            compact = {k: v for k, v in item.items() if k != "commercial"}
+            compact["commercial_details_omitted"] = True
+            compact["context_guidance"] = (
+                "El programa existe en el catálogo, pero su ficha comercial completa no cabe en esta consulta. "
+                "Pide concretar ese programa para consultar sus condiciones; no inventes ni extrapoles tarifas, "
+                "becas o materias de otro programa."
+            )
+            bounded.append(compact)
+    return selected, bounded
 
 
 class Catalog:
@@ -114,6 +147,8 @@ class Catalog:
             commercial = agent_facts(read_profile(c, self.settings, program_id))
             if commercial:
                 selected["commercial"] = commercial
+        fingerprint = digest([catalog, selected, informational])
+        selected, informational = bounded_commercial_context(selected, informational)
         # Never infer assignment/program from the question, names or phone.
         sources = []
         if selected:
@@ -159,6 +194,6 @@ class Catalog:
                 "academic_writes_allowed": False,
             },
             "sources": sources,
-            "fingerprint": digest([catalog, selected, informational]),
+            "fingerprint": fingerprint,
             "authority": catalog["authority"],
         }

@@ -11,25 +11,25 @@
       "id": "P13.1",
       "name": "Ficha comercial",
       "status": "pending_review",
-      "pending": "Revisión de Admisiones de las fichas piloto; no publicar tarifas ausentes."
+      "pending": "26 fichas locales guardadas con requisitos y planes del propietario; Inglés sin tarifa hasta confirmar su alcance. Revisión del piloto comercial pendiente."
     },
     {
       "id": "P13.2",
       "name": "Fuentes institucionales revisadas",
       "status": "in_validation",
-      "pending": "Enfermería revisión2 y Software revisión4 con fuente oficial guardadas. Verificar consultas reales y revisión de Admisiones."
+      "pending": "26 fichas con contenido académico revisado; distribución conjunta de Barismo/Bartender y Ventas/Marketing no inventada. Consultas reales del nuevo corte pendientes."
     },
     {
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "25 especialistas y20procedimientos por perfil publicados. Simulaciones reales de Enfermería y Software pasan sin memoria inventada; quedan continuidad, cambio de interés y revisión final del propietario."
+      "pending": "26 especialistas y orientador activos, 20 procedimientos por perfil. Continuidad y cambio de interés pendientes del piloto."
     },
     {
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Financieros anunciados por el propietario; estilo CBN publicado. Probar dos programas en el mismo hilo, memoria, partes/indicador en teléfono y silencio Humano. Nueva Enfermería limitada por timeout/503 externo; no cerrar por pruebas sintéticas."
+      "pending": "Cita sólo en primera parte y pausas confirmadas por el propietario. Pendientes dos programas en un hilo, memoria y silencio en Humano."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -58,16 +58,16 @@
     "recovery_endpoint_regressions": 29,
     "comment_edit_backend_selected": 231,
     "comment_edit_frontend_selected": 20,
-    "conversation_style_backend_selected": 333,
-    "conversation_style_frontend_selected": 84
+    "conversation_style_backend_selected": 335,
+    "conversation_style_frontend_selected": 85
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
     "backend": "wm1rzwzel80eywkl3qfqvg9s",
     "backend_health": "healthy",
-    "agents_created": 25,
-    "active_total": 26,
-    "guide_version": 7,
+    "agents_created": 26,
+    "active_total": 27,
+    "guide_version": 9,
     "selected_skills_per_new_agent": 20,
     "recovery_code": "0c938feee74fe8a8de389ad08da9a0440dcb6206",
     "recovery_backend": "unwxdeuom7m3baeo4jbkbe4h",
@@ -116,7 +116,7 @@
       "same account/model/context",
       "no automatic replay of uncertain POST"
     ],
-    "financial_information": "Owner sheets received for joint Barismo/Bartender and two health programs; requirements and benefit clarified; UI publication pending.",
+    "financial_information": "26 fichas publicadas; 24 con tarifas/planes del propietario y dos de Inglés sin precios pendientes de confirmación.",
     "runbook": "docs/adaptation/P13_CONVERSATION_STYLE.md",
     "published": {
       "code": "c2dcd4a",
@@ -129,6 +129,9 @@
       "simulator": "institution and transparent identity passed; nursing new review pending upstream timeout/503",
       "notice_frontend": "7fe7a47 / qih5zrmwcjggcjywqfxmwtcr Success; descriptive failure modal verified live"
     },
-    "incident": "Owner saw typing with no reply: unconverted millisecond DATEADD caused PostgreSQL 42703. Interval translation and regression corrected; deployment/recovery pending."
-  }
+    "incident": "Traducción de milisegundos desplegada en 691edf0; recuperación explícita de la generación sin respuesta, tres partes leídas y cita/pausas confirmadas por propietario.",
+    "quote_phone_confirmation": true,
+    "context_budget": "Comparaciones grandes probadas localmente: ficha seleccionada íntegra, sin repetirla, perfiles adicionales completos o marcados como omitidos. Despliegue pendiente."
+  },
+  "program_review": "artifacts/live/p13-program-review-20261119.json"
 }

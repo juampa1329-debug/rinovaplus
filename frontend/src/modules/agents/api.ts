@@ -350,6 +350,8 @@ const errors: Record<string, string> = {
     "El proveedor de IA alcanzó un límite temporal de solicitudes o de su cuenta. Revisa el cupo del proveedor en APIs y modelos y espera antes de repetir; aumentar el cupo del CRM no elimina ese límite externo.",
   admissions_invalid_structured_response:
     "El proveedor no devolvió el formato de respuesta requerido. Revise el modelo y el límite de respuesta; el consumo reportado se conserva en Actividad.",
+  admissions_context_limit:
+    "La consulta reúne más información de la que puede revisar el agente de una vez. Prueba con un programa concreto o reduce las fuentes e instrucciones repetidas. No se llamó al proveedor ni se envió un mensaje al contacto.",
   admissions_response_truncated:
     "El proveedor agotó el límite de respuesta antes de completar el JSON. Aumente el límite de tokens del agente o acote las instrucciones y la pregunta; el consumo informado se conserva.",
   admissions_invalid_json_response:

@@ -1,0 +1,202 @@
+{
+  "phase": "P13",
+  "date_local": "2026-11-19",
+  "status": "published_pilot_pending",
+  "local_records_reviewed": 26,
+  "financial_profiles_from_owner": 24,
+  "english_financial_profiles_withheld": [
+    5,
+    18
+  ],
+  "exact_prices": "Owner sheets kept in ignored private local intake; production profiles only; no exact financial data copied into Git.",
+  "record_revisions": {
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 3,
+    "5": 3,
+    "6": 3,
+    "7": 3,
+    "8": 5,
+    "9": 3,
+    "10": 3,
+    "11": 3,
+    "12": 3,
+    "13": 3,
+    "14": 3,
+    "15": 3,
+    "16": 3,
+    "17": 3,
+    "18": 3,
+    "19": 3,
+    "20": 3,
+    "21": 3,
+    "22": 3,
+    "23": 3,
+    "24": 3,
+    "25": 4,
+    "26": 2
+  },
+  "academic_sources": [
+    {
+      "program_ids": [
+        2,
+        6
+      ],
+      "source": "https://cbn.edu.co/escuela-de-salud/auxiliar-administrativo-en-salud/"
+    },
+    {
+      "program_ids": [
+        4
+      ],
+      "source": "https://cbn.edu.co/escuela-de-salud/auxiliar-salud-oral/"
+    },
+    {
+      "program_ids": [
+        20
+      ],
+      "source": "https://cbn.edu.co/auxiliar-en-servicios-farmaceuticos/"
+    },
+    {
+      "program_ids": [
+        19
+      ],
+      "source": "https://cbn.edu.co/escuela-de-salud/atencion-a-la-primera-infancia-preescolar/"
+    },
+    {
+      "program_ids": [
+        10,
+        16
+      ],
+      "source": "https://cbn.edu.co/escuela-administracion/asistente-administrativo/"
+    },
+    {
+      "program_ids": [
+        12,
+        14
+      ],
+      "source": "https://cbn.edu.co/escuela-administracion/contabilidad-sistematizada-y-finanzas/"
+    },
+    {
+      "program_ids": [
+        3
+      ],
+      "source": "https://cbn.edu.co/escuela-tic/desarrollo-multimedia-y-comunicacion-grafica/"
+    },
+    {
+      "program_ids": [
+        21
+      ],
+      "source": "https://cbn.edu.co/escuela-tic/mantenimiento-electronico-y-energias-renovables/"
+    },
+    {
+      "program_ids": [
+        9
+      ],
+      "source": "https://cbn.edu.co/escuela-logistica/logistica-maritima-y-portuaria/"
+    },
+    {
+      "program_ids": [
+        26
+      ],
+      "source": "https://cbn.edu.co/escuela-logistica/aduanas-procesos-logisticos-y-automatizacion/"
+    },
+    {
+      "program_ids": [
+        13
+      ],
+      "source": "https://cbn.edu.co/escuela-turismo/servicios-hoteleros-y-agencias-turisticas/"
+    },
+    {
+      "program_ids": [
+        11,
+        15
+      ],
+      "source": "https://cbn.edu.co/escuela-gastronomia/cocina-nacional-e-internacional/"
+    },
+    {
+      "program_ids": [
+        7,
+        17
+      ],
+      "source": "https://cbn.edu.co/escuela-gastronomia/reposteria-pasteleria/"
+    },
+    {
+      "program_ids": [
+        24,
+        25
+      ],
+      "source": "https://cbn.edu.co/escuela-gastronomia/barismo/"
+    },
+    {
+      "program_ids": [
+        22,
+        23
+      ],
+      "source": "https://cbn.edu.co/escuela-administracion/agente-de-ventas-mercadeo-y-call-center/"
+    },
+    {
+      "program_ids": [
+        5,
+        18
+      ],
+      "source": "https://cbn.edu.co/centro-de-idiomas-cbn/proeficiencia-en-ingles/"
+    }
+  ],
+  "source_limits": [
+    "Published curricula summarized, preserving existing reviewed Nursing and Software content.",
+    "Joint Barismo/Bartender two-semester offer uses owner clarification; old separate three-cycle web curricula are thematic references, not an invented semester mapping.",
+    "Sales/Marketing joint offer confirmed by owner; integrated semester mapping is not inferred from separate web curricula.",
+    "English financial scope per level/block still awaits owner confirmation; rates and plans withheld.",
+    "External certificate registry, individual practice placement and international equivalence are not asserted."
+  ],
+  "owner_clarifications": [
+    "All erroneous first-March dates corrected to 2027 by explicit owner confirmation.",
+    "Optional full-career scholarships in Negocios del Sector Gastronomico for the gastronomy offers; not merely one semester.",
+    "Gran Diploma in Arte Gastronomico only for Cocina when completing both programs.",
+    "Optional full-career Gestion Ambiental benefit for Aduanas, Logistica Portuaria and Turismo.",
+    "Sales/Marketing: mandatory joint double qualification, one offer paid; neither scholarship nor optional second component."
+  ],
+  "agents": {
+    "active": 27,
+    "program_records_covered": 26,
+    "skills_each": 20,
+    "guide_version": 9,
+    "new_aduanas_version": 1,
+    "joint_barismo_version": 3,
+    "existing_legacy_bartender_record_preserved": true
+  },
+  "ai_settings_revision": 19,
+  "real_quote_and_cadence": {
+    "code": "691edf0",
+    "backend": "adnrmp5bgx0hlaz63fmo3tw4",
+    "health": "healthy_rolling_update_completed",
+    "parts": 3,
+    "receipts": "read",
+    "owner_confirmation": "Only the first part quotes the incoming message; pauses correct."
+  },
+  "context_budget": {
+    "status": "local_tests_passed_deployment_pending",
+    "keeps_selected_financing_whole": true,
+    "other_profiles": "Complete facts or explicit catalog-only omission; never cut payment conditions.",
+    "fingerprint": "Includes full source profiles, even omitted details."
+  },
+  "verification": {
+    "backend_selected": 335,
+    "frontend_selected": 85,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "ruff_functional_modified": "passed",
+    "workspace_build": "passed",
+    "bundle_warning": "existing"
+  },
+  "acceptance_units": 0,
+  "pending": [
+    "two-program live pilot",
+    "memory and handover review",
+    "Human silence"
+  ],
+  "no_ddl": true,
+  "no_siie_writes": true,
+  "no_new_test_containers": true
+}
