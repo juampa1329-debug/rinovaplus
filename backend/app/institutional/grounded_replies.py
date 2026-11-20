@@ -139,7 +139,13 @@ def context(
     # Public comments never receive private CRM memory or a DM conversation history.
     instructions = ai["document"].get("system_prompt", "")
     if selection:
-        instructions += "\nInstrucciones del agente:\n" + config.get("instructions", "")
+        agent_instructions = config.get("instructions", "")
+        # The institutional agent composer already prepends this exact prompt.
+        # Keep it once; preserve all distinct manual specialist instructions.
+        prefix = instructions + "\n"
+        if instructions and agent_instructions.startswith(prefix):
+            agent_instructions = agent_instructions[len(prefix):]
+        instructions += "\nInstrucciones del agente:\n" + agent_instructions
         instructions += "\nTono: " + config.get("tone", "")
         instructions += "\nObjetivos y reglas: " + json.dumps(
             [config.get("objectives", []), config.get("rules", [])],

@@ -169,7 +169,8 @@ def project_facts(value, trace):
     if not value or trace["turn_plan"]["phase"] != "orientation":
         return value
     financial = {"financial_plans", "entry_payment_offer", "price_cop", "full_cost_cash_cop",
-                 "price_concept", "price_valid_from", "price_valid_until", "financial_guidance", "pending_confirmation"}
+                 "price_concept", "price_valid_from", "price_valid_until", "financial_guidance", "pending_confirmation",
+                 "syllabus", "requirements"}
     def project(item):
         if isinstance(item, list):
             return [project(v) for v in item]

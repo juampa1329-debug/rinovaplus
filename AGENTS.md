@@ -1,3 +1,7 @@
+## P13: catálogo reparado, contexto del piloto acotado — 2026-11-20
+
+Backendb78a326 saludable en kdtu99u6ehlbyyqpmszcjfm1, rollout14:13:22Z. Agentes abrió27perfiles/26programas sin modal: causa del prompt11044/8000 corregida. Primera vista previa de Barismo fue rechazada antes de consumo por admissions_context_limit413; no hay aún simulación comercial v5 aceptada. Se elimina repetición exacta del prompt general en grounding y del ADN ya incluido en system; referencias/versiones conservadas. Recuperación evita fichas cuyo único término coincide parcialmente con otra más específica; apertura reserva temario/requisitos para su consulta. Condiciones financieras explícitas siguen completas y límite40000 intacto.93regresiones seleccionadas pasan. Se publica para repetir simulador y piloto real; P13continúa0/4.
+
 ## P19: pistas grabadas en sustitución de la v1 sintética — 2026-11-20
 
 El titular acepta mezcla/faders/generador y rechaza la calidad de oficina/tecleo sintéticos. Se reemplazan por Busy Office No People Loop deFupicat y Keyboard Typing.wav dese2001, CC0, con teléfonos/impresora y teclado real de portátil. Procedencia/URLs/SHA en voice_assets/sources.json; conversión reproducible local sin llamadas pagadas ni red en ejecución. Duraciones24.14875s/29.878313s, picos -6.9/-6.7dBFS;11pruebas con FFmpeg real pasan. Se conserva ducking, faders, política22 y ambiente apagado. Publicación, escucha en frontend y aceptación sonora v2 pendientes. No declarar P13 cerrado.

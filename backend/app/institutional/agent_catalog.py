@@ -27,8 +27,11 @@ def relevant_programs(items, profiles, question):
         names = normalized(item["name"] + " " + profile.get("aliases", ""))
         score = len(words & set(re.findall(r"[a-z0-9]+", names)))
         if score:
-            ranked.append((score, item))
-    return [item for _, item in sorted(ranked, key=lambda pair: (-pair[0], pair[1]["program_id"]))[:6]]
+            ranked.append((score, item, words & set(re.findall(r"[a-z0-9]+", names))))
+    # A shared word such as Diurna or Bartender must not retrieve an unrelated
+    # or duplicate full profile when another match covers those words plus more.
+    ranked = [entry for entry in ranked if not any(entry[2] < other[2] for other in ranked)]
+    return [item for _, item, _ in sorted(ranked, key=lambda pair: (-pair[0], pair[1]["program_id"]))[:6]]
 
 
 def bounded_commercial_context(selected, informational, limit=20_000):

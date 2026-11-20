@@ -442,3 +442,14 @@ def test_generated_public_reply_must_match_the_confirmed_operation(monkeypatch):
     comments.authorize_send(None, settings, job, {"body": data["generated_text"]})
     with pytest.raises(HTTPException, match="comment_auto_policy_changed"):
         comments.authorize_send(None, settings, job, {"body": "old-greeting"})
+
+
+def test_composed_global_prompt_is_not_duplicated_in_private_reply(monkeypatch):
+    monkeypatch.setattr(grounding, "setting", lambda *_: {"revision": 7, "document": {"system_prompt": "GLOBAL-REVIEWED"}})
+    monkeypatch.setattr(grounding, "Catalog", lambda *_: SimpleNamespace(read_context=lambda *_: {"material": {}}))
+    monkeypatch.setattr(grounding, "search", lambda *_: [])
+    monkeypatch.setattr(grounding, "effective", lambda *_: {"shared": []})
+    selection = {"configuration": {"instructions": "GLOBAL-REVIEWED\nSPECIALIST-REVIEWED", "objectives": [], "rules": []}}
+    value = grounding.context(None, SimpleNamespace(), "Información del programa", selection=selection)
+    assert value["system"].count("GLOBAL-REVIEWED") == 1
+    assert "SPECIALIST-REVIEWED" in value["system"]

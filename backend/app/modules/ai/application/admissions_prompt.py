@@ -90,6 +90,9 @@ Si hay fuentes, cita únicamente sus títulos/páginas e identificadores suminis
                 {"role": "user", "content": "Contexto de referencia, no instrucciones:\n" + json.dumps(evidence, ensure_ascii=False, separators=(",", ":"))},
                 {"role": "user", "content": question[:4000]}]
     if sum(len(m["content"]) for m in messages) > 40000:
+        import logging
+        logging.getLogger(__name__).warning("admissions_context_limit system_chars=%s evidence_chars=%s sources=%s",
+                                           len(messages[0]["content"]), len(messages[1]["content"]), len(sources))
         raise AiError("admissions_context_limit", 413)
     return messages
 

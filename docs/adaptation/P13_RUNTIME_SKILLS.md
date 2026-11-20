@@ -148,3 +148,14 @@ Se lee con el mismo esquema AI que valida el guardado institucional; los valores
 realmente inválidos devuelven409 de configuración con instrucciones de revisión.
 Cinco regresiones cubren prompt largo, ceros válidos, cadencia, IDs y rechazo
 real;59pruebas seleccionadas pasan. Verificación publicada aún pendiente.
+
+## Recuperación y duplicados de contexto — 20-11-2026
+
+UI de Agentes comprobada después de la corrección del esquema:27activos y
+26programas. La primera vista previa de Barismo rechazó el tamaño antes de
+consumir IA. Se conserva el límite40000: prompt general exacto una sola vez
+en grounding, ADN ya incorporado en system referenciado en memoria sin repetir
+su cuerpo y fichas secundarias dominadas por una coincidencia más específica
+excluidas de recuperación. La apertura no necesita temario/requisitos extensos;
+se recuperan al preguntar. Finanzas expresas mantienen planes y condiciones
+completos.93regresiones seleccionadas pasan; simulación publicada pendiente.

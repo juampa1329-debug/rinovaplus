@@ -76,3 +76,39 @@ def test_large_comparisons_keep_selected_financing_whole_and_mark_omissions(monk
     before = context["fingerprint"]
     profiles[6]["financial_plans"][0]["initial_payment_cop"] = 101
     assert catalog.read_context(object(), question, 1)["fingerprint"] != before
+
+
+def test_specific_interest_does_not_retrieve_profiles_matching_only_a_shared_word():
+    programs = [{"program_id": 24, "name": "BARISMO Y BARTENDER", "schedule": "DIURNA"},
+                {"program_id": 25, "name": "BARTENDER", "schedule": "DIURNA"},
+                {"program_id": 1, "name": "ENFERMERIA DIURNA"},
+                {"program_id": 2, "name": "SOFTWARE DIURNA"}]
+    assert agent_catalog.relevant_programs(programs, {}, "Hola, me interesa Barismo y Bartender") == [programs[0]]
+    assert agent_catalog.relevant_programs(programs, {}, "Información de enfermería diurna") == [programs[2]]
+    assert {v["program_id"] for v in agent_catalog.relevant_programs(programs, {}, "Compara Barismo y Bartender con Software diurna")} == {24, 2}
+
+
+def test_opening_reserves_long_syllabus_and_requirements_for_a_specific_question():
+    from app.modules.agents.skill_policy import for_turn, project_facts
+    profile = {"presentation": "Beneficio revisado", "duration": "2 semestres", "certification": "Condición completa",
+               "syllabus": "Materia" * 1000, "requirements": "Condiciones" * 200,
+               "financial_plans": [{"conditions": "No cortar"}]}
+    opening = project_facts(profile, for_turn("Me interesa ese programa"))
+    assert opening["presentation"] == profile["presentation"] and opening["certification"] == profile["certification"]
+    assert "syllabus" not in opening and "requirements" not in opening and "financial_plans" not in opening
+    assert project_facts(profile, for_turn("¿Cuáles son las materias y requisitos?")) == profile
+    assert project_facts(profile, for_turn("¿Cuánto cuesta y cuáles son las cuotas?"))["financial_plans"] == profile["financial_plans"]
+
+
+def test_reviewed_dna_already_in_system_is_referenced_without_duplicating_body():
+    from app.modules.agents.runtime import scoped_memory
+    from app.modules.agents.domain import Configuration
+    from app.modules.agents.service import policy_for
+    dna = {"id": "dna", "version": 3, "content": {"dna": {"identity": "Reviewed identity"}}}
+    shared = {"id": "shared", "version": 1, "content": {"body": "Independent shared guidance"}}
+    selection = {"agent_id": "guide", "configuration": Configuration(memories=[]).model_dump(), "context": {"program_id": 1}, "institution_dna": [dna]}
+    cursor = SimpleNamespace(agent_memory=lambda *_: {"shared": [dna, shared], "conversation": []})
+    memory = scoped_memory(cursor, selection)
+    assert "Reviewed identity" in policy_for(selection).system_prompt
+    assert memory["reviewed_memory"]["shared"] == [shared]
+    assert memory["reviewed_memory"]["dna_in_system"] == [{"id": "dna", "version": 3}]

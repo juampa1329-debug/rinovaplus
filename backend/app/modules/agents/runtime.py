@@ -123,7 +123,15 @@ def scoped_memory(cursor, selection, conversation_id=None):
             if scope in enabled:
                 result[scope] = {"available": False, "reason": "Sin conversación seleccionada"}
     if getattr(cursor, "agent_memory", None):
-        result["reviewed_memory"] = cursor.agent_memory(selection, conversation_id)
+        reviewed = cursor.agent_memory(selection, conversation_id)
+        # policy_for embeds these exact reviewed DNA versions in the system role.
+        # Do not resend their bodies as user evidence; retain their references.
+        embedded = {(v["id"], v["version"]) for v in selection.get("institution_dna", [])}
+        shared = reviewed.get("shared", [])
+        result["reviewed_memory"] = {**reviewed,
+            "shared": [v for v in shared if (v["id"], v["version"]) not in embedded],
+            "dna_in_system": [{"id": v["id"], "version": v["version"]} for v in shared if (v["id"], v["version"]) in embedded]}
+
     return result
 
 
