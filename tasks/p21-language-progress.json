@@ -2,56 +2,87 @@
   "phase": "P21",
   "title": "Catálogos, pruebas y respaldo de lenguaje",
   "updated_at": "2026-11-20",
-  "status": "deferred_by_owner_pending_new_confirmation",
-  "accepted": 0,
+  "status": "accepted_initial_scope",
+  "accepted": 4,
   "total": 4,
   "milestones": [
     {
       "id": "P21.1",
       "title": "Catálogo autenticado y prueba gratuita aislada",
-      "status": "live_verified"
+      "status": "accepted"
     },
     {
       "id": "P21.2",
       "title": "Respaldo compatible y límites sin duplicados",
-      "status": "local_tests_passed"
+      "status": "accepted"
     },
     {
       "id": "P21.3",
       "title": "Mensajes/comentarios y reservas por intento",
-      "status": "deployed_enabled_by_owner"
+      "status": "accepted"
     },
     {
       "id": "P21.4",
       "title": "Publicación y comprobación operativa",
-      "status": "private_503_passed_public_429_deferred"
+      "status": "accepted"
     }
   ],
   "limitations": [
-    "Credits confirmed by owner; one already-started private503 backup succeeded. Further P21 tests paused for presentation, pending renewed confirmation; public429 still pending.",
+    "Accepted controlled-rehearsal scope: primary503/429 synthetic, backup real. No productive Gemini outage induced and no WhatsApp/comment sent by rehearsal.",
     "Respaldo automático institucional Gemini/OpenRouter; el simulador conserva las rutas del agente.",
     "Audio previo a transcripción, monitor proactivo y circuito distribuido fuera de esta entrega.",
     "No reintentar resultados inciertos ni inducir fallos pagados del principal; cada ensayo de respaldo tiene tope USD0,05."
   ],
   "latest_trial": {
-    "operation_id": "f4e75e02-f016-4f6b-9be5-9b85b81c2f2b",
-    "configuration_revision": 29,
+    "operation_id": "216f3b7b-6a0d-4bb2-9301-b75f818334e6",
     "state": "passed",
-    "case": "unavailable",
-    "audience": "message",
-    "primary": "synthetic503",
+    "case": "rate_limited",
+    "audience": "comment",
+    "configuration_revision": 29,
+    "primary": "synthetic429",
     "backup": "openrouter/openai/gpt-4.1-mini",
     "provider_calls": 1,
     "reported_usage": {
-      "input": 2739,
-      "output": 173
+      "input": 2708,
+      "output": 65
     },
-    "reserved_usd_micros": 6314,
+    "latency_ms": 6026,
+    "reserved_usd_micros": 6290,
+    "cost_cap_usd_micros": 50000,
     "reserve_is_invoice": false,
+    "public_private_memory_excluded": true,
     "recovered_via_GET": true,
     "provider_calls_after_recovery": 1,
-    "configuration_changed": false,
     "crm_written": false,
-    "delivered": false
-  }
+    "delivered": false,
+    "configuration_changed": false
+  },
+  "acceptance_basis": "Owner resumed trials; private503 and public429 real backup responses, Human/healthy zeroIO, replay GET and unchanged configuration verified.",
+  "zero_io_checks": [
+    {
+      "operation_id": "0777fd3a-81b4-4581-8cca-ef729dcb14a2",
+      "state": "passed",
+      "case": "human",
+      "audience": "comment",
+      "configuration_revision": 29,
+      "provider_calls": 0,
+      "reserved_usd_micros": 0,
+      "code": "language_rehearsal_human_control",
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false
+    },
+    {
+      "operation_id": "86cf1838-e4bf-4776-a42e-1e2b02325a96",
+      "state": "passed",
+      "case": "healthy",
+      "audience": "comment",
+      "configuration_revision": 29,
+      "provider_calls": 0,
+      "reserved_usd_micros": 0,
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false
+    }
+  ]
 }

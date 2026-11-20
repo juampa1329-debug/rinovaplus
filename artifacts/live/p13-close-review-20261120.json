@@ -1,8 +1,8 @@
 {
   "date": "2026-11-20",
   "phase": "P13",
-  "status": "program_switch_verified_human_incoming_pending",
-  "accepted": 0,
+  "status": "accepted_initial_scope",
+  "accepted": 4,
   "total": 4,
   "local_checks": {
     "backend_selected": 264,
@@ -24,7 +24,18 @@
     },
     "barismo_whatsapp": "Specialist24v3, seven full guides traced, named customer, entrepreneurship relevance, optional scholarship distinguished; read receipts observed.",
     "program_switch": "Retake passed: Software specialist8 version2 selected; response states four semesters and remembers declared name, city and entrepreneurship goal. Follow-ups preserve Software and city. No customer quotes stored here.",
-    "human_silence": "Control humano aria-checked=true confirmed. Fresh owner incoming requested, not yet observed. No silence acceptance claimed.",
+    "human_silence": {
+      "incoming_received": true,
+      "incoming_local_time": "18:06",
+      "date": "2026-11-20",
+      "observation_through_local": "18:10",
+      "human_control_confirmed": true,
+      "post_input_automatic_reply_observed": false,
+      "observation_method": "Native Inbox message list and repeated refresh; no fabricated input.",
+      "restored_to_ai": true,
+      "private_message_copied_to_git": false,
+      "provider_io_claim": "No claim of real-turn provider accounting from UI silence alone; zeroIO guard separately proved in P21 rehearsal."
+    },
     "academic_profiles": "Current Nursing and Software UI reviewed: durations and reviewed sources present; finance retained with semester scope and optional dates. No edits or price changes.",
     "objection_finance_simulator": {
       "provider": "gemini",
@@ -106,12 +117,15 @@
     "contacts_moved": 0,
     "stage_agent_model_handoffs": "Not activated. Candidate selection and pipeline-link validation planned explicitly in P22."
   },
-  "P21": "One already-started private503/paid backup trial passed; further tests paused pending renewed confirmation.",
+  "P21": "Accepted controlled-rehearsal scope4/4: private503/public429 real paid backup, zeroIO in Human/healthy; no productive outage induced.",
   "limits": [
     "No private messages, prices or playbook copied into Git.",
     "No DDL, seed scripts, new test containers or SIIE writes.",
     "Stages organize commercial attention; enrollment is not an autonomous LLM decision.",
-    "Public/private memory isolation, Human mode and existing budgets retained."
+    "Public/private memory isolation, Human mode and existing budgets retained.",
+    "English tariffs remain intentionally unset pending owner confirmation.",
+    "Institutional SLA threshold still unset. CRM-stage model handoffs/candidate benchmarks belong to P22, not claimed enabled.",
+    "Commercial guidance and source-bound memory are accepted in the tested scope, not a conversion guarantee or new trained neural model."
   ],
   "deployment": {
     "code": "e058493",
@@ -138,5 +152,6 @@
       "state": "Success",
       "duration_seconds": 26
     }
-  }
+  },
+  "acceptance_basis": "Owner requested closure conditional on real program switch, personal-context continuity and Human silence; all inspected. Financial/objection review and source checks retained."
 }

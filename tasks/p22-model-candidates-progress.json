@@ -20,6 +20,6 @@
   ],
   "paid_trials_executed": false,
   "active_model_assignments_changed": false,
-  "dependencies": ["P21 deferred until owner recharges OpenRouter", "P13 program continuity and Human controls retained"],
+  "dependencies": ["P21 controlled fallback accepted; owner budget for comparative benchmarks still required", "P13 initial scope accepted; stage-agent/model bridge still requires validation in P22"],
   "runbook": "docs/adaptation/P22_MODEL_CANDIDATES.md"
 }

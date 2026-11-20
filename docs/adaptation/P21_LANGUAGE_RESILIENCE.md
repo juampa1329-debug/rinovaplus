@@ -139,3 +139,20 @@ escrituras CRM o cambios de configuración. Evidencia en el mismo artefacto.
 Durante esa operación el propietario pidió pausar para presentar el software.
 No se iniciaron más ensayos: P21 sigue pendiente de nueva confirmación para
 comprobar429 público y cerrar la fase; no continúa bloqueada por el402 anterior.
+
+### Cierre técnico del ensayo controlado
+
+El propietario reanudó la validación. El ensayo público 429 obtuvo una respuesta
+real de GPT-4.1 mini: 2708 tokens de entrada y 65 de salida, en 6,026 segundos.
+Conservó programa, duración y jornada, y excluyó la memoria privada. Consultar
+por GET recuperó el mismo único POST. La reserva de USD 0,006290 no es factura.
+
+Humano y principal saludable, con configuración 29, pasaron con cero llamadas
+externas y reservas. Junto al 503 privado previo, catálogo y guardas, P21 queda
+4/4 en el alcance inicial. Los dos respaldos pagados reportaron 5447 tokens de
+entrada y 238 de salida; las reservas suman USD 0,012604, sin acreditar factura.
+
+No se indujo caída productiva ni envío de mensajes. Gemini sigue como principal
+y GPT-4.1 mini como respaldo guardado. ASR, monitor proactivo, circuito
+distribuido y comparación de candidatos P22 quedan fuera del cierre. Los
+históricos 402/429 se conservan.

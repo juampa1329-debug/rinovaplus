@@ -1,6 +1,6 @@
 {
   "date": "2026-11-20",
-  "status": "private_503_passed_further_tests_deferred_by_owner",
+  "status": "accepted_initial_scope",
   "primary_fault": "synthetic exception, no paid primary request and no global configuration mutation",
   "backup": "Owner authorized paid OpenRouter backup; GPT-4.1 mini selected from authenticated catalog, price ceilings USD0.40/1.60 per million tokens, AI revision28.",
   "local_checks": {
@@ -98,6 +98,55 @@
         "schedule_preserved": true,
         "name_preserved": true
       }
+    },
+    {
+      "operation_id": "216f3b7b-6a0d-4bb2-9301-b75f818334e6",
+      "state": "passed",
+      "case": "rate_limited",
+      "audience": "comment",
+      "configuration_revision": 29,
+      "primary": "synthetic429",
+      "backup": "openrouter/openai/gpt-4.1-mini",
+      "provider_calls": 1,
+      "reported_usage": {
+        "input": 2708,
+        "output": 65
+      },
+      "latency_ms": 6026,
+      "reserved_usd_micros": 6290,
+      "cost_cap_usd_micros": 50000,
+      "reserve_is_invoice": false,
+      "public_private_memory_excluded": true,
+      "recovered_via_GET": true,
+      "provider_calls_after_recovery": 1,
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false
+    },
+    {
+      "operation_id": "0777fd3a-81b4-4581-8cca-ef729dcb14a2",
+      "state": "passed",
+      "case": "human",
+      "audience": "comment",
+      "configuration_revision": 29,
+      "provider_calls": 0,
+      "reserved_usd_micros": 0,
+      "code": "language_rehearsal_human_control",
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false
+    },
+    {
+      "operation_id": "86cf1838-e4bf-4776-a42e-1e2b02325a96",
+      "state": "passed",
+      "case": "healthy",
+      "audience": "comment",
+      "configuration_revision": 29,
+      "provider_calls": 0,
+      "reserved_usd_micros": 0,
+      "crm_written": false,
+      "delivered": false,
+      "configuration_changed": false
     }
   ],
   "deployment": {
@@ -107,11 +156,7 @@
     "frontend": "wxpijv2csvmwna6jtpxh7yya",
     "frontend_state": "Success"
   },
-  "pending": [
-    "Further P21 trials paused by owner pending renewed confirmation.",
-    "Public synthetic429/real backup response pending. No productive Gemini outage induced.",
-    "Private503 success does not close the full phase."
-  ],
+  "pending": [],
   "additional_regression": {
     "test_agent_providers": "11 passed, 1 failed",
     "failure": "test_pre_provider_request_keeps_its_original_idempotency_hash",
@@ -130,5 +175,18 @@
     "test_agent_providers": "19 passed",
     "closing_regression": "264 passed after memory fix",
     "historical_failure_preserved": true
+  },
+  "accepted": 4,
+  "total": 4,
+  "acceptance_limits": [
+    "Controlled primary exceptions, real paid backup, fictitious context; not a naturally occurring outage or an outgoing WhatsApp fallback pilot.",
+    "No ASR fallback, proactive outage monitor or distributed circuit breaker claimed.",
+    "Paid model comparison remains P22; no further benchmark requests performed."
+  ],
+  "closing_configuration": {
+    "revision": 29,
+    "primary": "gemini/gemini-3.1-flash-lite",
+    "backup": "openrouter/openai/gpt-4.1-mini",
+    "changed_by_rehearsal": false
   }
 }

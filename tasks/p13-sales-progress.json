@@ -2,34 +2,34 @@
   "phase": "P13",
   "name": "Académico y agentes de venta por programa",
   "updated": "2026-11-20",
-  "status": "implementation_in_validation",
-  "accepted_units": 0,
+  "status": "accepted_initial_scope",
+  "accepted_units": 4,
   "total_units": 4,
   "original_roadmap_percent": 100,
   "units": [
     {
       "id": "P13.1",
       "name": "Ficha comercial",
-      "status": "live_reviewed_acceptance_pending",
-      "pending": "Nursing and Software reviewed in current Academic UI, including duration, source, curriculum, requirements and first-semester finance. English remains deliberately unpriced pending owner confirmation."
+      "status": "accepted",
+      "evidence": "Current reviewed commercial profiles accepted with known/unknown fields explicit; English remains unpriced until confirmation."
     },
     {
       "id": "P13.2",
       "name": "Fuentes institucionales revisadas",
-      "status": "live_reviewed_acceptance_pending",
-      "pending": "Nursing response matches the current reviewed source; Software has four semesters and practices subject to confirmation. Program-switch retake still pending."
+      "status": "accepted",
+      "evidence": "Reviewed institutional sources and complete financing conditions; no invented accreditation, jobs or academic eligibility."
     },
     {
       "id": "P13.3",
       "name": "Enrutamiento y venta",
-      "status": "in_validation",
-      "pending": "Real Software switch verified, name/city/entrepreneurship goal retained. Goal-reference fix5eb697c healthy and verified in native graph. Human saved; fresh incoming silence proof pending."
+      "status": "accepted",
+      "evidence": "Real Nursing/Barismo pilots and Software8v2 switch verified; full guides traced, name/city/entrepreneurship continuity and concrete-goal fix confirmed."
     },
     {
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
-      "status": "pending",
-      "pending": "Fresh incoming in Human requested; not observed yet. No silence acceptance claimed. Stage agents/model handoffs remain planned in P22."
+      "status": "accepted",
+      "evidence": "Real fresh WhatsApp incoming at18:06 in Human, no automatic outgoing through18:10; IA restored after observation."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -98,7 +98,7 @@
     "Own Facebook reply edited and restored in production, two exact Meta readbacks confirmed; two history entries survive reload. Final backend f80dd89 healthy. Instagram comment text and sent DM editing not documented by the official APIs inspected."
   ],
   "conversation_style": {
-    "status": "deployed_settings_published_pilot_pending",
+    "status": "deployed_real_pilot_verified",
     "advisor_name": "Juan by default; editable and inherited",
     "identity": "presentation name, transparent AI if asked; no false human identity",
     "general_prompt": "reviewed CBN institutional sources",
@@ -169,7 +169,7 @@
       "postgres_queries_parsed": 9,
       "database_writes_in_parser": 0
     },
-    "acceptance": "0/4; commercial review, second program continuity and Human silence pending",
+    "acceptance": "4/4 accepted in initial scope after real program switch and Human-silence proof.",
     "modal_fix": "Institutional AI permits the saved prompt; Agentes loads 27 agents and 26 programs without the old storage modal",
     "live_pilot": {
       "orientation": "Gemini passed with program value, two main titles and optional third; no unsolicited prices",
@@ -177,7 +177,7 @@
       "contact_projection": "Real incoming audio: explicit name and city saved and displayed with source provenance; greeting uses name",
       "memory": "Goal and sourced observations visible in native graph; seven full guides consulted",
       "objection": "Isolated Gemini objection and comparison passed after focused context; real WhatsApp also preserved program",
-      "human_silence": "New v5 test pending",
+      "human_silence": "Passed fresh incoming after published patch; IA restored.",
       "nursing_simulator": "Gemini timeout after 30.738s, usage unconfirmed in activity, not repeated",
       "mixed_duration_finance": "Published preview identifies financial intent, preserves duration and payment facts; 37803 characters, no provider call"
     },
@@ -195,7 +195,24 @@
     "status": "crm_stages_created_agent_stage_rules_pending",
     "stage_count": 9,
     "automatic_model_handoffs": false,
-    "paid_models": "P21 private503 succeeded; remaining trials paused. Candidate benchmarks deferred to P22.",
+    "paid_models": "P21 controlled fallback accepted; model candidates and stage handoffs remain P22.",
     "model_selection_phase": "P22"
+  },
+  "acceptance": {
+    "requested_by_owner": true,
+    "date": "2026-11-20",
+    "scope": "Initial Academic/program-sales-agent scope; existing limits retained.",
+    "human_proof": {
+      "incoming_received": true,
+      "incoming_local_time": "18:06",
+      "date": "2026-11-20",
+      "observation_through_local": "18:10",
+      "human_control_confirmed": true,
+      "post_input_automatic_reply_observed": false,
+      "observation_method": "Native Inbox message list and repeated refresh; no fabricated input.",
+      "restored_to_ai": true,
+      "private_message_copied_to_git": false,
+      "provider_io_claim": "No claim of real-turn provider accounting from UI silence alone; zeroIO guard separately proved in P21 rehearsal."
+    }
   }
 }

@@ -2,8 +2,8 @@
 
 Solicitada por el propietario el 20 de noviembre de 2026. Planificada, 0/5.
 La lista es de candidatos; no cambia modelos activos ni acredita superioridad
-comercial. P21 permanece diferida hasta recargar OpenRouter. P13 se valida con
-Gemini y conserva sus criterios propios.
+comercial. P21 ya validó el respaldo con saldo y P13 cerró su piloto inicial.
+Gemini continúa como referencia de la comparación.
 
 ## Candidatos iniciales
 

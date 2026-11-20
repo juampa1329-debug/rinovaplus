@@ -1,6 +1,6 @@
 # P13 · Especialistas comerciales y contexto
 
-Corte del 19 de noviembre de 2026. Implementación en validación, no aceptación automática por cantidad de pruebas. Original P0–P11:100%; P12 auxiliar:100% PostgreSQL/Meta. No cambia el denominador original.
+Corte del 20 de noviembre de 2026. Alcance inicial aceptado 4/4 tras fuentes y piloto real, no por cantidad de pruebas. Original P0–P11:100%; P12 auxiliar:100% PostgreSQL/Meta. No cambia el denominador original.
 
 ## Configurar los agentes
 
@@ -28,8 +28,14 @@ En comentarios de Facebook/Instagram, generación automática y sugerencias comp
 
 La prueba real inicial de PreICFES generó una sugerencia sobre ese curso tras guardar las instrucciones del panel. No se publicó una segunda respuesta a comentarios antiguos. No se necesita ampliar suscripciones si los eventos y el texto de la publicación ya llegan; el caso observado disponía del caption correcto.
 
-## Validación pendiente para aceptar P13
+## Antecedentes y cierre del piloto
 
-El piloto del44 por nota de voz detectó un batch SQL Server no compatible en el guardado de calificación. Se reemplaza por INSERT/UPDATE parametrizados dentro del bloqueo institucional; la transacción anterior no confirmó una respuesta para enviar. La memoria muestra el estado de la generación. **Revisar recuperación de respuesta** comprueba la última fuente, cuenta activa, control IA/epoch, lease vencido y ausencia de respuesta comprometida. Requiere permisos de Canales/Inbox, identidad reciente y confirmación del nuevo consumo. Reutiliza la misma generación y EffectKey, guarda auditoría y conserva el intento previo; no reenvía mensajes aceptados ni repite automáticamente inferencias inciertas. Máximo3intentos. Los datos citados extraídos de texto se validan contra el cuerpo entrante; la nota de voz sigue interpretándose como audio por Gemini y no se presenta como una transcripción literal verificada.
+El piloto del44 por nota de voz detectó un batch SQL Server no compatible en el guardado de calificación. Se reemplaza por INSERT/UPDATE parametrizados dentro del bloqueo institucional; la transacción anterior no confirmó una respuesta para enviar. La memoria muestra el estado de la generación. **Revisar recuperación de respuesta** comprueba la última fuente, cuenta activa, control IA/epoch, lease vencido y ausencia de respuesta comprometida. Requiere permisos de Canales/Inbox, identidad reciente y confirmación del nuevo consumo. Reutiliza la misma generación y EffectKey, guarda auditoría y conserva el intento previo; no reenvía mensajes aceptados ni repite automáticamente inferencias inciertas. Máximo3intentos. Los datos citados extraídos de texto se validan contra el cuerpo entrante; las voces pendientes se interpretan cronológicamente antes de derivar, con transcripción automática atribuida al recurso/SHA; no se presenta como verificación humana.
 
-Revisar dos fichas oficiales (Enfermería y Software), sus datos presentes/ausentes y los especialistas publicados. Probar alias, ambigüedad, cambio de interés y revisión humana. Completar ambos recorridos WhatsApp en el mismo hilo, memoria/correcciones, silencio en Humano y aprobación de Admisiones. Las unidades siguen separadas de las pruebas automatizadas; ver `tasks/p13-sales-progress.json`.
+La revisión comprende dos fichas oficiales (Enfermería y Software), alias, ambigüedad, cambio de interés, memoria y control Humano. El resultado real de cierre consta abajo y en `tasks/p13-sales-progress.json`.
+
+## Aceptación del alcance inicial · 20 de noviembre
+
+El propietario pidió cerrar tras comprobar el piloto: fuentes/fichas Enfermería y Software revisadas, orientación y financiación/objeciones contrastadas. Barismo→Software conservó nombre, ciudad y objetivo. Entrada real en Humano a las 18:06 sin respuesta automática hasta las 18:10; después se restauró IA. El grafo conserva la meta concreta frente a referencias genéricas. P13 queda 4/4. Las pruebas pendientes descritas arriba son antecedentes ya resueltos; ver tasks/p13-sales-progress.json y artifacts/live/p13-close-review-20261120.json.
+
+Biblioteca vigente: 34 procedimientos revisados del backend, independientes de Codex. Cada turno selecciona y traza las guías consultadas completas, sin atribuir ejecución a las diferidas. Inglés sin precio confirmado, SLA sin umbral y candidatos/traspasos por etapa P22 siguen explícitos. No se garantiza conversión ni se decide matrícula autónomamente.
