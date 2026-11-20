@@ -61,10 +61,13 @@ def interest(programs, profiles, history):
 
 
 def history(c, conversation, sequence=None, limit=80):
-    return list(reversed(rows(c,
+    boundary = getattr(c, "context_cutoff", lambda _: 0)(conversation)
+    messages = list(reversed(rows(c,
         f"SELECT TOP({int(limit)}) MessageId,Direction,Body,Sequence,CreatedAt FROM crm.Message WHERE ConversationId=? "
+        + ("AND Sequence>? " if boundary else "")
         + ("AND Sequence<=? " if sequence is not None else "") + "ORDER BY Sequence DESC",
-        conversation, *((sequence,) if sequence is not None else ()))))
+        conversation, *((boundary,) if boundary else ()), *((sequence,) if sequence is not None else ()))))
+    return getattr(c, "audio_history", lambda _, values: values)(conversation, messages)
 
 
 def catalog_data(c, settings):
@@ -76,6 +79,8 @@ def catalog_data(c, settings):
 
 
 def configure(c, settings):
+    from app.institutional.conversation_scope import configure as configure_scope
+    configure_scope(c, settings)
     c.agent_catalog = Catalog(settings)
 
     def commercial(agents, stages, assignment, channel, conversation):
@@ -88,6 +93,8 @@ def configure(c, settings):
         detected = interest(programs, profiles, history(c, conversation, seq))
         from app.institutional.sales_referrals import origin
         referral = origin(c, settings, conversation, seq)
+        if referral and referral.get("sequence", 0) <= c.context_cutoff(conversation):
+            referral = None
         if referral and referral.get("program_id") and (not detected or referral["sequence"] > detected.get("sequence", 0)):
             matched = next((p for p in programs if p["program_id"] == referral["program_id"]), None)
             if matched:

@@ -1,3 +1,13 @@
+## P13: política central de 34 skills y audio antes del especialista — 2026-11-19
+
+Por petición expresa del propietario, los procedimientos de venta, presentación, comunicación, seguimiento, calificación, grafos y continuidad son política nativa del backend para la IA general, agentes, mensajes y comentarios. Catálogo34: unión de20anteriores y17solicitados con3repetidos. Selección determinista por turno, traza versionada en contexto/operaciones/ejecuciones; no depende de Codex ni concede permisos. Ver docs/adaptation/P13_RUNTIME_SKILLS.md.
+
+El piloto real de Enfermería coincidió con la ficha. El de Barismo por audio NO pasó: se elegía especialista antes de interpretar el audio. Se implementa transcripción acotada, atribuida al recurso/SHA y previa al enrutamiento, con guardas Humano/epoch/historia/lease/modelo. Menor abono vigente se suministra como pago inicial, con cuotas y alcance; pesos sin A1/A2. Reinicio de contexto reversible por conversación conserva mensajes/ficha/recibos/consumo y cancela autorizaciones pendientes. Código en validación; despliegue y nueva prueba real pendientes. No declarar corregido en producción hasta evidencia.
+
+26fichas leídas de nuevo en UI y24financieros contrastados con el material privado. Inglés sin precio hasta confirmar por nivel/bloque. Ajustes IA21 guardados con la indicación de decir pesos. P13 sigue0/4aceptadas. El ambiente de oficina/faders solicitado es ampliación de P19 pendiente, no parte de su aceptación previa. No DDL/seeds/contenedores nuevos/escrituras SIIE.
+
+General original P0–P11:100%,56/56y279/279; P12online100%PostgreSQL/Meta. P13Académico/agentes0/4en validación; P14entrenamiento comercial plan; P15correo100%7/7inicial; P16SIIE0/5parcial, origen financiero pendiente; P17TikTok0/5diferida; P18seguridad0/8plan; P19voces100%5/5técnico inicial, ampliación de ambiente pendiente; P20llamadasWhatsApp0/8plan; OPS01–06abiertos. Cortes inferiores históricos.
+
 ## P13: fichas y cita publicadas, piloto comercial pendiente — 2026-11-19
 
 26 fichas locales revisadas, 24 con planes del propietario y dos de Inglés sin precios hasta confirmar alcance. 26 especialistas y orientador activos, 20 procedimientos por perfil; guía9, Barismo/Bartender3, Aduanas1. Temarios públicos resumidos sin inventar distribución de ofertas conjuntas, equivalencias internacionales ni prácticas garantizadas. Becas opcionales de carrera completa y doble titulación obligatoria Ventas/Marketing conservadas. No copiar importes privados en Git ni escribir en SIIE.

@@ -24,8 +24,9 @@ PROGRAMS = [
 ]
 
 
-def test_twenty_reviewed_skills_are_validated_and_compiled():
-    assert len(IDS) == len(catalog()) == 20
+def test_reviewed_skills_include_sales_and_continuity_and_are_validated():
+    assert len(IDS) == len(catalog()) == 34
+    assert {"graphify", "recall", "handoff", "pricing", "sales-discovery-questions", "sales-closing-tactics"} <= IDS
     config = Configuration(sales_skill_ids=sorted(IDS))
     assert "Grafo de la conversación" in prompt(config.model_dump())
     for ids in (["invented-tool"], ["lead-triage", "lead-triage"]):

@@ -43,7 +43,6 @@ export function AgentSalesSkills({
       live = false;
     };
   }, [reload]);
-  const selected = configuration.sales_skill_ids ?? [];
   return (
     <section
       className="agents-editor-section"
@@ -51,8 +50,9 @@ export function AgentSalesSkills({
     >
       <h4>Skills comerciales y memoria</h4>
       <p>
-        Procedimientos que el agente aplica con su system prompt y los datos de
-        su programa. Las skills no conceden permisos adicionales.
+        Política central del backend para la IA general y todos los agentes. En
+        cada turno se aplican los procedimientos pertinentes a la consulta,
+        junto al system prompt y la ficha del programa. No conceden permisos.
       </p>
       {error && <Notice error>{error}</Notice>}
       {error && (
@@ -68,7 +68,7 @@ export function AgentSalesSkills({
       )}
       <div className="sales-toolbar">
         <strong>
-          {selected.length} de {skills.length} activas
+          {skills.length} skills disponibles · aplicación automática por turno
         </strong>
         <Button
           type="button"
@@ -77,36 +77,11 @@ export function AgentSalesSkills({
         >
           Actualizar skills
         </Button>
-        <Button
-          type="button"
-          variant="quiet"
-          disabled={!skills.length}
-          onClick={() => onChange({ sales_skill_ids: skills.map((v) => v.id) })}
-        >
-          Seleccionar las 20 skills
-        </Button>
-        <Button
-          type="button"
-          variant="quiet"
-          onClick={() => onChange({ sales_skill_ids: [] })}
-        >
-          Limpiar selección
-        </Button>
       </div>
       <div className="sales-skills-grid">
         {skills.map((skill) => (
           <label key={skill.id} title={skill.procedure}>
-            <input
-              type="checkbox"
-              checked={selected.includes(skill.id)}
-              onChange={(event) =>
-                onChange({
-                  sales_skill_ids: event.target.checked
-                    ? [...selected, skill.id]
-                    : selected.filter((id) => id !== skill.id),
-                })
-              }
-            />
+            <input type="checkbox" checked disabled />
             <span>
               <strong>{skill.name}</strong>
               <small>{skill.category}</small>

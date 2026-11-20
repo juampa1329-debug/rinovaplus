@@ -23,13 +23,13 @@
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "26 especialistas y orientador activos, 20 procedimientos por perfil. Continuidad y cambio de interés pendientes del piloto."
+      "pending": "34 procedimientos por política central para IA general y especialistas. Transcripción previa al enrutamiento, menor abono y reset reversible implementados; despliegue y piloto del nuevo corte pendientes."
     },
     {
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Cita sólo en primera parte y pausas confirmadas por el propietario. Pendientes dos programas en un hilo, memoria y silencio en Humano."
+      "pending": "Enfermería real coincidió con su ficha. Barismo por audio falló por selección previa a transcripción; repetir tras el nuevo corte. Cita/pausas confirmadas; continuidad y silencio Humano pendientes."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -133,5 +133,13 @@
     "quote_phone_confirmation": true,
     "context_budget": "Comparaciones grandes probadas localmente: ficha seleccionada íntegra, sin repetirla, perfiles adicionales completos o marcados como omitidos. Despliegue pendiente."
   },
-  "program_review": "artifacts/live/p13-program-review-20261119.json"
+  "program_review": "artifacts/live/p13-program-review-20261119.json",
+  "runtime_policy": {
+    "version": "cbn-sales-skills-v3",
+    "available": 34,
+    "scope": "general_agents_private_messages_public_comments_suggestions",
+    "provider_independent": true,
+    "deployment": "pending",
+    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md"
+  }
 }

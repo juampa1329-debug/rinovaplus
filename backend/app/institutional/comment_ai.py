@@ -426,6 +426,7 @@ class Drafts:
                 status, code, draft = "uncertain", "comment_or_ai_authority_changed", ""
             result = {
                 "draft": draft.strip(),
+                "skill_policy": grounded.get("skill_policy"),
                 "code": code,
                 "automatic_send": False,
                 "budget_reserved_tokens": ceiling_tokens,

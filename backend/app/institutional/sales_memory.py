@@ -34,7 +34,7 @@ def validated(observations, incoming):
         field, quote = item.get("field"), item.get("quote")
         if field in FIELDS and isinstance(quote, str) and 3 <= len(quote.strip()) <= 300 and quote in incoming["Body"]:
             value = {"field": field, "value": quote, "source_message_id": str(incoming["MessageId"]),
-                     "sequence": incoming["Sequence"], "origin": "customer_quote", "classification": "inferred_by_agent"}
+                     "sequence": incoming["Sequence"], "origin": incoming.get("body_origin", "customer_quote"), "classification": "inferred_by_agent"}
             if value not in clean:
                 clean.append(value)
     return clean
@@ -86,9 +86,10 @@ def record(c, settings, data, selection, observations, reply):
     config = selection["configuration"]
     if not config.get("sales_memory_enabled") or "customer_profile" not in config.get("memories", []):
         return
-    incoming = db.one(c, "SELECT MessageId,Body,Sequence FROM crm.Message WHERE ConversationId=? AND MessageId=? AND Direction='incoming'", data["conversation"], data["incoming"])
+    incoming = db.one(c, "SELECT MessageId,Body,Sequence,Direction FROM crm.Message WHERE ConversationId=? AND MessageId=? AND Direction='incoming'", data["conversation"], data["incoming"])
     if not incoming:
         raise HTTPException(409, "sales_memory_source_changed")
+    incoming = getattr(c, "audio_history", lambda _, values: values)(data["conversation"], [incoming])[0]
     document, revision = read(c, settings, data["conversation"])
     if any(v.get("incoming") == data["incoming"] for v in document.get("turns", [])):
         return
@@ -109,7 +110,8 @@ def record(c, settings, data, selection, observations, reply):
                     ad_referral=selection.get("ad_referral"),
                     updated_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
                     turns=[*document.get("turns", [])[-39:], {"incoming": data["incoming"], "reply": reply,
-                           "agent_id": selection["agent_id"], "agent_version": selection["version"], "sequence": incoming["Sequence"]}])
+                           "agent_id": selection["agent_id"], "agent_version": selection["version"], "sequence": incoming["Sequence"],
+                           "skill_policy": data.get("skill_policy")}])
     document["commercial_risk"] = risk(document, incoming["Sequence"])
     if config.get("auto_sales_crm") and q["score"] is not None:
         existing = db.one(c, "SELECT LeadScore,Temperature,UpdatedAt FROM crm_channels.ConversationProfile WHERE ConversationId=?", data["conversation"])
@@ -185,7 +187,11 @@ def graph(c, settings, conversation):
         node = "turn:" + turn["incoming"]
         nodes.append({"id": node, "label": "Intercambio · versión " + str(turn["agent_version"]), "kind": "turn", **turn})
         edges.append({"source": "conversation", "target": node, "relation": "atendida por", "certainty": "EXTRACTED"})
+    latest_sequence = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=?", conversation).fetchval()
     return {"revision": revision, "facts": facts, "qualification": document.get("qualification"),
+            "last_skill_policy": (document.get("turns") or [{}])[-1].get("skill_policy"),
+            "context_boundary": document.get("reset_after_sequence", 0),
+            "reset_target_sequence": latest_sequence, "can_restore_context": "previous_context" in document,
             "generation": generation_summary(c, settings, conversation),
             "assessment_authority": document.get("assessment_authority"), "interest": document.get("commercial_interest"),
             "ad_referral": document.get("ad_referral"),

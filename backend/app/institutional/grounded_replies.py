@@ -69,20 +69,25 @@ def context(
     program, stage = scope.get("program_id") or commercial_interest.get("program_id"), scope.get("stage_id")
     history = []
     if conversation and not public:
+        boundary = getattr(c, "context_cutoff", lambda _: 0)(conversation)
         history = list(
             reversed(
                 rows(
                     c,
-                    "SELECT TOP(12) m.Direction,m.Body FROM crm.Message m WHERE m.ConversationId=? AND " + pending_bot_history() + " "
+                    "SELECT TOP(12) m.MessageId,m.Sequence,m.Direction,m.Body FROM crm.Message m WHERE m.ConversationId=? AND " + pending_bot_history() + " "
+                    + ("AND Sequence>? " if boundary else "")
                     + ("AND Sequence<=? " if sequence is not None else "")
                     + "ORDER BY Sequence DESC",
                     conversation,
+                    *((boundary,) if boundary else ()),
                     *((sequence,) if sequence is not None else ()),
                 )
             )
         )
+        history = getattr(c, "audio_history", lambda _, values: values)(conversation, history)
         history = [
-            {"direction": v["Direction"], "text": redact(v["Body"][:1600])}
+            {"direction": v["Direction"], "text": redact(v["Body"][:1600]),
+             **({"origin": v["body_origin"]} if v.get("body_origin") else {})}
             for v in history
         ]
     retrieval = (
@@ -129,8 +134,6 @@ def context(
     # Public comments never receive private CRM memory or a DM conversation history.
     instructions = ai["document"].get("system_prompt", "")
     if selection:
-        from app.modules.agents.sales_skills import prompt as sales_prompt
-        instructions += sales_prompt(config)
         instructions += "\nInstrucciones del agente:\n" + config.get("instructions", "")
         instructions += "\nTono: " + config.get("tone", "")
         instructions += "\nObjetivos y reglas: " + json.dumps(
@@ -158,6 +161,9 @@ def context(
         if structured
         else "Devuelve sólo el texto del borrador para revisión humana, sin JSON."
     )
+    from app.modules.agents.skill_policy import for_turn, instructions as skill_instructions
+    skill_policy = for_turn(question + " " + post[:1600], history=history, public=public)
+    system += skill_instructions(skill_policy)
     system += style_instructions(config)
     if public:
         system += PUBLICATION_RULES
@@ -166,6 +172,7 @@ def context(
         + instructions
     )
     payload = {
+        "skill_policy": skill_policy,
         "consulta": redact(question[:2000]),
         "catalogo": material,
         "institucion_revisada": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
@@ -193,6 +200,7 @@ def context(
     query = json.dumps(payload, ensure_ascii=False, default=str)
     return {
         "system": system,
+        "skill_policy": skill_policy,
         "query": query,
         "fingerprint": digest([system, query, ai["revision"]]),
         "sources": [{"id": v["id"], "title": v["title"]} for v in documents],

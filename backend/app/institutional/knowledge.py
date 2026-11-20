@@ -839,6 +839,11 @@ def effective(c, settings, selection, conversation=None):
         context_id = active_context(c, conversation)
         where = "r.ContextId=?" if context_id else "r.ContextId IS NULL"
         vals = [context_id] if context_id else []
+        boundary = getattr(c, "context_cutoff", lambda _: 0)(conversation)
+        if boundary:
+            where += (" AND EXISTS(SELECT 1 FROM crm.Message source_message WHERE source_message.ConversationId=r.ConversationId "
+                      "AND source_message.MessageId=TRY_CONVERT(uniqueidentifier,JSON_VALUE(v.Snapshot,'$.source_message_id')) AND source_message.Sequence>?)")
+            vals.append(boundary)
         if context_id:
             where += (
                 " AND TRY_CONVERT(int,JSON_VALUE(v.Snapshot,'$.context_revision'))=?"

@@ -1,0 +1,66 @@
+{
+  "phase": "P13",
+  "status": "local_verified_deployment_pending",
+  "accepted_units": 0,
+  "total_units": 4,
+  "policy": {
+    "version": "cbn-sales-skills-v3",
+    "native_procedures": 34,
+    "previous_catalog": 20,
+    "owner_requested_ids": 17,
+    "overlap": 3,
+    "general_ai_and_specialists": true,
+    "messages_comments_suggestions": true,
+    "selection": "deterministic_per_turn",
+    "additional_model_call_for_selection": false,
+    "permissions_expanded": false,
+    "coding_skill_runtime_executed": false,
+    "third_party_review": "mbfinotti/sales-skills@b2ed3628695e523919af440eab77648e16c5eea8",
+    "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md"
+  },
+  "audio_routing": {
+    "prior_barismo_pilot": "failed_before_this_cut; specialist selected before audio interpretation",
+    "new_flow": "bounded_ASR_then_reclaim_and_resolve_specialist",
+    "provenance": "institution_conversation_message_asset_SHA256",
+    "human_change_during_transcription_test": "abandoned_without_transcript_or_reply",
+    "actual_new_voice_pilot": "pending"
+  },
+  "context_reset": {
+    "scope": "one_reviewed_conversation",
+    "reversible": true,
+    "history_deleted": false,
+    "voice_quota_reset": false,
+    "stale_sequence_rejected": true,
+    "actual_owner_44_reset": "pending"
+  },
+  "commercial": {
+    "entry_offer": "minimum_positive_initial_payment_from_current_permitted_plans",
+    "remaining_installments_and_scope_required": true,
+    "currency_wording": "pesos",
+    "global_prompt_revision_observed": 21,
+    "reviewed_program_records": 26,
+    "exact_owner_financial_readbacks": 24,
+    "english_prices": "withheld_pending_owner_scope_confirmation",
+    "earlier_nursing_live_pilot": "values_match_profile; owner_confirmed_receipt",
+    "exact_financial_data_in_git": false
+  },
+  "verification": {
+    "backend_selected": 197,
+    "frontend_selected": 28,
+    "types": "passed",
+    "ruff_modified": "passed",
+    "eslint_modified": "passed",
+    "workspace_build": "passed",
+    "existing_large_bundle_warning": true
+  },
+  "database_schema_changes": false,
+  "siie_writes": false,
+  "new_containers": false,
+  "deployment": "pending",
+  "remaining": [
+    "Deploy and verify both Coolify resources",
+    "Reset only the institutional owner test conversation through the reviewed UI",
+    "Repeat real audio routing and financing, continuity and Human silence",
+    "P19 office ambience and faders extension remains pending"
+  ]
+}

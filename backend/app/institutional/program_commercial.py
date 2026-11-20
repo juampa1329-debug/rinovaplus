@@ -162,6 +162,15 @@ def agent_facts(profile):
             facts.pop(field, None)
     if not facts["financial_plans"]:
         facts.pop("financial_plans", None)
+    entry_plans = [p for p in facts.get("financial_plans", [])
+                   if type(p.get("initial_payment_cop")) is int and p["initial_payment_cop"] > 0]
+    if entry_plans:
+        entry = min(entry_plans, key=lambda p: (p["initial_payment_cop"], p.get("total_cost_cop") or 1_000_000_001, p["external_id"]))
+        facts["entry_payment_offer"] = {
+            "currency": "COP", "source_plan_id": entry["external_id"],
+            **{k: entry.get(k) for k in ("initial_payment_cop", "initial_payment_due_date", "installments", "total_cost_cop", "conditions", "valid_until")},
+            "guidance": "Presenta primero este abono inicial mínimo como opción para empezar el proceso, seguido de las cuotas pendientes. Es un pago inicial, nunca el precio total del semestre ni de la carrera. No garantiza matrícula o admisión. Di pesos y evita nombres internos como Plan A1/A2. Si preguntan por contado o total, informa directamente el importe revisado correspondiente y su alcance; no ocultes condiciones ni inventes descuentos.",
+        }
     missing = []
     if profile.get("siie_program_id") and not profile.get("requirements"):
         missing.append("requirements")

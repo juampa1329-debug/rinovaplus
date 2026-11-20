@@ -623,8 +623,6 @@ def policy_for(selection):
         "\nPrograma y etapa sólo cambian por confirmación humana. No declares "
         "cambios institucionales."
     )
-    from app.modules.agents.sales_skills import prompt as sales_prompt
-    instructions += sales_prompt(config)
     instructions += "\nRuta operativa: " + config.get("route", "admissions")
     instructions += "\nPolíticas complementarias: " + ", ".join(
         config.get("industry_policies", ["academy"])
@@ -1560,7 +1558,9 @@ class AgentsService:
                     source_proof(sources),
                 ]
             )
+        from app.modules.agents.skill_policy import from_messages
         response = {
+            "skill_policy": from_messages(messages),
             "agent_id": key,
             "config_version": request.config_version,
             "program_id": request.program_id,

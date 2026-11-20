@@ -56,7 +56,7 @@ def digest(value):
 
 class Configuration(StrictModel):
     provider: Provider = "openrouter"
-    sales_skill_ids: list[str] = Field(default_factory=list, max_length=20)
+    sales_skill_ids: list[str] = Field(default_factory=list, max_length=64)
     sales_routing_enabled: bool = False
     sales_memory_enabled: bool = False
     auto_sales_crm: bool = False

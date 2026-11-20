@@ -299,6 +299,9 @@ def reply_context(c, settings, data, source_value):
     from app.institutional.sales_context import configure as configure_sales
 
     configure_sales(c, settings)
+    interpreted = getattr(c, "audio_history", lambda _, values: values)(data["conversation"], [
+        {**source_value, "MessageId": data["incoming"], "Direction": "incoming"},
+    ])[0]
     channel = data.get("channel", "whatsapp")
     selected = resolve_conversation(
         c, data["conversation"], "facebook" if channel == "messenger" else channel
@@ -306,7 +309,7 @@ def reply_context(c, settings, data, source_value):
     result = grounded_replies.context(
         c,
         settings,
-        source_value["Body"],
+        interpreted["Body"],
         selection=selected,
         conversation=data["conversation"],
         sequence=source_value["Sequence"],
@@ -324,6 +327,9 @@ def reply_context(c, settings, data, source_value):
             [result["fingerprint"], voice_audio.audio_fingerprint(audio)]
         )
         result["input_audio"] = audio
+        result["audio_transcribed"] = interpreted.get("body_origin") == "automatic_audio_transcription"
+        if result["audio_transcribed"]:
+            result["system"] += "\nLa consulta procede de una transcripción automática del audio original, no verificada por una persona. Usa ese texto para consultar el programa correcto; si hay ambigüedad en nombres o datos importantes, aclara antes de cotizar. No arrastres el programa anterior cuando el cliente cambió de interés."
     options = voice_audio.policy(c, settings)
     result["voice_profile_id"] = selected.get("configuration", {}).get(
         "voice_profile_id", ""
@@ -449,6 +455,7 @@ class Worker:
                 )
                 config, secret, binding = model_config(c, settings, data)
                 grounded = reply_context(c, settings, data, context)
+                data["skill_policy"] = grounded.get("skill_policy")
                 secret_value = unseal(
                     key(settings),
                     {
@@ -465,11 +472,13 @@ class Worker:
                 input_tokens = (
                     len((grounded["system"] + grounded["query"]).encode()) + 512
                 )
-                if grounded.get("input_audio"):
+                if grounded.get("input_audio") and not grounded.get("audio_transcribed"):
                     input_tokens += (
                         10_240  # Conservative reserve for the inspected <=300s asset.
                     )
                 output_tokens = min(2000, config["max_tokens"])
+                if grounded.get("input_audio") and not grounded.get("audio_transcribed"):
+                    output_tokens = 2000
                 cost_micros = max(
                     1,
                     math.ceil(
@@ -551,19 +560,45 @@ class Worker:
                     before=before_attempt,
                     enabled=delivery_options.get("show_typing", True),
                 )
-            result = asyncio.run(
-                self.gateway_factory({"gemini": secret_value}).gemini_generation(
-                    binding["model"],
-                    voice_audio.request_with_audio(
-                        grounded_replies.request_body(
-                            grounded, output_tokens, config.get("temperature", 0.3)
-                        ),
-                        grounded.get("input_audio"),
-                    ),
-                    before_attempt=before_attempt,
+            if grounded.get("input_audio") and not grounded.get("audio_transcribed"):
+                from app.institutional import voice_transcripts
+                transcription = asyncio.run(self.gateway_factory({"gemini": secret_value}).gemini_generation(
+                    binding["model"], voice_transcripts.request_body(grounded["input_audio"]), before_attempt=before_attempt,
+                ))
+                text = voice_transcripts.parse(transcription)
+                if text:
+                    # Persist interpretation and release this stage atomically. The next
+                    # claim resolves the specialist/model from the transcribed interest.
+                    with transaction(settings, True, anonymous=True) as c:
+                        source(c, settings, integration, data)
+                        if model_config(c, settings, data)[2] != binding:
+                            raise HTTPException(409, "gemini_whatsapp_model_changed")
+                        active = c.execute("SELECT 1 FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=? AND LeaseUntil>SYSUTCDATETIME()",
+                                           institution(settings), operation, lease).fetchone()
+                        if not active:
+                            raise HTTPException(409, "gemini_whatsapp_claim_changed")
+                        voice_transcripts.save(c, settings, data, grounded["input_audio"], text, binding["model"], transcription.get("usageMetadata"))
+                        data["transcription_stage"] = {"completed": True, "media": voice_audio.audio_fingerprint(grounded["input_audio"])}
+                        c.execute("UPDATE crm_channels2.ProviderOperation SET Status='pending',ResultMetadata=?,ResultCode=NULL,LeaseId=NULL,LeaseUntil=NULL WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=?",
+                                  json.dumps(data), institution(settings), operation, lease)
+                        if c.rowcount != 1:
+                            raise HTTPException(409, "gemini_whatsapp_claim_changed")
+                        c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
+                    return True
+                generated = "No alcancé a entender bien esa nota de voz. ¿Me la repites o me escribes tu pregunta para poder orientarte con precisión?"
+                result = None
+            else:
+                result = asyncio.run(
+                    self.gateway_factory({"gemini": secret_value}).gemini_generation(
+                        binding["model"],
+                        voice_audio.request_with_audio(
+                            grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
+                            None if grounded.get("audio_transcribed") else grounded.get("input_audio"),
+                        ), before_attempt=before_attempt,
+                    )
                 )
-            )
-            generated = grounded_replies.parse(result)
+            if result is not None:
+                generated = grounded_replies.parse(result)
             # Optional observations never become instructions or arbitrary field writes.
             raw = json.loads(
                 "".join(
@@ -571,7 +606,7 @@ class Worker:
                     for part in result["candidates"][0]["content"]["parts"]
                     if not part.get("thought")
                 )
-            )
+            ) if result is not None else {}
             observations = raw.get("crm_observations", [])
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
@@ -645,6 +680,7 @@ class Worker:
                     "generated_text": generated,
                     "modelBinding": binding,
                     "contextBinding": grounded["fingerprint"],
+                    "skill_policy": grounded.get("skill_policy"),
                     "voiceMedia": audio["media_id"] if audio else None,
                     "voiceOperation": audio["operation"] if audio else None,
                     "voiceReason": voice_reason,

@@ -108,6 +108,8 @@ def require_provider(ai, configuration, provider=None):
 async def complete(ai, selection, policy, messages, guard, *, preview=False):
     """Use explicit primary/fallback routes; uncertain POSTs are never repeated."""
     configuration = selection["configuration"]
+    from app.modules.agents.skill_policy import from_messages
+    skill_policy = from_messages(messages)
     if ai.busy:
         raise AiError("operation_busy", 429)
     ai.busy = True
@@ -193,6 +195,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         "model": model,
                         "role": "fallback" if index else "primary",
                         "state": "completed",
+                        "skill_policy": skill_policy,
                         "latency_ms": round((monotonic() - attempt_start) * 1000),
                         **result.get("response_metadata", {}),
                     }
@@ -203,6 +206,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                     "fallback_used": bool(index),
                     "latency_ms": round((monotonic() - started) * 1000),
                     "attempts": attempts,
+                    "skill_policy": skill_policy,
                 }
             except AiError as error:
                 attempts.append(
@@ -211,6 +215,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         "model": model,
                         "role": "fallback" if index else "primary",
                         "state": "failed",
+                        "skill_policy": skill_policy,
                         "code": error.code,
                         "latency_ms": round((monotonic() - attempt_start) * 1000),
                     }

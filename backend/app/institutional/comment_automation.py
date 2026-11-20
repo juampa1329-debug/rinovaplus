@@ -365,7 +365,8 @@ class Worker:
                         raise HTTPException(409, "comment_auto_policy_changed")
                     outgoing = str(uuid4())
                     data.update(operation=outgoing, revision=ai["revision"], generation="grounded-v1",
-                                generated_text=reply, contextBinding=grounded["fingerprint"])
+                                generated_text=reply, contextBinding=grounded["fingerprint"],
+                                skill_policy=grounded.get("skill_policy"))
                 except HTTPException as error:
                     state, code = "abandoned", error.detail
             if finish(c, settings, operation, state, code, data, lease) and outgoing:

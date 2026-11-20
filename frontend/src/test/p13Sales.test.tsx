@@ -15,7 +15,10 @@ import { blankConfiguration, type Catalog } from "../modules/agents/api";
 const mocks = vi.hoisted(() => ({ api: vi.fn() }));
 vi.mock("../institution/api", async (original) => ({
   ...(await original<typeof import("../institution/api")>()),
-  useInstitution: () => ({ call: vi.fn(), session: { actions: ["inbox.read"] } }),
+  useInstitution: () => ({
+    call: vi.fn(),
+    session: { actions: ["inbox.read"] },
+  }),
 }));
 vi.mock("../modules/agents/api", async (original) => ({
   ...(await original<typeof import("../modules/agents/api")>()),
@@ -24,7 +27,7 @@ vi.mock("../modules/agents/api", async (original) => ({
 afterEach(cleanup);
 beforeEach(() => mocks.api.mockReset());
 
-test("skills are selectable and disabling memory also stops automatic CRM writes", async () => {
+test("central skills are always available while memory writes remain independently controlled", async () => {
   mocks.api.mockResolvedValue({
     items: [
       {
@@ -63,12 +66,13 @@ test("skills are selectable and disabling memory also stops automatic CRM writes
   }
   render(<Editor />);
   await screen.findByText("Recuperar contexto");
-  fireEvent.click(
-    screen.getByRole("button", { name: "Seleccionar las 20 skills" }),
-  );
+  expect(screen.getByText(/2 skills disponibles/)).toBeInTheDocument();
   expect(
     screen.getByRole("checkbox", { name: /Recuperar contexto/ }),
   ).toBeChecked();
+  expect(
+    screen.getByRole("checkbox", { name: /Recuperar contexto/ }),
+  ).toBeDisabled();
   fireEvent.click(
     screen.getByRole("checkbox", { name: /Conservar memoria comercial/ }),
   );
@@ -118,7 +122,7 @@ test("skill catalog can recover after a deployment without changing the saved se
   });
   fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
   fireEvent.click(screen.getByRole("button", { name: "Actualizar skills" }));
-  await screen.findByText("1 de 1 activas");
+  await screen.findByText(/1 skills disponibles/);
   expect(
     screen.getByRole("checkbox", { name: /Recuperar contexto/ }),
   ).toBeChecked();

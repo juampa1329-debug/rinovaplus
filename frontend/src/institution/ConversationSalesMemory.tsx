@@ -10,8 +10,14 @@ type Fact = {
   value: string;
   source_message_id: string;
   sequence: number;
+  origin?: string;
 };
 type Memory = {
+  last_skill_policy?: {
+    version: string;
+    active_ids: string[];
+    available_count: number;
+  } | null;
   generation?: {
     id: string;
     integration: string;
@@ -27,6 +33,9 @@ type Memory = {
     program_id?: number;
   };
   revision: number;
+  context_boundary?: number;
+  reset_target_sequence?: number;
+  can_restore_context?: boolean;
   facts: Fact[];
   qualification: {
     score: number | null;
@@ -87,6 +96,10 @@ function SalesMemory({
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   const [recover, setRecover] = useState(false);
+  const [resetAction, setResetAction] = useState<"reset" | "restore" | null>(
+    null,
+  );
+  const [feedback, setFeedback] = useState("");
   const [busy, setBusy] = useState(false);
   const { call, session } = useInstitution();
   useEffect(() => {
@@ -130,6 +143,63 @@ function SalesMemory({
         </Notice>
       )}
       {!value && !error && <p>Cargando contexto…</p>}
+      {feedback && <Notice>{feedback}</Notice>}
+      {resetAction && value && (
+        <OperationDialog
+          guidance={{
+            title:
+              resetAction === "reset"
+                ? "Empezar un contexto de IA nuevo"
+                : "Restaurar el contexto anterior",
+            detail:
+              resetAction === "reset"
+                ? "La IA comenzará desde el próximo mensaje sin usar los intercambios ni la memoria comercial anteriores. El historial, la ficha CRM, los recibos y el consumo de voz se conservan. Las respuestas anteriores que sigan pendientes perderán su autorización. Podrás restaurar el contexto anterior."
+                : "La IA volverá a disponer de la memoria y los intercambios anteriores. El historial y los límites de voz se conservan. Se cancelará la autorización de respuestas pendientes del contexto actual.",
+          }}
+          dismiss={() => setResetAction(null)}
+          dismissLabel="Cancelar"
+          confirm={{
+            label:
+              resetAction === "reset"
+                ? "Reiniciar contexto"
+                : "Restaurar contexto",
+            run: async () => {
+              if (busy) return;
+              setBusy(true);
+              try {
+                await call(
+                  `conversation-memory/${conversation}/reset`,
+                  "POST",
+                  {
+                    operation_id: crypto.randomUUID(),
+                    revision: value.revision,
+                    sequence: value.reset_target_sequence,
+                    confirmed: true,
+                    action: resetAction,
+                  },
+                );
+                setFeedback(
+                  resetAction === "reset"
+                    ? "Contexto reiniciado. El próximo mensaje empezará una atención nueva; el historial se conserva."
+                    : "Contexto anterior restaurado.",
+                );
+                setResetAction(null);
+                setRetry((v) => v + 1);
+                setError("");
+              } catch (failure) {
+                setError(
+                  failure instanceof Error
+                    ? failure.message
+                    : "No se pudo cambiar el contexto.",
+                );
+                setResetAction(null);
+              } finally {
+                setBusy(false);
+              }
+            },
+          }}
+        />
+      )}
       {recover && value?.generation && (
         <OperationDialog
           guidance={{
@@ -174,6 +244,20 @@ function SalesMemory({
       )}
       {value && (
         <>
+          {value.last_skill_policy && (
+            <details>
+              <summary>
+                Skills del último turno ·{" "}
+                {value.last_skill_policy.active_ids.length} aplicadas
+              </summary>
+              <p>
+                {value.last_skill_policy.version} ·{" "}
+                {value.last_skill_policy.available_count} disponibles por
+                política central
+              </p>
+              <p>{value.last_skill_policy.active_ids.join(" · ")}</p>
+            </details>
+          )}
           {value.generation &&
             ["failed", "uncertain", "running"].includes(
               value.generation.status,
@@ -275,8 +359,10 @@ function SalesMemory({
                 <dt>{labels[fact.field] ?? fact.field}</dt>
                 <dd>{fact.value}</dd>
                 <small>
-                  Cita del cliente · categoría interpretada por IA · mensaje{" "}
-                  {fact.sequence}
+                  {fact.origin === "automatic_audio_transcription"
+                    ? "Transcripción automática · confirma datos importantes"
+                    : "Cita del cliente"}{" "}
+                  · categoría interpretada por IA · mensaje {fact.sequence}
                 </small>
               </div>
             ))}
@@ -317,6 +403,27 @@ function SalesMemory({
             </ol>
           </details>
           <small>{value.memory_limit}</small>
+          {session.actions.includes("inbox.write") &&
+            value.reset_target_sequence !== undefined && (
+              <div className="form-actions">
+                <Button
+                  variant="quiet"
+                  disabled={busy}
+                  onClick={() => setResetAction("reset")}
+                >
+                  Empezar desde cero con IA
+                </Button>
+                {value.can_restore_context && (
+                  <Button
+                    variant="quiet"
+                    disabled={busy}
+                    onClick={() => setResetAction("restore")}
+                  >
+                    Restaurar contexto anterior
+                  </Button>
+                )}
+              </div>
+            )}
         </>
       )}
     </details>

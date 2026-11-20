@@ -399,6 +399,12 @@ const errors: Record<string, string> = {
     "Revisa los especialistas y marca la confirmación antes de crearlos.",
   sales_memory_revision_conflict:
     "La memoria cambió durante la operación. Actualiza el hilo antes de reintentar.",
+  sales_context_reset_changed:
+    "Llegó información nueva o cambió la memoria. Actualiza el hilo y revisa lo último antes de reiniciar el contexto.",
+  sales_context_reset_review_required:
+    "Revisa qué información conservará el chat y confirma el cambio de contexto.",
+  sales_context_restore_unavailable:
+    "No hay un contexto anterior disponible para restaurar.",
   voice_institutional_only:
     "Los perfiles de voz se administran en el entorno institucional de RinovaPlus.",
   agents_channel_not_allowed:

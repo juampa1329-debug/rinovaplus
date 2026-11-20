@@ -208,6 +208,8 @@ class Agents(AgentsService):
         if authority is None:
             raise HTTPException(401, "session_required")
         with transaction(self.profile, write, anonymous=True) as c:
+            from app.institutional.conversation_scope import configure as configure_scope
+            configure_scope(c, self.profile)
             actor = authorize(c, self.profile, authority, authority["permission"])
             if not setting(c, self.profile, "modules")["document"]["enabled"].get(
                 "agents", False
