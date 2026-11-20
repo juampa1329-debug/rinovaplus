@@ -572,9 +572,14 @@ it("reuses the preview intent to avoid duplicate charges and renders a private a
   expect(ids[0]).toBe(ids[1]);
 });
 
-it("reopens a stored private preview without another paid generation", async () => {
+it("reopens and remixes a stored private preview without another paid generation or saving", async () => {
   let paid = 0;
-  mock((url) => {
+  mock((url, init) => {
+    if (url.endsWith("/voice/previews/stored")) {
+      expect(init?.method).toBe("GET");
+      return respond({ id: "stored", profile_id: "juampa", remix_available: true, state: "confirmed",
+        audio_url: "/api/institution/voice/previews/stored/audio", duration: 6, characters: 50 });
+    }
     if (url.endsWith("/stored/audio"))
       return new Response(new Blob(["OggS"], { type: "audio/ogg" }));
     if (url.endsWith("/voice/usage"))
@@ -604,6 +609,9 @@ it("reopens a stored private preview without another paid generation", async () 
     await screen.findByRole("link", { name: "Descargar audio" }),
   ).toHaveAttribute("href", "blob:private-preview");
   expect(screen.getByText("Saludo: Cálida")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Preparar mezcla sin generar" }));
+  expect(await screen.findByRole("heading", { name: "Mezcla de la muestra · sin nueva generación" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Guardar configuración de voz" })).toBeDisabled();
   expect(paid).toBe(0);
 });
 

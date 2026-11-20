@@ -126,3 +126,22 @@ def test_real_opus_mix_ducks_background_without_cutting_voice(tmp_path, monkeypa
         levels[duck] = (amplitude(0.4, 0.8), amplitude(1.8, 2.4))
     assert levels[True][1] < levels[False][1] * 0.6
     assert levels[True][0] == pytest.approx(levels[False][0], rel=0.1)
+
+
+def test_recover_existing_sample_is_owner_scoped_read_only_and_never_synthesizes(monkeypatch, tmp_path):
+    app, source, queries, actor = setup_route(monkeypatch, tmp_path)
+    operation = str(uuid4())
+    record = {"OperationId": operation, "Status": "confirmed", "ResultCode": None,
+              "ResultMetadata": json.dumps({"profile": {"id": "juampa"}, "characters": 150, "duration": 3,
+                 "receipt": {"ambience": {"dry_hash": hashlib.sha256(source.read_bytes()).hexdigest()}}})}
+    def one(_c, sql, *args):
+        queries.append((sql, args))
+        return record
+    monkeypatch.setattr(voice, "one", one)
+    monkeypatch.setattr(voice, "stored_key", lambda *_: pytest.fail("existing sample cannot call provider"))
+    with TestClient(app) as client:
+        response = client.get(f"/api/institution/voice/previews/{operation}")
+    assert response.status_code == 200 and response.json()["remix_available"]
+    assert response.json()["profile_id"] == "juampa" and response.json()["id"] == operation
+    assert len(queries) == 1 and "ActorRef=?" in queries[0][0] and queries[0][1][-1] == actor
+    assert "hour,-24" in queries[0][0] and queries[0][0].startswith("SELECT")

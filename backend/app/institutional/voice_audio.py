@@ -263,6 +263,7 @@ def authorize_dispatch(c, settings, data, payload):
 def preview_response(row):
     value = json.loads(row["ResultMetadata"])
     return {"id": uid(str(row["OperationId"])), "state": row["Status"], "code": row["ResultCode"],
+            "profile_id": value.get("profile", {}).get("id"),
             "remix_available": bool(value.get("receipt", {}).get("ambience", {}).get("dry_hash")),
             "characters": value["characters"], "duration": value.get("duration"), "greeting_tone": value.get("profile", {}).get("greeting_tone", "inherit"),
             "audio_url": "/api/institution/voice/previews/" + uid(str(row["OperationId"])) + "/audio" if row["Status"] == "confirmed" else None}
@@ -498,6 +499,16 @@ def install(app, settings):
     @app.post("/api/institution/voice/previews")
     def create_preview(request: Request, body: Preview):
         return preview(settings, request.state.authority, body)
+
+    @app.get("/api/institution/voice/previews/{operation}")
+    def recover_preview(request: Request, operation: str):
+        # Recover an existing private sample and its mixer, never regenerate TTS.
+        with transaction(settings, anonymous=True) as c:
+            actor = authorize(c, settings, request.state.authority, "settings.ai.read")
+            row = one(c, "SELECT * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=? AND Action=? AND ActorRef=? AND Status='confirmed' AND CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME())", institution(settings), uid(operation), PREVIEW, uid(str(actor["UserId"])))
+            if not row:
+                raise HTTPException(404, "voice_preview_unavailable")
+            return preview_response(row)
 
     @app.get("/api/institution/voice/previews/{operation}/audio")
     def preview_file(request: Request, operation: str):

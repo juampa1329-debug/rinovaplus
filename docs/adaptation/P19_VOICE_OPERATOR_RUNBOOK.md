@@ -128,3 +128,11 @@ teclado sintéticos. Se sustituyen por fuentes CC0 de Fupicat y se2001, con
 procedencia y SHA-256 verificables. No hay nuevas llamadas al proveedor para
 crear el fondo, ni se modifica la política de audios. Publicación y escucha
 comparada pendientes de esta revisión; no aceptar automáticamente su realismo.
+
+### Recuperar una muestra para mezclar sin consumo
+
+En Actividad y consumo, junto a una muestra privada vigente, pulsa
+**Preparar mezcla sin generar**. Recupera el original y el mezclador durante
+24horas para su mismo propietario; no llama a ElevenLabs, no modifica el perfil
+ni envía mensajes. Ajusta los faders y pulsa Escuchar mezcla. Las muestras
+anteriores a la ampliación no tienen original separado para esta operación.

@@ -102,6 +102,7 @@ type Usage = {
 };
 type Preview = {
   id?: string;
+  profile_id?: string;
   remix_available?: boolean;
   state: string;
   code?: string;
@@ -1241,6 +1242,21 @@ function VoiceEditor({
                     {historyPreview === v.id
                       ? "Ocultar muestra"
                       : "Escuchar muestra"}
+                  </Button>
+                )}
+                {v.audio_url && (
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    disabled={!writable || task.busy || previewBusy || changed}
+                    onClick={() => void task.run(async () => {
+                      const recovered = await call<Preview>(`voice/previews/${v.id}`);
+                      setPreview(recovered);
+                      if (recovered.profile_id && saved.profiles.some((p) => p.id === recovered.profile_id))
+                        setPreviewProfile(recovered.profile_id);
+                    }, "Muestra recuperada sin generar voz ni consumir caracteres.")}
+                  >
+                    Preparar mezcla sin generar
                   </Button>
                 )}
                 {v.audio_url && historyPreview === v.id && (
