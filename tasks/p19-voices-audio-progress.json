@@ -90,7 +90,7 @@
   "live_audio_generated_at_prior_cut": 10,
   "ambience_extension": {
     "date": "2026-11-19",
-    "status": "implemented_local_checks_live_preview_pending",
+    "status": "published_frontend_preview_verified_sample_delivered_owner_quality_pending",
     "controls": [
       "per_profile_enable",
       "voice_volume",
@@ -102,8 +102,21 @@
     "assets": "Original procedural ventilation and keyboard; no speech or third-party recordings",
     "preview": "One paid voice sample; owner-scoped remixes of dry master without provider calls or saving",
     "existing_profiles": "Ambience disabled; current voice policy and counters unchanged",
-    "phone44": "Deferred by owner until continuing; no new WhatsApp send this extension",
+    "phone44": "Owner authorized after initial deferral; one12second sample delivered, playback and sound balance pending owner review",
     "acceptance": "Initial 5/5 scope remains accepted; new sound quality requires owner review",
-    "P13": "Deferred to another request; local skill-library edits excluded from P19 commit"
+    "P13": "Deferred to another request; local skill-library edits excluded from P19 commit",
+    "checks": {
+      "backend": 66,
+      "frontend": 16,
+      "skipped": 0,
+      "types": "passed",
+      "modified_lint": "passed",
+      "build": "passed_existing_bundle_warning"
+    },
+    "evidence": "artifacts/live/p19-ambience-review-20261119.json",
+    "deployed_code": "d09b969",
+    "backend": "83phcn5lc0xbrcfbmhbzuvxu healthy",
+    "frontend": "u1ccy7e5uvminbm1wrwjegkm Success",
+    "current_live_settings": "Revision22 retained; max5 audios,60seconds,20000characters/day, Juampa/Tranquila; ambience remains off for existing profiles"
   }
 }

@@ -2,11 +2,17 @@
   "phase": "P19",
   "extension": "Office and keyboard ambience with preview before saving",
   "date": "2026-11-19",
-  "status": "local_checks_passed_deployment_pending",
+  "status": "published_preview_verified_whatsapp_delivered_owner_sound_review_pending",
   "initial_acceptance": "5/5 retained; does not accept new sound quality on behalf of the owner",
   "scope": "Only P19. Uncommitted P13 skill library and UI changes excluded by owner instruction.",
-  "backend_checks": {"passed": 66, "skipped": 0},
-  "frontend_checks": {"passed": 16, "files": 2},
+  "backend_checks": {
+    "passed": 66,
+    "skipped": 0
+  },
+  "frontend_checks": {
+    "passed": 16,
+    "files": 2
+  },
   "typecheck": "passed",
   "modified_eslint": "passed",
   "ruff": "passed",
@@ -28,7 +34,40 @@
     "temporary_mix": "Removed after each response",
     "existing_profiles": "Ambience disabled by default; voice limits and current assignments preserved"
   },
-  "live": {"deployment": "pending", "frontend_preview": "pending", "new_whatsapp_messages_sent": 0},
-  "owner_review": "Phone44 playback deferred by owner until continuing; no global ambience activation performed",
-  "roadmap": "Original P0-P11 100%, P12 PostgreSQL/Meta 100%; no original weights changed. P13 remains 0/4 for another request."
+  "live": {
+    "code_commit": "d09b9699797712e238f3f6ea2c3e67feccba4853",
+    "backend_deployment": "83phcn5lc0xbrcfbmhbzuvxu",
+    "backend_health": "healthy",
+    "backend_rollout_finished_utc": "2026-11-20T04:43:19Z",
+    "frontend_deployment": "u1ccy7e5uvminbm1wrwjegkm",
+    "frontend_status": "Success, 43 seconds",
+    "frontend_preview": "Generated Juampa/Tranquila once; dry and mixed audio load with browser readyState4 and no media error",
+    "mixed_duration_seconds": 12.2465,
+    "reserved_characters": 270,
+    "usage_before": 6291,
+    "usage_after_generation_and_remix": 6561,
+    "provider_reported_characters": null,
+    "saved_policy_revision": 22,
+    "saved_configuration_unchanged": true,
+    "preview_levels": {
+      "voice": 1,
+      "office": 0.12,
+      "typing": 0.16,
+      "ducking": true
+    },
+    "slider_check": "Office12->13->12; changed-preview notice visible; no configuration write",
+    "preview_master_expiry": "24 hours; page stays open; new paid sample needed after expiry",
+    "new_whatsapp_messages_sent": 1,
+    "whatsapp_recipient": "Owner approved existing test conversation ending44 on institutional account",
+    "whatsapp_receipt": "delivered",
+    "phone_playback": "Pending owner listening; not inferred from receipt",
+    "global_ambience_activation": false,
+    "screenshot": "p19-ambiente-preview.jpg in local visualization workspace"
+  },
+  "owner_review": "Owner subsequently authorized sending one sample to44, delivered. Owner will adjust frontend levels; no sound-quality acceptance inferred.",
+  "roadmap": "Original P0-P11 100%, P12 PostgreSQL/Meta 100%; no original weights changed. P13 remains 0/4 for another request.",
+  "assets_sha256": {
+    "office.wav": "3543fa9a62557104d583040412f4301f9402a1daee034e7c9065758c8ebb3aa5",
+    "typing.wav": "115f04734204410daa0ba716404ffa9210da866971b6fb965884b16c6654dca4"
+  }
 }

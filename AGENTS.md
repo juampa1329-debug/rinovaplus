@@ -1,3 +1,9 @@
+## P19: mezcla publicada y muestra entregada — 2026-11-19
+
+Código d09b969 publicado: backend83phcn5lc0xbrcfbmhbzuvxu saludable y frontendu1ccy7e5uvminbm1wrwjegkm Success.66backend/16frontend, tipos/lint/build pasan; FFmpeg real midió ducking/duración/picos. Preview Juampa/Tranquila real de12,2465s;270caracteres reservados una vez y remix local sin incremento ni guardado. El propietario autorizó después enviar esa muestra al44: Meta confirmó Entregado. Escucha y balance final siguen pendientes; no inferir aceptación sonora. Ambiente global apagado, política22 conservada (5audios/60s/20000caracteres diarios). Evidencia: artifacts/live/p19-ambience-review-20261119.json.
+
+P13 Académico/agentes comerciales continúa0/4 y quedó para otra petición; cambios locales de biblioteca v5/UI fuera de commits P19, no borrarlos. Original P0–P11 y P12 auxiliar PostgreSQL/Meta:100%; P15 correo7/7; P19 voz5/5 inicial con ampliación publicada y calidad pendiente. P14 entrenamiento comercial plan; P16 SIIE parcial0/5; P17 TikTok diferida0/5; P18 seguridad plan0/8; P20 llamadas WhatsApp plan0/8. OPS01–06 abiertos. Los cortes inferiores conservan historia.
+
 ## P19: ambiente y vista previa; P13 diferida — 2026-11-19
 
 El titular acotó esta entrega a P19 y dejó P13 para otra petición. Se conservan sus cambios locales sin incluirlos en el commit de voz. No se acepta P13: sigue0/4 y falta validar calidad comercial.

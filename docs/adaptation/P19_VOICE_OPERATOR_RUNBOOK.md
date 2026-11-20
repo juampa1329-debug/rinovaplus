@@ -101,3 +101,19 @@ El titular aplazó la prueba al teléfono 44 hasta que continuemos. No se enviar
 nuevos audios de prueba ni se activará ambiente global sin ese recorrido. P13
 Académico/agentes comerciales queda para otra petición; sus cambios locales no
 forman parte del commit de esta ampliación.
+
+### Resultado publicado de la ampliación — 19-11-2026
+
+Backend/frontend d09b969 publicados y saludables en Coolify. Vista previa real
+Juampa/Tranquila de12,2465segundos; navegador readyState4 sin error de audio.
+270caracteres reservados una vez. El remix local conservó6561caracteres diarios
+y la configuración versión22 sin escrituras. Deslizador oficina12→13→12 y aviso
+de vista previa desactualizada comprobados. Mantener distinguido este consumo
+reservado del coste facturado, que el proveedor no devolvió individualmente.
+
+El titular autorizó posteriormente una muestra al44: se envió el mismo archivo
+de la vista previa (voz100%, oficina12%, teclado16%, reducción automática) y Meta
+confirmó Entregado. Falta su escucha y elección de balance; no afirmar calidad
+aceptada por el recibo. La política vigente conserva máximo5audios,60segundos,
+20000caracteres diarios y Juampa/Tranquila. No se activó ambiente global.
+P13 permanece fuera de esta entrega, pendiente para otra petición.
