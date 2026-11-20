@@ -1,0 +1,34 @@
+{
+  "phase": "P19",
+  "extension": "Office and keyboard ambience with preview before saving",
+  "date": "2026-11-19",
+  "status": "local_checks_passed_deployment_pending",
+  "initial_acceptance": "5/5 retained; does not accept new sound quality on behalf of the owner",
+  "scope": "Only P19. Uncommitted P13 skill library and UI changes excluded by owner instruction.",
+  "backend_checks": {"passed": 66, "skipped": 0},
+  "frontend_checks": {"passed": 16, "files": 2},
+  "typecheck": "passed",
+  "modified_eslint": "passed",
+  "ruff": "passed",
+  "workspace_build": "passed; existing large chunk warning retained",
+  "audio": {
+    "engine": "FFmpeg local mix, mono OGG/Opus",
+    "test_encoder": "9.0.2 essentials, vendor checksum verified",
+    "test_encoder_zip_sha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba",
+    "assets": "Original procedural ventilation and irregular keyboard; no speech or third-party recordings",
+    "ducking": "Real PCM projection verified background during speech below 60% of the same uncompressed mix; quiet portion within 10%",
+    "duration": "Four-second test preserved within 40 ms; no text truncation",
+    "peaks": "Decoded test output below 0.99 full scale",
+    "resource_bounds": "2 render slots, 25-second timeout, 300-second duration ceiling, private local fixed inputs"
+  },
+  "preview": {
+    "new_synthesis_calls_per_level_adjustment": 0,
+    "configuration_writes_when_listening": 0,
+    "dry_master": "SHA-verified, owned preview, 24-hour expiry; authorization rechecked after render",
+    "temporary_mix": "Removed after each response",
+    "existing_profiles": "Ambience disabled by default; voice limits and current assignments preserved"
+  },
+  "live": {"deployment": "pending", "frontend_preview": "pending", "new_whatsapp_messages_sent": 0},
+  "owner_review": "Phone44 playback deferred by owner until continuing; no global ambience activation performed",
+  "roadmap": "Original P0-P11 100%, P12 PostgreSQL/Meta 100%; no original weights changed. P13 remains 0/4 for another request."
+}

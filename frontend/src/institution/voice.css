@@ -256,3 +256,34 @@
     font-size: 1.5rem;
   }
 }
+
+.voice-ambience {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.voice-mixer-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 1.25rem;
+  margin-block: 1rem;
+}
+.voice-mixer-track {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+.voice-mixer-track input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.voice-mix-preview {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.voice-mixer-track output {
+  font-variant-numeric: tabular-nums;
+}

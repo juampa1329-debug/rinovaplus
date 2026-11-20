@@ -252,6 +252,13 @@ const cases = new Map<string, ErrorGuidance>([
 ]);
 
 export function explainChannelError(failure: OperationFailure): ErrorGuidance {
+  if (failure.code?.startsWith("voice_mix_"))
+    return {
+      title: "No se pudo preparar la mezcla",
+      detail: failure.message,
+      nextStep:
+        "Para una vista previa, vuelve a abrir la misma muestra reciente; sus volúmenes se ajustan sin generar otra voz. Si continúa, pide revisar el mezclador del backend y consulta la actividad antes de repetir una generación.",
+    };
   if (
     failure.code?.startsWith("voice_") ||
     failure.code === "provider_timeout_or_network"

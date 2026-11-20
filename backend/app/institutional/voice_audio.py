@@ -9,12 +9,12 @@ import base64
 import hashlib
 import json
 from datetime import datetime, timezone
-from uuid import UUID
+from uuid import UUID, uuid4
 from uuid import NAMESPACE_URL, uuid5
 from typing import Literal
 
 from fastapi import HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import Field
 from starlette.concurrency import run_in_threadpool
 
@@ -26,7 +26,7 @@ from app.modules.agents.domain import JsonUUID
 from app.institutional.provider_catalog import credential
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.institutional.voice_policy import GreetingTone, VoicePolicy, choose_profile, estimate_seconds, reason
+from app.institutional.voice_policy import GreetingTone, VoiceAmbience, VoicePolicy, choose_profile, estimate_seconds, reason
 from app.institutional.voice_delivery import expressive_model, speech_text, voice_settings
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
@@ -136,6 +136,8 @@ async def synthesize(value, profile, text, media_id, gateway_factory=MediaGatewa
         source.write_bytes(raw)
         source.chmod(0o600)
         info = await run_in_threadpool(files.inspect_file, media_id, "respuesta-ia.mp3")
+        from app.institutional.voice_ambience import apply
+        info, metadata["ambience"] = await run_in_threadpool(apply, media_id, info, profile.get("ambience", {}))
         info["name"] = "nota-de-voz.ogg"  # Existing Meta transport sets audio.voice for this inspected format.
         return info, metadata
     finally:
@@ -228,6 +230,8 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
                 c.execute("UPDATE crm_channels4.MediaAsset SET State='failed',LastErrorCode=?,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND MediaId=? AND MessageId IS NULL", code, institution(settings), media_id)
             files.path(media_id).unlink(missing_ok=True)
         return None, code
+    finally:
+        files.path(media_id, ".dry").unlink(missing_ok=True)
 
 
 def attach(c, settings, item, data, message, audio):
@@ -259,6 +263,7 @@ def authorize_dispatch(c, settings, data, payload):
 def preview_response(row):
     value = json.loads(row["ResultMetadata"])
     return {"id": uid(str(row["OperationId"])), "state": row["Status"], "code": row["ResultCode"],
+            "remix_available": bool(value.get("receipt", {}).get("ambience", {}).get("dry_hash")),
             "characters": value["characters"], "duration": value.get("duration"), "greeting_tone": value.get("profile", {}).get("greeting_tone", "inherit"),
             "audio_url": "/api/institution/voice/previews/" + uid(str(row["OperationId"])) + "/audio" if row["Status"] == "confirmed" else None}
 
@@ -279,6 +284,7 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         for old in expired:
             previous = json.loads(old["ResultMetadata"])
             files.path(previous["media"]).unlink(missing_ok=True)
+            files.path(previous["media"], ".dry").unlink(missing_ok=True)
             previous["file_expired"] = True
             c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=?", json.dumps(previous), institution(settings), old["OperationId"])
         options = policy(c, settings)
@@ -325,6 +331,7 @@ def preview(settings, authority, body, gateway_factory=MediaGateway):
         with transaction(settings, True, anonymous=True) as c:
             complete(c, settings, operation, "uncertain", code, record)
         files.path(media_id).unlink(missing_ok=True)
+        files.path(media_id, ".dry").unlink(missing_ok=True)
         raise HTTPException(error.status_code if isinstance(error, HTTPException) else 502, code) from None
 
 
@@ -504,3 +511,35 @@ def install(app, settings):
             if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != data.get("hash"):
                 raise HTTPException(404, "voice_preview_unavailable")
             return FileResponse(path, media_type="audio/ogg", headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"})
+
+    @app.get("/api/institution/voice/previews/{operation}/mix")
+    def remix_preview(request: Request, operation: str, enabled: bool = True,
+                      voice_volume: float = 1.0, office_volume: float = 0.12,
+                      typing_volume: float = 0.16, ducking: bool = True):
+        from pydantic import ValidationError
+        from app.institutional.voice_ambience import mix
+        try:
+            options = VoiceAmbience(enabled=enabled, voice_volume=voice_volume,
+                                    office_volume=office_volume, typing_volume=typing_volume, ducking=ducking)
+        except ValidationError:
+            raise HTTPException(422, "voice_mix_invalid") from None
+        def source_for():
+            with transaction(settings, anonymous=True) as c:
+                actor = authorize(c, settings, request.state.authority, "settings.ai.read")
+                row = one(c, "SELECT * FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=? AND Action=? AND ActorRef=? AND Status='confirmed' AND CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME())", institution(settings), uid(operation), PREVIEW, uid(str(actor["UserId"])))
+                if not row:
+                    raise HTTPException(404, "voice_preview_unavailable")
+                data = json.loads(row["ResultMetadata"])
+                dry = files.path(data["media"], ".dry")
+                expected = data.get("receipt", {}).get("ambience", {}).get("dry_hash")
+                if not expected or not dry.is_file() or hashlib.sha256(dry.read_bytes()).hexdigest() != expected:
+                    raise HTTPException(404, "voice_mix_source_unavailable")
+                return dry, data["duration"]
+        source, duration = source_for()
+        target = files.path(uuid4(), ".mixed")
+        try:
+            mix(source, target, options, duration)
+            source_for()  # Revocation/expiry while rendering must not expose the result.
+            return Response(target.read_bytes(), media_type="audio/ogg", headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"})
+        finally:
+            target.unlink(missing_ok=True)

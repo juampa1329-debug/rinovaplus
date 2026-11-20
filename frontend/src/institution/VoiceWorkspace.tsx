@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -19,9 +19,14 @@ import {
 } from "./api";
 import { ResourceState, useResource } from "./Settings";
 import { useDraftGuard } from "./drafts";
-import { ErrorFeedback } from "./ErrorFeedback";
+import { ErrorFeedback, ErrorFeedbackContext } from "./ErrorFeedback";
 import { explainChannelError } from "./channelErrors";
 import "./voice.css";
+import {
+  VoiceAmbience,
+  ambienceDefaults,
+  type Ambience,
+} from "./VoiceAmbience";
 
 export type VoiceProfile = {
   id: string;
@@ -36,6 +41,7 @@ export type VoiceProfile = {
   similarity_boost?: number;
   language_code?: string;
   greeting_tone?: string;
+  ambience?: Ambience;
   agent_ids: string[];
   schools: string[];
 };
@@ -95,6 +101,8 @@ type Usage = {
   }[];
 };
 type Preview = {
+  id?: string;
+  remix_available?: boolean;
   state: string;
   code?: string;
   audio_url: string | null;
@@ -154,7 +162,7 @@ function VoiceEditor({
     saved.default_profile_id,
   );
   const [sample, setSample] = useState(
-    "Hola, soy el asistente virtual de CBN. Puedo orientarte sobre nuestros programas y ayudarte a resolver tus preguntas. ¿Qué te gustaría conocer?",
+    "Hola, qué gusto saludarte. En CBN puedes explorar nuestros programas y resolver tus dudas con calma. Cuéntame, ¿qué te gustaría aprender?",
   );
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewBusy, setPreviewBusy] = useState(false);
@@ -682,6 +690,14 @@ function VoiceEditor({
                     </small>
                   </div>
                   <details>
+                    <summary>Ambiente y mezcla de audio</summary>
+                    <VoiceAmbience
+                      id={`ambience-${p.id}`}
+                      value={p.ambience}
+                      onChange={(value) => profile(p.id, { ambience: value })}
+                    />
+                  </details>
+                  <details>
                     <summary>Naturalidad e interpretación</summary>
                     <SelectField
                       id={`voice-greeting-${p.id}`}
@@ -969,6 +985,17 @@ function VoiceEditor({
             </span>
           </div>
         )}
+        {preview?.remix_available && preview.id && (
+          <AmbiencePreview
+            key={`${preview.id}-${previewProfile}`}
+            operation={preview.id}
+            initial={
+              saved.profiles.find((p) => p.id === previewProfile)?.ambience
+            }
+            disabled={!writable || task.busy || previewBusy}
+            apply={(value) => profile(previewProfile, { ambience: value })}
+          />
+        )}
         {preview && !preview.audio_url && (
           <Notice error>
             Esta generación quedó {preview.state}. No se reintenta
@@ -1229,10 +1256,14 @@ function VoiceEditor({
 }
 
 function PreviewPlayer({ url }: { url: string }) {
-  const [source, setSource] = useState("");
-  const [error, setError] = useState("");
+  const report = useContext(ErrorFeedbackContext);
+  const [loaded, setLoaded] = useState({ url: "", source: "" });
+  const [failed, setFailed] = useState({ url: "", message: "" });
+  const source = loaded.url === url ? loaded.source : "";
+  const error = failed.url === url ? failed.message : "";
   useEffect(() => {
     const abort = new AbortController();
+    const trigger = document.activeElement;
     let objectUrl = "";
     void fetch(url, {
       credentials: "same-origin",
@@ -1241,22 +1272,41 @@ function PreviewPlayer({ url }: { url: string }) {
       signal: abort.signal,
     })
       .then(async (response) => {
-        if (!response.ok)
-          throw new ApiError(response.status, "voice_preview_unavailable");
+        if (!response.ok) {
+          const result = (await response.json().catch(() => ({}))) as {
+            detail?: string;
+          };
+          throw new ApiError(
+            response.status,
+            typeof result.detail === "string"
+              ? result.detail
+              : "voice_preview_unavailable",
+          );
+        }
         const blob = await response.blob();
         if (!abort.signal.aborted) {
           objectUrl = URL.createObjectURL(blob);
-          setSource(objectUrl);
+          setLoaded({ url, source: objectUrl });
         }
       })
       .catch((failure) => {
-        if (!abort.signal.aborted) setError((failure as Error).message);
+        if (!abort.signal.aborted) {
+          setFailed({ url, message: (failure as Error).message });
+          report?.(
+            {
+              message: (failure as Error).message,
+              code: failure instanceof ApiError ? failure.detail : undefined,
+              status: failure instanceof ApiError ? failure.status : undefined,
+            },
+            trigger,
+          );
+        }
       });
     return () => {
       abort.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [url]);
+  }, [url, report]);
   return error ? (
     <Notice error>{error}</Notice>
   ) : source ? (
@@ -1273,6 +1323,69 @@ function PreviewPlayer({ url }: { url: string }) {
     </div>
   ) : (
     <span role="status">Cargando muestra privada…</span>
+  );
+}
+
+function AmbiencePreview({
+  operation,
+  initial,
+  disabled,
+  apply,
+}: {
+  operation: string;
+  initial?: Ambience;
+  disabled: boolean;
+  apply: (value: Ambience) => void;
+}) {
+  const [mix, setMix] = useState<Ambience>({ ...ambienceDefaults, ...initial });
+  const [rendered, setRendered] = useState("");
+  const [sequence, setSequence] = useState(0);
+  const signature = JSON.stringify(mix);
+  const [heard, setHeard] = useState("");
+  return (
+    <div className="voice-mix-preview">
+      <h4>Mezcla de la muestra · sin nueva generación</h4>
+      <VoiceAmbience
+        id="preview-ambience"
+        value={mix}
+        disabled={disabled}
+        onChange={setMix}
+      />
+      <div className="voice-actions">
+        <Button
+          disabled={disabled}
+          onClick={() => {
+            const params = new URLSearchParams(
+              Object.entries(mix).map(([key, value]) => [key, String(value)]),
+            );
+            setRendered(
+              `/api/institution/voice/previews/${encodeURIComponent(operation)}/mix?${params}`,
+            );
+            setHeard(signature);
+            setSequence((n) => n + 1);
+          }}
+        >
+          Escuchar mezcla
+        </Button>
+        <Button
+          variant="secondary"
+          disabled={disabled}
+          onClick={() => apply(mix)}
+        >
+          Usar esta mezcla en el perfil
+        </Button>
+      </div>
+      {rendered && heard !== signature && (
+        <p role="status">
+          Ajustes modificados. Pulsa Escuchar mezcla para actualizar la muestra.
+        </p>
+      )}
+      {rendered && <PreviewPlayer key={sequence} url={rendered} />}
+      <p>
+        Escuchar no cambia la configuración. Para aplicarla a los siguientes
+        audios, usa la mezcla y guarda la configuración de voz.
+      </p>
+    </div>
   );
 }
 

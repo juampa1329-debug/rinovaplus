@@ -10,6 +10,15 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 GreetingTone = Literal["inherit", "warm", "calm", "upbeat"]
 
 
+class VoiceAmbience(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    enabled: bool = False
+    voice_volume: float = Field(default=1.0, ge=0.2, le=1.5)
+    office_volume: float = Field(default=0.12, ge=0, le=1)
+    typing_volume: float = Field(default=0.16, ge=0, le=1)
+    ducking: bool = True
+
+
 class VoiceProfile(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
@@ -24,6 +33,7 @@ class VoiceProfile(BaseModel):
     similarity_boost: float = Field(default=0.75, ge=0, le=1)
     language_code: str = Field(default="", pattern=r"^(?:[a-z]{2})?$")
     greeting_tone: GreetingTone = "inherit"
+    ambience: VoiceAmbience = Field(default_factory=VoiceAmbience)
     agent_ids: list[str] = Field(default_factory=list, max_length=50)
     schools: list[str] = Field(default_factory=list, max_length=50)
 

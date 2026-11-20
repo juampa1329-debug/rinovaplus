@@ -1,3 +1,11 @@
+## P19: ambiente y vista previa; P13 diferida — 2026-11-19
+
+El titular acotó esta entrega a P19 y dejó P13 para otra petición. Se conservan sus cambios locales sin incluirlos en el commit de voz. No se acepta P13: sigue0/4 y falta validar calidad comercial.
+
+Ampliación P19: oficina y tecleo originales sintéticos, volúmenes independientes y reducción automática del fondo durante la voz. Vista previa sobre el original privado sin otra generación de ElevenLabs; Usar mezcla crea borrador y Guardar aplica a audios futuros. Perfiles existentes con ambiente apagado. La prueba al44 quedó aplazada hasta continuar; no enviar ni activar globalmente por este corte. No se cambia el cierre técnico inicial5/5 ni se acepta implícitamente la nueva calidad sonora. Manual: docs/adaptation/P19_VOICE_OPERATOR_RUNBOOK.md. Publicación/evidencia final pendientes al corte de implementación.
+
+General original P0–P11:100%; P12 online PostgreSQL/Meta:100%. P13 Académico/agentes comerciales0/4 en validación, diferida por el titular; P14 entrenamiento comercial plan; P15 correos7/7; P16 API SIIE parcial0/5; P17 TikTok diferida0/5; P18 seguridad plan0/8; P19 voz5/5 inicial con ampliación en validación; P20 llamadas WhatsApp plan0/8. OPS01–06 conservan sus límites. Los cortes inferiores son historia.
+
 ## P13: piloto técnico pasó; conducta comercial v3 rechazada por propietario — 2026-11-19
 
 El audio nuevo del propietario se transcribió con procedencia automática y eligió Barismo24v3,2semestres y financiación correcta;3partes leídas,19skills trazadas y objetivo en grafo. NO es aceptación comercial: el propietario rechazó el volcado de información/precios ante una consulta general, la debilidad ante 'es caro' y el cambio a otras escuelas ante comparación. También se observó confusión entre precio semestral/carrera y entre doble título principal/tercer diploma opcional. Certificación aclarada en fichas24r4y25r5, sin cambiar tarifas.

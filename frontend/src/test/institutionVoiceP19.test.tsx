@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { VoiceWorkspace } from "../institution/VoiceWorkspace";
@@ -138,6 +139,86 @@ afterEach(() => {
       Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
     else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
   }
+});
+
+it("previews independent ambience levels without another synthesis or saving until explicitly applied", async () => {
+  const fetch = mock((url) => {
+    if (url.endsWith("/voice/previews"))
+      return respond({
+        id: "sample-1",
+        state: "confirmed",
+        audio_url: "/private/audio",
+        duration: 8,
+        characters: 40,
+        remix_available: true,
+      });
+    if (url.includes("/voice/previews/sample-1/mix?"))
+      return new Response(new Blob(["OggS-mixed"], { type: "audio/ogg" }));
+    return undefined;
+  });
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Generar muestra" }),
+  );
+  const heading = await screen.findByRole("heading", {
+    name: "Mezcla de la muestra · sin nueva generación",
+  });
+  const panel = within(heading.parentElement!);
+  fireEvent.click(panel.getByLabelText("Activar ambiente en este perfil"));
+  fireEvent.change(
+    panel.getByLabelText("Ambiente de oficina", { selector: "input" }),
+    { target: { value: "0.23" } },
+  );
+  fireEvent.change(panel.getByLabelText("Tecleo", { selector: "input" }), {
+    target: { value: "0.08" },
+  });
+  expect(
+    panel.getByLabelText(
+      "Bajar el fondo automáticamente mientras habla la voz",
+    ),
+  ).toBeChecked();
+  fireEvent.click(panel.getByRole("button", { name: "Escuchar mezcla" }));
+  await waitFor(() =>
+    expect(
+      fetch.mock.calls.some(([url]) =>
+        String(url).includes(
+          "office_volume=0.23&typing_volume=0.08&ducking=true",
+        ),
+      ),
+    ).toBe(true),
+  );
+  expect(
+    fetch.mock.calls.filter(
+      ([url, init]) =>
+        String(url).endsWith("/voice/previews") && init?.method === "POST",
+    ),
+  ).toHaveLength(1);
+  expect(
+    fetch.mock.calls.filter(([, init]) => init?.method === "PUT"),
+  ).toHaveLength(0);
+  fireEvent.click(
+    panel.getByRole("button", { name: "Usar esta mezcla en el perfil" }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar configuración de voz" }),
+  );
+  await waitFor(() =>
+    expect(fetch.mock.calls.some(([, init]) => init?.method === "PUT")).toBe(
+      true,
+    ),
+  );
+  const saved = JSON.parse(
+    String(
+      fetch.mock.calls.find(([, init]) => init?.method === "PUT")![1]!.body,
+    ),
+  );
+  expect(saved.document.voice.profiles[0].ambience).toEqual({
+    enabled: true,
+    voice_volume: 1,
+    office_volume: 0.23,
+    typing_volume: 0.08,
+    ducking: true,
+  });
 });
 
 it("shows explicit duration, conversation cap, fallback and existing profile without generating audio", async () => {

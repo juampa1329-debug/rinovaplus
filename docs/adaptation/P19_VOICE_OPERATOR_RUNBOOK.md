@@ -68,3 +68,36 @@ Una voz fijada no se reemplaza por asignaciones nuevas; un perfil/modelo cambiad
 Tres perfiles disponibles: Juampa predeterminada y dos alternativas Sarah/George, sin asignaciones permanentes de escuela decididas por el ensayo. El agente existente volvió a Automática. Política15 conserva el alcance guardado por el propietario y sus topes3audios/60segundos/20000caracteres diarios, modo nota entrante. Para otras voces, crea un perfil desde el catálogo y actualiza la lista en el constructor de agentes.
 
 Cuenta ElevenLabs: la consulta de uso requiere que la clave permita la lectura de usuario/suscripción. Si falta ese permiso, la generación puede seguir funcionando; revisa el permiso de lectura de la clave sin exponerla. El contador puede retrasarse y no equivale a una factura por generación. Las dos muestras de cierre reservaron262caracteres; el proveedor no devolvió conteo facturado individual. No se interpreta un contador inmóvil como consumo gratuito. Las muestras privadas vencen en24h y no se envían automáticamente.
+
+## Ambiente de oficina y tecleo — ampliación 19-11-2026
+
+En Ajustes → Voces y audios, cada perfil tiene Ambiente y mezcla de audio.
+Los perfiles anteriores conservan el ambiente apagado. Tres volúmenes separados:
+voz 20–150%, oficina 0–100% y tecleo 0–100%; cero silencia una pista de fondo.
+La reducción automática está activada por defecto: detecta la voz original,
+reduce ambas pistas durante el habla y las recupera suavemente en las pausas.
+Son pistas originales sintéticas de ventilación y teclado; no incluyen personas
+hablando ni grabaciones privadas. No se promete simular una ubicación real.
+
+Prueba antes de guardar:
+1. Selecciona Juampa en Escucha antes de activar y genera una muestra corta.
+   Esta única generación usa caracteres de ElevenLabs y conserva sus reservas.
+2. En Mezcla de la muestra activa el ambiente y ajusta los tres volúmenes.
+3. Pulsa Escuchar mezcla. Se procesa la voz original sin otra llamada de síntesis,
+   sin guardar configuración y sin enviar mensajes. Puedes repetir este paso.
+4. Cuando te guste, pulsa Usar esta mezcla en el perfil. Esto crea un borrador.
+5. Pulsa Guardar configuración de voz para aplicarlo a audios futuros.
+
+La muestra y su original privado vencen en 24 horas y sólo puede escucharlos el
+usuario que los generó, mientras mantenga permiso. La mezcla requiere FFmpeg;
+dos trabajos simultáneos como máximo, 25 segundos por trabajo, duración hasta
+300 segundos, inspección final OGG/Opus mono y límite de picos. No corta el texto
+ni reinicia cupos, ni modifica voz/modelo, control Humano o credenciales.
+Las muestras anteriores al despliegue no tienen original separado: genera una
+muestra nueva para probar la mezcla. Las copias originales de envíos automáticos
+se eliminan al terminar; sólo se conservan temporalmente en muestras privadas.
+
+El titular aplazó la prueba al teléfono 44 hasta que continuemos. No se enviarán
+nuevos audios de prueba ni se activará ambiente global sin ese recorrido. P13
+Académico/agentes comerciales queda para otra petición; sus cambios locales no
+forman parte del commit de esta ampliación.

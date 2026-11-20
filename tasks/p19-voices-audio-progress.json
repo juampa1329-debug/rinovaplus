@@ -87,5 +87,23 @@
   "assignment_acceptance": "Three real profiles; school simulations, direct agent choice saved and restored, new-agent form, pinned existing thread",
   "operational_acceptance": "Live account query, private samples/replay, durable chat usage and no-IO checks; prior native rollback cap/Humano/uncertainty evidence retained",
   "cost_limit": "Reserved characters are conservative; no per-generation billed count returned. Account counter is provider-wide and may lag; no dollar estimate or claim of free usage.",
-  "live_audio_generated_at_prior_cut": 10
+  "live_audio_generated_at_prior_cut": 10,
+  "ambience_extension": {
+    "date": "2026-11-19",
+    "status": "implemented_local_checks_live_preview_pending",
+    "controls": [
+      "per_profile_enable",
+      "voice_volume",
+      "office_volume",
+      "typing_volume",
+      "automatic_ducking",
+      "preview_before_save"
+    ],
+    "assets": "Original procedural ventilation and keyboard; no speech or third-party recordings",
+    "preview": "One paid voice sample; owner-scoped remixes of dry master without provider calls or saving",
+    "existing_profiles": "Ambience disabled; current voice policy and counters unchanged",
+    "phone44": "Deferred by owner until continuing; no new WhatsApp send this extension",
+    "acceptance": "Initial 5/5 scope remains accepted; new sound quality requires owner review",
+    "P13": "Deferred to another request; local skill-library edits excluded from P19 commit"
+  }
 }

@@ -63,3 +63,20 @@ Pausa/restauración de George sin tráfico verificadas en versiones14/15. La con
 Comprobaciones publicadas sin consumo: Humano bloquea voz; tamaño excesivo y duración estimada120s sobre60s continúan íntegros por texto; entrada sin nota no cumple el modo elegido. Se conservan pruebas nativas PG con rollback y proveedores simulados para agotamiento de cupo, resultado incierto, deduplicación y cambio a Humano durante síntesis. No se provocaron fallos pagados ni caídas de proveedores en producción.242backend y56frontend seleccionadas, tipos/lint/build pasan; advertencia previa de bundle permanece. Evidencia de cierre: [p19-close-review](../../artifacts/live/p19-close-review-20261119.json).
 
 Estado final: política15, predeterminadaJuampa/Tranquila, alcance global previamente guardado por el propietario, modo nota entrante, máximo3audios/60segundos y20000caracteres en24h. No se envió WhatsApp nuevo por este cierre. Calidad contextual y reproducción real ya confirmadas por el titular en P19.3/P19.4; las muestras de Sarah/George no sustituyen esa aceptación ni prometen eficacia comercial. P20 llamadas y las demás fases adicionales siguen pendientes. El historial superior de implementación conserva las condiciones de cada corte.
+
+## Ampliación: ambiente y vista previa — 19 de noviembre de 2026
+
+Oficina y tecleo originales sintéticos, control independiente de ambas pistas y
+de la voz, reducción automática durante el habla y recuperación suave en pausas.
+Cada perfil conserva ambiente apagado por defecto. La muestra retiene su original
+privado para escuchar otras mezclas sin una segunda síntesis de ElevenLabs.
+Escuchar no guarda: Usar esta mezcla crea borrador y Guardar configuración aplica
+a los siguientes audios. El titular solicitó expresamente este ensayo previo.
+
+Pasan66 pruebas backend,16 frontend, tipos, ESLint modificado, Ruff y build del
+workspace (advertencia de bundle anterior conservada). FFmpeg real comprobó
+ducking, duración y picos. Evidencia: `artifacts/live/p19-ambience-review-20261119.json`.
+Publicación y preview real pendientes al corte; reproducción con el44 aplazada
+por el titular. No se acredita su aceptación de la nueva calidad sonora.
+El cierre inicial5/5 se conserva, sin cambiar denominadores. P13 queda para otra
+petición; biblioteca v5 y cambios de esa fase se conservan fuera de este commit.
