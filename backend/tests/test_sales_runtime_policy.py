@@ -213,11 +213,13 @@ def test_history_boundary_excludes_pre_reset_messages_at_sql_source(monkeypatch)
 
 
 @pytest.mark.parametrize("human_during_transcription", [False, True])
-def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypatch, human_during_transcription):
+@pytest.mark.parametrize("prior_audio", [False, True])
+def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypatch, human_during_transcription, prior_audio):
     from fastapi import HTTPException
     from app.institutional import whatsapp_gemini as worker
     conversation, operation, integration, identity = [str(uuid4()) for _ in range(4)]
     data = {"conversation": conversation, "incoming": operation, "identity": identity, "epoch": 1}
+    audio_message = str(uuid4()) if prior_audio else operation
     statements, saved, finishes, provider_calls = [], [], [], []
     state = {"human": False}
     class Cursor:
@@ -231,6 +233,8 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
     c = Cursor()
     monkeypatch.setattr(worker, "transaction", lambda *a, **kw: nullcontext(c))
     monkeypatch.setattr(worker, "setting", lambda *_: {"document": {}})
+    # This fixture exercises ASR/rerouting, with no configured P21 text route.
+    monkeypatch.setattr(worker.language_resilience, "snapshot", lambda *_: {"routes": [], "keys": {}})
     monkeypatch.setattr(worker, "one", lambda cursor, sql, *args: None if "SELECT ExternalId" in sql else
                         {"OperationId": operation, "IntegrationId": integration, "ResultMetadata": json.dumps(data)})
     def source(*args):
@@ -243,6 +247,7 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
         {"max_tokens": 700, "input_usd_per_million": .1, "output_usd_per_million": .2},
         {"VersionNo": 1, "Nonce": b"", "Ciphertext": b""}, {"model": "gemini-test", "credential": operation}))
     monkeypatch.setattr(worker, "reply_context", lambda *_: {"system": "original context", "query": "old interest", "fingerprint": "test",
+                         "audio_source_message": audio_message,
                          "input_audio": {"id": str(uuid4()), "hash": "ab" * 32, "voice": True, "mime": "audio/ogg", "raw": b"fixture"}})
     monkeypatch.setattr(worker, "unseal", lambda *_: "fixture-key")
     monkeypatch.setattr(worker, "key", lambda *_: b"fixture")
@@ -265,5 +270,6 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
         assert saved == [] and finishes == [("abandoned", "gemini_whatsapp_control_or_history_changed")]
     else:
         assert saved[0][4] == "Ahora quiero Barismo y Bartender"
+        assert saved[0][2]["incoming"] == audio_message
         assert any("SET Status='pending',ResultMetadata" in sql for sql, _ in statements)
         assert finishes == []  # next claim resolves specialist from the persisted transcript

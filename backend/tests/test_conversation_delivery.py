@@ -44,6 +44,16 @@ def test_parts_keep_every_word_financial_condition_url_and_emoji_without_truncat
     )
 
 
+def test_short_paragraphs_become_distinct_chat_messages_with_their_own_emoji():
+    text = "☕ Qué buena elección. Aprenderás técnicas prácticas.\n\nPara tu negocio, también verás costos e inventarios.\n\n¿Ya tienes una idea de lo que quieres abrir?"
+    assert delivery.chunks(text, 350) == [
+        "☕ Qué buena elección. Aprenderás técnicas prácticas.",
+        "Para tu negocio, también verás costos e inventarios.",
+        "¿Ya tienes una idea de lo que quieres abrir?",
+    ]
+    assert delivery.chunks(text, 350, enabled=False) == [text]
+
+
 def test_a_complete_long_sentence_is_not_cut_and_instagram_oversize_requires_review():
     text = (
         "Una explicación de "

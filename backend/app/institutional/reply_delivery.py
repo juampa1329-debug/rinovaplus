@@ -33,18 +33,21 @@ def chunks(text, target=350, *, enabled=True, channel="whatsapp"):
             text[: boundary.start()]
         ):
             continue
-        units.append(text[start : boundary.start()])
+        units.append((text[start : boundary.start()], "\n" in boundary.group()))
         start = boundary.end()
-    units.append(text[start:])
+    units.append((text[start:], False))
     result, current = [], ""
-    for unit in units:
+    for unit, paragraph_end in units:
         unit = unit.strip()
         if not unit:
             continue
         if current and len(current) + len(unit) + 2 > target:
             result.append(current)
             current = ""
-        current = current + "\n\n" + unit if current else unit
+        current = current + " " + unit if current else unit
+        if paragraph_end and current:
+            result.append(current)
+            current = ""
     if current:
         result.append(current)
     # A long complete sentence stays intact. Bound fragment count by merging,
@@ -53,7 +56,7 @@ def chunks(text, target=350, *, enabled=True, channel="whatsapp"):
         index = min(
             range(len(result) - 1), key=lambda i: len(result[i]) + len(result[i + 1])
         )
-        result[index : index + 2] = [result[index] + "\n\n" + result[index + 1]]
+        result[index : index + 2] = [result[index] + " " + result[index + 1]]
     if any(len(part) > hard_limit for part in result):
         raise HTTPException(409, "gemini_whatsapp_segment_too_long")
     if "".join(text.split()) != "".join("".join(result).split()):

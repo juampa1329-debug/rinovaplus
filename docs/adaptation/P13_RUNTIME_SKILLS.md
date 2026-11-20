@@ -173,3 +173,35 @@ las rutas, fuentes, SHA y versiones verificándolas contra la biblioteca. No se
 reducen las guías de razonamiento ni se amplía el límite40000. Reproducción
 privada local:38178financiación,39281objeción,39331comparación.286backend pasan.
 P13continúa0/4hasta las comprobaciones publicadas y aceptación comercial.
+
+## Revisión de cierre — 20-11-2026
+
+Nueva orientación real de Enfermería con Gemini completada, sin envío ni ficha
+modificada; la respuesta comercial de Barismo llegó en WhatsApp con siete guías
+completas y objetivo trazado. La prueba de cambio falló: la primera de dos notas
+consecutivas quedó sin interpretación. Se procesa la más antigua pendiente del
+grupo sin respuesta, con fuente/hash, corte de memoria y guardas de la última
+entrada. Cada transcripción se guarda y se resuelve de nuevo el especialista.
+Un audio anterior intentado sin resultado confirmado requiere revisión; nunca
+se reenvía automáticamente una solicitud incierta. Máximo seis notas por grupo.
+
+Estilo v4: un párrafo representa un mensaje; las frases del mismo párrafo pueden
+permanecer juntas. Se conservan seis partes como máximo, palabras completas,
+pausas y el final íntegro. Los emojis acompañan frases pertinentes, sin firma
+repetida al cierre ni identidad humana falsa. Objetivos como «para abrir mi
+negocio» activan las guías de valor antes de recuperar hechos comerciales.
+
+Se corrige además la huella de repetición de configuraciones antiguas: los
+campos nuevos omitidos no invalidan la operación original; se acepta la huella
+intermedia publicada sólo para recuperar una operación existente. Los valores
+expresos y el actor permanecen protegidos.255backend/24frontend, tipos/lint/build
+y una consulta PostgreSQL parseada. Pendientes publicación y retoma real; no
+se acepta P13 por este volumen de pruebas.
+
+El propietario autorizó crear el pipeline CRM: Nuevo, Calificación, Programa
+definido, Propuesta y financiación, Dudas y objeciones, Inscripción, Matriculado,
+Seguimiento y Cerrado sin matrícula. Creadas por la UI, con probabilidad vacía y
+sin mover contactos. No son todavía agentes automáticos de etapa ni se han
+cambiado sus modelos; esa asignación y los criterios de traspaso requieren su
+configuración y pruebas. Matriculado exige verificación humana o académica.
+P21 queda diferida expresamente hasta la recarga de crédito.

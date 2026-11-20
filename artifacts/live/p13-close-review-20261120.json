@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-20",
+  "phase": "P13",
+  "status": "fixes_ready_for_deployment_retest_pending",
+  "accepted": 0,
+  "total": 4,
+  "local_checks": {
+    "backend_selected": 255,
+    "frontend_selected": 24,
+    "types_lint_build": "passed_with_historical_bundle_warning",
+    "postgres_queries_parsed": 1
+  },
+  "live_checks": {
+    "nursing_simulator": {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-lite",
+      "response": "warm, relevant preparation/duration/schedule/practice, no unsolicited prices",
+      "usage": {
+        "input": 8154,
+        "output": 182
+      },
+      "crm_written": false,
+      "delivered": false
+    },
+    "barismo_whatsapp": "Specialist24v3, seven full guides traced, named customer, entrepreneurship relevance, optional scholarship distinguished; read receipts observed.",
+    "program_switch": "Failed before patch: two consecutive voice messages; first remained untranscribed, second was generic; prior Barismo interest persisted. Retake required.",
+    "human_silence": "Pending real incoming after patch."
+  },
+  "fixes": [
+    "Chronological interpretation of up to six unanswered voice assets, per-source ID/hash proof, context cutoff, latest conversation/epoch/lease guard, rerouting after each stored transcript.",
+    "Superseded attempted audio without confirmed transcript requires review, not an automatic repeated paid POST.",
+    "Paragraphs become separate complete messages with maximum six parts and full tail preserved; sentences stay together when appropriate.",
+    "Stylev4 places pertinent emojis alongside the relevant phrase, rather than a repeated ending signature.",
+    "Business-purpose language selects value guides without unsolicited pricing.",
+    "Legacy agent replay accepts original and intermediate deployed default fingerprints, retaining explicit fields and actor isolation."
+  ],
+  "crm_pipeline": {
+    "created_live": true,
+    "existing_preserved": [
+      "nuevo"
+    ],
+    "new_stages": [
+      {
+        "key": "calificacion",
+        "label": "Calificación"
+      },
+      {
+        "key": "programa_definido",
+        "label": "Programa definido"
+      },
+      {
+        "key": "propuesta_financiacion",
+        "label": "Propuesta y financiación"
+      },
+      {
+        "key": "dudas_objeciones",
+        "label": "Dudas y objeciones"
+      },
+      {
+        "key": "inscripcion",
+        "label": "Inscripción"
+      },
+      {
+        "key": "matriculado",
+        "label": "Matriculado"
+      },
+      {
+        "key": "seguimiento",
+        "label": "Seguimiento"
+      },
+      {
+        "key": "cerrado_sin_matricula",
+        "label": "Cerrado sin matrícula"
+      }
+    ],
+    "probabilities": "unset",
+    "contacts_moved": 0,
+    "stage_agent_model_handoffs": "Not activated; existing specialist routing by program remains. Paid models await credit and validation."
+  },
+  "P21": "Deferred by owner until credit recharge; no new OpenRouter inference.",
+  "limits": [
+    "No private messages, prices or playbook copied into Git.",
+    "No DDL, seed scripts, new test containers or SIIE writes.",
+    "Stages organize commercial attention; enrollment is not an autonomous LLM decision.",
+    "Public/private memory isolation, Human mode and existing budgets retained."
+  ]
+}

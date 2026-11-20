@@ -23,13 +23,13 @@
       "id": "P13.3",
       "name": "Enrutamiento y venta",
       "status": "in_validation",
-      "pending": "v5 library deployed; real orientation, financing and automatic name/city projection passed. Remaining objection/comparison and program-switch continuity acceptance."
+      "pending": "Real Nursing/Gemini and Barismo/WhatsApp passed. Consecutive audio found missing first transcript; fix ready, program-switch retake and Human silence pending."
     },
     {
       "id": "P13.4",
       "name": "Piloto real WhatsApp",
       "status": "pending",
-      "pending": "Repeat objection/comparison, second specialist and Human silence; owner acceptance of commercial behavior pending."
+      "pending": "Retake two-audio program switch after deployment, verify name/city/goal and silence in Human. Stage pipeline created; automatic stage agents/models not enabled."
     }
   ],
   "skills": "artifacts/live/p13-skills-20261119.json",
@@ -59,7 +59,9 @@
     "comment_edit_backend_selected": 231,
     "comment_edit_frontend_selected": 20,
     "conversation_style_backend_selected": 335,
-    "conversation_style_frontend_selected": 85
+    "conversation_style_frontend_selected": 85,
+    "closing_backend_selected": 255,
+    "closing_frontend_selected": 24
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -187,5 +189,12 @@
       "frontend": "blxwuuczmssjrk3nwnqeopig",
       "frontend_status": "Success"
     }
+  },
+  "closing_review": "artifacts/live/p13-close-review-20261120.json",
+  "pipeline_expansion": {
+    "status": "crm_stages_created_agent_stage_rules_pending",
+    "stage_count": 9,
+    "automatic_model_handoffs": false,
+    "paid_models": "pending P21 recharge and validation"
   }
 }

@@ -137,6 +137,42 @@ def test_profile_configuration_roundtrips_provider_and_uuid_sources():
     assert effective["document_ids"] == config.model_dump(mode="json")["document_ids"]
 
 
+def test_replay_preserves_the_intermediate_deployed_default_fingerprint():
+    request = AgentWrite(operation_id=uuid4(), revision=0, name="Legacy guide", level="guide", configuration=Configuration())
+    empty = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchone=lambda: None))
+    _, canonical = replay(empty, "agent_config", "legacy", request)
+    doc = request.model_dump(mode="json")
+    # This was the published fingerprint before additive defaults were omitted.
+    additions = {"sales_skill_ids", "sales_routing_enabled", "sales_memory_enabled", "auto_sales_crm", "voice_profile_id", "advisor_name"}
+    original = {"instructions", "objectives", "rules", "tone", "channels", "capabilities", "document_ids",
+                "primary_model", "fallback_model", "max_tokens", "monthly_token_limit", "allow_reply"}
+    doc["configuration"] = {k:v for k,v in doc["configuration"].items() if k in original | additions}
+    deployed = digest(["agent_config", "legacy", doc])
+    assert deployed != canonical
+    cursor = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchone=lambda: (deployed,)))
+    assert replay(cursor, "agent_config", "legacy", request) == (True, deployed)
+
+
+@pytest.mark.parametrize("changes", [{"voice_profile_id":"reviewed-voice"}, {"advisor_name":"Juan"}, {"sales_memory_enabled":True}, {"sales_routing_enabled":True}, {"sales_skill_ids":["pricing"]}])
+def test_new_explicit_agent_fields_cannot_replay_an_old_different_operation(changes):
+    old = AgentWrite(operation_id=uuid4(), revision=0, name="Guide", level="guide", configuration=Configuration())
+    empty = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchone=lambda: None))
+    _, fingerprint = replay(empty, "agent_config", "scope", old)
+    changed = old.model_copy(update={"configuration":Configuration(**changes)})
+    cursor = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchone=lambda: (fingerprint,)))
+    with pytest.raises(AiError, match="agents_operation_conflict"):
+        replay(cursor, "agent_config", "scope", changed)
+
+
+def test_matching_legacy_fingerprint_still_rejects_another_actor():
+    request = AgentWrite(operation_id=uuid4(), revision=0, name="Guide", level="guide", configuration=Configuration())
+    empty = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchone=lambda: None))
+    _, fingerprint = replay(empty, "agent_config", "scope", request)
+    cursor = SimpleNamespace(agent_actor="operator-b", execute=lambda *_: SimpleNamespace(fetchone=lambda:(fingerprint,"operator-a")))
+    with pytest.raises(AiError, match="agents_operation_conflict"):
+        replay(cursor, "agent_config", "scope", request)
+
+
 def test_execution_uses_profile_provider_models_and_budget_without_global_writes():
     calls, guards = [], []
     ai, saved = runtime()

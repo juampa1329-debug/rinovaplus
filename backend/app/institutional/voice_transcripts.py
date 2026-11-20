@@ -8,6 +8,42 @@ from app.institutional import db
 from app.institutional.conversation_scope import transcript_section
 
 
+def pending_input(c, settings, data, sequence):
+    """Oldest unread voice in the unanswered group, bound to the latest intent.
+
+    A superseded operation with an attempted inference needs operator review;
+    this must never turn an uncertain earlier POST into an automatic retry.
+    """
+    from app.institutional import voice_audio
+    boundary = getattr(c, "context_cutoff", lambda _: 0)(data["conversation"])
+    messages = db.rows(c,
+        "SELECT TOP(7) m.MessageId,m.Sequence,m.Direction,m.Body,op.Attempts AS PriorAttempts "
+        "FROM crm.Message m JOIN crm_channels4.MediaAsset a ON a.MessageId=m.MessageId "
+        "AND a.InstitutionId=? AND a.IdentityId=? AND a.ConversationId=m.ConversationId "
+        "AND a.SourceKind='provider' AND a.Kind='audio' "
+        "LEFT JOIN crm_channels2.ProviderOperation op ON op.InstitutionId=a.InstitutionId "
+        "AND op.OperationId=m.MessageId "
+        "WHERE m.ConversationId=? AND m.Direction='incoming' AND m.Sequence<=? AND m.Sequence>? "
+        "AND m.Sequence>COALESCE((SELECT MAX(sent.Sequence) FROM crm.Message sent "
+        "WHERE sent.ConversationId=m.ConversationId AND sent.Direction='outgoing' AND sent.Sequence<=?),0) "
+        "ORDER BY m.Sequence",
+        db.institution(settings), data["identity"], data["conversation"], sequence, boundary, sequence)
+    interpreted = getattr(c, "audio_history", lambda _, values: values)(data["conversation"], messages)
+    pending = [m for m in interpreted if m.get("body_origin") != "automatic_audio_transcription"]
+    if not pending:
+        return None
+    if len(messages) >= 7:
+        raise HTTPException(409, "voice_batch_review_required")
+    target = pending[0]
+    identity = str(target["MessageId"]).lower()
+    if identity != str(data["incoming"]).lower() and (target.get("PriorAttempts") or 0) > 0:
+        raise HTTPException(409, "voice_prior_audio_review_required")
+    audio = voice_audio.input_audio(c, settings, {**data, "incoming": identity})
+    if not audio:
+        raise HTTPException(409, "voice_input_unavailable")
+    return {"message_id": identity, "audio": audio}
+
+
 def request_body(audio):
     from app.institutional.voice_audio import request_with_audio
     return request_with_audio({

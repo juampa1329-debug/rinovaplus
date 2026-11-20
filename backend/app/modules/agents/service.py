@@ -224,6 +224,17 @@ def replay(cursor, kind, key, request):
         ):
             if field not in request.configuration.model_fields_set:
                 document["configuration"].pop(field, None)
+    # P13/P19 added defaults after the original provider migration. Keep the
+    # deployed fingerprint as a candidate for existing operations only; never
+    # discard an explicitly supplied field or accept a different actor.
+    deployed_payload = digest([kind, key, document])
+    if "configuration" in request.model_fields_set:
+        for field in (
+            "sales_skill_ids", "sales_routing_enabled", "sales_memory_enabled",
+            "auto_sales_crm", "voice_profile_id", "advisor_name",
+        ):
+            if field not in request.configuration.model_fields_set:
+                document["configuration"].pop(field, None)
     payload = digest([kind, key, document])
     row = cursor.execute(
         "SELECT PayloadHash"
@@ -232,12 +243,12 @@ def replay(cursor, kind, key, request):
         str(request.operation_id),
     ).fetchone()
     if row and (
-        row[0] != payload
+        row[0] not in {payload, deployed_payload}
         or isinstance(getattr(cursor, "agent_actor", None), str)
         and row[1] != cursor.agent_actor
     ):
         raise AiError("agents_operation_conflict", 409)
-    return bool(row), payload
+    return bool(row), row[0] if row else payload
 
 
 def history(cursor, kind, key, request, payload, document):

@@ -322,13 +322,17 @@ def reply_context(c, settings, data, source_value):
         if isinstance(selected_program, dict) and selected_program.get("school")
         else []
     )
-    audio = voice_audio.input_audio(c, settings, data)
+    from app.institutional import voice_transcripts
+    pending_audio = voice_transcripts.pending_input(c, settings, data, source_value["Sequence"])
+    audio = pending_audio["audio"] if pending_audio else voice_audio.input_audio(c, settings, data)
     if audio:
+        audio_source = pending_audio["message_id"] if pending_audio else data["incoming"]
         result["fingerprint"] = grounded_replies.digest(
-            [result["fingerprint"], voice_audio.audio_fingerprint(audio)]
+            [result["fingerprint"], voice_audio.audio_fingerprint(audio), str(audio_source)]
         )
         result["input_audio"] = audio
-        result["audio_transcribed"] = interpreted.get("body_origin") == "automatic_audio_transcription"
+        result["audio_source_message"] = str(audio_source)
+        result["audio_transcribed"] = not pending_audio and interpreted.get("body_origin") == "automatic_audio_transcription"
         if result["audio_transcribed"]:
             result["system"] += "\nLa consulta procede de una transcripción automática del audio original, no verificada por una persona. Usa ese texto para consultar el programa correcto; si hay ambigüedad en nombres o datos importantes, aclara antes de cotizar. No arrastres el programa anterior cuando el cliente cambió de interés."
     options = voice_audio.policy(c, settings)
@@ -581,8 +585,9 @@ class Worker:
                                            institution(settings), operation, lease).fetchone()
                         if not active:
                             raise HTTPException(409, "gemini_whatsapp_claim_changed")
-                        voice_transcripts.save(c, settings, data, grounded["input_audio"], text, binding["model"], transcription.get("usageMetadata"))
-                        data["transcription_stage"] = {"completed": True, "media": voice_audio.audio_fingerprint(grounded["input_audio"])}
+                        transcript_source = {**data, "incoming": grounded.get("audio_source_message", data["incoming"])}
+                        voice_transcripts.save(c, settings, transcript_source, grounded["input_audio"], text, binding["model"], transcription.get("usageMetadata"))
+                        data["transcription_stage"] = {"completed": True, "message": transcript_source["incoming"], "media": voice_audio.audio_fingerprint(grounded["input_audio"])}
                         c.execute("UPDATE crm_channels2.ProviderOperation SET Status='pending',ResultMetadata=?,ResultCode=NULL,LeaseId=NULL,LeaseUntil=NULL WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=?",
                                   json.dumps(data), institution(settings), operation, lease)
                         if c.rowcount != 1:

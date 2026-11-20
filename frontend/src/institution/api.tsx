@@ -324,6 +324,8 @@ const messages: Record<string, string> = {
   provider_endpoint_missing: "Configura la dirección del proveedor antes de consultar sus modelos.",
   provider_rate_limited: "El proveedor limitó las consultas. Espera un momento y actualiza el catálogo.",
   openrouter_payment_required: "OpenRouter rechazó la consulta por crédito insuficiente en la cuenta o la API key. Revisa Credits y el límite de esa clave en OpenRouter. Tener una tarjeta guardada no garantiza saldo disponible. No se reintentará automáticamente.",
+  voice_prior_audio_review_required: "Una nota anterior quedó sin interpretación confirmada después de un intento de IA. Revisa esa ejecución antes de repetirla. Puedes pasar a Humano y pedir que escriban o repitan la parte que falta; RinovaPlus no vuelve a consumir automáticamente una solicitud incierta.",
+  voice_batch_review_required: "Hay demasiadas notas de voz pendientes en el mismo grupo. Revisa el hilo en modo Humano y pide la consulta por escrito o en una sola nota. Se conserva el historial completo y no se descarta ninguna nota para inventar la respuesta.",
   provider_catalog_timeout: "El catálogo tardó en responder. Actualízalo para volver a intentarlo.",
   confirmation_failed: "No se pudo confirmar tu identidad.",
   invalid_request: "Revisa los campos y sus límites antes de guardar.",

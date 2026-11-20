@@ -70,6 +70,23 @@ def test_comparison_and_short_aliases_cannot_change_program_interest():
         assert sales_context.matches(programs, profiles, question) == []
 
 
+@pytest.mark.parametrize("question", [
+    "Me interesa Barismo y Bartender para abrir mi propio negocio. ¿Cómo me ayudaría esa formación?",
+    "¿Cómo me ayudaría a crear mi propio negocio?",
+    "Busco Software para montar mi empresa.",
+])
+def test_business_purpose_consults_value_guides_without_opening_a_price_pitch(question):
+    selected = for_turn(question, history=[{"role":"user","content":"Me interesa estudiar"}])
+    assert selected["turn_plan"]["phase"] == "value_alignment"
+    assert not selected["turn_plan"]["money_relevant"]
+    assert {"sales-enablement", "deal-value-calc", "recall", "graphify"} <= {r["id"] for r in selected["consulted_resources"]}
+
+
+def test_business_purpose_does_not_override_requested_finance_or_an_objection():
+    assert for_turn("Quiero Barismo para abrir mi negocio. ¿Con cuánto puedo empezar?")["turn_plan"]["phase"] == "financial"
+    assert for_turn("Quiero Barismo para abrir mi negocio pero me parece caro")["turn_plan"]["phase"] == "objection"
+
+
 def test_prompt_trace_is_compact_but_operational_audit_restores_exact_provenance():
     import json
     from app.modules.agents.skill_policy import prompt_trace, from_messages
