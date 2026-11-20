@@ -10,7 +10,7 @@ from app.institutional import db
 from app.institutional.agent_catalog import normalized
 from app.institutional.sales_context import history
 
-FIELDS = {"goal": "Objetivo", "budget": "Presupuesto declarado", "schedule": "Jornada preferida",
+FIELDS = {"name": "Nombre declarado", "city": "Ciudad declarada", "interests": "Intereses declarados", "goal": "Objetivo", "budget": "Presupuesto declarado", "schedule": "Jornada preferida",
           "start_time": "Cuándo quiere empezar", "objection": "Objeción", "next_step": "Próximo paso solicitado", "objection_resolved": "Objeción resuelta"}
 
 
@@ -23,7 +23,7 @@ def read(c, settings, conversation):
     return (json.loads(value["Document"]), value["Revision"]) if value else ({"observations": []}, 0)
 
 
-def validated(observations, incoming):
+def validated(observations, incoming, previous_reply=""):
     """Model labels are inferences; the stored value is always an exact incoming quote."""
     clean = []
     if not isinstance(observations, list):
@@ -32,9 +32,15 @@ def validated(observations, incoming):
         if not isinstance(item, dict):
             continue
         field, quote = item.get("field"), item.get("quote")
-        if field in FIELDS and isinstance(quote, str) and 3 <= len(quote.strip()) <= 300 and quote in incoming["Body"]:
+        if field in FIELDS and isinstance(quote, str) and 2 <= len(quote.strip()) <= 300 and quote in incoming["Body"]:
+            from app.institutional.sales_contact import declared_value
+            declared = declared_value(item, incoming, previous_reply)
+            if field in {"name", "city", "interests"} and not declared:
+                continue
             value = {"field": field, "value": quote, "source_message_id": str(incoming["MessageId"]),
                      "sequence": incoming["Sequence"], "origin": incoming.get("body_origin", "customer_quote"), "classification": "inferred_by_agent"}
+            if declared:
+                value["declared_value"] = declared
             if value not in clean:
                 clean.append(value)
     return clean
@@ -93,7 +99,11 @@ def record(c, settings, data, selection, observations, reply):
     document, revision = read(c, settings, data["conversation"])
     if any(v.get("incoming") == data["incoming"] for v in document.get("turns", [])):
         return
-    new = validated(observations, incoming)
+    previous_reply = ""
+    if isinstance(observations, list) and any(isinstance(v, dict) and v.get("field") == "name" for v in observations):
+        previous = db.one(c, "SELECT TOP(1) Body FROM crm.Message WHERE ConversationId=? AND Direction='outgoing' AND Sequence<? ORDER BY Sequence DESC", data["conversation"], incoming["Sequence"])
+        previous_reply = previous["Body"] if previous else ""
+    new = validated(observations, incoming, previous_reply)
     old = document.get("observations", [])
     # Keep the newest fact per field plus a bounded evidence trail; source messages stay in CRM.
     combined = old + [v for v in new if v not in old]
@@ -113,6 +123,9 @@ def record(c, settings, data, selection, observations, reply):
                            "agent_id": selection["agent_id"], "agent_version": selection["version"], "sequence": incoming["Sequence"],
                            "skill_policy": data.get("skill_policy")}])
     document["commercial_risk"] = risk(document, incoming["Sequence"])
+    if config.get("auto_sales_crm"):
+        from app.institutional.sales_contact import project
+        document["contact_projection"] = project(c, settings, data, new, incoming)
     if config.get("auto_sales_crm") and q["score"] is not None:
         existing = db.one(c, "SELECT LeadScore,Temperature,UpdatedAt FROM crm_channels.ConversationProfile WHERE ConversationId=?", data["conversation"])
         prior = document.get("last_auto_assessment")
@@ -190,6 +203,7 @@ def graph(c, settings, conversation):
     latest_sequence = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=?", conversation).fetchval()
     return {"revision": revision, "facts": facts, "qualification": document.get("qualification"),
             "last_skill_policy": (document.get("turns") or [{}])[-1].get("skill_policy"),
+            "contact_projection": document.get("contact_projection", []),
             "context_boundary": document.get("reset_after_sequence", 0),
             "reset_target_sequence": latest_sequence, "can_restore_context": "previous_context" in document,
             "generation": generation_summary(c, settings, conversation),

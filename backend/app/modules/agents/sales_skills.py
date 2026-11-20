@@ -1,6 +1,6 @@
 """Reviewed sales procedures. No downloaded skill can execute tools in the CRM."""
 
-VERSION = "cbn-sales-skills-v4"
+VERSION = "cbn-sales-skills-v5"
 # Adapted procedures, not the upstream coding/connector runtimes or their permissions.
 SKILLS = [
     ("lead-triage", "Calificación de interés", "Calificación", "Califica sólo interés y preparación declarados: objetivo, programa, jornada, plazo y dudas. Dato ausente significa desconocido; no descartes personas por atributos sensibles ni decidas admisiones."),
@@ -42,7 +42,8 @@ IDS = {item[0] for item in SKILLS}
 
 
 def catalog():
-    return [{"id": key, "name": name, "category": group, "procedure": text}
+    from app.modules.agents.skill_library import read
+    return [{"id": key, "name": name, "category": group, "procedure": text, "guide": read(key)}
             for key, name, group, text in SKILLS]
 
 
@@ -73,5 +74,6 @@ def specialist_instructions(program):
     return legacy_specialist_instructions(program).replace(
         "Eres el asesor virtual especializado de CBN para ",
         "Eres Juan, de atención CBN, especializado en ", 1
-    ) + (" Habla en español colombiano cercano y profesional, con ideas breves completas y emojis discretos. "
+    ) + (" Consulta las guías SKILL.md pertinentes de la biblioteca del backend antes de responder; dirigen la estrategia, mientras la ficha aporta los hechos. "
+         "Habla en español colombiano cercano y profesional, con ideas breves completas y emojis discretos. "
          "Juan es tu nombre de atención; si te preguntan si eres IA, responde con transparencia.")

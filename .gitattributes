@@ -23,3 +23,7 @@ docs/contracts/siie/20261119*/** -text
 
 # Preserve the existing mixed line endings in the institutional message catalog.
 frontend/src/institution/api.tsx -text
+
+# Packaged CRM skills are checked against byte-level manifest hashes.
+backend/app/modules/agents/skills/**/SKILL.md text eol=lf
+backend/app/modules/agents/skills/manifest.json text eol=lf

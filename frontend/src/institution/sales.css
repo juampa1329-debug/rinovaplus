@@ -27,6 +27,31 @@
   border-color: var(--accent, #c4f04d);
   background: color-mix(in srgb, var(--accent, #c4f04d) 7%, transparent);
 }
+.sales-skill-card {
+  min-width: 0;
+}
+.sales-skill-guide {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-top: 0.35rem;
+}
+.sales-skill-guide summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 650;
+}
+.sales-skill-guide pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.sales-skill-guide small,
+.sales-memory p {
+  overflow-wrap: anywhere;
+}
 .sales-skills-grid small,
 .sales-program-review small {
   display: block;

@@ -1,12 +1,12 @@
 # Política central de skills de RinovaPlus
 
-Corte: 19 de noviembre de 2026. P13 sigue en validación, 0/4 unidades aceptadas.
+Corte: 20 de noviembre de 2026. P13 sigue en validación, 0/4 unidades aceptadas hasta repetir el piloto comercial publicado.
 
 ## Dónde viven y cómo se aplican
 
-El catálogo ejecutable de procedimientos revisados está en `backend/app/modules/agents/sales_skills.py`; la selección por turno está en `skill_policy.py`. Son **34 procedimientos nativos del CRM**, disponibles para la IA general y todos los especialistas. No dependen de una instalación de Codex, de un directorio de skills en el contenedor ni del proveedor del modelo. Las selecciones antiguas de 20 IDs se conservan por compatibilidad histórica y no omiten la política central nueva.
+La biblioteca física está en `backend/app/modules/agents/skills/<id>/SKILL.md`: **34 guías nativas revisadas**, empaquetadas con el backend y disponibles para la IA general y los especialistas. `manifest.json` conserva fuente, versión y SHA256; `skill_library.py` valida el contenido, y `skill_policy.py` selecciona e incorpora las guías completas pertinentes al system prompt. `sales_skills.py` mantiene el índice. No depende de Codex ni ejecuta instaladores, motores Graphify o scripts de terceros. Son adaptaciones educativas revisadas, no una afirmación de instalar íntegros todos los paquetes originales. Los 20 IDs antiguos se conservan por compatibilidad.
 
-La política v4 se decide **antes de recuperar la ficha comercial**, no después de redactar. `Catalog.read_context` y `grounded_replies.context` preparan el plan por intención actual; `assemble_prompt` lo incorpora también en admisiones, simulador y agentes. No hay una llamada adicional a un modelo para seleccionar skills. La memoria autorizada permite continuar el hilo sin interpretar una comparación de instituciones como cambio de carrera. Siempre incorpora continuidad, presentación, escucha y revisión; añade diagnóstico, precios, objeciones, negociación, cierre o seguimiento cuando corresponde. El tema de la publicación activa la comunicación contextual para comentarios públicos.
+La política v5 se decide **antes de recuperar la ficha comercial**, no después de redactar. `Catalog.read_context` y `grounded_replies.context` preparan el plan por intención actual; `assemble_prompt` lo incorpora también en admisiones, simulador y agentes. No hay una llamada adicional a un modelo para seleccionar skills. La memoria autorizada permite continuar el hilo sin interpretar una comparación de instituciones como cambio de carrera. Siempre incorpora continuidad, presentación, escucha y revisión; añade diagnóstico, precios, objeciones, negociación, cierre o seguimiento cuando corresponde. El tema de la publicación activa la comunicación contextual para comentarios públicos.
 
 ```mermaid
 flowchart LR
@@ -80,4 +80,61 @@ Se conserva su aviso de licencia en `docs/third-party/sales-skills-MIT.txt`.
 
 Las pruebas cubren política obligatoria sin selección guardada, selección por tema, aislamiento público/privado, menor abono vigente, prueba de procedencia del audio, cambio de interés interpretado, control Humano durante transcripción y reset/restauración sin borrado. El piloto anterior de Enfermería coincidió con la ficha; el de Barismo expuso el enrutamiento previo a transcripción y **no se acepta**. Queda repetir el audio real y verificar dos programas, continuidad y silencio Humano del nuevo corte antes de aceptar P13.
 
-El ambiente de oficina y sus faders solicitados son una ampliación de P19 pendiente de implementación y prueba, separada de su aceptación técnica inicial de voces.
+P19: controles, mezcla y generador publicados y confirmados por el propietario; las pistas sintéticas fueron rechazadas por sonar poco realistas y su sustitución sigue pendiente, separada de P13.
+
+
+## Revisión v5 — 20-11-2026
+
+La consulta real de los SKILL.md incluye íntegros los procedimientos principales
+de la intención y las guías de memoria/grafo/continuidad/revisión/persuasión.
+Las guías adicionales entran mientras quepan en9000caracteres de contenido;
+las principales nunca se recortan y pueden superar ese objetivo. La traza
+consulted_resources conserva ID/ruta/versión/SHA; deferred_resource_ids indica
+las adicionales que no se suministraron. La interfaz dice consultadas: eso no
+garantiza por sí solo que el modelo las haya aplicado correctamente.
+
+Se corrige el enrutamiento por artículos/pronombres y aliases cortos: «voy a ver
+otras opciones» no puede seleccionar Primera Infancia sólo por la palabra «a».
+Las preguntas explícitas, cambio real de programa, ambigüedad de jornada y control
+manual mantienen sus recorridos. Se elimina la presentación repetitiva obligatoria
+de asistente virtual del ensamblador común; el nombre de atención no es una falsa
+identidad humana y se conserva la transparencia si preguntan por IA.
+
+## Nombre y campos visibles de la ficha CRM
+
+El contexto privado puede usar el nombre visible guardado para dirigirse a la
+persona con naturalidad, sin repetir saludo/nombre en cada turno. Se omiten números
+y nombres genéricos como Contacto de Messenger. Comentarios públicos no reciben
+esa ficha ni memoria privada.
+
+Con memoria customer_profile y auto_sales_crm habilitados, la IA puede proponer
+nombre, ciudad, jornada e intereses expresamente declarados: value debe aparecer
+literalmente en quote y quote en el mensaje entrante. Nombre exige presentación
+explícita o respuesta a nuestra pregunta de nombre; no se toma de terceros.
+La transcripción de audio conserva su origen automático. El backend escribe sólo
+esos cuatro campos de trato, con procedencia y comparación del valor previo.
+
+Las modificaciones manuales se protegen por campo. Los contactos con guardados
+manuales anteriores al despliegue conservan los valores no vacíos como revisados.
+Si hay conflicto, la corrección queda en memoria y se informa que el campo manual
+se conservó. No se promete sobrescribirlo. El nuevo guardado manual sólo protege
+los campos cambiados, y la unificación de contactos usa la ficha canónica.
+
+Los objetivos, presupuesto declarado, dudas, fechas de interés y próximos pasos
+se conservan como hechos citados en memoria, sin inventar datos ausentes. La
+calificación es comercial y explicable; el SLA usa su política y tiempos reales.
+No se escriben automáticamente documento, salud, género, pagos, matrícula,
+identidad académica, propietario humano, descuentos ni decisiones de admisión.
+
+Pruebas locales:263backend seleccionadas y47frontend; tipos/ESLint/Ruff/build
+pasan (bundle histórico grande conservado). Nueve consultas nuevas traducidas y
+parseadas como PostgreSQL sin conexión ni escrituras. La actualización del nombre
+conserva el contexto anterior durante el mismo turno para no invalidar su propio
+despacho; el siguiente turno usa el nombre nuevo.
+
+Pendiente de aceptación: despliegue v5, simulaciones reales de apertura, objetivo,
+objeción, comparación, financiación, becas/títulos, límites y continuidad; piloto
+real del44 con dos programas, campo de ficha y silencio Humano. Inglés conserva
+su tarifa pendiente de confirmación, sin inventarla. OpenRouter comparte política
+en el simulador; su prueba real queda condicionada a una clave guardada por el
+propietario y no se acredita por probar Gemini.

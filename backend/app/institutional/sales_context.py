@@ -9,7 +9,7 @@ from app.institutional.db import institution, rows
 from app.modules.agents.domain import digest, resolve
 from app.modules.ai.infrastructure.providers import AiError
 
-STOP = set("de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me sobre como que ofrecen tienen".split())
+STOP = set("a al de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me mi mis yo tu tus se es si no lo le les nos sobre como que ofrecen tienen".split())
 
 
 def matches(programs, profiles, text):
@@ -18,12 +18,12 @@ def matches(programs, profiles, text):
     text = re.split(r"\b(?:prefiero|mejor quiero|ahora quiero|sino)\b", text)[-1]
     if re.search(r"\b(?:no quiero|no me interesa)\b", text):
         return []
-    words = set(re.findall(r"[a-z0-9]+", text)) - STOP
+    words = {word for word in re.findall(r"[a-z0-9]+", text) if len(word) >= 3} - STOP
     scores = []
     for p in programs:
         names = set(re.findall(r"[a-z0-9]+", normalized(p["name"]))) - STOP
         aliases = [normalized(v.strip()) for v in re.split(r"[,;\n]", profiles.get(p["program_id"], {}).get("aliases", "")) if v.strip()]
-        exact_alias = any(re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text) for alias in aliases)
+        exact_alias = any(len(alias) >= 3 and alias not in STOP and re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text) for alias in aliases)
         score = sum(2 for word in words if word in names)
         if not score:
             score = sum(1 for word in words if len(word) >= 6 and any(
@@ -82,6 +82,8 @@ def configure(c, settings):
     from app.institutional.conversation_scope import configure as configure_scope
     configure_scope(c, settings)
     c.agent_catalog = Catalog(settings)
+    from app.institutional.sales_contact import personalization
+    c.contact_personalization = lambda conversation, sequence: personalization(c, settings, conversation, sequence)
 
     def commercial(agents, stages, assignment, channel, conversation):
         guides = [a for a in agents.values() if a["level"] == "guide" and a["state"] == "active" and a["enabled"]]

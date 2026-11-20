@@ -1,7 +1,7 @@
 {
   "phase": "P13",
   "name": "Académico y agentes de venta por programa",
-  "updated": "2026-11-19",
+  "updated": "2026-11-20",
   "status": "implementation_in_validation",
   "accepted_units": 0,
   "total_units": 4,
@@ -153,5 +153,20 @@
     "runbook": "docs/adaptation/P13_RUNTIME_SKILLS.md",
     "evidence": "artifacts/live/p13-runtime-skills-20261119.json",
     "persuasion_principles": 7
+  },
+  "runtime_v5": {
+    "status": "local_checks_passed_deployment_pending",
+    "guides": 34,
+    "library": "backend/app/modules/agents/skills",
+    "selected_guides": "Full primary procedures before commercial retrieval; supplementary budget9000characters with explicit deferrals",
+    "routing_fix": "Ignore articles/pronouns and short aliases; preserve Barismo when comparing institutions",
+    "crm_fields": "Name/city/schedule/interests exact customer quotes; manual edits protected; canonical contact; private name personalization",
+    "checks": {
+      "backend": 263,
+      "frontend": 47,
+      "postgres_queries_parsed": 9,
+      "database_writes_in_parser": 0
+    },
+    "acceptance": "0/4 unchanged until published commercial evidence"
   }
 }

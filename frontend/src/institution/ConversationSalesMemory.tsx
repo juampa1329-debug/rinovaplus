@@ -17,6 +17,12 @@ type Memory = {
     version: string;
     active_ids: string[];
     available_count: number;
+    consulted_resources?: {
+      id: string;
+      path: string;
+      sha256: string;
+      version: string;
+    }[];
   } | null;
   generation?: {
     id: string;
@@ -43,6 +49,11 @@ type Memory = {
     reasons: string[];
   } | null;
   assessment_authority?: string;
+  contact_projection?: {
+    field: string;
+    state: string;
+    source_message_id: string;
+  }[];
   interest?: {
     status: string;
     candidates?: { name: string; schedule: string }[];
@@ -60,6 +71,9 @@ type Memory = {
   memory_limit: string;
 };
 const labels: Record<string, string> = {
+  name: "Nombre declarado",
+  city: "Ciudad declarada",
+  interests: "Intereses declarados",
   goal: "Objetivo",
   budget: "Presupuesto declarado",
   schedule: "Jornada preferida",
@@ -250,11 +264,29 @@ function SalesMemory({
       )}
       {value && (
         <>
+          {!!value.contact_projection?.length && (
+            <div role="status">
+              <strong>Actualización de la ficha CRM</strong>
+              {value.contact_projection.map((item) => (
+                <p key={item.field}>
+                  {labels[item.field] ?? item.field}:{" "}
+                  {item.state === "updated"
+                    ? "guardado desde el mensaje del contacto"
+                    : item.state === "already_current"
+                      ? "ya coincide con la ficha"
+                      : "dato manual conservado; revisa la corrección declarada en la memoria"}
+                  .
+                </p>
+              ))}
+            </div>
+          )}
           {value.last_skill_policy && (
             <details>
               <summary>
                 Skills del último turno ·{" "}
-                {value.last_skill_policy.active_ids.length} aplicadas
+                {value.last_skill_policy.consulted_resources?.length ??
+                  value.last_skill_policy.active_ids.length}{" "}
+                consultadas
               </summary>
               <p>
                 {value.last_skill_policy.version} ·{" "}
@@ -262,6 +294,17 @@ function SalesMemory({
                 política central
               </p>
               <p>{value.last_skill_policy.active_ids.join(" · ")}</p>
+              {value.last_skill_policy.consulted_resources?.map((resource) => (
+                <p key={resource.id}>
+                  <strong>{resource.id}</strong>
+                  <br />
+                  {resource.path}
+                  <br />
+                  <small>
+                    {resource.version} · SHA256 {resource.sha256.slice(0, 16)}
+                  </small>
+                </p>
+              ))}
             </details>
           )}
           {value.generation &&

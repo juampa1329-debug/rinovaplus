@@ -1,3 +1,9 @@
+## P13 retomada: biblioteca física y ficha CRM en validación — 2026-11-20
+
+El titular revocó la postergación de P13 y pidió pruebas comerciales completas. Biblioteca34SKILL.md nativa con manifiesto SHA, guías completas por intención antes de ficha, deferimiento explícito de complementarias y UI de consulta/traza. Se corrige enrutamiento espurio por «a»/pronombres/alias cortos, presentación repetitiva del ensamblador y presupuesto sin cortar finanzas. Nombre del contacto disponible en contexto privado; campos nombre/ciudad/jornada/intereses con cita y protección manual/canónica, sin identidad legal/matrícula/pagos.263backend/47frontend, tipos/lint/build y9SQLparseadas pasan. Publicación y pruebas reales pendientes: P13 sigue0/4, no cerrar por cantidad de tests.
+
+P19: el propietario confirmó faders, mezcla y muestras, pero rechazó el fondo/tecleo sintéticos por poco realistas. Sustitución de pistas requerida; no confundir aceptación de controles con aceptación sonora. OriginalP0–P11 yP12onlinePostgreSQL/Meta100%;P15correo7/7;P19voz5/5 inicial. P14entrenamiento comercial plan;P16SIIEparcial0/5;P17TikTokdiferida0/5;P18seguridadplan0/8;P20llamadasWhatsAppplan0/8;OPS01–06 abiertos. Los cortes inferiores son historia.
+
 ## P19: mezcla publicada y muestra entregada — 2026-11-19
 
 Código d09b969 publicado: backend83phcn5lc0xbrcfbmhbzuvxu saludable y frontendu1ccy7e5uvminbm1wrwjegkm Success.66backend/16frontend, tipos/lint/build pasan; FFmpeg real midió ducking/duración/picos. Preview Juampa/Tranquila real de12,2465s;270caracteres reservados una vez y remix local sin incremento ni guardado. El propietario autorizó después enviar esa muestra al44: Meta confirmó Entregado. Escucha y balance final siguen pendientes; no inferir aceptación sonora. Ambiente global apagado, política22 conservada (5audios/60s/20000caracteres diarios). Evidencia: artifacts/live/p19-ambience-review-20261119.json.

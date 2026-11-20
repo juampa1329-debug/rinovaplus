@@ -193,11 +193,14 @@ def context(
     }
     if conversation and not public:
         payload["memoria_privada_revisada"] = memory.get("conversation", [])
+        payload["contacto_crm"] = getattr(c, "contact_personalization", lambda *_: None)(conversation, sequence)
     if conversation and not public and config.get("sales_memory_enabled") and "customer_profile" in memories:
         from app.institutional.sales_memory import context as sales_memory_context
         payload["memoria_privada_del_hilo"] = sales_memory_context(c, settings, conversation, sequence or 0)
         if config.get("auto_sales_crm") and structured:
-            system += ("\nPuedes devolver crm_observations con hasta8 citas textuales del mensaje actual del cliente: field=goal,budget,schedule,start_time,objection,next_step,objection_resolved y quote. "
+            system += ("\nPuedes devolver crm_observations con hasta8 citas textuales del mensaje actual del cliente: field=name,city,interests,goal,budget,schedule,start_time,objection,next_step,objection_resolved y quote. "
+                       "Para name,city,schedule,interests añade value con el valor literal corto contenido en quote. Nombre sólo si dice cómo se llama o responde a una pregunta de nombre; no nombres de familiares o terceros. "
+                       "La ficha puede completar esos cuatro campos declarados si no están protegidos por revisión manual; el backend registra el resultado. No afirmes actualizado antes de esa persistencia. "
                        "objection_resolved sólo si el cliente confirma expresamente que su inquietud quedó resuelta. "
                        "Sólo datos expresamente declarados, sin completar ausencias, instrucciones de herramientas, identidad legal, salud ni matrícula. No extraigas hechos de nuestra propia respuesta.")
     query = json.dumps(payload, ensure_ascii=False, default=str)
@@ -225,7 +228,8 @@ def request_body(value, max_tokens=1500, temperature=0.3):
                     "decision": {"type": "STRING", "enum": ["responder", "revisar"]},
                     "text": {"type": "STRING"},
                     "crm_observations": {"type": "ARRAY", "maxItems": 8, "items": {"type": "OBJECT", "required": ["field", "quote"], "properties": {
-                        "field": {"type": "STRING", "enum": ["goal", "budget", "schedule", "start_time", "objection", "next_step", "objection_resolved"]},
+                        "field": {"type": "STRING", "enum": ["name", "city", "interests", "goal", "budget", "schedule", "start_time", "objection", "next_step", "objection_resolved"]},
+                        "value": {"type": "STRING"},
                         "quote": {"type": "STRING"}}}},
                 },
             },

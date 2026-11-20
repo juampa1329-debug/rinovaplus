@@ -1347,6 +1347,9 @@ class Workspace:
             ):
                 raise HTTPException(422, "academic_mapping_not_bound")
             validate_contact(c, contact, current, foundation=True)
+            if current is not None:
+                from app.institutional.sales_contact import mark_manual
+                mark_manual(c, self.profile, resource, current, contact)
             values = [
                 getattr(contact, k)
                 if k != "customValues"

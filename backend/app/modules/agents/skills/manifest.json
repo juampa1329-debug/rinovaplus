@@ -1,0 +1,210 @@
+{
+  "version": "cbn-skill-library-v1",
+  "kind": "reviewed_native_educational_sales_adaptations",
+  "items": {
+    "lead-triage": {
+      "name": "Calificación de interés",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "0cb3183681cfe51f4ad2ddf706b499c2c35904d8abe04ea1f9f18b2acc24996c",
+      "bytes": 676
+    },
+    "route-lead": {
+      "name": "Derivación al especialista",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "63cd8534b28e94240c853ebd239e2dc9df39769dbaead065603dd99eb4f110e9",
+      "bytes": 715
+    },
+    "close-plan": {
+      "name": "Cierre con próximos pasos",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "4cd023d06d5b3fd1a48ff0d96da9d5ebddbf742212f609da3314274a6645f282",
+      "bytes": 642
+    },
+    "handle-objection": {
+      "name": "Manejo de objeciones",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "416d6cc922ce05362d7a35b436fb86093354e6b24965365d997e3f1d46707b62",
+      "bytes": 642
+    },
+    "customer-voice": {
+      "name": "Escucha y evidencia",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "a25f5cff4ef1a246f47d63c52b93319aef6a797ea2706e087575aa5f6cf04096",
+      "bytes": 612
+    },
+    "draft-outreach": {
+      "name": "Respuesta personalizada",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29",
+      "bytes": 662
+    },
+    "call-summary": {
+      "name": "Resumen y acuerdos",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "0da231fe4c31eae0ed010d997f9f800d41d96b7e0a66dde679f700a842dfb8a5",
+      "bytes": 662
+    },
+    "deal-review": {
+      "name": "Revisión de la oportunidad",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "fcd1d32ee712865c599b01981d5cdb181c5e33b4f2de0056fd83d06bf4f9cdfc",
+      "bytes": 604
+    },
+    "deal-signals": {
+      "name": "Señales de abandono",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "4bb75f9bde543b7361c638a87381625bfb4578dc2937320db049286a14f68562",
+      "bytes": 649
+    },
+    "log-activity": {
+      "name": "Ficha CRM con procedencia",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "a814c8ee8ee13cfd06b70594b51a04372945401dd889a1f263eb9276c5f516a6",
+      "bytes": 1197
+    },
+    "customer-escalation": {
+      "name": "Escalamiento al equipo",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "e72999ac95a826fab23d913cb7ff9183fe5a40e396efc57192ac0f658bb05194",
+      "bytes": 610
+    },
+    "win-loss-review": {
+      "name": "Aprendizaje con resultados reales",
+      "source": "https://github.com/anthropics/knowledge-work-plugins",
+      "sha256": "0a0c5b9b97aab77b5c20203ff0de87ad863bd3d04e5e8847d01dfcd4773f0225",
+      "bytes": 675
+    },
+    "sales-enablement": {
+      "name": "Presentación del programa",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5",
+      "bytes": 2085
+    },
+    "copywriting": {
+      "name": "Claridad y propuesta de valor",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5",
+      "bytes": 682
+    },
+    "copy-editing": {
+      "name": "Revisión de la respuesta",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648",
+      "bytes": 932
+    },
+    "marketing-psychology": {
+      "name": "Persuasión de Cialdini",
+      "source": "https://github.com/coreyhaines31/marketingskills",
+      "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9",
+      "bytes": 1566
+    },
+    "graphify": {
+      "name": "Grafo de la conversación",
+      "source": "https://github.com/graphify-labs/graphify",
+      "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc",
+      "bytes": 968
+    },
+    "recall": {
+      "name": "Recuperación de contexto",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e",
+      "bytes": 1043
+    },
+    "commit-context": {
+      "name": "Procedencia y correcciones",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "sha256": "2cd09b910440fcff60439bf1216c901ccfd2718fded5427a6b18b2897d7f2324",
+      "bytes": 641
+    },
+    "handoff": {
+      "name": "Continuidad entre agentes",
+      "source": "https://github.com/rohitg00/agentmemory",
+      "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00",
+      "bytes": 705
+    },
+    "cold-call-opener": {
+      "name": "Apertura pertinente",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158",
+      "bytes": 1542
+    },
+    "lead-intelligence": {
+      "name": "Señales del prospecto",
+      "source": "owner_requested_methodology_native_adaptation",
+      "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d",
+      "bytes": 639
+    },
+    "sales-discovery-questions": {
+      "name": "Diagnóstico consultivo",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15",
+      "bytes": 1374
+    },
+    "meddpicc-scorecard": {
+      "name": "Calificación con evidencia",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f",
+      "bytes": 668
+    },
+    "deal-champion-mapping": {
+      "name": "Personas que acompañan la decisión",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5",
+      "bytes": 669
+    },
+    "deal-red-flags": {
+      "name": "Alertas comerciales explicables",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9",
+      "bytes": 634
+    },
+    "deal-value-calc": {
+      "name": "Valor y coste verificables",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47",
+      "bytes": 700
+    },
+    "pricing": {
+      "name": "Presentación transparente de financiación",
+      "source": "owner_requested_methodology_native_adaptation",
+      "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d",
+      "bytes": 1934
+    },
+    "negotiation-concession-planner": {
+      "name": "Límites de concesiones",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7",
+      "bytes": 671
+    },
+    "negotiation": {
+      "name": "Negociación colaborativa",
+      "source": "owner_requested_methodology_native_adaptation",
+      "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae",
+      "bytes": 640
+    },
+    "sales-objection-handling": {
+      "name": "Resolución de objeciones",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621",
+      "bytes": 2146
+    },
+    "sales-closing-tactics": {
+      "name": "Cierre consultivo voluntario",
+      "source": "owner_requested_methodology_native_adaptation",
+      "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242",
+      "bytes": 1419
+    },
+    "sales-call-review": {
+      "name": "Revisión comercial del turno",
+      "source": "https://github.com/mbfinotti/sales-skills",
+      "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d",
+      "bytes": 710
+    },
+    "ads-copywriter": {
+      "name": "Comunicación según anuncio",
+      "source": "owner_requested_methodology_native_adaptation",
+      "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e",
+      "bytes": 719
+    }
+  }
+}

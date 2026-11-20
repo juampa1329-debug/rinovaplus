@@ -43,6 +43,13 @@ test("central skills are always available while memory writes remain independent
         name: "Recuperar contexto",
         category: "Memoria",
         procedure: "Sólo hechos",
+        guide: {
+          path: "app/modules/agents/skills/recall/SKILL.md",
+          version: "cbn-skill-library-v1",
+          sha256: "a".repeat(64),
+          content:
+            "## Procedimiento\nConsulta la memoria de este hilo antes de preguntar otra vez.",
+        },
       },
       {
         id: "close-plan",
@@ -75,6 +82,13 @@ test("central skills are always available while memory writes remain independent
   render(<Editor />);
   await screen.findByText("Recuperar contexto");
   expect(screen.getByText(/2 skills disponibles/)).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Consultar guía de Recuperar contexto"));
+  expect(
+    screen.getByText(/Consulta la memoria de este hilo antes/),
+  ).toBeVisible();
+  expect(
+    screen.getByText(/app\/modules\/agents\/skills\/recall\/SKILL.md/),
+  ).toBeVisible();
   expect(
     screen.getByRole("checkbox", { name: /Recuperar contexto/ }),
   ).toBeChecked();
@@ -235,6 +249,10 @@ test("private graph loads only when opened and never carries the previous conver
       reasons: ["Jornada declarada"],
     },
     assessment_authority: "manual_preserved",
+    contact_projection: [
+      { field: "name", state: "updated", source_message_id: "source" },
+      { field: "city", state: "manual_preserved", source_message_id: "source" },
+    ],
     graph: {
       nodes: [
         { id: "conversation", label: "Hilo", kind: "conversation" },
@@ -252,6 +270,12 @@ test("private graph loads only when opened and never carries the previous conver
   expect(mocks.api).not.toHaveBeenCalled();
   fireEvent.click(screen.getByText("Memoria y contexto del agente"));
   await screen.findByText("Prefiero de noche");
+  expect(
+    screen.getByText(/Nombre declarado: guardado desde el mensaje/),
+  ).toBeVisible();
+  expect(
+    screen.getByText(/Ciudad declarada: dato manual conservado/),
+  ).toBeVisible();
   expect(screen.getByRole("img", { name: /Grafo de hechos/ })).toBeVisible();
   fireEvent.click(screen.getByText("Por qué tiene esta calificación"));
   expect(screen.getByText(/La calificación manual se conserva/)).toBeVisible();

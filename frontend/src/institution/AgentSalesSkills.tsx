@@ -9,6 +9,7 @@ export type SalesSkill = {
   name: string;
   category: string;
   procedure: string;
+  guide?: { path: string; version: string; sha256: string; content: string };
 };
 
 export function AgentSalesSkills({
@@ -52,7 +53,9 @@ export function AgentSalesSkills({
       <p>
         Política central del backend para la IA general y todos los agentes. En
         cada turno se aplican los procedimientos pertinentes a la consulta,
-        junto al system prompt y la ficha del programa. No conceden permisos.
+        junto al system prompt de cada agente y la ficha del programa. El
+        backend consulta los archivos SKILL.md de su biblioteca; no dependen de
+        Codex. Las guías no conceden permisos.
       </p>
       {error && <Notice error>{error}</Notice>}
       {error && (
@@ -80,13 +83,25 @@ export function AgentSalesSkills({
       </div>
       <div className="sales-skills-grid">
         {skills.map((skill) => (
-          <label key={skill.id} title={skill.procedure}>
-            <input type="checkbox" checked disabled />
-            <span>
-              <strong>{skill.name}</strong>
-              <small>{skill.category}</small>
-            </span>
-          </label>
+          <div key={skill.id} className="sales-skill-card">
+            <label title={skill.procedure}>
+              <input type="checkbox" checked disabled />
+              <span>
+                <strong>{skill.name}</strong>
+                <small>{skill.category}</small>
+              </span>
+            </label>
+            {skill.guide && (
+              <details className="sales-skill-guide">
+                <summary>Consultar guía de {skill.name}</summary>
+                <small>
+                  {skill.guide.path} · {skill.guide.version}
+                </small>
+                <pre>{skill.guide.content}</pre>
+                <small>SHA256 {skill.guide.sha256}</small>
+              </details>
+            )}
+          </div>
         ))}
       </div>
       <label className="sales-switch">
