@@ -184,6 +184,10 @@ def install(app, service, settings):
                 document = {"conversation_id": key, "observations": [], "turns": [],
                             "source_sequence": latest, "reset_after_sequence": latest,
                             "previous_context": {k: v for k, v in previous.items() if k != "previous_context"}}
+                # Operational provenance is not conversational memory. Keep it
+                # so a prior automatic CRM score does not become a manual one.
+                if previous.get("last_auto_assessment"):
+                    document["last_auto_assessment"] = previous["last_auto_assessment"]
             save(c, settings, key, document, revision)
             c.execute("UPDATE crm_channels.ConversationControl SET Epoch=Epoch+1 WHERE ConversationId=? AND Epoch=?", key, control["Epoch"])
             if c.rowcount != 1:

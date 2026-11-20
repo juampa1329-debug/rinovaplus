@@ -88,7 +88,8 @@ def test_audio_interpretation_requires_same_conversation_message_asset_and_hash(
 def test_reset_and_restore_preserve_messages_and_reject_stale_conversation(monkeypatch):
     from app.institutional import sales_memory
     actor, conversation = str(uuid4()), str(uuid4())
-    original = {"observations": [{"field": "goal", "value": "software"}], "turns": []}
+    original = {"observations": [{"field": "goal", "value": "software"}], "turns": [],
+                "last_auto_assessment": {"score": 40, "temperature": "warm", "updated_at": "fixture"}}
     state = {"document": original, "revision": 2, "sequence": 7}
     statements = []
     class Cursor:
@@ -124,6 +125,7 @@ def test_reset_and_restore_preserve_messages_and_reject_stale_conversation(monke
         assert response.status_code == 200
         assert response.json()["messages_deleted"] is False and response.json()["voice_usage_reset"] is False
         assert state["document"]["reset_after_sequence"] == 7 and state["document"]["observations"] == []
+        assert state["document"]["last_auto_assessment"] == original["last_auto_assessment"]
         assert request("restore").status_code == 200 and state["document"] == original
     assert not any("DELETE" in sql or "crm.Message SET" in sql for sql, _ in statements)
     assert sum("Epoch=Epoch+1" in sql for sql, _ in statements) == 2
