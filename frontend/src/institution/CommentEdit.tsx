@@ -108,6 +108,11 @@ export function CommentEdit({
       );
       if (result.status !== "confirmed") {
         if (
+          result.status === "failed" &&
+          result.code !== "comment_edit_source_changed"
+        )
+          intent.clear();
+        if (
           result.status === "uncertain" ||
           result.status === "running" ||
           result.code === "comment_edit_source_changed"

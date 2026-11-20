@@ -129,6 +129,38 @@ it("does not expose editing for readers or an unsupported provider", () => {
   ).toBeNull();
 });
 
+it("requires another explicit review to retry a definite rejection with a new operation", async () => {
+  const { fetcher } = setup("failed");
+  fireEvent.click(screen.getByRole("button", { name: "Editar comentario" }));
+  await waitFor(() =>
+    expect(screen.getByLabelText("Editar respuesta publicada")).toBeEnabled(),
+  );
+  fireEvent.change(screen.getByLabelText("Editar respuesta publicada"), {
+    target: { value: "Corrección" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Revisar cambio" }));
+  fireEvent.click(screen.getByRole("button", { name: "Guardar en Facebook" }));
+  await screen.findByRole("alertdialog", {
+    name: "Meta no confirmó la edición",
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Cerrar aviso" }));
+  expect(
+    fetcher.mock.calls.filter(([, init]) => init?.method === "POST"),
+  ).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Revisar cambio" }));
+  fireEvent.click(screen.getByRole("button", { name: "Guardar en Facebook" }));
+  await screen.findByRole("alertdialog", {
+    name: "Meta no confirmó la edición",
+  });
+  const posts = fetcher.mock.calls.filter(
+    ([, init]) => init?.method === "POST",
+  );
+  expect(posts).toHaveLength(2);
+  expect(JSON.parse(String(posts[0][1]?.body)).operation_id).not.toBe(
+    JSON.parse(String(posts[1][1]?.body)).operation_id,
+  );
+});
+
 it("does not expose editing when the provider capability is absent", () => {
   setup("confirmed", true, false);
   expect(

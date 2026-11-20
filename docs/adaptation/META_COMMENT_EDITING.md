@@ -31,6 +31,8 @@ La revisión de WhatsApp es una conclusión sobre el contrato publicado consulta
 
 ## Verificación de este corte
 
-231pruebas backend seleccionadas (edición, hilos, eventos, canales, HTTP y P13),19frontend seleccionadas; tipos, ESLint modificado y build workspace pasan. La prueba de edición comprueba lectura/propiedad, texto cambiado fuera del CRM, rechazo, timeout, lectura final, replay, conciliación sólo GET y aislamiento de cuentas. SQL nuevo traducido/parseado para PostgreSQL; estos dobles no equivalen a una prueba nativa de rollback. La advertencia histórica de bundle grande permanece.
+231pruebas backend seleccionadas (edición, hilos, eventos, canales, HTTP y P13),20frontend seleccionadas; tipos, ESLint modificado y build workspace pasan. La prueba de edición comprueba lectura/propiedad, texto cambiado fuera del CRM, rechazo, timeout, lectura final, replay, conciliación sólo GET y aislamiento de cuentas. SQL nuevo traducido/parseado para PostgreSQL; estos dobles no equivalen a una prueba nativa de rollback. La advertencia histórica de bundle grande permanece.
 
 El despliegue y el recorrido publicado se registran en `artifacts/live/meta-comment-editing-20261119.json`. No se acredita una edición real de Meta hasta que aparezca allí su lectura final confirmada.
+
+Prueba publicada: en Facebook · CBN se editó una frase de la respuesta al comentario de ensayo «Necesito orientación», de Juan Pablo, y después se restauró el texto original. Ambas operaciones exigieron confirmación y lectura exacta en Meta; el hilo conservó dos versiones en su historial. No se creó otro comentario. Backend probado f5f47b5 saludable; revisión adicional f80dd89 saludable, rolling update completado. Historial de dos cambios conservado tras recargar el frontend. El reintento de un rechazo definitivo exige otra revisión explícita con nueva operación; la incertidumbre conserva la operación para conciliarla.

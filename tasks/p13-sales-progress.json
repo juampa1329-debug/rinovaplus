@@ -57,7 +57,7 @@
     "simulator_fix_regressions": 91,
     "recovery_endpoint_regressions": 29,
     "comment_edit_backend_selected": 231,
-    "comment_edit_frontend_selected": 19
+    "comment_edit_frontend_selected": 20
   },
   "deployment": {
     "code": "03616d8a2553b83b57018b2ac526bfd56822577c",
@@ -91,6 +91,6 @@
     "new_audio_interpretation_verified_in_reply": true
   },
   "requested_followups": [
-    "Facebook own-comment editor implemented with history, replay and explicit GET reconciliation; deploy/live review pending. Instagram comment text and sent DM editing not documented by the APIs inspected."
+    "Own Facebook reply edited and restored in production, two exact Meta readbacks confirmed; two history entries survive reload. Final backend f80dd89 healthy. Instagram comment text and sent DM editing not documented by the official APIs inspected."
   ]
 }

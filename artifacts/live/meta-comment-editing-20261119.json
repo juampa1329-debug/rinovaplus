@@ -1,7 +1,7 @@
 {
   "date": "2026-11-19",
   "feature": "own_facebook_comment_edit",
-  "status": "deployment_pending",
+  "status": "deployed_real_edit_and_restore_confirmed",
   "official_sources": [
     "https://developers.facebook.com/docs/graph-api/reference/comment",
     "https://developers.facebook.com/docs/graph-api/reference/message",
@@ -10,20 +10,46 @@
   ],
   "verification": {
     "backend_selected": 231,
-    "frontend_selected": 19,
+    "frontend_selected": 20,
     "types": "passed",
     "eslint_modified": "passed",
     "workspace_build": "passed",
     "postgres_new_statements_parser": "passed",
-    "existing_bundle_warning": true
+    "existing_bundle_warning": true,
+    "retry_definite_failure": "requires another explicit review, new operation; uncertainty retains prior operation"
   },
   "no_ddl": true,
   "no_new_test_containers": true,
-  "provider_live_edit": "not_yet_tested",
+  "provider_live_edit": {
+    "account": "Facebook CBN",
+    "test_comment_author": "Juan Pablo",
+    "test_comment": "Necesito orientación",
+    "publication": "Mantenimiento Electrónico y Energías Renovables",
+    "changed": "One sentence only; no new comment",
+    "first_save": "Meta success true and exact GET readback; UI confirmed",
+    "restore": "Original text restored, second Meta confirmation",
+    "history_count": 2,
+    "native_projection_and_history": "observed in production PostgreSQL",
+    "new_comments_created": 0,
+    "standalone_job_without_echo": "covered with controlled tests, not separately forced in production",
+    "history_survives_frontend_reload": true
+  },
   "unsupported_text_edits": [
     "instagram_comments",
     "messenger_dm",
     "instagram_dm",
     "whatsapp_cloud_api_no_documented_endpoint"
+  ],
+  "deployments": {
+    "tested_code": "f5f47b5da938b1bbb662bcd05057c61b74fd594a",
+    "tested_backend": "2hkddf4jduuxjk3matbzwxvs",
+    "tested_backend_health": "healthy_rolling_update_completed",
+    "final_code": "f80dd89506cd5c9f0529b65890f7561ecebfeb29",
+    "final_backend": "3xfqibeifkomaarbttwz6aah",
+    "final_backend_health": "healthy_rolling_update_completed"
+  },
+  "screenshots": [
+    "meta-comment-edit-confirmed.jpg",
+    "meta-comment-edit-history.jpg"
   ]
 }
