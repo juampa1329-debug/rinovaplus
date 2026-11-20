@@ -1,3 +1,7 @@
+## P13: causa del modal de Agentes identificada — 2026-11-20
+
+El prompt institucional guardado tiene11044caracteres, válido en AI institucional (máximo20000), pero AgentAI.read lo pasaba por AiSettings compartido (máximo8000). PostgreSQL capturaba ValidationError como general_storage_unavailable503: no era una caída de la base ni una clave inválida. Se reutiliza AI institucional y una configuración realmente inválida obtiene agents_ai_settings_invalid409. Cinco regresiones nuevas y59pruebas seleccionadas pasan; publicación y verificación UI pendientes. Backend9e54d40 ya saludable en yoihu3daf8etcgsamq0ffk1h, rollout13:59:57Z. No cerrar P13 por este ajuste.
+
 ## P13 retomada: biblioteca física y ficha CRM en validación — 2026-11-20
 
 El titular revocó la postergación de P13 y pidió pruebas comerciales completas. Biblioteca34SKILL.md nativa con manifiesto SHA, guías completas por intención antes de ficha, deferimiento explícito de complementarias y UI de consulta/traza. Se corrige enrutamiento espurio por «a»/pronombres/alias cortos, presentación repetitiva del ensamblador y presupuesto sin cortar finanzas. Nombre del contacto disponible en contexto privado; campos nombre/ciudad/jornada/intereses con cita y protección manual/canónica, sin identidad legal/matrícula/pagos.263backend/47frontend, tipos/lint/build y9SQLparseadas pasan. Publicación y pruebas reales pendientes: P13 sigue0/4, no cerrar por cantidad de tests.

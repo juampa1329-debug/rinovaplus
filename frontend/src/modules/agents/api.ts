@@ -193,6 +193,10 @@ export const labels: Record<string, string> = {
   reindex: "Conocimiento reindexado",
 };
 const errors: Record<string, string> = {
+  agents_ai_settings_invalid:
+    "Los ajustes generales de IA guardados no son compatibles. Abre Ajustes → Inteligencia artificial, revisa los campos indicados y guarda la configuración antes de recargar Agentes.",
+  general_storage_unavailable:
+    "RinovaPlus no pudo completar la consulta del servidor. Conserva tu borrador y vuelve a cargar. Si se repite, soporte debe revisar el registro del backend; no cambies las claves de API por este aviso.",
   siie_source_changed_review_again:
     "SIIE cambió desde la revisión. Vuelve a obtener la página o preparar la ficha antes de guardarla; la copia local se conserva.",
   siie_local_mapping_ambiguous:

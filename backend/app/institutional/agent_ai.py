@@ -12,7 +12,10 @@ from app.institutional.db import institution, key, rows
 from app.institutional.policy import request_authority
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.modules.ai.domain.models import AiSettings, Provider
+from app.modules.ai.domain.models import Provider
+from app.institutional.models import AI
+from app.modules.ai.infrastructure.providers import AiError
+from pydantic import ValidationError
 
 
 class AgentAI:
@@ -39,9 +42,12 @@ class AgentAI:
             ai = setting(c, self.profile, "ai")
             models = setting(c, self.profile, "models")
             document = ai["document"]
-            config = AiSettings(
-                **{k: v for k, v in document.items() if k in AiSettings.model_fields}
-            )
+            try:
+                # Reuse the schema that validated the saved institutional settings.
+                # The shared demo schema has narrower timing/prompt/token bounds.
+                config = AI(**{k: v for k, v in document.items() if k in AI.model_fields})
+            except ValidationError:
+                raise AiError("agents_ai_settings_invalid", 409) from None
             self.catalogs = {}
             return SimpleNamespace(
                 settings=config, revision=(ai["revision"], models["revision"])

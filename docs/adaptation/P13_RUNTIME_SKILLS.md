@@ -138,3 +138,13 @@ real del44 con dos programas, campo de ficha y silencio Humano. Inglés conserva
 su tarifa pendiente de confirmación, sin inventarla. OpenRouter comparte política
 en el simulador; su prueba real queda condicionada a una clave guardada por el
 propietario y no se acredita por probar Gemini.
+
+## Corrección del catálogo de Agentes — 20-11-2026
+
+El prompt general de producción tiene11044caracteres: válido en el esquema
+institucional de20000, pero rechazado por el esquema compartido de8000 que usaba
+AgentAI.read. La excepción de validación se presentaba como503 de almacenamiento.
+Se lee con el mismo esquema AI que valida el guardado institucional; los valores
+realmente inválidos devuelven409 de configuración con instrucciones de revisión.
+Cinco regresiones cubren prompt largo, ceros válidos, cadencia, IDs y rechazo
+real;59pruebas seleccionadas pasan. Verificación publicada aún pendiente.

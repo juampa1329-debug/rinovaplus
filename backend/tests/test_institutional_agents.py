@@ -137,3 +137,40 @@ def test_descendant_cannot_expand_tools_or_disable_parent_human_approval():
                     },
                 ]
             )
+
+
+@pytest.mark.parametrize("changed", [
+    {"output_tokens": 0, "chars_per_message": 0},
+    {"system_prompt": "x" * 12000},
+    {"wait_seconds": 120, "typing_ms": 40000, "fragment_delay_ms": 60000},
+    {"model": "m" * 220},
+])
+def test_provider_catalog_reads_valid_institutional_settings_without_demo_limits(monkeypatch, changed):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+    from app.institutional import agent_ai
+    from app.institutional.models import AI
+    from app.modules.agents.generation import provider_options
+
+    document = AI(model="saved-model", **changed).model_dump(mode="json") if "model" not in changed else AI(**changed).model_dump(mode="json")
+    monkeypatch.setattr(agent_ai, "transaction", lambda *_a, **_kw: nullcontext(None))
+    monkeypatch.setattr(agent_ai, "setting", lambda _c, _s, section: {"document": document if section == "ai" else {}, "revision": 1})
+    service = agent_ai.AgentAI(SimpleNamespace())
+    monkeypatch.setattr(service, "authorize", lambda *_: None)
+    monkeypatch.setattr(service, "connection_snapshot", lambda: {"providers": [], "credential_revision": 1})
+    result = provider_options(service)
+    assert result["network_called"] is False
+    assert result["defaults"]["primary_model"] == document["model"]
+    assert service.read().settings.system_prompt == document["system_prompt"]
+
+
+def test_invalid_saved_ai_settings_have_configuration_error_not_storage_error(monkeypatch):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+    from app.institutional import agent_ai
+    monkeypatch.setattr(agent_ai, "transaction", lambda *_a, **_kw: nullcontext(None))
+    monkeypatch.setattr(agent_ai, "setting", lambda *_a: {"document": {"output_tokens": -1}, "revision": 1})
+    service = agent_ai.AgentAI(SimpleNamespace())
+    monkeypatch.setattr(service, "authorize", lambda *_: None)
+    with pytest.raises(AiError, match="agents_ai_settings_invalid"):
+        service.read()
