@@ -22,3 +22,11 @@ No se guardaron sus niveles; se esperan las grabaciones propias propuestas.
 La carga de pistas personales desde el frontend no está implementada todavía.
 P13 continúa con pruebas reales, sin aceptación por el mero despliegue.
 El plazo institucional de SLA aparece sin configurar: no se inventó un umbral.
+
+### OpenRouter — 20-11-2026
+
+Clave guardada directamente por el propietario y catálogo autenticado cargado:
+408 modelos de texto antes del filtro interactivo. Empresas y familias funcionan.
+Se corrige la oferta de variantes batch/no-chat para evitar elecciones incompatibles.
+La generación real está pendiente de elegir modelo; no se cambió la IA activa.
+Conectar este proveedor no cierra la validación comercial de P13 ni las demás fases.

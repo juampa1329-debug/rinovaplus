@@ -269,6 +269,15 @@ class ProviderGateway:
                 if kind in {"audio", "vision"} and not model_id.startswith("gemini-"):
                     continue
             if provider == "openrouter":
+                # The CRM sends synchronous chat completions, never batch jobs.
+                # Respect explicit endpoint capabilities without excluding older
+                # catalogs that did not publish this field.
+                endpoints = item.get("endpoints")
+                if model_id.endswith(":batch") or endpoints is not None and (
+                    not isinstance(endpoints, list)
+                    or not any(path in endpoints for path in ("/api/v1/chat/completions", "/v1/chat/completions"))
+                ):
+                    continue
                 architecture = item.get("architecture", {})
                 if (
                     not isinstance(architecture, dict)

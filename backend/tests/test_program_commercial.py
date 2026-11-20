@@ -79,3 +79,21 @@ def test_account_catalogs_use_the_saved_provider_and_keep_exact_ids():
         "google/gemma-fixture:free",
     ]
     assert asyncio.run(gateway.models("openrouter", "vision", account_catalog=True)) == []
+
+
+def test_openrouter_catalog_only_offers_interactive_chat_models():
+    base = {"architecture": {"input_modalities": ["text"], "output_modalities": ["text"]},
+            "supported_parameters": ["max_tokens"]}
+    records = [
+        {**base, "id": "vendor/chat", "endpoints": ["/api/v1/chat/completions"]},
+        {**base, "id": "vendor/short-path", "endpoints": ["/v1/chat/completions"]},
+        {**base, "id": "vendor/legacy:free"},
+        {**base, "id": "vendor/chat:batch", "endpoints": ["/api/v1/chat/completions"]},
+        {**base, "id": "vendor/responses-only", "endpoints": ["/api/v1/responses"]},
+        {**base, "id": "vendor/invalid", "endpoints": "chat"},
+        {**base, "id": "vendor/invalid-list", "endpoints": [{}]},
+    ]
+    gateway = ProviderGateway({"openrouter": "fixture-key"}, httpx.MockTransport(
+        lambda request: httpx.Response(200, json={"data": records})))
+    assert [model.id for model in asyncio.run(gateway.models("openrouter", account_catalog=True))] == [
+        "vendor/chat", "vendor/legacy:free", "vendor/short-path"]

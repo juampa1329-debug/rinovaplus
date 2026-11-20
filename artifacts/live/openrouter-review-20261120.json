@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-20",
+  "status": "catalog_verified_interactive_filter_deployment_pending",
+  "credential": "Saved directly by owner, version 1; secret never read or copied",
+  "live_catalog_before_filter": {
+    "text_models": 408,
+    "anthropic": 22,
+    "openai": 75,
+    "google": 49,
+    "gemma_filtered": 8,
+    "company_filter": "passed",
+    "family_filter": "passed GPT/series-o and Gemini/Gemma",
+    "manual_model_ids_entered": false
+  },
+  "adjustment": "Exclude asynchronous batch variants and explicit non-chat endpoints from synchronous chat catalog; preserve legacy endpoint metadata compatibility",
+  "official_references": [
+    "https://openrouter.ai/docs/api/api-reference/models/list-models-filtered-by-user-provider-preferences-privacy-settings-and-guardrails",
+    "https://openrouter.ai/docs/batch-quickstart"
+  ],
+  "checks": {
+    "focused_backend_passed": 38,
+    "ruff_changed": "passed",
+    "broad_initial": "72 passed, 6 failed",
+    "baseline_without_patch": "The same 6 failures reproduced in unchanged test_ai.py and test_agent_providers.py; 51 passed",
+    "baseline_failures": [
+      "test_transient_fallback_four_attempts_and_no_hidden_retries",
+      "test_nontransient_failure_never_falls_back[404]",
+      "test_timeout_is_transient_and_busy_is_released",
+      "test_invalid_catalog_sanitized[None]",
+      "test_enabled_save_requires_catalog_and_supported_params",
+      "test_pre_provider_request_keeps_its_original_idempotency_hash"
+    ]
+  },
+  "generation": "Model family choice requested from owner; no OpenRouter inference performed yet",
+  "live_conversations_provider_changed": false,
+  "phase_acceptance_changed": false
+}
