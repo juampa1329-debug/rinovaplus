@@ -42,6 +42,7 @@ def test_relevance_is_deterministic_bounded_and_cannot_load_unreviewed_skills():
     ("Hola, quisiera información sobre Barismo y Bartender", "orientation", False),
     ("¿Cuánto dura el programa?", "specific_information", False),
     ("¿Cuánto cuesta y cómo lo financio?", "financial", True),
+    ("¿Cuánto dura y con cuánto puedo empezar el primer semestre?", "financial", True),
     ("Es que me parece caro", "objection", True),
     ("Me preocupa el horario", "objection", False),
     ("voya a ver optras opciones", "comparison", False),

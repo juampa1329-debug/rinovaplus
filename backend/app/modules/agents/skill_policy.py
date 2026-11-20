@@ -40,6 +40,7 @@ def turn_plan(question, *, has_history=False, public=False):
     current = "".join(c for c in unicodedata.normalize("NFKD", str(question).casefold()) if not unicodedata.combining(c))[:4000]
     current = current.replace("optras", "otras").replace("voya", "voy a")
     financial = bool(re.search(r"precio|cuesta|valor|abono|cuota|financi|contado|forma.*pago|\bplan\b", current)
+                     or re.search(r"\bcuanto\s+(?:puedo\s+)?(?:empez|inici|pag|abon|invert|necesit)", current)
                      or re.search(r"\bcuanto\b", current) and not re.search(r"cuanto\s+(?:dura|tiempo|tarda)", current))
     commitment = bool(re.search(r"quiero.*(?:matricular|inscribir)|como.*(?:matricul|inscri)|listo para", current))
     objection = bool(re.search(r"caro|costoso|no puedo|no tengo|preocupa|descuento|pensarlo|barat", current))

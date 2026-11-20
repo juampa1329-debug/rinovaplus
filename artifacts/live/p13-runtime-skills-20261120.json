@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-20",
+  "status": "deployed_live_pilot_in_progress",
+  "accepted_units": 0,
+  "total_units": 4,
+  "code": "0a5a81fa8863b3d57d60a11f0514211c5a2ffdfd",
+  "deployment": {
+    "backend": "yybcyyeaw1qxttc4qogxye1b",
+    "health": "healthy_rolling_update_completed",
+    "completed_utc": "2026-11-20T14:54:02Z",
+    "frontend": "ztrrevd51vqilyg1d6h7ynfp",
+    "frontend_status": "Success"
+  },
+  "library": {
+    "version": "cbn-sales-skills-v5",
+    "native_guides": 34,
+    "complete_guides_consulted_in_live_turn": 7,
+    "metadata": "paths, versions and hashes visible in private conversation memory",
+    "external_skill_engines_executed": false
+  },
+  "live_checks": {
+    "agents_catalog": "27 active agents, 26 programs, no former storage modal",
+    "opening_simulator": "Gemini: warm opening, correct duration and main versus optional titles, no unsolicited prices",
+    "finance_simulator": "Gemini: correct minimum initial payment, full installment dates, semester scope and exclusion preserved",
+    "real_whatsapp_audio": "Name and city explicitly declared, projected to visible CRM fields with source provenance; personalized greeting and relevant entrepreneurship response",
+    "memory": "Customer goal, objection, name and city visible in native sourced graph",
+    "real_objection_comparison": "Program interest and entrepreneurship retained; value and financing explained; owner commercial acceptance pending",
+    "objection_preview": {
+      "phase": "objection",
+      "message_characters": [
+        30236,
+        9009,
+        68
+      ],
+      "network_called": false,
+      "payment_conditions_clipped": false
+    },
+    "second_program_continuity": "owner message pending",
+    "human_silence_v5": "pending",
+    "objection_simulator": "Gemini passed after focused retrieval: preserves program, entrepreneurial goal, complete financing and asks which payment obstacle matters",
+    "comparison_simulator": "Gemini passed: preserves program and goal, proposes comparing practice and institutional evidence, no change of career",
+    "mixed_duration_finance": "Classifier correction validated for duration plus minimum initial payment in one question; publication pending"
+  },
+  "regression": {
+    "backend_selected": 288,
+    "frontend_focused_latest": 25,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "workspace_build": "passed_with_historical_chunk_warning",
+    "contact_sql_parser_statements": 9,
+    "parser_is_native_write_evidence": false
+  },
+  "limits": [
+    "English price scope still awaits owner confirmation",
+    "Institutional SLA threshold is not configured; no threshold invented",
+    "No SIIE writes, DDL, seeds or new test containers",
+    "No private prices, messages, contact identifiers or owner playbook copied into this artifact",
+    "Tests and technical delivery do not constitute commercial acceptance"
+  ]
+}

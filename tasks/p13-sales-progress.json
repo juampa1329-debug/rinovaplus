@@ -155,7 +155,7 @@
     "persuasion_principles": 7
   },
   "runtime_v5": {
-    "status": "deployed_real_pilot_in_progress",
+    "status": "commercial_pilot_and_contact_projection_verified_continuity_pending",
     "guides": 34,
     "library": "backend/app/modules/agents/skills",
     "selected_guides": "Full primary procedures before commercial retrieval; supplementary budget9000characters with explicit deferrals",
@@ -174,8 +174,9 @@
       "finance": "Gemini passed with minimum initial payment, complete installment dates, semester scope and uniform exclusion",
       "contact_projection": "Real incoming audio: explicit name and city saved and displayed with source provenance; greeting uses name",
       "memory": "Goal and sourced observations visible in native graph; seven full guides consulted",
-      "objection": "Isolated simulation hit 413 before provider; focused academic retrieval adjustment in validation",
+      "objection": "Isolated Gemini objection and comparison passed after focused context; real WhatsApp also preserved program",
       "human_silence": "New v5 test pending"
-    }
+    },
+    "evidence": "artifacts/live/p13-runtime-skills-20261120.json"
   }
 }
