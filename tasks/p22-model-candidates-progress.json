@@ -2,7 +2,7 @@
   "phase": "P22",
   "name": "Pruebas de modelos candidatos para agentes de RinovaPlus",
   "updated": "2026-11-20",
-  "status": "simulator_contract_validation_before_comparison",
+  "status": "comparison_and_owner_samples_delivered_selection_pending",
   "accepted": 0,
   "total": 5,
   "candidates": [
@@ -31,42 +31,48 @@
     {
       "id": "P22.1",
       "name": "Casos y rúbrica revisados",
-      "status": "cases_and_rubric_prepared"
+      "status": "cases_and_rubric_exercised"
     },
     {
       "id": "P22.2",
       "name": "Catálogo, compatibilidad, privacidad y presupuesto",
-      "status": "authenticated_catalog_and_budget_verified_compatibility_pending"
+      "status": "catalog_privacy_budget_and_five_compatible_routes_verified"
     },
     {
       "id": "P22.3",
       "name": "Comparación aislada de calidad, latencia y consumo",
-      "status": "planned"
+      "status": "comparison_and_owner_samples_delivered_commercial_acceptance_pending"
     },
     {
       "id": "P22.4",
       "name": "Selección por función y enlace al pipeline",
-      "status": "planned"
+      "status": "recommendations_prepared_pipeline_bridge_not_activated"
     },
     {
       "id": "P22.5",
       "name": "Piloto supervisado, reversión y publicación",
-      "status": "planned"
+      "status": "manual_samples_authorized_active_agent_pilot_pending"
     }
   ],
   "paid_trials_executed": true,
   "active_model_assignments_changed": false,
   "dependencies": [
-    "P21 controlled fallback accepted; owner budget for comparative benchmarks still required",
+    "P21 controlled fallback accepted; owner authorized USD10 total for P22 including WhatsApp samples to the 44",
     "P13 initial scope accepted; stage-agent/model bridge still requires validation in P22"
   ],
   "runbook": "docs/adaptation/P22_MODEL_CANDIDATES.md",
   "budget": {
-    "authorized_usd": 5,
+    "authorized_usd": 10,
     "scope": "entire P22 comparison",
     "no_topup": true,
     "production_agent_changes": false,
-    "unknown_cost_policy": "reserve conservative upper bound, do not replay uncertain requests"
+    "unknown_cost_policy": "reserve conservative upper bound, do not replay uncertain requests",
+    "authorization_history_usd": [
+      5,
+      10
+    ],
+    "estimated_known_usd": 0.7807282,
+    "unknown_reserved_usd": 0.052892631
   },
   "cases": "tasks/p22-evaluation-cases.json",
   "candidate_extensions": [
@@ -82,11 +88,39 @@
     "types": "passed",
     "eslint_modified": "passed",
     "build": "passed_with_historical_bundle_warning",
-    "output_contract_backend": 97
+    "output_contract_backend": 97,
+    "location_and_commercial_selected_backend": 155,
+    "agents_http_selected_backend": 18,
+    "backend_current_selected": 173
   },
   "preliminary_trials": {
     "count": 4,
     "commercially_usable": 1,
-    "excluded_from_final_comparison": "Legacy simulator memory/output contract; usage preserved privately, not counted as free."
+    "excluded_from_final_comparison": "Legacy simulator memory/output contract; usage preserved privately, not counted as free.",
+    "completed_without_captured_answer": 1
+  },
+  "implemented": 3,
+  "report": "docs/adaptation/P22_COMPARISON_20261120.md",
+  "evidence": "artifacts/live/p22-model-comparison-20261120.json",
+  "baseline": {
+    "valid_responses": 25,
+    "models": 5,
+    "invalid_provider_attempts": 2,
+    "runtime": "6716b06",
+    "active_agent_changes": false
+  },
+  "live_samples": {
+    "count": 30,
+    "read": 30,
+    "mode": "manual copies",
+    "active_models_changed": false,
+    "chat_returned_to_ai": true
+  },
+  "supplementary_review": {
+    "valid_captured_responses": 45,
+    "paid_attempts_including_preliminary": 52,
+    "short_style_cases": 4,
+    "location_corrected": true,
+    "calendar_benefit_grounded": true
   }
 }

@@ -1,6 +1,8 @@
 # P22 · Pruebas de modelos para agentes de RinovaPlus
 
-Solicitada por el propietario el 20 de noviembre de 2026. Planificada, 0/5.
+Solicitada por el propietario el 20 de noviembre de 2026. Comparativa técnica en revisión; cierre comercial aún pendiente.
+Informe de pruebas reales: [P22_COMPARISON_20261120.md](P22_COMPARISON_20261120.md).
+Presupuesto total autorizado ampliado a USD10; muestras al44 solicitadas por el titular.
 La lista es de candidatos; no cambia modelos activos ni acredita superioridad
 comercial. P21 ya validó el respaldo con saldo y P13 cerró su piloto inicial.
 Gemini continúa como referencia de la comparación.
