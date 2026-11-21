@@ -1,7 +1,25 @@
 """Small editorial review of public institutional sources; never a financial source."""
 
-REVIEWED = "2026-11-19"
+REVIEWED = "2026-11-20"
+ADMISSIONS_LOCATION = "Avenida del Libertador #13-45, frente a la Registraduría, Santa Marta"
+LOCATION_POLICY = (
+    "\nUBICACIÓN Y ATENCIÓN PRESENCIAL REVISADAS POR EL TITULAR (2026-11-20): "
+    "La oficina de Admisiones de CBN está en " + ADMISSIONS_LOCATION + ". "
+    "Ésta es la ubicación confirmada para orientación presencial; no la confundas con una sede académica. "
+    "No inventes otras direcciones, horarios, mapas ni disponibilidad de empleados. "
+    "Una respuesta anterior del propio agente no es una fuente institucional: si contradice este dato, "
+    "reconoce el error y corrígelo, sin insistir ni defenderla. "
+    "Si preguntan por hablar personalmente, ofrece visitar la oficina y conversar con el equipo de Admisiones. "
+    "No interpretes esa petición como una pregunta sobre tu identidad ni respondas con una presentación de asistente virtual. "
+    "No prometas que encontrarán físicamente al nombre de atención de la IA, ni que ya concertaste una cita. "
+    "Si preguntan expresamente si eres IA, responde con transparencia."
+)
 FACTS = [
+    {
+        "topic": "oficina_admisiones",
+        "text": "Oficina de Admisiones: " + ADMISSIONS_LOCATION + ". Ubicación confirmada por el titular; no confirma horarios ni la presencia de un asesor específico.",
+        "source": "owner_reviewed:2026-11-20:admissions-office",
+    },
     {
         "topic": "institucion",
         "text": "La Corporación Bolivariana del Norte (CBN) es una entidad sin ánimo de lucro de Santa Marta, creada en1995, dedicada a educación para el trabajo y el desarrollo humano y formación de técnicos laborales por competencias.",

@@ -78,3 +78,19 @@ def test_trial_output_schema_has_no_memory_or_tool_access():
     assert fmt["type"] == "json_schema" and fmt["json_schema"]["strict"]
     assert set(fmt["json_schema"]["schema"]["properties"]) == {"answer", "handoff", "references"}
     assert "tools" not in calls[0]
+
+
+@pytest.mark.parametrize("finish,code", [("length", "admissions_response_truncated"), ("content_filter", "provider_invalid_response")])
+def test_unusable_paid_completion_retains_usage_without_replaying_or_leaking_text(finish, code):
+    calls = []
+    def respond(request):
+        calls.append(request)
+        return httpx.Response(200, json={"model": "fixture", "choices": [{"finish_reason": finish, "message": {"content": "private-output", "reasoning": "private-reasoning"}}], "usage": {"prompt_tokens": 100, "completion_tokens": 700, "untrusted_extra": "private"}})
+    with pytest.raises(AiError) as failure:
+        asyncio.run(OpenRouterClient("fixture", httpx.MockTransport(respond)).complete(
+            SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=700),
+            [], lambda: None, max_attempts=1))
+    assert len(calls) == 1 and failure.value.code == code
+    assert failure.value.agent_usage == {"prompt_tokens": 100, "completion_tokens": 700}
+    assert failure.value.response_metadata == {"finish_reason": finish}
+    assert "private" not in repr(vars(failure.value))

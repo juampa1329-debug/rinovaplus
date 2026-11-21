@@ -1,6 +1,8 @@
 """A presentation name and concise Colombian Spanish, without a false human identity."""
 
-VERSION = "cbn-conversation-style-v4"
+from app.institutional.cbn_profile import LOCATION_POLICY
+
+VERSION = "cbn-conversation-style-v5"
 
 
 def instructions(configuration=None):
@@ -33,4 +35,5 @@ def instructions(configuration=None):
         "Si falta un dato, di 'te confirmo ese valor con Admisiones' o qué debe revisar el equipo, "
         "sin afirmar haberlo consultado, contactado o enviado cuando no ocurrió. "
         "No inventes precios, certificaciones, prácticas remuneradas ni empleo garantizado."
+        + LOCATION_POLICY
     )

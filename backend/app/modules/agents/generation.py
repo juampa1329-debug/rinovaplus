@@ -240,6 +240,8 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                     }
                 )
                 error.agent_execution = {
+                    "usage": getattr(error, "agent_usage", {}),
+                    "response_metadata": getattr(error, "response_metadata", {}),
                     "latency_ms": round((monotonic() - started) * 1000),
                     "attempts": attempts,
                     "provider": provider,

@@ -8,6 +8,7 @@ from pydantic import Field, ValidationError
 
 from app.modules.ai.domain.models import StrictModel
 from app.modules.ai.infrastructure.providers import AiError
+from app.institutional.cbn_profile import FACTS, REVIEWED, LOCATION_POLICY
 
 
 class AdmissionsPolicy(StrictModel):
@@ -69,6 +70,8 @@ No vuelvas a preguntar datos ya declarados en memoria, salvo contradicción que 
 Si solicita una persona, hay conflicto o no conoces la respuesta, deriva a un asesor. No inventes costos, fechas ni requisitos.
 """
 
+INSTITUTIONAL_SAFETY += LOCATION_POLICY
+
 SAFETY = INSTITUTIONAL_SAFETY + """En una derivación usa handoff=true.
 Responde exclusivamente JSON: {"answer":"...","handoff":false,"references":["chunk uuid"],"memory":[{"field":"program_interest|schedule_availability|registration_reported","value":"declaración literal","source_message_id":"uuid del mensaje entrante","quote":"cita exacta"}]}.
 Cada afirmación institucional requiere references. Memoria sólo hechos expresos con value contenido literalmente en quote, quote contenida en mensaje entrante suministrado. No infieras intención ni estado institucional.
@@ -79,6 +82,7 @@ def assemble_prompt(policy, question, memory, sources, history, *, structured=Tr
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history])
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
+                "institutional_reviewed_facts": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
                 "skill_policy": prompt_trace(skill_policy),
                 "history": [{"id": h["id"], "role": h["role"], "text": h["text"][-1600:]} for h in history[-12:]]}
     safety = SAFETY if structured else INSTITUTIONAL_SAFETY + """Esta es una prueba manual local del operador, sin envío al aspirante, sin modificar memoria ni tareas.

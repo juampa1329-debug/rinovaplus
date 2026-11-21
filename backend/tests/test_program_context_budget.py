@@ -23,7 +23,7 @@ def test_pronouns_and_articles_do_not_match_program_abbreviations():
 
 def test_native_trial_keeps_full_evidence_with_explicit_bound_and_model_capacity():
     from app.modules.agents.simulation_route import check_context
-    source = {"id": "fixture", "title": "Condiciones completas", "text": "Dato verificado. " * 2600}
+    source = {"id": "fixture", "title": "Condiciones completas", "text": "Dato verificado. " * 2400}
     with pytest.raises(AiError, match="admissions_context_limit"):
         assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [])
     messages = assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [], max_chars=60000)

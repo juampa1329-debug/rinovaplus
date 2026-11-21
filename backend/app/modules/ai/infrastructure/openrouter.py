@@ -104,7 +104,16 @@ class OpenRouterClient:
                                     if not isinstance(text, str) or not text.strip() or len(text) > 16000 or not isinstance(model, str):
                                         raise ValueError()
                                 except (KeyError, TypeError, IndexError, ValueError):
-                                    raise AiError("provider_invalid_response", 502) from None
+                                    # An unusable completion may still be billed. Preserve only
+                                    # bounded counters/status, never response text or reasoning.
+                                    choices = result.get("choices") if isinstance(result, dict) else None
+                                    choice = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
+                                    finish = choice.get("finish_reason")
+                                    error = AiError("admissions_response_truncated" if finish == "length" else "provider_invalid_response", 502)
+                                    reported = result.get("usage", {}) if isinstance(result, dict) else {}
+                                    error.agent_usage = {k: reported[k] for k in ("prompt_tokens", "completion_tokens") if isinstance(reported, dict) and type(reported.get(k)) is int and 0 <= reported[k] <= 10000000}
+                                    error.response_metadata = {"finish_reason": finish if finish in {"stop", "length", "content_filter", "tool_calls", "error"} else "unknown"}
+                                    raise error from None
                                 guard()
                                 return {"content": text, "model": model[:200], "usage": {k: usage[k] for k in ("prompt_tokens", "completion_tokens") if isinstance(usage, dict) and type(usage.get(k)) is int and 0 <= usage[k] <= 10000000}}
                 except (httpx.ConnectTimeout, httpx.ConnectError):
