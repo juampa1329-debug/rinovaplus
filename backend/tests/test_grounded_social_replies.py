@@ -206,13 +206,13 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 @pytest.mark.parametrize(
     "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None]
 )
-@pytest.mark.parametrize("with_backup", [False, True])
+@pytest.mark.parametrize("with_backup", [False, "rejected", "timeout"])
 def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup):
     from app.institutional import channel_outbox
     from app.modules.ai.domain.models import ModelInfo
     from app.modules.ai.infrastructure.providers import AiError
     route = {"provider": "openrouter", "model": "fixture:free", "input_usd_per_million": 0, "output_usd_per_million": 0}
-    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": [route] if with_backup else [], "keys": {"openrouter": "fixture"}})
+    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": [route] if with_backup else [], "keys": {"openrouter": "fixture"}, "fallback_on_timeout": with_backup == "timeout"})
     monkeypatch.setattr(messaging.language_resilience, "assert_snapshot", lambda *_: None)
     backup_reservations = []
     monkeypatch.setattr(messaging.language_resilience, "reservation", lambda *_: backup_reservations.append(1))
@@ -322,6 +322,8 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
             before_attempt()
             assert body["systemInstruction"]["parts"][0]["text"] == "Prompt de ventas"
             if with_backup:
+                if with_backup == "timeout":
+                    raise AiError("provider_response_timeout", 504)
                 raise AiError("provider_model_unavailable", 502, upstream_status=404)
             return result(answer or "", "responder" if answer else "revisar")
 
@@ -330,9 +332,11 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
     assert bool(handoffs) == (answer is None)
     assert recorded[-1]["generation"] == "grounded-v1"
     assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
-    assert len(backup_reservations) == int(with_backup)
+    assert len(backup_reservations) == int(bool(with_backup))
     if with_backup:
         assert recorded[-1]["language_execution"]["fallback_used"]
+    if with_backup == "timeout":
+        assert recorded[-1]["language_execution"]["attempts"][0]["state"] == "uncertain"
     assert [part["text"] for part in recorded[-1]["response_parts"]] == sent
     assert len([v for v in statements if v[0].startswith("UPDATE crm_channels2.SendJob SET DueAt=")]) == len(sent)
     if sent:

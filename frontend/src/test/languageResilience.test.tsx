@@ -25,7 +25,8 @@ it("prepares an explicit free backup without enabling or saving the policy", () 
   const { rerender } = render(
     <LanguageResilience value={undefined} onChange={change} />,
   );
-  expect(screen.getByRole("checkbox")).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "Habilitar respaldo en mensajes y comentarios automáticos" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "Usar respaldo si Gemini agota el tiempo de respuesta" })).toBeDisabled();
   fireEvent.click(
     screen.getByRole("button", { name: "Añadir modelo de respaldo" }),
   );
@@ -49,4 +50,14 @@ it("prepares an explicit free backup without enabling or saving the policy", () 
   expect(
     screen.queryByRole("button", { name: /^Guardar/ }),
   ).not.toBeInTheDocument();
+});
+
+it("prepares timeout recovery explicitly without changing routes or saving automatically", () => {
+  const change = vi.fn();
+  const routes = [{ provider: "openrouter", model: "fixture", input_usd_per_million: .4, output_usd_per_million: 1.6 }];
+  render(<LanguageResilience value={{ enabled: true, routes }} onChange={change} />);
+  fireEvent.click(screen.getByRole("checkbox", { name: "Usar respaldo si Gemini agota el tiempo de respuesta" }));
+  expect(change).toHaveBeenCalledWith({ enabled: true, routes, fallback_on_timeout: true });
+  expect(screen.queryByRole("button", { name: /^Guardar/ })).not.toBeInTheDocument();
+  expect(screen.getByText(/La solicitud original podría consumir tokens/)).toBeInTheDocument();
 });

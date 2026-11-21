@@ -7,7 +7,7 @@ type Route = {
   input_usd_per_million: number;
   output_usd_per_million: number;
 };
-type Policy = { enabled: boolean; routes: Route[] };
+type Policy = { enabled: boolean; fallback_on_timeout?: boolean; routes: Route[] };
 
 export function LanguageResilience({
   value,
@@ -30,8 +30,8 @@ export function LanguageResilience({
       <p>
         Si Gemini rechaza una solicitud por modelo retirado, saturación o
         servicio no disponible, se consulta la siguiente alternativa compatible.
-        Se conservan las instrucciones, skills y contexto. Los resultados
-        inciertos se dejan para revisión.
+        Se conservan las instrucciones, skills y contexto. También puedes permitir
+        el respaldo cuando Gemini agota el tiempo de generación de texto.
       </p>
       <label className="checkbox-label">
         <input
@@ -43,6 +43,23 @@ export function LanguageResilience({
         />
         Habilitar respaldo en mensajes y comentarios automáticos
       </label>
+      <label className="checkbox-label">
+        <input
+          type="checkbox"
+          checked={policy.fallback_on_timeout === true}
+          disabled={!policy.enabled}
+          onChange={(event) =>
+            onChange({ ...policy, fallback_on_timeout: event.target.checked })
+          }
+        />
+        Usar respaldo si Gemini agota el tiempo de respuesta
+      </label>
+      <p>
+        Sólo genera una alternativa de texto antes de enviar al canal. La solicitud
+        original podría consumir tokens y conserva su reserva; el respaldo reserva
+        su propio cupo. No repite envíos a Meta ni notas de voz y respeta Humano.
+        Si el respaldo tampoco confirma resultado, queda para revisión.
+      </p>
       <p>
         Orden de preferencia: primero el modelo del agente, después esta lista.
         Aplica a texto y audio ya transcrito. La interpretación de audio

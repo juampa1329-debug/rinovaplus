@@ -46,8 +46,11 @@ antes de reservar. El cambio de credencial, revisión, época, historial o modo
 Humano cancela la operación. El guardado que activa una política nueva exige
 confirmación reciente de identidad.
 
-Los timeouts de lectura, respuesta truncada/incorrecta, fallo de protocolo,
+Por defecto los timeouts de lectura, respuesta truncada/incorrecta, fallo de protocolo,
 HTTP 502/504 y resultados inciertos no provocan otra inferencia automática.
+La ampliación optativa de tiempos de espera descrita al final admite una
+alternativa de texto antes del envío, manteniendo la incertidumbre y reserva
+del intento principal.
 Las respuestas incompletas no se publican. Un rechazo de autenticación no se
 oculta usando otra credencial. Si todas las alternativas fallan, se conserva el
 error y su traza; no se genera una respuesta de bienvenida inventada.
@@ -156,3 +159,42 @@ No se indujo caída productiva ni envío de mensajes. Gemini sigue como principa
 y GPT-4.1 mini como respaldo guardado. ASR, monitor proactivo, circuito
 distribuido y comparación de candidatos P22 quedan fuera del cierre. Los
 históricos 402/429 se conservan.
+
+
+### Ampliación: recuperación de tiempo de espera de Gemini
+
+El propietario autorizó usar OpenRouter cuando Gemini no devuelve una respuesta.
+El diagnóstico real de un DM de Instagram identificó `provider_response_timeout`;
+no hubo desconexión OAuth ni respuesta comprometida. La recuperación explícita
+produjo una sola respuesta, posteriormente leída; una pregunta nueva también
+obtuvo respuesta automática. No se atribuye esa recuperación a esta ampliación
+hasta su publicación y activación.
+
+En **Ajustes → Inteligencia artificial → Modelos de respaldo**, el control
+**Usar respaldo si Gemini agota el tiempo de respuesta** es optativo y viene
+apagado en documentos antiguos. Requiere respaldo habilitado y Guardar ajustes.
+Cubre `provider_response_timeout`, `provider_timeout_or_network` y
+`provider_protocol_failure` sólo del principal Gemini y con contenidos de texto
+puros, sin herramientas ni streaming. El intento local ya terminó; el proveedor
+podría haber consumido tokens. Su reserva se conserva y el respaldo reserva su
+propio cupo. La traza conserva ese resultado incierto, no lo presenta como gratis.
+
+El mismo ejecutor atiende WhatsApp, Messenger, Instagram y comentarios. La
+respuesta alternativa aún debe superar el contrato, las guardas de IA/Humano,
+época, historial, lease, credencial y revisión antes de crear la salida única.
+No se repite ningún POST de Meta ni síntesis de voz. No se reintenta otro modelo
+si el propio respaldo termina con resultado incierto. ASR sigue fuera del alcance.
+Una indisponibilidad de ambos proveedores o presupuesto agotado queda visible
+para revisión; esta mejora no promete disponibilidad absoluta.
+
+OpenRouter conserva `allow_fallbacks=false`, `require_parameters=true` y
+`data_collection=deny`; además se transmiten los topes revisados en
+`provider.max_price`, junto con la comprobación previa del catálogo.
+[Referencia oficial de selección de proveedor](https://openrouter.ai/docs/guides/routing/provider-selection).
+
+**Ensayo de conmutación P21** añade el escenario de tiempo de espera. El principal
+es sintético, el respaldo es real, con el tope nativo de USD 0,05 y autorización
+explícita de pago. No escribe en CRM ni envía mensajes. La incertidumbre sintética
+no se contabiliza como consumo de Gemini; consultar el resultado usa GET y
+conserva un solo POST. Evidencia de publicación y operación:
+`artifacts/live/p21-timeout-recovery-20261120.json`.

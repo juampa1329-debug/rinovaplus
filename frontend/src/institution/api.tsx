@@ -68,6 +68,7 @@ const messages: Record<string, string> = {
   language_rehearsal_ai_disabled: "Habilita la IA antes de probar su respaldo. No se consultó ningún proveedor.",
   language_rehearsal_not_found: "No se encontró ese ensayo para tu usuario. Conserva el identificador y revisa la sesión; no generes otra respuesta para recuperar la anterior.",
   language_rehearsal_claim_changed: "El ensayo cambió o venció. Consulta su resultado antes de preparar otra prueba.",
+  language_rehearsal_timeout_disabled: "Activa y guarda el respaldo por tiempo de espera antes de ejecutar este ensayo. No se consultó ningún proveedor.",
   language_backup_required: "Añade al menos un modelo de respaldo del catálogo antes de habilitar esta función.",
   language_backup_duplicate: "Hay un modelo de respaldo repetido. Elige alternativas diferentes.",
   language_backup_interactive_model_required: "Elige un modelo de conversación del catálogo; las variantes batch no sirven para atención en tiempo real.",

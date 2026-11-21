@@ -1,0 +1,35 @@
+{
+  "date_local": "2026-11-20",
+  "scope": "Opt-in pure text timeout recovery before channel dispatch",
+  "initial_p21_acceptance_preserved": "4/4; independent extension",
+  "instagram": {
+    "cause": "provider_response_timeout",
+    "explicit_recovery_authorized": true,
+    "recovered_reply_read": true,
+    "subsequent_incoming_answered": true,
+    "duplicate_recovery": false
+  },
+  "messenger": {
+    "latest_visible_incoming_local": "2026-11-18",
+    "latest_visible_response": "delivered",
+    "control": "ai",
+    "new_test_requested": true
+  },
+  "checks": {
+    "backend_selected": 89,
+    "frontend_selected": 6,
+    "types": "passed",
+    "eslint_modified": "passed",
+    "build": "passed_with_historical_bundle_warning",
+    "ruff_modified": "passed"
+  },
+  "publication": "pending",
+  "live_timeout_rehearsal": "pending",
+  "limits": [
+    "No ASR or TTS fallback",
+    "Original unknown usage reservation retained",
+    "Uncertain backup stops chain",
+    "No Meta request replay",
+    "No active primary model changed"
+  ]
+}

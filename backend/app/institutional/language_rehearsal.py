@@ -39,7 +39,7 @@ async def free_quota(gateway):
 class Rehearsal(Strict):
     operation_id: str = Field(min_length=36, max_length=36)
     revision: int = Field(ge=0)
-    case: Literal["unavailable", "rate_limited", "healthy", "human"] = "unavailable"
+    case: Literal["unavailable", "rate_limited", "timeout", "healthy", "human"] = "unavailable"
     audience: Literal["message", "comment"] = "message"
     allow_paid: bool = False
 
@@ -96,6 +96,8 @@ def run(settings, authority, body, *, gateway=None):
         if not ai["document"]["enabled"]:
             raise HTTPException(409, "language_rehearsal_ai_disabled")
         saved = resilience.snapshot(c, settings)
+        if body.case == "timeout" and not saved.get("fallback_on_timeout"):
+            raise HTTPException(409, "language_rehearsal_timeout_disabled")
         if not saved["routes"] or any(r["provider"] != "openrouter" for r in saved["routes"]):
             raise HTTPException(409, "language_rehearsal_free_backup_required")
         paid = any(not r["model"].endswith(":free") or r["input_usd_per_million"] != 0
@@ -133,6 +135,8 @@ def run(settings, authority, body, *, gateway=None):
         if body.case == "healthy":
             return {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": json.dumps({
                 "decision": "responder", "text": ("" if body.audience == "comment" else "Alex, ") + "Programa Demostración P21: 2 semestres en jornada nocturna."})}]}}]}
+        if body.case == "timeout":
+            raise AiError("provider_response_timeout", 504, True)
         status = 429 if body.case == "rate_limited" else 503
         raise AiError("provider_rate_limited" if status == 429 else "provider_temporary_failure", 502, True, status)
 
@@ -182,6 +186,11 @@ def run(settings, authority, body, *, gateway=None):
             if result["state"] != "passed" and quota["remaining"] == 0:
                 result["code"] = "openrouter_free_daily_limit"
     result["real_backup"] = bool(result["provider_calls"])
+    for attempt in result["trace"].get("attempts", []):
+        if attempt.get("role") == "primary":
+            attempt["synthetic"] = True
+            if attempt.get("consumption_may_be_billed"):
+                attempt.update(consumption_may_be_billed=False, reservation_retained=False)
     with transaction(settings, True, anonymous=True) as c:
         c.execute("UPDATE crm_access.Operation SET Result=? WHERE InstitutionId=? AND OperationId=? AND ActorId=? "
                   "AND Action=? AND PayloadHash=? AND JSON_VALUE(Result,'$.state')='running'",

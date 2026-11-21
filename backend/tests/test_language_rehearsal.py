@@ -12,7 +12,7 @@ from app.institutional import language_rehearsal as rehearsal
 from app.modules.ai.infrastructure.providers import ProviderGateway
 
 
-def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False, paid=False, expensive=False, payment=False):
+def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post=False, busy=False, paid=False, expensive=False, payment=False, timeout_policy=False):
     state = {"operation": None, "calls": [], "reserves": [], "revision": 27}
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     actor = {"UserId": str(uuid4())}
@@ -31,6 +31,7 @@ def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post
     monkeypatch.setattr(rehearsal, "one", lambda *_: {"OperationId": "fixture"} if state["operation"]["state"] == "running" else None)
     saved = {"revision": 27, "credentials": {}, "keys": {"openrouter": "fixture"}, "routes": [{
         "provider": "openrouter", "model": "fixture:free", "input_usd_per_million": 0, "output_usd_per_million": 0}]}
+    saved["fallback_on_timeout"] = timeout_policy
     if paid:
         saved["routes"][0].update(model="fixture-paid", input_usd_per_million=10 if expensive else 0.4,
                                   output_usd_per_million=20 if expensive else 1.6)
@@ -72,10 +73,10 @@ def environment(monkeypatch, *, rotate=False, uncertain=False, revoke_after_post
     return state, profile, gateway
 
 
-@pytest.mark.parametrize("scenario", ["unavailable", "rate_limited"])
+@pytest.mark.parametrize("scenario", ["unavailable", "rate_limited", "timeout"])
 @pytest.mark.parametrize("audience", ["message", "comment"])
 def test_real_route_wire_and_synthetic_rejection_use_one_backup_and_replay_never_regenerates(monkeypatch, scenario, audience):
-    state, profile, gateway = environment(monkeypatch)
+    state, profile, gateway = environment(monkeypatch, timeout_policy=scenario == "timeout")
     body = rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, case=scenario, audience=audience)
     first = rehearsal.run(profile, {}, body, gateway=gateway)
     assert first["state"] == "passed" and first["trace"]["fallback_used"]
@@ -85,7 +86,18 @@ def test_real_route_wire_and_synthetic_rejection_use_one_backup_and_replay_never
     assert first["usage"]["promptTokenCount"] == 100
     second = rehearsal.run(profile, {}, body, gateway=gateway)
     assert first == second and state["calls"] == ["GET", "POST"] and len(state["reserves"]) == 1
-    assert first["skill_policy"]["version"] == "cbn-sales-skills-v5"
+    from app.modules.agents.sales_skills import VERSION
+    assert first["skill_policy"]["version"] == VERSION
+    if scenario == "timeout":
+        assert first["trace"]["timeout_recovery"]
+        assert not first["trace"]["attempts"][0]["consumption_may_be_billed"]
+
+
+def test_timeout_scenario_requires_saved_opt_in_before_claim_or_io(monkeypatch):
+    state, profile, gateway = environment(monkeypatch)
+    with pytest.raises(HTTPException, match="language_rehearsal_timeout_disabled"):
+        rehearsal.run(profile, {}, rehearsal.Rehearsal(operation_id=str(uuid4()), revision=27, case="timeout"), gateway=gateway)
+    assert not state["operation"] and not state["calls"] and not state["reserves"]
 
 
 @pytest.mark.parametrize("scenario", ["healthy", "human"])

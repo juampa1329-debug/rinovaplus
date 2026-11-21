@@ -1,7 +1,8 @@
 """P21: guarded backups for grounded text, with a reservation per attempted route.
 
-No audio is forwarded to a text model. A known rejection may select the next
-approved route; ambiguous inference results keep the original uncertain state.
+No audio is forwarded to a text model. Known rejections may select the next
+approved route. Opt-in timeout recovery applies only to text generation before
+any channel dispatch, with the original reservation retained.
 """
 
 import asyncio
@@ -22,7 +23,8 @@ from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 def snapshot(c, settings):
     value = setting(c, settings, "ai")
     policy = LanguageResilience.model_validate(value["document"].get("language_resilience", {}))
-    result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {}}
+    result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {},
+              "fallback_on_timeout": policy.enabled and policy.fallback_on_timeout}
     if not policy.enabled:
         return result
     for route in policy.routes:
@@ -104,7 +106,8 @@ async def generate(gateway, route, body, guard):
     data = await gateway.request("openrouter", "POST", "chat/completions", {
         "model": route["model"], "messages": messages, "max_tokens": body["generationConfig"]["maxOutputTokens"],
         "temperature": body["generationConfig"].get("temperature", 0.3), "response_format": {"type": "json_object"},
-        "provider": {"allow_fallbacks": False, "require_parameters": True, "data_collection": "deny"},
+        "provider": {"allow_fallbacks": False, "require_parameters": True, "data_collection": "deny",
+                     "max_price": {"prompt": route["input_usd_per_million"], "completion": route["output_usd_per_million"]}},
     })
     try:
         choice, usage = data["choices"][0], data.get("usage", {})
@@ -115,6 +118,17 @@ async def generate(gateway, route, body, guard):
                 "usageMetadata": {"promptTokenCount": usage.get("prompt_tokens"), "candidatesTokenCount": usage.get("completion_tokens")}}
     except (KeyError, IndexError, TypeError, ValueError):
         raise AiError("language_backup_invalid_response", 502) from None
+
+
+def timeout_recovery_allowed(error, provider, body, saved):
+    """Only pure, completed-local text attempts; never replay a channel/tool POST."""
+    if (saved.get("fallback_on_timeout") is not True or provider != "gemini"
+            or error.code not in {"provider_response_timeout", "provider_timeout_or_network", "provider_protocol_failure"}
+            or body.get("tools") or body.get("stream") or not body.get("contents")):
+        return False
+    return all(isinstance(content.get("parts"), list) and content["parts"]
+               and all(set(part) == {"text"} and isinstance(part["text"], str) for part in content["parts"])
+               for content in body["contents"])
 
 
 async def execute(primary, provider, model, body, saved, guard, reserve, trace, *, gateway=None):
@@ -131,9 +145,13 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
         trace["latency_ms"] = round((monotonic() - started) * 1000)
         return result
     except AiError as error:
-        attempts.append({"provider": provider, "model": model, "state": "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary"})
-        if not can_failover(error):
+        timeout_recovery = timeout_recovery_allowed(error, provider, body, saved)
+        attempts.append({"provider": provider, "model": model, "state": "uncertain" if timeout_recovery else "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary",
+                         **({"consumption_may_be_billed": True, "reservation_retained": True} if timeout_recovery else {})})
+        if not can_failover(error) and not timeout_recovery:
             raise
+        if timeout_recovery:
+            trace["timeout_recovery"] = True
         original = error
     try:
         async with asyncio.timeout(35):

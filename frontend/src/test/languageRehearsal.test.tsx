@@ -69,6 +69,21 @@ it("blocks a rehearsal while the AI settings draft is unsaved", () => {
   ).toBeDisabled();
 });
 
+it("can test timeout recovery without calling the principal or sending to Meta", async () => {
+  api.mockReset();
+  api.mockResolvedValue({ state: "passed", operation_id: "timeout-fixture", case: "timeout", real_backup: true, provider_calls: 1,
+    trace: { attempts: [{provider: "gemini", model: "fixture", role: "primary", state: "uncertain", code: "provider_response_timeout"},
+      {provider: "openrouter", model: "fixture", role: "fallback", state: "completed"}] } });
+  render(<LanguageRehearsal revision={30} enabled dirty={false} />);
+  fireEvent.change(screen.getByRole("combobox", { name: "Situación a simular" }), { target: { value: "timeout" } });
+  fireEvent.click(screen.getByRole("button", { name: "Ejecutar simulación controlada" }));
+  await screen.findByText("Ensayo superado");
+  expect(api).toHaveBeenCalledWith("language-rehearsals", "POST", expect.objectContaining({case: "timeout", revision: 30}));
+  expect(screen.getByText(/Tiempo agotado · resultado sin confirmar/)).toBeInTheDocument();
+  expect(screen.getByText(/Mensajes enviados: 0/)).toBeInTheDocument();
+  expect(api.mock.calls).toHaveLength(1);
+});
+
 it("explains a known OpenRouter credit rejection and does not repeat inference", async () => {
   api.mockReset();
   api.mockResolvedValue({

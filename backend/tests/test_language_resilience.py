@@ -27,6 +27,7 @@ def setup(*, context=100000, pricing="0", finish="stop", catalog=True):
         body = json.loads(req.content)
         assert body["provider"]["allow_fallbacks"] is False
         assert body["provider"]["data_collection"] == "deny"
+        assert body["provider"]["max_price"] == {"prompt": 0, "completion": 0}
         assert "Guías y contexto revisados" in body["messages"][0]["content"]
         return httpx.Response(200, json={"choices": [{"finish_reason": finish, "message": {"content": '{"decision":"responder","text":"Respuesta fundamentada"}'}}],
                                          "usage": {"prompt_tokens": 40, "completion_tokens": 15}})
@@ -104,6 +105,7 @@ def test_budget_failure_blocks_backup_and_truncated_response_is_not_retried():
 
 def test_disabled_policy_and_duplicate_or_batch_models():
     assert not LanguageResilience().enabled
+    assert not LanguageResilience().fallback_on_timeout
     for value in ({"enabled": True}, {"routes": [ROUTE, ROUTE]}, {"routes": [{**ROUTE, "model": "some:batch"}]}):
         with pytest.raises(ValidationError):
             LanguageResilience.model_validate(value)
@@ -126,3 +128,78 @@ def test_first_backup_missing_from_catalog_continues_to_next_compatible_free_mod
     assert state.trace["attempts"][1]["code"] == "language_backup_model_unavailable"
     assert state.trace["attempts"][2]["state"] == "completed"
     assert len(state.reservations) == 1 and sum(method == "POST" for method, _ in state.calls) == 1
+
+
+@pytest.mark.parametrize("code", ["provider_response_timeout", "provider_timeout_or_network", "provider_protocol_failure"])
+def test_opted_in_text_timeout_uses_one_backup_and_keeps_primary_uncertainty(code):
+    state = setup()
+    state.saved["fallback_on_timeout"] = True
+    primary_calls = []
+    async def primary():
+        primary_calls.append(1)
+        raise AiError(code, 504)
+    state.primary = primary
+    assert grounded_replies.parse(run(state)) == "Respuesta fundamentada"
+    assert primary_calls == [1] and len(state.reservations) == 1
+    assert state.calls == [("GET", "/api/v1/models/user"), ("POST", "/api/v1/chat/completions")]
+    assert state.trace["attempts"][0]["state"] == "uncertain"
+    assert state.trace["attempts"][0]["reservation_retained"]
+    assert state.trace["timeout_recovery"] and state.trace["fallback_used"]
+
+
+@pytest.mark.parametrize("patch", [
+    {"tools": [{"functionDeclarations": []}]}, {"stream": True},
+    {"contents": [{"role": "user", "parts": [{"inlineData": {"data": "private-audio"}}]}]},
+])
+def test_timeout_recovery_does_not_forward_media_tools_or_streaming(patch):
+    state = setup()
+    state.saved["fallback_on_timeout"] = True
+    async def primary():
+        raise AiError("provider_response_timeout", 504)
+    with pytest.raises(AiError, match="provider_response_timeout"):
+        asyncio.run(execute(primary, "gemini", "fixture", {**BODY, **patch}, state.saved,
+                            lambda: None, lambda *_: state.reservations.append(1), state.trace, gateway=state.gateway))
+    assert not state.calls and not state.reservations
+
+
+def test_opted_in_primary_timeout_does_not_start_another_inference_after_uncertain_backup():
+    state = setup()
+    state.saved["fallback_on_timeout"] = True
+    state.saved["routes"].append({**ROUTE, "model": "third"})
+    async def primary():
+        raise AiError("provider_response_timeout", 504)
+    original = state.gateway.request
+    paid = []
+    async def uncertain(provider, method, path, body=None):
+        if method == "POST":
+            paid.append(1)
+            raise AiError("provider_response_timeout", 504)
+        return await original(provider, method, path, body)
+    state.primary = primary
+    state.gateway.request = uncertain
+    with pytest.raises(AiError, match="provider_response_timeout"):
+        run(state)
+    assert paid == [1] and len(state.reservations) == 1
+    assert len(state.trace["attempts"]) == 2
+
+
+def test_human_change_during_backup_discards_result_before_any_dispatch():
+    state = setup()
+    state.saved["fallback_on_timeout"] = True
+    active = [True]
+    original = state.gateway.request
+    async def primary():
+        raise AiError("provider_response_timeout", 504)
+    async def request(provider, method, path, body=None):
+        value = await original(provider, method, path, body)
+        if method == "POST":
+            active[0] = False
+        return value
+    def guard():
+        if not active[0]:
+            raise HTTPException(409, "human_control")
+    state.primary, state.gateway.request = primary, request
+    with pytest.raises(HTTPException, match="human_control"):
+        run(state, guard=guard)
+    assert sum(method == "POST" for method, _ in state.calls) == 1
+    assert not state.trace.get("fallback_used")

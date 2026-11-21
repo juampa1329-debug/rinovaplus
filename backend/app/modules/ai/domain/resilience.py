@@ -22,6 +22,7 @@ class LanguageRoute(BaseModel):
 class LanguageResilience(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     enabled: bool = False
+    fallback_on_timeout: bool = False
     routes: list[LanguageRoute] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
