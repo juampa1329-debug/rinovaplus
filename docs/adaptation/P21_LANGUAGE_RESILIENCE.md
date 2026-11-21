@@ -198,3 +198,15 @@ explícita de pago. No escribe en CRM ni envía mensajes. La incertidumbre sint�
 no se contabiliza como consumo de Gemini; consultar el resultado usa GET y
 conserva un solo POST. Evidencia de publicación y operación:
 `artifacts/live/p21-timeout-recovery-20261120.json`.
+
+
+**Resultado publicado de la ampliación:** código `31c6739`, backend Success
+`ddbuunmazyi2h1v3nczfiujf` (4m16s), frontend Success
+`aaknknf4cwvoksce0s7izp0o` (42s). Política guardada en revisión30, timeout
+activado, Gemini principal y GPT-4.1 mini/topes0,40–1,60 USD/M conservados.
+Ensayo privado: timeout sintético → respaldo real en5850ms,2862/168tokens.
+Ensayo público:4809ms,2831/60tokens y memoria privada excluida. Una generación
+por caso; consultar por GET conservó ese conteo. Cero envíos/escriturasCRM en
+ambos. ReservasUSD0,013076; estimación por tokens y topesUSD0,002642, no factura.
+Las pruebas no indujeron una caída real de Gemini. La recuperación del DM
+anterior sí fue real y posteriormente el contacto recibió nuevas respuestas.

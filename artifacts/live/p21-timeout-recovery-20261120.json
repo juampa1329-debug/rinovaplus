@@ -13,7 +13,15 @@
     "latest_visible_incoming_local": "2026-11-18",
     "latest_visible_response": "delivered",
     "control": "ai",
-    "new_test_requested": true
+    "new_test_requested": true,
+    "token_health": "confirmed_by_provider",
+    "webhook": "enabled_verified",
+    "latest_shared_endpoint_event_local": "2026-11-20T20:37:06-05:00",
+    "recent_outgoing_checked": 10,
+    "all_recent_outgoing_delivered": true,
+    "historical_review_events": 11,
+    "historical_review_type": "delivery_unmatched receipts from Nov17/18, not new DMs",
+    "historical_events_replayed": false
   },
   "checks": {
     "backend_selected": 89,
@@ -23,13 +31,70 @@
     "build": "passed_with_historical_bundle_warning",
     "ruff_modified": "passed"
   },
-  "publication": "pending",
-  "live_timeout_rehearsal": "pending",
+  "publication": {
+    "code": "31c6739",
+    "backend": "ddbuunmazyi2h1v3nczfiujf",
+    "backend_state": "Success",
+    "backend_duration": "04m16s",
+    "frontend": "aaknknf4cwvoksce0s7izp0o",
+    "frontend_state": "Success",
+    "frontend_duration": "00m42s"
+  },
+  "live_timeout_rehearsal": [
+    {
+      "audience": "message",
+      "operation": "a547f3e2-565e-43ea-b4e8-22974db8dcc8",
+      "state": "passed",
+      "primary": "synthetic_timeout",
+      "backup": "real_openrouter",
+      "generation_calls": 1,
+      "prompt_tokens": 2862,
+      "output_tokens": 168,
+      "latency_ms": 5850,
+      "reserved_usd_micros": 6550,
+      "all_context_checks": true,
+      "get_recovery_calls_inference": 0,
+      "messages_sent": 0,
+      "crm_written": false
+    },
+    {
+      "audience": "comment",
+      "operation": "f1379929-f7b7-4331-8ffe-129d6dc8c973",
+      "state": "passed",
+      "primary": "synthetic_timeout",
+      "backup": "real_openrouter",
+      "generation_calls": 1,
+      "prompt_tokens": 2831,
+      "output_tokens": 60,
+      "latency_ms": 4809,
+      "reserved_usd_micros": 6526,
+      "all_context_checks": true,
+      "private_memory_excluded": true,
+      "get_recovery_calls_inference": 0,
+      "messages_sent": 0,
+      "crm_written": false
+    }
+  ],
   "limits": [
     "No ASR or TTS fallback",
     "Original unknown usage reservation retained",
     "Uncertain backup stops chain",
     "No Meta request replay",
     "No active primary model changed"
-  ]
+  ],
+  "configuration": {
+    "revision": 30,
+    "fallback_on_timeout": true,
+    "primary": "gemini/gemini-3.1-flash-lite",
+    "backup": "openrouter/openai/gpt-4.1-mini",
+    "input_price_cap_per_million_usd": 0.4,
+    "output_price_cap_per_million_usd": 1.6,
+    "primary_model_changed": false
+  },
+  "consumption": {
+    "total_reservation_usd": 0.013076,
+    "estimated_usage_at_reviewed_caps_usd": 0.002642,
+    "not_provider_invoice": true,
+    "budget": "within owner-authorized USD10; no recharge"
+  }
 }
