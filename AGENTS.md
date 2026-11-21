@@ -1,3 +1,7 @@
+## P22: beneficio comercial del calendario preparado — 2026-11-20
+
+Por aclaración del titular, skillsv6 prioriza reconocer inquietud→beneficio verificado→condiciones completas→pregunta útil. entry_payment_offer incluye calendar_benefit sólo con fechas completas, futuras y ordenadas: siguiente cuota y relación real con el año actual de Bogotá; sin extender la pausa a otros cargos ni confirmar pagos.155backend/Ruff pasan. Publicación y nuevas muestras breves pendientes. La matriz inicial de5modelos/25respuestas mantiene su versión6716b06 y no se mezcla con ampliaciones de prompts/fuentes posteriores. No cambiar modelos activos.7893ed0 saludable en pkedcs44ihxioipabsyzdtbo, rollout00:38:10Z.
+
 ## P22: citas institucionales coherentes — 2026-11-20
 
 7484005 saludable en qrxqjaye1mwfcusvwat3ns98, rollout2026-11-21T00:29:35Z. Muestras iniciales5 y financiación5 aceptadas en el hilo del44 por solicitud del titular; recibos reales observados. No confundir presencia en compositor con envío: confirmar párrafo del historial y recibo. Prueba ampliada de Gemini rechazó referencia de fuente institucional; se unifican UUIDs revisados, metadatos retornados y validación sin admitir URLs arbitrarias.148backend/Ruff pasan. Se conserva el uso conocido de ese rechazo; resto de ampliaciones pendientes. Sin cambios en modelos activos ni aceptación total P22.

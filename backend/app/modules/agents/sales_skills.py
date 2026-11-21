@@ -1,6 +1,6 @@
 """Reviewed sales procedures. No downloaded skill can execute tools in the CRM."""
 
-VERSION = "cbn-sales-skills-v5"
+VERSION = "cbn-sales-skills-v6"
 # Adapted procedures, not the upstream coding/connector runtimes or their permissions.
 SKILLS = [
     ("lead-triage", "Calificación de interés", "Calificación", "Califica sólo interés y preparación declarados: objetivo, programa, jornada, plazo y dudas. Dato ausente significa desconocido; no descartes personas por atributos sensibles ni decidas admisiones."),

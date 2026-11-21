@@ -145,6 +145,36 @@ def save_profile(c, settings, program_id, revision, actor, profile):
     )
 
 
+def payment_timing(entry, today):
+    """Describe a complete future financing schedule, never a general grace period."""
+    try:
+        initial = date.fromisoformat(entry["initial_payment_due_date"])
+        installments = entry["installments"]
+        dates = [date.fromisoformat(item["due_date"]) for item in installments]
+    except (KeyError, TypeError, ValueError):
+        return None
+    if not dates or initial < today or min(dates) <= initial or any(d < today for d in dates):
+        return None
+    following = min(dates)
+    next_year = following.year == today.year + 1
+    return {
+        "as_of_date_bogota": today.isoformat(),
+        "initial_payment_due_date": initial.isoformat(),
+        "next_installment_due_date": following.isoformat(),
+        "next_installment_is_next_year": next_year,
+        "scope": "financing_installments_only_not_other_charges",
+        "guidance": (
+            "Convierte estas fechas revisadas en un beneficio de organización del dinero: "
+            "si realiza el abono inicial, puede organizar la siguiente cuota de financiación para "
+            + following.isoformat()
+            + (", el año entrante. " if next_year else ". ")
+            + "Explícalo junto al importe inicial, no sólo enumeres números. Conserva todas las cuotas, "
+            "fechas, vigencia, alcance y exclusiones. No afirmes que ya pagó ni que no tendrá ningún "
+            "otro gasto, ni extiendas el calendario a uniforme, libro u otros cargos."
+        ),
+    }
+
+
 def agent_facts(profile):
     if not profile:
         return {}
@@ -173,6 +203,9 @@ def agent_facts(profile):
             **{k: entry.get(k) for k in ("initial_payment_cop", "initial_payment_due_date", "installments", "total_cost_cop", "conditions", "valid_until")},
             "guidance": "Cuando la conversación requiera precios o financiación, presenta este abono inicial mínimo con las cuotas pendientes y el alcance del precio documentado. Ante una apertura de información general no vuelques las tarifas. Es un pago inicial, no precio total ni garantía de matrícula. Di pesos, sin A1/A2. Explica sólo el calendario real y no inventes períodos sin pagos ni exenciones de otros cargos. Contado, total y alternativas se responden directamente si los piden.",
         }
+        timing = payment_timing(entry, date.fromisoformat(today))
+        if timing:
+            facts["entry_payment_offer"]["calendar_benefit"] = timing
     missing = []
     if profile.get("siie_program_id") and not profile.get("requirements"):
         missing.append("requirements")
