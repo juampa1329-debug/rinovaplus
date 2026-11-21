@@ -598,6 +598,7 @@ def runtime_context(cursor, conversation_id, question, channel):
 
 
 def public_sources(cursor, question, program_id, stage_id, config):
+    from app.institutional.cbn_profile import reviewed_sources
     institutional = read_context(cursor, question if program_id or getattr(cursor, "agent_catalog", None) else "", program_id)
     documents = (
         scoped_sources(
@@ -607,12 +608,13 @@ def public_sources(cursor, question, program_id, stage_id, config):
         and set(config.get("memories", ["knowledge"])) & {"knowledge", "collective"}
         else []
     )
-    return institutional, [
+    selected_sources = [
         *institutional["sources"],
         *documents,
     ] if "program.read" in config["capabilities"] and "vertical" in config.get(
         "memories", ["vertical"]
     ) else documents
+    return institutional, reviewed_sources(selected_sources)
 
 
 class AgentPolicy(AdmissionsPolicy):

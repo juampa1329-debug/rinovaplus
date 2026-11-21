@@ -1,5 +1,7 @@
 """Small editorial review of public institutional sources; never a financial source."""
 
+from uuid import NAMESPACE_URL, uuid5
+
 REVIEWED = "2026-11-20"
 ADMISSIONS_LOCATION = "Avenida del Libertador #13-45, frente a la Registraduría, Santa Marta"
 LOCATION_POLICY = (
@@ -46,6 +48,20 @@ FACTS = [
         "source": "https://cbn.edu.co/cbn-renueva-certificacion-icontec-16-anos-de-calidad/",
     },
 ]
+
+
+def reviewed_sources(sources):
+    """Same approved facts in context, returned metadata and citation validation."""
+    values = list(sources)
+    known = {source["id"] for source in values}
+    for fact in FACTS:
+        identifier = str(uuid5(NAMESPACE_URL, "cbn-reviewed:" + REVIEWED + ":" + fact["topic"]))
+        if identifier not in known:
+            values.append({"id": identifier, "title": "CBN · fuente institucional revisada · " + fact["topic"],
+                           "text": fact["text"], "provenance": fact["source"], "revision": REVIEWED,
+                           "source_kind": "reviewed_institutional_fact", "financial_source": False})
+            known.add(identifier)
+    return values
 
 
 def general_instructions():

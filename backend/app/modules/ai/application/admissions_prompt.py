@@ -8,7 +8,7 @@ from pydantic import Field, ValidationError
 
 from app.modules.ai.domain.models import StrictModel
 from app.modules.ai.infrastructure.providers import AiError
-from app.institutional.cbn_profile import FACTS, REVIEWED, LOCATION_POLICY
+from app.institutional.cbn_profile import LOCATION_POLICY, reviewed_sources
 
 
 class AdmissionsPolicy(StrictModel):
@@ -81,8 +81,8 @@ Cada afirmación institucional requiere references. Memoria sólo hechos expreso
 def assemble_prompt(policy, question, memory, sources, history, *, structured=True, max_chars=40000):
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history])
+    sources = reviewed_sources(sources)
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
-                "institutional_reviewed_facts": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
                 "skill_policy": prompt_trace(skill_policy),
                 "history": [{"id": h["id"], "role": h["role"], "text": h["text"][-1600:]} for h in history[-12:]]}
     safety = SAFETY if structured else INSTITUTIONAL_SAFETY + """Esta es una prueba manual local del operador, sin envío al aspirante, sin modificar memoria ni tareas.
@@ -117,7 +117,7 @@ def validate_reply(raw, sources, history, *, response_metadata=None, allow_memor
         raise AiError("admissions_invalid_structured_response", 502) from None
     if not allow_memory and response.memory:
         raise AiError("admissions_invalid_memory_response", 502)
-    valid = {s["id"] for s in sources}
+    valid = {s["id"] for s in reviewed_sources(sources)}
     if any(ref not in valid for ref in response.references):
         raise AiError("admissions_unknown_reference", 502)
     if not response.handoff and (not response.answer.strip() or not response.references):

@@ -141,9 +141,10 @@ class AdmissionsService:
 
     @staticmethod
     def sources(cursor, question, program_id=None, semester=None):
+        from app.institutional.cbn_profile import reviewed_sources
         institutional = read_context(cursor, question, program_id, semester)
         documents = [{**s, "source_kind": "document"} for s in search(cursor, question, limit=2)]
-        return institutional, [*institutional["sources"], *documents]
+        return institutional, reviewed_sources([*institutional["sources"], *documents])
 
     def academic_programs(self, offset=0, limit=150):
         with self.transaction() as cursor:
