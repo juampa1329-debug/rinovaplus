@@ -117,6 +117,18 @@ details.messaging_response_window_closed = details.whatsapp_reply_window_closed;
 details.provider_outcome_unknown = details.delivery_uncertain;
 details.provider_result_unknown = details.delivery_uncertain;
 details.send_lease_expired = details.delivery_uncertain;
+details.gemini_reply_context_changed = [
+  "La respuesta perdió vigencia antes de enviarse",
+  "El contexto o la configuración cambió después de preparar esta respuesta. RinovaPlus la detuvo antes de enviarla.",
+  "Consulta el diagnóstico del hilo. Si no hubo otra respuesta, revisa la recuperación; no reenvíes fragmentos antiguos por separado.",
+];
+details.gemini_whatsapp_control_or_history_changed = [
+  "La conversación cambió antes del envío",
+  "Entró otro mensaje, cambió el control IA/Humano o venció la ventana de respuesta. Esta salida no se envió.",
+  "Revisa el último mensaje y el modo actual de atención. El diagnóstico permite distinguir el motivo exacto.",
+];
+details.human_control_changed = ["La atención pasó a Humano", "Se canceló una respuesta automática para respetar la atención humana.", "Responde desde Humano o vuelve a IA para atender entradas nuevas."];
+details.gemini_whatsapp_previous_part_not_sent = ["Se detuvo el resto de la respuesta", "La parte anterior no llegó a enviarse o quedó sin confirmar.", "Revisa el motivo de la primera parte antes de recuperar la respuesta completa."];
 
 export function explainInboxError({
   code,
@@ -158,7 +170,7 @@ export function MessageDelivery({
 }) {
   const report = useContext(ErrorFeedbackContext);
   const blocked = state === "queued" && !!reason;
-  if (blocked || state === "failed" || state === "uncertain") {
+  if (blocked || state === "failed" || state === "uncertain" || state === "cancelled") {
     return (
       <button
         type="button"
@@ -170,7 +182,7 @@ export function MessageDelivery({
               message:
                 state === "failed"
                   ? "El canal marcó el mensaje como fallido."
-                  : "",
+                  : state === "cancelled" ? "El envío se canceló antes de completarse. Consulta el diagnóstico de la conversación." : "",
             },
             event.currentTarget,
           )
@@ -179,7 +191,7 @@ export function MessageDelivery({
         <Icon name="warning" />
         {blocked
           ? "En cola · ver motivo"
-          : state === "failed"
+          : state === "cancelled" ? "Cancelado · ver motivo" : state === "failed"
             ? "No enviado"
             : "Sin confirmar"}
       </button>
