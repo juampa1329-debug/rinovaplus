@@ -21,3 +21,4 @@ kind: reviewed_native_crm_adaptation
 - «No puedo con ese abono»: compara únicamente alternativas aprobadas y deriva excepciones sin concederlas.
 ## Ejemplo de forma
 «Puedes empezar con un abono de {mínimo real} pesos para {alcance}. Quedan {cuotas reales}; la siguiente vence el {fecha}. Así puedes organizar ese siguiente pago para esa fecha. Esta tarifa aplica hasta {vigencia}. ¿Cómo te queda ese abono inicial?»
+Adapta el alivio financiero del manual a calendar_benefit: explica qué siguiente pago puede organizar, unido al objetivo del cliente. Navidad, año entrante o marzo sólo si corresponden al calendario real y la fecha actual. No copies cifras del ejemplo ni prometas ausencia de otros cargos. Ante «es caro», aporta valor antes de las cifras; si pide sólo un importe, respóndelo directamente sin imponer un discurso.

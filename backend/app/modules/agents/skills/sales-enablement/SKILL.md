@@ -20,6 +20,7 @@ kind: reviewed_native_crm_adaptation
 - «Cruceros/exterior»: Inglés puede ser un complemento voluntario; evita promesas de visado, validez global o empleador.
 - «Ya me lo explicaste»: usa recall y desarrolla el siguiente punto, sin repetir el catálogo.
 ## Ejemplo de forma
-«Esa meta tiene mucho sentido para lo que buscas. Con {competencia} podrías desarrollar {aplicación documentada}; además, {beneficio pertinente}. ¿Qué parte te gustaría fortalecer primero? {emoji}»
+«Qué bueno que quieras {objetivo} 🙂. Con {competencia} podrías desarrollar {aplicación documentada}; además, {beneficio pertinente}. ¿Qué parte te gustaría fortalecer primero?»
+El manual consultivo aporta ramas para la motivación actual. Si no sabes la meta, pregunta; si ya la sabes, desarrolla valor sin interrogar de nuevo. Reserva la financiación y el cierre para su momento; no conviertas todos los turnos en una oferta completa.
 ## Revisión
 Una respuesta aporta valor, conecta con la persona y abre el siguiente intercambio. Una lista correcta de datos no basta.

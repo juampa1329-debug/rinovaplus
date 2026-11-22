@@ -77,14 +77,14 @@
     "sales-enablement": {
       "name": "Presentación del programa",
       "source": "https://github.com/coreyhaines31/marketingskills",
-      "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5",
-      "bytes": 2085
+      "sha256": "e92d2ef71c3c285a2cb33d1e41c36e7eb51e3e31368443addc1de12ad0b9c719",
+      "bytes": 2328
     },
     "copywriting": {
       "name": "Claridad y propuesta de valor",
       "source": "https://github.com/coreyhaines31/marketingskills",
-      "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5",
-      "bytes": 682
+      "sha256": "39ffac453f5def34815cb61734b4e0d123ec5937ddad2b29b0197d264ccca162",
+      "bytes": 1134
     },
     "copy-editing": {
       "name": "Revisión de la respuesta",
@@ -167,8 +167,8 @@
     "pricing": {
       "name": "Presentación transparente de financiación",
       "source": "owner_requested_methodology_native_adaptation",
-      "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d",
-      "bytes": 1934
+      "sha256": "c4e3b024ef61e985f8fb4311a56e2de0c5f2c0e9f4b34c819cc72d5803763880",
+      "bytes": 2355
     },
     "negotiation-concession-planner": {
       "name": "Límites de concesiones",
@@ -185,8 +185,8 @@
     "sales-objection-handling": {
       "name": "Resolución de objeciones",
       "source": "https://github.com/mbfinotti/sales-skills",
-      "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621",
-      "bytes": 2146
+      "sha256": "c3e240467099f76c43972e670bcdc84823405cd0a665519b296934ab8c00e228",
+      "bytes": 3207
     },
     "sales-closing-tactics": {
       "name": "Cierre consultivo voluntario",

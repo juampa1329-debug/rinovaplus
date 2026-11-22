@@ -36,3 +36,7 @@ Conectar este proveedor no cierra la validación comercial de P13 ni las demás 
 ### P22 · Cobertura explícita de skills — 22-11-2026
 
 Evaluación solicitada por el titular terminada: siete situaciones con las17guías comerciales completas y los cinco candidatos,35/35respuestas válidas. Inclusión completa y SHA comprobados para cada modelo;35copias al44 (6leídas/29entregadas), chat restauradoIA tras recarga. USD1,52840825estimados nuevos; acumulado conocido+reservado USD3,453871081/10. Se documentan suposiciones sobre horarios, reglas de reserva no sustentadas y exceso de extensión. [Informe detallado](P22_FULL_SKILLS_20261122.md). P22 conserva60%técnico/0%aceptación comercial: elección del titular, pipeline y piloto/reversión pendientes. Consulta manual de cuentas OpenRouter/ElevenLabs publicada y comprobada: consumo/límite de la clave OpenRouter y plan/unidades/renovación/voces ElevenLabs reales. Saldo global OpenRouter pendiente de la clave administrativa que el titular añadirá después. No cambia la elección de agentes ni cierra la fase. Ver [cuentas de proveedores](PROVIDER_BALANCES_20261122.md).
+
+### Manual comercial CBN — 22-11-2026
+
+El titular autoriza adaptar sus pautas a todos los programas con datos de las fichas vigentes. Política v7, patrones por situación y cuatro skills revisadas;204pruebas backend/Ruff pasan. Publicación y ronda comparable35respuestas pendientes. [Seguimiento](P22_MANUAL_CBN_20261122.md). No cambia selección de modelos ni aceptación de P22.

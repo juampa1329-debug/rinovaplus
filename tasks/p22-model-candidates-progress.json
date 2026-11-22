@@ -195,5 +195,13 @@
     "status": "comparison_delivered_owner_selection_pending",
     "provider_balance_extension": "published_key_usage_and_elevenlabs_verified_global_balance_owner_credential_pending"
   },
-  "provider_balance_evidence": "artifacts/live/provider-balances-20261122.json"
+  "provider_balance_evidence": "artifacts/live/provider-balances-20261122.json",
+  "manual_adaptation_wave": {
+    "id": "p22-manual-20261122",
+    "status": "implementation_checked_publication_and_trials_pending",
+    "manual_version": "cbn-consultative-manual-v1",
+    "protocol": "tasks/p22-manual-cases-20261122.json",
+    "planned_responses": 35,
+    "active_model_assignments_changed": false
+  }
 }
