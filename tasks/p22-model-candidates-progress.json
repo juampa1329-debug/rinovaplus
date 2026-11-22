@@ -71,7 +71,7 @@
       5,
       10
     ],
-    "estimated_known_usd": 0.7807282,
+    "estimated_known_usd": 1.8725702,
     "unknown_reserved_usd": 0.052892631
   },
   "cases": "tasks/p22-evaluation-cases.json",
@@ -104,8 +104,8 @@
     "completed_without_captured_answer": 1
   },
   "implemented": 3,
-  "report": "docs/adaptation/P22_COMPARISON_20261120.md",
-  "evidence": "artifacts/live/p22-model-comparison-20261120.json",
+  "report": "docs/adaptation/P22_COMPARISON_20261121.md",
+  "evidence": "artifacts/live/p22-five-models-20261121.json",
   "baseline": {
     "valid_responses": 25,
     "models": 5,
@@ -129,7 +129,7 @@
   },
   "current_wave": {
     "id": "p22-five-models-20261121",
-    "status": "compatibility_update_prepared_no_paid_calls",
+    "status": "25_responses_and_manual_samples_delivered_owner_selection_pending",
     "models": [
       "google/gemini-3.8-flash",
       "anthropic/claude-sonnet-4.6",
@@ -160,6 +160,22 @@
       "types": "passed",
       "lint": "passed",
       "build": "passed with historical bundle warning"
-    }
+    },
+    "actual_paid_attempts": 25,
+    "valid_responses": 25,
+    "unknown_attempts": 0,
+    "estimated_usd": 1.091842,
+    "manual_samples": 25,
+    "receipts": {
+      "read": 1,
+      "delivered": 24
+    },
+    "chat_returned_to_ai_verified_after_reload": true,
+    "context_hashes_match_per_case": true,
+    "runtime": "806e8a9",
+    "backend_deployment": "efhpkw8jbytzbj7fpswpck8i",
+    "frontend_deployment": "svca9gbxsriipcyj7pqobuxe",
+    "report": "docs/adaptation/P22_COMPARISON_20261121.md",
+    "evidence": "artifacts/live/p22-five-models-20261121.json"
   }
 }

@@ -1,0 +1,1150 @@
+{
+  "id": "p22-five-models-20261121",
+  "date_bogota": "2026-11-21",
+  "runtime": "806e8a96f6894d8753792cc1127a9e5d10b0ad58",
+  "provider": "openrouter",
+  "attempts": 25,
+  "valid_responses": 25,
+  "active_model_assignments_changed": false,
+  "simulation_crm_written": false,
+  "simulation_delivered": false,
+  "manual_copies": 25,
+  "delivery_receipts": {
+    "read": 1,
+    "delivered": 24
+  },
+  "chat_restored_to_ai_after_reload": true,
+  "budget": {
+    "authorized_usd": 10,
+    "previous_known_estimated_usd": 0.7807282,
+    "previous_unknown_reserved_usd": 0.052892631,
+    "wave_estimated_usd": 1.0918420000000002,
+    "wave_unknown_reserved_usd": 0,
+    "cumulative_known_estimated_usd": 1.8725702000000002,
+    "cumulative_with_unknown_reserved_usd": 1.9254628310000002,
+    "not_invoice": true
+  },
+  "trials": [
+    {
+      "sample": 1,
+      "model": "google/gemini-3.8-flash",
+      "case": "opening_value",
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 12051,
+      "completion_tokens": 197,
+      "latency_ms": 4205,
+      "cost_estimated_usd": 0.009777,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "google/gemini-3.8-flash"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 2,
+      "model": "anthropic/claude-sonnet-4.6",
+      "case": "opening_value",
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 14876,
+      "completion_tokens": 278,
+      "latency_ms": 16134,
+      "cost_estimated_usd": 0.048798,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4.6"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 3,
+      "model": "openai/gpt-4.1",
+      "case": "opening_value",
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 11288,
+      "completion_tokens": 202,
+      "latency_ms": 3609,
+      "cost_estimated_usd": 0.024192,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 4,
+      "model": "anthropic/claude-sonnet-5.5",
+      "case": "opening_value",
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 20327,
+      "completion_tokens": 374,
+      "latency_ms": 4627,
+      "cost_estimated_usd": 0.044394,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 5,
+      "model": "anthropic/claude-opus-5.5",
+      "case": "opening_value",
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 20327,
+      "completion_tokens": 424,
+      "latency_ms": 8606,
+      "cost_estimated_usd": 0.089788,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 6,
+      "model": "google/gemini-3.8-flash",
+      "case": "financing_objection",
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 11778,
+      "completion_tokens": 318,
+      "latency_ms": 4744,
+      "cost_estimated_usd": 0.010026,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "google/gemini-3.8-flash"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 7,
+      "model": "anthropic/claude-sonnet-4.6",
+      "case": "financing_objection",
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 14562,
+      "completion_tokens": 446,
+      "latency_ms": 13361,
+      "cost_estimated_usd": 0.050376,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4.6"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 8,
+      "model": "openai/gpt-4.1",
+      "case": "financing_objection",
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 11023,
+      "completion_tokens": 254,
+      "latency_ms": 3246,
+      "cost_estimated_usd": 0.024078,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 9,
+      "model": "anthropic/claude-sonnet-5.5",
+      "case": "financing_objection",
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 19866,
+      "completion_tokens": 465,
+      "latency_ms": 5218,
+      "cost_estimated_usd": 0.044382,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 10,
+      "model": "anthropic/claude-opus-5.5",
+      "case": "financing_objection",
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 19866,
+      "completion_tokens": 505,
+      "latency_ms": 9868,
+      "cost_estimated_usd": 0.089564,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 11,
+      "model": "google/gemini-3.8-flash",
+      "case": "program_memory",
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 12147,
+      "completion_tokens": 199,
+      "latency_ms": 4584,
+      "cost_estimated_usd": 0.0098565,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "google/gemini-3.8-flash"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 12,
+      "model": "anthropic/claude-sonnet-4.6",
+      "case": "program_memory",
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 14987,
+      "completion_tokens": 335,
+      "latency_ms": 10074,
+      "cost_estimated_usd": 0.049986,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4.6"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 13,
+      "model": "openai/gpt-4.1",
+      "case": "program_memory",
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 11363,
+      "completion_tokens": 201,
+      "latency_ms": 2930,
+      "cost_estimated_usd": 0.024334,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 14,
+      "model": "anthropic/claude-sonnet-5.5",
+      "case": "program_memory",
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 20556,
+      "completion_tokens": 373,
+      "latency_ms": 4346,
+      "cost_estimated_usd": 0.044842,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 15,
+      "model": "anthropic/claude-opus-5.5",
+      "case": "program_memory",
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 20556,
+      "completion_tokens": 325,
+      "latency_ms": 6929,
+      "cost_estimated_usd": 0.088724,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 16,
+      "model": "google/gemini-3.8-flash",
+      "case": "followup_comparison",
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 11882,
+      "completion_tokens": 223,
+      "latency_ms": 4533,
+      "cost_estimated_usd": 0.00974775,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "google/gemini-3.8-flash"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 17,
+      "model": "anthropic/claude-sonnet-4.6",
+      "case": "followup_comparison",
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 14683,
+      "completion_tokens": 298,
+      "latency_ms": 10111,
+      "cost_estimated_usd": 0.048519,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4.6"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 18,
+      "model": "openai/gpt-4.1",
+      "case": "followup_comparison",
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 11128,
+      "completion_tokens": 204,
+      "latency_ms": 3009,
+      "cost_estimated_usd": 0.023888,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 19,
+      "model": "anthropic/claude-sonnet-5.5",
+      "case": "followup_comparison",
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 20045,
+      "completion_tokens": 515,
+      "latency_ms": 5432,
+      "cost_estimated_usd": 0.04524,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 20,
+      "model": "anthropic/claude-opus-5.5",
+      "case": "followup_comparison",
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "program_id": 24,
+      "prompt_tokens": 20045,
+      "completion_tokens": 551,
+      "latency_ms": 8943,
+      "cost_estimated_usd": 0.0912,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 21,
+      "model": "google/gemini-3.8-flash",
+      "case": "safe_next_step",
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 12296,
+      "completion_tokens": 177,
+      "latency_ms": 4144,
+      "cost_estimated_usd": 0.00988575,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "google/gemini-3.8-flash"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 22,
+      "model": "anthropic/claude-sonnet-4.6",
+      "case": "safe_next_step",
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 15162,
+      "completion_tokens": 222,
+      "latency_ms": 7409,
+      "cost_estimated_usd": 0.048816,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4.6"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 23,
+      "model": "openai/gpt-4.1",
+      "case": "safe_next_step",
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 11493,
+      "completion_tokens": 176,
+      "latency_ms": 2804,
+      "cost_estimated_usd": 0.024394,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 24,
+      "model": "anthropic/claude-sonnet-5.5",
+      "case": "safe_next_step",
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 20799,
+      "completion_tokens": 340,
+      "latency_ms": 4618,
+      "cost_estimated_usd": 0.044998,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 25,
+      "model": "anthropic/claude-opus-5.5",
+      "case": "safe_next_step",
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "agent_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a",
+      "config_version": 2,
+      "program_id": 8,
+      "prompt_tokens": 20799,
+      "completion_tokens": 442,
+      "latency_ms": 7474,
+      "cost_estimated_usd": 0.092036,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "simulation_override": {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-5.5"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    }
+  ],
+  "checks": {
+    "backend_selected": 172,
+    "frontend_selected": 4,
+    "types": "passed",
+    "lint": "passed",
+    "ruff": "passed",
+    "build": "passed_historical_bundle_warning"
+  },
+  "deployment": {
+    "backend": {
+      "id": "efhpkw8jbytzbj7fpswpck8i",
+      "duration": "04m17s",
+      "healthy": true,
+      "rollout_utc": "2026-11-22T01:14:24Z"
+    },
+    "frontend": {
+      "id": "svca9gbxsriipcyj7pqobuxe",
+      "status": "Success",
+      "duration": "00m42s",
+      "runtime": "806e8a9"
+    }
+  },
+  "limitations": [
+    "Single observation per model and case, not conversion evidence",
+    "Manual independent cases with the same fictitious history, not a persisted multi-turn CRM test",
+    "No production stage routing, active-model changes or real handoff from the simulator",
+    "Sampling and tokenization differ by provider capability",
+    "Reported token costs are estimates; no invoice or cache billing verification"
+  ],
+  "pending": [
+    "owner commercial selection",
+    "stage-agent/model pipeline bridge",
+    "supervised production pilot and reversal"
+  ],
+  "skill_context": [
+    {
+      "case": "opening_value",
+      "identical_messages_across_five_models": true,
+      "context_sha256": "bef4c85f6b92119e349cbcdf62336c6d407c48afe45cdcf844a638b176fbea81",
+      "skill_policy": "cbn-sales-skills-v6",
+      "library_available": 34,
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "lead-triage",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/lead-triage/SKILL.md",
+          "sha256": "0cb3183681cfe51f4ad2ddf706b499c2c35904d8abe04ea1f9f18b2acc24996c"
+        }
+      ],
+      "profile_version": 3,
+      "profile_id": "b704c250-8815-5f2b-b52a-acb71193709a"
+    },
+    {
+      "case": "financing_objection",
+      "identical_messages_across_five_models": true,
+      "context_sha256": "476f8a1628649a6d23f55d6a35729ee143bf7c7bd595d363f14e453b3971678b",
+      "skill_policy": "cbn-sales-skills-v6",
+      "library_available": 34,
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "profile_version": 3,
+      "profile_id": "b704c250-8815-5f2b-b52a-acb71193709a"
+    },
+    {
+      "case": "program_memory",
+      "identical_messages_across_five_models": true,
+      "context_sha256": "edc2b8efb28949747d3a87949fbfbe188ec15a72fd1f7ce07e3877db941763be",
+      "skill_policy": "cbn-sales-skills-v6",
+      "library_available": 34,
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "lead-triage",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/lead-triage/SKILL.md",
+          "sha256": "0cb3183681cfe51f4ad2ddf706b499c2c35904d8abe04ea1f9f18b2acc24996c"
+        }
+      ],
+      "profile_version": 2,
+      "profile_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a"
+    },
+    {
+      "case": "followup_comparison",
+      "identical_messages_across_five_models": true,
+      "context_sha256": "4063c5da0cd4e39b3b0e063cb8b328b90286907b8643f37d3175862bca4df09b",
+      "skill_policy": "cbn-sales-skills-v6",
+      "library_available": 34,
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "profile_version": 3,
+      "profile_id": "b704c250-8815-5f2b-b52a-acb71193709a"
+    },
+    {
+      "case": "safe_next_step",
+      "identical_messages_across_five_models": true,
+      "context_sha256": "c3c4b6abb6f68f2ef2df0687252c3a3a3623942c950c0440167eadb451d5f7f1",
+      "skill_policy": "cbn-sales-skills-v6",
+      "library_available": 34,
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "customer-escalation",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/customer-escalation/SKILL.md",
+          "sha256": "e72999ac95a826fab23d913cb7ff9183fe5a40e396efc57192ac0f658bb05194"
+        },
+        {
+          "id": "customer-voice",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/customer-voice/SKILL.md",
+          "sha256": "a25f5cff4ef1a246f47d63c52b93319aef6a797ea2706e087575aa5f6cf04096"
+        },
+        {
+          "id": "call-summary",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/call-summary/SKILL.md",
+          "sha256": "0da231fe4c31eae0ed010d997f9f800d41d96b7e0a66dde679f700a842dfb8a5"
+        }
+      ],
+      "profile_version": 2,
+      "profile_id": "27b3ede6-7385-51dc-82b7-7ba33e2b9b6a"
+    }
+  ]
+}
