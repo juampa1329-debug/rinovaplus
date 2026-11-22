@@ -2,7 +2,11 @@
 
 
 def presentation(provider):
+    if not isinstance(provider, dict):
+        return None
     message = provider.get("message") or {}
+    if not isinstance(message, dict):
+        return None
     attachments = message.get("attachments") or []
     kinds = {a.get("type") for a in attachments if isinstance(a, dict)}
     if "story_mention" in kinds:

@@ -1,6 +1,7 @@
 """P4 transport extension of the accepted P3 human workspace."""
 
 import json
+import logging
 import re
 from datetime import timezone
 from urllib.parse import urlsplit
@@ -499,15 +500,26 @@ class Workspace(Parent):
                         for v in media
                         if str(v["MessageId"]).lower() == message["id"]
                     ]
-                from app.institutional.social_messages import presentation
-                sources = db.rows(c, "SELECT x.MessageId,e.Payload FROM crm_channels2.ExternalMessage x "
-                    "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId "
-                    "AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId=x.ExternalId "
-                    "WHERE x.InstitutionId=? AND x.MessageId IN(" + ",".join("?" for _ in ids) + ") AND e.Kind='message'", db.institution(self.profile), *ids)
-                social = {str(v["MessageId"]).lower(): presentation(json.loads(v["Payload"]).get("provider", {})) for v in sources}
-                for message in result["items"]:
-                    if social.get(message["id"]):
-                        message["socialSource"] = social[message["id"]]
-                        if message["body"] == "[multimedia]":
-                            message["body"] = social[message["id"]]["label"]
+        if result["items"]:
+            from app.institutional.social_messages import presentation
+            # Presentation is optional and uses its own read transaction. A
+            # provider preview must not make the accepted message history fail.
+            try:
+                with self.transaction() as c:
+                    sources = db.rows(c, "SELECT x.MessageId,e.Payload FROM crm_channels2.ExternalMessage x "
+                        "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId "
+                        "AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId COLLATE Latin1_General_100_BIN2=x.ExternalId "
+                        "WHERE x.InstitutionId=? AND x.MessageId IN(" + ",".join("?" for _ in ids) + ") AND e.Kind='message'", db.institution(self.profile), *ids)
+                    social = {str(v["MessageId"]).lower(): presentation(json.loads(v["Payload"]).get("provider", {})) for v in sources}
+            except HTTPException as failure:
+                if failure.status_code != 503:
+                    raise
+                logging.getLogger(__name__).warning("social_history_presentation_unavailable")
+                result["socialPresentationUnavailable"] = True
+                return result
+            for message in result["items"]:
+                if social.get(message["id"]):
+                    message["socialSource"] = social[message["id"]]
+                    if message["body"] == "[multimedia]":
+                        message["body"] = social[message["id"]]["label"]
         return result

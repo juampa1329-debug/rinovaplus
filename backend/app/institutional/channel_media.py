@@ -302,7 +302,7 @@ class Media:
             value = one(c, "SELECT TOP(1) m.MessageId,m.ConversationId,r.IntegrationId,r.IdentityId,e.Payload "
                 "FROM crm.Message m JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId "
                 "JOIN crm_channels2.ExternalMessage x ON x.InstitutionId=r.InstitutionId AND x.MessageId=m.MessageId AND x.IntegrationId=r.IntegrationId "
-                "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId=x.ExternalId "
+                "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId COLLATE Latin1_General_100_BIN2=x.ExternalId "
                 "WHERE r.InstitutionId=? AND m.MessageId=? AND m.Direction='incoming' AND r.ActorKind='external' AND e.Kind='message' ORDER BY e.CreatedAt DESC", institution(self.settings), message)
             if not value:
                 raise HTTPException(404, "media_story_source_unavailable")

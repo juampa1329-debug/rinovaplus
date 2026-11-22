@@ -120,8 +120,26 @@ def test_workspace_history_projects_legacy_story_payload_without_mutating_body(m
     def rows(_c, query, *args):
         assert query.count("?") == len(args)
         parse_sql(postgres_sql(query, layout()["tables"]).replace("%s", "NULL"))
+        if "SELECT x.MessageId,e.Payload" in query:
+            assert "ProviderEventId COLLATE Latin1_General_100_BIN2=x.ExternalId" in query
         return [{"MessageId": message, "Payload": json.dumps({"provider": {"message": {"attachments": [{"type": "story_mention"}]}}})}] if "SELECT x.MessageId,e.Payload" in query else []
     monkeypatch.setattr(channel_workspace.db, "rows", rows)
     result = workspace.messages(str(uuid4()))
     assert result["items"][0]["body"] == "Te mencionó en una historia"
     assert result["items"][0]["socialSource"]["kind"] == "story_mention"
+
+
+def test_optional_story_projection_failure_never_blocks_message_history(monkeypatch):
+    from app.institutional import channel_workspace
+    message = str(uuid4())
+    monkeypatch.setattr(channel_workspace.Parent, "messages", lambda *_: {"items": [{"id": message, "body": "hello"}]})
+    workspace = object.__new__(channel_workspace.Workspace)
+    workspace.profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    workspace.transaction = lambda: nullcontext(None)
+    def rows(_c, query, *_):
+        if "SELECT x.MessageId,e.Payload" in query:
+            raise HTTPException(503, "general_storage_unavailable")
+        return []
+    monkeypatch.setattr(channel_workspace.db, "rows", rows)
+    result = workspace.messages(str(uuid4()))
+    assert result["items"][0]["body"] == "hello" and result["socialPresentationUnavailable"]
