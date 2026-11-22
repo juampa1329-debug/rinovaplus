@@ -1604,7 +1604,9 @@ class AgentsService:
             "trial_bounds": {"max_tokens": policy.max_tokens,
                              "context_limit": trial["context_limit"],
                              "input_usd_per_million": trial["input_usd_per_million"],
-                             "output_usd_per_million": trial["output_usd_per_million"]} if trial else None,
+                             "output_usd_per_million": trial["output_usd_per_million"],
+                             "temperature_supported": trial.get("temperature_supported", True),
+                             "reasoning_effort": trial.get("reasoning_effort")} if trial else None,
             "published_configuration_changed": False,
             **({"effective_context": {"fingerprint":selection["knowledge_context"]["fingerprint"],"versions":[{"id":v["id"],"version":v["version"],"kind":v["kind"]} for v in selection["knowledge_context"]["shared"]]}} if "knowledge_context" in selection else {}),
         }
@@ -1697,6 +1699,7 @@ class AgentsService:
                 "handoff": reply.handoff,
                 "model": result["model"],
                 "usage": result["usage"],
+                "latency_ms": result.get("latency_ms"),
                 "provider": result["provider"],
                 "messages": None,
             }

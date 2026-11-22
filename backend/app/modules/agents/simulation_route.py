@@ -21,24 +21,29 @@ async def prepare(ai, request):
         raise AiError("agents_pricing_required", 409)
     if "response_format" not in details.get("supported_parameters", []):
         raise AiError("agents_model_structured_output_required", 409)
-    if not model.temperature:
-        raise AiError("agents_model_temperature_unsupported", 409)
+    if request.output_tokens_override and model.output_limit and request.output_tokens_override > model.output_limit:
+        raise AiError("agents_model_output_limit", 409)
     if ai.connection_snapshot()["credential_revision"] != before:
         raise AiError("agents_configuration_changed", 409)
     return {"provider": provider, "primary_model": model.id, "fallback_provider": None, "fallback_model": "",
             "input_usd_per_million": details["input_usd_per_million"],
             "output_usd_per_million": details["output_usd_per_million"],
-            "output_limit": model.output_limit, "credential_revision": before, "context_limit": details.get("context_length")}
+            "output_limit": model.output_limit, "credential_revision": before, "context_limit": details.get("context_length"),
+            "temperature_supported": model.temperature, "output_tokens_override": request.output_tokens_override,
+            "reasoning_effort": "low" if "reasoning" in details.get("supported_parameters", []) and isinstance(details.get("reasoning_efforts"), list) and "low" in details["reasoning_efforts"] else None}
 
 
 def apply(selection, route):
     if not route:
         return selection
-    changes = {k: v for k, v in route.items() if k not in {"output_limit", "credential_revision", "context_limit"}}
+    changes = {k: v for k, v in route.items() if k not in {"output_limit", "credential_revision", "context_limit", "temperature_supported", "output_tokens_override", "reasoning_effort"}}
     config = {**selection["configuration"], **changes}
+    if route.get("output_tokens_override"):
+        config["max_tokens"] = route["output_tokens_override"]
     if route["output_limit"]:
         config["max_tokens"] = min(config["max_tokens"], route["output_limit"])
-    return {**selection, "configuration": config, "binding": digest([selection["binding"], route])}
+    return {**selection, "configuration": config, "trial_temperature_supported": route.get("temperature_supported", True),
+            "trial_reasoning_effort": route.get("reasoning_effort"), "binding": digest([selection["binding"], route])}
 
 
 def check_context(route, messages, output_tokens):

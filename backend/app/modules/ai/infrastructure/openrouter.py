@@ -35,7 +35,7 @@ class OpenRouterClient:
     def __init__(self, key, transport=None):
         self.key, self.transport = key, transport
 
-    async def complete(self, policy, messages, guard, *, price_limits=None, max_attempts=3, response_schema=None):
+    async def complete(self, policy, messages, guard, *, price_limits=None, max_attempts=3, response_schema=None, include_temperature=True, reasoning_effort=None):
         if not self.key:
             raise AiError("openrouter_key_missing", 409)
         models = list(dict.fromkeys(m for m in (policy.primary_model, policy.fallback_model) if m))
@@ -45,6 +45,12 @@ class OpenRouterClient:
                 "temperature": policy.temperature, "max_tokens": policy.max_tokens,
                 "response_format": {"type": "json_object"},
                 "provider": {"require_parameters": True, "data_collection": "deny"}}
+        if type(include_temperature) is not bool or reasoning_effort not in {None, "low"}:
+            raise AiError("agents_trial_parameters_invalid", 409)
+        if not include_temperature:
+            body.pop("temperature")
+        if reasoning_effort:
+            body["reasoning"] = {"effort": reasoning_effort, "exclude": True}
         if response_schema is not None:
             body["response_format"] = {"type": "json_schema", "json_schema": {
                 "name": "rinova_simulation", "strict": True, "schema": response_schema}}

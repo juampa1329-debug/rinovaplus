@@ -1,7 +1,7 @@
 {
   "phase": "P22",
   "name": "Pruebas de modelos candidatos para agentes de RinovaPlus",
-  "updated": "2026-11-20",
+  "updated": "2026-11-21",
   "status": "comparison_and_owner_samples_delivered_selection_pending",
   "accepted": 0,
   "total": 5,
@@ -80,7 +80,11 @@
     "anthropic/claude-sonnet-5.5",
     "deepseek/deepseek-v4.1-flash",
     "qwen/qwen3.6-plus",
-    "mistralai/mistral-small-2603"
+    "mistralai/mistral-small-2603",
+    "google/gemini-3.8-flash",
+    "anthropic/claude-sonnet-4.6",
+    "openai/gpt-4.1",
+    "anthropic/claude-opus-5.5"
   ],
   "checks": {
     "backend_selected": 137,
@@ -122,5 +126,40 @@
     "short_style_cases": 4,
     "location_corrected": true,
     "calendar_benefit_grounded": true
+  },
+  "current_wave": {
+    "id": "p22-five-models-20261121",
+    "status": "compatibility_update_prepared_no_paid_calls",
+    "models": [
+      "google/gemini-3.8-flash",
+      "anthropic/claude-sonnet-4.6",
+      "openai/gpt-4.1",
+      "anthropic/claude-sonnet-5.5",
+      "anthropic/claude-opus-5.5"
+    ],
+    "provider": "openrouter",
+    "cases": [
+      "opening_value",
+      "financing_objection",
+      "program_memory",
+      "followup_comparison",
+      "safe_next_step"
+    ],
+    "planned_responses": 25,
+    "context": "same current saved specialist per case and same fictitious history, runtime skills and reviewed facts",
+    "output_token_limit": 2000,
+    "temperature": "0.3 where supported; omitted otherwise",
+    "reasoning": "low only when authenticated catalog explicitly lists it; provider default otherwise",
+    "active_agent_changes": false,
+    "customer_crm_writes": false,
+    "authorized_destination": "previously verified WhatsApp test contact ending44",
+    "budget_scope": "within existing USD10 total; historical USD0.833620831 known+held retained",
+    "checks": {
+      "backend": 172,
+      "frontend": 4,
+      "types": "passed",
+      "lint": "passed",
+      "build": "passed with historical bundle warning"
+    }
   }
 }

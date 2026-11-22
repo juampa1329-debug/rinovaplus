@@ -316,7 +316,8 @@ class ProviderGateway:
                 except (ValueError, TypeError, AttributeError):
                     request_price = math.inf
                 self.catalog_details[provider][model_id] = {**prices, "request_usd": request_price, "supported_parameters": params,
-                    "context_length": item.get("context_length") if type(item.get("context_length")) is int else None}
+                    "context_length": item.get("context_length") if type(item.get("context_length")) is int else None,
+                    "reasoning_efforts": ((item.get("reasoning") or {}).get("supported_efforts") or []) if isinstance(item.get("reasoning"), dict) else []}
             else:
                 if provider == "gemini":
                     self.catalog_details[provider][model_id] = {

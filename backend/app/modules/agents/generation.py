@@ -167,6 +167,8 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         price_limits=dict(zip(("prompt", "completion"), rates, strict=True)) if all(v is not None for v in rates) else None,
                         max_attempts=1 if preview else 3,
                         response_schema=SIMULATION_SCHEMA if preview else None,
+                        **({"include_temperature": False} if selection.get("trial_temperature_supported") is False else {}),
+                        **({"reasoning_effort": selection["trial_reasoning_effort"]} if selection.get("trial_reasoning_effort") else {}),
                     )
                 else:
                     system = "\n".join(

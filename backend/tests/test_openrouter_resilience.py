@@ -80,6 +80,24 @@ def test_trial_output_schema_has_no_memory_or_tool_access():
     assert "tools" not in calls[0]
 
 
+def test_adaptive_model_trial_omits_temperature_but_preserves_json_privacy_price_and_single_post():
+    from app.modules.agents.generation import SIMULATION_SCHEMA
+    calls = []
+    def respond(request):
+        calls.append(json.loads(request.content))
+        return httpx.Response(200, json={"model": "fixture", "choices": [{"finish_reason": "stop", "message": {"content": '{"answer":"Hola","handoff":false,"references":[]}'}}], "usage": {"prompt_tokens": 10, "completion_tokens": 20}})
+    asyncio.run(OpenRouterClient("fixture", httpx.MockTransport(respond)).complete(
+        SimpleNamespace(primary_model="fixture", fallback_model="", temperature=0.3, max_tokens=2000),
+        [], lambda: None, response_schema=SIMULATION_SCHEMA, max_attempts=1,
+        price_limits={"prompt": 4, "completion": 20}, include_temperature=False, reasoning_effort="low"))
+    assert len(calls) == 1
+    body = calls[0]
+    assert "temperature" not in body and body["reasoning"] == {"effort": "low", "exclude": True}
+    assert body["max_tokens"] == 2000 and body["models"] == ["fixture"]
+    assert body["provider"] == {"require_parameters": True, "data_collection": "deny", "max_price": {"prompt": 4, "completion": 20}}
+    assert body["response_format"]["json_schema"]["strict"]
+
+
 @pytest.mark.parametrize("finish,code", [("length", "admissions_response_truncated"), ("content_filter", "provider_invalid_response")])
 def test_unusable_paid_completion_retains_usage_without_replaying_or_leaking_text(finish, code):
     calls = []

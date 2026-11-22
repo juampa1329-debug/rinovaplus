@@ -277,11 +277,14 @@ class SimulationRequest(StrictModel):
     variant: Literal["current", "comparison"] = "current"
     provider_override: Literal["openrouter"] | None = None
     model_override: str | None = Field(default=None, max_length=200, pattern=r"^[A-Za-z0-9._:/-]+$")
+    output_tokens_override: int | None = Field(default=None, ge=128, le=2000)
 
     @model_validator(mode="after")
     def paired_simulation_route(self):
         if bool(self.provider_override) != bool(self.model_override):
             raise ValueError("simulation_route_incomplete")
+        if self.output_tokens_override is not None and not self.provider_override:
+            raise ValueError("simulation_route_required")
         return self
 
 

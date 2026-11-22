@@ -148,6 +148,7 @@ export function AgentsPanel() {
   const [simulationVariant, setSimulationVariant] = useState("current");
   const [simulationProvider, setSimulationProvider] = useState("");
   const [simulationModel, setSimulationModel] = useState("");
+  const [simulationTokens, setSimulationTokens] = useState(0);
   const [simulation, setSimulation] = useState<Simulation | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [eventOffset, setEventOffset] = useState(0);
@@ -443,6 +444,7 @@ export function AgentsPanel() {
         ...(simulationProvider && {
           provider_override: simulationProvider,
           model_override: simulationModel,
+          ...(simulationTokens > 0 && { output_tokens_override: simulationTokens }),
         }),
       }),
     );
@@ -1911,7 +1913,7 @@ export function AgentsPanel() {
                         <>
                           <p>
                             Esta selección sólo afecta al simulador. Conserva
-                            las skills, fuentes y límites del agente; no cambia
+                            las skills, fuentes y límites institucionales; no cambia
                             su modelo publicado ni envía mensajes al contacto.
                             Las tarifas de reserva se consultan al proveedor.
                           </p>
@@ -1925,6 +1927,19 @@ export function AgentsPanel() {
                             }}
                             label="Modelo para esta prueba"
                           />
+                          <SelectField
+                            id="simulation-output-tokens"
+                            label="Límite de salida de esta prueba"
+                            value={String(simulationTokens)}
+                            options={[
+                              { value: "0", label: "Usar límite publicado del agente" },
+                              { value: "700", label: "700 tokens" },
+                              { value: "1500", label: "1500 tokens" },
+                              { value: "2000", label: "2000 tokens" },
+                            ]}
+                            onChange={(e) => { setSimulationTokens(Number(e.target.value)); setSimulation(null); }}
+                          />
+                          <p>Este límite sólo reserva salida para la prueba. Algunos modelos también consumen tokens al razonar. Se omite temperatura cuando el catálogo no la admite y se usa razonamiento bajo sólo si lo declara compatible. No se modifica el agente.</p>
                         </>
                       )}
                       <SelectField

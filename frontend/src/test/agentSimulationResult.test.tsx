@@ -112,6 +112,9 @@ it.each([false, true])(
       fireEvent.change(screen.getByLabelText("Modelo para esta prueba"), {
         target: { value: "google/fixture:free" },
       });
+      fireEvent.change(screen.getByLabelText("Límite de salida de esta prueba"), {
+        target: { value: "2000" },
+      });
     }
     fireEvent.click(screen.getByRole("button", { name: "Probar respuesta" }));
     await screen.findByText("Respuesta real conservada");
@@ -127,6 +130,7 @@ it.each([false, true])(
       ([path]) => path === "/simulate",
     )?.[2] as Record<string, unknown>;
     expect(sent.provider_override).toBe(override ? "openrouter" : undefined);
+    expect(sent.output_tokens_override).toBe(override ? 2000 : undefined);
     expect(sent.model_override).toBe(
       override ? "google/fixture:free" : undefined,
     );
