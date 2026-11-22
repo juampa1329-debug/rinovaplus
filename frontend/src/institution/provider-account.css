@@ -1,0 +1,64 @@
+.provider-account-dialog {
+  inline-size: min(56rem, calc(100% - 2rem));
+}
+.provider-account-content {
+  padding: clamp(1rem, 4vw, 1.75rem);
+  overflow-wrap: anywhere;
+}
+.provider-account-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.provider-account-heading h2 {
+  margin: 0;
+}
+.provider-account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.provider-account-grid .panel {
+  margin: 0;
+  min-inline-size: 0;
+}
+.provider-account-grid dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem 1rem;
+}
+.provider-account-grid dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.provider-account-amount {
+  display: block;
+  font-size: clamp(1.6rem, 5vw, 2.3rem);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.provider-account-loading {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--notice-surface);
+}
+.provider-account-checked {
+  font-size: 0.875rem;
+}
+.provider-account-content progress {
+  inline-size: 100%;
+  accent-color: var(--focus);
+}
+@media (max-width: 40rem) {
+  .provider-account-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-account-grid dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-account-grid dd {
+    text-align: start;
+  }
+}

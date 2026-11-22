@@ -1,7 +1,7 @@
 {
   "phase": "P22",
   "name": "Pruebas de modelos candidatos para agentes de RinovaPlus",
-  "updated": "2026-11-21",
+  "updated": "2026-11-22",
   "status": "comparison_and_owner_samples_delivered_selection_pending",
   "accepted": 0,
   "total": 5,
@@ -71,7 +71,7 @@
       5,
       10
     ],
-    "estimated_known_usd": 1.8725702,
+    "estimated_known_usd": 3.40097845,
     "unknown_reserved_usd": 0.052892631
   },
   "cases": "tasks/p22-evaluation-cases.json",
@@ -104,8 +104,8 @@
     "completed_without_captured_answer": 1
   },
   "implemented": 3,
-  "report": "docs/adaptation/P22_COMPARISON_20261121.md",
-  "evidence": "artifacts/live/p22-five-models-20261121.json",
+  "report": "docs/adaptation/P22_FULL_SKILLS_20261122.md",
+  "evidence": "artifacts/live/p22-full-skills-20261122.json",
   "baseline": {
     "valid_responses": 25,
     "models": 5,
@@ -177,5 +177,22 @@
     "frontend_deployment": "svca9gbxsriipcyj7pqobuxe",
     "report": "docs/adaptation/P22_COMPARISON_20261121.md",
     "evidence": "artifacts/live/p22-five-models-20261121.json"
+  },
+  "full_skills_wave": {
+    "id": "p22-full-skills-20261122",
+    "planned": 35,
+    "valid_responses": 35,
+    "skills_complete_per_model": 17,
+    "cases": 7,
+    "known_estimated_usd": 1.52840825,
+    "new_unknown_attempts": 0,
+    "manual_copies": 35,
+    "read": 6,
+    "delivered": 29,
+    "chat_restored_to_ai_after_reload": true,
+    "active_model_assignments_changed": false,
+    "runtime": "2724633",
+    "status": "comparison_delivered_owner_selection_pending",
+    "provider_balance_extension": "implementation_in_validation"
   }
 }

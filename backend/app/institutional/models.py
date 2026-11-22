@@ -411,6 +411,7 @@ class SecretEdit(Strict):
     owner: str = Field(min_length=1, max_length=200)
     kind: Literal[
         "api_key",
+        "management_key",
         "access_token",
         "app_secret",
         "page_access_token",
@@ -423,6 +424,8 @@ class SecretEdit(Strict):
 
     @model_validator(mode="after")
     def validate_saved_app_secret(self):
+        if self.kind == "management_key" and (self.scope != "provider" or self.owner != "openrouter"):
+            raise ValueError("management_key_openrouter_only")
         if self.source_secret_id is not None:
             if self.scope != "channel" or self.kind not in {"app_secret", "client_secret"}:
                 raise ValueError("saved_app_secret_only")

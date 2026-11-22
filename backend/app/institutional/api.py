@@ -41,7 +41,7 @@ def core_permission(path, method):
         return "self", None
     if path in {"/api/institution/operations", "/api/institution/diagnostics"}:
         return "users.manage", None
-    if path.startswith("/api/institution/provider-catalog/"):
+    if path.startswith(("/api/institution/provider-catalog/", "/api/institution/provider-balance/")):
         return "settings.providers.read", "settings"
     if path.startswith('/api/institution/learning'):
         return 'agents.manage', 'intelligence'
@@ -428,6 +428,8 @@ def create_app(
         from app.institutional.provider_catalog import install as install_provider_catalog
 
         install_provider_catalog(app, settings)
+        from app.institutional.provider_balances import install as install_provider_balances
+        install_provider_balances(app, settings)
         from app.institutional.voice_audio import install as install_voice_audio
         install_voice_audio(app, settings)
 

@@ -1,3 +1,9 @@
+## P22: 17skills completas en35respuestas; cuentas de proveedores en validación — 2026-11-22
+
+2724633 publicado:backend6uauia7n4c4nrkxth0rn8fnx finalizó4m17s,frontendgx7rcczkljydecnpojalahqb Success41s.35/35respuestas,7casos×5modelos; cada modelo recibió las17skills completas por contenido/SHA.35copias al44,6Leídas/29Entregadas, chat restauradoIA tras recarga. USD1,52840825nuevos; acumulado3,40097845+reserva0,052892631 dentro10; no factura. Detectados supuestos de horarios(Gemini/GPT), reglas de reserva no sustentadas en revisión y extensión excesiva. No inferir conversión ni causalidad por guía. P22 sigue3/5técnico/0aceptación; elección/pipeline/piloto pendientes. Informe docs/adaptation/P22_FULL_SKILLS_20261122.md, evidencia artifacts/live/p22-full-skills-20261122.json.
+
+Titular añade consulta de saldo/consumo OpenRouter/ElevenLabs. Modal manual preparado; OpenRouter separa consumo clave normal y saldo global conManagementAPIkey opcional, cifradaKindmanagement_key sóloopenrouter. Motores conservanKindapi_key. GETexclusivo/sinrecarga/planes modificados; Elevenunidades/renovación/cuposdevoces, sin facturas.74backend/17frontend,tipos/lint/workspacebuild pasan; bundlehistórico. Publicación y consulta real pendientes. Doc PROVIDER_BALANCES_20261122.md. NoDDL,seeds,contenedores nuevos niSIIEwrites.
+
 ## P22: evaluación explícita de las 17 skills preparada — 2026-11-22
 
 El titular pide probar cómo usa cada modelo las guías completas. Simulador añade siete focos cerrados, cubren17IDs y preservan memoria/contexto/guardas. Sólo ruta manual; no cambia selección automática ni perfiles.161backend/2frontend,tipos/lint/Ruff/build pasan; bundle histórico. Protocolo tasks/p22-full-skills-cases.json:35respuestas previstas, mismas fichas/historial por caso, cinco modelos. Tope acumuladoUSD10, histórico1,925462831estimado+reservado conservado. Publicación y ensayos reales pendientes; no cerrarP22. Ver docs/adaptation/P22_FULL_SKILLS_20261122.md.

@@ -518,7 +518,7 @@ class Settings:
         with transaction(self.settings, True, anonymous=True) as c:
             actor = authorize(c, self.settings, authority, action, recent=True)
             if body.scope == "provider":
-                if body.owner not in PROVIDERS or body.kind != "api_key":
+                if body.owner not in PROVIDERS or (body.kind != "api_key" and not (body.owner == "openrouter" and body.kind == "management_key")):
                     raise HTTPException(422, "invalid_provider_credential")
             elif body.scope == "channel":
                 prefix, _, identity = body.owner.partition(":")

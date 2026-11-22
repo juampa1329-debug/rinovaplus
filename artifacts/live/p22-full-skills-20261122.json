@@ -1,0 +1,3643 @@
+{
+  "id": "p22-full-skills-20261122",
+  "date_bogota": "2026-11-22",
+  "runtime": "272463318d49410da2c058a5093700bc89720e65",
+  "provider": "openrouter",
+  "attempts": 35,
+  "valid_responses": 35,
+  "coverage": [
+    {
+      "model": "google/gemini-3.8-flash",
+      "required_skills": [
+        "ads-copywriter",
+        "cold-call-opener",
+        "copywriting",
+        "deal-champion-mapping",
+        "deal-red-flags",
+        "deal-value-calc",
+        "lead-intelligence",
+        "marketing-psychology",
+        "meddpicc-scorecard",
+        "negotiation",
+        "negotiation-concession-planner",
+        "pricing",
+        "sales-call-review",
+        "sales-closing-tactics",
+        "sales-discovery-questions",
+        "sales-enablement",
+        "sales-objection-handling"
+      ],
+      "cases": 7
+    },
+    {
+      "model": "anthropic/claude-sonnet-4.6",
+      "required_skills": [
+        "ads-copywriter",
+        "cold-call-opener",
+        "copywriting",
+        "deal-champion-mapping",
+        "deal-red-flags",
+        "deal-value-calc",
+        "lead-intelligence",
+        "marketing-psychology",
+        "meddpicc-scorecard",
+        "negotiation",
+        "negotiation-concession-planner",
+        "pricing",
+        "sales-call-review",
+        "sales-closing-tactics",
+        "sales-discovery-questions",
+        "sales-enablement",
+        "sales-objection-handling"
+      ],
+      "cases": 7
+    },
+    {
+      "model": "openai/gpt-4.1",
+      "required_skills": [
+        "ads-copywriter",
+        "cold-call-opener",
+        "copywriting",
+        "deal-champion-mapping",
+        "deal-red-flags",
+        "deal-value-calc",
+        "lead-intelligence",
+        "marketing-psychology",
+        "meddpicc-scorecard",
+        "negotiation",
+        "negotiation-concession-planner",
+        "pricing",
+        "sales-call-review",
+        "sales-closing-tactics",
+        "sales-discovery-questions",
+        "sales-enablement",
+        "sales-objection-handling"
+      ],
+      "cases": 7
+    },
+    {
+      "model": "anthropic/claude-sonnet-5.5",
+      "required_skills": [
+        "ads-copywriter",
+        "cold-call-opener",
+        "copywriting",
+        "deal-champion-mapping",
+        "deal-red-flags",
+        "deal-value-calc",
+        "lead-intelligence",
+        "marketing-psychology",
+        "meddpicc-scorecard",
+        "negotiation",
+        "negotiation-concession-planner",
+        "pricing",
+        "sales-call-review",
+        "sales-closing-tactics",
+        "sales-discovery-questions",
+        "sales-enablement",
+        "sales-objection-handling"
+      ],
+      "cases": 7
+    },
+    {
+      "model": "anthropic/claude-opus-5.5",
+      "required_skills": [
+        "ads-copywriter",
+        "cold-call-opener",
+        "copywriting",
+        "deal-champion-mapping",
+        "deal-red-flags",
+        "deal-value-calc",
+        "lead-intelligence",
+        "marketing-psychology",
+        "meddpicc-scorecard",
+        "negotiation",
+        "negotiation-concession-planner",
+        "pricing",
+        "sales-call-review",
+        "sales-closing-tactics",
+        "sales-discovery-questions",
+        "sales-enablement",
+        "sales-objection-handling"
+      ],
+      "cases": 7
+    }
+  ],
+  "context_identical_per_case": [
+    {
+      "case": "opening",
+      "identical": true
+    },
+    {
+      "case": "discovery",
+      "identical": true
+    },
+    {
+      "case": "value",
+      "identical": true
+    },
+    {
+      "case": "negotiation",
+      "identical": true
+    },
+    {
+      "case": "closing",
+      "identical": true
+    },
+    {
+      "case": "review",
+      "identical": true
+    },
+    {
+      "case": "advertisement",
+      "identical": true
+    }
+  ],
+  "budget": {
+    "authorized_usd": 10,
+    "previous_known_estimated_usd": 1.8725702000000002,
+    "previous_unknown_reserved_usd": 0.052892631,
+    "wave_estimated_usd": 1.52840825,
+    "wave_unknown_reserved_usd": 0,
+    "cumulative_known_estimated_usd": 3.40097845,
+    "cumulative_with_unknown_reserved_usd": 3.453871081,
+    "not_invoice": true
+  },
+  "manual_samples": {
+    "count": 35,
+    "read": 6,
+    "delivered": 29,
+    "chat_restored_to_ai": true
+  },
+  "active_model_assignments_changed": false,
+  "simulation_crm_writes": false,
+  "simulation_delivered": false,
+  "trials": [
+    {
+      "sample": 1,
+      "case": "opening",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "0c0edd5fff3191a4bdf131d932c9fa28a735b54d53cebaaaa9006056b512b347",
+      "skill_focus": {
+        "id": "opening",
+        "required_ids": [
+          "cold-call-opener",
+          "lead-intelligence",
+          "copywriting"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "lead-intelligence",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/lead-intelligence/SKILL.md",
+          "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 12368,
+      "completion_tokens": 208,
+      "latency_ms": 4599,
+      "cost_estimated_usd": 0.010056,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 2,
+      "case": "opening",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "0c0edd5fff3191a4bdf131d932c9fa28a735b54d53cebaaaa9006056b512b347",
+      "skill_focus": {
+        "id": "opening",
+        "required_ids": [
+          "cold-call-opener",
+          "lead-intelligence",
+          "copywriting"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "lead-intelligence",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/lead-intelligence/SKILL.md",
+          "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 15317,
+      "completion_tokens": 205,
+      "latency_ms": 7541,
+      "cost_estimated_usd": 0.049026,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 3,
+      "case": "opening",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "0c0edd5fff3191a4bdf131d932c9fa28a735b54d53cebaaaa9006056b512b347",
+      "skill_focus": {
+        "id": "opening",
+        "required_ids": [
+          "cold-call-opener",
+          "lead-intelligence",
+          "copywriting"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "lead-intelligence",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/lead-intelligence/SKILL.md",
+          "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11579,
+      "completion_tokens": 181,
+      "latency_ms": 3107,
+      "cost_estimated_usd": 0.024606,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 4,
+      "case": "opening",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "0c0edd5fff3191a4bdf131d932c9fa28a735b54d53cebaaaa9006056b512b347",
+      "skill_focus": {
+        "id": "opening",
+        "required_ids": [
+          "cold-call-opener",
+          "lead-intelligence",
+          "copywriting"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "lead-intelligence",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/lead-intelligence/SKILL.md",
+          "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20936,
+      "completion_tokens": 293,
+      "latency_ms": 4105,
+      "cost_estimated_usd": 0.044802,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 5,
+      "case": "opening",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "0c0edd5fff3191a4bdf131d932c9fa28a735b54d53cebaaaa9006056b512b347",
+      "skill_focus": {
+        "id": "opening",
+        "required_ids": [
+          "cold-call-opener",
+          "lead-intelligence",
+          "copywriting"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "lead-intelligence",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/lead-intelligence/SKILL.md",
+          "sha256": "1461d902fbaee642eef797e91911d1c05b32234a97966e07b145fef004f4173d"
+        },
+        {
+          "id": "copywriting",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copywriting/SKILL.md",
+          "sha256": "760a9f733c1cd37c9a081ec0bba7f020e009e4fcaf846b93b1aea4b01b26b4b5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20936,
+      "completion_tokens": 346,
+      "latency_ms": 7213,
+      "cost_estimated_usd": 0.090664,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 6,
+      "case": "discovery",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "99d0156bb19eeb0db1571eb2a588a0180d1f78e4975ba153f0f461067d91afd4",
+      "skill_focus": {
+        "id": "discovery",
+        "required_ids": [
+          "sales-discovery-questions",
+          "meddpicc-scorecard",
+          "deal-champion-mapping"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "meddpicc-scorecard",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/meddpicc-scorecard/SKILL.md",
+          "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 12437,
+      "completion_tokens": 174,
+      "latency_ms": 4225,
+      "cost_estimated_usd": 0.00998025,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 7,
+      "case": "discovery",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "99d0156bb19eeb0db1571eb2a588a0180d1f78e4975ba153f0f461067d91afd4",
+      "skill_focus": {
+        "id": "discovery",
+        "required_ids": [
+          "sales-discovery-questions",
+          "meddpicc-scorecard",
+          "deal-champion-mapping"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "meddpicc-scorecard",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/meddpicc-scorecard/SKILL.md",
+          "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 15405,
+      "completion_tokens": 278,
+      "latency_ms": 9669,
+      "cost_estimated_usd": 0.050385,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 8,
+      "case": "discovery",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "99d0156bb19eeb0db1571eb2a588a0180d1f78e4975ba153f0f461067d91afd4",
+      "skill_focus": {
+        "id": "discovery",
+        "required_ids": [
+          "sales-discovery-questions",
+          "meddpicc-scorecard",
+          "deal-champion-mapping"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "meddpicc-scorecard",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/meddpicc-scorecard/SKILL.md",
+          "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11648,
+      "completion_tokens": 203,
+      "latency_ms": 3643,
+      "cost_estimated_usd": 0.02492,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 9,
+      "case": "discovery",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "99d0156bb19eeb0db1571eb2a588a0180d1f78e4975ba153f0f461067d91afd4",
+      "skill_focus": {
+        "id": "discovery",
+        "required_ids": [
+          "sales-discovery-questions",
+          "meddpicc-scorecard",
+          "deal-champion-mapping"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "meddpicc-scorecard",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/meddpicc-scorecard/SKILL.md",
+          "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 21070,
+      "completion_tokens": 376,
+      "latency_ms": 4959,
+      "cost_estimated_usd": 0.0459,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 10,
+      "case": "discovery",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "99d0156bb19eeb0db1571eb2a588a0180d1f78e4975ba153f0f461067d91afd4",
+      "skill_focus": {
+        "id": "discovery",
+        "required_ids": [
+          "sales-discovery-questions",
+          "meddpicc-scorecard",
+          "deal-champion-mapping"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "meddpicc-scorecard",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/meddpicc-scorecard/SKILL.md",
+          "sha256": "92ee81630748d20d4deb3ce2cb701b902a4c671b54d08be3cca6a9ac1ba39d6f"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 21070,
+      "completion_tokens": 300,
+      "latency_ms": 6851,
+      "cost_estimated_usd": 0.09028,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 11,
+      "case": "value",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "8b6ea9adf6fc51fe186c8772510e6433c60e8bffb8bf5ee9e9aea8be43ab69ef",
+      "skill_focus": {
+        "id": "value",
+        "required_ids": [
+          "deal-value-calc",
+          "pricing",
+          "sales-enablement"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11871,
+      "completion_tokens": 276,
+      "latency_ms": 4711,
+      "cost_estimated_usd": 0.00993825,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 12,
+      "case": "value",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "8b6ea9adf6fc51fe186c8772510e6433c60e8bffb8bf5ee9e9aea8be43ab69ef",
+      "skill_focus": {
+        "id": "value",
+        "required_ids": [
+          "deal-value-calc",
+          "pricing",
+          "sales-enablement"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 14660,
+      "completion_tokens": 514,
+      "latency_ms": 15320,
+      "cost_estimated_usd": 0.05169,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 13,
+      "case": "value",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "8b6ea9adf6fc51fe186c8772510e6433c60e8bffb8bf5ee9e9aea8be43ab69ef",
+      "skill_focus": {
+        "id": "value",
+        "required_ids": [
+          "deal-value-calc",
+          "pricing",
+          "sales-enablement"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11106,
+      "completion_tokens": 253,
+      "latency_ms": 3790,
+      "cost_estimated_usd": 0.024236,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 14,
+      "case": "value",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "8b6ea9adf6fc51fe186c8772510e6433c60e8bffb8bf5ee9e9aea8be43ab69ef",
+      "skill_focus": {
+        "id": "value",
+        "required_ids": [
+          "deal-value-calc",
+          "pricing",
+          "sales-enablement"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20059,
+      "completion_tokens": 452,
+      "latency_ms": 4759,
+      "cost_estimated_usd": 0.044638,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 15,
+      "case": "value",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "8b6ea9adf6fc51fe186c8772510e6433c60e8bffb8bf5ee9e9aea8be43ab69ef",
+      "skill_focus": {
+        "id": "value",
+        "required_ids": [
+          "deal-value-calc",
+          "pricing",
+          "sales-enablement"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20059,
+      "completion_tokens": 525,
+      "latency_ms": 8593,
+      "cost_estimated_usd": 0.090736,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 16,
+      "case": "negotiation",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "9c9aff3502609ae5d9cb2cb32f2d0cd0da425c1daf646b630ecd535ef25ca867",
+      "skill_focus": {
+        "id": "negotiation",
+        "required_ids": [
+          "negotiation-concession-planner",
+          "negotiation",
+          "deal-red-flags",
+          "sales-objection-handling"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "negotiation-concession-planner",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/negotiation-concession-planner/SKILL.md",
+          "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7"
+        },
+        {
+          "id": "negotiation",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/negotiation/SKILL.md",
+          "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae"
+        },
+        {
+          "id": "deal-red-flags",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-red-flags/SKILL.md",
+          "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 12269,
+      "completion_tokens": 308,
+      "latency_ms": 6756,
+      "cost_estimated_usd": 0.01035675,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 17,
+      "case": "negotiation",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "9c9aff3502609ae5d9cb2cb32f2d0cd0da425c1daf646b630ecd535ef25ca867",
+      "skill_focus": {
+        "id": "negotiation",
+        "required_ids": [
+          "negotiation-concession-planner",
+          "negotiation",
+          "deal-red-flags",
+          "sales-objection-handling"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "negotiation-concession-planner",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/negotiation-concession-planner/SKILL.md",
+          "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7"
+        },
+        {
+          "id": "negotiation",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/negotiation/SKILL.md",
+          "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae"
+        },
+        {
+          "id": "deal-red-flags",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-red-flags/SKILL.md",
+          "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 15159,
+      "completion_tokens": 530,
+      "latency_ms": 15667,
+      "cost_estimated_usd": 0.053427,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 18,
+      "case": "negotiation",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "9c9aff3502609ae5d9cb2cb32f2d0cd0da425c1daf646b630ecd535ef25ca867",
+      "skill_focus": {
+        "id": "negotiation",
+        "required_ids": [
+          "negotiation-concession-planner",
+          "negotiation",
+          "deal-red-flags",
+          "sales-objection-handling"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "negotiation-concession-planner",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/negotiation-concession-planner/SKILL.md",
+          "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7"
+        },
+        {
+          "id": "negotiation",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/negotiation/SKILL.md",
+          "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae"
+        },
+        {
+          "id": "deal-red-flags",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-red-flags/SKILL.md",
+          "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11479,
+      "completion_tokens": 307,
+      "latency_ms": 3989,
+      "cost_estimated_usd": 0.025414,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 19,
+      "case": "negotiation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "9c9aff3502609ae5d9cb2cb32f2d0cd0da425c1daf646b630ecd535ef25ca867",
+      "skill_focus": {
+        "id": "negotiation",
+        "required_ids": [
+          "negotiation-concession-planner",
+          "negotiation",
+          "deal-red-flags",
+          "sales-objection-handling"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "negotiation-concession-planner",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/negotiation-concession-planner/SKILL.md",
+          "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7"
+        },
+        {
+          "id": "negotiation",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/negotiation/SKILL.md",
+          "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae"
+        },
+        {
+          "id": "deal-red-flags",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-red-flags/SKILL.md",
+          "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20690,
+      "completion_tokens": 545,
+      "latency_ms": 5645,
+      "cost_estimated_usd": 0.04683,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 20,
+      "case": "negotiation",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "9c9aff3502609ae5d9cb2cb32f2d0cd0da425c1daf646b630ecd535ef25ca867",
+      "skill_focus": {
+        "id": "negotiation",
+        "required_ids": [
+          "negotiation-concession-planner",
+          "negotiation",
+          "deal-red-flags",
+          "sales-objection-handling"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-objection-handling",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-objection-handling/SKILL.md",
+          "sha256": "6068dee0b717e8942db4b091408ddc97afd7cd1031878038f5938abbd6b13621"
+        },
+        {
+          "id": "pricing",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/pricing/SKILL.md",
+          "sha256": "15e40dcb5929c039f150770141f44c25b6d80d1caa918a43aa25e80f225c523d"
+        },
+        {
+          "id": "negotiation-concession-planner",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/negotiation-concession-planner/SKILL.md",
+          "sha256": "1d1d7c8bf0241b5aeb8087c8357aa261396c385cd5f33ab20267a5f4970103b7"
+        },
+        {
+          "id": "negotiation",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/negotiation/SKILL.md",
+          "sha256": "52c24653cad04e07229208b619b12aa380069adb3f234ddc3aaa053ad9dc59ae"
+        },
+        {
+          "id": "deal-red-flags",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-red-flags/SKILL.md",
+          "sha256": "f674d584cbc3252c1d28af26d5ca3d4339b4fec34115a24c603db19e2d4db5d9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20690,
+      "completion_tokens": 663,
+      "latency_ms": 10507,
+      "cost_estimated_usd": 0.09602,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 21,
+      "case": "closing",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "d3c452b578fd2bce032823ddc19691b4d6e07f5ea272cdb13e00fdaa1ae729e6",
+      "skill_focus": {
+        "id": "closing",
+        "required_ids": [
+          "sales-closing-tactics",
+          "marketing-psychology"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "sales-closing-tactics",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/sales-closing-tactics/SKILL.md",
+          "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        }
+      ],
+      "prompt_tokens": 10542,
+      "completion_tokens": 261,
+      "latency_ms": 5420,
+      "cost_estimated_usd": 0.00888525,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 22,
+      "case": "closing",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "d3c452b578fd2bce032823ddc19691b4d6e07f5ea272cdb13e00fdaa1ae729e6",
+      "skill_focus": {
+        "id": "closing",
+        "required_ids": [
+          "sales-closing-tactics",
+          "marketing-psychology"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "sales-closing-tactics",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/sales-closing-tactics/SKILL.md",
+          "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        }
+      ],
+      "prompt_tokens": 13350,
+      "completion_tokens": 259,
+      "latency_ms": 8479,
+      "cost_estimated_usd": 0.043935,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 23,
+      "case": "closing",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "d3c452b578fd2bce032823ddc19691b4d6e07f5ea272cdb13e00fdaa1ae729e6",
+      "skill_focus": {
+        "id": "closing",
+        "required_ids": [
+          "sales-closing-tactics",
+          "marketing-psychology"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "sales-closing-tactics",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/sales-closing-tactics/SKILL.md",
+          "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        }
+      ],
+      "prompt_tokens": 10040,
+      "completion_tokens": 254,
+      "latency_ms": 3819,
+      "cost_estimated_usd": 0.022112,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 24,
+      "case": "closing",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "d3c452b578fd2bce032823ddc19691b4d6e07f5ea272cdb13e00fdaa1ae729e6",
+      "skill_focus": {
+        "id": "closing",
+        "required_ids": [
+          "sales-closing-tactics",
+          "marketing-psychology"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "sales-closing-tactics",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/sales-closing-tactics/SKILL.md",
+          "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        }
+      ],
+      "prompt_tokens": 18475,
+      "completion_tokens": 446,
+      "latency_ms": 4993,
+      "cost_estimated_usd": 0.04141,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 25,
+      "case": "closing",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "d3c452b578fd2bce032823ddc19691b4d6e07f5ea272cdb13e00fdaa1ae729e6",
+      "skill_focus": {
+        "id": "closing",
+        "required_ids": [
+          "sales-closing-tactics",
+          "marketing-psychology"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "cold-call-opener",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/cold-call-opener/SKILL.md",
+          "sha256": "25af3e3adf7c99d5495f9736fd02cfce98dc61ce87a6297def22db537db0d158"
+        },
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "sales-closing-tactics",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/sales-closing-tactics/SKILL.md",
+          "sha256": "11612343d22215ef9cbeb23f0dc37d5467cb79901f543a89912869c4a578e242"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        }
+      ],
+      "prompt_tokens": 18475,
+      "completion_tokens": 446,
+      "latency_ms": 7603,
+      "cost_estimated_usd": 0.08282,
+      "handoff": true,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 26,
+      "case": "review",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "650f84cdfcabd61b062203f5f30ac3f3d2e94c9a411011b7a4327388a21e988d",
+      "skill_focus": {
+        "id": "review",
+        "required_ids": [
+          "sales-call-review"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "sales-call-review",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-call-review/SKILL.md",
+          "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        }
+      ],
+      "prompt_tokens": 11896,
+      "completion_tokens": 298,
+      "latency_ms": 6028,
+      "cost_estimated_usd": 0.0100395,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 27,
+      "case": "review",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "650f84cdfcabd61b062203f5f30ac3f3d2e94c9a411011b7a4327388a21e988d",
+      "skill_focus": {
+        "id": "review",
+        "required_ids": [
+          "sales-call-review"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "sales-call-review",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-call-review/SKILL.md",
+          "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        }
+      ],
+      "prompt_tokens": 14730,
+      "completion_tokens": 405,
+      "latency_ms": 11593,
+      "cost_estimated_usd": 0.050265,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 28,
+      "case": "review",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "650f84cdfcabd61b062203f5f30ac3f3d2e94c9a411011b7a4327388a21e988d",
+      "skill_focus": {
+        "id": "review",
+        "required_ids": [
+          "sales-call-review"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "sales-call-review",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-call-review/SKILL.md",
+          "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        }
+      ],
+      "prompt_tokens": 11130,
+      "completion_tokens": 263,
+      "latency_ms": 3323,
+      "cost_estimated_usd": 0.024364,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 29,
+      "case": "review",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "650f84cdfcabd61b062203f5f30ac3f3d2e94c9a411011b7a4327388a21e988d",
+      "skill_focus": {
+        "id": "review",
+        "required_ids": [
+          "sales-call-review"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "sales-call-review",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-call-review/SKILL.md",
+          "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        }
+      ],
+      "prompt_tokens": 20132,
+      "completion_tokens": 498,
+      "latency_ms": 5358,
+      "cost_estimated_usd": 0.045244,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 30,
+      "case": "review",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "650f84cdfcabd61b062203f5f30ac3f3d2e94c9a411011b7a4327388a21e988d",
+      "skill_focus": {
+        "id": "review",
+        "required_ids": [
+          "sales-call-review"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-discovery-questions",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-discovery-questions/SKILL.md",
+          "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15"
+        },
+        {
+          "id": "draft-outreach",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/anthropics/knowledge-work-plugins",
+          "path": "app/modules/agents/skills/draft-outreach/SKILL.md",
+          "sha256": "b05ce6d839517aae55705ad1070b4404b6713896a54486c3e1d0bdfd312a0c29"
+        },
+        {
+          "id": "sales-call-review",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/sales-call-review/SKILL.md",
+          "sha256": "3265496d67c5b386106d84720e8141bc6a71fd10faf1da0a49c5ce0a71453f7d"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        },
+        {
+          "id": "deal-champion-mapping",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-champion-mapping/SKILL.md",
+          "sha256": "bffb457cd1a6d90615a90f99fb3ddbe67e10e5348eacc6be8960c24c77b580a5"
+        }
+      ],
+      "prompt_tokens": 20132,
+      "completion_tokens": 485,
+      "latency_ms": 9516,
+      "cost_estimated_usd": 0.090228,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 31,
+      "case": "advertisement",
+      "model": "google/gemini-3.8-flash",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "762a4f4fc2ae19f30094cb81df7964d106f661ca59d0874b16e185c3ad4e2007",
+      "skill_focus": {
+        "id": "advertisement",
+        "required_ids": [
+          "ads-copywriter"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "ads-copywriter",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/ads-copywriter/SKILL.md",
+          "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11895,
+      "completion_tokens": 204,
+      "latency_ms": 6172,
+      "cost_estimated_usd": 0.00968625,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1048576,
+        "input_usd_per_million": 0.75,
+        "output_usd_per_million": 3.75,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 32,
+      "case": "advertisement",
+      "model": "anthropic/claude-sonnet-4.6",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "762a4f4fc2ae19f30094cb81df7964d106f661ca59d0874b16e185c3ad4e2007",
+      "skill_focus": {
+        "id": "advertisement",
+        "required_ids": [
+          "ads-copywriter"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "ads-copywriter",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/ads-copywriter/SKILL.md",
+          "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 14715,
+      "completion_tokens": 313,
+      "latency_ms": 10214,
+      "cost_estimated_usd": 0.04884,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 3,
+        "output_usd_per_million": 15,
+        "temperature_supported": true,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 33,
+      "case": "advertisement",
+      "model": "openai/gpt-4.1",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "762a4f4fc2ae19f30094cb81df7964d106f661ca59d0874b16e185c3ad4e2007",
+      "skill_focus": {
+        "id": "advertisement",
+        "required_ids": [
+          "ads-copywriter"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "ads-copywriter",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/ads-copywriter/SKILL.md",
+          "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 11139,
+      "completion_tokens": 224,
+      "latency_ms": 3418,
+      "cost_estimated_usd": 0.02407,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1047576,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 8,
+        "temperature_supported": true,
+        "reasoning_effort": null
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 34,
+      "case": "advertisement",
+      "model": "anthropic/claude-sonnet-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "762a4f4fc2ae19f30094cb81df7964d106f661ca59d0874b16e185c3ad4e2007",
+      "skill_focus": {
+        "id": "advertisement",
+        "required_ids": [
+          "ads-copywriter"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "ads-copywriter",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/ads-copywriter/SKILL.md",
+          "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20114,
+      "completion_tokens": 378,
+      "latency_ms": 4222,
+      "cost_estimated_usd": 0.044008,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 10,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    },
+    {
+      "sample": 35,
+      "case": "advertisement",
+      "model": "anthropic/claude-opus-5.5",
+      "agent_id": "b704c250-8815-5f2b-b52a-acb71193709a",
+      "config_version": 3,
+      "context_sha256": "762a4f4fc2ae19f30094cb81df7964d106f661ca59d0874b16e185c3ad4e2007",
+      "skill_focus": {
+        "id": "advertisement",
+        "required_ids": [
+          "ads-copywriter"
+        ],
+        "published_configuration_changed": false
+      },
+      "consulted_resources": [
+        {
+          "id": "sales-enablement",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/sales-enablement/SKILL.md",
+          "sha256": "964b7d02ad376154025645b19415261f47a10d1eab28acc5d7c7be71b5cb38c5"
+        },
+        {
+          "id": "deal-value-calc",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/mbfinotti/sales-skills",
+          "path": "app/modules/agents/skills/deal-value-calc/SKILL.md",
+          "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47"
+        },
+        {
+          "id": "ads-copywriter",
+          "version": "cbn-skill-library-v1",
+          "source": "owner_requested_methodology_native_adaptation",
+          "path": "app/modules/agents/skills/ads-copywriter/SKILL.md",
+          "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e"
+        },
+        {
+          "id": "recall",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/recall/SKILL.md",
+          "sha256": "da6bc9c42644619c7db788fec12b8ef68958061a9bde9771baade4e4854bdd1e"
+        },
+        {
+          "id": "graphify",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/graphify-labs/graphify",
+          "path": "app/modules/agents/skills/graphify/SKILL.md",
+          "sha256": "e1d796bcd21337637596231f22b8a43beeb9311165e42d0b6927bd2a929ac5bc"
+        },
+        {
+          "id": "handoff",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/rohitg00/agentmemory",
+          "path": "app/modules/agents/skills/handoff/SKILL.md",
+          "sha256": "7da7b44204812cddbbdaa2177d666b7ee70729eaefb24c8462589117d7e72d00"
+        },
+        {
+          "id": "copy-editing",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/copy-editing/SKILL.md",
+          "sha256": "824d77ae50858aac5766831b8946f0f6af23628c241db8334a39892a82df9648"
+        },
+        {
+          "id": "marketing-psychology",
+          "version": "cbn-skill-library-v1",
+          "source": "https://github.com/coreyhaines31/marketingskills",
+          "path": "app/modules/agents/skills/marketing-psychology/SKILL.md",
+          "sha256": "9178649540eb74702ef0aab68d975adc9b862fc86292ac7bcaf3923ae642abf9"
+        }
+      ],
+      "prompt_tokens": 20114,
+      "completion_tokens": 407,
+      "latency_ms": 7416,
+      "cost_estimated_usd": 0.088596,
+      "handoff": false,
+      "trial_bounds": {
+        "max_tokens": 2000,
+        "context_limit": 1000000,
+        "input_usd_per_million": 4,
+        "output_usd_per_million": 20,
+        "temperature_supported": false,
+        "reasoning_effort": "low"
+      },
+      "network_called": true,
+      "crm_written": false,
+      "delivered": false,
+      "published_configuration_changed": false
+    }
+  ],
+  "checks": {
+    "backend_selected": 161,
+    "frontend_selected": 2,
+    "types": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "build": "passed_with_historical_bundle_warning"
+  },
+  "deployments": {
+    "backend": "6uauia7n4c4nrkxth0rn8fnx",
+    "backend_finished": "04m17s",
+    "frontend": "gx7rcczkljydecnpojalahqb",
+    "frontend_status": "Success",
+    "frontend_duration": "00m41s"
+  },
+  "limitations": [
+    "Seven grouped skill situations; no isolated causal attribution to one guide",
+    "Manual fictitious history and supplied ad topic, not actual CRM memory or Meta ad ingestion",
+    "No active stage/model changes",
+    "Whole-guide inclusion verified separately from qualitative obedience",
+    "One response per model/case; no conversion or significance claim"
+  ]
+}

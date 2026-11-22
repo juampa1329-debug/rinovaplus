@@ -6,6 +6,7 @@ import { CBNConversationPreset } from "./CBNConversationPreset";
 import { LanguageResilience } from "./LanguageResilience";
 import { LanguageRehearsal } from "./LanguageRehearsal";
 import { InstitutionContacts } from "./InstitutionContacts";
+import { ProviderAccount } from "./ProviderAccount";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -899,11 +900,13 @@ export function ProviderKeys({ contract }: { contract: Contract }) {
           if (allowNavigation()) setProvider(event.target.value);
         }}
       />
+      <ProviderAccount key={`balance-${provider}`} provider={provider} />
+      {provider === "openrouter" && <p>La clave de modelos permite generar respuestas. La Management API key es opcional y permite consultar el saldo global; se guarda cifrada y se usa sólo para esa consulta. Se crea en la cuenta oficial de OpenRouter y tiene permisos administrativos en el proveedor. RinovaPlus no la utiliza para generar mensajes ni para crear o revocar claves.</p>}
       <Credentials
         key={provider}
         scope="provider"
         owner={provider}
-        kinds={[{ id: "api_key", label: "Clave de API" }]}
+        kinds={[{ id: "api_key", label: "Clave de API" }, ...(provider === "openrouter" ? [{ id: "management_key", label: "Clave de administración de OpenRouter (opcional)" }] : [])]}
       />
     </>
   );

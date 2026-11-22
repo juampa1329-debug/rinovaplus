@@ -322,6 +322,8 @@ const messages: Record<string, string> = {
   invalid_credentials: "Correo o contraseña incorrectos.",
   provider_key_missing: "Guarda una clave de este proveedor en Credenciales y vuelve a consultar el catálogo.",
   provider_key_rejected: "El proveedor rechazó la clave guardada. Actualízala en Credenciales y vuelve a consultar.",
+  provider_balance_timeout: "El proveedor tardó en responder sobre el saldo. La configuración y los límites se conservan. Vuelve a consultar el detalle en unos momentos.",
+  provider_balance_changed: "La credencial o los permisos cambiaron durante la consulta. Vuelve a abrir Saldo y consumo para obtener información de la cuenta vigente.",
   provider_endpoint_missing: "Configura la dirección del proveedor antes de consultar sus modelos.",
   provider_rate_limited: "El proveedor limitó las consultas. Espera un momento y actualiza el catálogo.",
   openrouter_payment_required: "OpenRouter rechazó la consulta por crédito insuficiente en la cuenta o la API key. Revisa Credits y el límite de esa clave en OpenRouter. Tener una tarjeta guardada no garantiza saldo disponible. No se reintentará automáticamente.",
