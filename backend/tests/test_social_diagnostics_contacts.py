@@ -107,3 +107,21 @@ def test_story_preview_replay_does_not_repeat_registration(monkeypatch):
     monkeypatch.setattr(channel_media, "replay", lambda *_: ("checksum", {"saved": True, "message_sent": False}))
     monkeypatch.setattr(channel_media, "one", lambda *_: pytest.fail("replay must not query source or register media"))
     assert channel_media.Media(settings).story_preview("authority", body)["saved"]
+
+
+def test_workspace_history_projects_legacy_story_payload_without_mutating_body(monkeypatch):
+    from app.institutional import channel_workspace
+    message = str(uuid4())
+    item = {"id": message, "body": "[multimedia]"}
+    monkeypatch.setattr(channel_workspace.Parent, "messages", lambda *_: {"items": [item]})
+    workspace = object.__new__(channel_workspace.Workspace)
+    workspace.profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    workspace.transaction = lambda: nullcontext(None)
+    def rows(_c, query, *args):
+        assert query.count("?") == len(args)
+        parse_sql(postgres_sql(query, layout()["tables"]).replace("%s", "NULL"))
+        return [{"MessageId": message, "Payload": json.dumps({"provider": {"message": {"attachments": [{"type": "story_mention"}]}}})}] if "SELECT x.MessageId,e.Payload" in query else []
+    monkeypatch.setattr(channel_workspace.db, "rows", rows)
+    result = workspace.messages(str(uuid4()))
+    assert result["items"][0]["body"] == "Te mencionó en una historia"
+    assert result["items"][0]["socialSource"]["kind"] == "story_mention"
