@@ -35,6 +35,17 @@ GROUPS = (
      {"win-loss-review"}),
 )
 
+# Explicit manual evaluation only. Production callers never supply this focus.
+SIMULATION_FOCUS = {
+    "opening": ("cold-call-opener", "lead-intelligence", "copywriting"),
+    "discovery": ("sales-discovery-questions", "meddpicc-scorecard", "deal-champion-mapping"),
+    "value": ("deal-value-calc", "pricing", "sales-enablement"),
+    "negotiation": ("negotiation-concession-planner", "negotiation", "deal-red-flags", "sales-objection-handling"),
+    "closing": ("sales-closing-tactics", "marketing-psychology"),
+    "review": ("sales-call-review",),
+    "advertisement": ("ads-copywriter",),
+}
+
 
 def turn_plan(question, *, has_history=False, public=False):
     current = "".join(c for c in unicodedata.normalize("NFKD", str(question).casefold()) if not unicodedata.combining(c))[:4000]
@@ -71,7 +82,7 @@ def turn_plan(question, *, has_history=False, public=False):
             "cross_sell_english": not public and bool(re.search(r"internacional|extranjero|otro pais|ingles|crucero", current))}
 
 
-def for_turn(question, *, history=(), public=False):
+def for_turn(question, *, history=(), public=False, simulation_focus=None):
     # User text can select relevance, never introduce a skill or permission.
     raw = str(question)[:4000]
     text = "".join(c for c in unicodedata.normalize("NFKD", raw.casefold()) if not unicodedata.combining(c))
@@ -105,6 +116,11 @@ def for_turn(question, *, history=(), public=False):
         "specific_information": ["sales-enablement", "copywriting"],
         "continue": ["sales-discovery-questions", "draft-outreach"],
     }[plan["phase"]]
+    if simulation_focus is not None:
+        if simulation_focus not in SIMULATION_FOCUS:
+            raise ValueError("skill_simulation_focus_invalid")
+        primary = list(dict.fromkeys([*primary, *SIMULATION_FOCUS[simulation_focus]]))
+        active.update(SIMULATION_FOCUS[simulation_focus])
     from app.modules.agents.skill_library import read, resources
     required = list(dict.fromkeys([*primary, "recall", "graphify", "handoff", "copy-editing", "marketing-psychology",
                                   *(["ads-copywriter"] if public else [])]))
@@ -131,7 +147,13 @@ def for_turn(question, *, history=(), public=False):
         else:
             deferred.append(key)
     consulted = resources(required)
+    if simulation_focus is not None:
+        # Fail before provider IO rather than shorten a mandatory guide.
+        from app.modules.agents.skill_library import render
+        render(consulted)
     return {"version": VERSION, "available_count": len(IDS),
+            **({"simulation_focus": {"id": simulation_focus, "required_ids": list(SIMULATION_FOCUS[simulation_focus]),
+                                      "published_configuration_changed": False}} if simulation_focus else {}),
             "turn_plan": plan,
             "persuasion": {"available_principles": PERSUASION,
                 "preferred": ["liking", "reciprocity", "authority"] if plan["phase"] == "orientation" else

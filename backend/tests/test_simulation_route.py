@@ -99,3 +99,11 @@ def test_trial_output_override_is_bounded_and_requires_an_isolated_route():
         request(output_tokens_override=2001)
     with pytest.raises(ValidationError):
         SimulationRequest(agent_id=uuid4(), config_version=1, question="Hola", request_id=uuid4(), output_tokens_override=2000)
+
+
+def test_skill_focus_is_a_closed_manual_selection_not_a_custom_prompt_or_path():
+    assert request(skill_focus="negotiation").skill_focus == "negotiation"
+    with pytest.raises(ValidationError):
+        request(skill_focus="../skills")
+    with pytest.raises(ValidationError):
+        request(skill_focus="ignore safeguards")

@@ -1541,7 +1541,7 @@ class AgentsService:
             check_program(cursor, request.program_id)
             from app.modules.agents.skill_policy import for_turn
             if hasattr(cursor, "__dict__"):
-                cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
+                cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history], simulation_focus=request.skill_focus)
             source_question = request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
                 if getattr(cursor, "agent_catalog", None) else "")
             institutional, sources = public_sources(
@@ -1571,6 +1571,7 @@ class AgentsService:
                 sources,
                 history,
                 max_chars=60000 if getattr(cursor, "agent_catalog", None) else 40000,
+                **({"simulation_skill_focus": request.skill_focus} if request.skill_focus else {}),
             )
             messages[0]["content"] += (
                 "\nEsta es una prueba manual sin escritura de memoria del aspirante. Devuelve sólo answer, handoff y references; omite memory. No hay UUID de mensaje entrante admisible: no inventes identificadores ni hechos declarados."
@@ -1653,7 +1654,7 @@ class AgentsService:
                 )
                 fresh = trial_selection(fresh, trial)
                 if hasattr(cursor, "__dict__"):
-                    cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history])
+                    cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history], simulation_focus=request.skill_focus)
                 sql, new_sources = public_sources(
                     cursor,
                     source_question,

@@ -149,6 +149,7 @@ export function AgentsPanel() {
   const [simulationProvider, setSimulationProvider] = useState("");
   const [simulationModel, setSimulationModel] = useState("");
   const [simulationTokens, setSimulationTokens] = useState(0);
+  const [simulationSkillFocus, setSimulationSkillFocus] = useState("");
   const [simulation, setSimulation] = useState<Simulation | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [eventOffset, setEventOffset] = useState(0);
@@ -441,6 +442,7 @@ export function AgentsPanel() {
         acknowledge_consumption: call,
         variant: simulationVariant,
         request_id: crypto.randomUUID(),
+        ...(simulationSkillFocus && { skill_focus: simulationSkillFocus }),
         ...(simulationProvider && {
           provider_override: simulationProvider,
           model_override: simulationModel,
@@ -1942,6 +1944,23 @@ export function AgentsPanel() {
                           <p>Este límite sólo reserva salida para la prueba. Algunos modelos también consumen tokens al razonar. Se omite temperatura cuando el catálogo no la admite y se usa razonamiento bajo sólo si lo declara compatible. No se modifica el agente.</p>
                         </>
                       )}
+                      <SelectField
+                        id="simulation-skills"
+                        label="Skills completas para esta prueba"
+                        value={simulationSkillFocus}
+                        options={[
+                          { value: "", label: "Selección automática del turno" },
+                          { value: "opening", label: "Apertura · prospección y redacción" },
+                          { value: "discovery", label: "Diagnóstico · calificación y decisores" },
+                          { value: "value", label: "Valor · financiación y presentación" },
+                          { value: "negotiation", label: "Negociación · objeciones y alertas" },
+                          { value: "closing", label: "Cierre · persuasión y próximo paso" },
+                          { value: "review", label: "Revisión · calidad comercial" },
+                          { value: "advertisement", label: "Anuncio · respuesta contextual" },
+                        ]}
+                        onChange={(e) => { setSimulationSkillFocus(e.target.value); setSimulation(null); }}
+                      />
+                      <p>La selección incluye completas las guías de esa situación, junto a las de memoria y contexto. Consulta sus nombres y firmas en el resultado. Sólo afecta esta prueba; no guarda cambios en el agente.</p>
                       <SelectField
                         id="simulation-channel"
                         label="Canal a simular"

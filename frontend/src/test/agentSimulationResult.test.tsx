@@ -103,6 +103,9 @@ it.each([false, true])(
       },
     });
     if (override) {
+      fireEvent.change(screen.getByLabelText("Skills completas para esta prueba"), {
+        target: { value: "negotiation" },
+      });
       fireEvent.change(screen.getByLabelText("Proveedor para esta prueba"), {
         target: { value: "openrouter" },
       });
@@ -131,6 +134,7 @@ it.each([false, true])(
     )?.[2] as Record<string, unknown>;
     expect(sent.provider_override).toBe(override ? "openrouter" : undefined);
     expect(sent.output_tokens_override).toBe(override ? 2000 : undefined);
+    expect(sent.skill_focus).toBe(override ? "negotiation" : undefined);
     expect(sent.model_override).toBe(
       override ? "google/fixture:free" : undefined,
     );

@@ -278,6 +278,7 @@ class SimulationRequest(StrictModel):
     provider_override: Literal["openrouter"] | None = None
     model_override: str | None = Field(default=None, max_length=200, pattern=r"^[A-Za-z0-9._:/-]+$")
     output_tokens_override: int | None = Field(default=None, ge=128, le=2000)
+    skill_focus: Literal["opening", "discovery", "value", "negotiation", "closing", "review", "advertisement"] | None = None
 
     @model_validator(mode="after")
     def paired_simulation_route(self):

@@ -9,6 +9,35 @@ from app.modules.agents.skill_policy import for_turn, instructions
 from app.institutional import sales_context
 
 
+def test_manual_focus_covers_all_17_requested_skills_and_rejects_unknown_focus():
+    from app.modules.agents.skill_policy import SIMULATION_FOCUS
+    expected = {"cold-call-opener", "lead-intelligence", "sales-discovery-questions", "meddpicc-scorecard",
+                "deal-champion-mapping", "deal-red-flags", "deal-value-calc", "pricing",
+                "negotiation-concession-planner", "negotiation", "sales-objection-handling",
+                "sales-closing-tactics", "sales-enablement", "marketing-psychology", "sales-call-review",
+                "copywriting", "ads-copywriter"}
+    assert {key for group in SIMULATION_FOCUS.values() for key in group} == expected
+    with pytest.raises(ValueError, match="skill_simulation_focus_invalid"):
+        for_turn("Hola", simulation_focus="../../private")
+    assert for_turn("Hola") == for_turn("Hola", simulation_focus=None)
+
+
+@pytest.mark.parametrize("focus", ["opening", "discovery", "value", "negotiation", "closing", "review", "advertisement"])
+def test_manual_focus_includes_whole_required_guides_and_retains_memory_and_safety(focus):
+    from app.modules.agents.skill_policy import SIMULATION_FOCUS
+    trace = for_turn("Me interesa Barismo, pero me parece caro. ¿Con cuánto puedo empezar?", simulation_focus=focus)
+    required = set(SIMULATION_FOCUS[focus])
+    consulted = {r["id"] for r in trace["consulted_resources"]}
+    assert required | {"recall", "graphify", "handoff", "copy-editing", "marketing-psychology"} <= consulted
+    assert required.isdisjoint(trace["deferred_resource_ids"])
+    prompt = instructions(trace)
+    for key in required:
+        assert library.read(key)["content"] in prompt
+    assert trace["simulation_focus"]["published_configuration_changed"] is False
+    assert trace["grants_permissions"] is False
+    assert "Humano" in prompt and "memoria privada" in prompt
+
+
 def test_all_34_native_guides_exist_with_complete_content_and_manifest_hashes():
     assert len(IDS) == 34 and set(library.manifest()["items"]) == IDS
     for item in catalog():

@@ -32,3 +32,7 @@ Clave guardada directamente por el propietario y catálogo autenticado cargado:
 Se corrige la oferta de variantes batch/no-chat para evitar elecciones incompatibles.
 Actualización: Gemma4 26B gratuito respondió en el simulador. Se guardó como selección de OpenRouter y respaldo institucional autorizado; Gemini permanece principal.
 Conectar este proveedor no cierra la validación comercial de P13 ni las demás fases.
+
+### P22 · Cobertura explícita de skills — 22-11-2026
+
+Nueva evaluación solicitada por el titular: siete situaciones con las 17 guías comerciales completas y los cinco candidatos, 35 respuestas previstas. El simulador permite elegir el foco sin publicar cambios de agentes. Validación local161backend/2frontend; publicación y muestras reales pendientes. [Protocolo y resultados](P22_FULL_SKILLS_20261122.md). P22 conserva60%técnico/0%aceptación comercial; topeUSD10 acumulado intacto.
