@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-22",
+  "status": "published_read_only_queries_verified_global_openrouter_balance_deferred_by_owner",
+  "runtime_commit": "a0b8310",
+  "backend_deployment": "tkpeigkbj4bwaw3nobnq3fqm",
+  "backend_duration": "04m16s",
+  "backend_state": "Finished; application Running; both native account queries succeeded",
+  "frontend_deployment": "gqgybvju6dhrxguczshcqi1w",
+  "frontend_state": "Success",
+  "frontend_duration": "00m43s",
+  "openrouter": {
+    "models_key_usage": "real values displayed",
+    "key_limit_separate_from_account_balance": true,
+    "manual_refresh": "new dated result verified",
+    "management_key": "not saved; owner deferred until office access",
+    "global_balance": "not queried or verified; ready for owner credential entry",
+    "existing_models_key_preserved": true,
+    "checkout": "static official link; no purchase performed"
+  },
+  "elevenlabs": {
+    "subscription": "real plan, used/limit/remaining and reset displayed",
+    "voice_slots": "real used and limit displayed",
+    "overage_capability": "displayed without changes",
+    "units": "plan units, not USD or guaranteed minutes",
+    "plan_management": "static official link; no change performed"
+  },
+  "ui": {
+    "location": "Settings / APIs and models / API provider / Balance and usage",
+    "escape_close": "verified",
+    "focus_restored_to_trigger": true,
+    "provider_calls": "GET only",
+    "polling": false
+  },
+  "checks": {
+    "selected_backend_passed": 74,
+    "selected_frontend_passed": 17,
+    "typescript": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "production_workspace_build": "passed; historical bundle warning"
+  },
+  "account_amounts_credentials_labels_invoices": "excluded from this public evidence",
+  "ai_generation_tts_or_messages_for_balance_checks": false,
+  "active_agent_model_changes": false,
+  "p22_acceptance": "unchanged: 3/5 technical milestones, owner selection/pipeline/pilot pending"
+}

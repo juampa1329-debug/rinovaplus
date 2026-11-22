@@ -193,6 +193,7 @@
     "active_model_assignments_changed": false,
     "runtime": "2724633",
     "status": "comparison_delivered_owner_selection_pending",
-    "provider_balance_extension": "implementation_in_validation"
-  }
+    "provider_balance_extension": "published_key_usage_and_elevenlabs_verified_global_balance_owner_credential_pending"
+  },
+  "provider_balance_evidence": "artifacts/live/provider-balances-20261122.json"
 }
