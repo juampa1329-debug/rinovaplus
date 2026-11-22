@@ -5,6 +5,7 @@ import { TypedFields } from "./Fields";
 import { CBNConversationPreset } from "./CBNConversationPreset";
 import { LanguageResilience } from "./LanguageResilience";
 import { LanguageRehearsal } from "./LanguageRehearsal";
+import { InstitutionContacts } from "./InstitutionContacts";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -199,6 +200,7 @@ function SettingEditor({
         }}
       >
         <fieldset disabled={task.busy || !writable}>
+          {section === "institution" && <InstitutionContacts value={draft.public_contacts} onChange={value => setDraft({ ...draft, public_contacts: value })} />}
           {section === "ai" && liveModels && (
             <LanguageResilience
               value={draft.language_resilience}

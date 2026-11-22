@@ -1,3 +1,7 @@
+## Corte vigente — 2026-11-21
+
+La síntesis actual está en [roadmap](../roadmap.md) y [fases adicionales](PENDING_PHASES.md). P0–P11/P12 aceptados100%; P13/P15/P19/P21 aceptados en sus alcances iniciales; P14/P16/P17/P18/P20/P22 y OPS conservan los pendientes allí enumerados. No usar los cortes inferiores como estado actual ni confundir implementación parcial con aceptación. La revisión de Inbox/diagnósticos/contactos del21-11 está en validación de publicación.
+
 ## P16: clave única real validada; bloqueos comerciales del productor — 2026-11-19
 
 El propietario guardó SIIE_API_TOKEN y el backend e26cef2 quedó saludable en Coolify, despliegue epmoecuqogluktfua8yr8tgl completado14:59:44UTC. Modo unified real y rechazo401 de clave deliberadamente inválida en Periodos/Commercial. Período ofrecido129(2027-A) separado del académico activo128;34períodos históricos,11estados y31combinaciones de filtros. Dos páginas de25aspirantes con contacto nativo, detalle/identidad e historial vacío comprobados;8estudiantes con contacto, filtros y1matrícula del detalle verificados. No se exportan personas a Git ni se fusionan identidades.

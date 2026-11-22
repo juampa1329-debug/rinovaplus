@@ -26,6 +26,16 @@ def latest(c, settings, conversation):
 
 
 def review(c, settings, row):
+    if row and row["Status"] == "confirmed":
+        data = json.loads(row["ResultMetadata"])
+        replies = [v["id"] for v in data.get("response_parts", [])] or ([data["reply"]] if data.get("reply") else [])
+        if not replies or row["Attempts"] >= 3:
+            raise HTTPException(409, "sales_generation_not_recoverable")
+        jobs = db.rows(c, "SELECT MessageId,State,Attempts,ExternalId FROM crm_channels2.SendJob WHERE InstitutionId=? AND IntegrationId=? AND MessageId IN(" + ",".join("?" for _ in replies) + ")", db.institution(settings), row["IntegrationId"], *replies)
+        if len(jobs) != len(replies) or any(v["State"] != "cancelled" or v["Attempts"] != 0 or v["ExternalId"] for v in jobs):
+            raise HTTPException(409, "sales_generation_not_recoverable")
+        source(c, settings, row["IntegrationId"], data)
+        return data
     if not row or row["Status"] not in {"failed", "uncertain", "running"} or row["Status"] == "running" and not row["Expired"]:
         raise HTTPException(409, "sales_generation_not_recoverable")
     data = json.loads(row["ResultMetadata"])
@@ -69,6 +79,11 @@ def install(app, service, settings):
                          "FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND IntegrationId=? AND OperationId=? AND Action=?",
                          db.institution(settings), integration, str(body.generation_id), ACTION)
             data = review(c, settings, row)
+            if row["Status"] == "confirmed":
+                data["cancelled_generations"] = [*data.get("cancelled_generations", []),
+                    {"reply_ids": [v["id"] for v in data.get("response_parts", [])] or [data["reply"]], "reason": "all_cancelled_zero_attempts", "prior_context_binding": data.get("contextBinding")}]
+                for name in ("reply", "response_parts", "generated_text", "modelBinding", "contextBinding", "contextComponents", "voiceMedia", "voiceOperation"):
+                    data.pop(name, None)
             data["operator_recoveries"] = [*data.get("operator_recoveries", []),
                 {"operation": str(body.operation_id), "actor": actor["UserId"], "prior_status": row["Status"], "prior_code": row["ResultCode"], "prior_attempts": row["Attempts"]}]
             c.execute("UPDATE crm_channels2.ProviderOperation SET Status='pending',ResultCode='operator_generation_retry',ResultMetadata=?,"

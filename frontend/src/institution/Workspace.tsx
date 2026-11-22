@@ -26,6 +26,7 @@ import { PrivateMemory } from "./KnowledgeWorkspace";
 import { Icon } from "../shared/Icon";
 import { ErrorFeedback, ErrorFeedbackContext } from "./ErrorFeedback";
 import { explainInboxError, MessageDelivery } from "./InboxDelivery";
+import { SocialStoryPreview } from "./SocialStoryPreview";
 import { EmojiPicker } from "./InboxComposer";
 import { InboxSuggestion } from "./InboxSuggestion";
 import { MetaAutomationHelp } from "./MetaAutomationHelp";
@@ -129,6 +130,7 @@ type Detail = {
   revision: string;
 };
 type Message = {
+  socialSource?: { kind: string; label: string; temporary: boolean };
   attachments?: Attachment[];
   replyTo?: { id: string; body: string; direction: string };
   id: string;
@@ -1664,7 +1666,9 @@ function Conversation({
                 </span>
               </blockquote>
             )}
-            {(!message.attachments?.length ||
+            {message.socialSource && <small className="inbox-source-context">{message.socialSource.label}</small>}
+            {message.socialSource?.kind === "story_mention" && !message.attachments?.length && <SocialStoryPreview message={message.id} reload={changed} />}
+            {message.body !== message.socialSource?.label && (!message.attachments?.length ||
               !/^\[(Adjunto|image|audio|video|document|sticker)\]$/i.test(
                 message.body,
               )) && <p>{message.body}</p>}
@@ -1690,6 +1694,7 @@ function Conversation({
       {data.value && data.value.items.length === 0 && (
         <p>Sin mensajes registrados.</p>
       )}
+      {session.actions.includes("users.manage") && <a className="button quiet" href={`#/settings/diagnostics?conversation=${detail.thread.ConversationId}`}>Ver diagnóstico de esta conversación</a>}
       {detail.agentOperations &&
         canWrite &&
         detail.thread.State !== "closed" && (

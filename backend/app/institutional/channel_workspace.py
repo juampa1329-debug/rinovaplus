@@ -498,4 +498,15 @@ class Workspace(Parent):
                         for v in media
                         if str(v["MessageId"]).lower() == message["id"]
                     ]
+                from app.institutional.social_messages import presentation
+                sources = db.rows(c, "SELECT x.MessageId,e.Payload FROM crm_channels2.ExternalMessage x "
+                    "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId "
+                    "AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId=x.ExternalId "
+                    "WHERE x.InstitutionId=? AND x.MessageId IN(" + ",".join("?" for _ in ids) + ") AND e.Kind='message'", db.institution(self.profile), *ids)
+                social = {str(v["MessageId"]).lower(): presentation(json.loads(v["Payload"]).get("provider", {})) for v in sources}
+                for message in result["items"]:
+                    if social.get(message["id"]):
+                        message["socialSource"] = social[message["id"]]
+                        if message["body"] == "[multimedia]":
+                            message["body"] = social[message["id"]]["label"]
         return result

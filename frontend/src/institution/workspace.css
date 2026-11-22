@@ -1263,3 +1263,15 @@
     animation: none;
   }
 }
+.diagnostics-workspace { display: grid; gap: 1.25rem; max-width: 1100px; }
+.diagnostics-workspace > header p { max-width: 70ch; }
+.diagnostic-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+.diagnostic-timeline > li { border: 1px solid var(--border, #52666b); border-inline-start: 4px solid #79aa9a; border-radius: 14px; padding: 1rem 1.2rem; }
+.diagnostic-timeline > li[data-problem="true"] { border-inline-start-color: #e5ab63; }
+.diagnostic-timeline article > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.2rem; }
+.diagnostic-timeline article > header time { margin-inline-start: auto; font-size: .85rem; }
+.diagnostic-timeline h3 { font-size: 1rem; margin-block: .8rem .3rem; }
+.diagnostic-timeline p { overflow-wrap: anywhere; max-width: 80ch; }
+.diagnostic-timeline summary { cursor: pointer; }
+.diagnostic-timeline details { margin-block-start: .7rem; }
+.inbox-source-context { display: block; font-weight: 700; padding-block: .3rem; }

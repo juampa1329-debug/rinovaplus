@@ -23,6 +23,7 @@ from app.modules.crm_configuration.application.service import (
 from app.modules.inbox.application.state import control
 from app.sql_workspace import Contact
 from app.institutional.sales_referrals import sanitize as sanitize_referral
+from app.institutional.social_messages import text as social_text
 
 
 def valid_external(value):
@@ -71,6 +72,7 @@ def bounded_provider(value, depth=0):
         "voice",
         "url",
         "message",
+        "reply_to", "story", "is_unsupported",
         "attachments",
         "payload",
         "sender",
@@ -296,7 +298,7 @@ def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=Tr
                         "message",
                         message.get("mid", ""),
                         (value.get("sender") or {}).get("id", ""),
-                        message.get("text") or "[multimedia]",
+                        social_text(message),
                         value,
                     )
                 )

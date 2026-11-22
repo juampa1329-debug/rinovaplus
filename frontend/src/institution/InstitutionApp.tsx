@@ -34,6 +34,7 @@ import { CampaignWorkspace } from "./CampaignWorkspace";
 import { AdsWorkspace } from "./AdsWorkspace";
 import { LearningWorkspace } from "./LearningWorkspace";
 import { OperationsWorkspace } from "./OperationsWorkspace";
+import { DiagnosticsWorkspace } from "./DiagnosticsWorkspace";
 import { EmailPreferences, EmailWorkspace } from "./EmailWorkspace";
 import { VoiceWorkspace } from "./VoiceWorkspace";
 import { BroadcastWorkspace } from "./BroadcastWorkspace";
@@ -78,13 +79,14 @@ const settingsTabs = [
   ["audit", "Auditoría", "audit.read"],
   ["crm", "Configuración CRM", "settings.crm.read"],
   ["operations", "Operación", "users.manage"],
+  ["diagnostics", "Diagnósticos", "users.manage"],
   ["notifications", "Correos y notificaciones", "users.manage"],
 ];
 function route() {
   const [page, tab] = window.location.hash.replace(/^#\/?/, "").split("/");
   return {
     page: sections.some((row) => row[0] === page) ? page : "overview",
-    tab: tab || "profile",
+    tab: tab?.split("?")[0] || "profile",
   };
 }
 const navigate = (page: string, tab?: string) => {
@@ -808,6 +810,8 @@ function Shell({
                 ) : location.page === "settings" ? (
                   !currentTab || !allowed(currentTab[2]) ? (
                     <Denied />
+                  ) : location.tab.split("?")[0] === "diagnostics" ? (
+                    <DiagnosticsWorkspace />
                   ) : location.tab === "operations" ? (
                     runtime.value.institutional_operations ? (
                       <OperationsWorkspace />

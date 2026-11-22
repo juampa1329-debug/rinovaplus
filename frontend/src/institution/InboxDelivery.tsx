@@ -117,6 +117,9 @@ details.messaging_response_window_closed = details.whatsapp_reply_window_closed;
 details.provider_outcome_unknown = details.delivery_uncertain;
 details.provider_result_unknown = details.delivery_uncertain;
 details.send_lease_expired = details.delivery_uncertain;
+details.provider_response_timeout = ["El modelo agotó el tiempo de respuesta", "El proveedor no confirmó una respuesta dentro del plazo.", "Revisa el intento de respaldo en Diagnósticos y la configuración de OpenRouter. No repitas una salida que ya esté confirmada."];
+details.openrouter_payment_required = ["OpenRouter rechazó la consulta por saldo o cupo", "La cuenta o la API key no tuvo crédito disponible para ese intento.", "Revisa Credits y el límite de la clave en OpenRouter. Tener una tarjeta guardada no acredita saldo disponible."];
+details.media_story_source_unavailable = ["No está disponible la fuente de la historia", "El evento conservado no incluye una mención recuperable.", "Consulta la historia en Instagram. No se fabricará una imagen ni se enviará una respuesta automática a este evento."];
 details.gemini_reply_context_changed = [
   "La respuesta perdió vigencia antes de enviarse",
   "El contexto o la configuración cambió después de preparar esta respuesta. RinovaPlus la detuvo antes de enviarla.",
@@ -127,8 +130,16 @@ details.gemini_whatsapp_control_or_history_changed = [
   "Entró otro mensaje, cambió el control IA/Humano o venció la ventana de respuesta. Esta salida no se envió.",
   "Revisa el último mensaje y el modo actual de atención. El diagnóstico permite distinguir el motivo exacto.",
 ];
-details.human_control_changed = ["La atención pasó a Humano", "Se canceló una respuesta automática para respetar la atención humana.", "Responde desde Humano o vuelve a IA para atender entradas nuevas."];
-details.gemini_whatsapp_previous_part_not_sent = ["Se detuvo el resto de la respuesta", "La parte anterior no llegó a enviarse o quedó sin confirmar.", "Revisa el motivo de la primera parte antes de recuperar la respuesta completa."];
+details.human_control_changed = [
+  "La atención pasó a Humano",
+  "Se canceló una respuesta automática para respetar la atención humana.",
+  "Responde desde Humano o vuelve a IA para atender entradas nuevas.",
+];
+details.gemini_whatsapp_previous_part_not_sent = [
+  "Se detuvo el resto de la respuesta",
+  "La parte anterior no llegó a enviarse o quedó sin confirmar.",
+  "Revisa el motivo de la primera parte antes de recuperar la respuesta completa.",
+];
 
 export function explainInboxError({
   code,
@@ -170,7 +181,12 @@ export function MessageDelivery({
 }) {
   const report = useContext(ErrorFeedbackContext);
   const blocked = state === "queued" && !!reason;
-  if (blocked || state === "failed" || state === "uncertain" || state === "cancelled") {
+  if (
+    blocked ||
+    state === "failed" ||
+    state === "uncertain" ||
+    state === "cancelled"
+  ) {
     return (
       <button
         type="button"
@@ -182,7 +198,9 @@ export function MessageDelivery({
               message:
                 state === "failed"
                   ? "El canal marcó el mensaje como fallido."
-                  : state === "cancelled" ? "El envío se canceló antes de completarse. Consulta el diagnóstico de la conversación." : "",
+                  : state === "cancelled"
+                    ? "El envío se canceló antes de completarse. Consulta el diagnóstico de la conversación."
+                    : "",
             },
             event.currentTarget,
           )
@@ -191,9 +209,11 @@ export function MessageDelivery({
         <Icon name="warning" />
         {blocked
           ? "En cola · ver motivo"
-          : state === "cancelled" ? "Cancelado · ver motivo" : state === "failed"
-            ? "No enviado"
-            : "Sin confirmar"}
+          : state === "cancelled"
+            ? "Cancelado · ver motivo"
+            : state === "failed"
+              ? "No enviado"
+              : "Sin confirmar"}
       </button>
     );
   }

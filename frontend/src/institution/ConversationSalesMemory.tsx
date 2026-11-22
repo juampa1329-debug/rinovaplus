@@ -225,7 +225,7 @@ function SalesMemory({
           guidance={{
             title: "Recuperar respuesta de IA",
             detail:
-              "La respuesta anterior no quedó guardada para envío. Se comprobará que no exista otra respuesta, que el chat siga en IA y que este sea el último mensaje. Esta nueva generación puede consumir tokens.",
+              "Se comprobará que no haya una respuesta enviada ni un envío incierto, que el chat siga en IA y que éste sea el último mensaje. Sólo se recuperan generaciones sin salida o con todas sus partes canceladas antes de intentar enviarlas. La nueva generación puede consumir tokens.",
           }}
           dismiss={() => setRecover(false)}
           dismissLabel="Cancelar"
@@ -308,9 +308,9 @@ function SalesMemory({
             </details>
           )}
           {value.generation &&
-            ["failed", "uncertain", "running"].includes(
+            (value.generation.can_retry || ["failed", "uncertain", "running"].includes(
               value.generation.status,
-            ) && (
+            )) && (
               <div role="status">
                 <strong>Revisión de respuesta automática</strong>
                 <p>

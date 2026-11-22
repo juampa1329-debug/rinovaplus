@@ -174,6 +174,8 @@ def context(
     )
     system += skill_instructions(skill_policy)
     system += style_instructions(config)
+    from app.institutional.institution_contacts import POLICY as CONTACT_POLICY
+    system += CONTACT_POLICY
     if public:
         system += PUBLICATION_RULES
     system += (
@@ -185,6 +187,7 @@ def context(
         "consulta": redact(question[:2000]),
         "catalogo": material,
         "institucion_revisada": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
+        "contactos_institucionales": getattr(c, "public_contact_context", lambda: {"items": []})(),
         "fuentes_revisadas": documents,
         "memoria_institucional": shared,
         "historial": history,
@@ -215,6 +218,7 @@ def context(
         "skill_policy": skill_policy,
         "query": query,
         "fingerprint": digest([system, query, ai["revision"]]),
+        "components": {"system": digest(system), **{k: digest(v) for k, v in payload.items()}},
         "sources": [{"id": v["id"], "title": v["title"]} for v in documents],
     }
 

@@ -79,6 +79,9 @@ def catalog_data(c, settings):
 
 
 def configure(c, settings):
+    from app.institutional.institution_contacts import directory, sources
+    c.public_contact_context = lambda: directory(c, settings)
+    c.public_contact_sources = lambda: sources(directory(c, settings))
     from app.institutional.conversation_scope import configure as configure_scope
     configure_scope(c, settings)
     c.agent_catalog = Catalog(settings)

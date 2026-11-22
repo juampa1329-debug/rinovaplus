@@ -93,10 +93,32 @@ class ProfileEdit(Strict):
     _email = field_validator("email")(login_key)
 
 
+class PublicContact(Strict):
+    label: str = Field(min_length=1, max_length=80)
+    number: str = Field(min_length=8, max_length=24)
+    use: Literal["whatsapp", "calls", "both"]
+    active: bool = True
+    note: str = Field(default="", max_length=200)
+
+    @field_validator("number")
+    @classmethod
+    def telephone(cls, value):
+        import re
+        if not re.fullmatch(r"\+?[0-9 ()-]+", value):
+            raise ValueError("invalid_public_contact_number")
+        digits = re.sub(r"\D", "", value)
+        if len(digits) == 10:
+            digits = "57" + digits
+        if not 8 <= len(digits) <= 15:
+            raise ValueError("invalid_public_contact_number")
+        return "+" + digits
+
+
 class Institution(Strict):
     name: str = Field(min_length=1, max_length=160)
     timezone: str = "America/Bogota"
     locale: Literal["es-CO", "es", "en-US"] = "es-CO"
+    public_contacts: list[PublicContact] = Field(default_factory=list, max_length=12)
     _timezone = field_validator("timezone")(valid_timezone)
 
 

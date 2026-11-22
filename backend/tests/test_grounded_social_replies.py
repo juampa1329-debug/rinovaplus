@@ -207,7 +207,8 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
     "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None]
 )
 @pytest.mark.parametrize("with_backup", [False, "rejected", "timeout"])
-def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup):
+@pytest.mark.parametrize("with_projection", [False, True])
+def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup, with_projection):
     from app.institutional import channel_outbox
     from app.modules.ai.domain.models import ModelInfo
     from app.modules.ai.infrastructure.providers import AiError
@@ -220,6 +221,10 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
 
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    projected = [False]
+    from app.institutional import sales_memory
+    monkeypatch.setattr(sales_memory, "record", lambda *_: projected.__setitem__(0, True))
+    monkeypatch.setattr(messaging, "resolve_conversation", lambda *_: {"configuration": {}, "agent_id": "fixture", "version": 1})
     operation, integration, conversation = [str(uuid4()) for _ in range(3)]
     data = {
         "conversation": conversation,
@@ -272,6 +277,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
         lambda *_: (
             {
                 "max_tokens": 1500,
+                "sales_memory_enabled": with_projection,
                 "input_usd_per_million": 0.25,
                 "output_usd_per_million": 1.5,
             },
@@ -288,7 +294,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
         lambda *_: {
             "system": "Prompt de ventas",
             "query": "Software: 3 semestres",
-            "fingerprint": "reviewed",
+            "fingerprint": "after-own-projection" if projected[0] else "reviewed",
         },
     )
     monkeypatch.setattr(messaging, "unseal", lambda *_: "test-only")
@@ -330,6 +336,11 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
     assert messaging.Worker(profile, Gateway).once()
     assert "".join("".join(sent).split()) == "".join((answer or "").split())
     assert bool(handoffs) == (answer is None)
+    if with_projection and sent:
+        rebound = [json.loads(v[1]) for v in statements if v[0].startswith("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=")]
+        assert rebound[-1]["contextBinding"] == "after-own-projection"
+        assert rebound[-1]["own_projection_context_refreshed"] is True
+        assert rebound[-1]["response_parts"] == recorded[-1]["response_parts"]
     assert recorded[-1]["generation"] == "grounded-v1"
     assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
     assert len(backup_reservations) == int(bool(with_backup))

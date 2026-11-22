@@ -160,6 +160,7 @@ def source(c, settings, integration, data):
     reply_ids = [part["id"] for part in data.get("response_parts", [])] or (
         [reply] if reply else []
     )
+    reply_ids += [identity for attempt in data.get("cancelled_generations", []) for identity in attempt.get("reply_ids", [])]
     context = one(
         c,
         "SELECT m.Body,m.Sequence,ctrl.Epoch FROM crm.Message m "
@@ -288,10 +289,13 @@ def dispatch_authorized(c, settings, job, payload):
         raise HTTPException(409, "gemini_whatsapp_model_changed")
     if data.get("generation") == "grounded-v1":
         _, current, _ = source(c, settings, job["IntegrationId"], data)
-        if (
-            reply_context(c, settings, data, current)["fingerprint"]
-            != data["contextBinding"]
-        ):
+        checked = reply_context(c, settings, data, current)
+        if checked["fingerprint"] != data["contextBinding"]:
+            previous = data.get("contextComponents", {})
+            data["dispatch_context_changes"] = [k for k, value in checked.get("components", {}).items() if previous and previous.get(k) != value]
+            if previous:
+                c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? AND Status='confirmed'",
+                          json.dumps(data), institution(settings), payload["automationId"])
             raise HTTPException(409, "gemini_reply_context_changed")
     voice_audio.authorize_dispatch(c, settings, data, payload)
 
@@ -693,6 +697,7 @@ class Worker:
                     "generated_text": generated,
                     "modelBinding": binding,
                     "contextBinding": grounded["fingerprint"],
+                    "contextComponents": grounded.get("components", {}),
                     "skill_policy": grounded.get("skill_policy"),
                     "voiceMedia": audio["media_id"] if audio else None,
                     "voiceOperation": audio["operation"] if audio else None,
@@ -786,4 +791,17 @@ class Worker:
             )
             if selected:
                 record_sales_memory(c, settings, data, selected, observations, reply)
+                # Validated projections made by this transaction may complete the
+                # CRM profile. Bind dispatch to that committed state, after the
+                # pre-write source/context checks, never to a later external edit.
+                committed = {**data, "reply": reply, "response_parts": parts,
+                    "generation": "grounded-v1", "generated_text": generated, "modelBinding": binding,
+                    "skill_policy": grounded.get("skill_policy"), "voiceMedia": audio["media_id"] if audio else None,
+                    "voiceOperation": audio["operation"] if audio else None, "voiceReason": voice_reason}
+                _, after_source, _ = source(c, settings, integration, committed)
+                after = reply_context(c, settings, committed, after_source)
+                committed.update(contextBinding=after["fingerprint"], contextComponents=after.get("components", {}),
+                    own_projection_context_refreshed=after["fingerprint"] != grounded["fingerprint"])
+                c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? AND Status='confirmed'",
+                          json.dumps(committed), institution(settings), operation)
         return True

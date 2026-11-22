@@ -33,6 +33,11 @@ class Upload(Strict):
     kind: Literal["video"] | None = None
 
 
+class StoryPreview(Strict):
+    operation_id: str
+    message_id: str
+
+
 STICKER_MAX = 100_000
 ANIMATED_STICKER_MAX = 500_000
 
@@ -238,6 +243,10 @@ def register_incoming(c, settings, item, effect, linked, message):
         attachments = (provider.get("message") or {}).get("attachments") or []
         first = attachments[0] if attachments else {}
         kind, reference = first.get("type"), first.get("payload")
+        if kind == "file":
+            kind = "document"
+        if kind == "story_mention" and isinstance(reference, dict):
+            kind, reference = "image", {**reference, "socialKind": "story_mention"}
     else:
         return  # TikTok download references require the approved Business API schema.
     if not isinstance(reference, dict) or kind not in {
@@ -281,6 +290,32 @@ def register_incoming(c, settings, item, effect, linked, message):
 class Media:
     def __init__(self, settings):
         self.settings = settings
+
+    def story_preview(self, authority, body):
+        with transaction(self.settings, True, anonymous=True) as c:
+            actor = authorize(c, self.settings, authority, "inbox.write")
+            authorize(c, self.settings, authority, "inbox.read")
+            message = uid(body.message_id)
+            digest, prior = replay(c, self.settings, actor["UserId"], uid(body.operation_id), "media.story-preview", message, {"message": message})
+            if prior:
+                return prior
+            value = one(c, "SELECT TOP(1) m.MessageId,m.ConversationId,r.IntegrationId,r.IdentityId,e.Payload "
+                "FROM crm.Message m JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId "
+                "JOIN crm_channels2.ExternalMessage x ON x.InstitutionId=r.InstitutionId AND x.MessageId=m.MessageId AND x.IntegrationId=r.IntegrationId "
+                "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId=x.ExternalId "
+                "WHERE r.InstitutionId=? AND m.MessageId=? AND m.Direction='incoming' AND r.ActorKind='external' AND e.Kind='message' ORDER BY e.CreatedAt DESC", institution(self.settings), message)
+            if not value:
+                raise HTTPException(404, "media_story_source_unavailable")
+            provider = json.loads(value["Payload"]).get("provider", {})
+            from app.institutional.social_messages import presentation
+            if (presentation(provider) or {}).get("kind") != "story_mention":
+                raise HTTPException(409, "media_story_source_unavailable")
+            if not one(c, "SELECT MediaId FROM crm_channels4.MediaAsset WHERE InstitutionId=? AND MessageId=?", institution(self.settings), message):
+                register_incoming(c, self.settings, account(c, self.settings, uid(str(value["IntegrationId"]))), {"provider": provider}, value, message)
+                c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
+            result = {"saved": True, "message_sent": False}
+            record_operation(c, self.settings, actor["UserId"], uid(body.operation_id), "media.story-preview", message, digest, result)
+            return result
 
     def upload(self, authority, body):
         identity = str(uuid4())
@@ -428,8 +463,16 @@ class MediaWorker:
                 reference,
                 files.path(identity, ".part"),
             )
+            # A story mention can contain either image or video. Inspect bytes,
+            # never infer a safe format from a CDN URL or a provider label.
+            kind = value["Kind"]
+            if reference.get("socialKind") == "story_mention":
+                with files.path(identity, ".part").open("rb") as handle:
+                    header = handle.read(16)
+                if header[4:8] == b"ftyp":
+                    kind = "video"
             info = inspect_attachment(
-                identity, value["FileName"], value["Kind"], incoming=True,
+                identity, value["FileName"], kind, incoming=True,
             )
             with transaction(self.settings, True, anonymous=True) as c:
                 mark_ready(c, self.settings, identity, info, reference)
@@ -452,6 +495,10 @@ class MediaWorker:
 
 def install(app, settings):
     service = Media(settings)
+
+    @app.post("/api/institution/media/story-preview")
+    def story_preview(request: Request, body: StoryPreview):
+        return service.story_preview(request.state.authority, body)
 
     @app.post("/api/institution/media/upload")
     def upload(request: Request, body: Upload):

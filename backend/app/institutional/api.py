@@ -39,7 +39,7 @@ def core_permission(path, method):
         return "settings.ai." + ("read" if method == "GET" else "write"), "settings"
     if path.startswith("/api/institution/notifications"):
         return "self", None
-    if path == "/api/institution/operations":
+    if path in {"/api/institution/operations", "/api/institution/diagnostics"}:
         return "users.manage", None
     if path.startswith("/api/institution/provider-catalog/"):
         return "settings.providers.read", "settings"
@@ -617,6 +617,8 @@ def create_app(
         install_learning(app,settings)
 
     if postgres or getattr(settings, "ticket", {}).get("version") == "cbn-institutional-operations-p11-v1":
+        from app.institutional.diagnostics import install as install_diagnostics
+        install_diagnostics(app, settings)
         from app.institutional.operations import install as install_operations
 
         install_operations(app, settings)

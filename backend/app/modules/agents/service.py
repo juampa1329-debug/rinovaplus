@@ -614,7 +614,10 @@ def public_sources(cursor, question, program_id, stage_id, config):
     ] if "program.read" in config["capabilities"] and "vertical" in config.get(
         "memories", ["vertical"]
     ) else documents
-    return institutional, reviewed_sources(selected_sources)
+    contacts = getattr(cursor, "public_contact_sources", lambda: [])()
+    if contacts:
+        institutional = {**institutional, "fingerprint": digest([institutional["fingerprint"], contacts])}
+    return institutional, [*reviewed_sources(selected_sources), *contacts]
 
 
 class AgentPolicy(AdmissionsPolicy):

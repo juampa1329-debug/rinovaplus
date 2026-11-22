@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-21",
+  "scope": "Inbox social events, cancelled AI replies, diagnostics and public contacts",
+  "observed_before": {
+    "whatsapp_cancelled_parts": 3,
+    "meta_send_attempts": 0,
+    "latest_first_part_code": "gemini_reply_context_changed",
+    "latest_second_part_code": "gemini_whatsapp_previous_part_not_sent",
+    "historical_changed_component": "not recorded"
+  },
+  "local_validation": {
+    "backend_selected_passed": 268,
+    "backend_skipped": 2,
+    "frontend_passed": 8,
+    "types": "passed",
+    "lint": "passed",
+    "build": "passed; historical large bundle warning",
+    "additional_story_preview_sql_and_replay": "3 passed"
+  },
+  "guards": [
+    "same-source, IA epoch and current context before generation commit",
+    "post-projection context binding inside same write transaction",
+    "external subsequent edits still invalidate dispatch",
+    "explicit recovery only all-cancelled zero-attempt no-external-id output",
+    "no Meta replay of uncertain or accepted outputs",
+    "bounded role-protected diagnostics without payloads or prompts",
+    "existing restricted CDN download and media inspection"
+  ],
+  "production_verification": "pending deployment",
+  "roadmap": "Original accepted scope preserved; unweighted future phases not averaged into original percentage",
+  "no_ddl": true,
+  "no_siie_writes": true
+}

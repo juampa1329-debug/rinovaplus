@@ -1,3 +1,27 @@
+## Estado vigente del roadmap — 2026-11-21
+
+El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y 279/279 hitos**, dentro del alcance PostgreSQL aceptado y sus límites operativos documentados. P12 de puesta online también está aceptada. Los cortes inferiores son historia; sus porcentajes anteriores no describen la versión actual.
+
+| Fase | De qué trata | Aceptación y pendientes |
+|---|---|---|
+| P0–P11 | Base del CRM, canales Meta, IA, conocimiento, broadcasting, seguimientos, publicidad, inteligencia y operación | 100% del alcance original aceptado. No incluye automáticamente las ampliaciones posteriores. |
+| P12 | Puesta online en PostgreSQL/Coolify y Meta | 100% del alcance aceptado. |
+| P13 | Académico y agentes comerciales por programa, skills, memoria y ficha CRM | 4/4, 100% inicial. Calidad comercial continua y modelos por etapa se evalúan en P22. Inglés aún sin alcance tarifario confirmado; SLA institucional sin plazo configurado. |
+| P14 | Entrenamiento y mejora comercial basada en datos | Plan pendiente; implementación no iniciada, 0%. |
+| P15 | Correos, recuperación, invitaciones, alertas y plantillas | 7/7, 100% inicial. Mejoras de monitorización operativa siguen separadas. |
+| P16 | API SIIE para programas, aspirantes, estudiantes y finanzas | Parcial; 0/5 aceptadas (0% de aceptación). Hay lecturas reales y catálogo local de 25 programas. Falta completar/verificar finanzas y sincronización de origen. |
+| P17 | Integración de TikTok | Diferida; 0/5, 0%. Requiere cuenta y pruebas propias. |
+| P18 | Seguridad integral: sesiones, tokens, IP/rate limit, 2FA, CAPTCHA, inyecciones e infraestructura | Planificada; 0/8, 0% de aceptación. Los controles existentes no equivalen a auditoría integral. |
+| P19 | ElevenLabs y notas de voz por agente/escuela, límites y consumo | 5/5, 100% técnico inicial. Faders/ducking/muestras aceptados; ambiente sonoro pendiente de grabaciones del propietario y nueva escucha. |
+| P20 | Llamadas de WhatsApp y agentes de voz, entrada/salida, transferencia y supervisión | Planificada; 0/8, 0%. Requisitos de cuenta/ruteo y coste pendientes. |
+| P21 | Catálogo y respaldo compatible de modelos | 4/4, 100% inicial. Timeout optativo activo con OpenRouter real comprobado en ensayo privado/público. ASR/TTS y monitor proactivo no forman parte de ese cierre. |
+| P22 | Comparativa de modelos y elección por agente/etapa del CRM | 3/5 hitos técnicos trabajados, 60%; 0/5 aceptaciones comerciales. Faltan elección del titular, enlace con etapas y piloto/reversión. |
+| OPS-01–06 | Copia externa, custodia de clave, RPO/RTO, retención, alertas y conciliación DB/archivos | 0/6 mejoras cerradas; límites expresamente conservados. |
+
+No hay un porcentaje global nuevo que mezcle estas ampliaciones: no tienen pesos homologados con los 56 criterios originales. Las cantidades de pruebas no sustituyen una aceptación. Detalle y evidencia: [fases adicionales](adaptation/PENDING_PHASES.md), [estado vivo](adaptation/RINOVAPLUS_LIVE_STATUS.md) y `tasks/*-progress.json`.
+
+La revisión del 21-11 añade contactos públicos separados para llamadas/WhatsApp, diagnóstico de recepción/IA/envíos y tratamiento de menciones de historias. Su validación de publicación se registra aparte, sin convertirla en cierre automático de P16/P18/P22.
+
 ## Corte de producción RinovaPlus — 2026-11-17
 
 El [estado vigente de producción y pendientes por fase](adaptation/RINOVAPLUS_LIVE_STATUS.md) registra canales, Inbox, Gemini, Académico y despliegues. El [registro de seguimiento](../tasks/rinovaplus-live-progress.json) separa implementación y aceptación. Total técnico: **93,88%, 262/279 hitos, 45/56 criterios aceptados**; quedan 17 hitos. P7 avanza a **85,14%** por el catálogo Meta aprobado real, sin acreditar aún envío masivo ni recibos. La definición y los pesos originales se conservan; el replay completo sigue limitado por artefactos históricos ausentes. Respuestas personalizadas y silencio Humano confirmados en Messenger/Instagram; comentario publicado observado. P13 mantiene cuatro aceptaciones pendientes: **SIIE pasa a P15, diferida**, y no bloquea fichas revisadas manualmente.
