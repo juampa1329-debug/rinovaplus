@@ -1,3 +1,7 @@
+## Revisión publicada del Inbox — 2026-11-21
+
+b2de74c saludable (backend04m18s/frontend00m25s): recuperación explícita de respuesta WhatsApp con dos partes Leído, historial operativo, diagnóstico acotado y contactos públicos revisión2. Dos menciones Instagram identificadas; su archivo de prueba no se pudo preparar y requiere prueba fresca, sin atribuir una causa no registrada. Alcances/porcentajes de fases sin cambios. Detalle: [diagnóstico, contactos y verificación](INBOX_DIAGNOSTICS_CONTACTS_20261121.md).
+
 ## Corte vigente — 2026-11-21
 
 La síntesis actual está en [roadmap](../roadmap.md) y [fases adicionales](PENDING_PHASES.md). P0–P11/P12 aceptados100%; P13/P15/P19/P21 aceptados en sus alcances iniciales; P14/P16/P17/P18/P20/P22 y OPS conservan los pendientes allí enumerados. No usar los cortes inferiores como estado actual ni confundir implementación parcial con aceptación. La revisión de Inbox/diagnósticos/contactos del21-11 está en validación de publicación.

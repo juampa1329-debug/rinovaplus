@@ -9,7 +9,7 @@
     "historical_changed_component": "not recorded"
   },
   "local_validation": {
-    "backend_selected_passed": 268,
+    "backend_selected_passed": 270,
     "backend_skipped": 2,
     "frontend_passed": 8,
     "types": "passed",
@@ -26,7 +26,41 @@
     "bounded role-protected diagnostics without payloads or prompts",
     "existing restricted CDN download and media inspection"
   ],
-  "production_verification": "pending deployment",
+  "production_verification": {
+    "feature_commit": "fd2f291",
+    "backend_deployment": "kzjc0dmcpuywyquov8tjjceb",
+    "backend_status": "Success",
+    "backend_duration": "05m44s",
+    "frontend_deployment": "habqfrnv3zkla91tfj0isqm7",
+    "frontend_status": "Success",
+    "frontend_duration": "01m10s",
+    "public_directory_revision": 2,
+    "public_directory_contacts": 2,
+    "affected_reply_recovery": {
+      "explicitly_requested": true,
+      "new_outbound_parts": 2,
+      "state": "read",
+      "attempts_per_part": 1,
+      "observed_local_time": "2026-11-21T19:27:13-05:00",
+      "control": "IA",
+      "historic_cancelled_outputs_preserved": true
+    },
+    "history_read_issue": "JSON import and explicit binary identifier comparison corrected; optional presentation isolated from accepted message history",
+    "history_fix_commit": "4df3ee0",
+    "history_fix_deployment": "wa805hqiif8r5qjhajlqezes",
+    "history_fix_status": "Success; full history readable after final binary identifier comparison fix",
+    "final_runtime_commit": "b2de74c",
+    "final_backend_deployment": "gbugn3gjzp7aqzizuscbl5do",
+    "final_backend_status": "Success",
+    "final_backend_duration": "04m18s",
+    "final_frontend_deployment": "awyam8j78wmvye98qmmcvzzs",
+    "final_frontend_status": "Success",
+    "final_frontend_duration": "00m25s",
+    "instagram_story_label_verified": true,
+    "instagram_preview_recovery": "one request; failed to prepare file, no outgoing message. Exact provider/inspection reason not retained by existing media worker; do not attribute to expiration without evidence.",
+    "instagram_story_labels_verified": 2,
+    "instagram_preview_acceptance": "fresh story file test remains pending"
+  },
   "roadmap": "Original accepted scope preserved; unweighted future phases not averaged into original percentage",
   "no_ddl": true,
   "no_siie_writes": true

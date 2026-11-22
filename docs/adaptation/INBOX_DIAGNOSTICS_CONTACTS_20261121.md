@@ -21,4 +21,22 @@ Meta: [referencia oficial de Instagram](https://developers.facebook.com/docs/gra
 
 ## Verificación
 
-268backend seleccionadas/2omitidas,8frontend,tipos/lint/build pasan al corte local. SQL del diagnóstico parseado para PostgreSQL con parámetros y proyección sin secretos comprobada. La conmutación P21 y Humano conservan sus guardas. Pendientes: publicación, directorio guardado, lectura real de menciones, diagnóstico y recuperación del hilo cancelado. No DDL, seeds ni escrituras SIIE.
+270backend seleccionadas/2omitidas,8frontend,tipos/lint/build pasan al corte local. SQL del diagnóstico parseado para PostgreSQL con parámetros y proyección sin secretos comprobada. La conmutación P21 y Humano conservan sus guardas. Pendientes: publicación, directorio guardado, lectura real de menciones, diagnóstico y recuperación del hilo cancelado. No DDL, seeds ni escrituras SIIE.
+
+## Corte vivo posterior
+
+`fd2f291` saludable en Coolify (`kzjc0dmcpuywyquov8tjjceb`, 05m44s); frontend `habqfrnv3zkla91tfj0isqm7` Success 01m10s. Contactos públicos guardados en revisión2, dos líneas con usos separados. Por instrucción expresa del titular se recuperó sólo la última generación del hilo afectado: dos nuevas partes **Entregadas**, un intento por parte, a las19:27 locales; modo IA conservado y cancelaciones históricas intactas. La causa histórica sigue siendo contexto cambiado, sin componente específico registrado.
+
+La lectura viva del historial detectó un import JSON ausente en la proyección de eventos; se corrigió en `4df3ee0` y se añadió regresión ejecutando el método de historial. 270backend/2omitidas y Ruff de todos los módulos modificados pasan. Redeploy de esa corrección y lectura de menciones aún en verificación.
+
+## Verificación del arreglo final
+
+`b2de74c` saludable, backend `gbugn3gjzp7aqzizuscbl5do` Success04m18s y frontend `awyam8j78wmvye98qmmcvzzs` Success00m25s. La comparación de IDs de Meta usa la misma colación binaria explícita que los recibos existentes. Además, la presentación social queda en una lectura aislada: un fallo de esa vista no bloquea el historial base. Historial completo de WhatsApp real abierto sin aviso; dos partes de recuperación con recibo **Leído**, sin duplicados ni reenvío de cancelaciones.
+
+Mención real de Instagram identificada como «Te mencionó en una historia», incluyendo el historial anterior. Recuperación de un archivo reciente solicitada una vez; en preparación al corte, sin respuesta saliente. No acreditar archivo visualizado mientras no esté listo. 270backend seleccionadas/2omitidas,8frontend,tipos/lint/build y Ruff pasan. Los controles de IA/Humano y envío incierto se conservan.
+
+## Cierre de esta revisión
+
+Los dos hilos Instagram reportados muestran «Te mencionó en una historia», sin generar respuestas ficticias por una mención sin texto. La solicitud única de vista previa pasó a «No se pudo preparar». El worker anterior conserva sólo `media_download_or_inspection_failed`, por lo que no se puede atribuir con evidencia a caducidad, formato o tamaño. Una historia nueva sigue siendo necesaria para aceptar la visualización del archivo; no declarar ese extremo aprobado. No se reintentó el mismo archivo ni se envió ningún DM desde esas menciones.
+
+Luisa: dos respuestas nuevas leídas, historial visible y modo IA. Los cancelados previos quedan como auditoría; no son envíos pendientes. Los cambios del directorio y las lecturas del diagnóstico no cambian modelos activos ni alteran fases pendientes.
