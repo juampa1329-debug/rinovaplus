@@ -63,3 +63,33 @@ Por instrucción del titular se añaden tres SKILL.md nativas revisadas (bibliot
 
 81dbf7b publicado: backend zhut9vvwzimdq1jdormu7c96 Success/Running4m17s y frontend cgurkkjqbnmcnhlvso4hi2a2 Success38s. Importacion real Messenger:66+4+0 mensajes incorporados, cero envios; busqueda PRE-ICFES muestra28conversaciones. message_echoes suscrito en app y sincronizacion de Pagina confirmada por proveedor. Nombres reales visibles en listado. Guardado general de IA devolvio422 al activar cuentas; campo exacto no identificado. Se separa PUT comments/policy con validacion propia, revisionCAS, permiso/reautenticacion/historial y mezcla solo de cuatro campos sin tocar modelos/voces. Se corrige indicador de carga residual y hora previewAt original.281backend/60frontend,tipos/ESLint/Ruff/build pasan; advertencia historica de bundle. Publicacion del ajuste, activacion y nuevo comentario real aun pendientes; no acreditar automatizacion por importar. P4/P13/P22 conservan estados. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
 
+
+
+## Origen de comentarios y bandeja sin respuesta preparados - 2026-11-23
+
+El titular pide etiqueta discreta y clasificar fuera del Inbox los privados iniciados por comentario hasta que la persona responda. Se agregan Desde comentario, vista rapida Desde comentarios (sin respuesta) y filtro Desde comentarios todas. La bandeja principal excluye solo origen comentario sin ninguna entrada; una entrada real lo incorpora automaticamente conservando origen, sin cambiar etapa, control, SLA ni enviar mensajes. Origen acreditado por cola privada, atribucion real de comentario o texto explicito de la ronda nativa PRE-ICFES confirmada; no se clasifica cualquier DM por mencionar un programa. Consulta PostgreSQL parseada y ensayo relacional de transicion sin escrituras de negocio;319backend y47frontend focalizadas pasan (60frontend previas), tipos/ESLint/Ruff/workspacebuild pasan. eff0c99 backend c6fpptvpsuxotqmhzdsdbtyz Success4m16s, frontend6a810dqznwuwrnv45clw6jy5Success. Publicacion y validacion visual de esta ampliacion pendientes. P4/P13/P22 conservan estados.
+
+
+
+## Inbox de comentarios publicado y verificado - 2026-11-23
+
+e748487 backend uavozvcl3ln0gx1fvgyfg0yk Success/Running4m17s, frontend6cznheznzfgqcil8tkfzgcmxSuccess44s. Vista real Desde comentarios:23hilos sin entrada, etiqueta compacta sin sustituir preview y hora original; bandeja principal filtrada PRE-ICFES:6hilos activos, conservan origen cuando esta acreditado. Antes de clasificar se verificaron29hilos de la ronda (26Messenger/3Instagram), incluido privado nativo de Instagram;70mensajes Messenger incorporados (66+4+0), sin reenviar. Primera consulta IG fallo temporalmente; posteriores completaron y mostraron el hilo privado, sin afirmar total exacto ni todo el historico remoto. Perfiles disponibles se resuelven sin abrir; Meta puede devolver usuario en lugar de nombre completo. Tres reglas nativas de comentarios apagadas; saludos/FAQ ya apagados, reglas organizativas preservadas. App message_echoes y reconciliacion de Pagina confirmadas. Politica privada solo CBN Facebook/Instagram guardada y comprobada tras recarga, ScentraWPP no seleccionada. Nuevo comentario real corto de prueba recibio una respuesta publica pertinente; no acredita DM automatico. Ensayo explicito privado solicitado y pendiente en este corte.319backend/47frontend focalizadas (60previas),tipos/ESLint/Ruff/workspacebuild pasan; bundlehistorico. Evidencia artifacts/live/contextual-private-comments-20261123.json. P4/P13 iniciales y P22 3/5tecnico/0aceptacion conservados. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
+
+
+
+## Ensayo real de privados: rechazo de borrador y contrato de respaldo reforzado - 2026-11-23
+
+Dos comentarios reales nuevos del titular: el corto se publico con informacion pertinente; la solicitud explicita de precios por privado fallo comment_ai_invalid_draft antes de encolar. Diagnostico confirma Gemini provider_temporary_failure y OpenRouter GPT4.1mini completed en ambos; no se conserva el contenido rechazado ni se atribuye un campo/longitud concreto. Se elimina la instruccion incondicional de entrega publica solo del contexto de decision privada, sin incorporar memoria privada. Respaldo usa json_schema estricto para los cinco campos de entrega, enums de programas recuperados y texto max900; rutas ordinarias conservan contrato anterior. Intencion information con programa validado se entrega por privado; apoyo sigue publico y ambiguedad revision. Huella incluye instrucciones sociales completas. Errores futuros distinguen extension/incompleto/contrato sin exponer borradores.342backend/Ruff y tipos/ESLint/workspacebuild pasan; sin reintento ni envio de operaciones fallidas. Publicacion y ensayo posterior pendientes. Filtros de origen e importacion ya verificados en e748487; P4/P13/P22 no cambian.
+
+
+
+## Compatibilidad del identificador de programa en revision - 2026-11-23
+
+f1c0421 publicado saludable: backend ntg6s7ruukfvxwkfrv0y83xz4m19s, frontend4yr2cxqiycmpzqhqo9tbyyfz45s. Tercer comentario real recibido: Gemini rechazo provider_rejected_request antes de generar y no se ejecuto respaldo; ningun privado enviado por ese intento. Se retira el enum con valor vacio introducido en program_id del esquema Gemini; identificador sigue string y la pertenencia a fichas se valida en backend antes de entregar. Esquema estricto de campos/canal y max900 en OpenRouter conservados.78pruebas focalizadas pasan. No se identifica otro campo de rechazo a partir del mensaje sanitizado. Ensayo real posterior pendiente; sin replay de intentos anteriores.
+
+
+
+## Principal OpenRouter por instruccion del titular preparado - 2026-11-23
+
+El titular solicita Sonnet4.6 principal y Sonnet5.5 respaldo, en lugar de generar lenguaje primero con Gemini; no se atribuye el rechazo previo al plan gratuito sin evidencia. P21 agrega primary opcional, misma biblioteca/contexto/guardas y reserva por ruta, sin ejecutar la funcion Gemini cuando hay principal explicito. Respaldo ante404/429/503 o timeout puro optativo; sin replay de Meta. Seleccion y tarifas desde catalogo autenticado, omision de temperatura no soportada y razonamiento low solo declarado. Claude no recibe maxLength no soportado; limite900 permanece en instrucciones y validacion backend, sin cortar mensajes. Guardado acotado con CAS/reautenticacion/historial conserva prompts/voces/privados. Simulador y ASR/vision conservan motores propios; ensayo sintetico no se sustituye por principal productivo.391backend/67frontend,tipos/ESLint/Ruff/workspacebuild pasan; bundlehistorico. Publicacion, seleccion nativa de ambos modelos y pruebas reales pendientes. Seleccion operativa autorizada no cierra por si sola P22 ni su reparto por etapas/piloto comercial.
+

@@ -23,10 +23,13 @@ class LanguageResilience(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     enabled: bool = False
     fallback_on_timeout: bool = False
+    primary: LanguageRoute | None = None
     routes: list[LanguageRoute] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
     def unique(self):
+        if self.primary and any((r.provider, r.model) == (self.primary.provider, self.primary.model) for r in self.routes):
+            raise ValueError("language_backup_duplicate")
         if len({(r.provider, r.model) for r in self.routes}) != len(self.routes):
             raise ValueError("language_backup_duplicate")
         if self.enabled and not self.routes:

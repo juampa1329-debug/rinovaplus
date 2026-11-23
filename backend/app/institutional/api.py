@@ -633,6 +633,8 @@ def create_app(
     if getattr(settings, "postgres_deployment", False):
         from app.institutional.language_rehearsal import install as install_language_rehearsal
         install_language_rehearsal(app, settings)
+        from app.institutional.language_policy import install as install_language_policy
+        install_language_policy(app, settings)
         from app.institutional.email_notifications import install as install_notifications
         install_notifications(app, settings)
 

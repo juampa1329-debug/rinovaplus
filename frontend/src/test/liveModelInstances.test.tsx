@@ -9,7 +9,7 @@ vi.mock("../institution/adsResource", () => ({
   useAdsResource: () => ({
     value: {
       items: [
-        { id: "fixture/a:free", name: "A" },
+        { id: "fixture/a:free", name: "A", input_usd_per_million: 3, output_usd_per_million: 15 },
         { id: "fixture/b:free", name: "B" },
       ],
     },
@@ -48,4 +48,12 @@ it("keeps the labels and selections independent for two backups of the same prov
   });
   expect(second).toHaveBeenCalledWith("fixture/b:free");
   expect(first).not.toHaveBeenCalled();
+});
+
+it("returns the selected catalog price atomically with the model", () => {
+  const selected = vi.fn(), changed = vi.fn();
+  render(<LiveModelSelect id="primary" label="Principal" provider="openrouter" category="text" value="" onChange={changed} onSelect={selected} />);
+  fireEvent.change(screen.getByLabelText("Principal"), {target:{value:"fixture/a:free"}});
+  expect(selected).toHaveBeenCalledWith({id:"fixture/a:free",name:"A",input_usd_per_million:3,output_usd_per_million:15});
+  expect(changed).not.toHaveBeenCalled();
 });

@@ -124,6 +124,21 @@ it("distinguishes the receiving account from the sender's phone", () => {
   expect(screen.getByTitle("Cuenta receptora: WhatsApp · CBN")).toBeVisible();
   expect(screen.queryByText(/311 7207294/)).not.toBeInTheDocument();
 });
+
+it("adds a compact comment-origin label without replacing the message preview", () => {
+  const { container } = render(
+    <ConversationRow selected={false} onSelect={() => {}} row={{
+      name: "Ana Ejemplo", phone: "", stage: "Nuevo", state: "open",
+      unread: false, assignee: null, risk, channel: "messenger",
+      accountName: "Messenger · CBN", commentOrigin: true, commentPending: true,
+      preview: "Puedes empezar con el abono inicial.",
+    }} />,
+  );
+  expect(screen.getByText("Desde comentario")).toBeVisible();
+  expect(screen.getByText("Puedes empezar con el abono inicial.")).toBeVisible();
+  expect(container.querySelector(".inbox-row-preview")?.textContent).not.toContain("comentario");
+  expect(screen.getByTitle(/esperando respuesta/)).toBeVisible();
+});
 const config = {
   stages: [{ key: "new", label: "Nueva", probability: null, active: true }],
   tags: ["Interés"],

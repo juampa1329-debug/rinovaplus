@@ -96,6 +96,9 @@ def run(settings, authority, body, *, gateway=None):
         if not ai["document"]["enabled"]:
             raise HTTPException(409, "language_rehearsal_ai_disabled")
         saved = resilience.snapshot(c, settings)
+        # This action deliberately tests a synthetic primary failure. A configured
+        # production primary must not silently replace that synthetic callback.
+        saved["primary"] = None
         if body.case == "timeout" and not saved.get("fallback_on_timeout"):
             raise HTTPException(409, "language_rehearsal_timeout_disabled")
         if not saved["routes"] or any(r["provider"] != "openrouter" for r in saved["routes"]):

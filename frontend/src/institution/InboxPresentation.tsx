@@ -394,6 +394,7 @@ export function InboxListControls({
           { value: "unread", label: "Sin leer" },
           { value: "mine", label: "Mías" },
           { value: "churn", label: "Abandono alto" },
+          { value: "comment_pending", label: "Desde comentarios" },
         ].map(({ value, label }) => (
           <Button
             key={value}
@@ -411,6 +412,9 @@ export function InboxListControls({
           </Button>
         ))}
       </div>
+      {filters.queue === "comment_pending" && (
+        <p className="scope-text">Privados iniciados desde un comentario. Cuando la persona responda, su chat aparecerá en el Inbox principal.</p>
+      )}
       <details className="inbox-filters">
         <summary>Filtros {count > 0 && <span>{count} activos</span>}</summary>
         <div className="inbox-filter-fields">
@@ -525,6 +529,8 @@ export function ConversationRow({
     channel?: string;
     accountName?: string | null;
     accountPhone?: string | null;
+    commentOrigin?: boolean;
+    commentPending?: boolean;
     preview?: string | null;
     previewKind?: string | null;
     previewDuration?: string | null;
@@ -575,10 +581,15 @@ export function ConversationRow({
         <span className="inbox-row-preview">
           <ConversationPreview preview={row.preview} kind={row.previewKind} duration={row.previewDuration} />
         </span>
-        {row.accountName && (
-          <span className="inbox-row-account" title={`Cuenta receptora: ${row.accountName}`}>
+        {(row.accountName || row.commentOrigin) && (
+          <span className="inbox-row-source">
+          {row.accountName && <span className="inbox-row-account" title={`Cuenta receptora: ${row.accountName}`}>
             <Icon name="channels" className="inbox-preview-media" />
             {row.accountName}
+          </span>}
+          {!!row.commentOrigin && <span className="inbox-comment-origin" title={row.commentPending ? "Privado iniciado desde un comentario; esperando respuesta" : "Esta conversación comenzó desde un comentario"}>
+            <Icon name="comments" />Desde comentario
+          </span>}
           </span>
         )}
         <span className="inbox-row-meta inbox-row-signals">

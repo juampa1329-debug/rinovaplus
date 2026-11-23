@@ -7,14 +7,21 @@ type Route = {
   input_usd_per_million: number;
   output_usd_per_million: number;
 };
-type Policy = { enabled: boolean; fallback_on_timeout?: boolean; routes: Route[] };
+type Policy = {
+  enabled: boolean;
+  fallback_on_timeout?: boolean;
+  primary?: Route | null;
+  routes: Route[];
+};
 
 export function LanguageResilience({
   value,
   onChange,
+  onSave,
 }: {
   value: unknown;
   onChange: (value: Policy) => void;
+  onSave?: () => Promise<void>;
 }) {
   const policy = (value ?? { enabled: false, routes: [] }) as Policy;
   const update = (index: number, patch: Partial<Route>) =>
@@ -26,12 +33,12 @@ export function LanguageResilience({
     });
   return (
     <section className="panel" aria-label="Respaldo de lenguaje">
-      <h3>Modelos de respaldo · P21</h3>
+      <h3>Motor de conversaciones y respaldos · P21</h3>
       <p>
-        Si Gemini rechaza una solicitud por modelo retirado, saturación o
+        Si el principal rechaza una solicitud por modelo retirado, saturación o
         servicio no disponible, se consulta la siguiente alternativa compatible.
-        Se conservan las instrucciones, skills y contexto. También puedes permitir
-        el respaldo cuando Gemini agota el tiempo de generación de texto.
+        Se conservan las instrucciones, skills y contexto. También puedes
+        permitir el respaldo cuando agota el tiempo de generación de texto.
       </p>
       <label className="checkbox-label">
         <input
@@ -46,24 +53,137 @@ export function LanguageResilience({
       <label className="checkbox-label">
         <input
           type="checkbox"
+          checked={!!policy.primary}
+          disabled={!policy.enabled}
+          onChange={(event) =>
+            onChange({
+              ...policy,
+              primary: event.target.checked
+                ? {
+                    provider: "openrouter",
+                    model: "",
+                    input_usd_per_million: 0,
+                    output_usd_per_million: 0,
+                  }
+                : null,
+            })
+          }
+        />
+        Elegir principal para mensajes y comentarios
+      </label>
+      {policy.primary && (
+        <fieldset>
+          <legend>Principal de conversaciones</legend>
+          <SelectField
+            id="language-primary-provider"
+            label="Proveedor principal de conversaciones"
+            value={policy.primary.provider}
+            options={[
+              { value: "openrouter", label: "OpenRouter" },
+              { value: "gemini", label: "Gemini" },
+            ]}
+            onChange={(event) =>
+              onChange({
+                ...policy,
+                primary: {
+                  ...policy.primary!,
+                  provider: event.target.value as Route["provider"],
+                  model: "",
+                },
+              })
+            }
+          />
+          <LiveModelSelect
+            id="language-primary-model"
+            label="Modelo principal de conversaciones"
+            category="text"
+            provider={policy.primary.provider}
+            value={policy.primary.model}
+            onChange={(model) =>
+              onChange({ ...policy, primary: { ...policy.primary!, model } })
+            }
+            onSelect={(model) =>
+              onChange({
+                ...policy,
+                primary: {
+                  ...policy.primary!,
+                  model: model.id,
+                  input_usd_per_million: model.input_usd_per_million ?? 0,
+                  output_usd_per_million: model.output_usd_per_million ?? 0,
+                },
+              })
+            }
+          />
+          <div className="form-grid">
+            <Field
+              id="language-primary-input"
+              label="Tope principal USD por millón de entrada"
+              type="number"
+              min={0}
+              max={100000}
+              step="0.001"
+              value={String(policy.primary.input_usd_per_million)}
+              onChange={(e) =>
+                onChange({
+                  ...policy,
+                  primary: {
+                    ...policy.primary!,
+                    input_usd_per_million: Number(e.target.value),
+                  },
+                })
+              }
+            />
+            <Field
+              id="language-primary-output"
+              label="Tope principal USD por millón de salida"
+              type="number"
+              min={0}
+              max={100000}
+              step="0.001"
+              value={String(policy.primary.output_usd_per_million)}
+              onChange={(e) =>
+                onChange({
+                  ...policy,
+                  primary: {
+                    ...policy.primary!,
+                    output_usd_per_million: Number(e.target.value),
+                  },
+                })
+              }
+            />
+          </div>
+          <p>
+            Las tarifas se cargan desde el catálogo al elegir el modelo. Puedes
+            reducir los topes; si el precio los supera, esa ruta no se utiliza.
+          </p>
+        </fieldset>
+      )}
+      <label className="checkbox-label">
+        <input
+          type="checkbox"
           checked={policy.fallback_on_timeout === true}
           disabled={!policy.enabled}
           onChange={(event) =>
             onChange({ ...policy, fallback_on_timeout: event.target.checked })
           }
         />
-        Usar respaldo si Gemini agota el tiempo de respuesta
+        Usar respaldo si el principal agota el tiempo de respuesta
       </label>
       <p>
-        Sólo genera una alternativa de texto antes de enviar al canal. La solicitud
-        original podría consumir tokens y conserva su reserva; el respaldo reserva
-        su propio cupo. No repite envíos a Meta ni notas de voz y respeta Humano.
-        Si el respaldo tampoco confirma resultado, queda para revisión.
+        Sólo genera una alternativa de texto antes de enviar al canal. La
+        solicitud original podría consumir tokens y conserva su reserva; el
+        respaldo reserva su propio cupo. No repite envíos a Meta ni notas de voz
+        y respeta Humano. Si el respaldo tampoco confirma resultado, queda para
+        revisión.
       </p>
       <p>
-        Orden de preferencia: primero el modelo del agente, después esta lista.
-        Aplica a texto y audio ya transcrito. La interpretación de audio
-        conserva Gemini. Los agentes del simulador mantienen su respaldo propio.
+        Orden de preferencia:{" "}
+        {policy.primary
+          ? "primero el principal elegido aquí"
+          : "primero el modelo del agente"}
+        , después esta lista. Aplica a texto y audio ya transcrito. La
+        interpretación de audio conserva Gemini. Los agentes del simulador
+        mantienen su respaldo propio.
       </p>
       {policy.routes.map((route, index) => (
         <fieldset key={index}>
@@ -90,6 +210,13 @@ export function LanguageResilience({
             value={route.model}
             label={`Modelo del respaldo ${index + 1}`}
             onChange={(model) => update(index, { model })}
+            onSelect={(model) =>
+              update(index, {
+                model: model.id,
+                input_usd_per_million: model.input_usd_per_million ?? 0,
+                output_usd_per_million: model.output_usd_per_million ?? 0,
+              })
+            }
           />
           <div className="form-grid">
             <Field
@@ -162,9 +289,13 @@ export function LanguageResilience({
       </Button>
       <p>
         Revisa las alternativas y pulsa Guardar ajustes al final. Cambiar esta
-        lista no cambia el modelo principal ni habilita una conversación en
-        Humano.
+        lista no habilita una conversación en Humano.
       </p>
+      {onSave && (
+        <Button variant="secondary" onClick={() => void onSave()}>
+          Guardar motor y respaldos
+        </Button>
+      )}
     </section>
   );
 }

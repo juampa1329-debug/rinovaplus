@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-23",
+  "scope": "CBN Facebook, Messenger and Instagram contextual private replies and Inbox visibility",
+  "privacy": "No credentials, recipient identifiers, names, message bodies or program prices included",
+  "feature_commit": "81dbf7b9ff36b5d6eb2b8ddb887c4a575c0d60ca",
+  "policy_and_dates_commit": "eff0c997c9d94019692ece8effe81d1fbdb1006b",
+  "origin_views_commit": "e7484877e392e4b57bde8a1d8f739ba04ca6868b",
+  "meta_native_automations": {
+    "comment_rules_disabled_and_reload_verified": 3,
+    "greetings_and_faq_already_disabled": true,
+    "lead_organization_rules_preserved": true
+  },
+  "subscriptions": {
+    "app_page_message_echoes_subscribed": true,
+    "page_subscription_sync_confirmed_by_provider": true
+  },
+  "history": {
+    "messenger_imported_page_counts": [
+      66,
+      4,
+      0
+    ],
+    "messages_sent_by_import": 0,
+    "preicfes_cohort_visible_before_classification": 29,
+    "facebook_video_recipients": 25,
+    "additional_related_facebook_recipient": 1,
+    "instagram_cohort": 3,
+    "instagram_native_private_visible_in_history": true,
+    "instagram_first_attempt_temporary_server_error": true,
+    "instagram_later_queries_completed": true,
+    "instagram_exact_imported_message_count": null,
+    "all_remote_history_claimed": false,
+    "history_window_days": 7,
+    "max_threads_per_request": 25,
+    "max_messages_per_thread": 20
+  },
+  "comment_policy": {
+    "facebook_cbn_selected": true,
+    "instagram_cbn_selected": true,
+    "scentra_wpp_selected": false,
+    "persisted_after_reload": true,
+    "new_comment_live_delivery_verified": false,
+    "live_tests": {
+      "short_test": "public informational reply accepted",
+      "explicit_private_test": "generation rejected before dispatch",
+      "primary": "Gemini temporary failure",
+      "backup": "OpenRouter GPT-4.1 mini completed",
+      "rejection": "comment_ai_invalid_draft",
+      "exact_rejected_field": "not retained; not asserted",
+      "strict_contract_post_fix_live_test": "pending",
+      "strict_contract_first_live_test": "Gemini provider_rejected_request before generation; backup not called",
+      "private_dispatch_still_pending": true
+    }
+  },
+  "origin_views": {
+    "default_hides_only_comment_origin_without_any_incoming_message": true,
+    "reply_promotes_to_main_inbox_without_changing_control_or_stage": true,
+    "relational_transition_test_passed": true,
+    "postgresql_query_parsed": true,
+    "live_views_verified": true,
+    "unanswered_comment_conversations_observed": 23,
+    "active_preicfes_threads_in_main_inbox": 6,
+    "all_comment_origin_threads_observed": 26
+  },
+  "validation": {
+    "backend_selected_tests_passed": 342,
+    "frontend_previous_four_file_tests_passed": 60,
+    "frontend_latest_two_file_tests_passed": 47,
+    "types": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "workspace_build": "passed",
+    "bundle_size_warning": "historical, preserved"
+  },
+  "invariants": {
+    "no_resends_during_history_import": true,
+    "no_historical_ai_processing": true,
+    "no_reply_window_extended": true,
+    "no_ddl_seeds_new_containers_or_siie_writes": true,
+    "p4_p13_initial_acceptance_unchanged": true,
+    "p22_technical_milestones": "3/5",
+    "p22_commercial_acceptance": "0/5"
+  },
+  "deployments": {
+    "backend": {
+      "id": "uavozvcl3ln0gx1fvgyfg0yk",
+      "status": "Success / Running",
+      "duration": "4m17s"
+    },
+    "frontend": {
+      "id": "6cznheznzfgqcil8tkfzgcmx",
+      "status": "Success / Running",
+      "duration": "44s"
+    }
+  },
+  "strict_contract_commit": "f1c0421f553ddd3f9190fc7865337faf007dcc5d",
+  "strict_contract_deployments": {
+    "backend": {
+      "id": "ntg6s7ruukfvxwkfrv0y83xz",
+      "status": "Success / Running",
+      "duration": "4m19s"
+    },
+    "frontend": {
+      "id": "4yr2cxqiycmpzqhqo9tbyyfz",
+      "status": "Success / Running",
+      "duration": "45s"
+    }
+  }
+}

@@ -3,7 +3,12 @@ import { Button, Notice, SelectField } from "../shared/ui";
 import { useTask } from "./api";
 import { useAdsResource } from "./adsResource";
 
-type Model = { id: string; name: string };
+type Model = {
+  id: string;
+  name: string;
+  input_usd_per_million?: number | null;
+  output_usd_per_million?: number | null;
+};
 
 export function LiveVoiceSelect({
   value,
@@ -121,6 +126,7 @@ export function LiveModelSelect({
   onChange,
   label = "Seleccionar modelo",
   exclude = [],
+  onSelect,
 }: {
   id?: string;
   provider: string;
@@ -129,6 +135,7 @@ export function LiveModelSelect({
   onChange: (model: string) => void;
   label?: string;
   exclude?: string[];
+  onSelect?: (model: Model) => void;
 }) {
   const task = useTask();
   const data = useAdsResource<{ items: Model[] }>(
@@ -229,7 +236,13 @@ export function LiveModelSelect({
           id={id}
           value={value}
           disabled={!models || loading || !!data.error}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            const selected = models?.find(
+              (model) => model.id === event.target.value,
+            );
+            if (onSelect && selected) onSelect(selected);
+            else onChange(event.target.value);
+          }}
         >
           <option value="" disabled>
             Selecciona un modelo disponible
