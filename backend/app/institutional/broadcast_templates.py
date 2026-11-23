@@ -132,7 +132,8 @@ def latest(c, settings, key, version=None):
 
 
 def append(
-    c, settings, item, raw, credential, origin, *, key=None, paused=None, observed=None
+    c, settings, item, raw, credential, origin, *, key=None, paused=None,
+    observed=None, removed=None
 ):
     provider = str(raw["id"])
     name = raw.get("name", "")
@@ -170,7 +171,11 @@ def append(
         key,
     )
     old = by_key or old
+    previous = json.loads(old["ProviderMetadata"]) if old else {}
+    removed = previous.get("library_removed", False) if removed is None else removed
     paused = bool(old["Paused"]) if paused is None and old else bool(paused)
+    if removed:
+        paused = True
     version = (old["VersionNo"] if old else 0) + 1
     components = raw.get("components")
     if (
@@ -190,7 +195,8 @@ def append(
         "credential": uid(str(credential["SecretId"])) if credential else None,
         "origin": origin,
     }
-    previous = json.loads(old["ProviderMetadata"]) if old else {}
+    if removed:
+        material["library_removed"] = True
     epoch = previous.get("material_revision", 0) + (
         previous.get("material_fingerprint") != fingerprint(material)
     )
@@ -223,6 +229,8 @@ def append(
         "variable_bindings": default_bindings,
     }
     metadata["allow_category_change"] = raw.get("allow_category_change", True)
+    if removed:
+        metadata["library_removed"] = True
     if recovered_from is not None:
         metadata["binding_recovered_from_version"] = recovered_from
     c.execute(

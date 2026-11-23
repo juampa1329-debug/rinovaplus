@@ -147,6 +147,53 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("keeps paused versions out of the active library and lets operators inspect history", async () => {
+  const fetcher = setup((path) =>
+    path.endsWith("options")
+      ? ok({
+          ...options,
+          templates: [template, { ...template, id: "old", name: "version_anterior", paused: true }],
+        })
+      : undefined,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Plantillas WhatsApp" }));
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), { target: { value: "a" } });
+  expect(screen.getByRole("heading", { name: "admisiones · es" })).toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "version_anterior · es" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Mostrar versiones pausadas (1)" }));
+  expect(screen.getByRole("heading", { name: "version_anterior · es" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Ocultar versiones pausadas (1)" }));
+  expect(screen.queryByRole("heading", { name: "version_anterior · es" })).toBeNull();
+  expect(fetcher.mock.calls.some(([, init]) => init?.method && init.method !== "GET")).toBe(false);
+});
+it("removes discarded versions from the library and restores them in pause from trash", async () => {
+  const fetcher = setup((path) => path.endsWith("options") ? ok({
+    ...options,
+    templates: [template, { ...template, id: "removed", name: "descartada", paused: true, metadata: { library_removed: true } }],
+  }) : undefined);
+  fireEvent.click(await screen.findByRole("button", { name: "Plantillas WhatsApp" }));
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), { target: { value: "a" } });
+  expect(screen.queryByRole("heading", { name: "descartada · es" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Ver papelera (1)" }));
+  expect(screen.getByRole("heading", { name: "descartada · es" })).toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "admisiones · es" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Permitir uso en CRM" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Restaurar en pausa" }));
+  await waitFor(() => expect(fetcher.mock.calls.some(([path, init]) =>
+    String(path).endsWith("templates/removed/library") && JSON.parse(String(init?.body)).removed === false,
+  )).toBe(true));
+  expect(fetcher.mock.calls.some(([path]) => String(path).endsWith("/submit"))).toBe(false);
+});
+it("keeps a currently pinned paused version inspectable but excludes discarded choices", async () => {
+  setup((path) => path.endsWith("options") ? ok({
+    ...options,
+    templates: [{ ...template, paused: true }, { ...template, id: "removed", metadata: { library_removed: true } }],
+  }) : undefined);
+  fireEvent.click(await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }));
+  const select = screen.getByLabelText("Plantilla e idioma");
+  expect(select).toHaveValue("t");
+  expect(select.querySelector('option[value="removed"]')).toBeNull();
+});
 it("opens delivery detail inside the campaign without posting or opening Inbox", async () => {
   const fetcher = setup((path) =>
     path.includes("report?")

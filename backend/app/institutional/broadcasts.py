@@ -561,6 +561,8 @@ class Broadcasts:
             template = templates.latest(
                 c, self.settings, str(body.template_id), body.template_version
             )
+            if json.loads(template["ProviderMetadata"]).get("library_removed"):
+                raise HTTPException(409, "broadcast_template_removed_from_library")
             if not same(template["IntegrationId"], item["IntegrationId"]):
                 raise HTTPException(409, "broadcast_template_account_mismatch")
             old = one(
@@ -1362,6 +1364,8 @@ class Broadcasts:
         operation = str(body.operation_id)
         with self.tx(auth, True, recent=True) as (c, actor):
             original = templates.latest(c, self.settings, key)
+            if json.loads(original["ProviderMetadata"]).get("library_removed"):
+                raise HTTPException(409, "broadcast_template_removed_from_library")
             item = account(c, self.settings, str(original["IntegrationId"]))
             adapter, credential = provider_account(c, self.settings, item)
             h = bound_hash(
