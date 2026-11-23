@@ -95,6 +95,9 @@ export function ProspectImport({ changed }: { changed: () => void }) {
           )
         : bundle.entries;
       for (let offset = 0; offset < entries.length; offset += 10) {
+        // Share the existing request budget with Inbox and normal user actions.
+        // Stop on 429 rather than automatically replaying an uncertain mutation.
+        if (offset > 0) await new Promise((resolve) => setTimeout(resolve, 1200));
         if (!alive.current) return;
         const slice = entries.slice(offset, offset + 10);
         // Preserve the exact attempt after an uncertain HTTP response.
