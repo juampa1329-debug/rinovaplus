@@ -41,7 +41,7 @@ function HistoryForm({ done }: { done: () => void }) {
         hilos por consulta. No vuelve a enviarlos, no activa la IA sobre
         mensajes antiguos y no abre la ventana de 24 horas.
       </p>
-      <ResourceState error={data.error} />
+      {!data.value && <ResourceState error={data.error} />}
       <SelectField
         id="meta-history-account"
         label="Cuenta de Meta"

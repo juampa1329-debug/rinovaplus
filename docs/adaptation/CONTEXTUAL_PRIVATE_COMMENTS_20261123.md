@@ -37,3 +37,9 @@ Los privados nativos previos no estaban todos en CRM porque el ingreso sólo reg
 Se corrigió la detección del literal Contacto de Instagram/Messenger y se persiste sólo el nombre público verificado sobre etiquetas generadas; los nombres declarados o revisados permanecen. La vista ordena los mensajes cargados por su fecha original y distingue Importado de Meta. La paginación conserva el cursor de secuencia; la consulta no acredita recuperar todo el histórico remoto ni los adjuntos cuyos datos Meta no entregue.
 
 Validación previa a publicación:279backend y59frontend;tipos,ESLint,Ruff ybuild aprobados. Advertencia histórica del bundle conservada.
+
+
+## Inbox saliente verificado; politica acotada preparada - 2026-11-23
+
+81dbf7b publicado: backend zhut9vvwzimdq1jdormu7c96 Success/Running4m17s y frontend cgurkkjqbnmcnhlvso4hi2a2 Success38s. Importacion real Messenger:66+4+0 mensajes incorporados, cero envios; busqueda PRE-ICFES muestra28conversaciones. message_echoes suscrito en app y sincronizacion de Pagina confirmada por proveedor. Nombres reales visibles en listado. Guardado general de IA devolvio422 al activar cuentas; campo exacto no identificado. Se separa PUT comments/policy con validacion propia, revisionCAS, permiso/reautenticacion/historial y mezcla solo de cuatro campos sin tocar modelos/voces. Se corrige indicador de carga residual y hora previewAt original.281backend/60frontend,tipos/ESLint/Ruff/build pasan; advertencia historica de bundle. Publicacion del ajuste, activacion y nuevo comentario real aun pendientes; no acreditar automatizacion por importar. P4/P13/P22 conservan estados. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
+

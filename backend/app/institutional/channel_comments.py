@@ -35,6 +35,15 @@ class CommentAction(Strict):
     display_name: str = Field(default="", max_length=180)
 
 
+class CommentPolicy(Strict):
+    operation_id: str
+    revision: int = Field(ge=1)
+    comment_prompt: str = Field(max_length=1600)
+    comment_mode: Literal["manual", "auto"]
+    comment_auto_reply: str = Field(max_length=400)
+    comment_private_accounts: list[str] = Field(max_length=50)
+
+
 def public_comment(value):
     from app.institutional.comment_threads import is_account_comment
     from app.institutional.comment_edits import edit_info
@@ -383,6 +392,11 @@ def install(app, settings):
 
     install_notifications(app, settings)
     service = Comments(settings)
+
+    @app.put("/api/institution/comments/policy")
+    def save_policy(request: Request, body: CommentPolicy):
+        from app.institutional.comment_private import save_policy as save
+        return save(settings, request.state.authority, body)
 
     @app.get("/api/institution/comments/private-accounts")
     def private_accounts(request: Request):

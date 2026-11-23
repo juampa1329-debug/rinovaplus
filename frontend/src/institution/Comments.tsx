@@ -1036,15 +1036,12 @@ function CommentAIEditor({
         void task.run(async () => {
           const body = {
             revision: saved.revision,
-            document: {
-              ...saved.document,
-              comment_prompt: rules,
-              comment_mode: mode,
-              comment_auto_reply: reply.trim(),
-              comment_private_accounts: privateAccounts,
-            },
+            comment_prompt: rules,
+            comment_mode: mode,
+            comment_auto_reply: reply.trim(),
+            comment_private_accounts: privateAccounts,
           };
-          await call("settings/ai", "PUT", {
+          await call("comments/policy", "PUT", {
             ...body,
             operation_id: intent.get(body),
           });

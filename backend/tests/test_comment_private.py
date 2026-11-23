@@ -452,3 +452,73 @@ def test_worker_enqueues_one_routed_reply_without_public_dm_claim(
         assert len(queued) == 1
         assert bool(queued[0][0].get("privateReply")) == expected
         assert queued[0][1]["comment"] == operation
+
+
+@pytest.mark.parametrize("stale", [False, True])
+def test_comment_policy_saves_only_comment_fields_with_recent_authority_and_revision(
+    monkeypatch, stale
+):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+    from uuid import uuid4
+    from pglast import parse_sql
+    from app.institutional import auth, db, settings as settings_module, store
+    from app.institutional.channel_comments import CommentPolicy
+    from app.institutional.operations_policy import layout
+    from app.institutional.postgres_dialect import postgres_sql
+
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    body = CommentPolicy(
+        operation_id=str(uuid4()),
+        revision=3,
+        comment_prompt="Consulta la ficha",
+        comment_mode="auto",
+        comment_auto_reply="",
+        comment_private_accounts=[str(uuid4())],
+    )
+    statements, authorized = [], []
+
+    class Cursor:
+        rowcount = 1
+
+        def execute(self, sql, *params):
+            assert sql.count("?") == len(params)
+            parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+            statements.append((sql, params))
+            return self
+
+    monkeypatch.setattr(store, "transaction", lambda *_a, **_k: nullcontext(Cursor()))
+    monkeypatch.setattr(
+        auth,
+        "authorize",
+        lambda *_a, **kw: authorized.append(kw) or {"UserId": str(uuid4())},
+    )
+    monkeypatch.setattr(db, "replay", lambda *_: (b"digest", None))
+    monkeypatch.setattr(db, "record_operation", lambda *_: None)
+    monkeypatch.setattr(db, "audit", lambda *_a, **_k: None)
+    original = {
+        "model": "existing",
+        "voice": {"owner_configuration": "preserved"},
+        "system_prompt": "Existing instructions",
+    }
+    monkeypatch.setattr(
+        settings_module,
+        "setting",
+        lambda *_: {"revision": 4 if stale else 3, "document": original},
+    )
+    monkeypatch.setattr(settings_module, "validate_links", lambda *_: None)
+    if stale:
+        with pytest.raises(HTTPException, match="revision_conflict"):
+            private.save_policy(settings, {}, body)
+        assert not statements
+    else:
+        result = private.save_policy(settings, {}, body)
+        assert (
+            result["revision"] == 4 and result["document"]["voice"] == original["voice"]
+        )
+        assert (
+            result["document"]["model"] == original["model"]
+            and result["document"]["system_prompt"] == original["system_prompt"]
+        )
+        assert len(statements) == 2
+    assert authorized == [{"recent": True}]

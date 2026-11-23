@@ -873,6 +873,7 @@ class Workspace:
                         ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
                         " WHERE m.ConversationId=v.ConversationId"
                         " ORDER BY m.CreatedAt DESC,m.Sequence DESC) AS preview"
+                        ",(SELECT TOP(1) m.CreatedAt FROM crm.Message m WHERE m.ConversationId=v.ConversationId ORDER BY m.CreatedAt DESC,m.Sequence DESC) AS previewAt"
                         ",(SELECT Temperature FROM crm_channels.ConversationProfile"
                         " WHERE ConversationId=v.ConversationId) AS temperature"
                         ",(SELECT LeadScore FROM crm_channels.ConversationProfile"

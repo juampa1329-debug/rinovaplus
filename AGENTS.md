@@ -1,3 +1,7 @@
+## Inbox saliente verificado; politica acotada preparada - 2026-11-23
+
+81dbf7b publicado: backend zhut9vvwzimdq1jdormu7c96 Success/Running4m17s y frontend cgurkkjqbnmcnhlvso4hi2a2 Success38s. Importacion real Messenger:66+4+0 mensajes incorporados, cero envios; busqueda PRE-ICFES muestra28conversaciones. message_echoes suscrito en app y sincronizacion de Pagina confirmada por proveedor. Nombres reales visibles en listado. Guardado general de IA devolvio422 al activar cuentas; campo exacto no identificado. Se separa PUT comments/policy con validacion propia, revisionCAS, permiso/reautenticacion/historial y mezcla solo de cuatro campos sin tocar modelos/voces. Se corrige indicador de carga residual y hora previewAt original.281backend/60frontend,tipos/ESLint/Ruff/build pasan; advertencia historica de bundle. Publicacion del ajuste, activacion y nuevo comentario real aun pendientes; no acreditar automatizacion por importar. P4/P13/P22 conservan estados. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
+
 
 
 ## Comentarios privados e historial Meta preparados — 2026-11-23

@@ -70,6 +70,7 @@ type Row = {
   accountName?: string | null;
   accountPhone?: string | null;
   updatedAt?: string;
+  previewAt?: string;
   preview?: string | null;
   previewKind?: string | null;
   previewDuration?: string | null;
@@ -930,9 +931,9 @@ function WorkspaceView({
                         row={row}
                         selected={selected === row.conversationId}
                         timestamp={
-                          row.updatedAt ? (
+                          row.previewAt || row.updatedAt ? (
                             <DateText
-                              value={row.updatedAt}
+                              value={row.previewAt || row.updatedAt || ""}
                               compactAt={list.loadedAt}
                             />
                           ) : undefined

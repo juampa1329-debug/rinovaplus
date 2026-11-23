@@ -158,6 +158,66 @@ it("sends a private reply for the chosen comment and keeps public sends distinct
   });
 });
 
+it("saves only comment policy fields instead of rewriting model and voice settings", async () => {
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (path, init) => {
+      if (String(path).endsWith("settings/ai"))
+        return ok({
+          revision: 7,
+          document: {
+            comment_prompt: "Fuentes vigentes",
+            comment_mode: "auto",
+            comment_auto_reply: "",
+            model: "existing-model",
+            voice: { private_configuration: true },
+          },
+        });
+      if (String(path).endsWith("comments/private-accounts"))
+        return ok({ items: [{ id: "cbn", name: "CBN", channel: "facebook" }] });
+      if (init?.method === "PUT") return ok({ revision: 8 });
+      return ok({ items: [], total: 0, has_more: false });
+    });
+  render(
+    <SessionBoundary
+      initial={{
+        ...session,
+        actions: [...session.actions, "settings.ai.read", "settings.ai.write"],
+      }}
+      expire={() => {}}
+    >
+      <Comments />
+    </SessionBoundary>,
+  );
+  fireEvent.click(
+    await screen.findByRole("checkbox", { name: "CBN · Facebook" }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Guardar instrucciones" }),
+  );
+  await waitFor(() =>
+    expect(
+      fetcher.mock.calls.some(
+        ([path, init]) =>
+          String(path).endsWith("comments/policy") && init?.method === "PUT",
+      ),
+    ).toBe(true),
+  );
+  const [, request] = fetcher.mock.calls.find(
+    ([path, init]) =>
+      String(path).endsWith("comments/policy") && init?.method === "PUT",
+  )!;
+  const value = JSON.parse(String(request?.body));
+  expect(value).toMatchObject({
+    revision: 7,
+    comment_private_accounts: ["cbn"],
+    comment_prompt: "Fuentes vigentes",
+  });
+  expect(value).not.toHaveProperty("document");
+  expect(value).not.toHaveProperty("model");
+  expect(value).not.toHaveProperty("voice");
+});
+
 it("does not allow private messages with more than 900 characters", async () => {
   setup();
   fireEvent.click(
