@@ -1,3 +1,11 @@
+## Sonnet principal y respaldo publicados; privado real entregado — 2026-11-23
+
+Por instrucción del titular, OpenRouter/Sonnet4.6 es el principal de lenguaje automático para mensajes y comentarios; Sonnet5.5 es el respaldo. Configuración32 guardada y confirmada tras recarga, con topes del catálogo3/15 y2/10USD por millón entrada/salida respectivamente. Gemini conserva ASR/visión y los simuladores mantienen selección propia. No se atribuye el rechazo anterior al plan gratuito sin evidencia.
+
+b80151b saludable: backend leys9qoufgwqpqtd3p2csudg Success/Running4m18s, frontend qryv2boms7e1yphqvjdgfq6g Success40s. Un comentario técnico nuevo en el video PRE-ICFES generó con Sonnet4.6: IA confirmada13:41:04, privado entregado13:41:20, una salida visible en Comentarios y en Inbox con nombre público y etiqueta Desde comentario. La bandeja sin respuesta pasó23→24 por esta prueba; no se reenviaron los intentos fallidos previos. Nueva prueba automática de Instagram todavía pendiente. El comentario técnico permanece publicado; no se elimina sin confirmación específica.
+
+Ensayo aislado3b6a952c-9ed7-44cf-896e-8e265638e469:503sintético→Sonnet5.5 real superado, una generación,5560/154tokens, reservaUSD0,036368 dentro0,05; reserva no es factura. Programa/duración/jornada conservados y memoria privada excluida en público, cero mensajes/CRM. El principal sintético del ensayo conserva etiqueta Gemini; no acredita una caída natural de Sonnet4.6.391backend/67frontend,tipos/ESLint/Ruff/workspacebuild pasan; bundlehistórico. Evidencia artifacts/live/sonnet-routing-20261123.json. P4/P13 iniciales conservadas. P22 sigue3/5técnico/0aceptación comercial: selección operativa de cadena autorizada, pipeline por etapas y piloto/reversión pendientes. SinDDL,seeds,contenedores nuevos niSIIEwrites.
+
 ## P16: clave de Catálogo validada y fallo financiero de origen — 2026-11-18
 
 La clave guardada por el propietario ya autentica el Catálogo comercial en SIIE. Se verificaron dos páginas de programas y cuatro páginas de ofertas de Software en la UI, además de consultas nativas acotadas. Programa143: Desarrollo de Software y Aplicaciones Móviles, DSAM, Escuela de TIC, cuatro niveles. El mismo token fue rechazado al consultar Periodos de Admisiones; esa prueba sólo usó un proceso temporal y no guardó otra credencial. Falta la clave General de Admisiones.

@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-23",
+  "scope": "Authorized production language primary and backup; automatic Facebook private reply",
+  "privacy": "No credentials, recipient identifiers, contact names, message bodies or program prices",
+  "code_commit": "b80151bf2fefdc21d5c5cb47430a3f05d9c0e64e",
+  "configuration": {
+    "revision": 32,
+    "reload_verified": true,
+    "provider": "openrouter",
+    "primary_model": "anthropic/claude-sonnet-4.6",
+    "fallback_models": [
+      "anthropic/claude-sonnet-5.5"
+    ],
+    "primary_price_caps_usd_per_million": {
+      "input": 3,
+      "output": 15
+    },
+    "fallback_price_caps_usd_per_million": {
+      "input": 2,
+      "output": 10
+    },
+    "price_source": "authenticated current catalog",
+    "timeout_fallback_enabled": true,
+    "applies_to": "automatic language messages/comments including transcribed audio",
+    "asr_and_vision": "Gemini preserved",
+    "manual_simulator_model_settings": "preserved"
+  },
+  "automatic_facebook_test": {
+    "new_technical_comment": true,
+    "primary_provider_confirmed": "openrouter",
+    "primary_model_confirmed": "anthropic/claude-sonnet-4.6",
+    "ai_confirmed_local_time": "13:41:04",
+    "private_delivered_local_time": "13:41:20",
+    "comment_view_status": "Entregado",
+    "inbox_status": "Entregado",
+    "inbox_projection": true,
+    "public_profile_name_in_list": true,
+    "origin_badge": true,
+    "pending_origin_view": true,
+    "messages_observed": 1,
+    "prior_failed_attempts_replayed": false,
+    "comment_retained": true,
+    "instagram_new_case_verified": false
+  },
+  "backup_rehearsal": {
+    "operation_id": "3b6a952c-9ed7-44cf-896e-8e265638e469",
+    "result": "Ensayo superado",
+    "audience": "fictitious public comment",
+    "primary_failure": "synthetic 503",
+    "synthetic_primary_trace_label": "gemini/gemini-3.1-flash-lite",
+    "real_backup": "openrouter/anthropic/claude-sonnet-5.5",
+    "provider_generation_calls": 1,
+    "input_tokens": 5560,
+    "output_tokens": 154,
+    "reserved_usd": 0.036368,
+    "cap_usd": 0.05,
+    "reservation_is_invoice": false,
+    "program_duration_schedule_preserved": true,
+    "private_memory_excluded": true,
+    "crm_writes": false,
+    "outbound_messages": false,
+    "natural_sonnet_outage_induced": false,
+    "configuration_mutated_by_rehearsal": false
+  },
+  "deployments": {
+    "backend": {
+      "id": "leys9qoufgwqpqtd3p2csudg",
+      "status": "Success / Running",
+      "duration": "4m18s"
+    },
+    "frontend": {
+      "id": "qryv2boms7e1yphqvjdgfq6g",
+      "status": "Success",
+      "duration": "40s"
+    }
+  },
+  "validation": {
+    "selected_backend_passed": 391,
+    "selected_frontend_six_files_passed": 67,
+    "types": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "workspace_build": "passed",
+    "bundle_warning": "historical"
+  },
+  "limits": {
+    "gemini_free_plan_root_cause_proven": false,
+    "guarantees_uninterrupted_availability": false,
+    "p22_technical": "3/5",
+    "p22_commercial_acceptances": "0/5",
+    "stage_pipeline_and_pilot": "pending",
+    "asr_fallback": "not included",
+    "no_ddl_seeds_new_containers_or_siie_writes": true
+  }
+}

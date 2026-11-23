@@ -1085,7 +1085,7 @@ function CommentAIEditor({
             aria-describedby="comments-auto-description"
           />
           <p className="scope-text" id="comments-auto-description">
-            Gemini redacta una respuesta personalizada con estas instrucciones y
+            El motor de IA elegido redacta una respuesta personalizada con estas instrucciones y
             la información vigente de Académico y Conocimiento. Este ejemplo no
             es una respuesta fija. Las consultas que requieren un asesor quedan
             para revisión.
