@@ -641,6 +641,15 @@ class Workspace:
                 return {"revision": current_revision, "unchanged": True}
             where = ["1=1"]
             params = []
+            if area == "inbox":
+                # Imported prospects belong to CRM/campaigns until a real reply.
+                # A delivery/read receipt or outgoing send never opens this list.
+                where.append(
+                    "(COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')='' "
+                    "OR EXISTS(SELECT 1 FROM crm.Message incoming "
+                    "WHERE incoming.ConversationId=v.ConversationId "
+                    "AND incoming.Direction='incoming'))"
+                )
             if area == "clients":
                 where.append(ALIASES)
                 # A grouped source can match; the canonical person is selected before

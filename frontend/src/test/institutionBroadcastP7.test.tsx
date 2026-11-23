@@ -147,6 +147,46 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("opens delivery detail inside the campaign without posting or opening Inbox", async () => {
+  const fetcher = setup((path) =>
+    path.includes("report?")
+      ? ok({
+          total: 1,
+          offset: 0,
+          counts: { delivered: 1 },
+          has_more: false,
+          items: [
+            {
+              id: "r1",
+              name: "Ana",
+              phone: "573100000000",
+              status: "delivered",
+              body: "Texto revisado de la campaña",
+              attempts: 1,
+              delivered_at: "2026-11-23T12:00:00Z",
+            },
+          ],
+        })
+      : undefined,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Abrir detalle del envío" }),
+  );
+  expect(screen.getByLabelText("Detalle del envío a Ana")).toBeInTheDocument();
+  expect(screen.getAllByText("Texto revisado de la campaña")).toHaveLength(2);
+  expect(
+    fetcher.mock.calls.filter(
+      ([, init]) => init?.method && init.method !== "GET",
+    ),
+  ).toHaveLength(0);
+  fireEvent.click(
+    screen.getByText("Cerrar detalle del envío"),
+  );
+  expect(screen.queryByLabelText("Detalle del envío a Ana")).toBeNull();
+});
 it("creates a template inside a campaign without submitting or losing the campaign draft", async () => {
   const f = setup();
   fireEvent.click(
@@ -390,9 +430,7 @@ it("chooses a natural requested-document example without publishing or sending",
   fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
     target: { value: "a" },
   });
-  fireEvent.click(
-    screen.getByRole("button", { name: "Crear plantilla" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Crear plantilla" }));
   fireEvent.click(screen.getByText("Guía y ejemplos de mensajes naturales"));
   fireEvent.click(
     screen.getByRole("button", {
@@ -443,9 +481,7 @@ it("requires explicit media upload approval and preserves text edited during upl
     fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {
       target: { value: "a" },
     });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Crear plantilla" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Crear plantilla" }));
     fireEvent.change(screen.getByLabelText("Tipo de cabecera"), {
       target: { value: "IMAGE" },
     });
