@@ -71,7 +71,7 @@
       5,
       10
     ],
-    "estimated_known_usd": 3.40097845,
+    "estimated_known_usd": 4.95794995,
     "unknown_reserved_usd": 0.052892631
   },
   "cases": "tasks/p22-evaluation-cases.json",
@@ -198,10 +198,24 @@
   "provider_balance_evidence": "artifacts/live/provider-balances-20261122.json",
   "manual_adaptation_wave": {
     "id": "p22-manual-20261122",
-    "status": "implementation_checked_publication_and_trials_pending",
+    "status": "35_valid_responses_and_delivered_copies_owner_selection_pending",
     "manual_version": "cbn-consultative-manual-v1",
     "protocol": "tasks/p22-manual-cases-20261122.json",
     "planned_responses": 35,
-    "active_model_assignments_changed": false
+    "active_model_assignments_changed": false,
+    "runtime": "def2232",
+    "valid_responses": 35,
+    "known_estimated_usd": 1.5569715,
+    "new_unknown_attempts": 0,
+    "context_hashes_match_per_case": true,
+    "baseline_evidence_unchanged_excluding_skill_policy": true,
+    "evidence": "artifacts/live/p22-manual-20261122.json",
+    "report": "docs/adaptation/P22_MANUAL_CBN_20261122.md",
+    "manual_copies": 35,
+    "delivered_at_cutoff": 35,
+    "unique_sample_numbers": 35,
+    "chat_restored_to_ai_after_reload": true,
+    "backend_deployment": "wccxgetf4fqllxbsllzowwdb",
+    "frontend_deployment": "fxdy5bunahqdootht58lqphe"
   }
 }

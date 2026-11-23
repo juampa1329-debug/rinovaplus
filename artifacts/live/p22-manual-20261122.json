@@ -1,0 +1,1324 @@
+{
+  "id": "p22-manual-20261122",
+  "runtime": "def2232",
+  "baseline": "p22-full-skills-20261122",
+  "manual_pdf_sha256": "628ad26cbd070fa1814aafd753114623dffe0ad793e3391b5b40be116d2e30e6",
+  "valid_responses": 35,
+  "new_estimated_usd": 1.5569715,
+  "new_unknown_reserved_usd": 0,
+  "previous_known_estimated_usd": 3.40097845,
+  "previous_unknown_reserved_usd": 0.052892631,
+  "total_known_and_reserved_usd": 5.0108425809999995,
+  "budget_usd": 10,
+  "context_same_across_models_per_case": true,
+  "active_model_changes": false,
+  "rows": [
+    {
+      "case": "opening",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "bcf2e35f00d949cc61df7d13d1051dc0814b9dd57488b7cb2121dc7031354dde",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "cold-call-opener",
+        "lead-intelligence",
+        "copywriting",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12689,
+        "completion_tokens": 221
+      },
+      "estimated_usd": 0.0103455,
+      "generation_ms": 5159,
+      "words": 100,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "opening",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "bcf2e35f00d949cc61df7d13d1051dc0814b9dd57488b7cb2121dc7031354dde",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "cold-call-opener",
+        "lead-intelligence",
+        "copywriting",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 15735,
+        "completion_tokens": 260
+      },
+      "estimated_usd": 0.051105,
+      "generation_ms": 8509,
+      "words": 104,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "opening",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "bcf2e35f00d949cc61df7d13d1051dc0814b9dd57488b7cb2121dc7031354dde",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "cold-call-opener",
+        "lead-intelligence",
+        "copywriting",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11892,
+        "completion_tokens": 196
+      },
+      "estimated_usd": 0.025352,
+      "generation_ms": 3043,
+      "words": 113,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "opening",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "bcf2e35f00d949cc61df7d13d1051dc0814b9dd57488b7cb2121dc7031354dde",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "cold-call-opener",
+        "lead-intelligence",
+        "copywriting",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21515,
+        "completion_tokens": 297
+      },
+      "estimated_usd": 0.046,
+      "generation_ms": 3696,
+      "words": 88,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "opening",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "bcf2e35f00d949cc61df7d13d1051dc0814b9dd57488b7cb2121dc7031354dde",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "cold-call-opener",
+        "lead-intelligence",
+        "copywriting",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21515,
+        "completion_tokens": 379
+      },
+      "estimated_usd": 0.09364,
+      "generation_ms": 7482,
+      "words": 136,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "discovery",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "e4c463fb9159c351a27ae78cd8c931fb4ea1dc3d713d90732827bcc2879715ba",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "sales-discovery-questions",
+        "meddpicc-scorecard",
+        "deal-champion-mapping",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "schedule",
+        "secondary": "family",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12747,
+        "completion_tokens": 173
+      },
+      "estimated_usd": 0.010209,
+      "generation_ms": 4294,
+      "words": 80,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "discovery",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "e4c463fb9159c351a27ae78cd8c931fb4ea1dc3d713d90732827bcc2879715ba",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "sales-discovery-questions",
+        "meddpicc-scorecard",
+        "deal-champion-mapping",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "schedule",
+        "secondary": "family",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 15816,
+        "completion_tokens": 267
+      },
+      "estimated_usd": 0.051453,
+      "generation_ms": 9170,
+      "words": 94,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "discovery",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "e4c463fb9159c351a27ae78cd8c931fb4ea1dc3d713d90732827bcc2879715ba",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "sales-discovery-questions",
+        "meddpicc-scorecard",
+        "deal-champion-mapping",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "schedule",
+        "secondary": "family",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11938,
+        "completion_tokens": 175
+      },
+      "estimated_usd": 0.025276,
+      "generation_ms": 3911,
+      "words": 110,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "discovery",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "e4c463fb9159c351a27ae78cd8c931fb4ea1dc3d713d90732827bcc2879715ba",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "sales-discovery-questions",
+        "meddpicc-scorecard",
+        "deal-champion-mapping",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "schedule",
+        "secondary": "family",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21629,
+        "completion_tokens": 298
+      },
+      "estimated_usd": 0.046238,
+      "generation_ms": 3970,
+      "words": 100,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "discovery",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "e4c463fb9159c351a27ae78cd8c931fb4ea1dc3d713d90732827bcc2879715ba",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "sales-discovery-questions",
+        "meddpicc-scorecard",
+        "deal-champion-mapping",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "schedule",
+        "secondary": "family",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21629,
+        "completion_tokens": 282
+      },
+      "estimated_usd": 0.092156,
+      "generation_ms": 5914,
+      "words": 90,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "value",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "2801fb876d94eee5631d7d9b1a43c91fa81684dfc88a5b095ffa6dfab85398c9",
+      "guide_ids": [
+        "pricing",
+        "deal-value-calc",
+        "sales-enablement",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12219,
+        "completion_tokens": 240
+      },
+      "estimated_usd": 0.01006425,
+      "generation_ms": 4820,
+      "words": 113,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "value",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "2801fb876d94eee5631d7d9b1a43c91fa81684dfc88a5b095ffa6dfab85398c9",
+      "guide_ids": [
+        "pricing",
+        "deal-value-calc",
+        "sales-enablement",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 15100,
+        "completion_tokens": 455
+      },
+      "estimated_usd": 0.052125,
+      "generation_ms": 13767,
+      "words": 153,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "value",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "2801fb876d94eee5631d7d9b1a43c91fa81684dfc88a5b095ffa6dfab85398c9",
+      "guide_ids": [
+        "pricing",
+        "deal-value-calc",
+        "sales-enablement",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11427,
+        "completion_tokens": 254
+      },
+      "estimated_usd": 0.024886,
+      "generation_ms": 3311,
+      "words": 160,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "value",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "2801fb876d94eee5631d7d9b1a43c91fa81684dfc88a5b095ffa6dfab85398c9",
+      "guide_ids": [
+        "pricing",
+        "deal-value-calc",
+        "sales-enablement",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20658,
+        "completion_tokens": 523
+      },
+      "estimated_usd": 0.046546,
+      "generation_ms": 6787,
+      "words": 189,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "value",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "2801fb876d94eee5631d7d9b1a43c91fa81684dfc88a5b095ffa6dfab85398c9",
+      "guide_ids": [
+        "pricing",
+        "deal-value-calc",
+        "sales-enablement",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20658,
+        "completion_tokens": 510
+      },
+      "estimated_usd": 0.092832,
+      "generation_ms": 8206,
+      "words": 189,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "negotiation",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "614d55ba753a2f06c719dbe9ce783659807e159da535c7410d5e145aecc49145",
+      "guide_ids": [
+        "sales-objection-handling",
+        "pricing",
+        "negotiation-concession-planner",
+        "negotiation",
+        "deal-red-flags",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": "comparison",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12878,
+        "completion_tokens": 327
+      },
+      "estimated_usd": 0.01088475,
+      "generation_ms": 6221,
+      "words": 185,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "negotiation",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "614d55ba753a2f06c719dbe9ce783659807e159da535c7410d5e145aecc49145",
+      "guide_ids": [
+        "sales-objection-handling",
+        "pricing",
+        "negotiation-concession-planner",
+        "negotiation",
+        "deal-red-flags",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": "comparison",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 15953,
+        "completion_tokens": 560
+      },
+      "estimated_usd": 0.056259,
+      "generation_ms": 16327,
+      "words": 129,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "negotiation",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "614d55ba753a2f06c719dbe9ce783659807e159da535c7410d5e145aecc49145",
+      "guide_ids": [
+        "sales-objection-handling",
+        "pricing",
+        "negotiation-concession-planner",
+        "negotiation",
+        "deal-red-flags",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": "comparison",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12061,
+        "completion_tokens": 252
+      },
+      "estimated_usd": 0.026138,
+      "generation_ms": 3553,
+      "words": 165,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "negotiation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "614d55ba753a2f06c719dbe9ce783659807e159da535c7410d5e145aecc49145",
+      "guide_ids": [
+        "sales-objection-handling",
+        "pricing",
+        "negotiation-concession-planner",
+        "negotiation",
+        "deal-red-flags",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": "comparison",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21759,
+        "completion_tokens": 512
+      },
+      "estimated_usd": 0.048638,
+      "generation_ms": 5603,
+      "words": 185,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "negotiation",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "614d55ba753a2f06c719dbe9ce783659807e159da535c7410d5e145aecc49145",
+      "guide_ids": [
+        "sales-objection-handling",
+        "pricing",
+        "negotiation-concession-planner",
+        "negotiation",
+        "deal-red-flags",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "price",
+        "secondary": "comparison",
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 21759,
+        "completion_tokens": 462
+      },
+      "estimated_usd": 0.096276,
+      "generation_ms": 8229,
+      "words": 166,
+      "handoff_requested": true,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "closing",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "4d75276a82a683bbbfad74193d491c1382e44f3e04288436ec1646ddd57ac8b8",
+      "guide_ids": [
+        "cold-call-opener",
+        "sales-enablement",
+        "sales-closing-tactics",
+        "marketing-psychology",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "opening",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 10753,
+        "completion_tokens": 343
+      },
+      "estimated_usd": 0.009351,
+      "generation_ms": 5500,
+      "words": 129,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "closing",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "4d75276a82a683bbbfad74193d491c1382e44f3e04288436ec1646ddd57ac8b8",
+      "guide_ids": [
+        "cold-call-opener",
+        "sales-enablement",
+        "sales-closing-tactics",
+        "marketing-psychology",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "opening",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 13630,
+        "completion_tokens": 221
+      },
+      "estimated_usd": 0.044205,
+      "generation_ms": 6467,
+      "words": 69,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "closing",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "4d75276a82a683bbbfad74193d491c1382e44f3e04288436ec1646ddd57ac8b8",
+      "guide_ids": [
+        "cold-call-opener",
+        "sales-enablement",
+        "sales-closing-tactics",
+        "marketing-psychology",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "opening",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 10238,
+        "completion_tokens": 218
+      },
+      "estimated_usd": 0.02222,
+      "generation_ms": 3310,
+      "words": 133,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "closing",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "4d75276a82a683bbbfad74193d491c1382e44f3e04288436ec1646ddd57ac8b8",
+      "guide_ids": [
+        "cold-call-opener",
+        "sales-enablement",
+        "sales-closing-tactics",
+        "marketing-psychology",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "opening",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 18860,
+        "completion_tokens": 433
+      },
+      "estimated_usd": 0.04205,
+      "generation_ms": 5444,
+      "words": 124,
+      "handoff_requested": true,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "closing",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "4d75276a82a683bbbfad74193d491c1382e44f3e04288436ec1646ddd57ac8b8",
+      "guide_ids": [
+        "cold-call-opener",
+        "sales-enablement",
+        "sales-closing-tactics",
+        "marketing-psychology",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "opening",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 18860,
+        "completion_tokens": 450
+      },
+      "estimated_usd": 0.08444,
+      "generation_ms": 8634,
+      "words": 143,
+      "handoff_requested": true,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "review",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "20e1c077151cefae5bdd0d1b0772b3786107e4210326dee613a68200e80843de",
+      "guide_ids": [
+        "sales-discovery-questions",
+        "draft-outreach",
+        "sales-call-review",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "review",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11908,
+        "completion_tokens": 309
+      },
+      "estimated_usd": 0.01008975,
+      "generation_ms": 6190,
+      "words": 124,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "review",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "20e1c077151cefae5bdd0d1b0772b3786107e4210326dee613a68200e80843de",
+      "guide_ids": [
+        "sales-discovery-questions",
+        "draft-outreach",
+        "sales-call-review",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "review",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 14731,
+        "completion_tokens": 434
+      },
+      "estimated_usd": 0.050703,
+      "generation_ms": 12427,
+      "words": 179,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "review",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "20e1c077151cefae5bdd0d1b0772b3786107e4210326dee613a68200e80843de",
+      "guide_ids": [
+        "sales-discovery-questions",
+        "draft-outreach",
+        "sales-call-review",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "review",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11134,
+        "completion_tokens": 224
+      },
+      "estimated_usd": 0.02406,
+      "generation_ms": 3328,
+      "words": 142,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "review",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "20e1c077151cefae5bdd0d1b0772b3786107e4210326dee613a68200e80843de",
+      "guide_ids": [
+        "sales-discovery-questions",
+        "draft-outreach",
+        "sales-call-review",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "review",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20152,
+        "completion_tokens": 512
+      },
+      "estimated_usd": 0.045424,
+      "generation_ms": 5482,
+      "words": 186,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "review",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "20e1c077151cefae5bdd0d1b0772b3786107e4210326dee613a68200e80843de",
+      "guide_ids": [
+        "sales-discovery-questions",
+        "draft-outreach",
+        "sales-call-review",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "review",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20152,
+        "completion_tokens": 547
+      },
+      "estimated_usd": 0.091548,
+      "generation_ms": 8979,
+      "words": 178,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "advertisement",
+      "model": "google/gemini-3.8-flash",
+      "context_sha256": "c02b605d3901179641f69a6a469a4832cbb7cd13cea9c34b341b3382bac9648d",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "ads-copywriter",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 12119,
+        "completion_tokens": 192
+      },
+      "estimated_usd": 0.00980925,
+      "generation_ms": 4304,
+      "words": 81,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "advertisement",
+      "model": "anthropic/claude-sonnet-4.6",
+      "context_sha256": "c02b605d3901179641f69a6a469a4832cbb7cd13cea9c34b341b3382bac9648d",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "ads-copywriter",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 15001,
+        "completion_tokens": 257
+      },
+      "estimated_usd": 0.048858,
+      "generation_ms": 8442,
+      "words": 96,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "advertisement",
+      "model": "openai/gpt-4.1",
+      "context_sha256": "c02b605d3901179641f69a6a469a4832cbb7cd13cea9c34b341b3382bac9648d",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "ads-copywriter",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 11351,
+        "completion_tokens": 240
+      },
+      "estimated_usd": 0.024622,
+      "generation_ms": 3182,
+      "words": 142,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "advertisement",
+      "model": "anthropic/claude-sonnet-5.5",
+      "context_sha256": "c02b605d3901179641f69a6a469a4832cbb7cd13cea9c34b341b3382bac9648d",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "ads-copywriter",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20513,
+        "completion_tokens": 391
+      },
+      "estimated_usd": 0.044936,
+      "generation_ms": 4137,
+      "words": 130,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    },
+    {
+      "case": "advertisement",
+      "model": "anthropic/claude-opus-5.5",
+      "context_sha256": "c02b605d3901179641f69a6a469a4832cbb7cd13cea9c34b341b3382bac9648d",
+      "guide_ids": [
+        "sales-enablement",
+        "deal-value-calc",
+        "ads-copywriter",
+        "recall",
+        "graphify",
+        "handoff",
+        "copy-editing",
+        "marketing-psychology"
+      ],
+      "manual": {
+        "version": "cbn-consultative-manual-v1",
+        "primary": "value",
+        "secondary": null,
+        "facts_from": "current_reviewed_programme_and_authorized_thread",
+        "examples_are": "behaviour_patterns_not_facts_or_actions"
+      },
+      "usage": {
+        "prompt_tokens": 20513,
+        "completion_tokens": 309
+      },
+      "estimated_usd": 0.088232,
+      "generation_ms": 6594,
+      "words": 104,
+      "handoff_requested": false,
+      "crm_written": false,
+      "delivered_by_simulator": false
+    }
+  ],
+  "backend_deployment": "wccxgetf4fqllxbsllzowwdb",
+  "backend_duration": "04m16s",
+  "frontend_deployment": "fxdy5bunahqdootht58lqphe",
+  "frontend_state": "Success",
+  "frontend_duration": "00m24s",
+  "baseline_sources_history_and_memory_identical": true,
+  "manual_copies_in_native_history": 35,
+  "unique_sample_numbers": 35,
+  "receipts_at_delivery_cutoff": {
+    "delivered": 35
+  },
+  "chat_control_restored_to_ai": true,
+  "rate_pause_handling": "Copies11 and27 reconciled once after temporary read pauses, no resend; final reload recovered and IA confirmed",
+  "chat_ai_verified_after_reload": true,
+  "rate_limiter_changed": false,
+  "sample_receipts": [
+    {
+      "sample": 1,
+      "state": "Entregado"
+    },
+    {
+      "sample": 2,
+      "state": "Entregado"
+    },
+    {
+      "sample": 3,
+      "state": "Entregado"
+    },
+    {
+      "sample": 4,
+      "state": "Entregado"
+    },
+    {
+      "sample": 5,
+      "state": "Entregado"
+    },
+    {
+      "sample": 6,
+      "state": "Entregado"
+    },
+    {
+      "sample": 7,
+      "state": "Entregado"
+    },
+    {
+      "sample": 8,
+      "state": "Entregado"
+    },
+    {
+      "sample": 9,
+      "state": "Entregado"
+    },
+    {
+      "sample": 10,
+      "state": "Entregado"
+    },
+    {
+      "sample": 11,
+      "state": "Entregado"
+    },
+    {
+      "sample": 12,
+      "state": "Entregado"
+    },
+    {
+      "sample": 13,
+      "state": "Entregado"
+    },
+    {
+      "sample": 14,
+      "state": "Entregado"
+    },
+    {
+      "sample": 15,
+      "state": "Entregado"
+    },
+    {
+      "sample": 16,
+      "state": "Entregado"
+    },
+    {
+      "sample": 17,
+      "state": "Entregado"
+    },
+    {
+      "sample": 18,
+      "state": "Entregado"
+    },
+    {
+      "sample": 19,
+      "state": "Entregado"
+    },
+    {
+      "sample": 20,
+      "state": "Entregado"
+    },
+    {
+      "sample": 21,
+      "state": "Entregado"
+    },
+    {
+      "sample": 22,
+      "state": "Entregado"
+    },
+    {
+      "sample": 23,
+      "state": "Entregado"
+    },
+    {
+      "sample": 24,
+      "state": "Entregado"
+    },
+    {
+      "sample": 25,
+      "state": "Entregado"
+    },
+    {
+      "sample": 26,
+      "state": "Entregado"
+    },
+    {
+      "sample": 27,
+      "state": "Entregado"
+    },
+    {
+      "sample": 28,
+      "state": "Entregado"
+    },
+    {
+      "sample": 29,
+      "state": "Entregado"
+    },
+    {
+      "sample": 30,
+      "state": "Entregado"
+    },
+    {
+      "sample": 31,
+      "state": "Entregado"
+    },
+    {
+      "sample": 32,
+      "state": "Entregado"
+    },
+    {
+      "sample": 33,
+      "state": "Entregado"
+    },
+    {
+      "sample": 34,
+      "state": "Entregado"
+    },
+    {
+      "sample": 35,
+      "state": "Entregado"
+    }
+  ]
+}
