@@ -5,8 +5,9 @@ import { useDraftGuard } from "./drafts";
 
 type Bundle = {
   version: string;
-  program: "logistica" | "aduanas";
+  program: "logistica" | "aduanas" | "all";
   contact_ids: string[];
+  review_count?: number;
 };
 
 export function BroadcastProspectSetup({
@@ -21,6 +22,8 @@ export function BroadcastProspectSetup({
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [count, setCount] = useState(0);
+  const [enabledCount, setEnabledCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
   const [error, setError] = useState("");
   const [hasPending, setHasPending] = useState(false);
   const pending = useRef<Record<string, unknown> | null>(null);
@@ -34,18 +37,29 @@ export function BroadcastProspectSetup({
       if (file.size > 1_000_000) throw Error("El lote supera 1 MB.");
       const value = JSON.parse(await file.text()) as Bundle;
       if (value.version !== "rinovaplus-whatsapp-prospects-v1" ||
-        !["logistica", "aduanas"].includes(value.program) ||
+        !["logistica", "aduanas", "all"].includes(value.program) ||
         !Array.isArray(value.contact_ids) || !value.contact_ids.length ||
-        value.contact_ids.length > 100 ||
+        value.contact_ids.length > 5000 ||
         value.contact_ids.some(v => typeof v !== "string" || !/^[a-f0-9-]{36}$/i.test(v)) ||
         new Set(value.contact_ids).size !== value.contact_ids.length)
         throw Error("Usa un lote de preinscritos revisado para este programa.");
       setBundle(value); setCount(0); setDone(false); setConfirmed(false);
+      setEnabledCount(0); setReviewCount(0);
       pending.current = null;
       setHasPending(false);
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "No se pudo leer el lote.");
     }
+  };
+  const loadAll = async () => {
+    setBusy(true); setError("");
+    try {
+      const value = await call<Bundle>(`broadcasts/accounts/${account}/prospects`);
+      setBundle(value); setCount(0); setDone(false); setConfirmed(false);
+      setEnabledCount(0); setReviewCount(value.review_count || 0);
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "No se pudo cargar el CRM.");
+    } finally { setBusy(false); }
   };
   const run = async () => {
     if (!bundle || busy || !confirmed) return;
@@ -61,7 +75,11 @@ export function BroadcastProspectSetup({
         };
           setHasPending(true);
         }
-        await call(`broadcasts/accounts/${account}/prospects/setup`, "POST", pending.current);
+        const result = await call<{ items?: unknown[]; held?: unknown[] }>(
+          `broadcasts/accounts/${account}/prospects/setup`, "POST", pending.current,
+        );
+        setEnabledCount(previous => previous + (result.items?.length ?? Math.min(10, bundle.contact_ids.length - offset)));
+        setReviewCount(previous => previous + (result.held?.length || 0));
         pending.current = null;
         setHasPending(false);
         setCount(Math.min(offset + 10, bundle.contact_ids.length));
@@ -87,10 +105,13 @@ export function BroadcastProspectSetup({
         No envía mensajes ni activa campañas. Habilita IA sólo en la ficha de importación vacía,
         sin mensajes ni intervención humana. Los chats con historial o control cambiado quedan para revisión.
         Meta confirmará la entrega cuando se envíe la plantilla.</p>
+      <Button disabled={busy || hasPending} onClick={() => void loadAll()}>Cargar todos los preinscritos del CRM</Button>
+      <p>Una sola revisión para todos los programas. Las campañas se activan por separado y
+        las autorizaciones vigentes se conservan; no se sustituyen revocaciones.</p>
       <label htmlFor="whatsapp-prospect-file">Lote de preinscritos revisado</label>
       <input id="whatsapp-prospect-file" type="file" accept=".json,application/json"
         disabled={busy || hasPending} onChange={e => void load(e.target.files?.[0])} />
-      {bundle && <p>{bundle.contact_ids.length} contactos · {bundle.program === "logistica" ? "Logística" : "Aduanas"}</p>}
+      {bundle && <p>{bundle.contact_ids.length} contactos · {bundle.program === "all" ? "Todos los programas" : bundle.program === "logistica" ? "Logística" : "Aduanas"}</p>}
       <label htmlFor="whatsapp-prospect-evidence">Evidencia de autorización del lote</label>
       <textarea id="whatsapp-prospect-evidence" value={evidence} disabled={locked}
         maxLength={1000} onChange={e => setEvidence(e.target.value)} />
@@ -106,7 +127,7 @@ export function BroadcastProspectSetup({
         Confirmo el número, el programa y la evidencia de autorización de estos contactos.</label>
       <Button disabled={!bundle || !confirmed || !evidence.trim() || !origin.trim() || !expires || busy || done}
         onClick={() => void run()}>Vincular y registrar autorización, sin enviar</Button>
-      {!!count && <p role="status">{count} contactos habilitados de {bundle?.contact_ids.length}.</p>}
+      {!!count && <p role="status">{count} procesados de {bundle?.contact_ids.length} · {enabledCount} habilitados · {reviewCount} para revisión.</p>}
       {done && <Notice>Lote vinculado. Revisa los destinatarios de la campaña antes de activar.</Notice>}
       {error && <Notice>{error} Los lotes anteriores se conservan. Continuar recupera el mismo intento pendiente.</Notice>}
     </details>

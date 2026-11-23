@@ -62,6 +62,18 @@ def test_aduanas_accepts_the_actual_source_label():
     assert setup.reviewed_contact(value, "aduanas") == "573001234567"
 
 
+def test_all_programs_still_requires_source_program_and_valid_phone():
+    value = person(CustomValues=json.dumps({
+        "pre_import_ref": "PRE-1234567890abcdef", "pre_programas": "ENFERMERIA",
+    }))
+    assert setup.reviewed_contact(value, "all") == "573001234567"
+    value["CustomValues"] = json.dumps({
+        "pre_import_ref": "PRE-1234567890abcdef", "pre_programas": "",
+    })
+    with pytest.raises(HTTPException):
+        setup.reviewed_contact(value, "all")
+
+
 class Cursor:
     def __init__(self, *, existing_channel=False, human_history=False):
         self.writes = []
@@ -176,3 +188,22 @@ def test_native_consent_replay_uses_same_operation_and_real_audit_contract(monke
     assert len(calls) == 2
     assert calls[0].operation_id == calls[1].operation_id
     assert calls[0].evidence == body.evidence and calls[0].confirmed
+
+
+def test_all_programs_keeps_revocations_for_review_and_continues(monkeypatch):
+    service, calls, _ = setup_harness(monkeypatch, previous={"State": "revoked"})
+    result = setup.setup(service, {}, "account", command(program="all"))
+    assert result["items"] == [] and len(result["held"]) == 1
+    assert result["held"][0]["reason"] == "prospect_revoked_consent_review_required"
+    assert calls == [] and result["messages_sent"] == 0
+
+
+def test_valid_existing_consent_is_preserved_without_repeated_registration(monkeypatch):
+    service, calls, _ = setup_harness(monkeypatch, previous={
+        "State": "granted", "VersionNo": 3,
+        "ExpiresAt": (
+            datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=1)
+        ),
+    })
+    result = setup.setup(service, {}, "account", command(program="all"))
+    assert result["items"][0]["preserve_consent"] and calls == []

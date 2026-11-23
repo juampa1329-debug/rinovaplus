@@ -48,3 +48,20 @@ it("recovers the same pending operation after an interrupted response", async ()
   await screen.findByText(/Lote vinculado/);
   expect(mock.call.mock.calls[1][2]).toEqual(initial);
 });
+
+it("loads every CRM program once and only enables reviewed contacts without sending", async () => {
+  mock.call.mockResolvedValueOnce({ ...source, program: "all", review_count: 2 })
+    .mockResolvedValueOnce({ items: [source.contact_ids[0]], held: [] });
+  render(<BroadcastProspectSetup account="account" changed={vi.fn()} />);
+  fireEvent.click(screen.getByText("Cargar todos los preinscritos del CRM"));
+  await screen.findByText("1 contactos · Todos los programas");
+  fireEvent.change(screen.getByLabelText("Evidencia de autorización del lote"), { target: { value: "Políticas confirmadas por el titular" } });
+  fireEvent.change(screen.getByLabelText("Fuente de la autorización"), { target: { value: "Solicitud expresa" } });
+  fireEvent.change(screen.getByLabelText("Vigencia para este seguimiento"), { target: { value: "2026-11-24T22:00" } });
+  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByText("Vincular y registrar autorización, sin enviar"));
+  await screen.findByText(/1 habilitados · 2 para revisión/);
+  expect(mock.call.mock.calls[0][0]).toBe("broadcasts/accounts/account/prospects");
+  expect(mock.call.mock.calls[1][2].program).toBe("all");
+  expect(mock.call.mock.calls.some(([path]) => /activate|send$/.test(path))).toBe(false);
+});

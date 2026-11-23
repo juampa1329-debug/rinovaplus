@@ -24,7 +24,7 @@ PROGRAMS = {
 
 class ProspectSetup(ConsentWrite):
     state: Literal["granted"] = "granted"
-    program: Literal["logistica", "aduanas"]
+    program: Literal["logistica", "aduanas", "all"]
     contact_ids: list[str] = Field(min_length=1, max_length=10)
 
     @model_validator(mode="after")
@@ -46,11 +46,33 @@ def reviewed_contact(value, program):
     if (
         value["Type"] != "Preinscrito"
         or not re.fullmatch(r"PRE-[a-f0-9]{16}", custom.get("pre_import_ref", ""))
-        or PROGRAMS[program] not in interests
+        or not any(interests)
+        or (program != "all" and PROGRAMS[program] not in interests)
         or not phone(value["Phone"])
     ):
         raise HTTPException(409, "prospect_phone_program_review_required")
     return phone(value["Phone"]).removeprefix("+")
+
+
+def review_all(service, auth):
+    with service.tx(auth) as (c, _):
+        values = db.rows(
+            c, "SELECT TOP(5001) ContactId,Phone,Type,CustomValues "
+            "FROM crm.Contact WHERE Type='Preinscrito' ORDER BY ContactId",
+        )
+        if len(values) > 5000:
+            raise HTTPException(409, "prospect_import_scope_limit")
+        ids = []
+        for value in values:
+            try:
+                reviewed_contact(value, "all")
+            except HTTPException:
+                continue
+            ids.append(str(value["ContactId"]))
+        return {
+            "version": "rinovaplus-whatsapp-prospects-v1", "program": "all",
+            "contact_ids": ids, "review_count": len(values) - len(ids),
+        }
 
 
 def link(c, settings, integration, contact_id, program):
@@ -138,19 +160,35 @@ def setup(service, auth, integration, body):
                 or item["VerifiedStatus"] != "verified"
             ):
                 raise HTTPException(409, "broadcast_verified_whatsapp_account_required")
-            items = []
+            items, held = [], []
             for contact_id in body.contact_ids:
-                identity = link(
-                    c, service.settings, integration, contact_id, body.program,
-                )
-                old = consent(c, service.settings, identity)
-                if old and old["State"] == "revoked":
-                    raise HTTPException(409, "prospect_revoked_consent_review_required")
+                try:
+                    identity = link(
+                        c, service.settings, integration, contact_id, body.program,
+                    )
+                    old = consent(c, service.settings, identity)
+                    if old and old["State"] == "revoked":
+                        raise HTTPException(
+                            409, "prospect_revoked_consent_review_required",
+                        )
+                except HTTPException as failure:
+                    # All review guards run before writes. A revoked consent
+                    # can only belong to an existing identity, also unchanged.
+                    if body.program != "all" or failure.status_code != 409:
+                        raise
+                    held.append({"contact_id": contact_id, "reason": failure.detail})
+                    continue
                 items.append({
                     "contact_id": contact_id, "identity_id": identity,
                     "consent_revision": old["VersionNo"] if old else 0,
+                    "preserve_consent": bool(
+                        old and old["State"] == "granted" and old["ExpiresAt"]
+                        and old["ExpiresAt"] > datetime.now(timezone.utc).replace(
+                            tzinfo=None,
+                        )
+                    ),
                 })
-            result = {"items": items, "program": body.program}
+            result = {"items": items, "held": held, "program": body.program}
             db.record_operation(
                 c, service.settings, actor["UserId"], str(body.operation_id),
                 "broadcast.prospect_setup", integration, digest, result,
@@ -163,6 +201,8 @@ def setup(service, auth, integration, body):
     # Separate native consent transactions retain existing CAS/reauth/revocation
     # rules. Deterministic operation IDs recover a partial HTTP response safely.
     for item in result["items"]:
+        if item.get("preserve_consent"):
+            continue
         command = ConsentWrite(
             operation_id=uuid5(UUID(str(body.operation_id)), item["identity_id"]),
             revision=item["consent_revision"], reason=body.reason,
