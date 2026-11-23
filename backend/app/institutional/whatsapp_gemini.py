@@ -552,7 +552,7 @@ class Worker:
                 ).fetchone()
                 if not active:
                     raise HTTPException(409, "gemini_whatsapp_claim_changed")
-                if backup["routes"]:
+                if backup["routes"] or backup.get("primary"):
                     language_resilience.assert_snapshot(c, settings, backup)
                 _, latest_context, _ = source(c, settings, integration, data)
                 if model_config(c, settings, data)[2] != binding:
@@ -613,7 +613,7 @@ class Worker:
                     lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
                     data.setdefault("language_execution", {}),
                     gateway=self.gateway_factory(backup["keys"]),
-                )) if backup["routes"] else asyncio.run(primary())
+                )) if backup["routes"] or backup.get("primary") else asyncio.run(primary())
             if result is not None:
                 generated = grounded_replies.parse(result)
             # Optional observations never become instructions or arbitrary field writes.

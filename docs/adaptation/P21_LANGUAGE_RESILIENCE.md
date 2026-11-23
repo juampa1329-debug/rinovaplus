@@ -210,3 +210,8 @@ por caso; consultar por GET conservó ese conteo. Cero envíos/escriturasCRM en
 ambos. ReservasUSD0,013076; estimación por tokens y topesUSD0,002642, no factura.
 Las pruebas no indujeron una caída real de Gemini. La recuperación del DM
 anterior sí fue real y posteriormente el contacto recibió nuevas respuestas.
+
+
+## Principal OpenRouter por instruccion del titular preparado - 2026-11-23
+
+El titular solicita Sonnet4.6 principal y Sonnet5.5 respaldo, en lugar de generar lenguaje primero con Gemini; no se atribuye el rechazo previo al plan gratuito sin evidencia. P21 agrega primary opcional, misma biblioteca/contexto/guardas y reserva por ruta, sin ejecutar la funcion Gemini cuando hay principal explicito. Respaldo ante404/429/503 o timeout puro optativo; sin replay de Meta. Seleccion y tarifas desde catalogo autenticado, omision de temperatura no soportada y razonamiento low solo declarado. Claude no recibe maxLength no soportado; limite900 permanece en instrucciones y validacion backend, sin cortar mensajes. Guardado acotado con CAS/reautenticacion/historial conserva prompts/voces/privados. Simulador y ASR/vision conservan motores propios; ensayo sintetico no se sustituye por principal productivo.391backend/67frontend,tipos/ESLint/Ruff/workspacebuild pasan; bundlehistorico. Publicacion, seleccion nativa de ambos modelos y pruebas reales pendientes. Seleccion operativa autorizada no cierra por si sola P22 ni su reparto por etapas/piloto comercial.

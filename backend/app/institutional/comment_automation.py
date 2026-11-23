@@ -307,7 +307,7 @@ class Worker:
 
         def assert_current():
             with transaction(settings, anonymous=True) as c:
-                if backup["routes"]:
+                if backup["routes"] or backup.get("primary"):
                     language_resilience.assert_snapshot(c, settings, backup)
                 if not c.execute(
                     "SELECT 1 FROM crm_channels2.ProviderOperation "
@@ -390,7 +390,7 @@ class Worker:
                 lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
                 data.setdefault("language_execution", {}),
                 gateway=self.gateway_factory(backup["keys"]),
-            )) if backup["routes"] else asyncio.run(primary())
+            )) if backup["routes"] or backup.get("primary") else asyncio.run(primary())
             if private_enabled:
                 reply, data["social_decision"] = comment_private.parse(result, grounded)
                 if reply and data["social_decision"]["delivery"] == "private":

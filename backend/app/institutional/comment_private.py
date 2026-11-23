@@ -12,78 +12,22 @@ POLICY = "cbn-comment-private-v1"
 
 
 def save_policy(settings, authority, body):
-    """Validate only this bounded policy, preserving unrelated AI configuration."""
     from app.institutional import db
-    from app.institutional.auth import authorize
-    from app.institutional.settings import setting, validate_links
-    from app.institutional.store import transaction
+    from app.institutional.ai_policy import save
 
     changed = body.model_dump(exclude={"operation_id", "revision"})
     changed["comment_private_accounts"] = list(
         dict.fromkeys(db.uid(v) for v in body.comment_private_accounts)
     )
-    with transaction(settings, True, anonymous=True) as c:
-        actor = authorize(
-            c,
-            settings,
-            authority,
-            "settings.ai.write",
-            recent=body.comment_mode == "auto",
-        )
-        digest, previous = db.replay(
-            c,
-            settings,
-            actor["UserId"],
-            body.operation_id,
-            "comments.policy",
-            "ai",
-            {"revision": body.revision, **changed},
-        )
-        if previous:
-            return previous
-        current = setting(c, settings, "ai")
-        if current["revision"] != body.revision:
-            raise HTTPException(409, "revision_conflict")
-        validate_links(c, settings, "ai", changed)
-        document = {**current["document"], **changed}
-        raw = json.dumps(document, ensure_ascii=False)
-        c.execute(
-            "UPDATE crm_access.Setting SET Document=?,Revision=Revision+1,UpdatedBy=?,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND Section='ai' AND Revision=?",
-            raw,
-            actor["UserId"],
-            db.institution(settings),
-            body.revision,
-        )
-        if c.rowcount != 1:
-            raise HTTPException(409, "revision_conflict")
-        c.execute(
-            "INSERT crm_access.SettingHistory(InstitutionId,Section,Revision,Document,RecordedAt,ActorId) VALUES(?,'ai',?,?,SYSUTCDATETIME(),?)",
-            db.institution(settings),
-            body.revision + 1,
-            raw,
-            actor["UserId"],
-        )
-        result = {"revision": body.revision + 1, "document": document}
-        db.record_operation(
-            c,
-            settings,
-            actor["UserId"],
-            body.operation_id,
-            "comments.policy",
-            "ai",
-            digest,
-            result,
-        )
-        db.audit(
-            c,
-            settings,
-            actor["UserId"],
-            "comments.policy",
-            "ai",
-            revision=body.revision + 1,
-            fields=sorted(changed),
-        )
-        return result
+    return save(
+        settings,
+        authority,
+        body.operation_id,
+        body.revision,
+        changed,
+        "comments.policy",
+        recent=body.comment_mode == "auto",
+    )
 
 
 def enabled(document, integration):
@@ -175,7 +119,9 @@ def context(grounded):
         + " Redacta entre 400 y 750 caracteres; prioriza lo solicitado y una pregunta útil. Nunca superes 900 caracteres.",
         "skill_policy": trace,
     }
-    value["fingerprint"] = digest([grounded["fingerprint"], POLICY, records, value["system"]])
+    value["fingerprint"] = digest(
+        [grounded["fingerprint"], POLICY, records, value["system"]]
+    )
     return value
 
 

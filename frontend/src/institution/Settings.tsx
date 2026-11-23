@@ -205,6 +205,13 @@ function SettingEditor({
           {section === "ai" && liveModels && (
             <LanguageResilience
               value={draft.language_resilience}
+              onSave={async () => {
+                await task.run(async () => {
+                  const body = {revision: initial.revision, language_resilience: draft.language_resilience};
+                  await call("settings/ai/language-policy", "PUT", {...body, operation_id: intent.get(body)});
+                  await reload();
+                }, "Motor de conversaciones y respaldos guardados.");
+              }}
               onChange={(value) =>
                 setDraft({ ...draft, language_resilience: value })
               }

@@ -62,7 +62,8 @@ def install(app, settings):
         secret = await run_in_threadpool(credential, settings, request.state.authority, provider)
         try:
             async with asyncio.timeout(36):
-                models = await ProviderGateway({provider: secret}).models(
+                gateway = ProviderGateway({provider: secret})
+                models = await gateway.models(
                     provider, category, account_catalog=True
                 )
         except TimeoutError:
@@ -70,4 +71,8 @@ def install(app, settings):
         except AiError as error:
             detail = "provider_key_rejected" if error.upstream_status in {401, 403} else error.code
             raise HTTPException(error.status, detail) from None
-        return {"items": [{"id": model.id, "name": model.name} for model in models]}
+        details = getattr(gateway, "catalog_details", {}).get(provider, {})
+        return {"items": [{"id": model.id, "name": model.name,
+                           "input_usd_per_million": details.get(model.id, {}).get("input_usd_per_million"),
+                           "output_usd_per_million": details.get(model.id, {}).get("output_usd_per_million")}
+                          for model in models]}

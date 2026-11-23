@@ -15,7 +15,8 @@ ROUTE = {"provider": "openrouter", "model": "google/fixture:free", "input_usd_pe
 BODY = grounded_replies.request_body({"system": "Guías y contexto revisados", "query": "Consulta"}, 700)
 
 
-def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_gemini_schema():
+@pytest.mark.parametrize("model", ["fixture/default", "anthropic/fixture"])
+def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_gemini_schema(model):
     import json
     from app.institutional import comment_private
     from app.institutional.language_resilience import generate
@@ -29,13 +30,17 @@ def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_
             calls.append(outgoing)
             return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision": "responder", "intent": "information", "delivery": "private", "program_id": "27", "text": "Información vigente solicitada."})}}]}
 
-    response = asyncio.run(generate(Gateway(), ROUTE, body, lambda: None))
+    response = asyncio.run(generate(Gateway(), {**ROUTE,"model":model}, body, lambda: None))
     format = calls[0]["response_format"]
     assert format["type"] == "json_schema"
     schema = format["json_schema"]["schema"]
     assert format["json_schema"]["strict"] is True
     assert schema["additionalProperties"] is False
-    assert schema["properties"]["text"]["maxLength"] == 900
+    if model.startswith("anthropic/"):
+        assert "maxLength" not in schema["properties"]["text"]
+        assert "900" in schema["properties"]["text"]["description"]
+    else:
+        assert schema["properties"]["text"]["maxLength"] == 900
     assert schema["properties"]["program_id"] == {"type": "string"}
     assert body["generationConfig"]["responseSchema"]["type"] == "OBJECT"
     assert "maxLength" not in body["generationConfig"]["responseSchema"]["properties"]["text"]

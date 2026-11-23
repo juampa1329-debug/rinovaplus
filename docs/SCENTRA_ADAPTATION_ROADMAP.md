@@ -984,3 +984,9 @@ Dos comentarios reales nuevos del titular: el corto se publico con informacion p
 
 f1c0421 publicado saludable: backend ntg6s7ruukfvxwkfrv0y83xz4m19s, frontend4yr2cxqiycmpzqhqo9tbyyfz45s. Tercer comentario real recibido: Gemini rechazo provider_rejected_request antes de generar y no se ejecuto respaldo; ningun privado enviado por ese intento. Se retira el enum con valor vacio introducido en program_id del esquema Gemini; identificador sigue string y la pertenencia a fichas se valida en backend antes de entregar. Esquema estricto de campos/canal y max900 en OpenRouter conservados.78pruebas focalizadas pasan. No se identifica otro campo de rechazo a partir del mensaje sanitizado. Ensayo real posterior pendiente; sin replay de intentos anteriores.
 
+
+
+## Principal OpenRouter por instruccion del titular preparado - 2026-11-23
+
+El titular solicita Sonnet4.6 principal y Sonnet5.5 respaldo, en lugar de generar lenguaje primero con Gemini; no se atribuye el rechazo previo al plan gratuito sin evidencia. P21 agrega primary opcional, misma biblioteca/contexto/guardas y reserva por ruta, sin ejecutar la funcion Gemini cuando hay principal explicito. Respaldo ante404/429/503 o timeout puro optativo; sin replay de Meta. Seleccion y tarifas desde catalogo autenticado, omision de temperatura no soportada y razonamiento low solo declarado. Claude no recibe maxLength no soportado; limite900 permanece en instrucciones y validacion backend, sin cortar mensajes. Guardado acotado con CAS/reautenticacion/historial conserva prompts/voces/privados. Simulador y ASR/vision conservan motores propios; ensayo sintetico no se sustituye por principal productivo.391backend/67frontend,tipos/ESLint/Ruff/workspacebuild pasan; bundlehistorico. Publicacion, seleccion nativa de ambos modelos y pruebas reales pendientes. Seleccion operativa autorizada no cierra por si sola P22 ni su reparto por etapas/piloto comercial.
+

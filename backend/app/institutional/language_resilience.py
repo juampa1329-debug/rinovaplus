@@ -24,13 +24,15 @@ def snapshot(c, settings):
     value = setting(c, settings, "ai")
     policy = LanguageResilience.model_validate(value["document"].get("language_resilience", {}))
     result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {},
-              "fallback_on_timeout": policy.enabled and policy.fallback_on_timeout}
+              "fallback_on_timeout": policy.enabled and policy.fallback_on_timeout, "primary": None}
     if not policy.enabled:
         return result
-    for route in policy.routes:
+    for route in ([policy.primary] if policy.primary else []) + policy.routes:
         secret = one(c, "SELECT * FROM crm_access.Secret WHERE InstitutionId=? AND Scope='provider' "
                      "AND OwnerRef=? AND Kind='api_key' AND State='staged'", institution(settings), route.provider)
         if not secret:
+            if route == policy.primary:
+                raise HTTPException(409, "language_primary_key_required")
             continue
         identity = uid(str(secret["SecretId"]))
         result["keys"][route.provider] = unseal(key(settings), {
@@ -38,7 +40,10 @@ def snapshot(c, settings):
             "kind": "api_key", "version": secret["VersionNo"], "secret_id": identity,
         }, secret["Nonce"], secret["Ciphertext"])
         result["credentials"][route.provider] = (identity, secret["VersionNo"])
-        result["routes"].append(route.model_dump())
+        if route == policy.primary:
+            result["primary"] = route.model_dump()
+        else:
+            result["routes"].append(route.model_dump())
     return result
 
 
@@ -75,7 +80,7 @@ async def compatible(gateway, route, body):
     context = details.get("context_length")
     if not context or incoming + outgoing > context or not model.output_limit or outgoing > model.output_limit:
         raise AiError("language_backup_context_incompatible", 409)
-    if not model.temperature:
+    if not model.temperature and route["provider"] != "openrouter":
         raise AiError("language_backup_parameters_incompatible", 409)
     if route["provider"] == "openrouter":
         if "response_format" not in details.get("supported_parameters", []):
@@ -86,6 +91,9 @@ async def compatible(gateway, route, body):
                 raise AiError("language_backup_price_exceeds_limit", 409)
         if details.get("request_usd") not in (None, 0):
             raise AiError("language_backup_price_exceeds_limit", 409)
+        route["include_temperature"] = model.temperature
+        if not model.temperature and "reasoning" in details.get("supported_parameters", []) and "low" in details.get("reasoning_efforts", []):
+            route["reasoning_effort"] = "low"
     return incoming, outgoing
 
 
@@ -111,7 +119,12 @@ async def generate(gateway, route, body, guard):
             name: {**value, "type": value["type"].lower()}
             for name, value in schema["properties"].items()
         }
-        properties["text"]["maxLength"] = 900
+        if route["model"].startswith("anthropic/"):
+            # Claude rejects string-length constraints in the provider schema.
+            # Retain the limit in instructions and validate it before dispatch.
+            properties["text"]["description"] = "Respuesta completa, entre 400 y 750 caracteres y nunca más de 900."
+        else:
+            properties["text"]["maxLength"] = 900
         response_format = {"type": "json_schema", "json_schema": {
             "name": "rinova_comment_delivery", "strict": True,
             "schema": {"type": "object", "required": schema["required"],
@@ -119,7 +132,9 @@ async def generate(gateway, route, body, guard):
         }}
     data = await gateway.request("openrouter", "POST", "chat/completions", {
         "model": route["model"], "messages": messages, "max_tokens": body["generationConfig"]["maxOutputTokens"],
-        "temperature": body["generationConfig"].get("temperature", 0.3), "response_format": response_format,
+        **({"temperature": body["generationConfig"].get("temperature", 0.3)} if route.get("include_temperature", True) else {}),
+        **({"reasoning": {"effort": route["reasoning_effort"]}} if route.get("reasoning_effort") else {}),
+        "response_format": response_format,
         "provider": {"allow_fallbacks": False, "require_parameters": True, "data_collection": "deny",
                      "max_price": {"prompt": route["input_usd_per_million"], "completion": route["output_usd_per_million"]}},
     })
@@ -136,7 +151,7 @@ async def generate(gateway, route, body, guard):
 
 def timeout_recovery_allowed(error, provider, body, saved):
     """Only pure, completed-local text attempts; never replay a channel/tool POST."""
-    if (saved.get("fallback_on_timeout") is not True or provider != "gemini"
+    if (saved.get("fallback_on_timeout") is not True or provider not in {"gemini", "openrouter"}
             or error.code not in {"provider_response_timeout", "provider_timeout_or_network", "provider_protocol_failure"}
             or body.get("tools") or body.get("stream") or not body.get("contents")):
         return False
@@ -148,6 +163,18 @@ def timeout_recovery_allowed(error, provider, body, saved):
 async def execute(primary, provider, model, body, saved, guard, reserve, trace, *, gateway=None):
     """One complete answer; tracing excludes prompt, secrets and customer data."""
     gateway = gateway or ProviderGateway(saved["keys"])
+    if saved.get("primary"):
+        preferred = dict(saved["primary"])
+        provider, model = preferred["provider"], preferred["model"]
+
+        async def configured_primary():
+            guard()
+            incoming, outgoing = await compatible(gateway, preferred, body)
+            guard()
+            reserve(preferred, incoming, outgoing)
+            return await generate(gateway, preferred, body, guard)
+
+        primary = configured_primary
     attempts = trace.setdefault("attempts", [])
     started = monotonic()
     seen = {(provider, model)}
@@ -162,14 +189,16 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
         timeout_recovery = timeout_recovery_allowed(error, provider, body, saved)
         attempts.append({"provider": provider, "model": model, "state": "uncertain" if timeout_recovery else "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary",
                          **({"consumption_may_be_billed": True, "reservation_retained": True} if timeout_recovery else {})})
-        if not can_failover(error) and not timeout_recovery:
+        preflight_rejected = error.code.startswith("language_backup_") and error.status == 409
+        if not can_failover(error) and not timeout_recovery and not preflight_rejected:
             raise
         if timeout_recovery:
             trace["timeout_recovery"] = True
         original = error
     try:
         async with asyncio.timeout(35):
-            for route in saved["routes"]:
+            for configured in saved["routes"]:
+                route = dict(configured)
                 pair = (route["provider"], route["model"])
                 if pair in seen:
                     continue
