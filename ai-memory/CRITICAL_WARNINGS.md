@@ -1,3 +1,7 @@
+## Plantillas Juan Pablo — 2026-11-23
+
+20 aprobadas por Meta y32 antiguas en Papelera nativa; no borrar remotamente ni vaciar Papelera. Meta sync conserva la eliminación local. Campañas siguen borrador: ninguna autorización de enviar mensajes a prospectos ni conceder consentimientos. Los764 importados y201 ambiguos mantienen sus guardas. La identidad se confirmó con autofill autorizado, segundo campo vacío; no se copió la contraseña. Readiness no se desactivó: curl existente sustituye wget ausente; corrección nvarchar y auditoría verificadas. Backend fd236e7 saludable. Evidencia juan-pablo-template-library-20261123.json; detalles nominales sólo.local.
+
 ## Preinscritos importados y campañas preparadas — 2026-11-23
 
 Los 764 importados no tienen identidad Meta ni consentimiento creados por la importación; control Humano conservado. No convertir preinscripción/gestión en fecha de conversación o matrícula. 201 dudosos quedan en CSV privado, sin fusionar fichas. No reenviar campañas históricas ni activar borradores; la revisión de tarjeta sólo acreditó método y deuda cero. Los PDF son ejemplos: fichas vigentes mandan. Ver PREINSCRITOS_IMPORTACION_20261123.md. El roadmap vigente original es 100%; los cortes inferiores de octubre son históricos.

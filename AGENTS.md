@@ -1,3 +1,11 @@
+## Juan Pablo y biblioteca de plantillas verificados — 2026-11-23
+
+Veinte plantillas nuevas con presentación de Juan Pablo, sin uniforme, enviadas tras autorización explícita de las veinte; Meta confirma 20 aprobadas. Veinte campañas conservan Borrador y la nueva plantilla. Retiradas 32 antiguas a Papelera recuperable; nueva sincronización conserva 20 visibles/32 retiradas. Confirmación reciente completada con contraseña autocompletada y segundo campo vacío, sin extraer credenciales. Cero mensajes a prospectos, activaciones, cargos o consentimientos. Importados 764 y revisión201 intactos.
+
+Código eb0a0ee/737a5df/fd236e7 publicado en ambas ramas. Backend fd236e7 Running en cfmafgsm3xivbcxkzy1znt3s, 4m17s; readiness200 y rollout20:31:48UTC. Se resolvieron override wget ausente, nvarchar heredado en atribución y metadato de auditoría no admitido; intentos fallidos y reversión conservados. 170backend iniciales/25frontend y57backend focalizados de corrección; tipos/lint/build y Ruff nuevos pasan, advertencias históricas conservadas. Ver docs/adaptation/PLANTILLAS_JUAN_PABLO_20261123.md y artifacts/live/juan-pablo-template-library-20261123.json; textos/capturas sólo.local. Sin DDL, seeds, servicios nuevos ni escrituras SIIE.
+
+Roadmap original P0–P11 y P12 auxiliar:100%; P13/P15/P19/P21 iniciales:100%; P22:60% técnico/0% aceptación; otras fases y OPS conservadas. No activar campañas sin nueva instrucción: la aprobación de Meta no acredita identidad de canal ni consentimiento de los importados.
+
 ## Preinscritos importados y campañas preparadas — 2026-11-23
 
 764 contactos nuevos importados; 201 casos en revisión; once campos creados. Segundo contraste: 764 ya importados, cero nuevos pendientes. Ocho plantillas v2 y ocho campañas guardadas en borrador; seis v1 pausadas. Inglés A1/A2 juntos en un semestre verificado en ambas jornadas. Meta: método predeterminado presente y deuda pendiente cero; no fondos disponibles verificados ni cargo. Cero mensajes, consentimientos o escrituras SIIE. Backend c392a4f saludable en qu6rozixwip4b2lz3wmmsk1b; frontend publicado. 163 backend y 22 frontend pasan, tipos/lint/build; advertencias heredadas conservadas. Ver docs/adaptation/PREINSCRITOS_IMPORTACION_20261123.md y artifacts/live/preinscritos-import-20261123.json. Datos nominales y recibos sólo .local.
