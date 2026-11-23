@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-23",
+  "implementation_commit": "46b15cf",
+  "deployments": {
+    "backend": {"id": "ofbym6w7x2vpyqbgyjaurq3u", "status": "success_running", "duration_seconds": 327},
+    "frontend": {"id": "vhst4alryrae5xbdzi7yoidm", "status": "success", "duration_seconds": 44}
+  },
+  "academic": {
+    "programs": 27,
+    "agents": 28,
+    "specialists_created": 1,
+    "existing_specialists_preserved": 26,
+    "siie_written": false,
+    "g2_hours_confirmed": false,
+    "start_year_confirmed": false,
+    "historical_numeric_score_independently_verified": false
+  },
+  "outreach": {
+    "facebook_video_commenters_reviewed": 25,
+    "facebook_video_commenters_covered": 25,
+    "facebook_existing_private_threads": 17,
+    "facebook_new_private_replies": 8,
+    "additional_related_facebook_thread": 1,
+    "instagram_inbox_replies": 2,
+    "instagram_comment_private_replies": 1,
+    "total_native_or_provider_confirmed_outputs": 29,
+    "all_delivered_or_read": false,
+    "old_blocked_job_cancelled_before_first_attempt": true,
+    "inbox_chats_restored_to_ai": true,
+    "global_meta_automation_created": false,
+    "new_automatic_comment_dm_engine_implemented": false,
+    "private_detail_path": ".local/preicfes-outreach-20261123.json"
+  },
+  "agent_preview": {
+    "context_lookup": "program_confirmed_without_consumption",
+    "provider": "gemini",
+    "model": "gemini-3.1-flash-lite",
+    "state": "uncertain",
+    "latency_ms": 7513,
+    "tokens_reported": null,
+    "cost_confirmed": null,
+    "repeated": false,
+    "sent_to_contact": false
+  },
+  "verification": {"backend_tests": 145, "frontend_tests": 48, "types": "pass", "lint": "pass", "ruff": "pass", "workspace_build": "pass", "historical_bundle_warning": true},
+  "p22": {"technical_milestones": "3/5", "commercial_acceptances": 0, "active_model_selection_changed": false},
+  "no_new_schema_seed_or_container": true
+}

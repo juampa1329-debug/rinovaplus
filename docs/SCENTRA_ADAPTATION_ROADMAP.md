@@ -945,3 +945,7 @@ Protocolo para retomar: [RESUME.md](adaptation/RESUME.md). Estado operativo de l
 | P9 | Pendiente: Meta Ads. |
 | P10 | Pendiente: inteligencia y entrenamiento. |
 | P11 | Pendiente: aceptación integral y operación institucional. |
+
+
+## PRE-ICFES e Inbox verificados, 23 de noviembre de 2026
+46b15cf backend ofbym6w7x2vpyqbgyjaurq3u Success/Running 5m27s y frontend vhst4alryrae5xbdzi7yoidm Success44s. Ficha local y especialista creados, 27programas/28agentes. Video Facebook25/25privados, un hilo relacionado adicional y3Instagram (2Inbox/1comentario):29salidas nativas/aceptadas, no29lecturas. Cola antigua cancelada con0intentos antes de respuesta nativa; amboschats vuelvenIA. Nombres cargan progresivamente sin abrir hilos. Gemini preview nuevo uncertain7513ms sin tokens, no repetido; contexto sí pasó. P22 conserva3/5técnico/0aceptación; no motor nuevo de privados automáticos por comentario ni cambios de modelos. Evidencia artifacts/live/preicfes-inbox-20261123.json y docs/adaptation/PREICFES_INBOX_20261123.md; detalle nominal sólo.local. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
