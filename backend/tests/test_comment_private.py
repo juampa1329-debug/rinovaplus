@@ -112,6 +112,7 @@ def grounding():
 
 def test_private_only_for_information_and_actual_catalog_program():
     assert private.parse(generated(), grounding())[1]["delivery"] == "private"
+    assert private.parse(generated(delivery="public"), grounding())[1]["delivery"] == "private"
     for result in [
         generated(program="invented"),
         generated(intent="support"),
@@ -155,6 +156,16 @@ def test_real_guides_are_loaded_hashed_and_bound_to_context():
         "responseSchema"
     ]
     assert "delivery" in schema["required"]
+    assert schema["properties"]["program_id"]["enum"] == ["", "27"]
+
+
+def test_private_routing_context_removes_the_unconditional_public_delivery_instruction():
+    source = grounding()
+    source["system"] += " Esta respuesta será PÚBLICA. No incluyas datos personales ni memoria privada. "
+    value = private.context(source)
+    assert "Esta respuesta será PÚBLICA" not in value["system"]
+    assert "No incluyas datos personales ni memoria privada" in value["system"]
+    assert "Nunca superes 900" in value["system"]
 
 
 @pytest.mark.parametrize("channel,asset", [("facebook", "page"), ("instagram", "ig")])

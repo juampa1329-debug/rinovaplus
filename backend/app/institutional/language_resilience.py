@@ -103,9 +103,23 @@ async def generate(gateway, route, body, guard):
             raise AiError("language_backup_text_only", 409)
         messages.append({"role": "assistant" if content.get("role") == "model" else "user",
                          "content": "\n".join(p["text"] for p in content["parts"])})
+    response_format = {"type": "json_object"}
+    if set(schema.get("properties", {})) == {"decision", "intent", "delivery", "program_id", "text"}:
+        # Keep the private/public decision contract on the backup too. JSON mode
+        # alone guarantees syntax, not the fields or enums used by dispatch.
+        properties = {
+            name: {**value, "type": value["type"].lower()}
+            for name, value in schema["properties"].items()
+        }
+        properties["text"]["maxLength"] = 900
+        response_format = {"type": "json_schema", "json_schema": {
+            "name": "rinova_comment_delivery", "strict": True,
+            "schema": {"type": "object", "required": schema["required"],
+                       "additionalProperties": False, "properties": properties},
+        }}
     data = await gateway.request("openrouter", "POST", "chat/completions", {
         "model": route["model"], "messages": messages, "max_tokens": body["generationConfig"]["maxOutputTokens"],
-        "temperature": body["generationConfig"].get("temperature", 0.3), "response_format": {"type": "json_object"},
+        "temperature": body["generationConfig"].get("temperature", 0.3), "response_format": response_format,
         "provider": {"allow_fallbacks": False, "require_parameters": True, "data_collection": "deny",
                      "max_price": {"prompt": route["input_usd_per_million"], "completion": route["output_usd_per_million"]}},
     })

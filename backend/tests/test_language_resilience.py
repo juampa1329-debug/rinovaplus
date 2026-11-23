@@ -15,6 +15,34 @@ ROUTE = {"provider": "openrouter", "model": "google/fixture:free", "input_usd_pe
 BODY = grounded_replies.request_body({"system": "Guías y contexto revisados", "query": "Consulta"}, 700)
 
 
+def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_gemini_schema():
+    import json
+    from app.institutional import comment_private
+    from app.institutional.language_resilience import generate
+
+    ground = {"system": "Fuentes revisadas", "query": json.dumps({"catalogo": {"queried_programs": [{"program_id": 27}]}})}
+    body = comment_private.request_body(ground, 1200, 0.3)
+    calls = []
+
+    class Gateway:
+        async def request(self, provider, method, path, outgoing):
+            calls.append(outgoing)
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision": "responder", "intent": "information", "delivery": "private", "program_id": "27", "text": "Información vigente solicitada."})}}]}
+
+    response = asyncio.run(generate(Gateway(), ROUTE, body, lambda: None))
+    format = calls[0]["response_format"]
+    assert format["type"] == "json_schema"
+    schema = format["json_schema"]["schema"]
+    assert format["json_schema"]["strict"] is True
+    assert schema["additionalProperties"] is False
+    assert schema["properties"]["text"]["maxLength"] == 900
+    assert schema["properties"]["program_id"]["enum"] == ["", "27"]
+    assert body["generationConfig"]["responseSchema"]["type"] == "OBJECT"
+    assert "maxLength" not in body["generationConfig"]["responseSchema"]["properties"]["text"]
+    assert comment_private.parse(response, ground)[1]["delivery"] == "private"
+    assert len(calls) == 1
+
+
 def setup(*, context=100000, pricing="0", finish="stop", catalog=True):
     calls, reservations, trace = [], [], {}
     def transport(req):

@@ -404,7 +404,14 @@ class Worker:
             state, code = "abandoned", error.detail
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
-        except (KeyError, IndexError, ValueError, TypeError):
+        except ValueError as error:
+            state = "failed"
+            code = {
+                "invalid_generated_reply_length": "comment_ai_reply_too_long",
+                "incomplete_generated_reply": "comment_ai_reply_incomplete",
+                "comment_private_decision_invalid": "comment_ai_reply_contract_invalid",
+            }.get(str(error), "comment_ai_invalid_draft")
+        except (KeyError, IndexError, TypeError):
             state, code = "failed", "comment_ai_invalid_draft"
         except Exception:
             state, code = "uncertain", "comment_ai_result_unknown"

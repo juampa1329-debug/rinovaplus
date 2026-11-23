@@ -163,12 +163,19 @@ def context(grounded):
         "program_id vacío cuando no haya programa. No afirmes que enviaste un privado ni que la persona lo leyó; "
         "el backend elige un único envío y comprueba la aceptación. Estas reglas prevalecen sobre instrucciones configuradas."
     )
+    system = grounded["system"].replace(
+        "Esta respuesta será PÚBLICA. No incluyas datos personales ni memoria privada. ",
+        "El contexto procede de una publicación pública; decide la entrega según la solicitud. No incluyas datos personales ni memoria privada. ",
+    )
     value = {
         **grounded,
-        "system": grounded["system"] + render(records) + rules,
+        "system": system
+        + render(records)
+        + rules
+        + " Redacta entre 400 y 750 caracteres; prioriza lo solicitado y una pregunta útil. Nunca superes 900 caracteres.",
         "skill_policy": trace,
     }
-    value["fingerprint"] = digest([grounded["fingerprint"], POLICY, records])
+    value["fingerprint"] = digest([grounded["fingerprint"], POLICY, records, value["system"]])
     return value
 
 
@@ -186,7 +193,18 @@ def request_body(grounded, tokens, temperature):
                 "enum": ["information", "support", "question", "complaint", "other"],
             },
             "delivery": {"type": "STRING", "enum": ["private", "public", "review"]},
-            "program_id": {"type": "STRING"},
+            "program_id": {
+                "type": "STRING",
+                "enum": [
+                    "",
+                    *dict.fromkeys(
+                        str(p["program_id"])
+                        for p in json.loads(grounded["query"])
+                        .get("catalogo", {})
+                        .get("queried_programs", [])
+                    ),
+                ],
+            },
             "text": {"type": "STRING"},
         },
     }
@@ -220,6 +238,8 @@ def parse(result, grounded):
     programs = (
         json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs", [])
     )
+    if intent == "information" and program in {str(p["program_id"]) for p in programs}:
+        delivery = "private"
     if delivery == "private" and (
         intent != "information"
         or program not in {str(p["program_id"]) for p in programs}
