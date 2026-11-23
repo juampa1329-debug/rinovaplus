@@ -193,18 +193,7 @@ def request_body(grounded, tokens, temperature):
                 "enum": ["information", "support", "question", "complaint", "other"],
             },
             "delivery": {"type": "STRING", "enum": ["private", "public", "review"]},
-            "program_id": {
-                "type": "STRING",
-                "enum": [
-                    "",
-                    *dict.fromkeys(
-                        str(p["program_id"])
-                        for p in json.loads(grounded["query"])
-                        .get("catalogo", {})
-                        .get("queried_programs", [])
-                    ),
-                ],
-            },
+            "program_id": {"type": "STRING"},
             "text": {"type": "STRING"},
         },
     }

@@ -81,3 +81,9 @@ e748487 backend uavozvcl3ln0gx1fvgyfg0yk Success/Running4m17s, frontend6cznheznz
 
 Dos comentarios reales nuevos del titular: el corto se publico con informacion pertinente; la solicitud explicita de precios por privado fallo comment_ai_invalid_draft antes de encolar. Diagnostico confirma Gemini provider_temporary_failure y OpenRouter GPT4.1mini completed en ambos; no se conserva el contenido rechazado ni se atribuye un campo/longitud concreto. Se elimina la instruccion incondicional de entrega publica solo del contexto de decision privada, sin incorporar memoria privada. Respaldo usa json_schema estricto para los cinco campos de entrega, enums de programas recuperados y texto max900; rutas ordinarias conservan contrato anterior. Intencion information con programa validado se entrega por privado; apoyo sigue publico y ambiguedad revision. Huella incluye instrucciones sociales completas. Errores futuros distinguen extension/incompleto/contrato sin exponer borradores.342backend/Ruff y tipos/ESLint/workspacebuild pasan; sin reintento ni envio de operaciones fallidas. Publicacion y ensayo posterior pendientes. Filtros de origen e importacion ya verificados en e748487; P4/P13/P22 no cambian.
 
+
+
+## Compatibilidad del identificador de programa en revision - 2026-11-23
+
+f1c0421 publicado saludable: backend ntg6s7ruukfvxwkfrv0y83xz4m19s, frontend4yr2cxqiycmpzqhqo9tbyyfz45s. Tercer comentario real recibido: Gemini rechazo provider_rejected_request antes de generar y no se ejecuto respaldo; ningun privado enviado por ese intento. Se retira el enum con valor vacio introducido en program_id del esquema Gemini; identificador sigue string y la pertenencia a fichas se valida en backend antes de entregar. Esquema estricto de campos/canal y max900 en OpenRouter conservados.78pruebas focalizadas pasan. No se identifica otro campo de rechazo a partir del mensaje sanitizado. Ensayo real posterior pendiente; sin replay de intentos anteriores.
+

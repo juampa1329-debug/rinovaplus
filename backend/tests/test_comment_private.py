@@ -156,7 +156,7 @@ def test_real_guides_are_loaded_hashed_and_bound_to_context():
         "responseSchema"
     ]
     assert "delivery" in schema["required"]
-    assert schema["properties"]["program_id"]["enum"] == ["", "27"]
+    assert schema["properties"]["program_id"] == {"type": "STRING"}
 
 
 def test_private_routing_context_removes_the_unconditional_public_delivery_instruction():

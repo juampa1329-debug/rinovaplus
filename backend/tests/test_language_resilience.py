@@ -36,7 +36,7 @@ def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_
     assert format["json_schema"]["strict"] is True
     assert schema["additionalProperties"] is False
     assert schema["properties"]["text"]["maxLength"] == 900
-    assert schema["properties"]["program_id"]["enum"] == ["", "27"]
+    assert schema["properties"]["program_id"] == {"type": "string"}
     assert body["generationConfig"]["responseSchema"]["type"] == "OBJECT"
     assert "maxLength" not in body["generationConfig"]["responseSchema"]["properties"]["text"]
     assert comment_private.parse(response, ground)[1]["delivery"] == "private"

@@ -47,7 +47,9 @@
       "backup": "OpenRouter GPT-4.1 mini completed",
       "rejection": "comment_ai_invalid_draft",
       "exact_rejected_field": "not retained; not asserted",
-      "strict_contract_post_fix_live_test": "pending"
+      "strict_contract_post_fix_live_test": "pending",
+      "strict_contract_first_live_test": "Gemini provider_rejected_request before generation; backup not called",
+      "private_dispatch_still_pending": true
     }
   },
   "origin_views": {
@@ -57,7 +59,8 @@
     "postgresql_query_parsed": true,
     "live_views_verified": true,
     "unanswered_comment_conversations_observed": 23,
-    "active_preicfes_threads_in_main_inbox": 6
+    "active_preicfes_threads_in_main_inbox": 6,
+    "all_comment_origin_threads_observed": 26
   },
   "validation": {
     "backend_selected_tests_passed": 342,
@@ -88,6 +91,19 @@
       "id": "6cznheznzfgqcil8tkfzgcmx",
       "status": "Success / Running",
       "duration": "44s"
+    }
+  },
+  "strict_contract_commit": "f1c0421f553ddd3f9190fc7865337faf007dcc5d",
+  "strict_contract_deployments": {
+    "backend": {
+      "id": "ntg6s7ruukfvxwkfrv0y83xz",
+      "status": "Success / Running",
+      "duration": "4m19s"
+    },
+    "frontend": {
+      "id": "4yr2cxqiycmpzqhqo9tbyyfz",
+      "status": "Success / Running",
+      "duration": "45s"
     }
   }
 }
