@@ -548,6 +548,20 @@ it("explains an empty Inbox without offering unavailable pages", async () => {
   expect(screen.queryByRole("button", { name: "Siguiente" })).toBeNull();
 });
 
+it("returns from the chat to the list and preserves its unsent draft", async () => {
+  open("inbox");
+  await select();
+  fireEvent.change(screen.getByLabelText("Mensaje local"), {
+    target: { value: "Borrador antes de volver" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Volver a conversaciones" }));
+  expect(screen.queryByRole("region", { name: "Conversación seleccionada" })).toBeNull();
+  expect(screen.getByRole("complementary", { name: "Conversaciones" })).toBeInTheDocument();
+  await select();
+  expect(screen.getByLabelText("Mensaje local")).toHaveValue("Borrador antes de volver");
+  expect(calls.filter(c => c.method === "POST" && c.path.endsWith("/messages"))).toHaveLength(0);
+});
+
 it("sends with Enter and the button, inserts a line at the caret with Alt+Enter", async () => {
   open("inbox");
   await select();

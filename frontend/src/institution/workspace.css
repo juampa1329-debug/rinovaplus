@@ -867,7 +867,7 @@
     gap: 0.75rem;
   }
 }
-@media (max-width: 759px) {
+@media (max-width: 900px) {
   .institutional-inbox .p3-columns {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -882,13 +882,18 @@
     display: inline-flex;
     align-self: start;
     margin-bottom: 0.4rem;
+    min-block-size: 2.75rem;
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    background: var(--surface);
   }
   .inbox-list-controls .button,
   .inbox-thread-heading .button {
     min-height: 2.5rem;
   }
 }
-@media (min-width: 760px) and (max-width: 1199px) {
+@media (min-width: 901px) and (max-width: 1199px) {
   .institutional-inbox .p3-columns {
     grid-template-columns: minmax(220px, 270px) minmax(0, 1fr);
   }

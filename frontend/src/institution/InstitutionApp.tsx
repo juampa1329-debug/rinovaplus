@@ -13,6 +13,7 @@ import { Clients } from "../modules/clients/pages/Clients";
 import { useCrmConfiguration } from "../modules/crm-configuration/hooks/useCrmConfiguration";
 import { CrmConfiguration } from "../modules/crm-configuration/pages/CrmConfiguration";
 import { Inbox } from "../modules/inbox/pages/Inbox";
+import { InstitutionNavigation } from "./InstitutionNavigation";
 import { send, SessionBoundary, useInstitution, useTask } from "./api";
 import type { Contract, Session } from "./api";
 import {
@@ -477,6 +478,8 @@ function Shell({
     theme = useTheme();
   const [location, setLocation] = useState(route),
     [menu, setMenu] = useState(false);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
+  const closeMenu = useCallback(() => setMenu(false), []);
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem("rinovaplus.sidebar.collapsed") === "true"; }
     catch { return false; }
@@ -527,9 +530,9 @@ function Shell({
       }}
     >
       <div className="app-shell pilot-shell institution-shell" data-nav-collapsed={collapsed || undefined}>
-        <aside className={`sidebar ${menu ? "is-open" : ""}`}>
+        <InstitutionNavigation open={menu} close={closeMenu} trigger={menuTrigger}>
           <div className="institution-sidebar-heading">
-          <a className="institution-brand" href="#/overview" aria-label="RinovaPlus, inicio">
+          <a className="institution-brand" href="#/overview" aria-label="RinovaPlus, inicio" onClick={closeMenu}>
             <ProductBrand />
           </a>
           <Button className="institution-collapse" variant="quiet"
@@ -563,6 +566,7 @@ function Shell({
                   href={`#/${id}`}
                   aria-label={label}
                   aria-current={location.page === id ? "page" : undefined}
+                  onClick={closeMenu}
                   aria-describedby={tooltip?.label === label ? "institution-nav-tooltip" : undefined}
                   onMouseEnter={(event) => showTooltip(event.currentTarget, label)}
                   onMouseLeave={() => setTooltip(null)}
@@ -612,20 +616,25 @@ function Shell({
               <span className="institution-nav-label">Cerrar sesión</span>
             </Button>
           </div>
-        </aside>
+        </InstitutionNavigation>
         {tooltip && createPortal(
           <div id="institution-nav-tooltip" role="tooltip" className="institution-nav-tooltip"
             style={{ left: tooltip.left, top: tooltip.top }}>
             {tooltip.label}
           </div>, document.body,
         )}
-        <main className="institution-main">
+        <main className="institution-main" inert={menu}>
           <header className="institution-topbar">
             <Button
               variant="secondary"
               className="institution-menu"
+              aria-controls="institution-sidebar"
+              aria-label={menu ? "Cerrar menú" : "Abrir menú"}
               aria-expanded={menu}
-              onClick={() => setMenu(!menu)}
+              onClick={(event) => {
+                menuTrigger.current = event.currentTarget;
+                setMenu(!menu);
+              }}
             >
               Menú
             </Button>

@@ -40,3 +40,7 @@ Evaluación solicitada por el titular terminada: siete situaciones con las17guí
 ### Manual comercial CBN — 22-11-2026
 
 El titular autoriza adaptar sus pautas a todos los programas con datos de las fichas vigentes. Política v7 publicada en def2232, patrones por situación y cuatro skills revisadas;204pruebas backend/Ruff pasan.35respuestas válidas,17skills completas verificadas por modelo en los casos pertinentes y35copias entregadas al44. Chat restauradoIA tras recarga; modelos activos conservados. USD1,5569715nuevos; acumulado conocido+reservado USD5,010842581/10. Se documentan supuestos de horario de GPT, generalización de reglas de reserva y extensión/advertencias. Elección del titular/pipeline/piloto pendientes. [Seguimiento](P22_MANUAL_CBN_20261122.md). No cambia selección de modelos ni aceptación de P22.
+
+### Inbox responsive — 23-11-2026
+
+Cierre de menú móvil y retorno al listado hasta900px preparados,46pruebas frontend/tipos/lint/build institucional pasan. [Detalle](INBOX_RESPONSIVE_NAV_20261123.md). No cambia aceptaciones de fases ni acredita los envíos PRE-ICFES pendientes.

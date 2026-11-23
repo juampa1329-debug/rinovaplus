@@ -500,6 +500,10 @@
 .institution-menu {
   display: none;
 }
+.institution-menu-close,
+.institution-nav-backdrop {
+  display: none;
+}
 @media (max-width: 900px) {
   .institution-collapse {
     display: none !important;
@@ -512,12 +516,39 @@
     position: fixed;
     z-index: 30;
     width: min(85vw, 19rem);
+    max-block-size: calc(100dvh - 1.5rem);
+    box-sizing: border-box;
   }
   .institution-shell .sidebar.is-open {
     display: flex;
   }
   .institution-menu {
     display: inline-flex;
+    min-block-size: 2.75rem;
+  }
+  .institution-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 29;
+    border: 0;
+    border-radius: 0;
+    background: #00181d80;
+    cursor: pointer;
+  }
+  .institution-shell .institution-menu-close {
+    display: inline-flex;
+    align-self: flex-end;
+    align-items: center;
+    gap: 0.35rem;
+    flex: none;
+    min-block-size: 2.75rem;
+    color: var(--rinova-paper);
+  }
+  .institution-shell .sidebar nav {
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .institution-content {
     padding: 1rem;
