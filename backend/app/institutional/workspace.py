@@ -527,6 +527,16 @@ class Workspace:
         )
         return f"COALESCE({connected},{legacy},'local')"
 
+    def inbox_comment_columns(self, area):
+        if area != "inbox" or not self.operational_channels:
+            return ""
+        from app.institutional.conversation_origins import COMMENT_ORIGIN, COMMENT_PENDING
+
+        return (
+            f",CASE WHEN {COMMENT_ORIGIN} THEN 1 ELSE 0 END AS commentOrigin"
+            f",CASE WHEN {COMMENT_PENDING} THEN 1 ELSE 0 END AS commentPending"
+        )
+
     def inbox_account_columns(self):
         if not self.operational_channels:
             return ""
@@ -641,6 +651,10 @@ class Workspace:
                 return {"revision": current_revision, "unchanged": True}
             where = ["1=1"]
             params = []
+            if area == "inbox" and self.operational_channels:
+                from app.institutional.conversation_origins import view_predicate
+
+                where.append(view_predicate(queue))
             if area == "clients":
                 where.append(ALIASES)
                 # A grouped source can match; the canonical person is selected before
@@ -869,6 +883,7 @@ class Workspace:
                     + SLA_STATUS
                     + f" AS slaStatus,{channel_expression} AS channel"
                     + (self.inbox_account_columns() if area == "inbox" else "")
+                    + self.inbox_comment_columns(area)
                     + (
                         ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
                         " WHERE m.ConversationId=v.ConversationId"
@@ -1665,6 +1680,8 @@ def install(app, settings, workspace=None):
             "hot",
             "churn",
             "sla",
+            "comment_pending",
+            "comment_origin",
         ] = "all",
         user: str = Query("", max_length=36),
         channel: Literal[

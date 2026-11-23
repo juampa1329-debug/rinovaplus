@@ -71,6 +71,8 @@ type Row = {
   accountPhone?: string | null;
   updatedAt?: string;
   previewAt?: string;
+  commentOrigin?: boolean;
+  commentPending?: boolean;
   preview?: string | null;
   previewKind?: string | null;
   previewDuration?: string | null;
@@ -181,6 +183,8 @@ const statuses = [
 ];
 const queues = [
   { value: "all", label: "Todas" },
+  { value: "comment_pending", label: "Comentarios sin respuesta" },
+  { value: "comment_origin", label: "Desde comentarios · todas" },
   { value: "unread", label: "No leídas" },
   { value: "mine", label: "Mis conversaciones" },
   { value: "unassigned", label: "Sin asignar" },
