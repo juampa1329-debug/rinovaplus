@@ -39,7 +39,7 @@
     "instagram_cbn_selected": true,
     "scentra_wpp_selected": false,
     "persisted_after_reload": true,
-    "new_comment_live_delivery_verified": false,
+    "new_comment_live_delivery_verified": true,
     "live_tests": {
       "short_test": "public informational reply accepted",
       "explicit_private_test": "generation rejected before dispatch",
@@ -47,9 +47,11 @@
       "backup": "OpenRouter GPT-4.1 mini completed",
       "rejection": "comment_ai_invalid_draft",
       "exact_rejected_field": "not retained; not asserted",
-      "strict_contract_post_fix_live_test": "pending",
+      "strict_contract_post_fix_live_test": "passed with OpenRouter primary; previous three failed/public attempts preserved below",
       "strict_contract_first_live_test": "Gemini provider_rejected_request before generation; backup not called",
-      "private_dispatch_still_pending": true
+      "private_dispatch_still_pending": false,
+      "latest_result": "New technical Facebook comment: Sonnet4.6 confirmed and one private delivered; projected to Inbox with public profile name and origin label",
+      "instagram_new_automatic_case": "pending"
     }
   },
   "origin_views": {
@@ -60,17 +62,19 @@
     "live_views_verified": true,
     "unanswered_comment_conversations_observed": 23,
     "active_preicfes_threads_in_main_inbox": 6,
-    "all_comment_origin_threads_observed": 26
+    "all_comment_origin_threads_observed": 26,
+    "unanswered_comment_conversations_after_technical_test": 24
   },
   "validation": {
-    "backend_selected_tests_passed": 342,
+    "backend_selected_tests_passed": 391,
     "frontend_previous_four_file_tests_passed": 60,
     "frontend_latest_two_file_tests_passed": 47,
     "types": "passed",
     "eslint": "passed",
     "ruff": "passed",
     "workspace_build": "passed",
-    "bundle_size_warning": "historical, preserved"
+    "bundle_size_warning": "historical, preserved",
+    "frontend_current_six_file_tests_passed": 67
   },
   "invariants": {
     "no_resends_during_history_import": true,
@@ -105,5 +109,7 @@
       "status": "Success / Running",
       "duration": "45s"
     }
-  }
+  },
+  "language_primary_commit": "b80151bf2fefdc21d5c5cb47430a3f05d9c0e64e",
+  "language_primary_evidence": "artifacts/live/sonnet-routing-20261123.json"
 }

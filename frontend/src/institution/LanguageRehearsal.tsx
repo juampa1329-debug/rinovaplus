@@ -60,7 +60,7 @@ export function LanguageRehearsal({
     <section className="panel" aria-label="Ensayo de conmutación P21">
       <h3>Simular una caída · P21</h3>
       <p>
-        El principal se simula dentro del ensayo; Gemini y los chats reales
+        El principal se simula dentro del ensayo; los modelos y chats reales
         siguen funcionando. Ante un rechazo 503, 429 o un tiempo de espera agotado se consulta el respaldo
         guardado con información ficticia. Los modelos de pago requieren tu
         autorización y el ensayo reserva como máximo USD 0,05 en total, además
@@ -79,7 +79,7 @@ export function LanguageRehearsal({
           options={[
             { value: "unavailable", label: "Principal no disponible · 503" },
             { value: "rate_limited", label: "Principal saturado · 429" },
-            { value: "timeout", label: "Gemini agota el tiempo · respaldo de texto" },
+            { value: "timeout", label: "Principal agota el tiempo · respaldo de texto" },
             {
               value: "healthy",
               label: "Principal saludable · sin consulta externa",
