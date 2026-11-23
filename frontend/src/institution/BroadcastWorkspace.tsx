@@ -58,6 +58,7 @@ type Template = {
   paused: boolean;
   components: Component[];
   metadata?: {
+    library_removed?: boolean;
     quality_score?: string;
     rejection_reason?: string;
     variable_bindings?: Record<string, VariableBinding>;
@@ -166,6 +167,10 @@ const stateLabel: Record<string, string> = {
   blocked: "Bloqueado",
 };
 const reasonLabel: Record<string, string> = {
+  broadcast_template_still_in_campaign:
+    "Cambia la plantilla de las campañas que todavía la usan antes de eliminarla de la biblioteca.",
+  broadcast_template_removed_from_library:
+    "La plantilla está en la papelera. Restáurala antes de usarla.",
   human_control: "Atención humana",
   canonical_contact_prior_effect:
     "Esta persona ya tiene un envío aceptado o pendiente de conciliación",
@@ -199,6 +204,7 @@ const profileLabels: Record<string, string> = {
   schedule: "Jornada",
   contact_type: "Tipo de contacto",
   stage: "Estado CRM",
+  last_incoming: "Último mensaje recibido al preparar",
 };
 const sources = [
   "literal",
@@ -554,7 +560,12 @@ function CampaignEditor({
             options={[
               { value: "", label: "Selecciona una plantilla" },
               ...options.templates
-                .filter((t) => t.integration_id === doc.integration_id)
+                .filter(
+                  (t) =>
+                    t.integration_id === doc.integration_id &&
+                    !t.metadata?.library_removed &&
+                    (!t.paused || t.id === doc.template_id),
+                )
                 .map((t) => ({
                   value: t.id,
                   label: `${t.name} · ${t.language} · ${templateStatus(t.status)}${t.paused ? " · Pausada" : ""}`,
@@ -1358,6 +1369,8 @@ function TemplatePanel({
     task = useTask(),
     intent = useIntent();
   const [creating, setCreating] = useState(initiallyCreating),
+    [showPaused, setShowPaused] = useState(false),
+    [showRemoved, setShowRemoved] = useState(false),
     [reviewed, setReviewed] = useState("");
   const command = (revision = 0, extra = {}) => {
     const value = {
@@ -1376,6 +1389,26 @@ function TemplatePanel({
         aprueba ni envía mensajes.
       </p>
       <div className="institution-actions">
+        {templates.some((t) => t.metadata?.library_removed) && (
+          <Button
+            variant="quiet"
+            aria-pressed={showRemoved}
+            onClick={() => setShowRemoved(!showRemoved)}
+          >
+            {showRemoved ? "Volver a plantillas" : "Ver papelera"}
+            {` (${templates.filter((t) => t.metadata?.library_removed).length})`}
+          </Button>
+        )}
+        {!showRemoved && templates.some((t) => t.paused && !t.metadata?.library_removed) && (
+          <Button
+            variant="quiet"
+            aria-pressed={showPaused}
+            onClick={() => setShowPaused(!showPaused)}
+          >
+            {showPaused ? "Ocultar versiones pausadas" : "Mostrar versiones pausadas"}
+            {` (${templates.filter((t) => t.paused && !t.metadata?.library_removed).length})`}
+          </Button>
+        )}
         <Button
           disabled={task.busy}
           onClick={() =>
@@ -1417,7 +1450,7 @@ function TemplatePanel({
           borrador.
         </Notice>
       )}
-      {templates.map((t) => (
+      {templates.filter((t) => showRemoved ? t.metadata?.library_removed : !t.metadata?.library_removed && (showPaused || !t.paused)).map((t) => (
         <article className="broadcast-message" key={t.id}>
           <h3>
             {t.name} · {t.language}
@@ -1436,6 +1469,7 @@ function TemplatePanel({
               {templateStatus(t.status)}
             </span>{" "}
             {t.paused && "· Pausada en CRM"}
+            {t.metadata?.library_removed && " · Eliminada de biblioteca"}
           </p>
           {t.metadata?.quality_score && (
             <p>
@@ -1455,7 +1489,7 @@ function TemplatePanel({
             .map((c, i) => (
               <p key={i}>{c.text}</p>
             ))}
-          {t.origin === "operator" && (
+          {t.origin === "operator" && !t.metadata?.library_removed && (
             <div>
               <label className="broadcast-check">
                 <input
@@ -1487,7 +1521,7 @@ function TemplatePanel({
               </Button>
             </div>
           )}
-          <Button
+          {!t.metadata?.library_removed && <Button
             variant="quiet"
             disabled={task.busy}
             onClick={() =>
@@ -1503,6 +1537,18 @@ function TemplatePanel({
             }
           >
             {t.paused ? "Permitir uso en CRM" : "Pausar uso en CRM"}
+          </Button>}
+          <Button
+            variant="quiet"
+            disabled={task.busy}
+            onClick={() => void task.run(async () => {
+              await call(`broadcasts/templates/${t.id}/library`, "POST",
+                command(t.version, { removed: !t.metadata?.library_removed, confirmed: true }));
+              intent.clear();
+              await reload();
+            }, t.metadata?.library_removed ? "Plantilla restaurada en pausa." : "Plantilla retirada de la biblioteca.")}
+          >
+            {t.metadata?.library_removed ? "Restaurar en pausa" : "Eliminar de biblioteca"}
           </Button>
         </article>
       ))}

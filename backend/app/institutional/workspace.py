@@ -660,9 +660,11 @@ class Workspace:
                     "AND incoming.Direction='incoming'))"
                 )
             if area == "inbox" and self.operational_channels:
+                from app.institutional.broadcast_inbox import BROADCAST_PENDING
                 from app.institutional.conversation_origins import view_predicate
 
                 where.append(view_predicate(queue))
+                where.append("NOT " + BROADCAST_PENDING)
             if area == "clients":
                 where.append(ALIASES)
                 # A grouped source can match; the canonical person is selected before

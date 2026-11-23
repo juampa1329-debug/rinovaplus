@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-23",
+  "scope": "CBN_WhatsApp_template_library",
+  "new_advisor_templates": 20,
+  "submitted_to_meta_after_explicit_20_template_authorization": 20,
+  "meta_approved_after_sync": 20,
+  "active_library_templates": 20,
+  "obsolete_templates_removed_to_trash": 32,
+  "trash_restore_buttons_verified": 32,
+  "meta_sync_preserves_library_removal": true,
+  "all_active_templates_present_juan_pablo": true,
+  "active_templates_with_uniform_mentions": 0,
+  "campaign_drafts_using_new_templates": 20,
+  "campaigns_activated": 0,
+  "messages_sent_to_prospects": 0,
+  "consents_granted": 0,
+  "charges": 0,
+  "remote_meta_templates_deleted": 0,
+  "academic_writes": 0,
+  "ddl": false,
+  "reauthentication": {
+    "completed": true,
+    "used_existing_autofill": true,
+    "second_field_cleared": true,
+    "credentials_extracted": false
+  },
+  "backend": {
+    "sha": "fd236e7a9b912d7b15931b47a957887ea179bb2b",
+    "deployment": "cfmafgsm3xivbcxkzy1znt3s",
+    "duration": "04m17s",
+    "readiness": "ready",
+    "rollout_completed_utc": "2026-11-23T20:31:48Z"
+  },
+  "resolved_failures": [
+    "Coolify_HTTP_override_used_missing_wget_changed_to_existing_curl_same_readiness",
+    "PostgreSQL_42883_Unicode_text_conversion_in_incoming_comment_attribution",
+    "library_audit_metadata_rejected_and_rolled_back_then_corrected"
+  ],
+  "validation": {
+    "initial_selected_backend_passed": 170,
+    "frontend_passed": 25,
+    "corrections_selected_backend_passed": 57,
+    "library_tests_in_corrections": 8,
+    "new_python_modules_ruff": true,
+    "frontend_types_lint_build": true,
+    "live_queue_probe_rolled_back_before_commit_and_provider": true,
+    "historical_bundle_datetime_and_legacy_format_warnings_retained": true
+  },
+  "private_evidence_sha256": {
+    "juan-pablo-templates.json": "4e177dd1c0dd25a41058e5acb091648297efe8573ffa5b246dd3bc83d73060ae",
+    "juan-pablo-meta-statuses.json": "df522f6a167f809b51d5b1eb1c44f01530a20d5e1c79c3ca90654dd3c8548b5a",
+    "library-cleanup-verification.json": "d23b1f160226d4845bd67604a1735ec6275d22a1d6ae2c3422620cbccafd4242",
+    "juan-pablo-campaign-final-proof.json": "aa2dbd2370cf6196e7a0ede650e68bbac3085445b93b188519af9bc924ec5eeb",
+    "biblioteca-juan-pablo-verificada.jpg": "0882f59a45392058932dee0649d3fec9f17b1933f156f6011fa6361da72ffac0"
+  }
+}

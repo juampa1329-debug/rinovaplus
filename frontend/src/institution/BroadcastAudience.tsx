@@ -19,6 +19,7 @@ export type AudienceFilters = {
   cities: string[];
   tags: string[];
   audience_mode?: "segment" | "contacts";
+  last_incoming_bucket?: "any" | "unknown" | "0_29" | "30_59" | "60_89" | "90_plus";
   tag_match?: "all" | "any";
   schedules?: string[];
   contact_types?: string[];
@@ -27,7 +28,7 @@ export type AudienceFilters = {
   countries?: string[];
   age_min?: number | null;
   age_max?: number | null;
-  custom_fields?: { field_key: string; values: string[] }[];
+  custom_fields?: { field_key: string; values: string[]; match?: "exact" | "contains" }[];
 };
 
 function TokenField(props: ComponentProps<typeof Field>) {
@@ -256,6 +257,21 @@ export function BroadcastAudience({
         />
         Elegir personas específicas
       </label>
+      <SelectField
+        id="audience-last-incoming"
+        label="Tiempo desde el último mensaje recibido"
+        value={filters.last_incoming_bucket || "any"}
+        options={[
+          { value: "any", label: "Cualquier antigüedad" },
+          { value: "unknown", label: "Sin mensaje recibido verificable" },
+          { value: "0_29", label: "0–29 días" },
+          { value: "30_59", label: "30–59 días" },
+          { value: "60_89", label: "60–89 días" },
+          { value: "90_plus", label: "90 días o más" },
+        ]}
+        onChange={(e) => update({ last_incoming_bucket: e.target.value as AudienceFilters["last_incoming_bucket"] })}
+      />
+      <p className="broadcast-help">Usa la fecha real recibida del canal, en la zona horaria de la campaña. Una preinscripción o gestión administrativa no demuestra una conversación; sin evidencia queda en su grupo propio.</p>
       {(filters.audience_mode === "contacts" || !!filters.contact_ids.length) &&
         (account ? (
           <People
@@ -459,6 +475,13 @@ export function BroadcastAudience({
                   ),
                 })
               }
+            />
+            <SelectField
+              id={`custom-match-${i}`}
+              label={`Coincidencia del campo ${i + 1}`}
+              value={f.match || "exact"}
+              options={[{ value: "exact", label: "Valor completo" }, { value: "contains", label: "Contiene alguno de los valores" }]}
+              onChange={(e) => update({ custom_fields: custom.map((v, n) => n === i ? { ...v, match: e.target.value as "exact" | "contains" } : v) })}
             />
             <Button
               variant="quiet"

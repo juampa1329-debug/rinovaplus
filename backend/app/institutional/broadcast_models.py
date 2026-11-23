@@ -102,10 +102,14 @@ class Variable(Strict):
 class CustomFilter(Strict):
     field_key: str = Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")
     values: list[str] = Field(min_length=1, max_length=100)
+    match: Literal["exact", "contains"] = "exact"
 
 
 class Filters(Strict):
     audience_mode: Literal["segment", "contacts"] = "segment"
+    last_incoming_bucket: Literal[
+        "any", "unknown", "0_29", "30_59", "60_89", "90_plus"
+    ] = "any"
     contact_ids: list[JsonUUID] = Field(default_factory=list, max_length=5000)
     program_ids: list[int] = Field(default_factory=list, max_length=100)
     stages: list[str] = Field(default_factory=list, max_length=100)

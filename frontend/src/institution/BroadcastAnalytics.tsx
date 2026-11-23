@@ -42,6 +42,7 @@ const dimensions = [
   ["schedule", "Jornada"],
   ["contact_type", "Tipo de contacto"],
   ["stage", "Estado CRM"],
+  ["last_incoming", "Último mensaje recibido al preparar"],
 ];
 const metrics = [
   ["total", "Destinatarios"],

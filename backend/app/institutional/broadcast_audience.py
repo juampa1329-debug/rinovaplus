@@ -3,11 +3,41 @@
 import json
 import unicodedata
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
-DIMENSIONS = ("gender", "age_band", "city", "region", "country", "program", "schedule", "contact_type", "stage")
+DIMENSIONS = (
+    "gender", "age_band", "city", "region", "country", "program", "schedule",
+    "contact_type", "stage", "last_incoming",
+)
+RECENCY_LABELS = {
+    "unknown": "Sin mensaje recibido verificable",
+    "0_29": "0–29 días", "30_59": "30–59 días", "60_89": "60–89 días",
+    "90_plus": "90 días o más",
+}
+
+
+def incoming_bucket(person, document, as_of):
+    """Provider-observed inbound date only; registration/management is not contact."""
+    value = person.get("LastIncomingAt")
+    try:
+        stamp = (
+            value if isinstance(value, datetime)
+            else datetime.fromisoformat(value.replace("Z", "+00:00"))
+        )
+        stamp = stamp.replace(tzinfo=timezone.utc) if stamp.tzinfo is None else stamp
+        zone = ZoneInfo(document.get("timezone", "America/Bogota"))
+        days = (as_of - stamp.astimezone(zone).date()).days
+        if days < 0:
+            return "unknown"
+        for limit, bucket in [(30, "0_29"), (60, "30_59"), (90, "60_89")]:
+            if days < limit:
+                return bucket
+        return "90_plus"
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return "unknown"
 
 
 def normalized(value):
@@ -61,6 +91,7 @@ def details(person, document, as_of):
         "schedule": person.get("Schedule", ""),
         "contact_type": person.get("Type", ""),
         "stage": person.get("Stage", ""),
+        "last_incoming": RECENCY_LABELS[incoming_bucket(person, document, as_of)],
     }
     return {k: str(v).strip()[:200] if v is not None and str(v).strip() else "Sin dato" for k, v in result.items()}, age, values
 
@@ -68,6 +99,9 @@ def details(person, document, as_of):
 def matches(person, document, as_of):
     filters = document.get("filters", {})
     if filters.get("audience_mode") == "contacts" and not filters.get("contact_ids"):
+        return False
+    bucket = filters.get("last_incoming_bucket", "any")
+    if bucket != "any" and incoming_bucket(person, document, as_of) != bucket:
         return False
     profile, age, values = details(person, document, as_of)
     if filters.get("genders") and normalized(profile["gender"]) not in {normalized(gender(v)) for v in filters["genders"]}:
@@ -81,7 +115,13 @@ def matches(person, document, as_of):
             return False
     for field in filters.get("custom_fields", []):
         value = values.get(field["field_key"])
-        if value is None or normalized(value) not in {normalized(v) for v in field["values"]}:
+        allowed = {normalized(v) for v in field["values"]}
+        matched = (
+            any(v in normalized(value) for v in allowed)
+            if field.get("match") == "contains"
+            else normalized(value) in allowed
+        )
+        if value is None or not matched:
             return False
     return True
 

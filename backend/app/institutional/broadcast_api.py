@@ -16,6 +16,7 @@ from app.institutional.broadcast_models import (
 )
 from app.institutional.broadcasts import Broadcasts
 from app.institutional.db import uid
+from app.institutional.template_library import LibraryWrite
 
 
 def install(app, settings, gateway=None):
@@ -72,6 +73,12 @@ def install(app, settings, gateway=None):
     @app.post(("/api/institution/broadcasts/templates/{template}/pause"))
     def pause_template(request: Request, template: str, body: TemplatePause):
         return service.pause_template(request.state.authority, uid(template), body)
+
+    @app.post("/api/institution/broadcasts/templates/{template}/library")
+    def template_library(request: Request, template: str, body: LibraryWrite):
+        from app.institutional.template_library import change
+
+        return change(service, request.state.authority, uid(template), body)
 
     @app.get("/api/institution/broadcasts/{campaign}/export")
     def export(

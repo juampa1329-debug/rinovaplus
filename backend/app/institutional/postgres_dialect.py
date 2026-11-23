@@ -194,7 +194,10 @@ def postgres_sql(statement, table_map):
             part, flags=re.I,
         )
         part = re.sub(r"CONVERT\(date,SYSUTCDATETIME\(\)\)", NOW + "::date", part, flags=re.I)
-        part = re.sub(r"CONVERT\(varchar\(\d+\),\s*([\w.]+)\)", r"(\1)::text", part, flags=re.I)
+        part = re.sub(
+            r"CONVERT\(n?varchar\(\d+\),\s*([\w.]+)\)",
+            r"(\1)::text", part, flags=re.I,
+        )
         part = re.sub(r"CONVERT\(bigint,\s*([\w.]+)\)", r"(\1)::bigint", part, flags=re.I)
         part = re.sub(r"CONVERT\(int,\s*(FallbackUsed)\)", r"(\1)::integer", part, flags=re.I)
         part = re.sub(r"\bSYSUTCDATETIME\(\)", NOW, part, flags=re.I)
