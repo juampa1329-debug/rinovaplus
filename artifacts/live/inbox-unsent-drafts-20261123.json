@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-23",
+  "timezone": "America/Bogota",
+  "scope": "Distinguish unsent automated drafts from provider-delivered Instagram messages",
+  "privacy": "No credentials, recipient identifiers, contact names, message bodies or program prices",
+  "feature_commit": "48a122c0801363762cf6d995a0fb82e02ef4e6d5",
+  "diagnosis": {
+    "cancelled_badges_in_loaded_history_before": 10,
+    "sample_cancelled_queue_ids": [
+      "a3f44945-a2a8-465a-b088-f15daa450269",
+      "77666e76-d9b3-4ef0-a785-6008e8f09d33",
+      "db8fe3e7-4c66-4fb0-bce9-80ff41ded1b7"
+    ],
+    "sample_cancelled_attempts": 0,
+    "code": "gemini_whatsapp_control_or_history_changed",
+    "read_final_queue": "edd15eb1-7bca-4eb5-8804-5960392dd779",
+    "read_final_attempts": 1,
+    "exact_draft_text_present_in_native_meta_window": false,
+    "native_meta_window": "16:39–16:44",
+    "distinct_final_reply_seen_with_reaction": true,
+    "specific_historical_context_component_proven": false
+  },
+  "presentation": {
+    "ai_origin_required": true,
+    "zero_attempts_required": true,
+    "missing_provider_id_required": true,
+    "cancelled_state_required": true,
+    "unknown_metadata_does_not_classify_as_unsent_draft": true,
+    "draft_label": "Borrador de IA · no enviado",
+    "draft_footer": "Descartado · no enviado",
+    "text_preserved": true,
+    "not_color_only": true,
+    "actual_delivery_state_unchanged": true,
+    "verified_discarded_labels_after_reload": 10,
+    "cancelled_error_buttons_after_reload": 0,
+    "final_read_message_preserved": true
+  },
+  "validation": {
+    "selected_backend_passed": 74,
+    "frontend_integration_passed": 47,
+    "types": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed",
+    "bundle_warning": "historical"
+  },
+  "deployments": {
+    "backend": {
+      "id": "tiuzhc4py6z0eqqipxfcplpo",
+      "status": "Success / Running",
+      "duration": "4m27s"
+    },
+    "frontend": {
+      "id": "vqjeq8sorp79agu9z9d0popj",
+      "status": "Success / Running",
+      "duration": "43s"
+    }
+  },
+  "invariants": {
+    "no_new_messages_sent": true,
+    "no_generations": true,
+    "no_queue_or_receipt_state_rewritten": true,
+    "no_historical_message_deleted": true,
+    "control_unchanged": true,
+    "no_ddl_seeds_new_services_or_siie_writes": true,
+    "p4_p13_p21_initial_acceptance_preserved": true,
+    "p22": "3/5 technical, 0/5 commercial acceptance"
+  }
+}

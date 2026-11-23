@@ -1,3 +1,9 @@
+## Inbox: borradores y recibos reales publicados y verificados — 2026-11-23
+
+48a122c saludable: backend tiuzhc4py6z0eqqipxfcplpo Success/Running4m27s; frontend vqjeq8sorp79agu9z9d0popj Success43s. Tras recargar el hilo real de Instagram, los10avisos Cancelado del tramo cargado pasan a10etiquetas Borrador de IA · no enviado/Descartado · no enviado, con0botones de error por esas cancelaciones previstas. El mensaje final conserva Leído y el estilo de enviado. Contraste nativo de Meta confirma que el texto exacto señalado no aparece entre los mensajes enviados del tramo16:39–16:44, mientras que la respuesta final distinta sí aparece vista/con reacción. No falsificar entrega por semejanza semántica.
+
+Se conservan cuerpos, estados almacenados, colas, recibos, control IA/Humano y auditoría; no reenvíos ni nuevas inferencias. Sólo presentación y metadatos de lectura acotados.74backend/47frontend,tipos/ESLint/Ruff/workspacebuild pasan; bundlehistórico. Captura local de la vista corregida; evidencia pública sin nombres/cuerpos/precios en artifacts/live/inbox-unsent-drafts-20261123.json. Roadmap actualizado sin modificar aceptaciones P4/P13/P21 ni P22 3/5técnico/0aceptación. SinDDL,seeds,servicios nuevos niSIIEwrites.
+
 ## Inbox: borradores descartados separados de mensajes enviados — 2026-11-23
 
 El titular reporta Cancelado en un hilo Instagram aunque vio respuestas en la app. Contraste del texto exacto en Meta: los borradores de16:44 no figuran como mensajes recibidos; la respuesta final distinta sí está vista y tiene reacción. Diagnóstico confirma cero intentos en las colas canceladas y un intento/Leído en la última salida. Código gemini_whatsapp_control_or_history_changed; el contexto se invalidó antes de invocar Meta, sin atribuir a un componente histórico no trazado. No convertir a Leído por semejanza de texto.
