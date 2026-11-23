@@ -121,3 +121,21 @@ Vistas previas y recibos detallados se conservan en `.local/preinscritos-import`
 Roadmap original P0-P11 conserva 100%; fases adicionales y OPS mantienen los
 estados de PENDING_PHASES.md. Esta unidad no acredita conversiones ni nuevos
 envíos productivos.
+
+## Prueba única posterior solicitada por el titular
+
+El titular solicitó recibir Cocina en su propio WhatsApp antes de activar las
+campañas comerciales. Se creó una prueba separada con una sola identidad ya
+verificada por el historial anterior y la plantilla aprobada de Juan Pablo.
+Preflight: 1 elegible de 1, sin exclusiones; personalización «Hola, Juan».
+Se registró evidencia explícita de autorización puntual y vigencia limitada.
+La cuenta, originalmente apagada, se habilitó con máximo un mensaje en 24 horas.
+
+Meta aceptó un único intento. Después se observaron recibos de entrega y lectura;
+el informe muestra Leído 1, entrega 100% y lectura 100%. No se reintentó.
+Las veinte campañas comerciales siguen en borrador. Se revocó el permiso temporal
+y se restauró la cadencia original: apagada, límite 100, intervalo 30 segundos.
+No se acreditan un coste facturado ni entrega futura a otros destinatarios.
+Sin cambios de código ni nuevo despliegue por esta prueba.
+Evidencia agregada: `artifacts/live/cocina-whatsapp-single-test-20261123.json`;
+el recibo nominal, texto y captura permanecen privados en `.local`.

@@ -1,3 +1,7 @@
+## Cocina enviada al titular y leída — 2026-11-23
+
+Por solicitud expresa posterior se envió una sola plantilla cbn_cocina_beca_2027_juan_pablo_v4 al WhatsApp del titular, en prueba aislada con 1 elegible/1 destinatario/1 intento. Meta aceptó y confirmó entrega y lectura. Veinte campañas comerciales siguen Borrador. Permiso temporal registrado desde la solicitud y revocado al acabar; cadencia restaurada apagada/límite100/intervalo30. No inferir coste facturado ni entrega futura a otros contactos. Sin cambio de código ni redeploy nuevo. Evidencia artifacts/live/cocina-whatsapp-single-test-20261123.json; recibo nominal y captura sólo.local. Roadmap y fases sin cambios.
+
 ## Juan Pablo y biblioteca de plantillas verificados — 2026-11-23
 
 Veinte plantillas nuevas con presentación de Juan Pablo, sin uniforme, enviadas tras autorización explícita de las veinte; Meta confirma 20 aprobadas. Veinte campañas conservan Borrador y la nueva plantilla. Retiradas 32 antiguas a Papelera recuperable; nueva sincronización conserva 20 visibles/32 retiradas. Confirmación reciente completada con contraseña autocompletada y segundo campo vacío, sin extraer credenciales. Cero mensajes a prospectos, activaciones, cargos o consentimientos. Importados 764 y revisión201 intactos.
