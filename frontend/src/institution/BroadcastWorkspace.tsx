@@ -199,6 +199,7 @@ const profileLabels: Record<string, string> = {
   schedule: "Jornada",
   contact_type: "Tipo de contacto",
   stage: "Estado CRM",
+  last_incoming: "Último mensaje recibido al preparar",
 };
 const sources = [
   "literal",
