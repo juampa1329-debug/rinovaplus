@@ -1,3 +1,7 @@
+## Preinscritos importados y campañas preparadas — 2026-11-23
+
+Los 764 importados no tienen identidad Meta ni consentimiento creados por la importación; control Humano conservado. No convertir preinscripción/gestión en fecha de conversación o matrícula. 201 dudosos quedan en CSV privado, sin fusionar fichas. No reenviar campañas históricas ni activar borradores; la revisión de tarjeta sólo acreditó método y deuda cero. Los PDF son ejemplos: fichas vigentes mandan. Ver PREINSCRITOS_IMPORTACION_20261123.md. El roadmap vigente original es 100%; los cortes inferiores de octubre son históricos.
+
 ## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.

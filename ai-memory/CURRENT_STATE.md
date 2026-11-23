@@ -1,3 +1,11 @@
+## Preinscritos importados y campañas preparadas — 2026-11-23
+
+764 contactos nuevos importados; 201 casos en revisión; once campos creados. Segundo contraste: 764 ya importados, cero nuevos pendientes. Ocho plantillas v2 y ocho campañas guardadas en borrador; seis v1 pausadas. Inglés A1/A2 juntos en un semestre verificado en ambas jornadas. Meta: método predeterminado presente y deuda pendiente cero; no fondos disponibles verificados ni cargo. Cero mensajes, consentimientos o escrituras SIIE. Backend c392a4f saludable en qu6rozixwip4b2lz3wmmsk1b; frontend publicado. 163 backend y 22 frontend pasan, tipos/lint/build; advertencias heredadas conservadas. Ver docs/adaptation/PREINSCRITOS_IMPORTACION_20261123.md y artifacts/live/preinscritos-import-20261123.json. Datos nominales y recibos sólo .local.
+
+Seguimiento temporal por último mensaje real recibido: 0–29/30–59/60–89/90+ y sin evidencia. Gestión administrativa no equivale a contacto. Importados y salidas de campaña sin entrada se conservan fuera del Inbox; entrada real los incorpora. Modal e informes verificados con campaña histórica, sin nuevo envío. Pendientes: revisar ambiguos, vinculación al canal/consentimiento, revisión y posterior aprobación Meta; clics externos no medidos. No activar campañas automáticamente.
+
+Roadmap original P0–P11: 100%; P12 auxiliar y P13/P15/P19/P21 en alcances iniciales conservan aceptación. P22: 60% técnico/0% aceptación; otros adicionales y OPS siguen PENDING_PHASES.md. Los cortes históricos inferiores no sustituyen este estado. Sin DDL, seeds, servicios nuevos ni alteración de releases/grafos históricos.
+
 ## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.

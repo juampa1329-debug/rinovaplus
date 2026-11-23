@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-23",
+  "scope": "preinscritos_import_and_broadcast_drafts",
+  "source_rows": 1515,
+  "contact_groups": 965,
+  "imported_new": 764,
+  "held_for_review": 201,
+  "custom_fields_added": 11,
+  "second_contrast": {
+    "ready": 0,
+    "already_imported": 764,
+    "review": 201
+  },
+  "template_drafts_created": 8,
+  "old_template_drafts_paused": 6,
+  "campaign_drafts_created": 8,
+  "templates_submitted_to_meta": 0,
+  "campaigns_activated": 0,
+  "messages_sent_by_this_task": 0,
+  "consents_granted": 0,
+  "academic_writes": 0,
+  "ddl": false,
+  "recency_source": "provider_LastIncomingAt_in_campaign_timezone; unknown_stays_unknown",
+  "recency_buckets": [
+    "unknown",
+    "0_29",
+    "30_59",
+    "60_89",
+    "90_plus"
+  ],
+  "english_a1_a2_one_semester_verified_journeys": 2,
+  "meta_payment": {
+    "correct_waba_matched": true,
+    "default_method_present": true,
+    "outstanding_debt_zero": true,
+    "available_funds_verified": false,
+    "charge_attempted": false
+  },
+  "backend": {
+    "sha": "c392a4f45414d2167a04fc15e53ef3adca3fc997",
+    "deployment": "qu6rozixwip4b2lz3wmmsk1b",
+    "healthy": true,
+    "rollout_completed_utc": "2026-11-23T19:10:13Z"
+  },
+  "frontend_functional_before_final_selector": {
+    "sha": "c392a4f45414d2167a04fc15e53ef3adca3fc997",
+    "verified": true
+  },
+  "validation": {
+    "backend_passed": 163,
+    "frontend_passed": 22,
+    "types": true,
+    "eslint_changed_frontend": true,
+    "build": true,
+    "new_python_modules_ruff": true,
+    "legacy_long_lines_not_reformatted": true
+  },
+  "historical_report_ui": {
+    "recipients": 1,
+    "delivered": 1,
+    "read": 1,
+    "attributed_replies": 1,
+    "new_message": false,
+    "modal_verified": true
+  },
+  "limitations": [
+    "new_contacts_need_reviewed_channel_binding_and_consent",
+    "human_control_not_changed",
+    "templates_not_Meta_approved",
+    "external_clicks_not_measured",
+    "reply_attribution_requires_message_reference",
+    "real_new_inbound_promotion_not_exercised_with_outbound"
+  ],
+  "private_evidence_hashes": {
+    "live-receipts.json": "23fab272b2899e844f357bf6bc7cfdd73de170bafb7f4c07d857fd834f801586",
+    "templates-v2.json": "831023ccb96f304609411c0333d15f6ea4b3d1b70cc16411999655d18e01b57d",
+    "campaigns-verification.json": "1e0197fcf76da7b92560fbbd6aa16136925db1657d6284155e9cdbb32760208b",
+    "english-verification.json": "e4106dbf2ca40a378281006ac3090598d51f25e57ee5e5733fb708cf70104259"
+  }
+}
