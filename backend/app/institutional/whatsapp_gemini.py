@@ -629,7 +629,19 @@ class Worker:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
         except HTTPException as error:
             state, code = "abandoned", error.detail
-        except (KeyError, IndexError, TypeError, ValueError):
+        except ValueError as error:
+            # Diagnose contract failures without retaining customer text or
+            # the provider's raw response, and without another inference.
+            reason = str(error)
+            code = {
+                "incomplete_generated_reply": "generated_reply_incomplete",
+                "invalid_generated_reply": "generated_reply_invalid_contract",
+                "invalid_generated_reply_length": "generated_reply_invalid_length",
+            }.get(reason, "gemini_whatsapp_invalid_response")
+            if isinstance(error, json.JSONDecodeError):
+                code = "generated_reply_invalid_json"
+            state = "failed"
+        except (KeyError, IndexError, TypeError):
             state, code = "failed", "gemini_whatsapp_invalid_response"
         except Exception:
             state, code = "uncertain", "gemini_whatsapp_result_unknown"

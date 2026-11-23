@@ -112,6 +112,31 @@ async def generate(gateway, route, body, guard):
         messages.append({"role": "assistant" if content.get("role") == "model" else "user",
                          "content": "\n".join(p["text"] for p in content["parts"])})
     response_format = {"type": "json_object"}
+    if (set(schema.get("properties", {})) in ({"decision", "text"}, {"decision", "text", "crm_observations"})
+            and schema["properties"]["decision"].get("enum") == ["responder", "revisar"]):
+        # JSON mode alone does not enforce the responder/revisar dispatch
+        # contract. The same schema is used for the primary and each backup.
+        properties = {
+            "decision": {"type": "string", "enum": ["responder", "revisar"]},
+            "text": {"type": "string", "description": "Respuesta completa, como máximo 3000 caracteres; nunca inventes datos."},
+        }
+        if not route["model"].startswith("anthropic/"):
+            properties["text"]["maxLength"] = 3000
+        if "crm_observations" in schema["properties"]:
+            properties["crm_observations"] = {
+                "type": "array", "description": "Como máximo 8 observaciones sustentadas en el mensaje; usa [] si no hay ninguna.",
+                "items": {"type": "object", "additionalProperties": False,
+                          "required": ["field", "value", "quote"], "properties": {
+                              "field": {"type": "string", "enum": schema["properties"]["crm_observations"]["items"]["properties"]["field"]["enum"]},
+                              "value": {"type": "string"}, "quote": {"type": "string"}}},
+            }
+            if not route["model"].startswith("anthropic/"):
+                properties["crm_observations"]["maxItems"] = 8
+        response_format = {"type": "json_schema", "json_schema": {
+            "name": "rinova_grounded_reply", "strict": True,
+            "schema": {"type": "object", "additionalProperties": False,
+                       "required": list(properties), "properties": properties},
+        }}
     if set(schema.get("properties", {})) == {"decision", "intent", "delivery", "program_id", "text"}:
         # Keep the private/public decision contract on the backup too. JSON mode
         # alone guarantees syntax, not the fields or enums used by dispatch.

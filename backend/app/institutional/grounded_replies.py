@@ -258,12 +258,18 @@ def parse(result, public=False):
             if not v.get("thought")
         )
     )
-    if value.get("decision") not in {"responder", "revisar"} or not isinstance(
+    if not isinstance(value, dict):
+        raise ValueError("invalid_generated_reply")
+    # Claude can vary the capitalization of an enum even with strict output.
+    # Canonicalize only this closed vocabulary; unknown decisions still fail.
+    decision = value.get("decision")
+    decision = decision.strip().casefold() if isinstance(decision, str) else None
+    if decision not in {"responder", "revisar"} or not isinstance(
         value.get("text"), str
     ):
         raise ValueError("invalid_generated_reply")
     text = value["text"].strip()
-    if value["decision"] == "revisar":
+    if decision == "revisar":
         return None
     if not text or len(text) > (900 if public else 3000):
         raise ValueError("invalid_generated_reply_length")

@@ -48,6 +48,44 @@ def test_private_comment_backup_enforces_the_dispatch_contract_without_changing_
     assert len(calls) == 1
 
 
+@pytest.mark.parametrize("model", ["anthropic/claude-sonnet-4.6", "anthropic/claude-sonnet-5.5", "fixture/default"])
+def test_grounded_dm_contract_is_strict_for_primary_and_backups(model):
+    import copy
+    import json
+    from app.institutional.language_resilience import generate
+
+    original = copy.deepcopy(BODY)
+    calls = []
+
+    class Gateway:
+        async def request(self, provider, method, path, outgoing):
+            calls.append(outgoing)
+            contract = outgoing["response_format"]
+            assert contract["type"] == "json_schema" and contract["json_schema"]["strict"]
+            schema = contract["json_schema"]["schema"]
+            assert schema["additionalProperties"] is False
+            assert set(schema["required"]) == {"decision", "text", "crm_observations"}
+            assert schema["properties"]["decision"]["enum"] == ["responder", "revisar"]
+            observations = schema["properties"]["crm_observations"]
+            assert observations["items"]["additionalProperties"] is False
+            assert set(observations["items"]["required"]) == {"field", "value", "quote"}
+            if model.startswith("anthropic/"):
+                assert "maxLength" not in schema["properties"]["text"]
+                assert "maxItems" not in observations
+                assert "3000" in schema["properties"]["text"]["description"]
+                assert "8" in observations["description"]
+            else:
+                assert schema["properties"]["text"]["maxLength"] == 3000
+                assert observations["maxItems"] == 8
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({
+                "decision": "responder", "text": "La tarifa está por confirmar; no inventamos precios.",
+                "crm_observations": []})}}]}
+
+    result = asyncio.run(generate(Gateway(), {**ROUTE, "model": model}, BODY, lambda: None))
+    assert grounded_replies.parse(result) == "La tarifa está por confirmar; no inventamos precios."
+    assert len(calls) == 1 and BODY == original
+
+
 def setup(*, context=100000, pricing="0", finish="stop", catalog=True):
     calls, reservations, trace = [], [], {}
     def transport(req):
