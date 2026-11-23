@@ -147,6 +147,8 @@ type Message = {
   sequence: string;
   deliveryState?: string;
   deliveryError?: string;
+  deliveryUnsentDraft?: boolean;
+  deliveryAttempts?: number;
   readReceiptAt?: string | null;
   channelAccount?: string;
 };
@@ -1670,7 +1672,8 @@ function Conversation({
         }}
       >
         {data.value?.items.slice().sort((a, b) => a.createdAt.localeCompare(b.createdAt) || Number(a.sequence) - Number(b.sequence)).map((message) => (
-          <li key={message.id} data-direction={message.direction}>
+          <li key={message.id} data-direction={message.direction} data-unsent-draft={message.deliveryUnsentDraft || undefined}>
+            {message.deliveryUnsentDraft && <small className="inbox-unsent-label">Borrador de IA · no enviado</small>}
             {message.replyTo && (
               <blockquote
                 className="inbox-quoted-message"
@@ -1706,6 +1709,7 @@ function Conversation({
                 <MessageDelivery
                   state={message.deliveryState}
                   reason={message.deliveryError}
+                  unsentDraft={message.deliveryUnsentDraft}
                   readReceiptAt={message.readReceiptAt}
                 />
               )}

@@ -441,7 +441,8 @@ class Workspace(Parent):
                 values = db.rows(
                     c,
                     (
-                        "SELECT q.MessageId,q.QueueId,q.State,q.LastErrorCode,i.DisplayName,"
+                        "SELECT q.MessageId,q.QueueId,q.State,q.LastErrorCode,q.Attempts,q.ExternalId,"
+                        "JSON_VALUE(q.Payload,'$.origin') AS Origin,i.DisplayName,"
                         "quoted.MessageId AS ReplyId,quoted.Body AS ReplyBody,quoted.Direction AS ReplyDirection,"
                         "(SELECT TOP(1) e.CreatedAt FROM crm_channels2.WebhookEvent e "
                         "WHERE q.State='read' AND e.InstitutionId=q.InstitutionId "
@@ -492,6 +493,10 @@ class Workspace(Parent):
                     if value:
                         message.update(
                             deliveryState=value["State"],
+                            deliveryUnsentDraft=(value["State"] == "cancelled" and value.get("Attempts") == 0
+                                                 and not value.get("ExternalId")
+                                                 and value.get("Origin") in {"gemini_whatsapp", "gemini_comment"}),
+                            deliveryAttempts=value.get("Attempts"),
                             queueId=str(value["QueueId"]).lower(),
                             deliveryError=(paused if value["State"] == "queued" and paused else value["LastErrorCode"]),
                             channelAccount=value["DisplayName"],
