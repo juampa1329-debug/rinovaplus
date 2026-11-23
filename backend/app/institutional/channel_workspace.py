@@ -21,6 +21,10 @@ from app.institutional.workspace import Workspace as Parent
 from app.modules.channels import providers
 
 
+def generic_social_name(value):
+    return not value or bool(re.fullmatch(r"\d+|contacto(?: de)? (?:instagram|messenger|facebook)|dm sender|usuario de (?:instagram|facebook)", value.strip(), re.I))
+
+
 def social_avatar_url(value):
     if not isinstance(value, str) or len(value) > 2048:
         return ""
@@ -134,7 +138,7 @@ class Workspace(Parent):
         with self.transaction() as c:
             identity = db.one(
                 c,
-                "SELECT TOP(1) i.ExternalId,i.IntegrationId FROM crm_channels2.ExternalIdentity i "
+                "SELECT TOP(1) i.ExternalId,i.IntegrationId,i.ContactId FROM crm_channels2.ExternalIdentity i "
                 "JOIN crm_channels2.Integration a ON a.InstitutionId=i.InstitutionId "
                 "AND a.IntegrationId=i.IntegrationId WHERE i.InstitutionId=? "
                 "AND i.ConversationId=? AND a.Channel IN('facebook','messenger','instagram') "
@@ -190,6 +194,17 @@ class Workspace(Parent):
             "username": sql_text(username.strip(), 100) if isinstance(username, str) else "",
             "avatarUrl": social_avatar_url(photo),
         }
+        if (profile["name"] or profile["username"]) and identity.get("ContactId"):
+            # Persist verified display names only over generated placeholders.
+            # Customer-declared or manually reviewed names retain precedence.
+            with self.transaction(True) as c:
+                row = db.one(c, "SELECT Name FROM crm.Contact WHERE ContactId=?", identity["ContactId"])
+                if row and generic_social_name(row["Name"]):
+                    from app.institutional.sales_contact import read as contact_fields
+                    fields, _ = contact_fields(c, self.profile, identity["ContactId"])
+                    if not fields.get("fields", {}).get("name"):
+                        c.execute("UPDATE crm.Contact SET Name=?,UpdatedAt=SYSUTCDATETIME() WHERE ContactId=? AND Name=?", profile["name"] or "@" + profile["username"], identity["ContactId"], row["Name"])
+                        c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
         return {"profile": profile if any(profile.values()) else None}
 
     def apply(self, c, action, resource, body, actor):
@@ -452,6 +467,17 @@ class Workspace(Parent):
                     *ids,
                 )
                 by_id = {str(v["MessageId"]).lower(): v for v in values}
+                imported = db.rows(c,
+                    "SELECT x.MessageId,x.Payload,i.DisplayName,q.State,q.QueueId,q.LastErrorCode FROM crm_channels2.ExternalMessage x "
+                    "JOIN crm_channels2.Integration i ON i.InstitutionId=x.InstitutionId AND i.IntegrationId=x.IntegrationId "
+                    "LEFT JOIN crm_channels2.SendJob q ON q.InstitutionId=x.InstitutionId AND q.QueueId=TRY_CONVERT(uniqueidentifier,JSON_VALUE(x.Payload,'$.private_queue_id')) "
+                    "WHERE x.InstitutionId=? AND JSON_VALUE(x.Payload,'$.meta_outgoing')='true' AND x.MessageId IN(" + ",".join("?" for _ in ids) + ")",
+                    db.institution(self.profile), *ids)
+                imported_by_id = {str(v["MessageId"]).lower(): v for v in imported}
+                for message in result["items"]:
+                    stored = imported_by_id.get(message["id"])
+                    if stored:
+                        message.update(deliveryState=stored["State"] or "accepted", channelAccount=stored["DisplayName"], metaImported=not bool(stored["QueueId"]))
                 paused = None
                 if any(value["State"] == "queued" for value in values):
                     channel_config = configuration(c, self.profile)
@@ -509,7 +535,7 @@ class Workspace(Parent):
                     sources = db.rows(c, "SELECT x.MessageId,e.Payload FROM crm_channels2.ExternalMessage x "
                         "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId "
                         "AND e.IntegrationId=x.IntegrationId AND e.ProviderEventId COLLATE Latin1_General_100_BIN2=x.ExternalId "
-                        "WHERE x.InstitutionId=? AND x.MessageId IN(" + ",".join("?" for _ in ids) + ") AND e.Kind='message'", db.institution(self.profile), *ids)
+                        "WHERE x.InstitutionId=? AND x.MessageId IN(" + ",".join("?" for _ in ids) + ") AND e.Kind IN('message','message_echo')", db.institution(self.profile), *ids)
                     social = {str(v["MessageId"]).lower(): presentation(json.loads(v["Payload"]).get("provider", {})) for v in sources}
             except HTTPException as failure:
                 if failure.status_code != 503:

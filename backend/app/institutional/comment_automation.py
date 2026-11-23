@@ -18,6 +18,7 @@ from app.institutional.whatsapp_gemini import finish
 from app.institutional import grounded_replies
 from app.modules.ai.infrastructure.providers import AiError
 from app.institutional import language_resilience
+from app.institutional import comment_private
 
 ACTION = "comment_auto_gemini"
 ACTOR = "system:gemini-comments"
@@ -171,6 +172,8 @@ def authorize_send(c, settings, job, payload):
     if not row:
         raise HTTPException(409, "comment_auto_intent_required")
     data = json.loads(row["ResultMetadata"])
+    if bool(payload.get("privateReply")) != (data.get("social_decision", {}).get("delivery") == "private"):
+        raise HTTPException(409, "comment_auto_policy_changed")
     _, ai, text, reply = current(c, settings, job["IntegrationId"], data, job["QueueId"])
     if data.get("generation") == "grounded-v1":
         reply = data.get("generated_text")
@@ -189,7 +192,12 @@ def comment_context(c, settings, data, text):
     preview = payload.get("_crm", {}).get("preview") or {}
     provider = payload.get("provider") or {}
     post = data.get("post_caption") or preview.get("caption") or (provider.get("media") or {}).get("caption") or ""
-    return grounded_replies.context(c, settings, text, public=True, post=post)
+    if data.get("visual_topic"):
+        post += "\nTema leído en la imagen/miniatura (no prueba el contenido completo del video ni las condiciones comerciales): " + data["visual_topic"]
+    grounded = grounded_replies.context(c, settings, text, public=True, post=post)
+    ai = setting(c, settings, "ai")["document"]
+    integration = data.get("integration")
+    return comment_private.context(grounded) if comment_private.enabled(ai, integration) else grounded
 
 
 class Worker:
@@ -214,6 +222,7 @@ class Worker:
                 return False
             operation, integration = job["OperationId"], job["IntegrationId"]
             data = json.loads(job["ResultMetadata"])
+            data["integration"] = str(integration).lower()
             c.execute("SAVE TRANSACTION comment_auto")
             try:
                 item, ai, text, reply = current(c, settings, integration, data)
@@ -222,7 +231,7 @@ class Worker:
                 backup = language_resilience.snapshot(c, settings)
                 pricing = policy(c, settings, integration, document)
                 spent = c.execute(
-                    "SELECT COUNT(*) FROM crm_channels2.ProviderOperation "
+                    "SELECT COALESCE(SUM(1+CASE WHEN JSON_VALUE(ResultMetadata,'$.vision_attempted')='true' THEN 1 ELSE 0 END),0) FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? AND IntegrationId=? "
                     "AND Action IN('comment_ai',?) "
                     "AND Attempts>0 AND CreatedAt>=CONVERT(date,SYSUTCDATETIME())",
@@ -325,11 +334,13 @@ class Worker:
             from app.institutional.comment_effects import call_provider
             from app.modules.channels.providers import ProviderFailure
             with transaction(settings, anonymous=True) as c:
-                original = one(c, "SELECT ExternalId,Payload FROM crm_channels2.SocialComment "
+                original = one(c, "SELECT * FROM crm_channels2.SocialComment "
                                "WHERE InstitutionId=? AND CommentId=?", inst, data["comment"])
             try:
-                data["post_caption"] = call_provider(adapter, "preview", original)["preview"]["caption"][:1600]
+                preview = call_provider(adapter, "preview", original)["preview"]
+                data["post_caption"] = preview["caption"][:1600]
             except ProviderFailure:
+                preview = {}
                 data["post_caption"] = ""
             with transaction(settings, True, anonymous=True) as c:
                 current(c, settings, integration, data)
@@ -340,7 +351,37 @@ class Worker:
                     reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
                     reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
                                    budget["daily_usd_micros"] / 1_000_000)
+                    tokens = actual_tokens
+            private_enabled = comment_private.enabled(document, integration)
+            if private_enabled and not json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs") and spent + 2 <= pricing["daily_requests"]:
+                image = comment_private.image_part(preview)
+                if image:
+                    with transaction(settings, True, anonymous=True) as c:
+                        # The initial conservative reservation includes 8192 input
+                        # tokens. Reserve the additional vision output explicitly.
+                        reserve_budget(c, settings, "tokens", 256, budget["daily_tokens"])
+                        reserve_budget(c, settings, "usd", math.ceil(256 * pricing["output_micros_per_million"] / 1_000_000) / 1_000_000,
+                                       budget["daily_usd_micros"] / 1_000_000)
+                        data.update(vision_attempted=True, visual_image_hash=image["hash"])
+                        c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=?", json.dumps(data), inst, operation, lease)
+                        if c.rowcount != 1:
+                            raise HTTPException(409, "comment_auto_claim_changed")
+                    visual = asyncio.run(self.gateway_factory({"gemini": secret}).gemini_generation(
+                        document["model"], comment_private.image_request(image), before_attempt=assert_current))
+                    data["visual_topic"] = comment_private.image_result(visual)
+                    data["visual_usage"] = visual.get("usageMetadata", {})
+                    with transaction(settings, True, anonymous=True) as c:
+                        current(c, settings, integration, data)
+                        grounded = comment_context(c, settings, data, text)
+                        actual_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
+                        if actual_tokens > tokens:
+                            extra = actual_tokens - tokens
+                            reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
+                            reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
+                                           budget["daily_usd_micros"] / 1_000_000)
             request_body = grounded_replies.request_body(grounded, out, document.get("temperature", 0.3))
+            if private_enabled:
+                request_body = comment_private.request_body(grounded, out, document.get("temperature", 0.3))
             async def primary():
                 return await self.gateway_factory({"gemini": secret}).gemini_generation(
                     document["model"], request_body, before_attempt=assert_current)
@@ -350,7 +391,13 @@ class Worker:
                 data.setdefault("language_execution", {}),
                 gateway=self.gateway_factory(backup["keys"]),
             )) if backup["routes"] else asyncio.run(primary())
-            reply = grounded_replies.parse(result, public=True)
+            if private_enabled:
+                reply, data["social_decision"] = comment_private.parse(result, grounded)
+                if reply and data["social_decision"]["delivery"] == "private":
+                    data["private_source_time"] = comment_private.source_time(adapter, original)
+                    comment_private.eligible(item, original, data["private_source_time"])
+            else:
+                reply = grounded_replies.parse(result, public=True)
             publish = bool(reply)
             code = None if publish else "comment_auto_review_required"
         except HTTPException as error:
@@ -385,7 +432,9 @@ class Worker:
                     item,
                     None,
                     outgoing,
-                    {"origin": ORIGIN, "body": reply},
+                    {"origin": ORIGIN, "body": reply,
+                     **({"privateReply": True, "privateSourceTime": data["private_source_time"]}
+                        if data.get("social_decision", {}).get("delivery") == "private" else {})},
                     comment=data["comment"],
                 )
         return True

@@ -25,7 +25,8 @@ PROGRAMS = [
 
 
 def test_reviewed_skills_include_sales_and_continuity_and_are_validated():
-    assert len(IDS) == len(catalog()) == 34
+    assert len(IDS) == len(catalog()) == 37
+    assert {"social-comment-intent", "publication-context", "private-reply-care"} <= IDS
     assert {"graphify", "recall", "handoff", "pricing", "sales-discovery-questions", "sales-closing-tactics"} <= IDS
     config = Configuration(sales_skill_ids=sorted(IDS))
     assert "Grafo de la conversación" in prompt(config.model_dump())

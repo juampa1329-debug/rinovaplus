@@ -144,6 +144,10 @@ export type SocialProfile = {
   avatarUrl: string;
 };
 
+export function genericSocialName(name: string) {
+  return !name || /^\d+$|^contacto(?: de)? (instagram|messenger|facebook)$|^dm sender$|^usuario de (instagram|facebook)$/i.test(name.trim());
+}
+
 export function inboxDisplayName(
   name: string,
   phone: string,
@@ -152,7 +156,7 @@ export function inboxDisplayName(
 ) {
   if (
     (channel === "facebook" || channel === "messenger" || channel === "instagram") &&
-    (!name || /^\d+$/.test(name))
+    genericSocialName(name)
   ) {
     return (
       profile?.name ||

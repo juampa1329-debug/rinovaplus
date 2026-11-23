@@ -125,6 +125,53 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
+it("sends a private reply for the chosen comment and keeps public sends distinct", async () => {
+  const fetcher = setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Juan Pablo.*CBN · Nuevo/ }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Responder al comentario: ¿Cuánto cuesta?",
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Respuesta pública"), {
+    target: { value: "Te comparto la financiación que solicitaste." },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Enviar por privado" }));
+  await waitFor(() =>
+    expect(
+      fetcher.mock.calls.some(
+        ([path, init]) =>
+          String(path).endsWith("comments/first") && init?.method === "POST",
+      ),
+    ).toBe(true),
+  );
+  const call = fetcher.mock.calls.find(
+    ([path, init]) =>
+      String(path).endsWith("comments/first") && init?.method === "POST",
+  )!;
+  expect(JSON.parse(String(call[1]?.body))).toMatchObject({
+    action: "private_reply",
+    row_version: first.row_version,
+    body: "Te comparto la financiación que solicitaste.",
+  });
+});
+
+it("does not allow private messages with more than 900 characters", async () => {
+  setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Juan Pablo.*CBN · Nuevo/ }),
+  );
+  await screen.findByRole("button", { name: "Enviar por privado" });
+  fireEvent.change(screen.getByLabelText("Respuesta pública"), {
+    target: { value: "x".repeat(901) },
+  });
+  expect(
+    screen.getByRole("button", { name: "Enviar por privado" }),
+  ).toBeDisabled();
+});
+
 it("groups a person and post and keeps each CBN answer below its exact comment", async () => {
   setup();
   fireEvent.click(

@@ -187,9 +187,10 @@ def download(service, auth, id):
     )
 
 
-def retrieve(url, destination):
+def retrieve(url, destination, *, max_bytes=None):
     """No credentials, redirects, private addresses or unverified TLS destinations."""
     connection = None
+    limit = files.MAX_BYTES if max_bytes is None else min(files.MAX_BYTES, max_bytes)
     try:
         parts = urlsplit(url)
         host = (parts.hostname or "").encode("idna").decode()
@@ -228,7 +229,7 @@ def retrieve(url, destination):
         if (
             response.getheader("Content-Encoding", "identity") != "identity"
             or length is not None
-            and (not length.isdecimal() or int(length) > files.MAX_BYTES)
+            and (not length.isdecimal() or int(length) > limit)
         ):
             raise ProviderFailure("campaign_image_size_limit")
         total = 0
@@ -240,7 +241,7 @@ def retrieve(url, destination):
                 if not chunk:
                     break
                 total += len(chunk)
-                if total > files.MAX_BYTES or time.monotonic() - started > 30:
+                if total > limit or time.monotonic() - started > 30:
                     raise ProviderFailure("campaign_image_size_limit")
                 f.write(chunk)
         if not total or length is not None and int(length) != total:

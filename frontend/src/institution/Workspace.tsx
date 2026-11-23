@@ -30,6 +30,7 @@ import { SocialStoryPreview } from "./SocialStoryPreview";
 import { EmojiPicker } from "./InboxComposer";
 import { InboxSuggestion } from "./InboxSuggestion";
 import { MetaAutomationHelp } from "./MetaAutomationHelp";
+import { MetaHistorySync } from "./MetaHistorySync";
 import {
   ChannelLabel,
   ConversationRow,
@@ -39,6 +40,7 @@ import {
   InboxUnread,
   RiskBadge,
   inboxDisplayName,
+  genericSocialName,
   initialInboxFilters,
 } from "./InboxPresentation";
 import type { SocialProfile } from "./InboxPresentation";
@@ -137,6 +139,7 @@ type Message = {
   body: string;
   direction: string;
   createdAt: string;
+  metaImported?: boolean;
   sequence: string;
   deliveryState?: string;
   deliveryError?: string;
@@ -675,7 +678,7 @@ function WorkspaceView({
     ? selected
     : list.value?.items.find((row) =>
         needsProfile(row.conversationId, row.channel) &&
-        (!row.name || /^\d+$/.test(row.name))
+        genericSocialName(row.name)
       )?.conversationId ?? "";
   const profile = useRead<{ profile: SocialProfile | null }>(
     `conversations/${profileTarget}/social-profile`,
@@ -869,6 +872,7 @@ function WorkspaceView({
                   comments={showComments}
                   refresh={changed}
                 >
+                  <MetaHistorySync done={changed} />
                   {session.actions.includes("crm.write") && (
                     <Button
                       variant="quiet"
@@ -1658,7 +1662,7 @@ function Conversation({
             list.scrollHeight - list.scrollTop - list.clientHeight < 100;
         }}
       >
-        {data.value?.items.map((message) => (
+        {data.value?.items.slice().sort((a, b) => a.createdAt.localeCompare(b.createdAt) || Number(a.sequence) - Number(b.sequence)).map((message) => (
           <li key={message.id} data-direction={message.direction}>
             {message.replyTo && (
               <blockquote
@@ -1689,6 +1693,7 @@ function Conversation({
             <footer className="inbox-bubble-footer">
               <small>
                 <DateText value={message.createdAt} />
+                {message.metaImported && <span> · Importado de Meta</span>}
               </small>
               {message.deliveryState && (
                 <MessageDelivery

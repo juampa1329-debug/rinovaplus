@@ -53,6 +53,8 @@ def bounded_provider(value, depth=0):
     allowed = {
         "id",
         "timestamp",
+        "created_time", "comment_surface",
+        "is_echo", "app_id",
         "text",
         "body",
         "type",
@@ -258,7 +260,7 @@ def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=Tr
                         value.get("id", ""),
                         (value.get("from") or {}).get("id", ""),
                         value.get("text", ""),
-                        value,
+                        {**value, "comment_surface": field},
                     )
                 )
             elif field == "feed" and value.get("item") == "comment":
@@ -290,14 +292,14 @@ def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=Tr
                 "instagram" if payload.get("object") == "instagram" else "messenger"
             )
             message = value.get("message") or {}
-            if message and not message.get("is_echo"):
+            if message:
                 effects.append(
                     event(
                         channel,
                         route,
-                        "message",
+                        "message_echo" if message.get("is_echo") else "message",
                         message.get("mid", ""),
-                        (value.get("sender") or {}).get("id", ""),
+                        (value.get("recipient" if message.get("is_echo") else "sender") or {}).get("id", ""),
                         social_text(message),
                         value,
                     )
@@ -484,6 +486,8 @@ def incoming(c, settings, item, effect):
     except (ValueError, TypeError, OSError, OverflowError):
         raise HTTPException(422, "provider_timestamp_invalid") from None
     message = str(uuid4())
+    from app.institutional.comment_private import incoming_source
+    comment_source = incoming_source(c, settings, item, effect["author"])
     c.execute(
         (
             "INSERT crm.Message(MessageId,Conversat"
@@ -509,6 +513,7 @@ def incoming(c, settings, item, effect):
         effect["external"],
         message,
         json.dumps({**({"whatsappUserId": user_id, "whatsappPhone": phone or None} if user_id else {}),
+                    **({"comment_source": comment_source} if comment_source else {}),
                     **({"referral": referral} if item["Channel"] == "whatsapp" and (referral := sanitize_referral(effect["provider"].get("referral"))) else {})}),
     )
     c.execute(
@@ -585,7 +590,10 @@ def delivery(previous, incoming):
 
 def project(c, settings, item, effect):
     inst = institution(settings)
-    if effect["kind"] == "message":
+    if effect["kind"] == "message_echo":
+        from app.institutional.meta_history import echo
+        echo(c, settings, item, effect)
+    elif effect["kind"] == "message":
         incoming(c, settings, item, effect)
     elif effect["kind"].startswith("comment"):
         comment = one(
@@ -694,6 +702,13 @@ def project(c, settings, item, effect):
                 inst,
                 job["QueueId"],
             )
+        if not jobs and item["Channel"] == "messenger" and getattr(settings, "postgres_deployment", False):
+            jobs = rows(c, "SELECT q.QueueId,q.State FROM crm_channels2.SendJob q JOIN crm_channels2.Integration i ON i.InstitutionId=q.InstitutionId AND i.IntegrationId=q.IntegrationId "
+                        "WHERE q.InstitutionId=? AND i.ApplicationId=? AND i.ExternalAccountId=? AND i.Channel='facebook' AND JSON_VALUE(q.Payload,'$.privateReply')='true' AND q.ExternalId=?",
+                        inst, item["ApplicationId"], item["ExternalAccountId"], effect["external"])
+            for job in jobs:
+                state = delivery(job["State"], effect["text"])
+                c.execute("UPDATE crm_channels2.SendJob SET State=? WHERE InstitutionId=? AND QueueId=?", state, inst, job["QueueId"])
         if not jobs and settings.ticket.get("version") in {
             "cbn-institutional-broadcast-p7-v1",
             "cbn-institutional-campaign-p8-v1", 'cbn-institutional-ads-p9-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}:

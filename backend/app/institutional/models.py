@@ -165,6 +165,7 @@ class AI(AiSettings):
     comment_prompt: str = Field(default="", max_length=1600)
     comment_mode: Literal["manual", "auto"] = "auto"
     comment_auto_reply: str = Field(default="", max_length=400)
+    comment_private_accounts: list[str] = Field(default_factory=list, max_length=50)
     voice_name: str = Field(default="", max_length=160)
     vision_analysis_provider: Literal[
         "gemini", "openai", "anthropic", "hermes", "openrouter", "kimi"

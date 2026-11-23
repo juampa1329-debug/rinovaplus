@@ -872,7 +872,7 @@ class Workspace:
                     + (
                         ",(SELECT TOP(1) LEFT(m.Body,220) FROM crm.Message m"
                         " WHERE m.ConversationId=v.ConversationId"
-                        " ORDER BY m.Sequence DESC) AS preview"
+                        " ORDER BY m.CreatedAt DESC,m.Sequence DESC) AS preview"
                         ",(SELECT Temperature FROM crm_channels.ConversationProfile"
                         " WHERE ConversationId=v.ConversationId) AS temperature"
                         ",(SELECT LeadScore FROM crm_channels.ConversationProfile"
@@ -885,11 +885,11 @@ class Workspace:
                         ",(SELECT TOP(1) asset.Kind FROM crm_channels4.MediaAsset asset "
                         "WHERE asset.MessageId=(SELECT TOP(1) lastMessage.MessageId FROM "
                         "crm.Message lastMessage WHERE lastMessage.ConversationId=v.ConversationId "
-                        "ORDER BY lastMessage.Sequence DESC) ORDER BY asset.MediaId) AS previewKind"
+                        "ORDER BY lastMessage.CreatedAt DESC,lastMessage.Sequence DESC) ORDER BY asset.MediaId) AS previewKind"
                         ",(SELECT TOP(1) JSON_VALUE(asset.ProviderReference,'$.durationSeconds') "
                         "FROM crm_channels4.MediaAsset asset WHERE asset.MessageId=(SELECT TOP(1) "
                         "lastMessage.MessageId FROM crm.Message lastMessage "
-                        "WHERE lastMessage.ConversationId=v.ConversationId ORDER BY lastMessage.Sequence DESC) "
+                        "WHERE lastMessage.ConversationId=v.ConversationId ORDER BY lastMessage.CreatedAt DESC,lastMessage.Sequence DESC) "
                         "ORDER BY asset.MediaId) AS previewDuration"
                         if area == "inbox" and self.operational_channels else ""
                     )

@@ -253,10 +253,10 @@ def subscribe(account):
             if channel == "instagram"
             else "feed"
             if channel == "facebook"
-            else "messages,messaging_postbacks,message_deliveries,message_reads"
+            else "messages,messaging_postbacks,message_deliveries,message_reads,message_echoes"
         )
         if channel in {"facebook", "messenger"} and config.get("sharedPageSubscription"):
-            fields = "feed,messages,messaging_postbacks,message_deliveries,message_reads"
+            fields = "feed,messages,messaging_postbacks,message_deliveries,message_reads,message_echoes"
         result = request(
             account, "POST", asset + "/subscribed_apps", {"subscribed_fields": fields}
         )
@@ -344,6 +344,13 @@ def whatsapp_reply_context(payload):
     return {"context": {"message_id": reference}}
 
 
+class AcceptedPrivateReply(str):
+    def __new__(cls, message_id, recipient_id):
+        value = super().__new__(cls, message_id)
+        value.recipient_id = recipient_id
+        return value
+
+
 def send(account, payload, media=None, before_send=None):
     if payload.get("origin") == "broadcast":
         if before_send is None:
@@ -353,7 +360,24 @@ def send(account, payload, media=None, before_send=None):
         return send_broadcast(account, payload, before_send=before_send)
     if media:
         return send_media(account, payload, media, before_send)
-    if (payload.get("origin") in {"bot", "gemini_whatsapp"} or "controlEpoch" in payload) and before_send:
+    if payload.get("kind") == "private_reply":
+        from app.institutional.comment_private import created_at
+        from datetime import datetime, timedelta, timezone
+        if before_send is None:
+            raise ProviderFailure("comment_private_frontier_required")
+        field = "timestamp" if account["channel"] == "instagram" else "created_time"
+        text_field = "text" if account["channel"] == "instagram" else "message"
+        source = request(account, "GET", payload["target"], {"fields": "id," + field + "," + text_field})
+        if "privateOriginalText" in payload and source.get(text_field) != payload["privateOriginalText"]:
+            raise ProviderFailure("comment_private_source_changed")
+        try:
+            stamp = created_at(source.get(field))
+        except Exception:
+            raise ProviderFailure("comment_private_creation_unknown") from None
+        if str(source.get("id")) != payload["target"] or not timedelta(0) <= datetime.now(timezone.utc) - stamp < timedelta(days=7):
+            raise ProviderFailure("comment_private_window_closed")
+        before_send()
+    elif (payload.get("origin") in {"bot", "gemini_whatsapp", "gemini_comment"} or "controlEpoch" in payload) and before_send:
         before_send()
     channel = account["channel"]
     config = account["configuration"]
@@ -406,7 +430,7 @@ def send(account, payload, media=None, before_send=None):
             },
         )
         external = (result.get("messages") or [{}])[0].get("id")
-    elif channel in ("messenger", "instagram"):
+    elif channel in ("messenger", "instagram") or (channel == "facebook" and payload["kind"] == "private_reply"):
         asset = config.get("accountId") if channel == "instagram" else config["pageId"]
         recipient = (
             {"comment_id": payload["target"]}
@@ -414,7 +438,7 @@ def send(account, payload, media=None, before_send=None):
             else {"id": payload["target"]}
         )
         body = {"recipient": recipient, "message": {"text": text}}
-        if channel == "messenger":
+        if channel == "messenger" and payload["kind"] != "private_reply":
             body["messaging_type"] = "RESPONSE"
         result = request(account, "POST", asset + "/messages", body)
         external = result.get("message_id")
@@ -422,6 +446,8 @@ def send(account, payload, media=None, before_send=None):
         raise ProviderFailure("channel_messages_unavailable")
     if not external:
         raise ProviderFailure("provider_acceptance_not_confirmed", uncertain=True)
+    if payload["kind"] == "private_reply":
+        return AcceptedPrivateReply(str(external), str(result.get("recipient_id") or "")[:200])
     return str(external)
 
 

@@ -34,10 +34,16 @@ def origin(c, settings, conversation, sequence):
     row = db.one(c,
         "SELECT TOP(1) x.Payload,m.MessageId,m.Sequence FROM crm_channels2.ExternalMessage x "
         "JOIN crm.Message m ON m.MessageId=x.MessageId WHERE x.InstitutionId=? AND m.ConversationId=? "
-        "AND m.Direction='incoming' AND m.Sequence<=? AND JSON_VALUE(x.Payload,'$.referral.source_id') IS NOT NULL ORDER BY m.Sequence DESC",
+        "AND m.Sequence<=? AND ((m.Direction='incoming' AND JSON_VALUE(x.Payload,'$.referral.source_id') IS NOT NULL) OR JSON_VALUE(x.Payload,'$.comment_source.program_id') IS NOT NULL) ORDER BY m.Sequence DESC",
         db.institution(settings), conversation, sequence)
     if not row:
         return None
+    value = json.loads(row["Payload"]).get("comment_source", {})
+    if value:
+        if value.get("authority") != "cbn-comment-private-v1" or type(value.get("program_id")) is not int:
+            return None
+        return {**value, "source_message_id": str(row["MessageId"]), "sequence": row["Sequence"],
+                "source_type": "comment_private_reply", "authority": "accepted_private_reply_not_academic_confirmation"}
     referral = sanitize(json.loads(row["Payload"]).get("referral"))
     if not referral:
         return None

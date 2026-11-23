@@ -30,7 +30,7 @@ from app.modules.inbox.application.service import pattern
 class CommentAction(Strict):
     operation_id: str
     row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
-    action: Literal["read", "archive", "reopen", "convert", "reply", "takeover", "release"]
+    action: Literal["read", "archive", "reopen", "convert", "reply", "private_reply", "takeover", "release"]
     body: str = Field(default="", max_length=4000)
     display_name: str = Field(default="", max_length=180)
 
@@ -145,6 +145,19 @@ class Comments:
             }
 
     def action(self, authority, identity, body):
+        private_time = None
+        if body.action == "private_reply":
+            from app.institutional.channel_provider import provider_account
+            from app.institutional.comment_private import source_time
+            with transaction(self.settings, anonymous=True) as c:
+                authorize(c, self.settings, authority, "inbox.write")
+                source = one(c, "SELECT * FROM crm_channels2.SocialComment WHERE InstitutionId=? AND CommentId=?", institution(self.settings), uid(identity))
+                if not source:
+                    raise HTTPException(404, "comment_not_found")
+                adapter, _ = provider_account(c, self.settings, account(c, self.settings, str(source["IntegrationId"])))
+            # GET only; the following transaction rechecks the comment version and
+            # the outbox fences duplicate effects, including unknown results.
+            private_time = source_time(adapter, source)
         with transaction(self.settings, True, anonymous=True) as c:
             actor = authorize(c, self.settings, authority, "inbox.write")
             identity = uid(identity)
@@ -184,7 +197,7 @@ class Comments:
             item = account(c, self.settings, str(value["IntegrationId"]))
             from app.institutional.comment_threads import is_account_comment
 
-            if body.action in {"reply", "convert", "takeover", "release"} and is_account_comment(value, item):
+            if body.action in {"reply", "private_reply", "convert", "takeover", "release"} and is_account_comment(value, item):
                 raise HTTPException(409, "comment_is_account_reply")
             result = {}
             if body.action == "convert":
@@ -268,7 +281,7 @@ class Comments:
                     contact_id=state["contact_id"],
                     conversation_id=state["conversation_id"],
                 )
-            elif body.action == "reply":
+            elif body.action in {"reply", "private_reply"}:
                 if (
                     not body.body.strip()
                     or not capabilities(item)["public_comment_reply"]
@@ -284,13 +297,19 @@ class Comments:
                 ).fetchone()
                 if existing:
                     raise HTTPException(409, "comment_reply_already_pending")
+                private = body.action == "private_reply"
+                if private:
+                    from app.institutional.comment_private import eligible
+                    eligible(item, value, private_time)
+                    if len(body.body.strip()) > 900:
+                        raise HTTPException(422, "comment_private_text_limit")
                 queue = enqueue(
                     c,
                     self.settings,
                     item,
                     actor,
                     uid(body.operation_id),
-                    {"body": body.body.strip()},
+                    {"body": body.body.strip(), **({"privateReply": True, "privateSourceTime": private_time} if private else {})},
                     comment=identity,
                 )
                 state["last_queue_id"] = str(queue).lower()
@@ -358,10 +377,19 @@ class Comments:
 
 
 def install(app, settings):
+    from app.institutional.meta_history import install as install_meta_history
+    install_meta_history(app, settings)
     from app.institutional.comment_notifications import install as install_notifications
 
     install_notifications(app, settings)
     service = Comments(settings)
+
+    @app.get("/api/institution/comments/private-accounts")
+    def private_accounts(request: Request):
+        with transaction(settings, anonymous=True) as c:
+            authorize(c, settings, request.state.authority, "settings.ai.read")
+            values = rows(c, "SELECT IntegrationId,Channel,DisplayName FROM crm_channels2.Integration WHERE InstitutionId=? AND Channel IN('facebook','instagram') AND RequestedStatus<>'retired' ORDER BY DisplayName", institution(settings))
+            return {"items": [{"id": uid(str(v["IntegrationId"])), "channel": v["Channel"], "name": v["DisplayName"]} for v in values]}
 
     @app.get("/api/institution/comments")
     def comments(

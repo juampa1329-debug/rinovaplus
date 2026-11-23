@@ -54,6 +54,7 @@ type Comment = {
     body: string;
     received_at: string;
     state: string;
+    private_reply?: boolean;
     edit?: CommentEditInfo;
   }[];
   capabilities: { public_comment_reply: boolean; comment_like: boolean };
@@ -448,7 +449,12 @@ function ThreadedCommentDetail({
                     <li key={response.id}>
                       <div className="comments-heading">
                         <strong>
-                          {response.author} <small>Cuenta conectada</small>
+                          {response.author}{" "}
+                          <small>
+                            {response.private_reply
+                              ? "Mensaje privado"
+                              : "Cuenta conectada"}
+                          </small>
                         </strong>
                         <time dateTime={response.received_at}>
                           {new Date(response.received_at).toLocaleString(
@@ -530,14 +536,14 @@ function CommentDetail({
       const body = {
         row_version: comment.row_version,
         action,
-        ...(action === "reply" ? { body: reply } : {}),
+        ...(["reply", "private_reply"].includes(action) ? { body: reply } : {}),
         ...(action === "convert" ? { display_name: name } : {}),
       };
       await call(`comments/${comment.id}`, "POST", {
         ...body,
         operation_id: intent.get(body),
       });
-      if (action === "reply") setReply("");
+      if (["reply", "private_reply"].includes(action)) setReply("");
       if (action === "convert") setName("");
       await done();
     });
@@ -730,6 +736,30 @@ function CommentDetail({
           >
             Enviar respuesta pública
           </Button>
+          {["facebook", "instagram"].includes(comment.channel) && (
+            <>
+              <Button
+                variant="secondary"
+                disabled={
+                  !writable ||
+                  !active ||
+                  task.busy ||
+                  !reply.trim() ||
+                  reply.trim().length > 900
+                }
+                onClick={() => act("private_reply")}
+              >
+                Enviar por privado
+              </Button>
+              <p className="scope-text">
+                El mismo texto puede enviarse por privado: un primer mensaje por
+                comentario, hasta siete días desde su creación. Máximo 900
+                caracteres. Los siguientes mensajes requieren que la persona
+                responda. Meta puede rechazarlo si ya recibió un privado desde
+                otra herramienta.
+              </p>
+            </>
+          )}
         </form>
         {comment.channel === "tiktok" && (
           <p>Las reacciones de comentarios no están habilitadas por TikTok.</p>
@@ -973,6 +1003,9 @@ function CommentAIEditor({
   reload: () => Promise<Setting>;
 }) {
   const { session, call } = useInstitution();
+  const accounts = useResource<{
+    items: { id: string; name: string; channel: string }[];
+  }>("comments/private-accounts");
   const task = useTask(),
     intent = useIntent();
   const savedRules = String(saved.document.comment_prompt ?? ""),
@@ -980,9 +1013,18 @@ function CommentAIEditor({
     savedMode = saved.document.comment_mode === "manual" ? "manual" : "auto";
   const [rules, setRules] = useState(savedRules),
     [reply, setReply] = useState(savedReply),
-    [mode, setMode] = useState(savedMode);
+    [mode, setMode] = useState(savedMode),
+    [privateAccounts, setPrivateAccounts] = useState<string[]>(
+      Array.isArray(saved.document.comment_private_accounts)
+        ? (saved.document.comment_private_accounts as string[])
+        : [],
+    );
   const dirty =
-    rules !== savedRules || reply !== savedReply || mode !== savedMode;
+    rules !== savedRules ||
+    reply !== savedReply ||
+    mode !== savedMode ||
+    JSON.stringify(privateAccounts) !==
+      JSON.stringify(saved.document.comment_private_accounts ?? []);
   const canWrite = session.actions.includes("settings.ai.write");
   useDraftGuard(dirty);
   return (
@@ -999,6 +1041,7 @@ function CommentAIEditor({
               comment_prompt: rules,
               comment_mode: mode,
               comment_auto_reply: reply.trim(),
+              comment_private_accounts: privateAccounts,
             },
           };
           await call("settings/ai", "PUT", {
@@ -1050,6 +1093,42 @@ function CommentAIEditor({
             es una respuesta fija. Las consultas que requieren un asesor quedan
             para revisión.
           </p>
+          <fieldset>
+            <legend>Información por privado según la publicación</legend>
+            <p className="scope-text">
+              Activa las cuentas que atenderán solicitudes por privado. La IA
+              consulta el contexto y la ficha vigente; agradece el apoyo en
+              público y deja las quejas o consultas ambiguas para revisión. No
+              envía dos respuestas por un mismo turno ni afirma que un privado
+              se leyó.
+            </p>
+            {accounts.value?.items.map((account) => (
+              <label
+                key={account.id}
+                style={{
+                  display: "flex",
+                  gap: ".65rem",
+                  alignItems: "center",
+                  marginBlock: ".65rem",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={privateAccounts.includes(account.id)}
+                  disabled={!canWrite || task.busy}
+                  onChange={(event) =>
+                    setPrivateAccounts((current) =>
+                      event.target.checked
+                        ? [...current, account.id]
+                        : current.filter((id) => id !== account.id),
+                    )
+                  }
+                />
+                {account.name} ·{" "}
+                {account.channel === "facebook" ? "Facebook" : "Instagram"}
+              </label>
+            ))}
+          </fieldset>
         </>
       )}
       {task.notices}

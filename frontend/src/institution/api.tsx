@@ -315,6 +315,18 @@ const messages: Record<string, string> = {
     "El proveedor eliminó este comentario; sus acciones están bloqueadas.",
   comment_reply_already_pending:
     "Esta respuesta ya está en curso. Consulta su estado antes de repetirla.",
+  comment_private_already_attempted: "Este comentario ya tiene un intento de mensaje privado. Revisa su historial antes de repetir; un resultado incierto puede haber llegado a Meta.",
+  meta_history_provider_permission_or_request_rejected: "Meta no permitió consultar el historial con esta cuenta. Revisa su conexión y los permisos de mensajería; no se enviaron mensajes.",
+  meta_history_account_changed: "La cuenta o su credencial cambió durante la consulta. Vuelve a abrir el historial.",
+  meta_history_connected_account_required: "Selecciona una cuenta conectada y verificada de Messenger o Instagram.",
+  comment_private_window_closed: "Pasaron siete días desde el comentario o su fecha no es válida. Meta no permite iniciar este privado; puedes responder públicamente.",
+  comment_private_creation_unknown: "No se pudo confirmar con Meta la fecha original del comentario. No se envió el privado.",
+  comment_private_source_changed: "El comentario cambió en Meta. Sincronízalo y revisa la respuesta antes de enviarla.",
+  comment_private_source_unavailable: "Este comentario no está disponible para iniciar un privado.",
+  comment_private_live_requires_review: "Los privados de Instagram Live requieren una transmisión activa. Este comentario queda para revisión.",
+  comment_private_person_required: "Los privados desde comentarios requieren una persona; no pueden enviarse a la propia cuenta o a otra Página.",
+  comment_private_text_limit: "El primer privado debe tener como máximo 900 caracteres. Resume el mensaje conservando las condiciones solicitadas.",
+  comment_private_channel_unavailable: "Los privados desde comentarios están disponibles para Facebook e Instagram.",
   initial_stage_review_required:
     "Revisa la etapa inicial del CRM en la configuración de esta cuenta.",
   tiktok_accounts_authorization_profile_required:

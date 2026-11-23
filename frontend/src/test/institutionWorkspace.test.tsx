@@ -172,6 +172,7 @@ let emptyInbox = false;
 let readOnOpen = false;
 let firstUnread = true;
 let socialProfileEnabled = false;
+let socialPlaceholder = "123456789";
 let followupSignals = false;
 const assessedRisk: Risk = {
   ...risk,
@@ -189,7 +190,7 @@ const calls: {
 function client(index: number) {
   return {
     id: ids[index],
-    name: socialProfileEnabled && !index ? "123456789" : "Persona " + index,
+    name: socialProfileEnabled && !index ? socialPlaceholder : "Persona " + index,
     phone: "",
     city: "",
     programId: null,
@@ -221,6 +222,7 @@ beforeEach(() => {
   readOnOpen = false;
   firstUnread = true;
   socialProfileEnabled = false;
+  socialPlaceholder = "123456789";
   followupSignals = false;
   calls.length = 0;
   vi.mocked(crmConfigurationApi.read).mockResolvedValue({
@@ -944,6 +946,14 @@ it("resolves an unnamed Meta row without opening it and does not rewrite CRM", a
   expect(screen.queryByRole("heading", { name: "Ana de Messenger" })).not.toBeInTheDocument();
   expect(calls.filter((call) => call.path.endsWith("/social-profile"))).toHaveLength(1);
   expect(calls.some((call) => call.method !== "GET")).toBe(false);
+});
+it.each(["Contacto de Instagram", "Contacto de Messenger"])("resolves the literal %s placeholder without clicking the conversation", async (placeholder) => {
+  socialProfileEnabled = true;
+  socialPlaceholder = placeholder;
+  open("inbox");
+  await screen.findByRole("button", {name: /^Contacto de Messenger/});
+  await screen.findByRole("button", {name: /^Ana de Messenger/}, {timeout: 4000});
+  expect(screen.queryByRole("heading", {name: "Ana de Messenger"})).not.toBeInTheDocument();
 });
 it("distinguishes Meta's messaging window from WhatsApp templates", () => {
   const guidance = explainInboxError({code: "messaging_response_window_closed", message: ""});

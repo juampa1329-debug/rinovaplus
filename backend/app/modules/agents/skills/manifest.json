@@ -205,6 +205,24 @@
       "source": "owner_requested_methodology_native_adaptation",
       "sha256": "81fc4cd7a89d87920c5664256e15f1cb15e46b47c7007155d49210af438f208e",
       "bytes": 719
+    },
+    "social-comment-intent": {
+      "name": "Intención de comentarios",
+      "source": "Adaptación CBN de ig-reply; revisión local 2026-11-23",
+      "sha256": "392cec3e0ca2dec5d986816eac8f6fce65f96e4a959681538294f5d42cdea939",
+      "bytes": 1000
+    },
+    "publication-context": {
+      "name": "Contexto de la publicación",
+      "source": "Procedimiento propio CBN; revisión local 2026-11-23",
+      "sha256": "b77c387aff98131258bcdf0a9123205949e28883e487b7c1c0390f29671c2fdd",
+      "bytes": 1065
+    },
+    "private-reply-care": {
+      "name": "Respuesta privada contextual",
+      "source": "https://developers.facebook.com/documentation/instagram-platform/private-replies",
+      "sha256": "4386e37ac3cbd5c03c9ae05f71bd3caaf6f1efc66f0380c9dd3c0fd330d2fc38",
+      "bytes": 1233
     }
   }
 }

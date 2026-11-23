@@ -334,8 +334,9 @@ def reply_history(comments, jobs, account, channel=""):
                 "received_at": utc(j["CreatedAt"]),
                 "state": j["State"],
                 "origin": "crm",
+                "private_reply": bool(json.loads(j["Payload"]).get("privateReply")),
                 "external_id": j.get("ExternalId"),
-                "edit": edit_info(j, "crm", channel, j["State"]),
+                "edit": None if json.loads(j["Payload"]).get("privateReply") else edit_info(j, "crm", channel, j["State"]),
             }
         )
     return sorted(values, key=lambda v: (v["received_at"], v["id"]))

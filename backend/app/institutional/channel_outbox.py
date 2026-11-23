@@ -77,6 +77,15 @@ def enqueue(
             inst,
             operation,
         ).fetchval()
+    if payload.get("privateReply"):
+        if not comment or item["Channel"] not in {"facebook", "instagram"}:
+            raise HTTPException(422, "comment_private_channel_unavailable")
+        if c.execute(
+            "SELECT 1 FROM crm_channels2.SendJob WITH(UPDLOCK,HOLDLOCK) WHERE InstitutionId=? AND IntegrationId=? AND CommentId=? "
+            "AND JSON_VALUE(Payload,'$.privateReply')='true' AND (State<>'cancelled' OR Attempts>0 OR ExternalId IS NOT NULL)",
+            inst, item["IntegrationId"], comment,
+        ).fetchone():
+            raise HTTPException(409, "comment_private_already_attempted")
     if item["RequestedStatus"] != "connected" or item["VerifiedStatus"] != "verified":
         raise HTTPException(409, "verified_connected_account_required")
     if identity:
@@ -288,6 +297,19 @@ def ready(c, settings, job, *, controlled=False):
             raise HTTPException(409, "comment_deleted")
         payload["target"] = comment["ExternalId"]
         payload["kind"] = "comment"
+        if payload.get("privateReply"):
+            from app.institutional.comment_private import eligible
+            # Manual requests can use a stored creation date; the provider adapter
+            # also reads the original source time immediately before its POST.
+            raw = json.loads(comment["Payload"]).get("provider", {})
+            eligible(item, comment, payload.get("privateSourceTime") or raw.get("created_time") or raw.get("timestamp"))
+            linked = json.loads(comment["Payload"]).get("_crm", {}).get("conversation_id")
+            if payload.get("origin") and linked:
+                control = c.execute("SELECT ControlMode FROM crm.Conversation WHERE ConversationId=?", linked).fetchval()
+                if control != "ai":
+                    raise HTTPException(409, "comment_auto_human_control")
+            payload["kind"] = "private_reply"
+            payload["privateOriginalText"] = comment["Body"]
         payload["videoId"] = (
             json.loads(comment["Payload"]).get("provider", {}).get("video_id", "")
         )
@@ -787,7 +809,8 @@ class Dispatcher:
                 if state == "queued"
                 else state,
                 code,
-                json.dumps({"accepted": state == "accepted", "external_id": external}),
+                json.dumps({"accepted": state == "accepted", "external_id": external,
+                            **({"recipient_id": external.recipient_id} if getattr(external, "recipient_id", None) else {})}),
                 inst,
                 job["OperationId"],
             )
@@ -853,6 +876,15 @@ class Dispatcher:
                 from app.institutional.email_notifications import observe_service
                 observe_service(c, self.settings, "channel-send:" + str(job["IntegrationId"]), failed=state != "accepted", module="channels", account=str(job["IntegrationId"]))
         if state == "accepted":
+            if payload.get("privateReply"):
+                # Acceptance is already durable. A failed CRM projection must
+                # never cause the provider message to be sent for a second time.
+                try:
+                    from app.institutional.meta_history import private_accepted
+                    private_accepted(self.settings, job, payload, external)
+                except Exception:
+                    import logging
+                    logging.getLogger(__name__).warning("private_reply_inbox_projection_pending")
             from app.institutional.reply_delivery import next_typing
             next_typing(self.settings, job, payload)
         return True

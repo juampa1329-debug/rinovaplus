@@ -3,6 +3,9 @@
 VERSION = "cbn-sales-skills-v7"
 # Adapted procedures, not the upstream coding/connector runtimes or their permissions.
 SKILLS = [
+    ("social-comment-intent", "Intención de comentarios", "Comunicación", "Distingue solicitudes de información, apoyo, preguntas y quejas con el contexto de la publicación. No envíes publicidad privada ante cualquier interacción."),
+    ("publication-context", "Contexto de la publicación", "Comunicación", "Relaciona comentario, publicación y ficha vigente. La imagen o el anuncio aportan tema; la ficha revisada aporta los hechos comerciales."),
+    ("private-reply-care", "Respuesta privada contextual", "Comunicación", "Entrega la información solicitada sin repetir preguntas de interés; respeta privacidad, control humano, ventana y aceptación real del proveedor."),
     ("lead-triage", "Calificación de interés", "Calificación", "Califica sólo interés y preparación declarados: objetivo, programa, jornada, plazo y dudas. Dato ausente significa desconocido; no descartes personas por atributos sensibles ni decidas admisiones."),
     ("route-lead", "Derivación al especialista", "Calificación", "Respeta el agente manual y el control humano. Si hay varios programas o jornadas compatibles, pregunta cuál prefiere; una consulta comercial no acredita matrícula ni cambia el expediente."),
     ("close-plan", "Cierre con próximos pasos", "Cierre", "Propón un único siguiente paso útil y voluntario según lo hablado: revisar requisitos, recibir información o hablar con Admisiones. No inventes reservas, cupos, descuentos, fechas ni compromisos."),

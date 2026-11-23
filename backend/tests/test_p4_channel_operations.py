@@ -432,7 +432,7 @@ def test_page_subscription_preserves_comments_and_message_fields(monkeypatch, ch
     def request(account, method, path, body):
         assert method == "POST" and path == "123/subscribed_apps"
         assert set(body["subscribed_fields"].split(",")) == {
-            "feed", "messages", "messaging_postbacks", "message_deliveries", "message_reads",
+            "feed", "messages", "messaging_postbacks", "message_deliveries", "message_reads", "message_echoes",
         }
         return {"success": True}
 

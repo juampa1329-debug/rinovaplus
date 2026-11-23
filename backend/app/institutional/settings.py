@@ -62,6 +62,11 @@ def setting(cursor, settings, section):
 
 
 def validate_links(cursor, settings, section, document):
+    if section == "ai":
+        for identity in document.get("comment_private_accounts", []):
+            value = one(cursor, "SELECT Channel FROM crm_channels2.Integration WHERE InstitutionId=? AND IntegrationId=?", institution(settings), uid(identity))
+            if not value or value["Channel"] not in {"facebook", "instagram"}:
+                raise HTTPException(422, "comment_private_account_invalid")
     if section == "webhooks":
         for endpoint in document["endpoints"]:
             for identity in endpoint["integration_ids"]:
@@ -147,7 +152,7 @@ class Settings:
             if section == "ai" and document["comment_mode"] == "auto":
                 changed_policy = any(
                     document[field] != current["document"].get(field)
-                    for field in ("comment_mode", "comment_prompt", "system_prompt", "comment_auto_reply")
+                    for field in ("comment_mode", "comment_prompt", "system_prompt", "comment_auto_reply", "comment_private_accounts")
                 )
                 if changed_policy:
                     authorize(c, self.settings, authority, action, recent=True)
