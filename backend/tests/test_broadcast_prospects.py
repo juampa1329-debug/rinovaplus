@@ -81,12 +81,13 @@ class Cursor:
         return self.result
 
 
-def link_harness(monkeypatch, *, linked=None, **cursor_options):
+def link_harness(monkeypatch, *, linked=None, placeholder=None, **cursor_options):
     value = person()
     c = Cursor(**cursor_options)
     monkeypatch.setattr(db, "institution", lambda _: "institution")
     monkeypatch.setattr(db, "one", lambda _, sql, *args:
-                        value if "FROM crm.Contact" in sql else linked)
+                        value if "FROM crm.Contact" in sql else
+                        placeholder if "FROM crm.Conversation" in sql else linked)
     monkeypatch.setattr(setup, "control", lambda *_: None)
     return c, value
 
@@ -107,6 +108,17 @@ def test_new_outbound_route_preserves_old_chat_and_has_no_incoming_message(monke
     assert not any("LastIncomingAt" in sql for sql in inserts)
     assert not any("crm.Message" in sql for sql in inserts)
     assert not any(sql.startswith("UPDATE") for sql, _ in c.writes)
+
+
+def test_empty_import_placeholder_is_reused_with_native_control_epoch(monkeypatch):
+    placeholder = {"ConversationId": str(uuid4()), "ControlMode": "human"}
+    c, value = link_harness(monkeypatch, placeholder=placeholder)
+    changes = []
+    monkeypatch.setattr(setup, "change_control", lambda *args: changes.append(args))
+    setup.link(c, None, "account", value["ContactId"], "logistica")
+    assert not any(sql.startswith("INSERT crm.Conversation") for sql, _ in c.writes)
+    assert changes == [(c, placeholder["ConversationId"], "human", "ai")]
+    assert any(sql.startswith("UPDATE crm.Conversation") for sql, _ in c.writes)
 
 
 def test_shared_phone_identity_conflict_never_merges_or_reassigns(monkeypatch):

@@ -84,7 +84,8 @@ export function BroadcastProspectSetup({
     <details>
       <summary>Habilitar preinscritos revisados en WhatsApp</summary>
       <p>Vincula los teléfonos del lote a esta cuenta y registra su autorización de seguimiento.
-        No envía mensajes ni activa campañas. Los chats anteriores y el control Humano se conservan.
+        No envía mensajes ni activa campañas. Habilita IA sólo en la ficha de importación vacía,
+        sin mensajes ni intervención humana. Los chats con historial o control cambiado quedan para revisión.
         Meta confirmará la entrega cuando se envíe la plantilla.</p>
       <label htmlFor="whatsapp-prospect-file">Lote de preinscritos revisado</label>
       <input id="whatsapp-prospect-file" type="file" accept=".json,application/json"

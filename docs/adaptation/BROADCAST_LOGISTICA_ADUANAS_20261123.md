@@ -6,7 +6,7 @@ El titular autoriza las dos campañas con sus plantillas Meta respectivas y conf
 
 Se revisaron 50 registros fuente: un teléfono inválido y tres registros anteriores que comparten número quedan fuera. Se conserva la preinscripción más reciente por número, sin fusionar personas. El contraste nativo de 46 seleccionados reconoció 35 importados e incorporó ocho fichas adicionales; tres posibles coincidencias con CRM quedan para revisión. Cohorte prevista: 32 Logística y 11 Aduanas, sujeta a las guardas de canal y consentimiento.
 
-La nueva vinculación explícita trabaja en lotes de diez y exige permisos de campañas, CRM e Inbox, reautenticación, evidencia y vigencia máxima de dos días. Conserva la autorización nativa con CAS e idempotencia. Una revocación anterior, otro canal o una conversación real/intervención humana exigen revisión individual. No crea entradas recibidas ni verifica la existencia del destinatario en Meta. Conserva los chats de importación y crea una ruta saliente vacía sólo para fichas revisadas sin historial real. Esta preparación no envía mensajes.
+La nueva vinculación explícita trabaja en lotes de diez y exige permisos de campañas, CRM e Inbox, reautenticación, evidencia y vigencia máxima de dos días. Conserva la autorización nativa con CAS e idempotencia. Una revocación anterior, otro canal o una conversación real/intervención humana exigen revisión individual. No crea entradas recibidas ni verifica la existencia del destinatario en Meta. Reutiliza la conversación vacía de importación y habilita IA mediante el control nativo con nuevo epoch sólo si nunca hubo mensajes o intervención humana. Esta preparación no envía mensajes.
 
 ## Etapa después del envío
 
@@ -16,6 +16,8 @@ Para estas dos campañas se configurará **Seguimiento**. El valor predeterminad
 
 ## Validación previa a publicar
 
-150 pruebas backend seleccionadas y 24 frontend pasan; TypeScript, ESLint de archivos cambiados, Ruff de módulos/pruebas nuevos y workspace build pasan. Se conserva la advertencia histórica de bundle. Los archivos backend heredados contienen avisos previos de formato fuera del cambio. Sin DDL, seeds, servicios nuevos, escrituras SIIE ni cambios de modelos.
+151 pruebas backend seleccionadas y 24 frontend pasan; TypeScript, ESLint de archivos cambiados, Ruff de módulos/pruebas nuevos y workspace build pasan. Se conserva la advertencia histórica de bundle. Los archivos backend heredados contienen avisos previos de formato fuera del cambio. Sin DDL, seeds, servicios nuevos, escrituras SIIE ni cambios de modelos.
+
+El primer despliegue `6cf1b0a` estuvo saludable, pero la vinculación fue rechazada por la restricción nativa de una conversación por contacto (`23505`); cero mensajes. Un diagnóstico transaccional se revirtió íntegramente. La corrección reutiliza la conversación vacía y agrega regresión para impedir una segunda inserción. Se conserva el intento fallido, sin atribuirle vinculación ni consentimiento completados.
 
 Publicación, vinculación efectiva, activación y resultados reales pendientes en este corte. Los recibos nominales permanecen únicamente en `.local/preinscritos-import/logistica-aduanas/`.

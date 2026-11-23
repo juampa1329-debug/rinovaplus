@@ -14,7 +14,7 @@ from app.institutional.auth import authorize
 from app.institutional.broadcast_models import ConsentWrite
 from app.institutional.channel_operations import account
 from app.institutional.prospect_import import normalize, phone
-from app.modules.inbox.application.state import control
+from app.modules.inbox.application.state import change_control, control
 
 PROGRAMS = {
     "logistica": "logistica portuaria y maritima",
@@ -74,8 +74,9 @@ def link(c, settings, integration, contact_id, program):
         db.institution(settings), contact_id,
     ).fetchone():
         raise HTTPException(409, "prospect_existing_channel_review_required")
-    # An untouched import placeholder is not an existing WhatsApp chat. Never
-    # replace, unpause, or create an alternate route around real human history.
+    # An untouched import placeholder has no real human history. The CRM keeps
+    # one conversation per contact; reuse that placeholder, never another route
+    # around a real conversation or an explicit human intervention.
     if c.execute(
         "SELECT 1 FROM crm.Conversation v WHERE v.ContactId=? AND "
         "(EXISTS(SELECT 1 FROM crm.Message m WHERE m.ConversationId=v.ConversationId) "
@@ -84,13 +85,29 @@ def link(c, settings, integration, contact_id, program):
         contact_id,
     ).fetchone():
         raise HTTPException(409, "prospect_existing_history_review_required")
-    conversation, identity = str(uuid4()), str(uuid4())
-    c.execute(
-        "INSERT crm.Conversation(ConversationId,ContactId,State,Priority,"
-        "ControlMode,Unread) VALUES(?,?,'open','normal','ai',0)",
-        conversation, contact_id,
+    placeholder = db.one(
+        c, "SELECT ConversationId,ControlMode FROM crm.Conversation "
+        "WHERE ContactId=?", contact_id,
     )
-    control(c, conversation)
+    identity = str(uuid4())
+    if placeholder:
+        conversation = str(placeholder["ConversationId"])
+        previous = placeholder["ControlMode"]
+        if previous != "ai":
+            c.execute(
+                "UPDATE crm.Conversation SET ControlMode='ai' "
+                "WHERE ConversationId=? AND ControlMode=?",
+                conversation, previous,
+            )
+            change_control(c, conversation, previous, "ai")
+    else:
+        conversation = str(uuid4())
+        c.execute(
+            "INSERT crm.Conversation(ConversationId,ContactId,State,Priority,"
+            "ControlMode,Unread) VALUES(?,?,'open','normal','ai',0)",
+            conversation, contact_id,
+        )
+        control(c, conversation)
     c.execute(
         "INSERT crm_channels2.ExternalIdentity(InstitutionId,IdentityId,"
         "IntegrationId,ExternalId,ContactId,ConversationId,CreatedAt) "
@@ -141,7 +158,7 @@ def setup(service, auth, integration, body):
             db.audit(
                 c, service.settings, actor["UserId"], "broadcast.prospect_setup",
                 integration, count=len(items), scope=body.program,
-                fields=["outbound_whatsapp_route"],
+                fields=["outbound_whatsapp_route", "untouched_import_control"],
             )
     # Separate native consent transactions retain existing CAS/reauth/revocation
     # rules. Deterministic operation IDs recover a partial HTTP response safely.
