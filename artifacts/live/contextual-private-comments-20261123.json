@@ -51,7 +51,8 @@
       "strict_contract_first_live_test": "Gemini provider_rejected_request before generation; backup not called",
       "private_dispatch_still_pending": false,
       "latest_result": "New technical Facebook comment: Sonnet4.6 confirmed and one private delivered; projected to Inbox with public profile name and origin label",
-      "instagram_new_automatic_case": "pending"
+      "instagram_new_automatic_case": "passed: one automatic private accepted/read; user confirmed DM; existing active conversation visible in all comment-origin filter",
+      "instagram_followup_evidence": "artifacts/live/instagram-private-comment-20261123.json"
     }
   },
   "origin_views": {

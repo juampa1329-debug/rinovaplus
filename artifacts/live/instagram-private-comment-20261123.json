@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-23",
+  "timezone": "America/Bogota",
+  "scope": "One real Instagram PRE-ICFES comment, automatic private response and Inbox projection",
+  "privacy": "No credentials, account identifiers, recipient names, bodies or program prices",
+  "code_baseline": "fa0fe304abc4d2c2bc878980034d458656a7f037",
+  "input": {
+    "user_posted_comment": true,
+    "related_publication_instead_of_ad": true,
+    "received_local_time": "17:23:45"
+  },
+  "generation": {
+    "provider": "openrouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "status": "Confirmado",
+    "diagnostic_reference": "01081f40-4344-4745-8cfc-4624350339d5"
+  },
+  "delivery": {
+    "private_accepted_local_time": "17:24:01",
+    "send_attempts_observed": 1,
+    "send_diagnostic_reference": "e68d0bd5-b257-4edf-8bdc-56fb4b81ada3",
+    "provider_confirmation_reference": "b3093234-d869-42f9-aec9-c8b9f30a9a4c",
+    "echo_received_local_time": "17:24:08",
+    "echo_diagnostic_reference": "0fe9db02-e92c-4f6c-985f-4f59b248ec14",
+    "private_replies_after_source_sync": 1,
+    "status_after_source_sync": "Leído",
+    "user_confirmed_dm_received": true,
+    "manual_send": false,
+    "generation_replayed": false
+  },
+  "inbox": {
+    "new_response_copies_observed": 1,
+    "origin_badge": true,
+    "all_comment_origin_filter_visible": true,
+    "existing_incoming_history": true,
+    "also_visible_in_main_inbox": true,
+    "pending_comment_filter_visible": false,
+    "pending_filter_reason": "Existing incoming messages in the same conversation; correct active-thread behavior",
+    "fresh_profile_without_incoming_transition_tested": false
+  },
+  "historical_followup": {
+    "dates": "2026-11-17",
+    "not_caused_by_current_private": true,
+    "removed_or_reconciled_in_this_test": false,
+    "matching_text_pairs_alongside_old_imports_observed": true,
+    "external_ids_compared": false
+  },
+  "invariants": {
+    "configuration_revision": 32,
+    "models_unchanged": true,
+    "no_code_change": true,
+    "p4_p13_initial_acceptance_preserved": true,
+    "p22_technical": "3/5",
+    "p22_commercial": "0/5",
+    "no_ddl_seeds_new_containers_or_siie_writes": true
+  }
+}

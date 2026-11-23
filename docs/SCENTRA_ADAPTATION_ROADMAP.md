@@ -1,3 +1,9 @@
+## Privado automático de Instagram comprobado — 2026-11-23
+
+Comentario real del titular en una publicación relacionada con PRE-ICFES: recibido17:23:45 y privado aceptado17:24:01, America/Bogota. Sonnet4.6 confirmado, un intento de envío. Eco17:24:08 procesado sin segunda salida. Sincronización posterior del comentario conserva una sola respuesta privada y estado Leído; titular confirma recepción en DM. No se usó envío manual ni replay. Inbox muestra exactamente una copia nueva de esta respuesta y etiqueta Desde comentario en Desde comentarios · todas. El hilo ya tenía entradas antiguas, por eso sigue también en Inbox principal y no pertenece a Comentarios sin respuesta; no se borró su historial para forzar la bandeja. La prueba no acredita la transición inicial sin entradas con un perfil nuevo.
+
+Evidencia artifacts/live/instagram-private-comment-20261123.json. Política32 y modelos conservados, sin cambios de código ni nueva inferencia manual. P4/P13 mantienen aceptación inicial; P22 sigue3/5técnico/0aceptación comercial, reparto por etapas/piloto pendientes. Se observaron pares de textos iguales junto a copias importadas del17Nov en el historial previo; no corresponden a este privado. No se compararon sus IDs externos ni se borraron: requieren conciliación separada, sin acreditar limpieza total. SinDDL,seeds,nuevoscontenedores niSIIEwrites.
+
 ## Sonnet principal y respaldo publicados; privado real entregado — 2026-11-23
 
 Por instrucción del titular, OpenRouter/Sonnet4.6 es el principal de lenguaje automático para mensajes y comentarios; Sonnet5.5 es el respaldo. Configuración32 guardada y confirmada tras recarga, con topes del catálogo3/15 y2/10USD por millón entrada/salida respectivamente. Gemini conserva ASR/visión y los simuladores mantienen selección propia. No se atribuye el rechazo anterior al plan gratuito sin evidencia.
