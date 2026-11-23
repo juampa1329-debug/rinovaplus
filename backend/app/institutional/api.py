@@ -571,6 +571,11 @@ def create_app(
         else:
             install_workspace(app, settings)
 
+        if getattr(settings, "postgres_deployment", False):
+            from app.institutional.prospect_import import install as install_prospect_import
+
+            install_prospect_import(app, settings, app.state.sql_workspace)
+
     if getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-agents-p5-v1",
         "cbn-institutional-knowledge-p6-v1",

@@ -946,6 +946,10 @@ function CampaignReport({
   retry: (ids: string[]) => void;
 }) {
   const [state, setState] = useState(""),
+    [recipientDetail, setRecipientDetail] = useState<{
+      recipient: Report["items"][number];
+      trigger: HTMLElement;
+    } | null>(null),
     [search, setSearch] = useState(""),
     [searchQuery, setSearchQuery] = useState(""),
     [charts, setCharts] = useState(false),
@@ -1047,6 +1051,11 @@ function CampaignReport({
             el evento autenticado. Una respuesta sólo se atribuye si referencia
             este mensaje.
           </p>
+          <p>
+            WhatsApp informa lecturas cuando existe recibo de Meta. Abrir y
+            visualizar no se cuentan como dos eventos distintos. Los clics en
+            enlaces no están medidos en este informe.
+          </p>
           <div className="institution-actions">
             <Button
               variant="secondary"
@@ -1120,6 +1129,17 @@ function CampaignReport({
                     <td>
                       {p.name}
                       <small>{p.phone}</small>
+                      <Button
+                        variant="quiet"
+                        onClick={(e) =>
+                          setRecipientDetail({
+                            recipient: p,
+                            trigger: e.currentTarget,
+                          })
+                        }
+                      >
+                        Abrir detalle del envío
+                      </Button>
                       <details>
                         <summary>Ver mensaje y fechas</summary>
                         <p>{p.body}</p>
@@ -1193,6 +1213,13 @@ function CampaignReport({
               </tbody>
             </table>
           </div>
+          {recipientDetail && (
+            <RecipientDeliveryDialog
+              item={recipientDetail.recipient}
+              trigger={recipientDetail.trigger}
+              close={() => setRecipientDetail(null)}
+            />
+          )}
           <Button
             variant="secondary"
             disabled={!canRetry || selected.length === 0}
@@ -1239,6 +1266,78 @@ function CampaignReport({
         />
       )}
     </section>
+  );
+}
+
+function RecipientDeliveryDialog({
+  item,
+  trigger,
+  close,
+}: {
+  item: Report["items"][number];
+  trigger: HTMLElement;
+  close: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    dialog.current?.showModal?.();
+    return () => {
+      if (trigger.isConnected) trigger.focus();
+    };
+  }, [trigger]);
+  const dates = [
+    ["prepared_at", "Preparado"],
+    ["queued_at", "En cola"],
+    ["accepted_at", "Aceptado"],
+    ["sent_at", "Enviado observado"],
+    ["delivered_at", "Entregado observado"],
+    ["read_at", "Leído observado"],
+    ["replied_at", "Respuesta atribuida"],
+    ["failed_at", "Fallo observado"],
+  ] as const;
+  return (
+    <dialog
+      ref={dialog}
+      className="operation-error-dialog broadcast-recipient-dialog"
+      aria-label={`Detalle del envío a ${item.name}`}
+      onCancel={(e) => {
+        e.preventDefault();
+        close();
+      }}
+    >
+      <div className="operation-error-content">
+        <h2>Detalle del envío</h2>
+        <p>
+          {item.name} · {item.phone}
+        </p>
+        <p>
+          Estado: {label(item.status)} · Intentos: {item.attempts}
+        </p>
+        <div
+          className="broadcast-phone-message"
+          style={{ whiteSpace: "pre-wrap", padding: "1rem" }}
+        >
+          {item.body}
+        </div>
+        <dl>
+          {dates.map(([key, title]) => (
+            <div key={key}>
+              <dt>{title}</dt>
+              <dd>
+                {item[key]
+                  ? new Date(item[key]!).toLocaleString("es-CO")
+                  : "Sin evento recibido"}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <p>
+          Este panel consulta la campaña. No envía mensajes ni abre una
+          conversación en Inbox.
+        </p>
+        <Button onClick={close}>Cerrar detalle del envío</Button>
+      </div>
+    </dialog>
   );
 }
 

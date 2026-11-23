@@ -651,6 +651,14 @@ class Workspace:
                 return {"revision": current_revision, "unchanged": True}
             where = ["1=1"]
             params = []
+            if area == "inbox":
+                # Imported prospects stay in CRM/campaigns until a real reply.
+                where.append(
+                    "(COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')='' "
+                    "OR EXISTS(SELECT 1 FROM crm.Message incoming "
+                    "WHERE incoming.ConversationId=v.ConversationId "
+                    "AND incoming.Direction='incoming'))"
+                )
             if area == "inbox" and self.operational_channels:
                 from app.institutional.conversation_origins import view_predicate
 
