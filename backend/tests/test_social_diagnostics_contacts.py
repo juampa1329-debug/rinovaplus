@@ -143,3 +143,39 @@ def test_optional_story_projection_failure_never_blocks_message_history(monkeypa
     monkeypatch.setattr(channel_workspace.db, "rows", rows)
     result = workspace.messages(str(uuid4()))
     assert result["items"][0]["body"] == "hello" and result["socialPresentationUnavailable"]
+
+
+@pytest.mark.parametrize("state,attempts,external,origin,discarded", [
+    ("cancelled", 0, None, "gemini_whatsapp", True),
+    ("cancelled", 1, None, "gemini_whatsapp", False),
+    ("cancelled", 0, "provider-mid", "gemini_whatsapp", False),
+    ("cancelled", 0, None, "human", False),
+    ("cancelled", None, None, "gemini_whatsapp", False),
+    ("read", 1, "provider-mid", "gemini_whatsapp", False),
+])
+def test_history_distinguishes_unsent_ai_drafts_without_rewriting_provider_status(
+    monkeypatch, state, attempts, external, origin, discarded
+):
+    from app.institutional import channel_workspace
+    message, queue = str(uuid4()), str(uuid4())
+    monkeypatch.setattr(channel_workspace.Parent, "messages", lambda *_: {"items": [{"id": message, "body": "Preserved audit text"}]})
+    workspace = object.__new__(channel_workspace.Workspace)
+    workspace.profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    workspace.transaction = lambda: nullcontext(None)
+
+    def rows(_c, query, *args):
+        assert query.count("?") == len(args)
+        parse_sql(postgres_sql(query, layout()["tables"]).replace("%s", "NULL"))
+        assert query.startswith("SELECT")  # Presentation never updates or resends.
+        if "SELECT q.MessageId" in query:
+            return [{"MessageId": message, "QueueId": queue, "State": state,
+                     "LastErrorCode": "gemini_whatsapp_control_or_history_changed",
+                     "Attempts": attempts, "ExternalId": external, "Origin": origin,
+                     "DisplayName": "Instagram test", "readReceiptAt": None}]
+        return []
+
+    monkeypatch.setattr(channel_workspace.db, "rows", rows)
+    value = workspace.messages(str(uuid4()))["items"][0]
+    assert value["deliveryUnsentDraft"] is discarded
+    assert value["deliveryAttempts"] == attempts
+    assert value["deliveryState"] == state and value["body"] == "Preserved audit text"

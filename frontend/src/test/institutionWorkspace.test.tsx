@@ -180,6 +180,7 @@ let failWrite = 0;
 let agentOperations = false;
 let serverRevision = "1";
 let failedDelivery = false;
+let discardedReply = false;
 let quotedReply = false;
 let threadMode = "human";
 let controlEpoch: string | undefined;
@@ -230,6 +231,7 @@ beforeEach(() => {
   agentOperations = false;
   serverRevision = "1";
   failedDelivery = false;
+  discardedReply = false;
   quotedReply = false;
   threadMode = "human";
   controlEpoch = undefined;
@@ -335,6 +337,13 @@ beforeEach(() => {
                   },
                 ]
               : []),
+            ...(discardedReply ? [
+              {id: "unsent-draft", body: "Borrador que no recibió el contacto", direction: "outgoing",
+                createdAt: "2026-10-26T12:01:00Z", sequence: "2", deliveryState: "cancelled",
+                deliveryError: "gemini_whatsapp_control_or_history_changed", deliveryUnsentDraft: true, deliveryAttempts: 0},
+              {id: "sent-reply", body: "Respuesta que sí recibió el contacto", direction: "outgoing",
+                createdAt: "2026-10-26T12:02:00Z", sequence: "3", deliveryState: "read", deliveryAttempts: 1},
+            ] : []),
             ...(failedDelivery
               ? [
                   {
@@ -482,6 +491,21 @@ it("shows a quote only on the reply part that includes the source reference", as
   expect(screen.getAllByLabelText("Mensaje citado")).toHaveLength(1);
   expect(screen.getByText("Primera idea completa")).toBeVisible();
   expect(screen.getByText("Segunda idea completa")).toBeVisible();
+});
+
+it("distinguishes an unsent AI draft from the actual read message without a false error alert", async () => {
+  discardedReply = true;
+  open("inbox");
+  await select();
+  const draft = (await screen.findByText("Borrador que no recibió el contacto")).closest("li");
+  expect(draft).toHaveAttribute("data-unsent-draft", "true");
+  expect(within(draft!).getByText("Borrador de IA · no enviado")).toBeVisible();
+  expect(within(draft!).getByText("Descartado · no enviado")).toBeVisible();
+  expect(within(draft!).queryByRole("button")).not.toBeInTheDocument();
+  const sent = screen.getByText("Respuesta que sí recibió el contacto").closest("li");
+  expect(sent).not.toHaveAttribute("data-unsent-draft");
+  expect(within(sent!).getByText("Leído")).toBeVisible();
+  expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
 });
 
 it("combines Inbox filters on the server and explains a failed delivery in plain Spanish", async () => {

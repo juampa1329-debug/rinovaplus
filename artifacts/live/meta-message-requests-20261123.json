@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-23",
+  "timezone": "America/Bogota",
+  "scope": "Meta incoming message requests and structured language replies",
+  "privacy": "No credentials, contact names, recipient identifiers, message bodies or program prices",
+  "code_commit": "86edcdbf721a2419b4ced8ebbd155bc628e476a6",
+  "diagnosed_instagram_case": {
+    "incoming_messages_in_crm": 2,
+    "original_incoming_times": [
+      "14:40",
+      "14:41"
+    ],
+    "original_ai_failure_time": "15:20:17",
+    "earlier_operation": "8aa1d189-6e44-4bf7-9e28-76ac70fbbb69",
+    "earlier_code": "gemini_whatsapp_control_or_history_changed",
+    "latest_failed_operation": "0af4bd5e-4223-4221-8a78-e2bbd902329a",
+    "latest_code": "gemini_whatsapp_invalid_response",
+    "language_provider_completed": "openrouter/anthropic/claude-sonnet-4.6",
+    "exact_invalid_field_retained": false,
+    "request_folder_was_not_blocking_ingress": true,
+    "native_folder_reported_by_user": true,
+    "native_folder_exposed_by_api": false
+  },
+  "authorized_english_reply": {
+    "manual": true,
+    "accepted_local_time": "17:49",
+    "in_crm_history": true,
+    "in_native_meta_inbox": true,
+    "human_mode_used_for_manual_send": true,
+    "original_ai_mode_restored": true,
+    "quote_provisional_prices": false,
+    "current_local_catalog_revision": 4,
+    "price_and_financing_unapproved": true,
+    "delivery_or_read_receipt_verified": false,
+    "queue_id": "dd59d6d0-30d3-43ed-9bc9-904c03881f3a",
+    "send_attempts": 1,
+    "echo_reference": "d5a312a2-5152-4c1e-ae1d-b25db56daf2e"
+  },
+  "fix": {
+    "ordinary_reply_strict_schema": true,
+    "applies_to_primary_and_backups": true,
+    "anthropic_unsupported_length_and_array_constraints_removed_only_from_provider_schema": true,
+    "backend_text_and_quote_guards_preserved": true,
+    "only_closed_decision_case_and_space_normalized": true,
+    "unknown_decisions_rejected": true,
+    "raw_reply_or_personal_data_in_diagnostics": false,
+    "new_inference_retry_added": false,
+    "historical_backfill_started": false,
+    "permissions_or_routing_changed": false
+  },
+  "validation": {
+    "selected_backend_passed": 310,
+    "ruff": "passed",
+    "frontend_changed": false
+  },
+  "deployment": {
+    "backend": "olsl2qtsmqldw8zilewbitcm",
+    "status": "Success / Running",
+    "duration": "4m20s"
+  },
+  "messenger_live": {
+    "incoming_local_time": "17:58:25",
+    "ai_operation": "465ae35f-c4bf-4f95-ac43-9c8d80d258cf",
+    "provider": "openrouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "state": "Confirmado",
+    "output_parts": 4,
+    "all_parts_delivered": true,
+    "each_part_attempts": 1,
+    "queue_ids": [
+      "011e1020-6201-48f2-be1c-b6eed3724219",
+      "68f8fc8c-cd49-44af-8fc0-db92c271cb41",
+      "1ace3c52-4968-4453-a1eb-a0f9e9127669",
+      "53c1bb69-267d-4365-8c75-fb95df8f8055"
+    ],
+    "echoes_seen_without_second_generation": true,
+    "same_comment_origin_thread_in_main": true,
+    "fresh_native_request_folder_proven": false,
+    "same_conversation_id_before_and_after": "921539ac-4995-402f-875e-657b13a5ee0d"
+  },
+  "instagram_post_deploy_automatic_test": "requested, pending",
+  "limits": {
+    "accepts_recipient_personal_requests_on_their_behalf": false,
+    "guarantees_all_message_delivery": false,
+    "historical_requests_replied_in_bulk": false,
+    "humano_override_preserved": true,
+    "p22": "3/5 technical, 0/5 commercial acceptance",
+    "no_ddl_seeds_new_containers_or_siie_writes": true
+  }
+}

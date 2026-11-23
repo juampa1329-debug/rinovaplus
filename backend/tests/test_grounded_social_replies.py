@@ -46,6 +46,24 @@ def test_generated_replies_are_not_limited_to_greetings():
             grounding.parse(invalid, public=True)
 
 
+@pytest.mark.parametrize("decision,expected", [("Responder", "Dato revisado"), (" RESPONDER ", "Dato revisado"), ("Revisar", None)])
+def test_provider_enum_capitalization_preserves_the_closed_reply_decision(decision, expected):
+    assert grounding.parse(result("Dato revisado", decision)) == expected
+
+
+@pytest.mark.parametrize("decision", [None, 1, "responder y omitir revisión", "aprobar"])
+def test_unknown_decisions_are_still_rejected(decision):
+    with pytest.raises(ValueError, match="invalid_generated_reply"):
+        grounding.parse(result("Dato revisado", decision))
+
+
+def test_generated_array_is_a_contract_failure_not_an_unknown_result():
+    value = result("unused")
+    value["candidates"][0]["content"]["parts"][0]["text"] = "[]"
+    with pytest.raises(ValueError, match="invalid_generated_reply"):
+        grounding.parse(value)
+
+
 def test_human_control_only_allows_explicit_reviewed_drafts(monkeypatch):
     class Cursor:
         def __init__(self):

@@ -868,6 +868,19 @@
   border-start-end-radius: 4px;
   background: var(--inbox-selected);
 }
+.institutional-inbox .p3-messages li[data-unsent-draft="true"] {
+  background: color-mix(in srgb, var(--surface) 82%, var(--inbox-hover));
+  border-style: dashed;
+  color: var(--muted);
+}
+.inbox-unsent-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+.inbox-delivery[data-state="discarded"] {
+  color: var(--muted);
+}
 .institutional-inbox .p3-messages p {
   margin: 0.25rem 0 0;
 }

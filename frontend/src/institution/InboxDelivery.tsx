@@ -179,12 +179,22 @@ export function MessageDelivery({
   state,
   reason,
   readReceiptAt,
+  unsentDraft,
 }: {
   state: string;
   reason?: string;
   readReceiptAt?: string | null;
+  unsentDraft?: boolean;
 }) {
   const report = useContext(ErrorFeedbackContext);
+  if (state === "cancelled" && unsentDraft) {
+    return (
+      <small className="inbox-delivery" data-state="discarded"
+        title="Borrador descartado antes del primer intento de envío. El historial se conserva; consulta el diagnóstico para ver el motivo.">
+        Descartado · no enviado
+      </small>
+    );
+  }
   const blocked = state === "queued" && !!reason;
   if (
     blocked ||
