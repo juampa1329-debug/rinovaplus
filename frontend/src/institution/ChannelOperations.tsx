@@ -1011,6 +1011,13 @@ function ChannelHistory({ identity }: { identity: string }) {
               {item.body_preview && (
                 <blockquote>{item.body_preview}</blockquote>
               )}
+              {item.state === "queued" && item.attempts === 0 && item.body_preview && (
+                <Button variant="secondary" disabled={task.busy || !session.actions.includes("settings.channels.write") || !session.actions.includes("inbox.write")}
+                  onClick={() => setRecoveryConfirmation({resource: item, action: "cancel_queued", trigger: document.activeElement,
+                    detail: "Se retirará este mensaje de la cola sólo si todavía no tuvo intentos de envío. Su texto e historial se conservarán. ¿Cancelar este envío pendiente?"})}>
+                  Cancelar envío sin intentos
+                </Button>
+              )}
               {["queued", "failed"].includes(item.state) &&
                 item.body_preview && (
                   <Button

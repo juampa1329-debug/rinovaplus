@@ -936,6 +936,21 @@ it("shows the Meta profile in an opened conversation and its Inbox row", async (
     "https://scontent.example.fbcdn.net/avatar.jpg",
   );
 });
+it("resolves an unnamed Meta row without opening it and does not rewrite CRM", async () => {
+  socialProfileEnabled = true;
+  open("inbox");
+  await screen.findByRole("button", { name: /^Contacto de Messenger/ });
+  await screen.findByRole("button", { name: /^Ana de Messenger/ }, { timeout: 4000 });
+  expect(screen.queryByRole("heading", { name: "Ana de Messenger" })).not.toBeInTheDocument();
+  expect(calls.filter((call) => call.path.endsWith("/social-profile"))).toHaveLength(1);
+  expect(calls.some((call) => call.method !== "GET")).toBe(false);
+});
+it("distinguishes Meta's messaging window from WhatsApp templates", () => {
+  const guidance = explainInboxError({code: "messaging_response_window_closed", message: ""});
+  expect(guidance.title).not.toContain("WhatsApp");
+  expect(guidance.nextStep).toContain("Meta Business Suite");
+  expect(guidance.nextStep).toContain("cancela primero");
+});
 it("shows one editable ficha without a duplicated read only contact block", async () => {
   open("inbox");
   await select();

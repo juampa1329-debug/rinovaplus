@@ -113,7 +113,12 @@ const details: Record<string, [string, string, string]> = {
     "Espera hasta un minuto y pulsa Enviar de nuevo. Puedes seguir editando el borrador.",
   ],
 };
-details.messaging_response_window_closed = details.whatsapp_reply_window_closed;
+details.messaging_response_window_closed = [
+  "Venció la ventana de respuesta del canal",
+  "El contacto lleva más de 24 horas sin escribir. Este mensaje permanece en cola y todavía no se ha enviado.",
+  "Espera una nueva entrada del contacto o revisa la atención humana en Meta Business Suite. Si respondes por otro medio, cancela primero este envío pendiente para evitar duplicados. Las plantillas aprobadas corresponden a WhatsApp.",
+];
+details.operator_cancelled = ["Envío retirado por un operador", "El mensaje se canceló antes del primer intento y su historial se conserva.", "No se volverá a enviar automáticamente."];
 details.provider_outcome_unknown = details.delivery_uncertain;
 details.provider_result_unknown = details.delivery_uncertain;
 details.send_lease_expired = details.delivery_uncertain;

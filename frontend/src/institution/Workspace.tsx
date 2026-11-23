@@ -291,6 +291,7 @@ export function useRead<T>(
   enabled = true,
   pollMs = 0,
   checkRevision = false,
+  initialDelay = 180,
 ) {
   const { call } = useInstitution();
   const [data, setData] = useState<{
@@ -360,7 +361,7 @@ export function useRead<T>(
         void load();
       }
     };
-    timer = setTimeout(() => void load(true), 180);
+    timer = setTimeout(() => void load(true), initialDelay);
     if (pollMs) document.addEventListener("visibilitychange", visible);
     if (pollMs) window.addEventListener("focus", visible);
     return () => {
@@ -369,7 +370,7 @@ export function useRead<T>(
       if (pollMs) document.removeEventListener("visibilitychange", visible);
       if (pollMs) window.removeEventListener("focus", visible);
     };
-  }, [path, refresh, enabled, call, pollMs, checkRevision]);
+  }, [path, refresh, enabled, call, pollMs, checkRevision, initialDelay]);
   return {
     value: enabled && data?.path === path ? data.value : null,
     loadedAt: enabled && data?.path === path ? data.loadedAt : undefined,
@@ -668,16 +669,26 @@ function WorkspaceView({
     !!identity &&
     !(identity in socialProfiles) &&
     (!channel || ["facebook", "messenger", "instagram"].includes(channel));
-  const profileTarget = needsProfile(selected, selectedChannel) ? selected : "";
+  // Resolve missing names without requiring the operator to open each chat.
+  // One delayed request at a time; never repeat failures on every Inbox poll.
+  const profileTarget = needsProfile(selected, selectedChannel)
+    ? selected
+    : list.value?.items.find((row) =>
+        needsProfile(row.conversationId, row.channel) &&
+        (!row.name || /^\d+$/.test(row.name))
+      )?.conversationId ?? "";
   const profile = useRead<{ profile: SocialProfile | null }>(
     `conversations/${profileTarget}/social-profile`,
     0,
     inbox && !!list.value?.socialProfiles && !!profileTarget,
+    0,
+    false,
+    profileTarget === selected ? 180 : 2000,
   );
-  if (profile.value && profileTarget && !(profileTarget in socialProfiles))
+  if ((profile.value || profile.error) && profileTarget && !(profileTarget in socialProfiles))
     setSocialProfiles({
       ...socialProfiles,
-      [profileTarget]: profile.value.profile,
+      [profileTarget]: profile.value?.profile ?? null,
     });
   const { queue, ...filters } = inboxFilters;
   const emptyInbox =

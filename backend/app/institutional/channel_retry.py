@@ -11,6 +11,40 @@ from app.institutional.channel_outbox import enqueue
 from app.institutional.db import institution, one, uid
 
 
+def cancel_queued(c, settings, authority, item, body):
+    """Keep history while withdrawing a human message that never reached Meta."""
+    authorize(c, settings, authority, "inbox.write", recent=True)
+    value = one(
+        c,
+        "SELECT * FROM crm_channels2.SendJob WITH(UPDLOCK,HOLDLOCK) "
+        "WHERE InstitutionId=? AND IntegrationId=? AND QueueId=?",
+        institution(settings), item["IntegrationId"], uid(body.resource_id),
+    )
+    if (
+        not value or value["State"] != "queued" or value["Attempts"] != 0
+        or value.get("ExternalId") or bytes(value["RowVersion"]).hex() != body.row_version
+        or json.loads(value["Payload"]).get("origin")
+    ):
+        raise HTTPException(409, "unattempted_human_send_required")
+    c.execute(
+        "UPDATE crm_channels2.SendJob SET State='cancelled',LastErrorCode='operator_cancelled',"
+        "CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND IntegrationId=? AND QueueId=? "
+        "AND State='queued' AND Attempts=0 AND ExternalId IS NULL AND RowVersion=?",
+        institution(settings), item["IntegrationId"], value["QueueId"], bytes.fromhex(body.row_version),
+    )
+    if c.rowcount != 1:
+        raise HTTPException(409, "unattempted_human_send_required")
+    c.execute(
+        "UPDATE crm_channels2.ProviderOperation SET Status='abandoned',ResultCode='operator_cancelled',"
+        "CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND IntegrationId=? AND OperationId=? "
+        "AND Status='pending'",
+        institution(settings), item["IntegrationId"], value["OperationId"],
+    )
+    if c.rowcount != 1:
+        raise HTTPException(409, "unattempted_human_send_required")
+    return uid(str(value["QueueId"]))
+
+
 def recover_send(c, settings, authority, actor, item, body):
     if settings.ticket.get("version") in {
         "cbn-institutional-broadcast-p7-v1",

@@ -586,6 +586,41 @@ def test_meta_recovery_never_retries_a_failed_job_with_an_unresolved_provider_ef
     assert error.value.detail == "certain_failure_required" and not f.state["writes"]
 
 
+@pytest.mark.parametrize("fault", [None, "attempted", "accepted", "provider_id", "version", "automatic"])
+def test_cancel_human_queue_only_before_any_provider_attempt(meta_recovery, monkeypatch, fault):
+    f = meta_recovery
+    job = {"State": "queued", "Attempts": 0, "ExternalId": None,
+           "RowVersion": bytes(8), "Payload": '{"actorId":"owner"}',
+           "OperationId": str(uuid4()), "QueueId": str(uuid4())}
+    if fault == "attempted":
+        job["Attempts"] = 1
+    elif fault == "accepted":
+        job["State"] = "accepted"
+    elif fault == "provider_id":
+        job["ExternalId"] = "provider-message"
+    elif fault == "version":
+        job["RowVersion"] = b"changed!"
+    elif fault == "automatic":
+        job["Payload"] = '{"origin":"gemini_whatsapp"}'
+    monkeypatch.setattr(channel_retry, "authorize", lambda *a, **kw: {})
+    monkeypatch.setattr(channel_retry, "one", lambda *a: job)
+    monkeypatch.setattr(channel_retry, "enqueue", lambda *a, **kw: pytest.fail("Cancellation must never enqueue"))
+    body = f.body.model_copy(update={"action": "cancel_queued"})
+    if fault:
+        with pytest.raises(HTTPException) as error:
+            channel_retry.cancel_queued(f.cursor, f.profile, {}, f.item, body)
+        assert error.value.detail == "unattempted_human_send_required"
+        assert not f.state["writes"]
+    else:
+        result = channel_retry.cancel_queued(f.cursor, f.profile, {}, f.item, body)
+        assert result == job["QueueId"]
+        assert len(f.state["writes"]) == 2
+        query, params = f.state["writes"][0]
+        assert "Attempts=0 AND ExternalId IS NULL AND RowVersion=?" in query
+        assert params[1] == f.item["IntegrationId"] and params[-1] == bytes(8)
+        assert "Status='pending'" in f.state["writes"][1][0]
+
+
 @pytest.mark.parametrize("phone_override", [None, "https://other.example/webhook"])
 def test_whatsapp_subscription_checks_precedence_and_verifies_the_waba_override(
     monkeypatch, phone_override,

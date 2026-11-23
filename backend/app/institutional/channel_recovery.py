@@ -30,7 +30,7 @@ class Recovery(Strict):
     resource_id: str
     row_version: str = Field(pattern=r"^[0-9a-f]{16}$")
     action: str = Field(
-        pattern=r"^(reprocess_event|retry_media|abandon_uncertain|retry_send|resume_queued)$"
+        pattern=r"^(reprocess_event|retry_media|abandon_uncertain|retry_send|resume_queued|cancel_queued)$"
     )
 
 
@@ -158,7 +158,11 @@ class Recoveries:
             if prior:
                 return prior
             queue_id = None
-            if body.action in {"retry_send", "resume_queued"}:
+            if body.action == "cancel_queued":
+                from app.institutional.channel_retry import cancel_queued
+
+                queue_id = cancel_queued(c, self.settings, authority, item, body)
+            elif body.action in {"retry_send", "resume_queued"}:
                 from app.institutional.channel_retry import recover_send
 
                 queue_id = recover_send(c, self.settings, authority, actor, item, body)

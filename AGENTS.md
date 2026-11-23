@@ -1081,3 +1081,7 @@ Al cerrar una unidad actualizar memoria, tarea, evidencia, riesgos y grafos afec
 - Entregar cambios pequeños con aceptación comprobable. Aplicar normalización antes de verificar; cualquier cambio posterior invalida la evidencia que dependía de esos bytes.
 - Actualizar avance y pendientes al cerrar cada unidad de trabajo con evidencia saneada, limitaciones y siguiente bloqueo. No inventar porcentajes, tests, revisión o CI aprobados.
 - Sin scaffold ni scripts ejecutables antes de la puerta de diseño definida en [fases](docs/roadmap.md). Las plantillas locales se validan estructuralmente; no prueban GitHub ni producción.
+
+
+## PRE-ICFES e Inbox, 23 de noviembre de 2026
+Ficha local y especialista creados desde UI; 27 programas y 28 agentes. Una respuesta Instagram aceptada y otra en cola por ventana cerrada; sin acreditar el segundo envío ni todos los comentarios. Navegación c987d85 publicada/verificada. Carga progresiva de nombres y cancelación de cola humana sin intentos en validación; ver docs/adaptation/PREICFES_INBOX_20261123.md. P22 conserva 60% técnico y elección/piloto pendientes. Sin DDL, SIIE writes ni nuevos contenedores.
