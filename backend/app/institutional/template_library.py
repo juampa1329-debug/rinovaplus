@@ -95,6 +95,8 @@ def change(service, auth, key, body):
             actor["UserId"],
             "broadcast.template_library",
             key,
-            details={"template_id": key, "removed": body.removed},
+            fields=["library_removed"],
+            version=result["version"],
+            reason="removed" if body.removed else "restored_in_pause",
         )
         return result

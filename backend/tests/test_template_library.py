@@ -9,6 +9,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.institutional import broadcast_templates as templates
+from app.institutional import db
 from app.institutional import template_library as library
 
 
@@ -94,6 +95,27 @@ def test_library_replay_does_not_append_a_second_version(monkeypatch):
     service, key, command, writes = harness(monkeypatch, duplicate={"removed": True})
     assert library.change(service, {}, key, command) == {"removed": True}
     assert writes == []
+
+
+def test_library_change_uses_the_real_shared_audit_contract(monkeypatch):
+    service, key, command, _ = harness(monkeypatch)
+    monkeypatch.setattr(db, "institution", lambda _: "institution")
+    monkeypatch.setattr(library, "audit", db.audit)
+    recorded = []
+
+    def execute(sql, *parameters):
+        recorded.append((sql, parameters))
+        return SimpleNamespace(fetchone=lambda: None)
+
+    with service.tx({}, True) as (cursor, _):
+        cursor.execute = execute
+    assert library.change(service, {}, key, command)["removed"] is True
+    entries = [p for sql, p in recorded if sql.startswith("INSERT crm_access.Audit")]
+    assert len(entries) == 1 and entries[0][3] == key
+    metadata = json.loads(entries[0][-1])
+    assert metadata == {
+        "fields": ["library_removed"], "version": 3, "reason": "removed"
+    }
 
 
 def test_library_requires_explicit_confirmation(monkeypatch):
