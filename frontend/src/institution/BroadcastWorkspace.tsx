@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BroadcastAudience } from "./BroadcastAudience";
+import { BroadcastProspectSetup } from "./BroadcastProspectSetup";
 import type {
   AudienceFilters,
   CrmField,
@@ -78,6 +79,7 @@ type Document = {
   header_media_operation?: string | null;
   scheduled_local: string | null;
   timezone: string;
+  sent_stage?: string;
 };
 type Campaign = {
   id: string;
@@ -770,6 +772,19 @@ function CampaignEditor({
               if (e.target.value === "now") update({ scheduled_local: null });
             }}
           />
+          <SelectField
+            id="campaign-sent-stage"
+            label="Etapa tras envío confirmado"
+            value={doc.sent_stage || ""}
+            disabled={!session.actions.includes("crm.write")}
+            options={[
+              { value: "", label: "Conservar la etapa actual" },
+              ...options.stages.map(value => ({ value, label: value })),
+            ]}
+            onChange={e => update({ sent_stage: e.target.value })}
+          />
+          <p>Se aplica cuando Meta confirma enviado, entregado o leído.
+            Si un asesor cambió la etapa después de preparar, se conserva su cambio.</p>
           <div className="broadcast-binding">
             <Field
               id="bulk-schedule"
@@ -2053,6 +2068,7 @@ function ConsentPanel({ account }: { account: string }) {
           />
         )}
       </section>
+      <BroadcastProspectSetup account={account} changed={people.reload} />
     </div>
   );
 }

@@ -26,6 +26,12 @@ def install(app, settings, gateway=None):
     def options(request: Request):
         return service.metadata(request.state.authority)
 
+    from app.institutional.broadcast_prospects import ProspectSetup, setup
+
+    @app.post("/api/institution/broadcasts/accounts/{integration}/prospects/setup")
+    def setup_prospects(request: Request, integration: str, body: ProspectSetup):
+        return setup(service, request.state.authority, uid(integration), body)
+
     @app.get("/api/institution/broadcasts")
     def listing(request: Request):
         return service.listing(request.state.authority)

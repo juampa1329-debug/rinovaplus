@@ -535,6 +535,13 @@ class Broadcasts:
 
             crm_config, _ = read_configuration(c, foundation=True)
             segments.configuration(document, crm_config.fields)
+            if body.sent_stage:
+                authorize(c, self.settings, auth, "crm.write")
+                if not any(
+                    v.active and v.label == body.sent_stage
+                    for v in crm_config.stages
+                ):
+                    raise HTTPException(409, "broadcast_sent_stage_unavailable")
             if (
                 self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
                 and c.execute(
@@ -767,6 +774,9 @@ class Broadcasts:
                     )
                     snapshot = {
                         "audience_profile": candidate["audience_profile"],
+                        "sent_stage": json.loads(campaign["Document"]).get(
+                            "sent_stage", "",
+                        ),
                         "template": candidate["template"],
                         "body": candidate["text"],
                         "target": candidate["phone"],

@@ -702,6 +702,12 @@ def project(c, settings, item, effect):
                 inst,
                 job["QueueId"],
             )
+            if item["Channel"] == "whatsapp" and effect["text"] in {
+                "sent", "delivered", "read",
+            }:
+                from app.institutional.broadcast_followup import observe
+
+                observe(c, settings, job["QueueId"], effect["text"])
         if not jobs and item["Channel"] == "messenger" and getattr(settings, "postgres_deployment", False):
             jobs = rows(c, "SELECT q.QueueId,q.State FROM crm_channels2.SendJob q JOIN crm_channels2.Integration i ON i.InstitutionId=q.InstitutionId AND i.IntegrationId=q.IntegrationId "
                         "WHERE q.InstitutionId=? AND i.ApplicationId=? AND i.ExternalAccountId=? AND i.Channel='facebook' AND JSON_VALUE(q.Payload,'$.privateReply')='true' AND q.ExternalId=?",
