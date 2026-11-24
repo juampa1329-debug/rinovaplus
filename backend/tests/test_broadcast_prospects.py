@@ -207,3 +207,11 @@ def test_valid_existing_consent_is_preserved_without_repeated_registration(monke
     })
     result = setup.setup(service, {}, "account", command(program="all"))
     assert result["items"][0]["preserve_consent"] and calls == []
+
+
+def test_bulk_policy_cannot_override_an_authenticated_unsubscribe(monkeypatch):
+    service, calls, _ = setup_harness(monkeypatch)
+    monkeypatch.setattr(setup, "prior_opt_out", lambda *args: True)
+    result = setup.setup(service, {}, "account", command(program="all"))
+    assert result["items"] == [] and calls == []
+    assert result["held"][0]["reason"] == "prospect_opt_out_review_required"

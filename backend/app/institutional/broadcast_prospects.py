@@ -75,6 +75,19 @@ def review_all(service, auth):
         }
 
 
+def prior_opt_out(c, settings, identity):
+    if getattr(settings, "ticket", {}).get("version") not in {
+        "cbn-institutional-campaign-p8-v1", "cbn-institutional-ads-p9-v1",
+        "cbn-institutional-learning-p10-v1", "cbn-institutional-operations-p11-v1",
+    }:
+        return False
+    return bool(c.execute(
+        "SELECT 1 FROM crm_campaign8.Event WHERE InstitutionId=? AND Kind='opt_out' "
+        "AND JSON_VALUE(Document,'$.identity_id')=?",
+        db.institution(settings), identity,
+    ).fetchone())
+
+
 def link(c, settings, integration, contact_id, program):
     person = db.one(
         c, "SELECT ContactId,Phone,Type,CustomValues FROM crm.Contact "
@@ -170,6 +183,10 @@ def setup(service, auth, integration, body):
                     if old and old["State"] == "revoked":
                         raise HTTPException(
                             409, "prospect_revoked_consent_review_required",
+                        )
+                    if prior_opt_out(c, service.settings, identity):
+                        raise HTTPException(
+                            409, "prospect_opt_out_review_required",
                         )
                 except HTTPException as failure:
                     # All review guards run before writes. A revoked consent

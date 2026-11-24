@@ -93,6 +93,7 @@ export function BroadcastProspectSetup({
         prospect_existing_channel_review_required: "La ficha ya tiene otro canal. Revisa su vinculación.",
         prospect_existing_history_review_required: "Existe una conversación o intervención humana previa. Se conserva para revisión.",
         prospect_revoked_consent_review_required: "Hay una revocación previa. Se requiere revisión individual.",
+        prospect_opt_out_review_required: "La persona pidió no recibir mensajes. Se conserva para revisión individual.",
         prospect_phone_program_review_required: "Revisa el número y el programa de estos preinscritos.",
       };
       setError(failure instanceof ApiError && reasons[failure.detail] ||

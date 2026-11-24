@@ -41,3 +41,11 @@ Diagnóstico transaccional sin llamada a proveedor: `ready` pasa, pero `reserve`
 La corrección reutiliza la reserva sólo si está liberada, corresponde a la misma integración/operación y el trabajo permanece en cola, sin ID externo ni lease; la operación del proveedor debe estar pendiente y confirmar exactamente una espera conocida previa a I/O (`broadcast_cadence_wait` o `campaign_quiet_or_not_due`). Reservas comprometidas, inciertas, activas o errores desconocidos requieren revisión. Se conservan presupuestos, contadores de cuota y día UTC; no se crea otra operación ni se relanza un resultado incierto. 310 pruebas backend seleccionadas y Ruff de módulo/pruebas nuevos pasan. Publicación y recuperación efectiva pendientes en este corte.
 
 Se conservan los cambios concurrentes de `76b1f49` sobre agrupación de preguntas y respuestas citadas del Inbox; no se modifican sus asignaciones o modelos.
+
+## Recuperación efectiva y revisión de bajas
+
+`428852b` publicado saludable en `gpuovtst0oyuveqtzbhm0l69`, 4m19s. El diagnóstico de la corrección devolvió `RESERVE_OK` sobre la reserva real y revirtió toda la prueba, sin I/O al proveedor. El despachador continuó después por su recorrido normal, sin replay manual. Aduanas alcanzó 11 entregas; el CRM mostró un caso real Calificación antes del envío y Seguimiento después. Se observó recuperación posterior de Logística. El despliegue concurrente `08d0a5f` conserva la corrección y quedó saludable en `ulhl5wq7sdkikpk88ukn6zvs`.
+
+La búsqueda por nombre y por fragmento del teléfono, además del caso sin coincidencias, quedó verificada en vivo. `b222f02` aclara en el informe que una espera de cadencia conserva el mensaje en cola y no necesita reintento; interfaz actualizada observada. Listados nominales de 193 pendientes de Excel y del único conflicto de vinculación guardados sólo en `.local/`.
+
+Se añade reconocimiento nativo del texto exacto «No recibir mensajes» del botón de las plantillas, como evento autenticado `opt_out` de esa identidad/mensaje. Una habilitación en bloque no puede sustituir una baja previa, incluso si la autorización antigua expiró. La renovación individual con evidencia nueva conserva su recorrido nativo. 369 pruebas backend seleccionadas pasan; la baja real no se simula escribiendo como un prospecto ni enviando otro mensaje.
