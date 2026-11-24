@@ -23,3 +23,11 @@ Para estas dos campañas se configurará **Seguimiento**. El valor predeterminad
 El primer despliegue `6cf1b0a` estuvo saludable, pero la vinculación fue rechazada por la restricción nativa de una conversación por contacto (`23505`); cero mensajes. Un diagnóstico transaccional se revirtió íntegramente. La corrección reutiliza la conversación vacía y agrega regresión para impedir una segunda inserción. Se conserva el intento fallido, sin atribuirle vinculación ni consentimiento completados.
 
 Publicación, vinculación efectiva, activación y resultados reales pendientes en este corte. Los recibos nominales permanecen únicamente en `.local/preinscritos-import/logistica-aduanas/`.
+
+## Habilitación general realizada
+
+`66e885d` publicado en Coolify `4jprj8piliechjaho2pmyaap`, saludable/Running, 4m18s. La prueba transaccional corregida vinculó diez fichas reales y revirtió todo, sin envío. Después, el proceso nativo general completó 772 fichas: 771 habilitadas y una para revisión. Las evidencias son declaraciones del titular sobre políticas de preinscripción; éste añade posteriormente que la web informa tratamiento de datos y contacto por los medios institucionales. No se presenta como inspección independiente del texto web. Registro de este seguimiento hasta 24/11/2026 23:59, hora mostrada por el navegador. Sin activación automática de las otras campañas.
+
+La consulta de consentimiento tenía un límite histórico de 500 identidades y falló al refrescar después de completar la habilitación. No fue un fallo de los registros ya confirmados y no se repitieron las escrituras. Por petición expresa se añade búsqueda por nombre/número y páginas de cien, con selección y autorización individual conservadas. La interfaz distingue la actualización fallida del listado de un lote pendiente de guardar. 155 pruebas backend y 26 frontend pasan; tipos, lint y build se verifican para este ajuste.
+
+Revisión de Excel pendiente: 193 registros (201 iniciales menos ocho resueltos), separada del único caso ya importado que no se habilitó. Envíos y cambio efectivo de etapa todavía pendientes.

@@ -85,7 +85,8 @@ export function BroadcastProspectSetup({
         setCount(Math.min(offset + 10, bundle.contact_ids.length));
       }
       setDone(true);
-      await changed();
+      try { await changed(); }
+      catch { setError("La habilitación terminó. No se pudo refrescar el listado de consulta; recárgalo sin repetir la habilitación."); }
     } catch (failure) {
       const reasons: Record<string, string> = {
         prospect_phone_identity_conflict: "El número ya está vinculado a otra ficha. Revisa ese destinatario.",
@@ -129,7 +130,7 @@ export function BroadcastProspectSetup({
         onClick={() => void run()}>Vincular y registrar autorización, sin enviar</Button>
       {!!count && <p role="status">{count} procesados de {bundle?.contact_ids.length} · {enabledCount} habilitados · {reviewCount} para revisión.</p>}
       {done && <Notice>Lote vinculado. Revisa los destinatarios de la campaña antes de activar.</Notice>}
-      {error && <Notice>{error} Los lotes anteriores se conservan. Continuar recupera el mismo intento pendiente.</Notice>}
+      {error && <Notice>{error} {!done && "Los lotes anteriores se conservan. Continuar recupera el mismo intento pendiente."}</Notice>}
     </details>
   </section>;
 }

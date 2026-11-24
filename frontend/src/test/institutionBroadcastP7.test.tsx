@@ -147,6 +147,18 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("searches consent recipients by name or number without writing consent", async () => {
+  const fetcher = setup((path) => path.includes("identities?search=Laura") ? ok({
+    items: [{ id: "laura", name: "Laura", phone: "573001234567", consent: null }],
+    has_more: false,
+  }) : undefined);
+  fireEvent.click(await screen.findByRole("button", { name: "Consentimiento y cadencia" }));
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), { target: { value: "a" } });
+  await screen.findByRole("option", { name: "Ana · 573100000000" });
+  fireEvent.change(screen.getByLabelText("Buscar destinatario por nombre o número"), { target: { value: "Laura" } });
+  await screen.findByRole("option", { name: "Laura · 573001234567" });
+  expect(fetcher.mock.calls.some(([, init]) => init?.method && init.method !== "GET")).toBe(false);
+});
 it("keeps paused versions out of the active library and lets operators inspect history", async () => {
   const fetcher = setup((path) =>
     path.endsWith("options")

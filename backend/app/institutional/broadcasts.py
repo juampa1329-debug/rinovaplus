@@ -981,20 +981,22 @@ class Broadcasts:
             found = rows(
                 c,
                 (
-                    "SELECT TOP(501) i.IdentityId,i.Externa"
+                    "SELECT i.IdentityId,i.Externa"
                     "lId,i.ContactId,i.ConversationId,p.Nam"
                     "e FROM crm_channels2.ExternalIdentity "
                     "i JOIN crm.Contact p ON p.ContactId=i."
                     "ContactId WHERE i.InstitutionId=? AND "
-                    "i.IntegrationId=? ORDER BY p.Name,i.Id"
-                    "entityId"
+                    "i.IntegrationId=? AND (?='' OR CHARINDEX(?,p.Name)>0 "
+                    "OR CHARINDEX(?,i.ExternalId)>0) ORDER BY p.Name,i.IdentityId "
+                    "OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY"
                 ),
                 institution(self.settings),
                 integration,
+                search, search, search, offset,
             )
-            if len(found) > 500:
-                raise HTTPException(413, "broadcast_identity_scope_limit")
             return {
+                "has_more": len(found) > 100,
+                "offset": offset,
                 "items": [
                     {
                         "id": uid(str(v["IdentityId"])),
@@ -1013,7 +1015,7 @@ class Broadcasts:
                             else None
                         ),
                     }
-                    for v in found
+                    for v in found[:100]
                 ]
             }
 
