@@ -10,3 +10,9 @@ Regla aportada por el titular,24noviembre2026. Disponible en política central o
 Se conserva la presentación del menor abono de entrada para la venta inicial y se comparan alternativas cuando la persona lo pide. Se corrigió la clasificación de «abonar», que antes no siempre activaba pricing. Biblioteca y procedencia SHA verificadas; los escenarios privados/públicos conservan los planes vigentes sin reescribir cifras y excluyen vencidos.185pruebas focalizadas pasan y Ruff pasa. Seis fallos de la selección amplia ya ocurrían antes de cambiar código: dos esperaban34guías frente a37actuales y cuatro usaban un Cursor de audio sin description para la cola actual. La selección focalizada los excluye explícitamente; no se acredita suite completa verde.
 
 No se llamó a modelos ni se enviaron mensajes, no se alteraron fichas financieras ni se escribieron datos en SIIE. Publicación en verificación; la aplicación de una guía no acredita por sí sola calidad comercial de una respuesta real.
+
+## Verificación de publicación
+
+Código9d265df: backend b7nyedvu3b4osdirfnhjzjtb Success/Running04m18s y frontend voxlnm7bwrr3zywpa2ldicci Success25s. La guía pricing nativa publicada contiene la rama Abono mayor con el reajuste sujeto a aprobación de Tesorería. Ver contexto para Barismo y Bartender resolvió la ficha y las fuentes sin consumo. No se pulsó Probar respuesta ni se enviaron mensajes. No se afirma una negociación real ni que la solicitud haya sido tramitada.
+
+281pruebas adicionales de mensajes,comentarios,voz y operaciones pasan; contienen solapamientos con las185previas. Los seis fallos heredados detectados antes del cambio siguen documentados; no se declara la suite completa verde. No se modificaron permisos,asignaciones de modelos,voces,importes ni planes.
