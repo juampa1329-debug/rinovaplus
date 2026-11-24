@@ -1,6 +1,7 @@
 """Only the P4 C10 event/outbound consumers run in this application."""
 
 import logging
+import re
 import threading
 from contextlib import asynccontextmanager
 
@@ -86,8 +87,18 @@ class Workers:
                 if consume():
                     continue
                 delay = 3
-            except Exception:
-                logger.warning("channel_queue_worker_retry_required")
+            except Exception as error:
+                # Class and SQLSTATE identify a failed queue without exposing
+                # SQL, parameters, provider payloads or exception messages.
+                sqlstate = getattr(error, "pgcode", None)
+                field = error.args[0] if isinstance(error, KeyError) and error.args else None
+                known_fields = {"QueueId", "OperationId", "IntegrationId", "MessageId", "IdentityId", "Kind", "Payload", "State", "RowVersion", "SecretId", "Snapshot", "Name", "Language", "ProviderId", "Definition", "CurrentQueueId", "CampaignId", "CampaignEpoch", "CampaignRevision", "ConsentId", "ConsentVersion", "AccountVersion", "ControlEpoch", "person", "eligible", "template", "consent", "template_record", "text", "phone", "ContactId", "ActorRef", "ApplicationId"}
+                logger.warning(
+                    "channel_queue_worker_retry_required type=%s sqlstate=%s field=%s",
+                    type(error).__name__,
+                    sqlstate if isinstance(sqlstate, str) and re.fullmatch(r"[A-Z0-9]{5}", sqlstate) else "none",
+                    field if isinstance(field, str) and field in known_fields else "none",
+                )
                 delay = 5
             wake.wait(delay)
 
