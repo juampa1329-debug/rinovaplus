@@ -152,6 +152,16 @@ type Report = {
     replied_at?: string;
     failed_at?: string;
     profile?: Record<string, string>;
+    template_parts?: { header: string; footer: string; buttons: string[] };
+    contact?: {
+      stage: string;
+      program: string;
+      requested_program: string;
+      requested_at: string;
+      request_channel: string;
+      source: string;
+      sent_stage: string;
+    };
   }[];
 };
 const stateLabel: Record<string, string> = {
@@ -266,6 +276,8 @@ const blank = (): Document => ({
 });
 
 export function BroadcastWorkspace() {
+  const selectionVersion = useRef(0);
+  const [visibleSelectionVersion, setVisibleSelectionVersion] = useState(0);
   const options = useResource<Options>("broadcasts/options"),
     listing = useResource<{ items: Campaign[] }>("broadcasts");
   const [tab, setTab] = useState("campaigns"),
@@ -348,6 +360,8 @@ export function BroadcastWorkspace() {
               <Button
                 onClick={() => {
                   if (allowNavigation()) {
+                    selectionVersion.current += 1;
+                    setVisibleSelectionVersion(selectionVersion.current);
                     setCreating(true);
                     setChosen(null);
                   }
@@ -366,6 +380,8 @@ export function BroadcastWorkspace() {
               hidden={!listVisible}
               onSelect={(c) => {
                 if (allowNavigation()) {
+                  selectionVersion.current += 1;
+                  setVisibleSelectionVersion(selectionVersion.current);
                   setCreating(false);
                   setChosen(c);
                 }
@@ -381,11 +397,10 @@ export function BroadcastWorkspace() {
                 }}
                 saved={async (id) => {
                   await reload();
-                  setChosen(
-                    await listing
-                      .reload()
-                      .then((v) => v.items.find((c) => c.id === id) || null),
-                  );
+                  const latest = await listing.reload();
+                  if (selectionVersion.current !== visibleSelectionVersion)
+                    return;
+                  setChosen(latest.items.find((c) => c.id === id) || null);
                   setCreating(false);
                 }}
               />
@@ -1354,9 +1369,87 @@ function RecipientDeliveryDialog({
         </Button>
       </div>
       <div className="broadcast-recipient-content">
+        <dl className="broadcast-recipient-request">
+          <div>
+            <dt>Información solicitada en preinscripción</dt>
+            <dd>
+              {item.contact?.requested_program ||
+                item.profile?.program ||
+                "Sin dato registrado"}
+            </dd>
+          </div>
+          <div>
+            <dt>Etapa actual en el CRM</dt>
+            <dd>{item.contact?.stage || "No disponible en este informe"}</dd>
+          </div>
+          {item.contact?.program && (
+            <div>
+              <dt>Programa actual en el CRM</dt>
+              <dd>{item.contact.program}</dd>
+            </div>
+          )}
+          {item.contact?.sent_stage && (
+            <div>
+              <dt>Etapa configurada tras envío confirmado</dt>
+              <dd>{item.contact.sent_stage}</dd>
+            </div>
+          )}
+        </dl>
+        {item.contact &&
+          (item.contact.requested_at ||
+            item.contact.request_channel ||
+            item.contact.source) && (
+            <details className="broadcast-recipient-source">
+              <summary>Ver origen de la solicitud</summary>
+              <dl className="readable-record-fields">
+                {item.contact.requested_at && (
+                  <div>
+                    <dt>Última preinscripción</dt>
+                    <dd>{item.contact.requested_at}</dd>
+                  </div>
+                )}
+                {item.contact.request_channel && (
+                  <div>
+                    <dt>Canal declarado</dt>
+                    <dd>{item.contact.request_channel}</dd>
+                  </div>
+                )}
+                {item.contact.source && (
+                  <div>
+                    <dt>Archivo de origen</dt>
+                    <dd>{item.contact.source}</dd>
+                  </div>
+                )}
+              </dl>
+              <p>
+                La fecha de preinscripción no acredita una conversación ni una
+                lectura.
+              </p>
+            </details>
+          )}
         <h3>Mensaje de la campaña</h3>
         <div className="broadcast-phone-message">
+          {item.template_parts?.header && (
+            <p>
+              <strong>{item.template_parts.header}</strong>
+            </p>
+          )}
           <ReadableRecord text={item.body || ""} />
+          {item.template_parts?.footer && (
+            <p className="broadcast-recipient-footer">
+              {item.template_parts.footer}
+            </p>
+          )}
+          {!!item.template_parts?.buttons.length && (
+            <ul
+              className="broadcast-recipient-buttons"
+              aria-label="Opciones del mensaje enviado"
+            >
+              {item.template_parts.buttons.map((text, i) => (
+                <li key={i}>{text}</li>
+              ))}
+            </ul>
+          )}
         </div>
         <details className="broadcast-recipient-events">
           <summary>

@@ -37,6 +37,46 @@
 .broadcast-recipient-content h3 {
   margin-top: 0;
 }
+.broadcast-recipient-footer {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.broadcast-recipient-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+.broadcast-recipient-buttons li {
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.85rem;
+}
+.broadcast-recipient-request {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+.broadcast-recipient-request dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.broadcast-recipient-request dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+}
+.broadcast-recipient-source {
+  margin-block: 0.75rem 1.25rem;
+}
+.broadcast-recipient-source summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+}
 .broadcast-recipient-content .broadcast-phone-message {
   padding: 1rem;
   background: var(--active);

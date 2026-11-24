@@ -153,10 +153,12 @@ class Workers:
     def run(self):
         from app.institutional.channel_media import MediaWorker
         from app.institutional.channel_recovery import maintenance
+        from app.institutional.broadcast_catalog_refresh import Refresher
 
         events = EventWorker(self.settings)
         dispatcher = Dispatcher(self.settings, self.transport)
         media = MediaWorker(self.settings, self.media_downloader)
+        catalog_refresh = Refresher(self.settings)
         failures = 0
         while not self.stop_event.is_set():
             try:
@@ -188,6 +190,10 @@ class Workers:
                     from app.institutional.store import transaction
 
                     def run_broadcast():
+                        try:
+                            catalog_refresh.once()
+                        except Exception:
+                            logger.warning("broadcast_catalog_refresh_retry_required")
                         with transaction(self.settings, True, anonymous=True) as c:
                             reconcile_receipts(c, self.settings)
                         Worker(self.settings).once()
