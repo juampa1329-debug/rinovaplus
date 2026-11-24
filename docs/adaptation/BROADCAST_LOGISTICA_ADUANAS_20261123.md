@@ -31,3 +31,13 @@ Publicación, vinculación efectiva, activación y resultados reales pendientes 
 La consulta de consentimiento tenía un límite histórico de 500 identidades y falló al refrescar después de completar la habilitación. No fue un fallo de los registros ya confirmados y no se repitieron las escrituras. Por petición expresa se añade búsqueda por nombre/número y páginas de cien, con selección y autorización individual conservadas. La interfaz distingue la actualización fallida del listado de un lote pendiente de guardar. 155 pruebas backend y 26 frontend pasan; tipos, lint y build se verifican para este ajuste.
 
 Revisión de Excel pendiente: 193 registros (201 iniciales menos ocho resueltos), separada del único caso ya importado que no se habilitó. Envíos y cambio efectivo de etapa todavía pendientes.
+
+## Activación y bloqueo de reserva comprobado
+
+Activadas únicamente Aduanas (11) y Logística (32), con sus plantillas Meta aprobadas y filtro exacto de referencias de importación. Vistas previas 11/11 y 32/32 elegibles; etapa tras envío confirmado Seguimiento. Cuenta CBN habilitada con límite 100/24h e intervalo 30 segundos; todas las demás campañas comerciales siguen Borrador. Se observaron cuatro entregas reales de Aduanas, incluida una lectura, antes de una espera prolongada. Los 43 destinatarios tienen trabajo nativo en cola; esto no acredita 43 POST a Meta. Un destinatario aún pendiente conserva Calificación en CRM.
+
+Diagnóstico transaccional sin llamada a proveedor: `ready` pasa, pero `reserve` intenta insertar de nuevo la reserva ya liberada de una operación que volvió a cola por `broadcast_cadence_wait`; PostgreSQL rechaza `23505`. Esto bloquea el despacho de los trabajos siguientes. No se atribuye a saldo o rechazo de Meta. La prueba se revierte y no repite envíos aceptados.
+
+La corrección reutiliza la reserva sólo si está liberada, corresponde a la misma integración/operación y el trabajo permanece en cola, sin ID externo ni lease; la operación del proveedor debe estar pendiente y confirmar exactamente una espera conocida previa a I/O (`broadcast_cadence_wait` o `campaign_quiet_or_not_due`). Reservas comprometidas, inciertas, activas o errores desconocidos requieren revisión. Se conservan presupuestos, contadores de cuota y día UTC; no se crea otra operación ni se relanza un resultado incierto. 310 pruebas backend seleccionadas y Ruff de módulo/pruebas nuevos pasan. Publicación y recuperación efectiva pendientes en este corte.
+
+Se conservan los cambios concurrentes de `76b1f49` sobre agrupación de preguntas y respuestas citadas del Inbox; no se modifican sus asignaciones o modelos.
