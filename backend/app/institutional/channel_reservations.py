@@ -26,9 +26,8 @@ def preflight_reservation(c, settings, job):
         and uid(str(previous["IntegrationId"])) == uid(str(job["IntegrationId"]))
         and job.get("State") == "queued" and not job.get("ExternalId")
         and not job.get("LeaseId") and not job.get("LeaseUntil")
-        and job.get("LastErrorCode") in KNOWN_WAITS
         and operation and operation["Status"] == "pending"
-        and operation["ResultCode"] == job["LastErrorCode"]
+        and operation["ResultCode"] in KNOWN_WAITS
     ):
         raise HTTPException(409, "outbound_reservation_review_required")
     return uid(str(previous["ReservationId"]))

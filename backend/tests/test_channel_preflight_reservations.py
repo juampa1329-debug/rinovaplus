@@ -77,7 +77,7 @@ def test_effectful_or_inflight_reservations_are_never_reused(monkeypatch, status
 
 @pytest.mark.parametrize("changes", [
     {"State": "uncertain"}, {"ExternalId": "wamid.accepted"},
-    {"LeaseId": str(uuid4())}, {"LastErrorCode": "provider_result_unknown"},
+    {"LeaseId": str(uuid4())}, {"LeaseUntil": "2026-11-24T00:00:00Z"},
 ])
 def test_only_a_known_pre_provider_wait_can_be_restored(monkeypatch, changes):
     c, job, _, _, settings = harness(monkeypatch, **changes)
@@ -99,3 +99,11 @@ def test_provider_operation_must_confirm_same_known_wait(monkeypatch):
     with pytest.raises(HTTPException):
         outbox.reserve(c, settings, job)
     assert c.writes == [] and c.increments == 0
+
+
+def test_later_template_refresh_does_not_erase_proof_of_unsent_wait(monkeypatch):
+    c, job, previous, _, settings = harness(
+        monkeypatch, LastErrorCode="broadcast_template_refresh_required",
+    )
+    assert outbox.reserve(c, settings, job) == previous["ReservationId"]
+    assert c.increments == 1 and previous["Status"] == "reserved"
