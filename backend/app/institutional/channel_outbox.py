@@ -455,7 +455,12 @@ def reserve(c, settings, job):
         ).fetchval()
         if policy["DailyOutboundQuota"] <= 0 or own >= policy["DailyOutboundQuota"]:
             raise HTTPException(429, "tiktok_daily_outbound_quota")
-    identity = str(uuid4())
+    from app.institutional.channel_reservations import preflight_reservation, restore
+
+    prior = preflight_reservation(c, settings, job)
+    identity = prior or str(uuid4())
+    if prior:
+        restore(c, settings, prior)
     if getattr(settings, "postgres_profile", False):
         c.native(
             """INSERT INTO rinovaplus_crm.crmcanalinstitucionalcuota
@@ -468,6 +473,8 @@ def reserve(c, settings, job):
         )
     else:
         increment_reservation(c, inst, job["IntegrationId"])
+    if prior:
+        return identity
     c.execute(
         (
             "INSERT crm_channels2.QuotaReservation("
