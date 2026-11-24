@@ -1,3 +1,9 @@
+## Botón de Juan Pablo publicado — 2026-11-24
+
+b3e68e2 saludable: backend vfrsuqistgptrryfvwkcrtlm Success/Running, 4m20s; frontend s5ngszwmokfyghwjllpwkmkq Success, 25s. El botón verificado de campaña inicia presentación Juan Pablo y orientación/negociación con ficha vigente. La presentación de plantilla no sustituye la primera respuesta conversacional. Entrada real pasa al Inbox por filtro existente, mismo hilo; control Humano y solicitudes humanas explícitas conservados. No se enviaron mensajes ni activaron campañas. Nuevo clic real y respuesta posterior aún no observados: no acreditar piloto end-to-end.
+
+181 pruebas seleccionadas y 88 posteriores solapadas pasan; Ruff pasa. Ocho fallos amplios reproducidos en copia aislada del HEAD previo y documentados, sin afirmar suite completa verde. Contexto ligado a campaña/cuenta/identidad/cita aceptadas y Snapshot de esa cola; cambios explícitos de interés prevalecen. Sin contexto privado en comentarios públicos ni cuerpo financiero antiguo añadido al modelo. Evidencia artifacts/live/campaign-advisor-entry-20261124.json y guía docs/adaptation/CAMPAIGN_ADVISOR_ENTRY_20261124.md. Fases y P22 sin nuevas aceptaciones. Sin DDL, seeds, servicios ni escrituras SIIE.
+
 ## Botón comercial de campaña preparado — 2026-11-24
 
 El titular pide que Hablar con Juan Pablo inicie atención comercial de IA y pase al Inbox. La promoción por entrada real ya existe y se conserva. Se reconoce sólo el título de botón firmado vinculado por context.id a una campaña realmente aceptada, misma institución/cuenta/identidad/conversación y Snapshot vigente de esa cola; el payload libre no concede autoridad. Recupera programa/jornada y selecciona especialista si es inequívoco; el interés explícito más reciente prevalece. El cuerpo antiguo se usa sólo para orientar la selección y no se añade como fuente de precios al modelo.
