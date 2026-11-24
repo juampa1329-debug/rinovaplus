@@ -507,7 +507,7 @@ const messages: Record<string, string> = {
   invalid_server_response:
     "El servidor devolvió una respuesta incompleta. Tu configuración se conserva; vuelve a cargar RinovaPlus cuando termine la actualización.",
   rate_limit: "Alcanzaste el límite temporal. Espera antes de reintentar.",
-  rate_limited: "RinovaPlus alcanzó el límite temporal de solicitudes.",
+  rate_limited: "El Inbox alcanzó el límite temporal de consultas al CRM. Este aviso no indica falta de saldo ni tokens de IA.",
   last_active_owner: "Debe quedar al menos un propietario activo con acceso.",
   last_active_admin: "Debe quedar al menos un administrador activo.",
   email_already_registered: "Este correo ya tiene una cuenta.",

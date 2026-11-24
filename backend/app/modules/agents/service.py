@@ -1405,7 +1405,7 @@ class AgentsService:
                 ),
                 key,
             ).fetchval()
-            if (
+            if not getattr(cursor, "agent_budget_unlimited", False) and (
                 not cap
                 or used + estimate > cap
                 and agents[key]["configuration"].get("hard_stop", True)

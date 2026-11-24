@@ -103,6 +103,7 @@ def test_recovery_preview_query_requires_latest_ai_input_without_any_existing_at
     def rows(c, sql, *args):
         assert sql.count("?") == len(args)
         parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+        assert "LEN(" not in postgres_sql(sql, layout()["tables"])
         assert "v.ControlMode='ai'" in sql and "newer.Sequence>m.Sequence" in sql
         assert "NOT EXISTS(SELECT 1 FROM crm_channels2.ProviderOperation" in sql
         assert args[-1] == conversation

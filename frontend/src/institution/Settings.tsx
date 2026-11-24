@@ -7,6 +7,7 @@ import { LanguageResilience } from "./LanguageResilience";
 import { LanguageRehearsal } from "./LanguageRehearsal";
 import { InstitutionContacts } from "./InstitutionContacts";
 import { ProviderAccount } from "./ProviderAccount";
+import { BalanceAlertStatus } from "./BalanceAlertStatus";
 import { allowNavigation, useDraftGuard } from "./drafts";
 import { useInstitution, useIntent, useTask } from "./api";
 import type { Contract, Document, Setting } from "./api";
@@ -152,13 +153,13 @@ function SettingEditor({
         </section>
       )}
       {section === "budgets" && (
-        <Notice>
-          Los límites de solicitudes y cantidad de cuentas se aplican
-          localmente.{" "}
-          {contract.channel_operations
-            ? "Los topes diarios controlan la cola de mensajes y las reservas de borradores de IA; cero deshabilita esa ejecución."
-            : "Los topes diarios quedan guardados para la futura ejecución de proveedores; cero significa ejecución externa deshabilitada."}
-        </Notice>
+        <>
+          <Notice>
+            Activa «IA sin topes internos» para continuar generando respuestas sin cortes por presupuesto diario ni mensual de agentes. Se registra el consumo. Los topes por respuesta, límites de voz, mensajes y seguridad siguen vigentes. Sin esa opción, cero en los topes diarios deshabilita la ejecución correspondiente.
+            La alerta consulta el saldo total de OpenRouter con su clave de administración; avisa una vez por episodio de saldo bajo a los administradores activos y vuelve a habilitarse al recuperar saldo. No recarga ni bloquea respuestas.
+          </Notice>
+          <BalanceAlertStatus />
+        </>
       )}
       {task.notices}
       {current && (

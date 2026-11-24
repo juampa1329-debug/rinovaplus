@@ -133,9 +133,15 @@ class Workers:
             self.stop_event.wait(delay)
 
     def run_email(self):
+        from app.institutional.balance_alerts import Monitor
         from app.institutional.email_notifications import Worker as EmailWorker
         worker = EmailWorker(self.settings)
+        monitor = Monitor(self.settings)
         while not self.stop_event.is_set():
+            try:
+                monitor.once()
+            except Exception:
+                logger.warning("provider_balance_monitor_retry_required")
             try:
                 worked = self.pulse.observe("email", worker.once)
                 delay = 1 if worked else 5

@@ -20,6 +20,7 @@ EVENTS = {
     "agents.create": ("Nuevo agente", "agents.manage"),
     "settings.save": ("Cambio de configuración", "users.manage"),
     "operations.failure": ("Fallo operativo", "users.manage"),
+    "provider.balance_low": ("Saldo bajo de OpenRouter", "users.manage"),
     "operations.recovered": ("Servicio recuperado", "users.manage"),
     "report.daily": ("Informe diario", "users.manage"),
     "report.weekly": ("Informe semanal", "users.manage"),

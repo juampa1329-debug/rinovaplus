@@ -280,6 +280,10 @@ class Availability(Strict):
 
 
 class Budgets(Strict):
+    ai_budget_unlimited: bool = False
+    openrouter_balance_alert_enabled: bool = False
+    openrouter_balance_alert_threshold_usd: float = Field(default=5, ge=0, le=1_000_000, allow_inf_nan=False)
+    openrouter_balance_check_minutes: int = Field(default=15, ge=5, le=1440)
     daily_tokens: int = Field(default=0, ge=0, le=1_000_000_000)
     daily_messages: int = Field(default=0, ge=0, le=1_000_000)
     daily_usd_micros: int = Field(default=0, ge=0, le=10_000_000_000)

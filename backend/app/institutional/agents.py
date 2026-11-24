@@ -222,6 +222,7 @@ class Agents(AgentsService):
             ).decode().rstrip("=")
             c.agent_user, c.agent_session = actor["UserId"], actor["SessionId"]
             c.agent_catalog = self.catalog_adapter
+            c.agent_budget_unlimited = setting(c, self.profile, "budgets")["document"].get("ai_budget_unlimited", False)
             from app.institutional.sales_context import configure as configure_sales
             configure_sales(c, self.profile)
             def validate_sales(config, previous):

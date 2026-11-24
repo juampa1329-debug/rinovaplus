@@ -96,6 +96,8 @@ class Settings:
         with transaction(self.settings, anonymous=True) as c:
             authorize(c, self.settings, authority, scope(section))
             result = setting(c, self.settings, section)
+            if section == "budgets":
+                result["document"] = SECTIONS[section].model_validate(result["document"]).model_dump(mode="json")
         if section == "webhooks":
             result["operational"] = False
         return result

@@ -35,7 +35,7 @@ def missing(c, s, conversation=None):
         "JOIN crm_channels2.Integration a ON a.InstitutionId=r.InstitutionId AND a.IntegrationId=r.IntegrationId "
         "WHERE m.Direction='incoming' AND v.ControlMode='ai' AND v.State<>'closed' "
         "AND a.Channel IN('whatsapp','messenger','instagram') AND a.RequestedStatus='connected' AND a.VerifiedStatus='verified' "
-        "AND m.CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) AND LEN(m.Body)>0 AND LEFT(m.Body,1)<>'[' "
+        "AND m.CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) AND m.Body<>'' AND LEFT(m.Body,1)<>'[' "
         "AND NOT EXISTS(SELECT 1 FROM crm.Message newer WHERE newer.ConversationId=m.ConversationId AND newer.Sequence>m.Sequence) "
         "AND NOT EXISTS(SELECT 1 FROM crm_channels2.ProviderOperation op WHERE op.InstitutionId=r.InstitutionId AND op.OperationId=m.MessageId) "
         + ("AND m.ConversationId=? " if conversation else "")

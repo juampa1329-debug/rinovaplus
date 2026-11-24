@@ -338,6 +338,7 @@ export function useRead<T>(
           prefix + path + (conditional ? `&afterRevision=${lastRevision}` : ""),
         );
         if (active) {
+          retryAt = 0;
           if (!value.unchanged) {
             lastRevision = value.revision ?? "";
             lastFullRead = Date.now();
@@ -347,7 +348,7 @@ export function useRead<T>(
         }
       } catch (failure) {
         const limited = failure instanceof ApiError && failure.status === 429;
-        if (limited && pollMs)
+        if (limited)
           retryAt = Date.now() + (failure.retryAfterSeconds ?? 60) * 1000;
         if (active && !(limited && !initial && lastFullRead))
           setError({
@@ -359,7 +360,7 @@ export function useRead<T>(
           });
       } finally {
         running = false;
-        if (active && pollMs && foregroundPolling())
+        if (active && (pollMs || retryAt > Date.now()) && foregroundPolling())
           timer = setTimeout(
             () => void load(),
             Math.max(pollMs, retryAt - Date.now()),
@@ -367,19 +368,19 @@ export function useRead<T>(
       }
     }
     const visible = () => {
-      if (foregroundPolling()) {
+      if ((pollMs || retryAt) && foregroundPolling()) {
         clearTimeout(timer);
         void load();
       }
     };
     timer = setTimeout(() => void load(true), initialDelay);
-    if (pollMs) document.addEventListener("visibilitychange", visible);
-    if (pollMs) window.addEventListener("focus", visible);
+    document.addEventListener("visibilitychange", visible);
+    window.addEventListener("focus", visible);
     return () => {
       active = false;
       clearTimeout(timer);
-      if (pollMs) document.removeEventListener("visibilitychange", visible);
-      if (pollMs) window.removeEventListener("focus", visible);
+      document.removeEventListener("visibilitychange", visible);
+      window.removeEventListener("focus", visible);
     };
   }, [path, refresh, enabled, call, pollMs, checkRevision, initialDelay]);
   return {
@@ -1028,7 +1029,7 @@ function WorkspaceView({
                 page={page}
                 refresh={refresh}
                 liveRevision={
-                  inbox && offset === 0 ? list.value?.revision : undefined
+                  inbox && offset === 0 ? JSON.stringify(list.value?.items.find((row) => row.conversationId === selected)) : undefined
                 }
                 changed={changed}
                 config={cfg.config}
@@ -1253,6 +1254,8 @@ function Person({
       ? `inbox/${conversation}/detail`
       : `conversations/${conversation}`,
     `${refresh}:${liveRevision ?? ""}`,
+    true,
+    page === "inbox" ? 15000 : 0,
   );
   if (!detail.value)
     return (
@@ -1417,7 +1420,7 @@ function Conversation({
       `conversations/${conversation}/messages${before ? `?before=${before}` : ""}`,
       `${refresh}:${before ? "" : (liveRevision ?? "")}`,
       true,
-      channel && !before && liveRevision === undefined ? 4000 : 0,
+      channel && !before ? 10000 : 0,
     ),
     [body, setBody] = useState(drafts.get(conversation) ?? ""),
     [attachment, setAttachment] = useState<Attachment | null>(null),
