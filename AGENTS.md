@@ -1,3 +1,7 @@
+## Requisitos de edad e inscripción PRE-ICFES guardados — 2026-11-24
+
+Por instrucción del titular se guardó edad mínima de 16 años cumplidos en las 26 fichas locales distintas de PRE-ICFES, conservando documentos específicos, acudiente, requisitos sanitarios, importes y planes. Se comprobaron las 26 tras recargar. PRE-ICFES revisión 2 conserva excepción expresa para escolares menores de edad y añade el enlace oficial de inscripción en presentación y requisitos. El formulario público de SIIE abrió hasta Datos personales y muestra tres pasos; no se rellenó ni envió una inscripción, ni se validó el proceso completo. No se alteró el horario G2 ni se inventó una edad mínima para PRE-ICFES. Cambios de datos mediante UI, sin código, nuevas inferencias, mensajes, DDL, seeds, servicios ni escrituras SIIE. Roadmap y aceptaciones de fases intactos. Evidencia agregada artifacts/live/program-age-preicfes-registration-20261124.json.
+
 ## Cierre de recuperación y presupuesto de IA — 2026-11-23
 
 Código final d5ede13: backend azayps2kruqyb2wmwekimyst Success 04m28s y frontend 1pqbbwdcsdr5gfmttx7rxoxd Success 25s. Revisión 4 de presupuesto comprobada tras recarga: IA sin topes internos activa, alerta habilitada con umbral USD 5 y cadencia 15 minutos. Management API key aún ausente; monitor informa management_key_required. No hay lectura de saldo global ni correo real de saldo bajo acreditados. Consulta nativa de la clave de modelos confirma que tiene un límite externo propio; no se modificó ni se publican importes de cuenta en la evidencia.
