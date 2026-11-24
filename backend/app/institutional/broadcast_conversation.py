@@ -33,6 +33,11 @@ def advisor_entry(text):
     return " ".join(re.findall(r"\w+", value)) == "hablar con juan pablo"
 
 
+def entry_turn(campaign, question, sequence, pending=None):
+    return bool(campaign and campaign["sequence"] == sequence and advisor_entry(question)
+                and all(advisor_entry(v) for v in (pending or [])))
+
+
 def origin(c, settings, conversation, history):
     incoming = next((m for m in reversed(history) if m["Direction"] == "incoming" and advisor_entry(m["Body"])), None)
     if not incoming:

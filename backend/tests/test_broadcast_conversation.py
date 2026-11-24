@@ -148,3 +148,13 @@ def test_confirmed_agent_receives_verified_campaign_context_without_rerouting(mo
     value = entry.enrich(None, None, "thread", selected, 4)
     assert value["agent_id"] == selected["agent_id"] and value["context"] == selected["context"]
     assert value["campaign_reply"] == {"sequence": 4} and "campaign_reply" not in selected
+
+
+@pytest.mark.parametrize("question,pending,expected", [(entry.LABEL,[entry.LABEL],True), (entry.LABEL,["Quiero una persona real",entry.LABEL],False), ("Quiero un humano",[],False)])
+def test_only_exact_verified_commercial_entry_has_a_response_only_contract(question, pending, expected):
+    campaign = {"sequence": 2}
+    assert entry.entry_turn(campaign, question, 2, pending) is expected
+    assert not entry.entry_turn(None, question, 2, pending)
+    assert not entry.entry_turn(campaign, question, 3, pending)
+    value = grounding.request_body({"system":"policy", "query":"data", "campaign_entry_turn": expected})
+    assert value["generationConfig"]["responseSchema"]["properties"]["decision"]["enum"] == (["responder"] if expected else ["responder", "revisar"])

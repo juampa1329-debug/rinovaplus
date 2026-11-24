@@ -1,3 +1,4 @@
+import { ContactPreference } from "./ContactPreference";
 import {
   createContext,
   useContext,
@@ -1128,6 +1129,7 @@ function ContactEditor({
       }}
     >
       <h2>{create ? "Nuevo contacto" : "Ficha del contacto"}</h2>
+      {!create && <ContactPreference key={client.id} id={client.id} />}
       <p className="scope-text">
         Datos declarados en CRM. El expediente académico conserva su autoridad
         en SIIE.

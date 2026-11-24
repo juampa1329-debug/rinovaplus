@@ -61,6 +61,7 @@ type Doc = {
   description?: string;
   integration_id?: string;
   objective?: string;
+  followup_only?: boolean;
   segment_id?: string | null;
   segment_version?: number;
   crm_template_id?: string | null;
@@ -218,6 +219,7 @@ const labels: Record<string, string> = {
   human_control: "Atención humana",
   conversation_closed: "Conversación cerrada",
   no_contact: "No contactar",
+  genuine_incoming_required: "La persona aún no inició una conversación",
   campaign_cadence_required: "Configura el intervalo de envío de esta cuenta",
   verified_connected_account_required:
     "Verifica y conecta la cuenta en Canales",
@@ -1057,6 +1059,11 @@ function Editor({
               maxLength={1000}
               onChange={(e) => update({ objective: e.target.value })}
             />
+            <label>
+              <input type="checkbox" checked={doc.followup_only ?? false} onChange={(e) => update({ followup_only: e.target.checked, ...(e.target.checked ? {exit_on_response: true, quiet_hours: {...doc.quiet_hours!, enabled: true}} : {}) })} />
+              Sólo seguimiento de personas que ya conversaron
+            </label>
+            {doc.followup_only && <Notice>Requiere una entrada real del contacto, modo IA, consentimiento vigente y horario de silencio activo. Una respuesta, baja o intervención humana detiene el flujo. Fuera de la ventana del canal se necesita una plantilla Meta aprobada para WhatsApp.</Notice>}
             <SelectField
               id="flow-segment"
               label="Segmento guardado"

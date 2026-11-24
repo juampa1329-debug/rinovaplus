@@ -274,3 +274,19 @@ def test_human_change_during_backup_discards_result_before_any_dispatch():
         run(state, guard=guard)
     assert sum(method == "POST" for method, _ in state.calls) == 1
     assert not state.trace.get("fallback_used")
+
+
+def test_verified_commercial_button_keeps_response_only_schema_on_openrouter():
+    import json
+    from app.institutional.language_resilience import generate
+    calls = []
+    class Gateway:
+        async def request(self, provider, method, path, outgoing):
+            calls.append(outgoing)
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision":"responder", "text":"Conversemos sobre tu formación.", "crm_observations":[]})}}]}
+    body = grounded_replies.request_body({"system":"Botón comercial verificado", "query":"Consulta", "campaign_entry_turn":True})
+    result = asyncio.run(generate(Gateway(), {**ROUTE,"model":"anthropic/fixture"}, body, lambda: None))
+    assert grounded_replies.parse(result)
+    schema = calls[0]["response_format"]["json_schema"]["schema"]
+    assert schema["properties"]["decision"]["enum"] == ["responder"]
+    assert len(calls) == 1

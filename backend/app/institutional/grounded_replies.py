@@ -176,14 +176,18 @@ def context(
         )
     else:
         instructions += "\nEs un mensaje privado. Usa el historial para continuar. Máximo 3000 caracteres."
-    system = RULES + (
+    from app.institutional.broadcast_conversation import entry_turn as is_campaign_entry
+    campaign_entry = (selection or {}).get("campaign_reply") if not public else None
+    entry_turn = is_campaign_entry(campaign_entry, question, sequence, (reply_turn or {}).get("pending"))
+    rules = RULES.replace("Si solicita una persona, o requiere una decisión individual, usa revisar. ",
+        "Este turno contiene exclusivamente el botón comercial verificado de la campaña: inicia atención comercial con decision=responder, sin derivarlo a Humano. No decide admisión ni pagos. ") if entry_turn else RULES
+    system = rules + (
         (DECISION_RULE + (" En un turno privado también puedes devolver decision=esperar y texto vacío bajo sus reglas estrictas." if reply_turn and not public else ""))
         if structured
         else "Devuelve sólo el texto del borrador para revisión humana, sin JSON."
     )
     system += skill_instructions(skill_policy)
     system += style_instructions(config)
-    campaign_entry = (selection or {}).get("campaign_reply") if not public else None
     from app.institutional.institution_contacts import POLICY as CONTACT_POLICY
     system += CONTACT_POLICY
     if reply_turn and not public:
@@ -249,6 +253,7 @@ def context(
         "fingerprint": digest([system, query, ai["revision"]]),
         "components": {"system": digest(system), **{k: digest(v) for k, v in payload.items()}},
         "sources": [{"id": v["id"], "title": v["title"]} for v in documents],
+        "campaign_entry_turn": entry_turn,
         **({"reply_turn": reply_turn} if reply_turn and not public else {}),
     }
 
@@ -265,7 +270,7 @@ def request_body(value, max_tokens=1500, temperature=0.3):
                 "type": "OBJECT",
                 "required": ["decision", "text"],
                 "properties": {
-                    "decision": {"type": "STRING", "enum": ["responder", "revisar", *(["esperar"] if value.get("reply_turn", {}).get("can_wait") else [])]},
+                    "decision": {"type": "STRING", "enum": ["responder"] if value.get("campaign_entry_turn") else ["responder", "revisar", *(["esperar"] if value.get("reply_turn", {}).get("can_wait") else [])]},
                     "text": {"type": "STRING"},
                     "crm_observations": {"type": "ARRAY", "maxItems": 8, "items": {"type": "OBJECT", "required": ["field", "quote"], "properties": {
                         "field": {"type": "STRING", "enum": ["name", "city", "interests", "goal", "budget", "schedule", "start_time", "objection", "next_step", "objection_resolved"]},

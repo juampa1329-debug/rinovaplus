@@ -643,6 +643,8 @@ class Worker:
                 )) if backup["routes"] or backup.get("primary") else asyncio.run(primary())
             if result is not None:
                 generated = grounded_replies.parse(result, allow_wait=bool(grounded.get("reply_turn", {}).get("can_wait")))
+                if grounded.get("campaign_entry_turn") and not generated:
+                    raise ValueError("invalid_generated_reply")
             # Optional observations never become instructions or arbitrary field writes.
             raw = json.loads(
                 "".join(

@@ -637,6 +637,8 @@ def create_app(
         install_operations(app, settings)
 
     if getattr(settings, "postgres_deployment", False):
+        from app.institutional.contact_preference import install as install_contact_preference
+        install_contact_preference(app, settings)
         from app.institutional.language_rehearsal import install as install_language_rehearsal
         install_language_rehearsal(app, settings)
         from app.institutional.language_policy import install as install_language_policy

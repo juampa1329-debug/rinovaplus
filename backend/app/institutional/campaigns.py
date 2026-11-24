@@ -229,6 +229,8 @@ def reasons(c, s, doc, p):
         found.append("human_control")
     if p["ConversationState"] == "closed":
         found.append("conversation_closed")
+    if doc.get("followup_only") and not (p.get("IncomingCount") and p.get("LastIncomingAt")):
+        found.append("genuine_incoming_required")
     if not marketing_allowed(c, s, p):
         found.append("marketing_consent_required")
     try:
@@ -236,10 +238,8 @@ def reasons(c, s, doc, p):
             found.append("campaign_segment_excluded")
     except HTTPException as error:
         found.append(str(error.detail))
-    denied = c.execute(
-        "SELECT 1 FROM crm_strategy.EvaluationPlan e JOIN crm.Conversation v ON v.ConversationId=e.ConversationId LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=v.ContactId AND g.Active=1 WHERE COALESCE(g.TargetContactId,v.ContactId)=? AND JSON_VALUE(e.DocumentJson,'$.noContact')='true'",
-        p["CanonicalContactId"],
-    ).fetchone()
+    from app.institutional.contact_preference import blocked
+    denied = blocked(c, s, p["CanonicalContactId"])
     if denied:
         found.append("no_contact")
     return found
