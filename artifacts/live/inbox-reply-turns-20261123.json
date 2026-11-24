@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-23",
+  "timezone": "America/Bogota",
+  "scope": "Quiet-window DM batching, pending-question context and first-part verified quotes",
+  "privacy": "No recipients, customer messages, credentials, provider payloads or program prices",
+  "feature_commit": "1c59860",
+  "integration_commit": "08d0a5f",
+  "configuration": {
+    "revision": 33,
+    "wait_seconds_before": 3,
+    "wait_seconds_after": 60,
+    "quote_first_reply": true,
+    "reload_verified": true,
+    "primary_model_unchanged": "anthropic/claude-sonnet-4.6",
+    "fallback_unchanged": "anthropic/claude-sonnet-5.5"
+  },
+  "behavior": {
+    "quiet_window_resets_with_latest_input": true,
+    "pending_questions_bound_to_account_identity_conversation": true,
+    "accepted_complete_groups_advance_boundary": true,
+    "partial_groups_preserve_pending_questions": true,
+    "old_unattempted_parts_retained_as_superseded_drafts": true,
+    "active_prior_work_defers_only_own_turn": true,
+    "uncertain_provider_effects_require_review": true,
+    "wait_decision_requires_conservative_acknowledgement_and_spoken_history": true,
+    "new_questions_and_human_requests_cannot_use_wait": true,
+    "first_quote_only": true,
+    "quote_target_verified_in_same_route": true,
+    "instagram_quote_scope": "Facebook Login",
+    "audio_uses_same_receipt_boundary": true
+  },
+  "local_checks": {
+    "backend_selected_passed": 285,
+    "backend_selected_skipped": 2,
+    "frontend_inbox_and_ai_passed": 61,
+    "merged_broadcast_backend_passed_overlapping": 189,
+    "merged_broadcast_frontend_passed": 23,
+    "final_chat_kind_and_reservations_passed_overlapping": 146,
+    "final_chat_kind_skipped": 2,
+    "safe_diagnostic_and_reservations_passed_overlapping": 133,
+    "ruff": "passed",
+    "types": "passed",
+    "eslint": "0 errors; prior dirty dependency warning",
+    "institutional_build": "passed; historical bundle warning"
+  },
+  "rollout": {
+    "initial_backend": {
+      "id": "g0pe3fmw37zmgcd25yvutpno",
+      "commit": "76b1f49",
+      "result": "failed readiness; dispatch worker also failing in prior running revision"
+    },
+    "quota_fix": {
+      "commit": "428852b",
+      "id": "gpuovtst0oyuveqtzbhm0l69",
+      "result": "Success / Running",
+      "duration": "4m19s"
+    },
+    "final_backend": {
+      "id": "ulhl5wq7sdkikpk88ukn6zvs",
+      "commit": "08d0a5f",
+      "result": "Success / Running",
+      "duration": "7m58s including queued time"
+    },
+    "first_frontend": {
+      "id": "mushyjns6dlljkxejn4x3inw",
+      "commit": "76b1f49",
+      "result": "Success",
+      "duration": "43s"
+    },
+    "final_frontend": {
+      "id": "yc51lriilo13vnacqg29kvge",
+      "commit": "08d0a5f",
+      "result": "Success / Running",
+      "duration": "26s"
+    }
+  },
+  "live_acceptance": {
+    "controls_observed_after_reload": true,
+    "dispatch_reported_up_to_date_after_quota_fix": true,
+    "new_instagram_quoted_batch": "pending recipient test",
+    "no_manual_customer_messages_by_this_task": true,
+    "paid_test_generations": 0
+  },
+  "preserved": {
+    "human_control_epoch_context_and_budget_guards": true,
+    "receipt_states": true,
+    "no_uncertain_replay": true,
+    "no_ddl_seeds_new_services_siie_writes": true,
+    "p4_p13_p21_initial_acceptance": true,
+    "p22": "3/5 technical; 0/5 commercial acceptance"
+  }
+}
