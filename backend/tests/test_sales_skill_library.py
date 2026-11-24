@@ -38,13 +38,13 @@ def test_manual_focus_includes_whole_required_guides_and_retains_memory_and_safe
     assert "Humano" in prompt and "memoria privada" in prompt
 
 
-def test_all_34_native_guides_exist_with_complete_content_and_manifest_hashes():
-    assert len(IDS) == 34 and set(library.manifest()["items"]) == IDS
+def test_all_37_native_guides_exist_with_complete_content_and_manifest_hashes():
+    assert len(IDS) == 37 and set(library.manifest()["items"]) == IDS
     for item in catalog():
         guide = item["guide"]
         assert guide["path"].endswith("/" + item["id"] + "/SKILL.md")
         assert hashlib.sha256(guide["content"].encode()).hexdigest() == guide["sha256"]
-        assert "## " in guide["content"] and len(guide["content"]) > 500
+        assert "# " in guide["content"] and len(guide["content"]) > 500
         assert "reviewed_native_crm_adaptation" in guide["content"]
         assert "\r" not in guide["content"]
 

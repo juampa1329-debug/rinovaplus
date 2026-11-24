@@ -20,7 +20,7 @@ PERSUASION = ["reciprocity", "commitment_consistency", "social_proof", "authorit
 GROUPS = (
     ("discovery", r"interes|quiero|estudi|program|jornada|horario|duracion|materia|requisit|informacion",
      {"lead-triage", "lead-intelligence", "sales-discovery-questions", "meddpicc-scorecard", "deal-review"}),
-    ("pricing", r"precio|cuanto|cuesta|valor|\babon|cuota|financi|contado|pago|beca|matricul",
+    ("pricing", r"precio|cuanto|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|pag[ao]|beca|matricul",
      {"pricing", "deal-value-calc"}),
     ("objection", r"caro|costoso|no puedo|no tengo|preocupa|duda|pensar|competencia|otra institucion|descuento|rebaj",
      {"handle-objection", "sales-objection-handling", "negotiation", "negotiation-concession-planner", "deal-red-flags"}),
@@ -51,7 +51,12 @@ SIMULATION_FOCUS = {
 def turn_plan(question, *, has_history=False, public=False):
     current = "".join(c for c in unicodedata.normalize("NFKD", str(question).casefold()) if not unicodedata.combining(c))[:4000]
     current = current.replace("optras", "otras").replace("voya", "voy a")
-    financial = bool(re.search(r"precio|cuesta|valor|\babon|cuota|financi|contado|forma.*pago|\bplan\b", current)
+    academic_plan = bool(re.search(r"plan(?:es)?\s+de\s+estudio|pensum|temario|malla\s+(?:academica|curricular)", current))
+    cost_scope_ambiguity = academic_plan and bool(re.search(r"gratis|gratuit|costo|pagar|cobran", current)) and not bool(
+        re.search(r"\bsemestre|matricul|inscrip|mensualidad|(?:programa|curso|carrera)\s+(?:es\s+)?(?:gratis|gratuit)", current)
+    )
+    financial = bool(re.search(r"precio|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|forma.*pago|\bpagar\b", current)
+                     or re.search(r"\bplan\b", current) and not academic_plan
                      or re.search(r"\bcuanto\s+(?:puedo\s+)?(?:empez|inici|pag|abon|invert|necesit)", current)
                      or re.search(r"\bcuanto\b", current) and not re.search(r"cuanto\s+(?:dura|tiempo|tarda)", current))
     commitment = bool(re.search(r"quiero.*(?:matricular|inscribir)|como.*(?:matricul|inscri)|listo para", current))
@@ -62,18 +67,19 @@ def turn_plan(question, *, has_history=False, public=False):
         r"(?:\bpara\b|\bcomo\b.{0,18}\bayud\w*).{0,55}(?:abrir|crear|montar|iniciar).{0,30}(?:negocio|empresa|emprendimiento)",
         current,
     ))
-    detail = bool(re.search(r"materias|temario|requisitos|cuanto dura|duracion|horarios|beca|diplomas|titulos", current))
+    detail = academic_plan or bool(re.search(r"materias|temario|requisitos|cuanto dura|duracion|horarios|beca|diplomas|titulos", current))
     orientation = bool(re.search(r"\binfo\b|informacion|me interesa|conocer.*programa", current)
                        or re.fullmatch(r"\W*hablar\s+con\s+juan\s+pablo\W*", current))
     phase = "objection" if objection else "financial" if financial else "comparison" if comparison else "next_step" if commitment else "specific_information" if detail else "value_alignment" if goal else "orientation" if orientation or not has_history else "continue"
     price_objection = bool(re.search(r"caro|costoso|barat|presupuesto|plata|dinero|no puedo pagar", current))
     return {"phase": phase, "money_relevant": financial or commitment or price_objection,
+            "possible_cost_scope_ambiguity": cost_scope_ambiguity,
             "preserve_program_interest": comparison or objection,
             "retrieval_targets": ["presentation", "duration", "certification", "career_outcomes"] if phase == "orientation" else
                 ["financial_plans", "price_concept", "entry_payment_offer", "certification", "internships"] if phase in {"financial", "objection"} else
                 ["certification", "syllabus", "internships", "modality", "career_outcomes"],
             "requested_academic_details": [key for key, pattern in (
-                ("syllabus", r"materia|temario|pensum|asignatura|que.*aprend|que.*estudi"),
+                ("syllabus", r"materia|temario|pensum|plan(?:es)?\s+de\s+estudio|asignatura|que.*aprend|que.*estudi"),
                 ("requirements", r"requisito|document|inscri|matricul"),
                 ("career_outcomes", r"trabaj|salida|laboral|empleo|remoto|crucero|emprend|negocio"),
                 ("presentation", r"por que|porque|beneficio|ventaja|vale la pena|que.*ofrece"),
@@ -119,6 +125,10 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
         "specific_information": ["sales-enablement", "copywriting"],
         "continue": ["sales-discovery-questions", "draft-outreach"],
     }[plan["phase"]]
+    if plan["possible_cost_scope_ambiguity"]:
+        primary = ["sales-discovery-questions", "pricing"]
+        active.update(primary)
+        reasons.append("clarify_cost_scope")
     if simulation_focus is not None:
         if simulation_focus not in SIMULATION_FOCUS:
             raise ValueError("skill_simulation_focus_invalid")
@@ -186,6 +196,12 @@ def instructions(trace):
         + render(trace["consulted_resources"])
         + "\nSECUENCIA CONSULTIVA DEL TURNO: " + json.dumps(trace["turn_plan"], ensure_ascii=False)
         + consultative_manual.instructions(trace["consultative_manual"])
+        + ("\nACLARAR EL CONCEPTO ANTES DE COTIZAR: la pregunta puede confundir el plan de estudios (materias) "
+           "con el costo de estudiar el programa. Revisa el historial autorizado: si el concepto sigue ambiguo, "
+           "haz primero una sola pregunta breve, por ejemplo: '¿Te refieres al costo del semestre o a consultar las materias?'. "
+           "En ese caso no afirmes todavía que es gratis o que debe pagar ni presentes abonos. "
+           "Si el contacto ya aclaró el concepto, responde directamente con la ficha vigente sin repetir la pregunta.\n"
+           if trace["turn_plan"].get("possible_cost_scope_ambiguity") else "")
         + "\nAplica las guías, no las recites. Conserva el interés al comparar y las condiciones financieras completas: "
         "abono mínimo real, cuotas, fechas, exclusiones, vigencia y alcance; pesos, sin etiquetas A1/A2. "
         "Si entry_payment_offer incluye calendar_benefit, explica explícitamente ese margen para organizar la siguiente cuota "

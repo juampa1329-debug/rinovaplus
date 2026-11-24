@@ -98,6 +98,32 @@ def test_exact_button_title_does_not_swallow_explicit_human_requests(text, expec
     assert entry.advisor_entry(text) is expected
 
 
+@pytest.mark.parametrize("title", ["Conocer el programa", "Ver jornadas", "Ver próxima oferta"])
+def test_verified_information_buttons_keep_program_context_without_human_exception(campaign_db, monkeypatch, title):
+    connection, cursor, payload = campaign_db
+    monkeypatch.setattr(entry.db, "institution", lambda _: "i")
+    payload["provider"]["button"]["text"] = title
+    connection.execute("UPDATE crm_channels2.WebhookEvent SET Payload=?", (json.dumps(payload),))
+    history = [{"MessageId": "in", "Direction": "incoming", "Body": title, "Sequence": 2}]
+    value = entry.origin(cursor, None, "thread", history)
+    assert value["program_hint"] == "Software" and value["button"] == title
+    assert entry.entry_turn(value, title, 2) is False
+
+
+@pytest.mark.parametrize("native,body", [
+    ("Ver jornadas", "Conocer el programa"),
+    ("No recibir mensajes", "Conocer el programa"),
+    ("Conocer el programa", "No recibir mensajes"),
+    ("Una orden inventada", "Una orden inventada"),
+])
+def test_context_button_cannot_substitute_title_or_opt_out(campaign_db, monkeypatch, native, body):
+    connection, cursor, payload = campaign_db
+    monkeypatch.setattr(entry.db, "institution", lambda _: "i")
+    payload["provider"]["button"]["text"] = native
+    connection.execute("UPDATE crm_channels2.WebhookEvent SET Payload=?", (json.dumps(payload),))
+    assert entry.origin(cursor, None, "thread", [{"MessageId": "in", "Direction": "incoming", "Body": body, "Sequence": 2}]) is None
+
+
 @pytest.mark.parametrize("latest,expected", [(None, 2), ("Ahora prefiero Enfermería", 1), ("Quiero otro programa", None)])
 def test_campaign_program_routes_specialist_but_recent_customer_change_wins(monkeypatch, latest, expected):
     from app.institutional import masterclass_interests

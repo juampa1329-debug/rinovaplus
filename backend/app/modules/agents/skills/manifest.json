@@ -137,8 +137,8 @@
     "sales-discovery-questions": {
       "name": "Diagnóstico consultivo",
       "source": "https://github.com/mbfinotti/sales-skills",
-      "sha256": "1395918aa3c46dcea90babafb98f8b3042a88e7e78e3914a3443b4d157437d15",
-      "bytes": 1374
+      "sha256": "928ddb4fd1aec680c1228d43f83cf8cad70b3b0220219a3761d0ccdee2a420fc",
+      "bytes": 1427
     },
     "meddpicc-scorecard": {
       "name": "Calificación con evidencia",
@@ -167,8 +167,8 @@
     "pricing": {
       "name": "Presentación transparente de financiación",
       "source": "owner_requested_methodology_native_adaptation",
-      "sha256": "676fc5251411545ae868dde636dea23cd5a882a5d2a5136ba3459f4746ba9cb8",
-      "bytes": 2808
+      "sha256": "8d7ddbc004972293af1f4c06a95a57c04688445626d42203dd8ccfe85232cf31",
+      "bytes": 2988
     },
     "negotiation-concession-planner": {
       "name": "Límites de concesiones",

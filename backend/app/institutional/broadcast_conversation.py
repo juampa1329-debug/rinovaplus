@@ -35,13 +35,23 @@ def advisor_entry(text):
     return " ".join(re.findall(r"\w+", value)) == "hablar con juan pablo"
 
 
+def contextual_entry(text):
+    if not isinstance(text, str):
+        return ""
+    value = "".join(c for c in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(c))
+    title = " ".join(re.findall(r"\w+", value))
+    return title if title in {
+        "hablar con juan pablo", "conocer el programa", "ver jornadas", "ver proxima oferta",
+    } else ""
+
+
 def entry_turn(campaign, question, sequence, pending=None):
     return bool(campaign and campaign["sequence"] == sequence and advisor_entry(question)
                 and all(advisor_entry(v) for v in (pending or [])))
 
 
 def origin(c, settings, conversation, history):
-    incoming = next((m for m in reversed(history) if m["Direction"] == "incoming" and advisor_entry(m["Body"])), None)
+    incoming = next((m for m in reversed(history) if m["Direction"] == "incoming" and contextual_entry(m["Body"])), None)
     if not incoming:
         return None
     row = db.one(c,
@@ -68,12 +78,13 @@ def origin(c, settings, conversation, history):
     if not row:
         return None
     from app.institutional.channel_events import whatsapp_reply_text
-    if not advisor_entry(whatsapp_reply_text(json.loads(row["Payload"]).get("provider", {}))):
+    native_title = whatsapp_reply_text(json.loads(row["Payload"]).get("provider", {}))
+    if not contextual_entry(native_title) or contextual_entry(native_title) != contextual_entry(incoming["Body"]):
         return None
     snapshot = json.loads(row["Snapshot"])
     profile = snapshot.get("audience_profile", {})
     return {
-        "authority": "accepted_broadcast_button_v1", "button": LABEL,
+        "authority": "accepted_broadcast_button_v1", "button": native_title[:100],
         "campaign_id": str(row["CampaignId"]), "campaign_name": row["Name"][:160],
         "source_message_id": str(row["MessageId"]), "sequence": row["Sequence"],
         "program_hint": profile.get("program", "")[:200], "schedule_hint": profile.get("schedule", "")[:100],

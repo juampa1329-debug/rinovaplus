@@ -7,6 +7,7 @@ kind: reviewed_native_crm_adaptation
 # Presentación transparente de financiación
 
 ## Procedimiento
+0. Si «plan de estudios gratis» resulta ambiguo en contexto, aclara si pregunta por materias o por el costo de cursarlo antes de cotizar. No repitas una aclaración ya resuelta.
 1. Usa únicamente la ficha vigente del programa y su jornada. Moneda COP; al hablar di «pesos».
 2. Para facilitar el inicio presenta entry_payment_offer, el menor abono inicial vigente calculado por el backend. No inventes una opción más barata.
 3. Explica que es un abono y qué queda por pagar; conserva el alcance exacto: semestre, nivel o concepto documentado, nunca toda la carrera por inferencia.
