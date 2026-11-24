@@ -89,6 +89,13 @@ async def collect(provider, api_key, account_key=None, *, transport=None):
 
 
 def install(app, settings):
+    @app.get("/api/institution/provider-balance/openrouter/alert")
+    def alert_status(request: Request):
+        from app.institutional.balance_alerts import public_status
+        with transaction(settings, anonymous=True) as c:
+            authorize(c, settings, request.state.authority, "settings.budgets.read")
+            return public_status(c, settings)
+
     @app.get("/api/institution/provider-balance/{provider}")
     async def balance(request: Request, provider: Literal["openrouter", "elevenlabs"]):
         authority = request.state.authority

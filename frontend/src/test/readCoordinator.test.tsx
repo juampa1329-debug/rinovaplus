@@ -13,6 +13,7 @@ afterEach(() => {
 const response = (body: unknown, status = 200, headers?: HeadersInit) =>
   new Response(JSON.stringify(body), { status, headers });
 
+
 it("coalesces simultaneous reads, partitions credentials, and never coalesces writes", async () => {
   let release!: () => void;
   const blocked = new Promise<void>((resolve) => {
@@ -136,4 +137,29 @@ it("offers manual update on version change without forcing a reload", async () =
   expect(screen.getByText(/Guarda tus cambios/)).toBeInTheDocument();
   view.unmount();
   meta.remove();
+});
+
+it("retries a one-shot history GET after Retry-After without repeating a mutation", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(9_000_000);
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
+  const fetcher = vi.spyOn(globalThis, "fetch")
+    .mockResolvedValueOnce(response({ detail: "rate_limited" }, 429, { "Retry-After": "2" }))
+    .mockResolvedValue(response({ total: 9 }));
+  function View() {
+    const read = useRead<{ total: number }>("conversations/fixture/messages", 0, true, 0);
+    return <span>{read.value?.total ?? read.error}</span>;
+  }
+  const initial = { session_id: "s", csrf_token: "token", actions: [], user: { id: "u", email: "u@example.invalid", full_name: "Test", active: true, role: "test", revision: 1, profile: {}, mfa_state: "disabled" } };
+  const view = render(<SessionBoundary initial={initial} expire={vi.fn()}><View /></SessionBoundary>);
+  await act(() => vi.advanceTimersByTimeAsync(200));
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  await act(() => vi.advanceTimersByTimeAsync(2100));
+  expect(screen.getByText("9")).toBeInTheDocument();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(fetcher.mock.calls.every((v) => !v[1]?.method || v[1].method === "GET")).toBe(true);
+  await act(() => vi.advanceTimersByTimeAsync(60_000));
+  await act(async () => window.dispatchEvent(new Event("focus")));
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  view.unmount();
 });

@@ -83,7 +83,8 @@ def policy(c, settings, integration, ai):
 
 def reserve_budget(c, settings, kind, amount, maximum):
     amount, maximum = Decimal(str(amount)), Decimal(str(maximum))
-    if maximum <= 0:
+    unlimited = kind in {"tokens", "usd"} and setting(c, settings, "budgets")["document"].get("ai_budget_unlimited", False)
+    if maximum <= 0 and not unlimited:
         raise HTTPException(429, "comment_ai_budget_disabled")
     current = c.execute(
         (
@@ -94,7 +95,7 @@ def reserve_budget(c, settings, kind, amount, maximum):
         institution(settings),
         kind,
     ).fetchval()
-    if (current or 0) + amount > maximum:
+    if not unlimited and (current or 0) + amount > maximum:
         raise HTTPException(429, "comment_ai_budget_exhausted")
     if current is None:
         c.execute(

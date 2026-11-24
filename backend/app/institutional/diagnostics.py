@@ -55,6 +55,8 @@ def read(c, settings, conversation=None):
 
 
 def install(app, settings):
+    from app.institutional.reply_recovery import install as install_recovery
+    install_recovery(app, settings)
     @app.get("/api/institution/diagnostics")
     def overview(request: Request, conversation_id: str | None = None):
         with transaction(settings, anonymous=True) as c:

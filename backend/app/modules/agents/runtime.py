@@ -156,7 +156,7 @@ def reserve_execution(cursor, request_id, selection, tokens):
     for agent_id in selection["chain_ids"]:
         row = cursor.execute("SELECT Document FROM crm_agents.Profile WHERE AgentId=?", agent_id).fetchone()
         owner = Configuration.model_validate_json(row[0]).model_dump(mode="json")
-        if owner["monthly_usd_limit"] and owner["hard_stop"]:
+        if owner["monthly_usd_limit"] and owner["hard_stop"] and not getattr(cursor, "agent_budget_unlimited", False):
             usage = cursor.execute("SELECT SUM(COALESCE(e.CostEstimated,e.CostReserved)),SUM(CASE WHEN e.CostEstimated IS NULL AND e.CostReserved IS NULL THEN 1 ELSE 0 END) FROM crm_agents.Execution e JOIN crm_agents.Usage u ON u.RequestId=e.RequestId WHERE e.CreatedAt>=DATEFROMPARTS(YEAR(SYSUTCDATETIME()),MONTH(SYSUTCDATETIME()),1) AND EXISTS(SELECT 1 FROM OPENJSON(u.ChainJson) j WHERE j.value=?)", agent_id).fetchone()
             if reserved is None:
                 raise AiError("agents_pricing_required", 409)
