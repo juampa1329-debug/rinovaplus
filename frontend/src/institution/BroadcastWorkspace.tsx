@@ -1219,7 +1219,9 @@ function CampaignReport({
                     </td>
                     <td>
                       {label(p.status)}
-                      {p.error && (
+                      {p.status === "queued" && p.error === "broadcast_cadence_wait" ? (
+                        <p className="broadcast-help">El CRM respeta el intervalo entre mensajes. No hace falta reintentar este envío.</p>
+                      ) : p.error && (
                         <Button
                           variant="quiet"
                           onClick={(e) =>
