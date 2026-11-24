@@ -1,3 +1,9 @@
+## Ayuda de inscripción publicada y comprobada — 2026-11-24
+
+4f905d4: backend gbxbmke4pag8lrkzzswtsnvg Success/Running, 4m17s; frontend wmqyx0gmfmadrovoqyra3wap Success, 26s. La vista nativa de contexto para ayuda de municipio de PRE-ICFES recupera su ficha y las tres guías general/PRE/protección, sin llamada a modelo. Investigación de ambos sitios terminada sin datos personales, archivos, aceptación de políticas ni envío final. General incluye Gastronomía e Inglés; selección Barismo/Bartender separada se consulta con Admisiones. Instrucciones de ayuda seleccionadas por tema para generales, especialistas y respuestas sociales automáticas/sugeridas; datos sensibles sólo en formularios oficiales. 202 pruebas backend focalizadas y Ruff pasan, selección solapada con las 191 iniciales. No se acredita validación de inscripción completa ni prueba generativa nueva.
+
+La respuesta inicial autorizada quedó Leída; su nueva solicitud de inscripción recibió el formulario Entregado. La aclaración del segundo contacto quedó Entregada; el mensaje anterior también estaba Entregado y no se eliminó por ausencia de control en Inbox. Ambos hilos volvieron a IA. Evidencia sin datos nominales: artifacts/live/registration-guidance-20261124.json; guía: docs/adaptation/REGISTRATION_GUIDANCE_20261124.md. Roadmap y aceptaciones conservados, P22 técnico 3/5 y comercial 0/5. Sin DDL, seeds, servicios nuevos ni escrituras SIIE.
+
 ## Formularios de inscripción: ayuda por campo preparada — 2026-11-24
 
 Publicación inicial0fc2c5f saludable: backend juqh8gy4kwekscrxnljn7coo04m19s; frontend x2ivtuwmraedzqrivxa3h0um24s. Fuentes general/PRE visibles en contexto nativo sin consumo. Aclaración financiera posterior Entregada; primera consulta volvió a pedir inscripción, recibió el enlace correcto Entregado y volvióIA. No eliminación del mensaje anterior ni recibos alterados.

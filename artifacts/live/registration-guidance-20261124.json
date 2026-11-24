@@ -56,7 +56,20 @@
     "preicfes_source_present": true
   },
   "help_expansion": {
-    "deployment": "pending",
+    "deployment": {
+      "code_commit": "4f905d4",
+      "backend": {
+        "id": "gbxbmke4pag8lrkzzswtsnvg",
+        "status": "Success",
+        "running": true,
+        "duration": "04m17s"
+      },
+      "frontend": {
+        "id": "wmqyx0gmfmadrovoqyra3wap",
+        "status": "Success",
+        "duration": "00m26s"
+      }
+    },
     "public_forms_reviewed": 2,
     "general_sections_reviewed": 11,
     "preicfes_steps_reviewed": 3,
@@ -77,6 +90,15 @@
     "form_submitted": false,
     "backend_focused_tests": 202,
     "ruff": "passed",
-    "model_test_calls": 0
+    "model_test_calls": 0,
+    "native_context_preview": {
+      "provider_call": false,
+      "program": "PRE-ICFES CBN · Alta Competencia",
+      "help_sources_present": [
+        "inscripcion_ayuda_general",
+        "inscripcion_ayuda_preicfes",
+        "inscripcion_ayuda_y_proteccion"
+      ]
+    }
   }
 }
