@@ -1,0 +1,9 @@
+# Listado de campañas compacto — 23/11/2026
+
+El listado sin límite de altura extendía la página completa y mezclaba campañas en curso, borradores y finalizadas. Se incorpora un explorador lateral con búsqueda por nombre/programa (ignora tildes y mayúsculas), grupos Todas/Actuales/Borradores/Finalizadas con contadores, orden por estado y actividad, actividad reciente o nombre, y páginas de 25. Actuales incluye en curso, programadas y pausadas; Finalizadas reúne completadas y canceladas. Los contadores de grupo reflejan el catálogo completo; el rango inferior refleja la búsqueda aplicada.
+
+La lista tiene desplazamiento independiente y altura máxima vinculada a la ventana. El control Ocultar listado amplía el detalle a todo el ancho; al mostrarlo se conservan búsqueda, filtros, orden y página. Filtrar u ocultar no cierra la campaña ni descarta ediciones sin guardar. La selección sigue pasando por la guarda nativa de navegación, y los estados proceden del backend, sin efectos sobre envíos o destinatarios.
+
+Se conserva la paleta institucional (superficie #ffffff, borde #d5ded6, acento #35696b, activo #e4efdc y tinta institucional), fuentes existentes y variantes oscuras por tokens. Una columna bajo 850px; foco visible, región de desplazamiento accesible por teclado, estado seleccionado y botones de paginación identificados. No se añaden animaciones decorativas ni métricas inventadas.
+
+Validación: 28 pruebas frontend pasan, incluidas navegación por 100 campañas, búsqueda en otras páginas, tildes, estados, refresco con menos resultados, colapso y conservación de borrador sin guardar. TypeScript, ESLint de archivos cambiados y workspace build pasan; se conserva advertencia histórica de bundle. Publicación y comprobación visual real pendientes en este corte. Sin cambios de backend, DDL, seeds, servicios, SIIE, modelos ni campañas activadas.
