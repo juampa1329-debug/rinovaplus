@@ -305,6 +305,27 @@ def same_id(a, b):
     return str(a).lower() == str(b).lower()
 
 
+def display_parts(definition, snapshot):
+    """Presentation of the pinned template, never the current remote version."""
+    supplied = {
+        part.get("type", "").upper(): part.get("parameters", [])
+        for part in snapshot.get("template", {}).get("components", [])
+    }
+    result = {"header": "", "footer": "", "buttons": []}
+    for part in definition:
+        kind = part.get("type", "").upper()
+        if kind in {"HEADER", "FOOTER"}:
+            text = part.get("text", "")
+            for index, param in enumerate(supplied.get(kind, []), 1):
+                if param.get("type") == "text":
+                    text = re.sub(r"\{\{\s*" + str(index) + r"\s*\}\}", lambda _: str(param.get("text", "")), text)
+            if not TOKEN.search(text):
+                result[kind.lower()] = text
+        elif kind == "BUTTONS":
+            result["buttons"] = [b["text"] for b in part.get("buttons", []) if isinstance(b.get("text"), str)]
+    return result
+
+
 def parameters(template, document, person, campaign_name, *, allowed_custom_fields=()):
     definition = json.loads(template["Definition"])
     bindings = document.get("variables", {})

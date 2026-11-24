@@ -1,0 +1,549 @@
+{
+  "date_bogota": "2026-11-24",
+  "code_commits": [
+    "43295c4",
+    "7dfa852",
+    "39a8a1e"
+  ],
+  "authorization": {
+    "remaining_program_campaigns": "Explicit owner request",
+    "daily_cap_increase": "Explicit owner reply: 1,000/24h, 30-second interval",
+    "initial_auto_review_rejection_cancelled_then_resolved_by_explicit_authorization": true
+  },
+  "selection": {
+    "selected_clear_candidates": 709,
+    "native_prepared_and_activated": 704,
+    "outside_existing_filters": 5,
+    "previously_contacted_logistica_aduanas_excluded": 43,
+    "duplicate_phone_in_activated_cohorts": 0,
+    "source_review_still_pending": 193,
+    "existing_linkage_conflict": 1,
+    "additional_multi_campaign_interests_held": 19,
+    "review_total": 213,
+    "review_drafts": 18,
+    "preicfes_remains_draft_no_candidates": true
+  },
+  "cadence_verified_after_reload": {
+    "enabled": true,
+    "daily_limit": 1000,
+    "interval_seconds": 30
+  },
+  "campaigns": [
+    {
+      "name": "CBN · Mantenimiento Electrónico y Energías Renovables · Bienvenida · 2027",
+      "recipients": 7,
+      "observed_state": "Completada",
+      "captured_at": "2026-11-24T16:00:06.382Z",
+      "delivered": 6,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Desarrollo Multimedia y Comunicación Gráfica · Bienvenida · 2027",
+      "recipients": 4,
+      "observed_state": "Completada",
+      "captured_at": "2026-11-24T16:00:07.502Z",
+      "delivered": 4,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Agente de Ventas, Mercadeo y Call Center · Bienvenida · 2027",
+      "recipients": 1,
+      "observed_state": "Completada",
+      "captured_at": "2026-11-24T16:00:08.564Z",
+      "delivered": 1,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Contabilidad Sistematizada y Finanzas · Bienvenida · 2027",
+      "recipients": 14,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:09.652Z",
+      "delivered": 2,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Asistente Administrativo · Bienvenida · 2027",
+      "recipients": 19,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:10.722Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Auxiliar en Servicios Farmacéuticos · Bienvenida · 2027",
+      "recipients": 2,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:11.745Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Auxiliar en Salud Oral · Bienvenida · 2027",
+      "recipients": 2,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:12.811Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Cocina · Retomar interés · 2027",
+      "recipients": 62,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:31.518Z",
+      "delivered": 3,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Inglés A1-A2 · Retomar interés",
+      "recipients": 27,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:32.585Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Turismo · Retomar interés · 2027",
+      "recipients": 15,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:33.635Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Repostería · Retomar interés · 2027",
+      "recipients": 26,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:34.702Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Barismo y Bartender · Retomar interés · 2027",
+      "recipients": 101,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:35.820Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Cursos y masterclasses · Bienvenida",
+      "recipients": 335,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:37.394Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Desarrollo de Software y Aplicaciones Móviles · Bienvenida · 2027",
+      "recipients": 21,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:38.463Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Atención Integral a Primera Infancia / Preescolar · Bienvenida · 2027",
+      "recipients": 22,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:39.738Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Auxiliar Administrativo en Salud · Bienvenida · 2027",
+      "recipients": 15,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:40.788Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    },
+    {
+      "name": "CBN · Auxiliar en Enfermería · Bienvenida · 2027",
+      "recipients": 31,
+      "observed_state": "En curso",
+      "captured_at": "2026-11-24T16:00:41.837Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "failed": 0,
+      "uncertain": 0
+    }
+  ],
+  "review_drafts_prepared_or_activated": 0,
+  "first_export_totals": {
+    "recipients": 704,
+    "delivered": 16,
+    "sent_without_delivered_receipt": 2,
+    "prepared_not_yet_sent": 686,
+    "failed": 0,
+    "uncertain": 0,
+    "max_attempts": 1
+  },
+  "modal": {
+    "current_canonical_crm_stage_separate_from_planned_stage": true,
+    "declared_request_program": true,
+    "body_and_pinned_template_header_footer_buttons": true,
+    "source_and_actual_dates_collapsible": true,
+    "bounded_scrolling_and_persistent_close": true,
+    "raw_source_json_replaced_by_readable_fields_without_rewriting_records": true,
+    "live_verification": {
+      "current_stage": "Seguimiento",
+      "state": "Entregado",
+      "attempts": 1,
+      "source_program_visible": true,
+      "pinned_header_footer_buttons_visible": true,
+      "dialog_height_px": 686,
+      "viewport_height_px": 720,
+      "body_scroll_height_px": 763,
+      "body_client_height_px": 556,
+      "escape_closes": true,
+      "json_pre_blocks": 0
+    }
+  },
+  "catalog_refresh": {
+    "get_only": true,
+    "existing_worker_no_new_service": true,
+    "refresh_after_minutes": 45,
+    "check_at_most_once_per_seconds": 60,
+    "one_hour_freshness_guard_preserved": true,
+    "authority_and_binding_revalidated": true,
+    "missing_or_materially_changed_template_remains_for_review": true,
+    "failed_refresh_does_not_consume_slot_or_discard_prepared_recipients": true,
+    "live_automatic_refresh_verified": false
+  },
+  "validation": {
+    "backend_passed": 383,
+    "frontend_passed": 34,
+    "postgres_queries_parsed": 2,
+    "typescript": "passed",
+    "changed_file_eslint": "passed",
+    "new_module_ruff": "passed",
+    "workspace_build": "passed",
+    "historical_bundle_warning": true,
+    "ruff_new_modules": "passed"
+  },
+  "effects": {
+    "ddl": false,
+    "seeds": false,
+    "new_services": false,
+    "siie_writes": false,
+    "ai_model_changes": false,
+    "other_phase_acceptance_changes": false
+  },
+  "private_evidence": ".local/campaign-launch-20261124/",
+  "deployments": {
+    "initial_frontend": {
+      "commit": "7dfa852",
+      "id": "5tlj1u9qub6w7jtcwnhg5c4y",
+      "status": "Success",
+      "duration_seconds": 41
+    },
+    "final_frontend": {
+      "commit": "39a8a1e",
+      "status": "Success",
+      "duration_seconds": 42
+    },
+    "final_backend": {
+      "commit": "39a8a1e",
+      "id": "rdk4fcjgnn5cgy3c1occpux4",
+      "status": "Success",
+      "duration_seconds": 255,
+      "started_at": "2026-11-24T16:13:35Z",
+      "rollout_completed_at": "2026-11-24T16:17:50Z",
+      "healthy": true
+    }
+  },
+  "final_export_totals": {
+    "recipients": 704,
+    "unique_phones": 704,
+    "delivery_receipts": 57,
+    "read_receipts": 6,
+    "attributed_responses": 7,
+    "states": {
+      "delivered": 51,
+      "read": 6,
+      "prepared": 638,
+      "failed": 5,
+      "sent": 1,
+      "accepted": 1,
+      "queued": 2
+    },
+    "max_attempts": 1
+  },
+  "final_campaign_reports": [
+    {
+      "name": "CBN · Mantenimiento Electrónico y Energías Renovables · Bienvenida · 2027",
+      "recipients": 7,
+      "state": "Completada",
+      "captured_at": "2026-11-24T16:25:58.030Z",
+      "delivered": 7,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "delivered": 7
+      }
+    },
+    {
+      "name": "CBN · Desarrollo Multimedia y Comunicación Gráfica · Bienvenida · 2027",
+      "recipients": 4,
+      "state": "Completada",
+      "captured_at": "2026-11-24T16:25:59.291Z",
+      "delivered": 4,
+      "read": 1,
+      "replied": 1,
+      "states": {
+        "read": 1,
+        "delivered": 3
+      }
+    },
+    {
+      "name": "CBN · Agente de Ventas, Mercadeo y Call Center · Bienvenida · 2027",
+      "recipients": 1,
+      "state": "Completada",
+      "captured_at": "2026-11-24T16:26:00.348Z",
+      "delivered": 1,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "delivered": 1
+      }
+    },
+    {
+      "name": "CBN · Contabilidad Sistematizada y Finanzas · Bienvenida · 2027",
+      "recipients": 14,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:01.467Z",
+      "delivered": 2,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "delivered": 2,
+        "prepared": 12
+      }
+    },
+    {
+      "name": "CBN · Asistente Administrativo · Bienvenida · 2027",
+      "recipients": 19,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:02.515Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 19
+      }
+    },
+    {
+      "name": "CBN · Auxiliar en Servicios Farmacéuticos · Bienvenida · 2027",
+      "recipients": 2,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:03.872Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 2
+      }
+    },
+    {
+      "name": "CBN · Auxiliar en Salud Oral · Bienvenida · 2027",
+      "recipients": 2,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:04.925Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 2
+      }
+    },
+    {
+      "name": "CBN · Cocina · Retomar interés · 2027",
+      "recipients": 62,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:08.349Z",
+      "delivered": 43,
+      "read": 5,
+      "replied": 6,
+      "states": {
+        "delivered": 38,
+        "read": 5,
+        "failed": 5,
+        "sent": 1,
+        "accepted": 1,
+        "queued": 2,
+        "prepared": 10
+      }
+    },
+    {
+      "name": "CBN · Inglés A1-A2 · Retomar interés",
+      "recipients": 27,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:09.432Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 27
+      }
+    },
+    {
+      "name": "CBN · Turismo · Retomar interés · 2027",
+      "recipients": 15,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:10.751Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 15
+      }
+    },
+    {
+      "name": "CBN · Repostería · Retomar interés · 2027",
+      "recipients": 26,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:11.827Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 26
+      }
+    },
+    {
+      "name": "CBN · Barismo y Bartender · Retomar interés · 2027",
+      "recipients": 101,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:12.918Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 101
+      }
+    },
+    {
+      "name": "CBN · Cursos y masterclasses · Bienvenida",
+      "recipients": 335,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:14.553Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 335
+      }
+    },
+    {
+      "name": "CBN · Desarrollo de Software y Aplicaciones Móviles · Bienvenida · 2027",
+      "recipients": 21,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:15.862Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 21
+      }
+    },
+    {
+      "name": "CBN · Atención Integral a Primera Infancia / Preescolar · Bienvenida · 2027",
+      "recipients": 22,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:16.943Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 22
+      }
+    },
+    {
+      "name": "CBN · Auxiliar Administrativo en Salud · Bienvenida · 2027",
+      "recipients": 15,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:18.012Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 15
+      }
+    },
+    {
+      "name": "CBN · Auxiliar en Enfermería · Bienvenida · 2027",
+      "recipients": 31,
+      "state": "En curso",
+      "captured_at": "2026-11-24T16:26:19.116Z",
+      "delivered": 0,
+      "read": 0,
+      "replied": 0,
+      "states": {
+        "prepared": 31
+      }
+    }
+  ],
+  "final_export_window_utc": {
+    "from": "2026-11-24T16:25:58.030Z",
+    "to": "2026-11-24T16:26:19.116Z"
+  },
+  "review_drafts_still_draft_verified_live": 18,
+  "manual_catalog_sync_verified": {
+    "visible_templates": 20,
+    "trash": 32
+  },
+  "delivery_failures_held_without_retry": 5,
+  "delivery_failure_codes": {
+    "provider_delivery_failed": 3,
+    "whatsapp_recipient_unreachable": 2
+  }
+}

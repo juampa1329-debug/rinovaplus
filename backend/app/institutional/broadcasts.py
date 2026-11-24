@@ -1603,7 +1603,8 @@ class Broadcasts:
             base = (
                 "WITH base AS (\n              SELECT r."
                 "RecipientId,r.IdentityId,r.Attempts,r."
-                "CurrentQueueId,p.Name,i.ExternalId AS "
+                "CurrentQueueId,pc.Stage AS CurrentStage,pc.Program AS CurrentProgram,"
+                "p.CustomValues AS CurrentCustomValues,p.Name,i.ExternalId AS "
                 "Phone,\n                COALESCE(q.Stat"
                 "e COLLATE Latin1_General_100_BIN2,r.St"
                 "ate) AS Status,\n                COALES"
@@ -1621,6 +1622,8 @@ class Broadcasts:
                 "          FROM crm_broadcast7.Recipien"
                 "t r\n              JOIN crm.Contact p O"
                 "N p.ContactId=r.ContactId\n            "
+                "LEFT JOIN crm_workspace.Merge mg ON mg.SourceContactId=r.ContactId AND mg.Active=1 "
+                "JOIN crm.Contact pc ON pc.ContactId=COALESCE(mg.TargetContactId,r.ContactId) "
                 "  JOIN crm_channels2.ExternalIdentity "
                 "i ON i.InstitutionId=r.InstitutionId A"
                 "ND i.IdentityId=r.IdentityId\n         "
@@ -1701,6 +1704,12 @@ class Broadcasts:
                 *args,
                 *([] if all_items else [offset]),
             )
+            try:
+                pinned_definition = json.loads(templates.latest(c, self.settings, str(campaign["TemplateId"]), campaign["TemplateVersion"])["Definition"])
+            except HTTPException as error:
+                if error.status_code != 404:
+                    raise
+                pinned_definition = []
             items = [
                 {
                     "id": uid(str(v["RecipientId"])),
@@ -1716,6 +1725,8 @@ class Broadcasts:
                     else None,
                     "body": v["Body"],
                     "profile": segments.snapshot_profile(v["Snapshot"]),
+                    "contact": segments.contact_details(v),
+                    "template_parts": templates.display_parts(pinned_definition, json.loads(v["Snapshot"] or "{}")),
                     **{
                         n: utc(v[col])
                         for n, col in [

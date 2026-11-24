@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import { Button, Field, Notice, SelectField } from "../shared/ui";
 import { ResourceState, useResource } from "./Settings";
+import { BroadcastContactSelection } from "./BroadcastContactSelection";
 
 export type CrmField = {
   key: string;
@@ -257,6 +258,11 @@ export function BroadcastAudience({
         />
         Elegir personas específicas
       </label>
+      <BroadcastContactSelection
+        change={(contact_ids) =>
+          update({ audience_mode: "contacts", contact_ids })
+        }
+      />
       <SelectField
         id="audience-last-incoming"
         label="Tiempo desde el último mensaje recibido"
@@ -269,9 +275,18 @@ export function BroadcastAudience({
           { value: "60_89", label: "60–89 días" },
           { value: "90_plus", label: "90 días o más" },
         ]}
-        onChange={(e) => update({ last_incoming_bucket: e.target.value as AudienceFilters["last_incoming_bucket"] })}
+        onChange={(e) =>
+          update({
+            last_incoming_bucket: e.target
+              .value as AudienceFilters["last_incoming_bucket"],
+          })
+        }
       />
-      <p className="broadcast-help">Usa la fecha real recibida del canal, en la zona horaria de la campaña. Una preinscripción o gestión administrativa no demuestra una conversación; sin evidencia queda en su grupo propio.</p>
+      <p className="broadcast-help">
+        Usa la fecha real recibida del canal, en la zona horaria de la campaña.
+        Una preinscripción o gestión administrativa no demuestra una
+        conversación; sin evidencia queda en su grupo propio.
+      </p>
       {(filters.audience_mode === "contacts" || !!filters.contact_ids.length) &&
         (account ? (
           <People
@@ -480,8 +495,19 @@ export function BroadcastAudience({
               id={`custom-match-${i}`}
               label={`Coincidencia del campo ${i + 1}`}
               value={f.match || "exact"}
-              options={[{ value: "exact", label: "Valor completo" }, { value: "contains", label: "Contiene alguno de los valores" }]}
-              onChange={(e) => update({ custom_fields: custom.map((v, n) => n === i ? { ...v, match: e.target.value as "exact" | "contains" } : v) })}
+              options={[
+                { value: "exact", label: "Valor completo" },
+                { value: "contains", label: "Contiene alguno de los valores" },
+              ]}
+              onChange={(e) =>
+                update({
+                  custom_fields: custom.map((v, n) =>
+                    n === i
+                      ? { ...v, match: e.target.value as "exact" | "contains" }
+                      : v,
+                  ),
+                })
+              }
             />
             <Button
               variant="quiet"

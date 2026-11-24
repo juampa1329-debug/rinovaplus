@@ -131,6 +131,28 @@ def snapshot_profile(snapshot):
     return {key: str(profile.get(key) or "Sin dato")[:200] for key in DIMENSIONS}
 
 
+def contact_details(row):
+    """Current CRM and declared request, separate from preparation-time charts."""
+    try:
+        custom = json.loads(row.get("CurrentCustomValues") or "{}")
+        snapshot = json.loads(row.get("Snapshot") or "{}")
+    except (ValueError, TypeError):
+        custom, snapshot = {}, {}
+    custom = custom if isinstance(custom, dict) else {}
+    snapshot = snapshot if isinstance(snapshot, dict) else {}
+    def text(value):
+        return value.strip()[:2000] if isinstance(value, str) else ""
+    return {
+        "stage": text(row.get("CurrentStage")),
+        "program": text(row.get("CurrentProgram")),
+        "requested_program": text(custom.get("pre_programas")),
+        "requested_at": text(custom.get("pre_ultima_fecha")),
+        "request_channel": text(custom.get("pre_canal")),
+        "source": text(custom.get("pre_origen")),
+        "sent_stage": text(snapshot.get("sent_stage")),
+    }
+
+
 def analytics(items):
     """One bounded pass; historical records without a snapshot stay unknown."""
     grouped = {key: defaultdict(lambda: dict(total=0, delivered=0, read=0, replied=0, failed=0)) for key in DIMENSIONS}

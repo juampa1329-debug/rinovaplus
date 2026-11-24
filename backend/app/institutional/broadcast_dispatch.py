@@ -223,6 +223,13 @@ class Worker:
                     c, self.settings, recipient, controlled=self.controlled
                 )
             except HTTPException as e:
+                if e.detail == "broadcast_template_refresh_required":
+                    # A failed catalog GET must not discard unsent recipients.
+                    # Delay this account only; all provider/authority checks remain.
+                    c.execute("UPDATE crm_broadcast7.Cadence SET NextAt=DATEADD(second,60,SYSUTCDATETIME()) "
+                              "WHERE InstitutionId=? AND IntegrationId=?",
+                              institution(self.settings), recipient["IntegrationId"] if "IntegrationId" in recipient else current(c, self.settings, str(recipient["CampaignId"]))["IntegrationId"])
+                    return False
                 if e.detail == "campaign_quiet_or_not_due":
                     from app.institutional.campaign_models import now, next_allowed
 

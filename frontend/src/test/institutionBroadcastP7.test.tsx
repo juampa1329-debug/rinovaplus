@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import {
   BroadcastWorkspace,
@@ -83,7 +83,7 @@ const ok = (value: unknown, status = 200) =>
     headers: { "Content-Type": "application/json" },
   });
 function setup(
-  extra?: (path: string, init?: RequestInit) => Response | undefined,
+  extra?: (path: string, init?: RequestInit) => Response | Promise<Response> | undefined,
 ) {
   const fetcher = vi
     .spyOn(globalThis, "fetch")
@@ -235,6 +235,8 @@ it("opens delivery detail inside the campaign without posting or opening Inbox",
               phone: "573100000000",
               status: "delivered",
               body: "Texto revisado de la campaña",
+              contact: { requested_program: "Cocina", stage: "Programa definido", program: "Cocina", sent_stage: "Seguimiento", requested_at: "2026-11-01", source: "Noviembre.xls", request_channel: "En línea" },
+              template_parts: { header: "Tu formación", footer: "Juan Pablo", buttons: ["Conocer el programa", "No recibir mensajes"] },
               attempts: 1,
               delivered_at: "2026-11-23T12:00:00Z",
             },
@@ -250,6 +252,10 @@ it("opens delivery detail inside the campaign without posting or opening Inbox",
   );
   expect(screen.getByLabelText("Detalle del envío a Ana")).toBeInTheDocument();
   expect(screen.getAllByText("Texto revisado de la campaña")).toHaveLength(2);
+  expect(screen.getByText("Información solicitada en preinscripción")).toBeInTheDocument();
+  expect(screen.getByText("Programa definido")).toBeInTheDocument();
+  expect(screen.getByText("Tu formación")).toBeInTheDocument();
+  expect(screen.getByLabelText("Opciones del mensaje enviado")).toHaveTextContent("No recibir mensajes");
   expect(
     fetcher.mock.calls.filter(
       ([, init]) => init?.method && init.method !== "GET",
@@ -259,6 +265,20 @@ it("opens delivery detail inside the campaign without posting or opening Inbox",
     screen.getByText("Cerrar detalle del envío"),
   );
   expect(screen.queryByLabelText("Detalle del envío a Ana")).toBeNull();
+});
+it("does not replace the newly selected campaign when an older save finishes", async () => {
+  const next = { ...campaign, id: "next", name: "Segunda campaña", document: { ...campaign.document, name: "Segunda campaña" } };
+  let resolveSave!: (r: Response) => void;
+  const saving = new Promise<Response>(resolve => { resolveSave=resolve; });
+  vi.spyOn(window,"confirm").mockReturnValue(true);
+  setup((path, init) => path.endsWith('/broadcasts') ? ok({items:[campaign,next]}) : path.endsWith('/broadcasts/c') && init?.method==='PUT' ? saving : undefined);
+  fireEvent.click(await screen.findByRole('button',{name:'Admisiones CBN · Borrador'}));
+  fireEvent.change(screen.getByLabelText('Nombre de campaña'),{target:{value:'Cambio pendiente'}});
+  fireEvent.click(screen.getByRole('button',{name:'Guardar campaña'}));
+  fireEvent.click(screen.getByRole('button',{name:'Segunda campaña · Borrador'}));
+  await act(async()=>{resolveSave(ok(campaign));await saving;});
+  await waitFor(()=>expect(screen.getByRole('heading',{name:'Segunda campaña'})).toBeInTheDocument());
+  expect(screen.getByLabelText('Nombre de campaña')).toHaveValue('Segunda campaña');
 });
 it("creates a template inside a campaign without submitting or losing the campaign draft", async () => {
   const f = setup();
