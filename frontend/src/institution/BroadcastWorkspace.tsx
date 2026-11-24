@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { BroadcastAudience } from "./BroadcastAudience";
 import { BroadcastProspectSetup } from "./BroadcastProspectSetup";
+import {
+  BroadcastCampaignList,
+  campaignStateLabels,
+} from "./BroadcastCampaignList";
 import type {
   AudienceFilters,
   CrmField,
@@ -150,12 +154,7 @@ type Report = {
   }[];
 };
 const stateLabel: Record<string, string> = {
-  draft: "Borrador",
-  scheduled: "Programada",
-  running: "En curso",
-  paused: "Pausada",
-  cancelled: "Cancelada",
-  completed: "Completada",
+  ...campaignStateLabels,
   prepared: "Preparado",
   queued: "Pendiente",
   sending: "En curso de envío",
@@ -271,6 +270,7 @@ export function BroadcastWorkspace() {
   const [tab, setTab] = useState("campaigns"),
     [chosen, setChosen] = useState<Campaign | null>(null),
     [creating, setCreating] = useState(false),
+    [listVisible, setListVisible] = useState(true),
     [account, setAccount] = useState("");
   if (!options.value || !listing.value)
     return <ResourceState error={options.error || listing.error} />;
@@ -330,73 +330,80 @@ export function BroadcastWorkspace() {
         />
       )}
       {tab === "campaigns" ? (
-        <div className="broadcast-columns">
-          <section className="panel">
+        <>
+          <header className="broadcast-campaign-toolbar">
             <h2>Campañas de envío</h2>
-            <Button
-              onClick={() => {
-                if (allowNavigation()) {
-                  setCreating(true);
-                  setChosen(null);
-                }
-              }}
-            >
-              Nueva campaña
-            </Button>
-            {listing.value.items.length === 0 && (
-              <p>
-                Aún no hay campañas. Crea una para seleccionar la cuenta, la
-                plantilla y los destinatarios.
-              </p>
-            )}
-            {listing.value.items.map((c) => (
+            <div className="actions">
               <Button
                 variant="quiet"
-                key={c.id}
+                aria-expanded={listVisible}
+                aria-controls="broadcast-campaign-list"
+                onClick={() => setListVisible(!listVisible)}
+              >
+                {listVisible
+                  ? "Ocultar listado"
+                  : `Mostrar campañas (${listing.value.items.length})`}
+              </Button>
+              <Button
                 onClick={() => {
                   if (allowNavigation()) {
-                    setCreating(false);
-                    setChosen(c);
+                    setCreating(true);
+                    setChosen(null);
                   }
                 }}
               >
-                {c.name} · {label(c.state)}
+                Nueva campaña
               </Button>
-            ))}
-          </section>
-          {creating || chosen ? (
-            <CampaignEditor
-              key={chosen ? `${chosen.id}-${chosen.revision}` : "new"}
-              initial={chosen}
-              options={options.value}
-              refreshOptions={async () => {
-                await options.reload();
-              }}
-              saved={async (id) => {
-                await reload();
-                setChosen(
-                  await listing
-                    .reload()
-                    .then((v) => v.items.find((c) => c.id === id) || null),
-                );
-                setCreating(false);
+            </div>
+          </header>
+          <div
+            className={`broadcast-columns broadcast-campaign-columns${listVisible ? "" : " broadcast-list-hidden"}`}
+          >
+            <BroadcastCampaignList
+              items={listing.value.items}
+              selectedId={chosen?.id}
+              hidden={!listVisible}
+              onSelect={(c) => {
+                if (allowNavigation()) {
+                  setCreating(false);
+                  setChosen(c);
+                }
               }}
             />
-          ) : (
-            <section className="panel">
-              <h2>Mensajes con plantilla</h2>
-              <p>
-                Elige una campaña para revisar destinatarios, programar el envío
-                y consultar resultados.
-              </p>
-              <p>
-                Cada cuenta utiliza su catálogo de Meta y su consentimiento
-                registrado. Los programas y etapas proceden del CRM
-                institucional.
-              </p>
-            </section>
-          )}
-        </div>
+            {creating || chosen ? (
+              <CampaignEditor
+                key={chosen ? `${chosen.id}-${chosen.revision}` : "new"}
+                initial={chosen}
+                options={options.value}
+                refreshOptions={async () => {
+                  await options.reload();
+                }}
+                saved={async (id) => {
+                  await reload();
+                  setChosen(
+                    await listing
+                      .reload()
+                      .then((v) => v.items.find((c) => c.id === id) || null),
+                  );
+                  setCreating(false);
+                }}
+              />
+            ) : (
+              <section className="panel">
+                <h2>Mensajes con plantilla</h2>
+                <p>
+                  Elige una campaña para revisar destinatarios, programar el
+                  envío y consultar resultados.
+                </p>
+                <p>
+                  Cada cuenta utiliza su catálogo de Meta y su consentimiento
+                  registrado. Los programas y etapas proceden del CRM
+                  institucional.
+                </p>
+              </section>
+            )}
+          </div>
+        </>
       ) : !account ? (
         <Notice>
           Selecciona una cuenta de Canales o{" "}

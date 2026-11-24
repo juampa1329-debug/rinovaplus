@@ -147,6 +147,20 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("keeps the campaign draft while filtering or hiding the campaign list", async () => {
+  const fetcher = setup();
+  fireEvent.click(await screen.findByRole("button", { name: "Admisiones CBN · Borrador" }));
+  fireEvent.change(screen.getByLabelText("Nombre de campaña"), { target: { value: "Borrador sin guardar" } });
+  fireEvent.click(screen.getByRole("button", { name: "Finalizadas 0" }));
+  expect(screen.getByLabelText("Nombre de campaña")).toHaveValue("Borrador sin guardar");
+  fireEvent.click(screen.getByRole("button", { name: "Ocultar listado" }));
+  expect(screen.queryByRole("region", { name: "Explorar campañas" })).toBeNull();
+  expect(screen.getByLabelText("Nombre de campaña")).toHaveValue("Borrador sin guardar");
+  fireEvent.click(screen.getByRole("button", { name: "Mostrar campañas (1)" }));
+  expect(screen.getByRole("button", { name: "Finalizadas 0" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByLabelText("Nombre de campaña")).toHaveValue("Borrador sin guardar");
+  expect(fetcher.mock.calls.some(([, init]) => init?.method && init.method !== "GET")).toBe(false);
+});
 it("searches consent recipients by name or number without writing consent", async () => {
   const fetcher = setup((path) => path.includes("identities?search=Laura") ? ok({
     items: [{ id: "laura", name: "Laura", phone: "573001234567", consent: null }],

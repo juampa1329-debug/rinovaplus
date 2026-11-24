@@ -7,6 +7,16 @@ import {
 } from "./ErrorFeedback";
 
 const details: Record<string, [string, string, string]> = {
+  broadcast_template_refresh_required: [
+    "Actualiza la verificación de la plantilla",
+    "El mensaje sigue en cola porque hace falta comprobar de nuevo su estado actual en Meta.",
+    "En Mensajería masiva → Plantillas WhatsApp, selecciona la cuenta y pulsa Sincronizar con Meta. La cola volverá a comprobar la aprobación antes de continuar.",
+  ],
+  outbound_reservation_review_required: [
+    "La reserva del envío requiere revisión",
+    "El CRM no puede confirmar que la reserva anterior permita un nuevo intento seguro.",
+    "Revisa el historial del envío y la actividad del canal antes de repetirlo.",
+  ],
   whatsapp_billing_issue: [
     "Meta rechazó el envío por facturación",
     "La cuenta de WhatsApp tiene un problema de pago. Puede deberse a saldo insuficiente, un método de pago vencido o una cuenta de facturación sin configurar.",

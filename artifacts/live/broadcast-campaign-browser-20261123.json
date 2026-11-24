@@ -1,0 +1,77 @@
+{
+  "date_bogota": "2026-11-23",
+  "implementation_commit": "54c3157",
+  "deployment": {
+    "provider": "Coolify",
+    "application": "RinovaPlus Frontend",
+    "id": "zipjnxttbcgqb2xza1lz6rsc",
+    "status": "Success",
+    "duration_seconds": 43,
+    "started_at": "2026-11-24T03:20:05Z",
+    "healthy": true,
+    "backend_redeploy_required": false
+  },
+  "features": {
+    "groups": [
+      "Todas",
+      "Actuales",
+      "Borradores",
+      "Finalizadas"
+    ],
+    "current_states": [
+      "running",
+      "scheduled",
+      "paused"
+    ],
+    "finished_states": [
+      "completed",
+      "cancelled"
+    ],
+    "search": "Name/program in campaign name, case/accent insensitive",
+    "sort_options": [
+      "state_and_recent_activity",
+      "recent_activity",
+      "name"
+    ],
+    "page_size": 25,
+    "independent_vertical_scroll": true,
+    "hide_list_expands_detail": true,
+    "open_detail_and_unsaved_edits_preserved": true
+  },
+  "live_verification": {
+    "total_campaigns_including_historical_tests": 26,
+    "draft": 21,
+    "finished": 5,
+    "current": 0,
+    "second_page_reachable": true,
+    "finished_filter_rows": 5,
+    "accent_insensitive_search": true,
+    "selected_campaign_survives_hide_show": true,
+    "search_survives_hide_show": true,
+    "scroll_region_height_px": 358,
+    "scroll_content_height_px": 2163,
+    "keyboard_end_scroll_top_px": 1805,
+    "desktop_viewport_width_px": 1265,
+    "mobile_visual_acceptance": false,
+    "temporary_viewport_reset": true
+  },
+  "validation": {
+    "frontend_tests_passed": 28,
+    "one_hundred_campaign_fixture": true,
+    "typescript": "passed",
+    "changed_file_eslint": "passed",
+    "workspace_build": "passed",
+    "historical_bundle_warning": true
+  },
+  "effects": {
+    "campaign_document_writes": 0,
+    "messages_sent": 0,
+    "backend_changes": false,
+    "ddl": false,
+    "seeds": false,
+    "new_services": false,
+    "siie_writes": false,
+    "ai_models_changed": false
+  },
+  "private_screenshot": ".local/campaign-browser/campanas-organizadas.jpg"
+}

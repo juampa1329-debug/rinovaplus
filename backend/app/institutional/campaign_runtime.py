@@ -595,7 +595,10 @@ def observe_identity(
         .strip(" .!?,;:")
     )
     if incoming and (
-        text in {"stop", "baja", "unsubscribe", "cancelar suscripción", "darme de baja"}
+        text in {
+            "stop", "baja", "unsubscribe", "cancelar suscripción", "darme de baja",
+            "no recibir mensajes",
+        }
         or any(
             v in text for v in ["no me contacten", "no quiero mensajes", "no contactar"]
         )

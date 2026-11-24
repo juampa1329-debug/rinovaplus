@@ -1,0 +1,95 @@
+{
+  "captured_at": "2026-11-24T01:21:59.423Z",
+  "source": "Native RinovaPlus campaign reports and CSV exports; authentic Meta receipts",
+  "implementation_commit": "ca1793b",
+  "deployment": {
+    "provider": "Coolify",
+    "id": "ob0mmmccse7nqmfzufqbkssm",
+    "status": "Success",
+    "started_at": "2026-11-24T00:56:04Z"
+  },
+  "campaigns": {
+    "logistica": {
+      "status": "completed",
+      "recipients": 32,
+      "delivered": 32,
+      "read": 6,
+      "attributed_responses": 6,
+      "failed": 0,
+      "template": "respective approved Meta program template"
+    },
+    "aduanas": {
+      "status": "completed",
+      "recipients": 11,
+      "delivered": 11,
+      "read": 4,
+      "attributed_responses": 2,
+      "failed": 0,
+      "template": "respective approved Meta program template"
+    }
+  },
+  "totals": {
+    "recipients": 43,
+    "delivered": 43,
+    "read": 10,
+    "attributed_responses": 8,
+    "failed": 0,
+    "pending": 0,
+    "uncertain": 0,
+    "inbox_response_previews_individually_verified": 7,
+    "verified_opt_outs_recorded": 1,
+    "other_campaigns_remaining_draft": 18
+  },
+  "import": {
+    "crm_preinscritos": 772,
+    "source_review_remaining": 193,
+    "already_imported_linkage_conflicts": 1,
+    "source_review_with_shared_phone_or_email_between_names": 154,
+    "review_reason_counts_can_overlap": true
+  },
+  "onboarding": {
+    "initially_enabled": 771,
+    "review_held": 1,
+    "subsequent_revocation": 1,
+    "evidence_provenance": "Explicit owner attestation of preinscription/contact policies; no independent inspection of policy text",
+    "valid_until": "2026-11-25T04:59:00Z",
+    "batch_not_replayed": true
+  },
+  "stage": {
+    "target": "Seguimiento",
+    "trigger": "Authentic sent/delivered/read Meta receipt",
+    "real_transition_verified": true,
+    "later_human_stage_changes_preserved_by_cas": true
+  },
+  "consent_search": {
+    "name_verified": true,
+    "partial_number_verified": true,
+    "page_size": 100
+  },
+  "cadence": {
+    "max_per_24h": 100,
+    "interval_seconds": 30
+  },
+  "validation": {
+    "backend_selected_passed": 370,
+    "frontend_passed": 26,
+    "typescript": "passed",
+    "changed_file_eslint": "passed",
+    "new_module_ruff": "passed",
+    "workspace_build": "passed",
+    "historical_bundle_warning": true
+  },
+  "limits": {
+    "independent_open_or_view_metric": false,
+    "external_clicks_measured": false,
+    "ai_answering_verified": false,
+    "global_balance_or_payment_method_verified": false,
+    "manual_accepted_message_replay": false,
+    "ddl": false,
+    "seeds": false,
+    "new_services": false,
+    "siie_writes": false,
+    "other_phase_acceptances_changed": false
+  },
+  "private_evidence_location": ".local/preinscritos-import/logistica-aduanas/"
+}
