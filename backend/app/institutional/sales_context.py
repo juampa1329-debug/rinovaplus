@@ -9,7 +9,7 @@ from app.institutional.db import institution, rows
 from app.modules.agents.domain import digest, resolve
 from app.modules.ai.infrastructure.providers import AiError
 
-STOP = set("a al de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me mi mis yo tu tus se es si no lo le les nos sobre como que ofrecen tienen".split())
+STOP = set("a al de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me mi mis yo tu tus se es si no lo le les nos sobre como que ofrecen tienen cbn corporacion bolivariana norte".split())
 
 
 def matches(programs, profiles, text):

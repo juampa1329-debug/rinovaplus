@@ -123,6 +123,20 @@ def test_campaign_program_routes_specialist_but_recent_customer_change_wins(monk
     assert "12345" not in json.dumps(result["campaign_reply"])
 
 
+@pytest.mark.parametrize("text,expected", [
+    ("Soy Juan Pablo, del equipo de Admisiones de CBN. Tu interés es MASTERCLASS GASTRONOMIA.", []),
+    ("Corporación Bolivariana del Norte · consulta la oferta vigente", []),
+    ("Me interesa PRE-ICFES CBN Alta Competencia", [27]),
+    ("Masterclass de Cocina Colombiana en CBN", [4]),
+])
+def test_institution_brand_cannot_route_a_generic_masterclass_to_preicfes(text, expected):
+    programs = [
+        {"program_id": 27, "name": "PRE-ICFES CBN · Alta Competencia"},
+        {"program_id": 4, "name": "Cocina Nacional e Internacional"},
+    ]
+    assert [v["program_id"] for v in sales_context.matches(programs, {}, text)] == expected
+
+
 @pytest.mark.parametrize("public,sequence", [(False, 2), (False, 4), (True, 2)])
 def test_opening_guidance_is_private_context_and_does_not_repeat_on_followup(monkeypatch, public, sequence):
     monkeypatch.setattr(grounding, "setting", lambda *_: {"revision": 1, "document": {}})
