@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-23",
+  "budget_revision": 4,
+  "ai_budget_unlimited": true,
+  "alert": {
+    "enabled": true,
+    "threshold_usd": 5,
+    "interval_minutes": 15,
+    "native_status": "management_key_required",
+    "real_balance_checked": false,
+    "low_balance_email_delivered": false
+  },
+  "recovery": {
+    "queued_original_inputs": 8,
+    "answered_conversations": 7,
+    "reply_parts": 34,
+    "delivered_parts": 24,
+    "read_parts": 10,
+    "opt_out_human_without_reply": 1,
+    "prior_provider_messages_resent": false,
+    "initial_case_read": true,
+    "initial_case_ai_restored": true
+  },
+  "rate_limit": {
+    "requests_per_minute": 120,
+    "preserved": true,
+    "still_observed_during_fast_multi_tab_navigation": true,
+    "not_an_ai_budget_error": true
+  },
+  "deployments": {
+    "budget_backend": {
+      "commit": "552468b",
+      "id": "9jhwcm7symbx0znucghjilty",
+      "state": "Success",
+      "duration": "04m18s"
+    },
+    "optout_backend": {
+      "commit": "867b1f9",
+      "id": "rpfntdgwusoa7ltcjveviz4z",
+      "state": "in_progress"
+    }
+  },
+  "contains_credentials_or_customer_bodies": false,
+  "roadmap_acceptances_changed": false
+}

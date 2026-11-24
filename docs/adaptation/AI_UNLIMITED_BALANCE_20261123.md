@@ -17,3 +17,13 @@ Las revisiones del listado de otras conversaciones ya no disparan consultas de d
 104tests backend de presupuesto/monitor/cuentas/correo/recuperación/respaldo y61de agentes;55frontend seleccionados (la nueva prueba de reloj se aisló del reloj global de las anteriores); tipos, ESLint focalizado, Ruff y build institucional pasan. tzdata sólo en entorno local de pruebas Windows. Advertencia de bundle histórico conservada.
 
 La recuperación inicial publicada falló al consultar con LEN sobre PostgreSQL (42883); reemplazado por comparación de texto compatible y regresión añadida. No hubo IO de proveedor en esa consulta fallida. Revisión de destinatarios, recuperación efectiva y activación de ajustes en producción pendientes en este corte. No se acredita alerta real sin consulta y entrega verificadas.
+
+## Verificación nativa
+
+Presupuesto revisión4 guardado y persistido tras recarga: excepción de gasto/tokens y alerta activas; umbralUSD5 y15min. Monitor devuelve management_key_required. La clave de administración sigue pendiente del titular; no se ha probado un correo real de saldo bajo ni leído un saldo global. Función lista para usar al guardar esa clave. No se cambió el correo de acceso de ningún administrador.
+
+Ocho entradas originales recuperadas mediante una revisión explícita: siete consultas obtuvieron34partes,24entregadas y10leídas según recibos nativos. Una solicitud de baja terminó enHumano sin salida; se añade exclusión determinista previa al modelo y a la recuperación, compartida con campañas. No se reenviaron mensajes del historial ni operaciones inciertas. El caso inicial se respondió una vez (Leído), se devolvió aIA y luego hubo respuestas automáticas reales a nuevas preguntas.
+
+El rate limitHTTP120 se conserva. Navegar muy deprisa entre siete fichas con varias pestañas puede volver a alcanzarlo; se observó durante la verificación. Esto no detuvo las generaciones recuperadas. La revisión reduce refrescos por cambios de otros chats y reintenta consultasGET trasRetry-After; no se afirma eliminación universal de429.
+
+107tests de presupuesto/correo/proveedores/respaldo,61de agentes,230focalizados de canales y58de campañas, con solapamientos;55frontend. Pruebas adicionales de optout/tipos se verifican en corte posterior. El despliegue final se registra en artifacts/live/ai-unlimited-balance-20261123.json.

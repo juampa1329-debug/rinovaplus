@@ -121,6 +121,7 @@ def test_recovery_excludes_explicit_contact_opt_outs(monkeypatch):
     assert reply_recovery.missing(None, profile) == [{"Body": "Ver plan de pagos"}]
     assert opted_out("  NO RECIBIR MENSAJES. ")
     assert not opted_out("No sé cómo financiar el programa")
+    assert not opted_out({"text": "No recibir mensajes"})
     assert not replyable_message("messenger", {"message": {"text": "No me contacten"}})
 
 

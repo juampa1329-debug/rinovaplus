@@ -4,6 +4,8 @@ import unicodedata
 
 
 def opted_out(text):
+    if not isinstance(text, str):
+        return False
     value = unicodedata.normalize("NFKC", text or "").casefold().strip(" .!?,;:\r\n\t")
     return value in {
         "stop", "baja", "unsubscribe", "cancelar suscripción", "darme de baja",
