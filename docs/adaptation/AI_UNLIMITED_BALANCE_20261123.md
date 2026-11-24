@@ -27,3 +27,9 @@ Ocho entradas originales recuperadas mediante una revisión explícita: siete co
 El rate limitHTTP120 se conserva. Navegar muy deprisa entre siete fichas con varias pestañas puede volver a alcanzarlo; se observó durante la verificación. Esto no detuvo las generaciones recuperadas. La revisión reduce refrescos por cambios de otros chats y reintenta consultasGET trasRetry-After; no se afirma eliminación universal de429.
 
 107tests de presupuesto/correo/proveedores/respaldo,61de agentes,230focalizados de canales y58de campañas, con solapamientos;55frontend. Pruebas adicionales de optout/tipos se verifican en corte posterior. El despliegue final se registra en artifacts/live/ai-unlimited-balance-20261123.json.
+
+## Publicación final comprobada
+
+Código d5ede13 en backend azayps2kruqyb2wmwekimyst: Success 04m28s. Frontend 1pqbbwdcsdr5gfmttx7rxoxd: Success 25s. Exclusión compartida de bajas publicada; entradas originales pendientes elegibles: cero. Dieciocho pruebas adicionales comprueban topes mensuales de tokens/USD, contabilidad, alertas y cambios de credenciales; ochenta y dos pruebas de bajas/campañas/presupuesto pasan y se solapan con las anteriores.
+
+La consulta nativa de la clave de modelos confirmó un límite propio fijado en OpenRouter. Ese límite externo no se modificó; la excepción guardada elimina los topes internos de RinovaPlus. Se excluyen importes de cuenta y credenciales de la evidencia del repositorio. Para completar la verificación real de correo por saldo bajo falta guardar la Management API key y observar una consulta válida y la entrega de una alerta real. No se provocó gasto para agotar saldo ni se recargó la cuenta.

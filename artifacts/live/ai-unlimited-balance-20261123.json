@@ -19,7 +19,8 @@
     "opt_out_human_without_reply": 1,
     "prior_provider_messages_resent": false,
     "initial_case_read": true,
-    "initial_case_ai_restored": true
+    "initial_case_ai_restored": true,
+    "remaining_eligible_missing_inputs": 0
   },
   "rate_limit": {
     "requests_per_minute": 120,
@@ -37,9 +38,29 @@
     "optout_backend": {
       "commit": "867b1f9",
       "id": "rpfntdgwusoa7ltcjveviz4z",
-      "state": "in_progress"
+      "state": "Success",
+      "duration": "04m18s"
+    },
+    "final_backend": {
+      "commit": "d5ede13",
+      "id": "azayps2kruqyb2wmwekimyst",
+      "state": "Success",
+      "duration": "04m28s"
+    },
+    "final_frontend": {
+      "commit": "d5ede13",
+      "id": "1pqbbwdcsdr5gfmttx7rxoxd",
+      "state": "Success",
+      "duration": "00m25s"
     }
   },
   "contains_credentials_or_customer_bodies": false,
-  "roadmap_acceptances_changed": false
+  "roadmap_acceptances_changed": false,
+  "external_model_key_limit_present": true,
+  "external_model_key_limit_changed": false,
+  "additional_tests": {
+    "budget_and_alerts": 18,
+    "optouts_campaigns_budget": 82,
+    "overlap": true
+  }
 }

@@ -175,3 +175,35 @@ def test_unavailable_balance_never_enqueues_mail_or_overwrites_changed_credentia
     alerts.Monitor(None, fetch).once()
     assert not calls and "remaining_usd" not in saved
     assert saved["status"] == ("checking" if changed else "unavailable")
+
+
+@pytest.mark.parametrize("unlimited", [False, True])
+@pytest.mark.parametrize("old_cap", [0, 1])
+def test_agent_monthly_tokens_keep_the_ledger_without_internal_stop(monkeypatch, unlimited, old_cap):
+    from app.modules.agents import service, runtime
+    from app.modules.ai.infrastructure.providers import AiError
+    monkeypatch.setattr(runtime, "require_execution", lambda *_: None)
+    monkeypatch.setattr(runtime, "reserve_execution", lambda *_: None)
+    config = {"monthly_token_limit": old_cap, "hard_stop": True, "fallback_model": "", "max_tokens": 200}
+    monkeypatch.setattr(service, "load", lambda *_: ({"agent": {"configuration": config}}, {}))
+    class Cursor:
+        agent_budget_unlimited = unlimited
+        def __init__(self):
+            self.writes = []
+        def execute(self, sql, *args):
+            if sql.startswith("INSERT"):
+                self.writes.append((sql, args))
+            return self
+        def fetchone(self):
+            return None
+        def fetchval(self):
+            return 100000
+    c = Cursor()
+    selected = {"configuration": config, "agent_id": "agent", "chain_ids": ["agent"]}
+    if unlimited:
+        service.AgentsService.reserve(None, c, "request", selected, [{"content": "source"}])
+        assert len(c.writes) == 1 and c.writes[0][1][-1] > 0
+    else:
+        with pytest.raises(AiError, match="agents_budget_exhausted"):
+            service.AgentsService.reserve(None, c, "request", selected, [{"content": "source"}])
+        assert not c.writes
