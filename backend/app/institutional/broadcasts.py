@@ -535,6 +535,13 @@ class Broadcasts:
 
             crm_config, _ = read_configuration(c, foundation=True)
             segments.configuration(document, crm_config.fields)
+            if body.sent_stage:
+                authorize(c, self.settings, auth, "crm.write")
+                if not any(
+                    v.active and v.label == body.sent_stage
+                    for v in crm_config.stages
+                ):
+                    raise HTTPException(409, "broadcast_sent_stage_unavailable")
             if (
                 self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
                 and c.execute(
@@ -767,6 +774,9 @@ class Broadcasts:
                     )
                     snapshot = {
                         "audience_profile": candidate["audience_profile"],
+                        "sent_stage": json.loads(campaign["Document"]).get(
+                            "sent_stage", "",
+                        ),
                         "template": candidate["template"],
                         "body": candidate["text"],
                         "target": candidate["phone"],
@@ -971,20 +981,23 @@ class Broadcasts:
             found = rows(
                 c,
                 (
-                    "SELECT TOP(501) i.IdentityId,i.Externa"
-                    "lId,i.ContactId,i.ConversationId,p.Nam"
+                    "WITH base AS (SELECT i.IdentityId,i.ExternalId,"
+                    "i.ExternalId AS Phone,i.ContactId,i.ConversationId,p.Nam"
                     "e FROM crm_channels2.ExternalIdentity "
                     "i JOIN crm.Contact p ON p.ContactId=i."
                     "ContactId WHERE i.InstitutionId=? AND "
-                    "i.IntegrationId=? ORDER BY p.Name,i.Id"
-                    "entityId"
+                    "i.IntegrationId=?) SELECT * FROM base "
+                    "WHERE (?='' OR CHARINDEX(?,Name)>0 "
+                    "OR CHARINDEX(?,Phone)>0) ORDER BY Name,IdentityId "
+                    "OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY"
                 ),
                 institution(self.settings),
                 integration,
+                search, search, search, offset,
             )
-            if len(found) > 500:
-                raise HTTPException(413, "broadcast_identity_scope_limit")
             return {
+                "has_more": len(found) > 100,
+                "offset": offset,
                 "items": [
                     {
                         "id": uid(str(v["IdentityId"])),
@@ -1003,7 +1016,7 @@ class Broadcasts:
                             else None
                         ),
                     }
-                    for v in found
+                    for v in found[:100]
                 ]
             }
 

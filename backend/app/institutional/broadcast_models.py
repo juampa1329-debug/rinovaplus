@@ -153,6 +153,7 @@ class CampaignWrite(Command):
     header_media_operation: JsonUUID | None = None
     scheduled_local: str | None = None
     timezone: str = Field(default="America/Bogota", max_length=80)
+    sent_stage: str = Field(default="", max_length=100)
 
     @model_validator(mode="after")
     def safe(self):

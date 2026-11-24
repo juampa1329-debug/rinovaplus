@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BroadcastAudience } from "./BroadcastAudience";
+import { BroadcastProspectSetup } from "./BroadcastProspectSetup";
 import type {
   AudienceFilters,
   CrmField,
@@ -78,6 +79,7 @@ type Document = {
   header_media_operation?: string | null;
   scheduled_local: string | null;
   timezone: string;
+  sent_stage?: string;
 };
 type Campaign = {
   id: string;
@@ -770,6 +772,19 @@ function CampaignEditor({
               if (e.target.value === "now") update({ scheduled_local: null });
             }}
           />
+          <SelectField
+            id="campaign-sent-stage"
+            label="Etapa tras envío confirmado"
+            value={doc.sent_stage || ""}
+            disabled={!session.actions.includes("crm.write")}
+            options={[
+              { value: "", label: "Conservar la etapa actual" },
+              ...options.stages.map(value => ({ value, label: value })),
+            ]}
+            onChange={e => update({ sent_stage: e.target.value })}
+          />
+          <p>Se aplica cuando Meta confirma enviado, entregado o leído.
+            Si un asesor cambió la etapa después de preparar, se conserva su cambio.</p>
           <div className="broadcast-binding">
             <Field
               id="bulk-schedule"
@@ -2011,9 +2026,16 @@ type Identity = {
   };
 };
 function ConsentPanel({ account }: { account: string }) {
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {
+    const timer = setTimeout(() => { setQuery(search); setOffset(0); }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
   const data = useResource<Cadence>(`broadcasts/accounts/${account}/cadence`),
-    people = useResource<{ items: Identity[] }>(
-      `broadcasts/accounts/${account}/identities`,
+    people = useResource<{ items: Identity[]; has_more?: boolean }>(
+      `broadcasts/accounts/${account}/identities${query || offset ? `?search=${encodeURIComponent(query)}&offset=${offset}` : ""}`,
     );
   return (
     <div className="broadcast-columns">
@@ -2036,11 +2058,13 @@ function ConsentPanel({ account }: { account: string }) {
           Registra la evidencia de autorización para esta cuenta. No se deduce
           del teléfono ni de una conversación anterior.
         </p>
+        <Field id="consent-recipient-search" label="Buscar destinatario por nombre o número"
+          maxLength={100} value={search} onChange={e => setSearch(e.target.value)} />
         {!people.value ? (
           <ResourceState error={people.error} />
         ) : people.value.items.length === 0 ? (
           <Notice>
-            No hay identidades WhatsApp recibidas para esta cuenta.
+            No hay destinatarios que coincidan con esta búsqueda en la cuenta.
           </Notice>
         ) : (
           <ConsentEditor
@@ -2052,7 +2076,15 @@ function ConsentPanel({ account }: { account: string }) {
             reload={people.reload}
           />
         )}
+        <div className="actions">
+          <Button variant="secondary" disabled={!offset}
+            onClick={() => setOffset(Math.max(0, offset - 100))}>Destinatarios anteriores</Button>
+          <span>Página {Math.floor(offset / 100) + 1}</span>
+          <Button variant="secondary" disabled={!people.value?.has_more}
+            onClick={() => setOffset(offset + 100)}>Más destinatarios</Button>
+        </div>
       </section>
+      <BroadcastProspectSetup account={account} changed={people.reload} />
     </div>
   );
 }
