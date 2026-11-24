@@ -119,11 +119,59 @@ def test_missing_key_and_durable_cadence_make_no_network_calls(monkeypatch):
     assert saved["claim"] == first_claim
 
 
-def test_agent_monthly_guards_use_only_server_scoped_opt_in():
-    from pathlib import Path
-    root = Path(__file__).resolve().parents[1] / "app"
-    # Existing generic module tests keep their normal hard stops; only the
-    # institutional transaction injects the policy from authenticated settings.
-    assert 'c.agent_budget_unlimited = setting(c, self.profile, "budgets")' in (root / "institutional/agents.py").read_text(encoding="utf-8")
-    for file in ["modules/agents/service.py", "modules/agents/runtime.py"]:
-        assert 'getattr(cursor, "agent_budget_unlimited", False)' in (root / file).read_text(encoding="utf-8")
+@pytest.mark.parametrize("unlimited", [False, True])
+def test_agent_monthly_usd_stop_is_overridden_only_by_server_policy(monkeypatch, unlimited):
+    from app.modules.agents import runtime
+    from app.modules.ai.infrastructure.providers import AiError
+    config = {"provider": "openrouter", "primary_model": "fixture", "fallback_model": "", "monthly_usd_limit": 1, "hard_stop": True, "input_usd_per_million": 1, "output_usd_per_million": 1, "route": "default", "ab_variant": "A"}
+    monkeypatch.setattr(runtime, "require_execution", lambda *_: None)
+    monkeypatch.setattr(runtime.Configuration, "model_validate_json", lambda *_: SimpleNamespace(model_dump=lambda **_: config))
+    class Cursor:
+        agent_budget_unlimited = unlimited
+        writes = []
+        def execute(self, sql, *args):
+            self.sql = sql
+            if sql.startswith("INSERT"):
+                self.writes.append(sql)
+            return self
+        def fetchone(self):
+            return ["{}"] if self.sql.startswith("SELECT Document") else [100, 0]
+    cursor = Cursor()
+    selection = {"configuration": config, "chain_ids": ["fixture"], "agent_id": "fixture", "version": 1, "binding": "fixture"}
+    if unlimited:
+        runtime.reserve_execution(cursor, "request", selection, 1000)
+        assert len(cursor.writes) == 1
+    else:
+        with pytest.raises(AiError, match="agents_budget_exhausted"):
+            runtime.reserve_execution(cursor, "request", selection, 1000)
+        assert not cursor.writes
+
+
+@pytest.mark.parametrize("changed", [False, True])
+def test_unavailable_balance_never_enqueues_mail_or_overwrites_changed_credentials(monkeypatch, changed):
+    from app.modules.ai.infrastructure.providers import AiError
+    saved, calls = {}, []
+    policy = {"openrouter_balance_alert_enabled": True}
+    row = {"SecretId": "fef8c4b2-810e-4855-8721-bff85619a2c5", "VersionNo": 1, "Nonce": b"", "Ciphertext": b""}
+    @contextmanager
+    def tx(*_, **kw):
+        yield None
+    monkeypatch.setattr(alerts, "transaction", tx)
+    monkeypatch.setattr(alerts.mail, "enabled", lambda *_: True)
+    monkeypatch.setattr(alerts, "setting", lambda *_: {"document": policy})
+    monkeypatch.setattr(alerts, "state", lambda *_: dict(saved))
+    monkeypatch.setattr(alerts, "save", lambda c, s, v: saved.update(v))
+    monkeypatch.setattr(alerts, "secret_row", lambda *_: dict(row))
+    monkeypatch.setattr(alerts, "institution", lambda *_: "fixture")
+    monkeypatch.setattr(alerts, "key", lambda *_: b"")
+    monkeypatch.setattr(alerts, "unseal", lambda *_: "fixture-secret")
+    monkeypatch.setattr(alerts.mail, "enqueue", lambda *a, **k: calls.append(a))
+    async def fetch(token):
+        assert token == "fixture-secret"
+        if changed:
+            row["VersionNo"] = 2
+            return 1
+        raise AiError("provider_response_timeout", 504)
+    alerts.Monitor(None, fetch).once()
+    assert not calls and "remaining_usd" not in saved
+    assert saved["status"] == ("checking" if changed else "unavailable")

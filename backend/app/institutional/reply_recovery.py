@@ -8,6 +8,7 @@ from app.institutional.auth import authorize
 from app.institutional.models import Strict
 from app.institutional.store import transaction
 from app.modules.agents.domain import JsonUUID
+from app.institutional.contact_intent import opted_out
 
 
 class Input(Strict):
@@ -22,7 +23,7 @@ class Recover(Strict):
 
 
 def missing(c, s, conversation=None):
-    return db.rows(
+    candidates = db.rows(
         c,
         "SELECT TOP(50) m.MessageId,m.ConversationId,m.Body,m.Sequence,m.CreatedAt,"
         "r.IntegrationId,r.IdentityId,ctrl.Epoch,p.Name,a.Channel,a.DisplayName "
@@ -43,6 +44,7 @@ def missing(c, s, conversation=None):
         db.institution(s),
         *((db.uid(conversation),) if conversation else ()),
     )
+    return [row for row in candidates if not opted_out(row["Body"])]
 
 
 def proof(s, row):

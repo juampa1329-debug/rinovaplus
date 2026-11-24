@@ -196,6 +196,9 @@ def source(c, settings, integration, data):
     )
     if not context or context["Epoch"] != data.get("epoch", 0):
         raise HTTPException(409, "gemini_whatsapp_control_or_history_changed")
+    from app.institutional.contact_intent import opted_out
+    if opted_out(context["Body"]):
+        raise HTTPException(409, "contact_opted_out")
     return item, context, budget
 
 

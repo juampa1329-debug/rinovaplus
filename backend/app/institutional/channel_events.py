@@ -40,15 +40,17 @@ def replyable_message(channel, provider):
     This only queues Gemini input. ElevenLabs output still obeys its own pilot,
     conversation quota and human-control guards.
     """
+    from app.institutional.contact_intent import opted_out
     if channel == "whatsapp":
         if provider.get("type") == "text":
-            return True
+            return not opted_out((provider.get("text") or {}).get("body", ""))
         if provider.get("type") in {"button", "interactive"}:
-            return bool(whatsapp_reply_text(provider))
+            text = whatsapp_reply_text(provider)
+            return bool(text) and not opted_out(text)
         audio = provider.get("audio")
         return provider.get("type") == "audio" and isinstance(audio, dict) and valid_external(audio.get("id"))
     text = (provider.get("message") or {}).get("text")
-    return channel in {"messenger", "instagram"} and isinstance(text, str) and bool(text.strip())
+    return channel in {"messenger", "instagram"} and isinstance(text, str) and bool(text.strip()) and not opted_out(text)
 
 
 def whatsapp_reply_text(message):

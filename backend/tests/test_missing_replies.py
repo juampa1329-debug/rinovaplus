@@ -48,6 +48,7 @@ from app.institutional.postgres_dialect import postgres_sql
             "Plan financiado",
         ),
         ({"type": "button", "button": {"payload": "not visible text"}}, None),
+        ({"type": "button", "button": {"text": "No recibir mensajes"}}, None),
         (
             {
                 "type": "interactive",
@@ -111,6 +112,16 @@ def test_recovery_preview_query_requires_latest_ai_input_without_any_existing_at
 
     monkeypatch.setattr(reply_recovery.db, "rows", rows)
     assert reply_recovery.missing(None, profile, conversation) == []
+
+
+def test_recovery_excludes_explicit_contact_opt_outs(monkeypatch):
+    from app.institutional.contact_intent import opted_out
+    profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    monkeypatch.setattr(reply_recovery.db, "rows", lambda *_: [{"Body": "No recibir mensajes"}, {"Body": "Ver plan de pagos"}])
+    assert reply_recovery.missing(None, profile) == [{"Body": "Ver plan de pagos"}]
+    assert opted_out("  NO RECIBIR MENSAJES. ")
+    assert not opted_out("No sé cómo financiar el programa")
+    assert not replyable_message("messenger", {"message": {"text": "No me contacten"}})
 
 
 @pytest.mark.parametrize("stale", [False, True])

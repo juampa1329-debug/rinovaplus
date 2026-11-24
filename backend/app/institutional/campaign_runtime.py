@@ -1,8 +1,9 @@
 """Bounded persistent journey transitions; C10 remains the only dispatcher."""
 
 import json
-import base64, hmac
-import unicodedata
+import base64
+import hmac
+from app.institutional.contact_intent import opted_out
 from datetime import timedelta
 from uuid import uuid4, uuid5, NAMESPACE_URL
 from fastapi import HTTPException
@@ -587,22 +588,7 @@ def observe_identity(
             },
             source=key("signal", identity, revision, kind),
         )
-    text = (
-        unicodedata.normalize(
-            "NFKC", incoming_text if incoming_text is not None else p["IncomingText"]
-        )
-        .casefold()
-        .strip(" .!?,;:")
-    )
-    if incoming and (
-        text in {
-            "stop", "baja", "unsubscribe", "cancelar suscripción", "darme de baja",
-            "no recibir mensajes",
-        }
-        or any(
-            v in text for v in ["no me contacten", "no quiero mensajes", "no contactar"]
-        )
-    ):
+    if incoming and opted_out(incoming_text if incoming_text is not None else p["IncomingText"]):
         event(
             c,
             s,
