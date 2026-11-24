@@ -1,0 +1,43 @@
+.readable-record-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+.readable-record {
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+.readable-record-fields {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+.readable-record-fields > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+  gap: 0.5rem;
+  padding-block: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.readable-record-fields dt {
+  color: var(--muted);
+  font-weight: 500;
+}
+.readable-record-fields dd {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.readable-record details {
+  margin-top: 0.75rem;
+}
+.readable-record summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+}
+@media (max-width: 600px) {
+  .readable-record-fields > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}

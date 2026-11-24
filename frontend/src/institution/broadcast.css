@@ -2,6 +2,81 @@
   display: grid;
   gap: 1rem;
 }
+.broadcast-recipient-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  inline-size: min(52rem, calc(100% - 2rem));
+  max-block-size: min(48rem, calc(100dvh - 2rem));
+  overflow: hidden;
+}
+.broadcast-recipient-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-wrap: anywhere;
+}
+.broadcast-recipient-header h2,
+.broadcast-recipient-header p {
+  grid-column: 1;
+  margin: 0;
+}
+.broadcast-recipient-header .button {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  align-self: start;
+}
+.broadcast-recipient-content {
+  padding: 1.25rem;
+  overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+.broadcast-recipient-content h3 {
+  margin-top: 0;
+}
+.broadcast-recipient-content .broadcast-phone-message {
+  padding: 1rem;
+  background: var(--active);
+  border-radius: 0.65rem;
+}
+.broadcast-recipient-events {
+  margin-top: 1rem;
+}
+.broadcast-recipient-events summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  font-weight: 650;
+}
+.broadcast-recipient-events dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+.broadcast-recipient-events dd {
+  margin: 0.3rem 0 0;
+}
+.broadcast-recipient-events dt,
+.broadcast-recipient-content > p {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.broadcast-contact-import input {
+  max-width: 100%;
+}
+@media (max-width: 600px) {
+  .broadcast-recipient-header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .broadcast-recipient-header .button {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
 .broadcast-filter-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -16,6 +16,7 @@ import { CrmConfiguration } from "../modules/crm-configuration/pages/CrmConfigur
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import { ApiError, operationFailure, useInstitution } from "./api";
 import { foregroundPolling } from "./readCoordinator";
+import { ReadableRecord } from "./ReadableRecord";
 import { MediaDownload, MediaUpload } from "./ChannelMedia";
 import type { Attachment } from "./ChannelMedia";
 import { useWorkspaceState } from "../shared/workspaceSession";
@@ -2129,7 +2130,7 @@ function Notes({ detail, changed }: { detail: Detail; changed: () => void }) {
       <ul>
         {(notes.value?.items ?? detail.notes).map((note) => (
           <li key={note.id}>
-            <p>{note.body}</p>
+            <ReadableRecord text={note.body} />
             <small>
               {note.author} · <DateText value={note.createdAt} />
             </small>

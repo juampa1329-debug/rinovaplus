@@ -1,0 +1,11 @@
+# Resto de campañas por programa — 24/11/2026
+
+El titular autoriza lanzar los demás programas y conservar dudosos en borrador o programados, y pide reemplazar el JSON y la extensión excesiva del modal por información legible. Se conservan las campañas completadas de Logística/Aduanas, las bajas y la evidencia de autorización declarada por el titular, sin atribuir una inspección independiente de políticas.
+
+Preflight nativo tras sincronizar Meta: 18 campañas comerciales pendientes, 17 con coincidencias y PRE-ICFES sin destinatarios. La suma bruta de coincidencias no representa personas únicas. Cruce local con recibos reales de importación: 709 candidatos exclusivos, excluidos 43 ya contactados, una vinculación conflictiva y 19 contactos adicionales con varias campañas posibles. Se conservan los 193 registros fuente pendientes. Total para revisión: 213 registros separados; 206 corresponden a los programas pendientes y siete a otros casos fuente de Logística/Aduanas. No se fusionan identidades ni se elige un programa por intuición.
+
+La selección revisada permite cargar hasta 5.000 IDs únicos en un archivo limitado a 1 MB, ver su cantidad y aplicar explícitamente. No importa personas ni concede autorización: el backend revalida cuenta, identidad, filtros, consentimiento, control Humano, exclusiones y demás guardas. Así se fija la cohorte por campaña sin ampliar filtros de programa ni incluir nuevos contactos por accidente. La suma y exclusividad se verifican localmente; elegibilidad final aún sujeta a la vista previa nativa.
+
+Detalle del envío: encabezado y cierre siempre accesibles, cuerpo con desplazamiento propio, fechas reales agrupadas en acordeón y hora de Bogotá. Texto normal conservado; JSON estructurado se muestra en campos. Las notas históricas de preinscripción también presentan campos del formulario y origen en lugar del bloque JSON, sin modificar lo almacenado. No se infieren lecturas ni se reescriben eventos.
+
+32 pruebas frontend seleccionadas, TypeScript, ESLint de archivos cambiados y workspace build pasan; se conserva advertencia histórica de bundle. Publicación, selección real, borradores de revisión, activación y primeros recibos pendientes en este corte. Sin DDL, seeds, servicios nuevos, cambios de modelos o escrituras SIIE.

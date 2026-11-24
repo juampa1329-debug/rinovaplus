@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BroadcastAudience } from "./BroadcastAudience";
 import { BroadcastProspectSetup } from "./BroadcastProspectSetup";
+import { ReadableRecord } from "./ReadableRecord";
 import {
   BroadcastCampaignList,
   campaignStateLabels,
@@ -1340,7 +1341,7 @@ function RecipientDeliveryDialog({
         close();
       }}
     >
-      <div className="operation-error-content">
+      <div className="broadcast-recipient-header">
         <h2>Detalle del envío</h2>
         <p>
           {item.name} · {item.phone}
@@ -1348,29 +1349,43 @@ function RecipientDeliveryDialog({
         <p>
           Estado: {label(item.status)} · Intentos: {item.attempts}
         </p>
-        <div
-          className="broadcast-phone-message"
-          style={{ whiteSpace: "pre-wrap", padding: "1rem" }}
-        >
-          {item.body}
+        <Button variant="quiet" onClick={close}>
+          Cerrar detalle del envío
+        </Button>
+      </div>
+      <div className="broadcast-recipient-content">
+        <h3>Mensaje de la campaña</h3>
+        <div className="broadcast-phone-message">
+          <ReadableRecord text={item.body || ""} />
         </div>
-        <dl>
-          {dates.map(([key, title]) => (
-            <div key={key}>
-              <dt>{title}</dt>
-              <dd>
-                {item[key]
-                  ? new Date(item[key]!).toLocaleString("es-CO")
-                  : "Sin evento recibido"}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <details className="broadcast-recipient-events">
+          <summary>
+            Entrega y actividad · {dates.filter(([key]) => item[key]).length}{" "}
+            eventos registrados
+          </summary>
+          <dl>
+            {dates
+              .filter(([key]) => item[key])
+              .map(([key, title]) => (
+                <div key={key}>
+                  <dt>{title}</dt>
+                  <dd>
+                    {new Date(item[key]!).toLocaleString("es-CO", {
+                      timeZone: "America/Bogota",
+                    })}
+                  </dd>
+                </div>
+              ))}
+          </dl>
+          <p>
+            Horas de Bogotá. Sólo se muestran eventos recibidos; no se infiere
+            una lectura.
+          </p>
+        </details>
         <p>
           Este panel consulta la campaña. No envía mensajes ni abre una
           conversación en Inbox.
         </p>
-        <Button onClick={close}>Cerrar detalle del envío</Button>
       </div>
     </dialog>
   );
