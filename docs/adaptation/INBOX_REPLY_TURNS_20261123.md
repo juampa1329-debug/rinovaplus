@@ -19,7 +19,7 @@ No se promete deduplicación semántica perfecta: se dan instrucciones con evide
 
 ## Validación local y publicación
 
-285 pruebas backend aprobadas y 2 omitidas de la selección; 61 frontend aprobadas antes del último ajuste de texto del preset. Incluyen espera 0/60/120/3600, ámbito del turno, orden, reinicio, lote excesivo, silencio acotado, esquema estricto de OpenRouter, citas sólo en primera parte, invalidación antes de confirmar tras una generación, voz pendiente y guardas de control. Ruff E4/E7/E9/F aprobado; tipos y ESLint sin errores, con advertencia previa sobre dependencia `dirty`; compilación institucional aprobada con advertencia histórica de bundle. La comprobación final y el despliegue se registrarán al observar sus resultados.
+285 pruebas backend aprobadas y 2 omitidas de la selección; 61 frontend aprobadas en la comprobación final del preset e Inbox. Incluyen espera 0/60/120/3600, ámbito del turno, orden, reinicio, lote excesivo, silencio acotado, esquema estricto de OpenRouter, citas sólo en primera parte, invalidación antes de confirmar tras una generación, voz pendiente y guardas de control. Ruff E4/E7/E9/F aprobado; tipos y ESLint sin errores, con advertencia previa sobre dependencia `dirty`; compilación institucional aprobada con advertencia histórica de bundle. Tras integrar los cambios concurrentes de campañas, 189 comprobaciones backend adicionales (con solapamiento respecto de la selección anterior) y 23 frontend de campañas pasan; tipos y compilación institucional siguen aprobados. El despliegue y la revisión nativa se registrarán al observar sus resultados.
 
 No DDL, seeds, servicios nuevos ni escrituras SIIE. No se reenvían conversaciones históricas ni se alteran recibos. Las aceptaciones iniciales P4/P13/P21 se conservan. P22 mantiene 3/5 hitos técnicos y 0/5 aceptaciones comerciales.
 
@@ -27,3 +27,11 @@ No DDL, seeds, servicios nuevos ni escrituras SIIE. No se reenvían conversacion
 
 - [Meta Page Messages: reply_to.mid](https://developers.facebook.com/docs/graph-api/reference/page/messages)
 - [Instagram Messaging: soporte de respuestas citadas con Facebook Login](https://developers.facebook.com/documentation/business-messaging/instagram-messaging/changelog/)
+
+## Inbox: espera de 60 segundos y citas publicadas — 2026-11-23
+
+08d0a5f publicado: backend ulhl5wq7sdkikpk88ukn6zvs Success/Running, 7m58s incluyendo cola; frontend yc51lriilo13vnacqg29kvge Success/Running26s. Configuración IA33 comprobada tras recarga: espera3→60segundos, primera cita activa para WhatsApp/Messenger/Instagram con Facebook Login; Sonnet4.6/5.5 y voces conservados. El manifiesto mantiene consultas pendientes y sólo trata como habladas las partes aceptadas por el canal; ante nueva entrada replantea después de la espera. Silencio restringido a agradecimientos acotados, sin omitir preguntas ni cambiar Humano.
+
+El primer rollout76b1f49 no pasó salud por fallo de la cola de salida también observado en la revisión anterior. Se integró428852b: reutilización de reserva liberada sólo ante espera conocida previa al proveedor. La cola volvió a Al día y el rollout pasó, sin relanzar efectos inciertos. Diagnóstico de cola añade sólo clase/SQLSTATE/campo conocido, sin mensajes de excepción o credenciales. Se corrigió la cita para kind=chat utilizado por la cola, con pruebas positivas y negativas.
+
+285backend/2omitidas y61frontend pasan, más selecciones solapadas de integración de campañas/cuotas y citas; tipos/Ruff sin errores, ESLint con advertencia previa dirty y build con bundle histórico. No nuevas inferencias de prueba ni mensajes manuales a clientes. Se solicitó piloto de dos DM seguidos en Instagram para observar espera, ambas preguntas y primera cita: aún pendiente en este corte. Evidencia artifacts/live/inbox-reply-turns-20261123.json y manual docs/adaptation/INBOX_REPLY_TURNS_20261123.md. P4/P13/P21 iniciales y P22 3/5técnico/0aceptación se conservan. SinDDL/seeds/serviciosnuevos/escriturasSIIE.
