@@ -47,3 +47,13 @@ Se observó una restauración de control transitoria durante una acción rechaza
 dbbf867 backend Success4m18; activador y flujo Activo v2 tras reautenticación. Operación17:35:46Bogotá muestra los nueve procesos Al día; doce ejecuciones del nuevo flujo observadas después y un primer paso Completado, sin acreditar lectura por ese estado. Se conservan bajas, consentimiento, ventana, Humano y cadencia compartida con la cola.
 
 En los historiales recuperados se identificó una falsa coincidencia: el nombre institucional CBN del texto saliente podía puntuar el programa PRE-ICFES CBN aunque el interés fuera una masterclass genérica. Se excluyen las palabras de la identidad institucional del emparejamiento léxico; PRE-ICFES explícito y Cocina explícita siguen identificándose. No se cambian contextos académicos ni asignaciones manuales. Se concreta la presentación breve del botón como Juan Pablo, de CBN, manteniendo transparencia si preguntan por la naturaleza del agente o piden atención humana.84pruebas focalizadas yRuff pasan; publicación de esta última corrección pendiente en este corte.
+
+## Alcance comprobado de la recuperación
+
+Se revisaron los24hilos incluidos en la recuperación explícita:22tienen respuestas posteriores al botón con recibos de entrega/lectura; dos no tienen salida posterior. No se presenta el lote de23puesto en preparación como23entregas. Las preguntas nuevas de otros dos hilos tienen borradores descartados sin respuesta posterior acreditada. El cambio temporal aHumano necesario para atención manual quedó pendiente de confirmación explícita tras rechazo de la revisión automática; el modo originalIA fue restaurado en el único cambio transitorio observado. No se enviaron mensajes manuales aprovechando esa transición ni se reprodujeron operaciones inciertas.
+
+La sesión del navegador venció y se renovó con las credenciales existentes autocompletadas, sin extraerlas. La inspección rápida alcanzóHTTP120: se conservaron sus límites, se redujeron pestañas y no se confundió con saldo o tokens. No hay prueba de entrega de todos los mensajes nuevos ni de finalización del recorrido de21días. El registro de la fase y la operación guardan esas limitaciones.
+
+## Publicación final comprobada
+
+f9eda59: backend9glie98alsflvcgtnakgeh40 Success4m23; frontendwi9nckrdfxhbsswfismb8e4y Success26s. Operación17:45:08Bogotá: los nueve procesos Al día. Se conserva la evidencia de fallos/esperas anteriores; no se declara resuelta toda incidencia histórica. P23 planificada0/7, P22técnico3/5 y0/5aceptación; aceptaciones anteriores conservadas. El nuevo flujo sigueActivo v2 y el activadorActivo v2. La atención manual de cuatro consultas continúa pendiente de la confirmación solicitada, no de saldo de IA.
