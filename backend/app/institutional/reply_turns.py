@@ -53,7 +53,7 @@ def require_settled(c, settings, data, source):
         raise HTTPException(409, "reply_turn_delivery_uncertain" if state["State"] == "uncertain" else "reply_turn_waiting_previous")
     running = db.one(c,
         "SELECT TOP(1) op.OperationId FROM crm_channels2.ProviderOperation op "
-        "JOIN crm.Message m ON m.MessageId=op.OperationId "
+        "JOIN crm.Message m ON m.MessageId=COALESCE(TRY_CONVERT(uniqueidentifier,JSON_VALUE(op.ResultMetadata,'$.incoming')),op.OperationId) "
         "WHERE op.InstitutionId=? AND op.IntegrationId=? AND op.Action=? "
         "AND op.Status='running' AND op.LeaseUntil>SYSUTCDATETIME() "
         "AND m.ConversationId=? AND m.Sequence<? ORDER BY m.Sequence",
@@ -101,7 +101,7 @@ def snapshot(c, settings, data, source):
     integration, conversation = data["integration"], data["conversation"]
     complete = db.one(c,
         "SELECT MAX(m.Sequence) AS Sequence FROM crm.Message m "
-        "JOIN crm_channels2.ProviderOperation op ON op.OperationId=m.MessageId "
+        "JOIN crm_channels2.ProviderOperation op ON COALESCE(TRY_CONVERT(uniqueidentifier,JSON_VALUE(op.ResultMetadata,'$.incoming')),op.OperationId)=m.MessageId "
         "AND op.InstitutionId=? AND op.IntegrationId=? AND op.Action=? AND op.Status='confirmed' "
         "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=op.InstitutionId "
         "AND r.IntegrationId=op.IntegrationId AND r.IdentityId=? AND r.ActorKind='external' "

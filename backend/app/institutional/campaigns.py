@@ -221,6 +221,12 @@ def marketing_allowed(c, s, p):
     return not last or g["CreatedAt"] > last["CreatedAt"]
 
 
+def customer_window(doc, p):
+    return bool(doc.get("followup_only") and doc.get("contact_basis") == "customer_request"
+                and p.get("IncomingCount", 0) > 0 and p.get("LastIncomingAt")
+                and now() - timedelta(hours=24) < p["LastIncomingAt"] <= now())
+
+
 def reasons(c, s, doc, p):
     found = []
     if not same(p["IntegrationId"], doc["integration_id"]):
@@ -231,7 +237,7 @@ def reasons(c, s, doc, p):
         found.append("conversation_closed")
     if doc.get("followup_only") and not (p.get("IncomingCount") and p.get("LastIncomingAt")):
         found.append("genuine_incoming_required")
-    if not marketing_allowed(c, s, p):
+    if not marketing_allowed(c, s, p) and not customer_window(doc, p):
         found.append("marketing_consent_required")
     try:
         if any(not matches(p, f) for f in filters_for(c, s, doc)):

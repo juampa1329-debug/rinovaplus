@@ -8,7 +8,8 @@ from app.institutional import campaign_runtime as runtime
 
 @pytest.mark.parametrize("text,declined", [
     ("No recibir mensajes", True), ("NO RECIBIR MENSAJES!", True),
-    ("stop", True), ("Ver plan de pagos", False), ("Conocer el programa", False),
+    ("stop", True), ("Prefiero dejar el seguimiento en pausa", True), ("Pausa", True),
+    ("No quiero pausar el seguimiento", False), ("Ver plan de pagos", False), ("Conocer el programa", False),
 ])
 def test_authenticated_template_reply_records_scoped_opt_out(
     monkeypatch, text, declined,

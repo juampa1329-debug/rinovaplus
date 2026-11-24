@@ -153,3 +153,27 @@ def test_future_signed_receipt_and_same_database_restore_are_rejected():
 def test_principal_cannot_target_academic_previous_or_arbitrary_database(database):
     with pytest.raises(ValueError):
         principal(database)
+
+
+def test_worker_diagnostic_keeps_only_sqlstate_through_a_sanitized_storage_error():
+    from fastapi import HTTPException
+    from app.institutional.operations import safe_failure
+    class DatabaseFault(Exception):
+        pgcode = "57014"
+    try:
+        try:
+            raise DatabaseFault("private statement, secret and contact")
+        except DatabaseFault:
+            raise HTTPException(503, "general_storage_unavailable") from None
+    except HTTPException as error:
+        assert safe_failure(error) == {"type":"DatabaseFault", "sqlstate":"57014"}
+    p = Pulse()
+    def fail():
+        raise DatabaseFault("never expose this")
+    with pytest.raises(DatabaseFault):
+        p.observe("campaigns", fail)
+    status = p.snapshot(True)
+    assert "never expose" not in str(status)
+    assert next(v for v in status["stages"] if v["stage"] == "campaigns")["last_error"]["sqlstate"] == "57014"
+    p.observe("campaigns", lambda: None)
+    assert "last_error" not in next(v for v in p.snapshot(True)["stages"] if v["stage"] == "campaigns")

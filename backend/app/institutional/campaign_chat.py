@@ -232,6 +232,11 @@ def prepare(c, s, flow, doc, run, step, p, *, retry=False, next_part=False):
         raise HTTPException(409, "campaign_retry_limit")
     part = rendered[index]
     text = part["text"]
+    from app.institutional.broadcasts import consent
+    from app.institutional.campaigns import customer_window
+    grant = consent(c, s, str(p["IdentityId"]))
+    if not grant and not customer_window(doc, p):
+        raise HTTPException(409, "marketing_consent_required")
     message = str(uuid4())
     c.execute(
         "INSERT crm.Message(MessageId,ConversationId,Body,Direction) VALUES(?,?,?,'outgoing')",
@@ -253,9 +258,8 @@ def prepare(c, s, flow, doc, run, step, p, *, retry=False, next_part=False):
         controlEpoch=p["ControlEpoch"],
         cadenceRevision=cadence["Revision"],
         accountVersion=bytes(item["RowVersion"]).hex(),
-        consentVersion=__import__(
-            "app.institutional.broadcasts", fromlist=["consent"]
-        ).consent(c, s, str(p["IdentityId"]))["VersionNo"],
+        consentVersion=grant["VersionNo"] if grant else None,
+        contactBasis=doc.get("contact_basis", "marketing"),
     )
     payload["partIndex"] = index
     if part["kind"] != "text":
@@ -382,6 +386,7 @@ def ready(c, s, job):
     if index >= len(rendered) or payload.get("partIndex") != index:
         raise HTTPException(409, "campaign_part_changed")
     part = rendered[index]
+    grant = consent(c, s, str(p["IdentityId"]))
     if (
         payload.get("origin") != "campaign"
         or payload.get("flowId") != uid(str(flow["RecordId"]))
@@ -392,7 +397,8 @@ def ready(c, s, job):
         or uid(str(job["IntegrationId"])) != doc["integration_id"]
         or payload.get("accountVersion") != bytes(item["RowVersion"]).hex()
         or payload.get("consentVersion")
-        != consent(c, s, str(p["IdentityId"]))["VersionNo"]
+        != (grant["VersionNo"] if grant else None)
+        or payload.get("contactBasis", "marketing") != doc.get("contact_basis", "marketing")
         or payload.get("body") != part["text"]
     ):
         raise HTTPException(409, "campaign_chat_changed")

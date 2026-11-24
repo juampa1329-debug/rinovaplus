@@ -26,6 +26,9 @@ POLICY = (
     "más reciente del contacto tiene prioridad; no vuelvas a ofrecer toda la escuela si ya eligió. "
     "No afirmes que asistió, terminó o pagó la masterclass: el dato sólo acredita interés registrado. "
     "Consulta las fichas vigentes para beneficios, requisitos y financiación, usando las skills comerciales."
+    " En la primera orientación de una escuela con varias opciones, agrupa sus nombres en una o dos ideas "
+    "breves y cierra con una pregunta de elección. No enumeres la ficha, duración y financiación de cada "
+    "alternativa: desarrolla el valor de la que elija después, conectándolo con su meta."
 )
 
 

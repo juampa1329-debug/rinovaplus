@@ -22,3 +22,14 @@ Recuperación administrativa explícita de handoffs vacíos: sólo últimas 24 h
 ## Verificación
 
 244 pruebas backend seleccionadas pasan, más 27 de resiliencia con el contrato nuevo (selecciones solapadas, no sumar). Cinco frontend, tipos, ESLint, Ruff y compilación institucional pasan; aviso histórico de tamaño de bundle conservado. Sin DDL, seeds, servicios nuevos ni escrituras SIIE. No hay nuevos mensajes ni flujos activos acreditados todavía. P23 queda planificada 0/7; aceptaciones anteriores y P22 no cambian.
+
+
+## Corte operativo posterior
+
+- Masterclasses: 139 contactos actualizados inicialmente y 78 después de revisar Pasta Artesanal/Sabores de Latinoamérica; total217. Reconsulta: cero planes listos/cero por revisar. Una ficha dejó de ser candidata durante el intervalo y se respetó su elección posterior.
+- Se guardaron cuatro plantillas CRM; la primera está activa. Meta aceptó y aprobó `cbn_crm_seguimiento_duda_v1`, `cbn_crm_seguimiento_pausa_v1` y `cbn_crm_reactivacion_formacion_v1`, con primer nombre y botones de atención/baja. No se enviaron estas plantillas a personas en este corte.
+- Primer handoff recuperado: generación confirmada y partes leídas, orientación a Escuela de Salud. Lote posterior23 puesto en preparación tras revisión/reautenticación. No acreditar23entregas por el mero encolado. Una entrada nueva siempre invalida el turno antiguo.
+- Se habilitaron flujo y activador de8horas. La consulta de inactividad provocó degradación del proceso y contención de otras colas; la regla nueva se pausó y la siguiente consulta mostró todos los procesos al día. No se atribuye un SQLSTATE sin evidencia. Se sustituye el agregado correlacionado por unión a recibos autenticados y agrupación; sólo se toma la última salida, sin adelantarse a colas pendientes o inciertas. Diagnóstico de procesos guarda sólo clase/SQLSTATE, nunca cuerpos/SQL/credenciales.
+- Base de seguimiento explícita: marketing sigue siendo el valor histórico predeterminado. `customer_request` sólo con `followup_only`, entrada real y últimas24horas, modoIA, sinNoContact y conguardas. Permite la plantillaCRM de atención solicitada sin exigir un consentimiento de campaña masiva. Fuera de esa ventana siguen consentimiento y plantillaMeta; no se crean autorizaciones ni se extiende su vigencia. Envíos conservan límite/cadencia, vínculo de cuenta y versión de consentimiento si existe.
+- Continuidad de recuperación: las operaciones nuevas se vinculan a su entrada original para el manifiesto de preguntas atendidas; no se borra ni sustituye la derivación anterior. Se reconoce también la solicitud explícita de pausa, sin confundir «no quiero pausar» con una baja.
+-125pruebas backend del ajuste pasan, incluyendo consentimiento/ventana/Humano/baja, preparación CRM sin permiso de marketing y diagnóstico privado. Selección solapada con las244previas. Publicación del ajuste optimizado y secuencia completa aún pendientes en este corte.

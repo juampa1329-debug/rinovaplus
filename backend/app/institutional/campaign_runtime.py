@@ -837,14 +837,25 @@ class Worker:
                 continue
             job = one(
                 c,
-                "SELECT TOP(1) q.QueueId,q.IdentityId,clock.ObservedAt FROM crm_channels2.SendJob q JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=q.InstitutionId AND i.IdentityId=q.IdentityId CROSS APPLY(SELECT MIN(e.CreatedAt) AS ObservedAt FROM crm_channels2.WebhookEvent e WHERE e.InstitutionId=q.InstitutionId AND e.IntegrationId=q.IntegrationId AND e.Kind='status' AND e.Status='processed' AND JSON_VALUE(e.Payload,'$.text') IN('sent','delivered','read') AND JSON_VALUE(e.Payload,'$.external') COLLATE Latin1_General_100_BIN2=q.ExternalId) clock WHERE q.InstitutionId=? AND q.IntegrationId=? AND q.State IN('sent','delivered','read') "
+                "SELECT TOP(1) q.QueueId,q.IdentityId,MIN(receipt.CreatedAt) AS ObservedAt "
+                "FROM crm_channels2.SendJob q JOIN crm_channels2.ExternalIdentity i "
+                "ON i.InstitutionId=q.InstitutionId AND i.IdentityId=q.IdentityId "
+                "JOIN crm_channels2.WebhookEvent receipt ON receipt.InstitutionId=q.InstitutionId "
+                "AND receipt.IntegrationId=q.IntegrationId AND receipt.ProviderEventId COLLATE Latin1_General_100_BIN2=q.ExternalId "
+                "AND receipt.Kind='status' AND receipt.Status='processed' AND JSON_VALUE(receipt.Payload,'$.text') IN('sent','delivered','read') "
+                "WHERE q.InstitutionId=? AND q.IntegrationId=? AND q.State IN('sent','delivered','read') "
                 + ("AND i.LastIncomingAt IS NOT NULL AND EXISTS(SELECT 1 FROM crm_channels2.MessageRoute inbound JOIN crm.Message received ON received.MessageId=inbound.MessageId WHERE inbound.InstitutionId=q.InstitutionId AND inbound.IntegrationId=q.IntegrationId AND inbound.IdentityId=q.IdentityId AND inbound.ActorKind='external' AND received.Direction='incoming' AND received.CreatedAt<=q.CreatedAt) " if flowdoc.get("followup_only") else "")
-                + "AND clock.ObservedAt<=DATEADD(minute,?,SYSUTCDATETIME()) AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=clock.ObservedAt) AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event link WHERE link.InstitutionId=q.InstitutionId AND link.Kind='native_chat' AND JSON_VALUE(link.Document,'$.queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Attempt a JOIN crm_broadcast7.Recipient r ON r.InstitutionId=a.InstitutionId AND r.RecipientId=a.RecipientId JOIN crm_campaign8.Step step ON step.InstitutionId=r.InstitutionId AND step.NativeCampaignId=r.CampaignId WHERE a.InstitutionId=q.InstitutionId AND a.QueueId=q.QueueId) AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event e WHERE e.InstitutionId=q.InstitutionId AND e.Kind='signal' AND e.RecordId=? AND JSON_VALUE(e.Document,'$.inactivity_queue_id')=LOWER(CONVERT(varchar(36),q.QueueId)) AND JSON_VALUE(e.Document,'$.trigger_version')=?) ORDER BY clock.ObservedAt,q.QueueId",
+                + "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob newer JOIN crm.Message later ON later.MessageId=newer.MessageId JOIN crm.Message anchor ON anchor.MessageId=q.MessageId WHERE newer.InstitutionId=q.InstitutionId AND newer.IntegrationId=q.IntegrationId AND newer.IdentityId=q.IdentityId AND later.ConversationId=anchor.ConversationId AND later.Sequence>anchor.Sequence AND newer.State IN('queued','sending','uncertain','accepted','sent','delivered','read')) "
+                "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event link WHERE link.InstitutionId=q.InstitutionId AND link.Kind='native_chat' AND JSON_VALUE(link.Document,'$.queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) "
+                "AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Attempt a JOIN crm_broadcast7.Recipient r ON r.InstitutionId=a.InstitutionId AND r.RecipientId=a.RecipientId JOIN crm_campaign8.Step step ON step.InstitutionId=r.InstitutionId AND step.NativeCampaignId=r.CampaignId WHERE a.InstitutionId=q.InstitutionId AND a.QueueId=q.QueueId) "
+                "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event e WHERE e.InstitutionId=q.InstitutionId AND e.Kind='signal' AND e.RecordId=? AND JSON_VALUE(e.Document,'$.inactivity_queue_id')=LOWER(CONVERT(varchar(36),q.QueueId)) AND JSON_VALUE(e.Document,'$.trigger_version')=?) "
+                "GROUP BY q.QueueId,q.IdentityId,i.LastIncomingAt HAVING MIN(receipt.CreatedAt)<=DATEADD(minute,?,SYSUTCDATETIME()) "
+                "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=MIN(receipt.CreatedAt)) ORDER BY MIN(receipt.CreatedAt),q.QueueId",
                 institution(self.settings),
                 flowdoc["integration_id"],
-                -doc["idle_minutes"],
                 trigger["RecordId"],
                 str(trigger["CurrentVersion"]),
+                -doc["idle_minutes"],
             )
             if job:
                 p = person(c, self.settings, uid(str(job["IdentityId"])))
