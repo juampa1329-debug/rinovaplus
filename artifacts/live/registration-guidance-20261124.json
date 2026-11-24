@@ -1,6 +1,20 @@
 {
   "date": "2026-11-24",
-  "deployment": "pending",
+  "deployment": {
+    "code_commit": "0fc2c5f",
+    "backend": {
+      "id": "juqh8gy4kwekscrxnljn7coo",
+      "status": "Success",
+      "running": true,
+      "duration": "04m19s"
+    },
+    "frontend": {
+      "id": "x2ivtuwmraedzqrivxa3h0um",
+      "status": "Success",
+      "running": true,
+      "duration": "00m24s"
+    }
+  },
   "general_registration_url": "https://siieplus.online/SIIEWebPlus/inscripciones",
   "preicfes_registration_url": "https://siieplus.online/SIIEWEBPLUS/PreIcfes/Inscripcion.html",
   "public_general_form_opened": true,
@@ -17,7 +31,7 @@
       "prior_receipt": "delivered",
       "deletion_available_in_inbox": false,
       "prior_message_deleted": false,
-      "clarification_receipt": "sent",
+      "clarification_receipt": "delivered",
       "ai_restored": true
     }
   ],
@@ -28,5 +42,41 @@
   },
   "siie_writes": false,
   "financial_plans_changed": false,
-  "roadmap_acceptances_changed": false
+  "roadmap_acceptances_changed": false,
+  "registration_followup": {
+    "recipient": "same_first_authorized_conversation",
+    "customer_requested_registration_information": true,
+    "receipt": "delivered",
+    "ai_restored": true,
+    "form_submitted": false
+  },
+  "native_context_preview": {
+    "provider_call": false,
+    "general_form_source_present": true,
+    "preicfes_source_present": true
+  },
+  "help_expansion": {
+    "deployment": "pending",
+    "public_forms_reviewed": 2,
+    "general_sections_reviewed": 11,
+    "preicfes_steps_reviewed": 3,
+    "general_programs_checked": [
+      "Cocina Nacional e Internacional",
+      "Barismo",
+      "Bartender",
+      "Repostería y Pastelería",
+      "Proeficiencia en Inglés"
+    ],
+    "preicfes_groups_checked": [
+      "A",
+      "B",
+      "C"
+    ],
+    "no_personal_data_entered": true,
+    "consent_accepted": false,
+    "form_submitted": false,
+    "backend_focused_tests": 202,
+    "ruff": "passed",
+    "model_test_calls": 0
+  }
 }

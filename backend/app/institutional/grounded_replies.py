@@ -9,7 +9,7 @@ from app.institutional.knowledge import effective, search
 from app.institutional.settings import setting
 from app.modules.agents.domain import digest
 from app.modules.agents.conversation_style import instructions as style_instructions
-from app.institutional.cbn_profile import FACTS, REVIEWED
+from app.institutional.cbn_profile import REVIEWED, facts_for
 from app.institutional.reply_delivery import pending_bot_history
 
 RULES = (
@@ -195,7 +195,7 @@ def context(
         "skill_policy": prompt_trace(skill_policy),
         "consulta": redact(question[:2000]),
         "catalogo": material,
-        "institucion_revisada": {"reviewed_at": REVIEWED, "facts": FACTS, "financial_source": False},
+        "institucion_revisada": {"reviewed_at": REVIEWED, "facts": facts_for(retrieval), "financial_source": False},
         "contactos_institucionales": getattr(c, "public_contact_context", lambda: {"items": []})(),
         "fuentes_revisadas": documents,
         "memoria_institucional": shared,

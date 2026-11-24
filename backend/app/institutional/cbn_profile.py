@@ -13,6 +13,8 @@ REGISTRATION_POLICY = (
     "en el que la persona elige programa y jornada y completa sus datos. No intercambies ambos enlaces. "
     "Puede adelantar la inscripción mientras Contabilidad o Tesorería revisan un reajuste financiero; "
     "el formulario no aprueba el plan, confirma pagos, reserva un cupo ni acredita una matrícula. "
+    "Si pide ayuda, consulta las fuentes inscripcion_ayuda y explica sólo el paso pertinente. "
+    "Los datos y documentos se completan directamente en el sitio oficial, no se solicitan por este chat. "
     "No afirmes que lo llenaste, enviaste o que ya se confirmó una inscripción sin evidencia del sistema."
 )
 LOCATION_POLICY = (
@@ -73,11 +75,16 @@ FACTS = [
 ]
 
 
-def reviewed_sources(sources):
+def facts_for(question=None):
+    from app.institutional.registration_guidance import FACTS as help_facts, relevant
+    return [*FACTS, *(help_facts if relevant(question) else [])]
+
+
+def reviewed_sources(sources, question=None):
     """Same approved facts in context, returned metadata and citation validation."""
     values = list(sources)
     known = {source["id"] for source in values}
-    for fact in FACTS:
+    for fact in facts_for(question):
         reviewed_at = fact.get("reviewed_at", REVIEWED)
         identifier = str(uuid5(NAMESPACE_URL, "cbn-reviewed:" + reviewed_at + ":" + fact["topic"]))
         if identifier not in known:

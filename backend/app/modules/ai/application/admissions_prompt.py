@@ -82,7 +82,7 @@ def assemble_prompt(policy, question, memory, sources, history, *, structured=Tr
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history],
                             simulation_focus=simulation_skill_focus)
-    sources = reviewed_sources(sources)
+    sources = reviewed_sources(sources, question)
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
                 "skill_policy": prompt_trace(skill_policy),
                 "history": [{"id": h["id"], "role": h["role"], "text": h["text"][-1600:]} for h in history[-12:]]}

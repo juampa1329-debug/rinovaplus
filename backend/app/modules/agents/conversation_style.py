@@ -2,7 +2,7 @@
 
 from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY
 
-VERSION = "cbn-conversation-style-v6"
+VERSION = "cbn-conversation-style-v7"
 
 
 def instructions(configuration=None):

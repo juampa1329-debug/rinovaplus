@@ -1,3 +1,9 @@
+## Formularios de inscripción: ayuda por campo preparada — 2026-11-24
+
+Publicación inicial0fc2c5f saludable: backend juqh8gy4kwekscrxnljn7coo04m19s; frontend x2ivtuwmraedzqrivxa3h0um24s. Fuentes general/PRE visibles en contexto nativo sin consumo. Aclaración financiera posterior Entregada; primera consulta volvió a pedir inscripción, recibió el enlace correcto Entregado y volvióIA. No eliminación del mensaje anterior ni recibos alterados.
+
+Por nueva petición se revisan once secciones generales, tres pasos PRE, cinco opciones gastronómicas/idioma y los tres grupos PRE. Guías fechadas y selectivas para general/especialistas y sociales automáticas/sugeridas; campos, selectores, anexos, consentimiento decidido por persona y diagnóstico sin recopilar documentos privados. Barismo/Bartender separados en selector: confirmar con Admisiones sin duplicar solicitudes. Anexos sanitarios observados no se convierten en nuevas obligaciones ni exenciones. PRE10MBporarchivo/50total no se extienden al general.202backend focalizadas y Ruff pasan; publicación de ayuda ampliada pendiente. Sin datos personales, archivos, consentimiento, envío final ni escrituras SIIE. Fases conservadas/P22 técnico3/5 y0aceptaciones. Ver docs/adaptation/REGISTRATION_GUIDANCE_20261124.md.
+
 ## Inscripción general y aclaraciones autorizadas — 2026-11-24
 
 El titular incorpora https://siieplus.online/SIIEWebPlus/inscripciones para adelantar la inscripción a programas distintos de PRE-ICFES. PRE-ICFES conserva su formulario específico. Fuentes revisadas con fecha propia sin cambiar identificadores históricos; política compartida por IA general, especialistas y respuestas sociales. El formulario abrió en la interfaz pública; no se enviaron datos ni se escribieron registros SIIE. Puede adelantarse mientras Contabilidad/Tesorería revisa un abono mayor, sin acreditar aprobación del plan, pago, cupo o matrícula.
