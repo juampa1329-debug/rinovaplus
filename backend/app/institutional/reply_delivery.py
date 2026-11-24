@@ -100,17 +100,22 @@ def part_for(data, message):
 
 
 def quote_reference(data, part):
-    """Quote only the verified incoming message on the group's first part."""
+    """Quote the oldest pending input once; the newest input still fences dispatch."""
+    channel = data.get("channel", "whatsapp")
+    reference = data.get("quote_external", data.get("external_incoming"))
     if (
         data.get("quote_first_reply")
-        and data.get("channel", "whatsapp") == "whatsapp"
+        and data.get("supports_quoted_reply", True)
+        and channel in {"whatsapp", "messenger", "instagram"}
         and part["index"] == 0
-        and isinstance(data.get("external_incoming"), str)
-        and data["external_incoming"].startswith("wamid.")
+        and isinstance(reference, str)
+        and reference
+        and len(reference) <= 2000
+        and (channel != "whatsapp" or reference.startswith("wamid."))
     ):
         return {
-            "replyToMessageId": data["external_incoming"],
-            "replyToInternalId": data["incoming"],
+            "replyToMessageId": reference,
+            "replyToInternalId": data.get("quote_incoming", data["incoming"]),
         }
     return {}
 

@@ -24,10 +24,11 @@ export function CBNConversationPreset({
         guardar.
       </p>
       <p>
-        La propuesta usa tres segundos de espera, 1,5 segundos de preparación y
-        tres segundos entre partes; unos 350 caracteres por parte como
-        referencia, conservando frases y condiciones completas. El indicador
-        depende de Meta y en WhatsApp marca como procesado el mensaje entrante.
+        La propuesta usa 60 segundos de espera tras el último mensaje, 1,5
+        segundos de preparación y tres segundos entre partes; unos 350
+        caracteres por parte como referencia, conservando frases y condiciones
+        completas. El indicador depende de Meta y en WhatsApp marca como
+        procesado el mensaje entrante.
       </p>
       <Button
         variant="secondary"

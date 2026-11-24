@@ -41,6 +41,19 @@ def test_attempted_superseded_audio_cannot_trigger_an_automatic_paid_retry(monke
     assert len(calls) == 1  # No asset read and no provider call.
 
 
+def test_turn_receipts_boundary_keeps_audio_before_discarded_drafts_pending(monkeypatch):
+    from pglast import parse_sql
+    from app.institutional.operations_policy import layout
+    from app.institutional.postgres_dialect import postgres_sql
+    c, settings, data, ids, calls = group(monkeypatch)
+    value = voice_transcripts.pending_input(c, settings, {**data, "reply_turn": {"after_sequence": 9}}, 11)
+    assert value["message_id"] == ids[0]
+    sql, args = calls[0]
+    assert "sent.Direction" not in sql and args[-1] == 9
+    assert sql.count("?") == len(args)
+    parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+
+
 def test_large_audio_group_requires_review_instead_of_truncating_or_skipping(monkeypatch):
     c, settings, data, _, calls = group(monkeypatch, count=7)
     with pytest.raises(HTTPException, match="voice_batch_review_required"):

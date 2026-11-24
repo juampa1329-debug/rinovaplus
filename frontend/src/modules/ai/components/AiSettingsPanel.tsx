@@ -32,7 +32,13 @@ const providers = Object.entries(providerNames).map(([value, label]) => ({
 const numericFields = [
   ["max_tokens", "Máximo de tokens por solicitud", 64, 8192, 1],
   ["temperature", "Temperatura", 0, 2, 0.1],
-  ["wait_seconds", "Espera antes de responder (seg)", 0, 60, 1],
+  [
+    "wait_seconds",
+    "Espera desde el último mensaje (seg; recomendado 60)",
+    0,
+    3600,
+    1,
+  ],
   [
     "typing_ms",
     "Tiempo de escritura antes del primer envío (ms)",
@@ -190,18 +196,13 @@ export function AiSettingsPanel({
   if (!visible) return null;
   if (section === "APIs" && snapshot && draft) return <ApiIntegrationsPanel />;
   return (
-    <section
-      className="ai-settings"
-      aria-label="Configuración IA"
-    >
+    <section className="ai-settings" aria-label="Configuración IA">
       <div className="panel-heading">
         <div>
           <h3>
             {section === "APIs" ? "Proveedores y modelos" : "Ajustes de IA"}
           </h3>
-          <p>
-            Configure los asistentes y proveedores disponibles.
-          </p>
+          <p>Configure los asistentes y proveedores disponibles.</p>
         </div>
         <Badge>
           {snapshot?.outbound_enabled
@@ -384,9 +385,10 @@ export function AiSettingsPanel({
                     Permitir fallback por modelo y proveedor de respaldo
                   </label>
                   <p className="scope-text">
-                    Al habilitarlo, el Asistente puede usar los modelos de respaldo elegidos. Solo se
-                    continúa ante límite de solicitudes, timeout o fallo
-                    temporal; máximo cuatro intentos, uno por modelo.
+                    Al habilitarlo, el Asistente puede usar los modelos de
+                    respaldo elegidos. Solo se continúa ante límite de
+                    solicitudes, timeout o fallo temporal; máximo cuatro
+                    intentos, uno por modelo.
                   </p>
                   <div className="form-grid">
                     <SelectField
@@ -453,8 +455,8 @@ export function AiSettingsPanel({
                   />
                   <small id="ai-prompt-count">
                     {Array.from(draft.system_prompt).length} / 8000 caracteres.
-                    Identidad IA, control humano y protección de SIIE se
-                    se mantienen en la configuración.
+                    Identidad IA, control humano y protección de SIIE se se
+                    mantienen en la configuración.
                   </small>
                   <div className="form-grid ai-numbers">
                     {numericFields
@@ -561,9 +563,10 @@ export function AiSettingsPanel({
                     Solicitar “escribiendo…” cuando el canal lo permita
                   </label>
                   <p className="scope-text">
-                    La vista muestra un plan temporal. WhatsApp y su indicador de escritura no están
-                    conectados. Se usa el menor de los dos límites de tokens;
-                    tokens y caracteres son medidas distintas.
+                    La vista muestra un plan temporal. WhatsApp y su indicador
+                    de escritura no están conectados. Se usa el menor de los dos
+                    límites de tokens; tokens y caracteres son medidas
+                    distintas.
                   </p>
                 </>
               }
@@ -614,16 +617,14 @@ export function AiSettingsPanel({
           )}
           <p className="scope-text">
             Versión {snapshot.revision} ·{" "}
-            {dirty ? "Cambios sin guardar" : "Cambios guardados"}.
-            conserva esta configuración.
+            {dirty ? "Cambios sin guardar" : "Cambios guardados"}. conserva esta
+            configuración.
           </p>
           {busy && <p role="status">{busy}…</p>}
           {section === "IA" && (
             <div className="ai-test">
               <h3>Probar IA</h3>
-              <p>
-                Revise la respuesta generada antes de continuar.
-              </p>
+              <p>Revise la respuesta generada antes de continuar.</p>
               <TextArea
                 id="ai-test-prompt"
                 label="Mensaje"

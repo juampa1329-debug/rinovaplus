@@ -344,6 +344,19 @@ def whatsapp_reply_context(payload):
     return {"context": {"message_id": reference}}
 
 
+def meta_reply_context(account, payload):
+    reference = payload.get("replyToMessageId")
+    if reference is None:
+        return {}
+    if (payload.get("kind") != "message" or not isinstance(reference, str)
+            or not reference or len(reference) > 2000 or any(v.isspace() for v in reference)):
+        raise ProviderFailure("meta_reply_reference_invalid")
+    # Official quoted Instagram replies are documented for Facebook Login.
+    if account["channel"] == "instagram" and account["configuration"].get("instagramLogin") != "facebook":
+        raise ProviderFailure("instagram_quoted_reply_requires_facebook_login")
+    return {"reply_to": {"mid": reference}}
+
+
 class AcceptedPrivateReply(str):
     def __new__(cls, message_id, recipient_id):
         value = super().__new__(cls, message_id)
@@ -437,7 +450,7 @@ def send(account, payload, media=None, before_send=None):
             if payload["kind"] == "private_reply"
             else {"id": payload["target"]}
         )
-        body = {"recipient": recipient, "message": {"text": text}}
+        body = {"recipient": recipient, "message": {"text": text}, **meta_reply_context(account, payload)}
         if channel == "messenger" and payload["kind"] != "private_reply":
             body["messaging_type"] = "RESPONSE"
         result = request(account, "POST", asset + "/messages", body)
@@ -486,6 +499,7 @@ def send_meta_media(account, payload, media, before_send):
     channel, config = account["channel"], account["configuration"]
     if channel not in ("whatsapp", "messenger", "instagram"):
         raise ProviderFailure("channel_media_not_supported")
+    reply_context = meta_reply_context(account, payload) if channel != "whatsapp" else {}
     if (
         channel == "instagram"
         and config.get("instagramLogin") == "instagram"
@@ -509,6 +523,7 @@ def send_meta_media(account, payload, media, before_send):
                     }
                 },
                 "messaging_type": "RESPONSE",
+                **reply_context,
             },
         )
         external = result.get("message_id")
@@ -571,6 +586,7 @@ def send_meta_media(account, payload, media, before_send):
                 config["pageId"] + "/messages",
                 files={
                     "recipient": (None, json.dumps({"id": payload["target"]})),
+                    **({"reply_to": (None, json.dumps(reply_context["reply_to"]))} if reply_context else {}),
                     **(
                         {"messaging_type": (None, "RESPONSE")}
                         if channel == "messenger"

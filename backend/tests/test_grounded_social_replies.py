@@ -192,6 +192,15 @@ def test_context_uses_saved_prompts_history_and_reviewed_programs_without_privat
         and "privado" not in public["query"]
     )
     assert private["fingerprint"] != public["fingerprint"]
+    turn = {"pending": ["¿Cuánto cuesta Software?", "¿Y qué jornada tiene?"], "incoming_ids": ["first", "last"]}
+    grouped = grounding.context(None, settings, "¿Y qué jornada tiene?", selection=selection, conversation="own", sequence=3, reply_turn=turn)
+    assert json.loads(grouped["query"])["mensajes_pendientes"] == turn["pending"]
+    assert "trátalo como duda" in grouped["system"] and "no repitas lo que ya recibió" in grouped["system"]
+    assert "Software" in catalog_queries[-1]
+    assert grouped["fingerprint"] != private["fingerprint"]
+    public_turn = grounding.context(None, settings, "Precio", public=True, post="Software", reply_turn=turn)
+    assert "mensajes_pendientes" not in json.loads(public_turn["query"])
+    assert "reply_turn" not in public_turn
 
 
 @pytest.mark.parametrize("post", [
@@ -222,11 +231,12 @@ def test_publication_topic_precedes_generic_welcome_even_outside_catalog(monkeyp
 
 
 @pytest.mark.parametrize(
-    "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None]
+    "answer", ["Software dura tres semestres según la ficha vigente.", "Explicación completa del programa con sus condiciones. " * 20, None, "__wait__"]
 )
 @pytest.mark.parametrize("with_backup", [False, "rejected", "timeout"])
 @pytest.mark.parametrize("with_projection", [False, True])
-def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup, with_projection):
+@pytest.mark.parametrize("interrupted", [False, True])
+def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, with_backup, with_projection, interrupted):
     from app.institutional import channel_outbox
     from app.modules.ai.domain.models import ModelInfo
     from app.modules.ai.infrastructure.providers import AiError
@@ -237,9 +247,12 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
     monkeypatch.setattr(messaging.language_resilience, "reservation", lambda *_: backup_reservations.append(1))
     monkeypatch.setattr(messaging, "setting", lambda *_: {"document": {"wait_seconds": 0, "quote_first_reply": True}})
     monkeypatch.setattr(messaging.voice_audio, "generate", lambda *_a, **_k: (None, "voice_paused"))
+    monkeypatch.setattr(messaging.reply_turns, "require_settled", lambda *_: None)
+    monkeypatch.setattr(messaging.reply_turns, "supersede_queued", lambda *_: False)
 
     profile = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
     projected = [False]
+    changed = [False]
     from app.institutional import sales_memory
     monkeypatch.setattr(sales_memory, "record", lambda *_: projected.__setitem__(0, True))
     monkeypatch.setattr(messaging, "resolve_conversation", lambda *_: {"configuration": {}, "agent_id": "fixture", "version": 1})
@@ -279,15 +292,15 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
             "ResultMetadata": json.dumps(data),
         },
     )
-    monkeypatch.setattr(
-        messaging,
-        "source",
-        lambda *_: (
+    def source(*_):
+        if changed[0]:
+            raise HTTPException(409, "gemini_whatsapp_control_or_history_changed")
+        return (
             {"IntegrationId": integration},
             {"Body": "Software", "Sequence": 3, "Epoch": 1},
             {"daily_tokens": 1000000, "daily_usd_micros": 1000000},
-        ),
-    )
+        )
+    monkeypatch.setattr(messaging, "source", source)
     monkeypatch.setattr(messaging, "provider_account", lambda *_: ({}, None))
     monkeypatch.setattr(
         messaging,
@@ -313,6 +326,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
             "system": "Prompt de ventas",
             "query": "Software: 3 semestres",
             "fingerprint": "after-own-projection" if projected[0] else "reviewed",
+            **({"reply_turn": {"pending": ["Gracias"], "can_wait": True, "quote_incoming": operation, "quote_external": "wamid.incoming"}} if answer == "__wait__" else {}),
         },
     )
     monkeypatch.setattr(messaging, "unseal", lambda *_: "test-only")
@@ -340,7 +354,8 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
 
         async def request(self, provider, method, path, body):
             assert provider == "openrouter" and method == "POST" and path == "chat/completions"
-            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision": "responder" if answer else "revisar", "text": answer or ""})}}]}
+            changed[0] = interrupted
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision": "esperar" if answer == "__wait__" else "responder" if answer else "revisar", "text": "" if answer == "__wait__" else answer or ""})}}]}
 
         async def gemini_generation(self, model, body, before_attempt):
             before_attempt()
@@ -349,10 +364,17 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
                 if with_backup == "timeout":
                     raise AiError("provider_response_timeout", 504)
                 raise AiError("provider_model_unavailable", 502, upstream_status=404)
-            return result(answer or "", "responder" if answer else "revisar")
+            changed[0] = interrupted
+            return result("" if answer == "__wait__" else answer or "", "esperar" if answer == "__wait__" else "responder" if answer else "revisar")
 
     assert messaging.Worker(profile, Gateway).once()
-    assert "".join("".join(sent).split()) == "".join((answer or "").split())
+    if interrupted:
+        assert not sent and not handoffs
+        assert not any(v[0].startswith("INSERT crm.Message") for v in statements)
+        assert "response_parts" not in recorded[-1]
+        return
+    expected = answer if answer and answer != "__wait__" else ""
+    assert "".join("".join(sent).split()) == "".join(expected.split())
     assert bool(handoffs) == (answer is None)
     if with_projection and sent:
         rebound = [json.loads(v[1]) for v in statements if v[0].startswith("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=")]
@@ -360,7 +382,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
         assert rebound[-1]["own_projection_context_refreshed"] is True
         assert rebound[-1]["response_parts"] == recorded[-1]["response_parts"]
     assert recorded[-1]["generation"] == "grounded-v1"
-    assert recorded[-1]["generated_text"] == (answer.strip() if answer else None)
+    assert recorded[-1]["generated_text"] == (answer.strip() if answer and answer != "__wait__" else None)
     assert len(backup_reservations) == int(bool(with_backup))
     if with_backup:
         assert recorded[-1]["language_execution"]["fallback_used"]

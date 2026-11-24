@@ -15,7 +15,7 @@ from app.institutional.crypto import unseal
 from app.institutional.db import bound_hash, institution, key, one, uid
 from app.institutional.settings import setting
 from app.institutional.store import transaction
-from app.institutional import grounded_replies, voice_audio, reply_delivery
+from app.institutional import grounded_replies, voice_audio, reply_delivery, reply_turns
 from app.modules.agents.service import resolve_conversation
 from app.modules.ai.infrastructure.providers import AiError
 from app.institutional import language_resilience
@@ -150,6 +150,7 @@ def source(c, settings, integration, data):
     ):
         raise HTTPException(409, "gemini_whatsapp_disabled")
     item = account(c, settings, uid(str(integration)))
+    data["integration"] = uid(str(integration))
     if (item["Channel"], item["RequestedStatus"], item["VerifiedStatus"]) != (
         channel,
         "connected",
@@ -318,7 +319,9 @@ def reply_context(c, settings, data, source_value):
         selection=selected,
         conversation=data["conversation"],
         sequence=source_value["Sequence"],
+        reply_turn=reply_turns.snapshot(c, settings, data, source_value),
     )
+    result["fingerprint"] = grounded_replies.digest([result["fingerprint"], result["reply_turn"]])
     material = json.loads(result["query"]).get("catalogo", {})
     selected_program = material.get("selected") if isinstance(material, dict) else None
     result["voice_schools"] = (
@@ -327,7 +330,7 @@ def reply_context(c, settings, data, source_value):
         else []
     )
     from app.institutional import voice_transcripts
-    pending_audio = voice_transcripts.pending_input(c, settings, data, source_value["Sequence"])
+    pending_audio = voice_transcripts.pending_input(c, settings, {**data, "reply_turn": result["reply_turn"]}, source_value["Sequence"])
     audio = pending_audio["audio"] if pending_audio else voice_audio.input_audio(c, settings, data)
     if audio:
         audio_source = pending_audio["message_id"] if pending_audio else data["incoming"]
@@ -431,20 +434,29 @@ class Worker:
                 "SELECT TOP(1) OperationId,IntegrationId,ResultMetadata "
                 "FROM crm_channels2.ProviderOperation WHERE InstitutionId=? "
                 "AND Action=? AND Status='pending' AND CreatedAt<=DATEADD(second,?,SYSUTCDATETIME()) "
+                "AND (LeaseUntil IS NULL OR LeaseUntil<=SYSUTCDATETIME()) "
                 "ORDER BY CreatedAt,OperationId",
                 institution(settings),
                 ACTION,
-                -delivery_options.get("wait_seconds", 3),
+                -delivery_options.get("wait_seconds", 60),
             )
             if not row:
                 return False
             integration = row["IntegrationId"]
             operation, data = row["OperationId"], json.loads(row["ResultMetadata"])
+            data["integration"] = uid(str(integration))
             data["quote_first_reply"] = delivery_options.get("quote_first_reply", False)
             c.execute("SAVE TRANSACTION whatsapp_gemini")
             try:
                 item, context, budget = source(c, settings, integration, data)
+                if reply_turns.supersede_queued(c, settings, data, context):
+                    return True
+                reply_turns.require_settled(c, settings, data, context)
                 typing_adapter, _ = provider_account(c, settings, item)
+                data["supports_quoted_reply"] = (
+                    data.get("channel", "whatsapp") != "instagram"
+                    or typing_adapter.get("configuration", {}).get("instagramLogin") == "facebook"
+                )
                 incoming_external = one(
                     c,
                     "SELECT ExternalId FROM crm_channels2.ExternalMessage WHERE InstitutionId=? AND IntegrationId=? AND MessageId=?",
@@ -465,6 +477,10 @@ class Worker:
                 config, secret, binding = model_config(c, settings, data)
                 backup = language_resilience.snapshot(c, settings)
                 grounded = reply_context(c, settings, data, context)
+                if grounded.get("reply_turn"):
+                    data["reply_turn"] = grounded["reply_turn"]
+                    data["quote_incoming"] = grounded["reply_turn"]["quote_incoming"]
+                    data["quote_external"] = grounded["reply_turn"]["quote_external"]
                 data["skill_policy"] = grounded.get("skill_policy")
                 secret_value = unseal(
                     key(settings),
@@ -512,6 +528,11 @@ class Worker:
                 )
             except (HTTPException, AiError) as error:
                 c.execute("ROLLBACK TRANSACTION whatsapp_gemini")
+                if isinstance(error, HTTPException) and error.detail == "reply_turn_waiting_previous":
+                    c.execute("UPDATE crm_channels2.ProviderOperation SET LeaseUntil=DATEADD(second,3,SYSUTCDATETIME()),ResultCode=? "
+                              "WHERE InstitutionId=? AND OperationId=? AND Status='pending'",
+                              error.detail, institution(settings), operation)
+                    return True
                 if (
                     isinstance(error, HTTPException)
                     and error.detail == "voice_input_pending"
@@ -539,6 +560,7 @@ class Worker:
                 raise HTTPException(409, "gemini_whatsapp_claim_changed")
         state, code, generated = "confirmed", None, None
         observations = []
+        no_reply = False
 
         def before_attempt():
             with transaction(settings, anonymous=True) as c:
@@ -615,7 +637,7 @@ class Worker:
                     gateway=self.gateway_factory(backup["keys"]),
                 )) if backup["routes"] or backup.get("primary") else asyncio.run(primary())
             if result is not None:
-                generated = grounded_replies.parse(result)
+                generated = grounded_replies.parse(result, allow_wait=bool(grounded.get("reply_turn", {}).get("can_wait")))
             # Optional observations never become instructions or arbitrary field writes.
             raw = json.loads(
                 "".join(
@@ -625,6 +647,7 @@ class Worker:
                 )
             ) if result is not None else {}
             observations = raw.get("crm_observations", [])
+            no_reply = str(raw.get("decision", "")).strip().casefold() == "esperar"
         except AiError as error:
             state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
         except HTTPException as error:
@@ -700,7 +723,7 @@ class Worker:
                 settings,
                 operation,
                 "confirmed",
-                "gemini_handoff" if not reply else None,
+                "reply_turn_no_response" if no_reply else "gemini_handoff" if not reply else None,
                 {
                     **data,
                     "reply": reply,
@@ -718,7 +741,7 @@ class Worker:
                 lease,
             ):
                 return True
-            if not reply:
+            if not reply and not no_reply:
                 from app.modules.inbox.application.state import change_control
 
                 change_control(c, data["conversation"], "ai", "human")
@@ -727,7 +750,7 @@ class Worker:
                     "UpdatedAt=SYSUTCDATETIME() WHERE ConversationId=?",
                     data["conversation"],
                 )
-            else:
+            elif reply:
                 from app.institutional.channel_outbox import enqueue
 
                 for part in parts:

@@ -153,7 +153,7 @@ class AI(AiSettings):
     )
     max_tokens: int = Field(default=700, ge=200, le=8000)
     output_tokens: int = Field(default=700, ge=0, le=8000)
-    wait_seconds: int = Field(default=6, ge=0, le=3600)
+    wait_seconds: int = Field(default=60, ge=0, le=3600)
     typing_ms: int = Field(default=2600, ge=0, le=240000)
     fragment_delay_ms: int = Field(default=9000, ge=0, le=240000)
     chars_per_message: int = Field(default=180, ge=0, le=2000)

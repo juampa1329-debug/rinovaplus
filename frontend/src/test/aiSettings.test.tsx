@@ -333,7 +333,7 @@ describe("local AI settings", () => {
     for (const label of [
       "Máximo de tokens por solicitud",
       "Temperatura",
-      "Espera antes de responder (seg)",
+      "Espera desde el último mensaje (seg; recomendado 60)",
       "Tiempo de escritura antes del primer envío (ms)",
       "Caracteres por mensaje",
       "Espera entre fragmentos (ms)",

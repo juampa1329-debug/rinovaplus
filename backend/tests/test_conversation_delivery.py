@@ -285,8 +285,36 @@ def test_quote_only_first_whatsapp_part_and_allow_disabling(enabled):
             "replyToMessageId": "wamid.source",
             "replyToInternalId": data["incoming"],
         }
-    assert not delivery.quote_reference({**data, "channel": "instagram"}, parts[0])
+    assert bool(delivery.quote_reference({**data, "channel": "instagram"}, parts[0])) == enabled
     assert not delivery.quote_reference({**data, "external_incoming": None}, parts[0])
+
+
+@pytest.mark.parametrize("channel", ["whatsapp", "messenger", "instagram"])
+def test_quote_anchors_oldest_pending_input_only_once_without_changing_latest_fence(channel):
+    oldest, newest = [str(uuid4()) for _ in range(2)]
+    reference = "wamid.oldest" if channel == "whatsapp" else "m_oldest"
+    data = {"quote_first_reply": True, "channel": channel, "incoming": newest,
+            "external_incoming": "latest", "quote_incoming": oldest, "quote_external": reference}
+    parts = delivery.plan("Idea completa. " * 20, {"chars_per_message": 80}, channel)
+    assert delivery.quote_reference(data, parts[0]) == {"replyToMessageId": reference, "replyToInternalId": oldest}
+    assert all(not delivery.quote_reference(data, part) for part in parts[1:])
+    assert data["incoming"] == newest
+    assert not delivery.quote_reference({**data, "supports_quoted_reply": False}, parts[0])
+
+
+@pytest.mark.parametrize("channel", ["messenger", "instagram"])
+def test_meta_text_quote_is_top_level_and_never_retried_without_reference(monkeypatch, channel):
+    calls = []
+    monkeypatch.setattr(providers, "request", lambda _a, _m, _p, body: calls.append(body) or {"message_id": "accepted"})
+    account = {"channel": channel, "configuration": {"pageId": "page", "accountId": "ig", "instagramLogin": "facebook"}}
+    payload = {"kind": "message", "target": "person", "body": "Respuesta completa", "replyToMessageId": "m_oldest"}
+    assert providers.send(account, payload) == "accepted"
+    assert calls[0]["reply_to"] == {"mid": "m_oldest"}
+    assert "reply_to" not in calls[0]["message"]
+    for invalid in ["", "other person", 9]:
+        with pytest.raises(providers.ProviderFailure, match="meta_reply_reference_invalid"):
+            providers.send(account, {**payload, "replyToMessageId": invalid})
+    assert len(calls) == 1
 
 
 def test_whatsapp_provider_preserves_context_only_when_requested(monkeypatch):

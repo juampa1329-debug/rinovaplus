@@ -61,6 +61,7 @@ def context(
     public=False,
     post="",
     structured=True,
+    reply_turn=None,
 ):
     ai = setting(c, settings, "ai")
     config = selection["configuration"] if selection else {}
@@ -90,13 +91,18 @@ def context(
              **({"origin": v["body_origin"]} if v.get("body_origin") else {})}
             for v in history
         ]
+    if reply_turn and not public:
+        from app.institutional.reply_turns import can_wait
+        reply_turn = {**reply_turn, "can_wait": can_wait(reply_turn["pending"], history)}
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions, project_facts
     prior_history = history[:-1] if history and history[-1]["direction"] == "incoming" and history[-1]["text"] == redact(question[:1600]) else history
-    skill_policy = for_turn(question, history=prior_history, public=public)
+    turn_text = "\n".join(reply_turn["pending"]) if reply_turn and not public else ""
+    skill_policy = for_turn(turn_text or question, history=prior_history, public=public)
     if hasattr(c, "__dict__"):
         c.agent_turn_policy = skill_policy
     retrieval = (
         question
+        + " " + turn_text
         + " "
         + post[:1600]
         + " "
@@ -168,7 +174,7 @@ def context(
     else:
         instructions += "\nEs un mensaje privado. Usa el historial para continuar. Máximo 3000 caracteres."
     system = RULES + (
-        DECISION_RULE
+        (DECISION_RULE + (" En un turno privado también puedes devolver decision=esperar y texto vacío bajo sus reglas estrictas." if reply_turn and not public else ""))
         if structured
         else "Devuelve sólo el texto del borrador para revisión humana, sin JSON."
     )
@@ -176,6 +182,9 @@ def context(
     system += style_instructions(config)
     from app.institutional.institution_contacts import POLICY as CONTACT_POLICY
     system += CONTACT_POLICY
+    if reply_turn and not public:
+        from app.institutional.reply_turns import RULES as TURN_RULES
+        system += TURN_RULES
     if public:
         system += PUBLICATION_RULES
     system += (
@@ -201,6 +210,9 @@ def context(
         "anuncio_de_origen": (selection or {}).get("ad_referral"),
     }
     if conversation and not public:
+        if reply_turn:
+            payload["mensajes_pendientes"] = [redact(v) for v in reply_turn["pending"]]
+            payload["puede_cerrar_sin_respuesta"] = reply_turn["can_wait"]
         payload["memoria_privada_revisada"] = memory.get("conversation", [])
         payload["contacto_crm"] = getattr(c, "contact_personalization", lambda *_: None)(conversation, sequence)
     if conversation and not public and config.get("sales_memory_enabled") and "customer_profile" in memories:
@@ -220,6 +232,7 @@ def context(
         "fingerprint": digest([system, query, ai["revision"]]),
         "components": {"system": digest(system), **{k: digest(v) for k, v in payload.items()}},
         "sources": [{"id": v["id"], "title": v["title"]} for v in documents],
+        **({"reply_turn": reply_turn} if reply_turn and not public else {}),
     }
 
 
@@ -235,7 +248,7 @@ def request_body(value, max_tokens=1500, temperature=0.3):
                 "type": "OBJECT",
                 "required": ["decision", "text"],
                 "properties": {
-                    "decision": {"type": "STRING", "enum": ["responder", "revisar"]},
+                    "decision": {"type": "STRING", "enum": ["responder", "revisar", *(["esperar"] if value.get("reply_turn", {}).get("can_wait") else [])]},
                     "text": {"type": "STRING"},
                     "crm_observations": {"type": "ARRAY", "maxItems": 8, "items": {"type": "OBJECT", "required": ["field", "quote"], "properties": {
                         "field": {"type": "STRING", "enum": ["name", "city", "interests", "goal", "budget", "schedule", "start_time", "objection", "next_step", "objection_resolved"]},
@@ -247,7 +260,7 @@ def request_body(value, max_tokens=1500, temperature=0.3):
     }
 
 
-def parse(result, public=False):
+def parse(result, public=False, *, allow_wait=False):
     candidate = result["candidates"][0]
     if candidate.get("finishReason") != "STOP":
         raise ValueError("incomplete_generated_reply")
@@ -264,11 +277,15 @@ def parse(result, public=False):
     # Canonicalize only this closed vocabulary; unknown decisions still fail.
     decision = value.get("decision")
     decision = decision.strip().casefold() if isinstance(decision, str) else None
-    if decision not in {"responder", "revisar"} or not isinstance(
+    if decision not in {"responder", "revisar", *({"esperar"} if allow_wait and not public else set())} or not isinstance(
         value.get("text"), str
     ):
         raise ValueError("invalid_generated_reply")
     text = value["text"].strip()
+    if decision == "esperar":
+        if text or value.get("crm_observations"):
+            raise ValueError("invalid_generated_reply")
+        return None
     if decision == "revisar":
         return None
     if not text or len(text) > (900 if public else 3000):

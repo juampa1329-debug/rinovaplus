@@ -16,6 +16,11 @@ def pending_input(c, settings, data, sequence):
     """
     from app.institutional import voice_audio
     boundary = getattr(c, "context_cutoff", lambda _: 0)(data["conversation"])
+    turn = data.get("reply_turn")
+    floor_sql = "AND m.Sequence>? " if turn else (
+        "AND m.Sequence>COALESCE((SELECT MAX(sent.Sequence) FROM crm.Message sent "
+        "WHERE sent.ConversationId=m.ConversationId AND sent.Direction='outgoing' AND sent.Sequence<=?),0) "
+    )
     messages = db.rows(c,
         "SELECT TOP(7) m.MessageId,m.Sequence,m.Direction,m.Body,op.Attempts AS PriorAttempts "
         "FROM crm.Message m JOIN crm_channels4.MediaAsset a ON a.MessageId=m.MessageId "
@@ -24,10 +29,10 @@ def pending_input(c, settings, data, sequence):
         "LEFT JOIN crm_channels2.ProviderOperation op ON op.InstitutionId=a.InstitutionId "
         "AND op.OperationId=m.MessageId "
         "WHERE m.ConversationId=? AND m.Direction='incoming' AND m.Sequence<=? AND m.Sequence>? "
-        "AND m.Sequence>COALESCE((SELECT MAX(sent.Sequence) FROM crm.Message sent "
-        "WHERE sent.ConversationId=m.ConversationId AND sent.Direction='outgoing' AND sent.Sequence<=?),0) "
+        + floor_sql +
         "ORDER BY m.Sequence",
-        db.institution(settings), data["identity"], data["conversation"], sequence, boundary, sequence)
+        db.institution(settings), data["identity"], data["conversation"], sequence, boundary,
+        turn["after_sequence"] if turn else sequence)
     interpreted = getattr(c, "audio_history", lambda _, values: values)(data["conversation"], messages)
     pending = [m for m in interpreted if m.get("body_origin") != "automatic_audio_transcription"]
     if not pending:

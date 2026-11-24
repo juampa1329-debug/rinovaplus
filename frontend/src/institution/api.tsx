@@ -14,7 +14,11 @@ import {
 import { Button, Field, Notice } from "../shared/ui";
 import { ErrorFeedbackContext } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
-import { coordinatedRead, readRetrySeconds, observeReadLimit } from "./readCoordinator";
+import {
+  coordinatedRead,
+  readRetrySeconds,
+  observeReadLimit,
+} from "./readCoordinator";
 
 export type User = {
   id: string;
@@ -62,54 +66,102 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
-  language_rehearsal_free_backup_required: "Este ensayo necesita respaldos de OpenRouter guardados. Revisa la política antes de probar.",
-  language_rehearsal_paid_confirmation_required: "Hay un modelo de pago guardado. Autoriza su uso en el ensayo con el control de máximo USD 0,05 antes de ejecutar.",
-  language_rehearsal_cost_limit: "El costo máximo reservado supera USD 0,05. El ensayo se detuvo antes de consultar ese modelo. Elige un respaldo más económico o revisa sus topes de tarifa.",
-  language_rehearsal_ai_disabled: "Habilita la IA antes de probar su respaldo. No se consultó ningún proveedor.",
-  language_rehearsal_not_found: "No se encontró ese ensayo para tu usuario. Conserva el identificador y revisa la sesión; no generes otra respuesta para recuperar la anterior.",
-  language_rehearsal_claim_changed: "El ensayo cambió o venció. Consulta su resultado antes de preparar otra prueba.",
-  language_rehearsal_timeout_disabled: "Activa y guarda el respaldo por tiempo de espera antes de ejecutar este ensayo. No se consultó ningún proveedor.",
-  language_backup_required: "Añade al menos un modelo de respaldo del catálogo antes de habilitar esta función.",
-  language_backup_duplicate: "Hay un modelo de respaldo repetido. Elige alternativas diferentes.",
-  language_backup_interactive_model_required: "Elige un modelo de conversación del catálogo; las variantes batch no sirven para atención en tiempo real.",
-  language_backup_configuration_changed: "La política o una clave de respaldo cambió. Actualiza la configuración antes de continuar.",
-  voice_mix_busy: "El mezclador está ocupado. Espera unos segundos y vuelve a escuchar la misma muestra; no se generará otra voz.",
-  voice_mix_failed: "No se pudo mezclar el ambiente con la voz. El administrador debe revisar FFmpeg y las pistas de ambiente.",
-  voice_mix_unavailable: "El mezclador de audio no está disponible en el backend. Pide al administrador revisar FFmpeg.",
-  voice_mix_source_unavailable: "La voz original de esta muestra ya no está disponible para mezclar. Elige una muestra reciente generada desde tu sesión.",
-  voice_mix_invalid: "Uno de los volúmenes está fuera del rango permitido. Revisa los controles y prueba de nuevo.",
-  voice_greeting_model_required: "Las entonaciones del saludo requieren un modelo Eleven v4 o v3. Selecciona uno del catálogo y guarda el perfil antes de comparar.",
-  voice_preview_result_review: "Una muestra quedó en curso o con resultado incierto. La comparación se detuvo para evitar más consumo. Revisa su actividad antes de iniciar otro intento.",
-  voice_pilot_conversation_required: "Marca al menos una conversación de WhatsApp en el modo piloto antes de activar la voz. Sólo esos hilos usarán ElevenLabs.",
-  voice_default_profile_missing: "Crea un perfil de voz activo y selecciónalo como predeterminado antes de activar la generación.",
-  voice_duplicate_assignment: "Un agente o una escuela está asignado a más de un perfil activo. Deja una única voz para cada asignación.",
-  voice_duplicate_profile: "Hay dos perfiles con el mismo identificador. Actualiza la configuración guardada y crea un perfil nuevo desde Añadir perfil.",
-  voice_invalid_threshold: "El máximo de caracteres por audio debe ser igual o mayor que el umbral de explicación larga. Ajusta ambos valores y guarda.",
-  voice_language_unsupported: "El modelo no admite fijar ese idioma o ya no lo incluye en su catálogo. Elige Automático o un idioma disponible para el modelo seleccionado.",
-  voice_duration_estimated_exceeded: "El texto de la muestra duraría más que el máximo configurado. No se generó audio. Reduce el texto, aumenta la duración máxima o usa 0 para desactivar ese límite.",
-  voice_duration_actual_exceeded: "El audio generado excedió la duración máxima. Se descartó sin cortarlo. La generación pudo consumir caracteres; revisa la actividad y reduce el texto antes de otra prueba.",
-  voice_key_required: "Guarda primero la clave de ElevenLabs en Ajustes → APIs y modelos → Credenciales.",
-  voice_profile_unavailable: "El perfil de voz no está disponible o está desactivado. Elige un perfil activo y guarda la configuración.",
-  voice_text_too_large: "El texto supera el máximo de caracteres por audio. Reduce la muestra o ajusta ese límite; las respuestas automáticas continúan completas por texto.",
-  voice_check_context_immutable: "Para comprobar un chat real se usa su agente y programa guardados. Elige Simulación de asignación si quieres comparar otras opciones.",
-  voice_check_program_mismatch: "El agente elegido pertenece a otro programa. Selecciona su programa o deja que la comprobación use el programa del agente.",
-  voice_conversation_limit: "Este hilo ya alcanzó su máximo de audios. Las siguientes respuestas continúan por texto.",
-  voice_daily_limit: "Se alcanzó el tope de caracteres de las últimas 24 horas. Espera o ajusta el límite de voz; las conversaciones continúan por texto.",
-  voice_preview_limit: "Se alcanzó el límite de 100 intentos de voz en 24 horas para las muestras. Revisa la actividad antes de volver a generar.",
-  voice_configuration_changed: "La configuración o la clave cambió durante la generación. El audio se canceló para respetar la configuración vigente. Revisa el historial antes de iniciar otra muestra.",
-  voice_catalog_timeout: "ElevenLabs no terminó de devolver el catálogo. Conservamos tus perfiles; vuelve a cargar las voces cuando se recupere la conexión.",
-  voice_catalog_required: "La voz o el modelo ya no están disponibles para esta clave. Carga el catálogo de ElevenLabs y elige de nuevo en el perfil.",
-  voice_insufficient_credits: "ElevenLabs no tiene saldo suficiente. Revisa tu saldo en ElevenLabs. La conversación puede continuar por texto.",
-  voice_payment_required: "ElevenLabs requiere revisar el plan o el pago. Comprueba tu cuenta antes de generar otra muestra.",
-  voice_model_access_denied: "Tu cuenta no tiene acceso a este modelo de voz. Carga el catálogo y elige un modelo permitido por tu plan.",
-  voice_account_restricted: "ElevenLabs restringió temporalmente esta cuenta. Revisa los avisos de seguridad del proveedor antes de repetir la generación.",
-  voice_invalid_key: "ElevenLabs rechazó la clave. Reemplázala directamente en APIs y modelos → Credenciales → ElevenLabs.",
-  voice_insufficient_permissions: "La clave no permite esta operación. En ElevenLabs habilita lectura de voces y modelos y generación de texto a voz; luego guarda la clave en RinovaPlus.",
-  voice_forbidden: "ElevenLabs denegó el acceso. Revisa los permisos de lectura de voces/modelos y generación de audio, además del acceso al modelo y la voz elegidos.",
-  voice_access_denied: "La voz elegida no está disponible para tu cuenta. Actualiza el catálogo y selecciona otra voz.",
-  voice_invalid_parameters: "ElevenLabs rechazó la combinación de voz y modelo. Actualiza el catálogo y selecciona valores compatibles.",
-  voice_preview_unavailable: "La muestra venció, cambió de usuario o su archivo ya no está disponible. Genera una muestra nueva desde tu sesión.",
-  voice_channel_required: "Configura primero un canal de Meta para vincular el registro de generación institucional.",
+  language_rehearsal_free_backup_required:
+    "Este ensayo necesita respaldos de OpenRouter guardados. Revisa la política antes de probar.",
+  language_rehearsal_paid_confirmation_required:
+    "Hay un modelo de pago guardado. Autoriza su uso en el ensayo con el control de máximo USD 0,05 antes de ejecutar.",
+  language_rehearsal_cost_limit:
+    "El costo máximo reservado supera USD 0,05. El ensayo se detuvo antes de consultar ese modelo. Elige un respaldo más económico o revisa sus topes de tarifa.",
+  language_rehearsal_ai_disabled:
+    "Habilita la IA antes de probar su respaldo. No se consultó ningún proveedor.",
+  language_rehearsal_not_found:
+    "No se encontró ese ensayo para tu usuario. Conserva el identificador y revisa la sesión; no generes otra respuesta para recuperar la anterior.",
+  language_rehearsal_claim_changed:
+    "El ensayo cambió o venció. Consulta su resultado antes de preparar otra prueba.",
+  language_rehearsal_timeout_disabled:
+    "Activa y guarda el respaldo por tiempo de espera antes de ejecutar este ensayo. No se consultó ningún proveedor.",
+  language_backup_required:
+    "Añade al menos un modelo de respaldo del catálogo antes de habilitar esta función.",
+  language_backup_duplicate:
+    "Hay un modelo de respaldo repetido. Elige alternativas diferentes.",
+  language_backup_interactive_model_required:
+    "Elige un modelo de conversación del catálogo; las variantes batch no sirven para atención en tiempo real.",
+  language_backup_configuration_changed:
+    "La política o una clave de respaldo cambió. Actualiza la configuración antes de continuar.",
+  voice_mix_busy:
+    "El mezclador está ocupado. Espera unos segundos y vuelve a escuchar la misma muestra; no se generará otra voz.",
+  voice_mix_failed:
+    "No se pudo mezclar el ambiente con la voz. El administrador debe revisar FFmpeg y las pistas de ambiente.",
+  voice_mix_unavailable:
+    "El mezclador de audio no está disponible en el backend. Pide al administrador revisar FFmpeg.",
+  voice_mix_source_unavailable:
+    "La voz original de esta muestra ya no está disponible para mezclar. Elige una muestra reciente generada desde tu sesión.",
+  voice_mix_invalid:
+    "Uno de los volúmenes está fuera del rango permitido. Revisa los controles y prueba de nuevo.",
+  voice_greeting_model_required:
+    "Las entonaciones del saludo requieren un modelo Eleven v4 o v3. Selecciona uno del catálogo y guarda el perfil antes de comparar.",
+  voice_preview_result_review:
+    "Una muestra quedó en curso o con resultado incierto. La comparación se detuvo para evitar más consumo. Revisa su actividad antes de iniciar otro intento.",
+  voice_pilot_conversation_required:
+    "Marca al menos una conversación de WhatsApp en el modo piloto antes de activar la voz. Sólo esos hilos usarán ElevenLabs.",
+  voice_default_profile_missing:
+    "Crea un perfil de voz activo y selecciónalo como predeterminado antes de activar la generación.",
+  voice_duplicate_assignment:
+    "Un agente o una escuela está asignado a más de un perfil activo. Deja una única voz para cada asignación.",
+  voice_duplicate_profile:
+    "Hay dos perfiles con el mismo identificador. Actualiza la configuración guardada y crea un perfil nuevo desde Añadir perfil.",
+  voice_invalid_threshold:
+    "El máximo de caracteres por audio debe ser igual o mayor que el umbral de explicación larga. Ajusta ambos valores y guarda.",
+  voice_language_unsupported:
+    "El modelo no admite fijar ese idioma o ya no lo incluye en su catálogo. Elige Automático o un idioma disponible para el modelo seleccionado.",
+  voice_duration_estimated_exceeded:
+    "El texto de la muestra duraría más que el máximo configurado. No se generó audio. Reduce el texto, aumenta la duración máxima o usa 0 para desactivar ese límite.",
+  voice_duration_actual_exceeded:
+    "El audio generado excedió la duración máxima. Se descartó sin cortarlo. La generación pudo consumir caracteres; revisa la actividad y reduce el texto antes de otra prueba.",
+  voice_key_required:
+    "Guarda primero la clave de ElevenLabs en Ajustes → APIs y modelos → Credenciales.",
+  voice_profile_unavailable:
+    "El perfil de voz no está disponible o está desactivado. Elige un perfil activo y guarda la configuración.",
+  voice_text_too_large:
+    "El texto supera el máximo de caracteres por audio. Reduce la muestra o ajusta ese límite; las respuestas automáticas continúan completas por texto.",
+  voice_check_context_immutable:
+    "Para comprobar un chat real se usa su agente y programa guardados. Elige Simulación de asignación si quieres comparar otras opciones.",
+  voice_check_program_mismatch:
+    "El agente elegido pertenece a otro programa. Selecciona su programa o deja que la comprobación use el programa del agente.",
+  voice_conversation_limit:
+    "Este hilo ya alcanzó su máximo de audios. Las siguientes respuestas continúan por texto.",
+  voice_daily_limit:
+    "Se alcanzó el tope de caracteres de las últimas 24 horas. Espera o ajusta el límite de voz; las conversaciones continúan por texto.",
+  voice_preview_limit:
+    "Se alcanzó el límite de 100 intentos de voz en 24 horas para las muestras. Revisa la actividad antes de volver a generar.",
+  voice_configuration_changed:
+    "La configuración o la clave cambió durante la generación. El audio se canceló para respetar la configuración vigente. Revisa el historial antes de iniciar otra muestra.",
+  voice_catalog_timeout:
+    "ElevenLabs no terminó de devolver el catálogo. Conservamos tus perfiles; vuelve a cargar las voces cuando se recupere la conexión.",
+  voice_catalog_required:
+    "La voz o el modelo ya no están disponibles para esta clave. Carga el catálogo de ElevenLabs y elige de nuevo en el perfil.",
+  voice_insufficient_credits:
+    "ElevenLabs no tiene saldo suficiente. Revisa tu saldo en ElevenLabs. La conversación puede continuar por texto.",
+  voice_payment_required:
+    "ElevenLabs requiere revisar el plan o el pago. Comprueba tu cuenta antes de generar otra muestra.",
+  voice_model_access_denied:
+    "Tu cuenta no tiene acceso a este modelo de voz. Carga el catálogo y elige un modelo permitido por tu plan.",
+  voice_account_restricted:
+    "ElevenLabs restringió temporalmente esta cuenta. Revisa los avisos de seguridad del proveedor antes de repetir la generación.",
+  voice_invalid_key:
+    "ElevenLabs rechazó la clave. Reemplázala directamente en APIs y modelos → Credenciales → ElevenLabs.",
+  voice_insufficient_permissions:
+    "La clave no permite esta operación. En ElevenLabs habilita lectura de voces y modelos y generación de texto a voz; luego guarda la clave en RinovaPlus.",
+  voice_forbidden:
+    "ElevenLabs denegó el acceso. Revisa los permisos de lectura de voces/modelos y generación de audio, además del acceso al modelo y la voz elegidos.",
+  voice_access_denied:
+    "La voz elegida no está disponible para tu cuenta. Actualiza el catálogo y selecciona otra voz.",
+  voice_invalid_parameters:
+    "ElevenLabs rechazó la combinación de voz y modelo. Actualiza el catálogo y selecciona valores compatibles.",
+  voice_preview_unavailable:
+    "La muestra venció, cambió de usuario o su archivo ya no está disponible. Genera una muestra nueva desde tu sesión.",
+  voice_channel_required:
+    "Configura primero un canal de Meta para vincular el registro de generación institucional.",
   ads_meta_permission_required:
     "Meta no concedió acceso de lectura a Publicidad (ads_read). Activa ese permiso en la configuración de la app y vuelve a Conectar con Meta desde Publicidad.",
   ads_meta_login_source_required:
@@ -138,55 +190,103 @@ const messages: Record<string, string> = {
     "Esta cuenta alcanzó el límite de versiones consultables de borradores. Conserva su historial y solicita revisión del administrador.",
   ads_meta_draft_not_found:
     "El borrador no pertenece a esta cuenta o ya no está disponible. Actualiza la biblioteca de esta cuenta.",
-  password_policy: "La contraseña debe tener entre 15 y 128 caracteres y no puede ser una secuencia o clave demasiado común. Elige una frase personal más segura y vuelve a guardarla; el enlace sigue disponible si no ha vencido.",
-  email_access_link_required: "La plantilla de invitación o recuperación debe incluir {{enlace}} para que la persona pueda crear su contraseña. Añade un enlace HTTPS usando esa variable, valida y publica la plantilla.",
-  email_template_not_published: "Selecciona una plantilla publicada antes de activar esta regla o informe.",
-  email_recipient_selection_required: "Selecciona al menos un usuario, rol o grupo de destinatarios antes de activar esta regla o informe.",
-  email_invalid_configuration: "Hay un valor de configuración no permitido. Revisa identificador, evento, destinatarios y plantilla antes de guardar.",
-  email_invalid_header: "Revisa el nombre o asunto del correo: debe contener texto y no incluir saltos de línea.",
-  email_template_too_large: "El HTML debe ocupar entre 1 byte y 100 KB. Reduce su tamaño e incrusta las imágenes desde la biblioteca.",
-  email_invalid_image: "Usa una imagen PNG, JPEG o WebP estática, de hasta 1 MB y 2048 píxeles.",
-  email_asset_quota: "La biblioteca llegó a 20 MB. Solicita revisión del almacenamiento antes de cargar más recursos.",
-  email_asset_not_found: "Una imagen de la plantilla no está en esta biblioteca. Vuelve a subirla e insértala desde Logos y firmas.",
-  email_user_already_activated: "Esta cuenta ya tiene contraseña. Su titular puede usar Olvidé mi contraseña en el login si necesita recuperar el acceso.",
-  email_invalid_receipt: "Revisa el correo y la fecha del recibo de Oracle. Debe corresponder a un envío aceptado o incierto y a una observación posterior a su creación.",
-  email_invalid_daily_limit: "El límite diario de correo debe ser un número entero entre 1 y 10.000.",
-  email_migration_required: "Notificaciones necesita su instalación en PostgreSQL. Un administrador debe aplicar la migración P15 antes de guardar; la salida está pausada.",
-  email_provider_not_configured: "Faltan las credenciales SMTP de Oracle. Guarda CRM_SMTP_HOST, CRM_SMTP_USERNAME y CRM_SMTP_PASSWORD en las variables de producción del backend y redespliega.",
-  email_sending_paused: "El correo está pausado. Revisa Habilitar salida en Notificaciones y CRM_EMAIL_ENABLED en Coolify antes de enviar la prueba.",
-  email_unsafe_html: "El HTML contiene scripts, formularios o atributos no permitidos. Retíralos y vuelve a validar la vista previa.",
-  email_unsafe_css: "El estilo del correo incluye una propiedad o instrucción no permitida. Usa colores, tipografía, márgenes y tablas sin scripts ni recursos externos.",
-  email_unsafe_url: "Los enlaces del correo deben usar HTTPS y no contener credenciales. Corrige el enlace y vuelve a validar.",
-  email_image_requires_library: "Sube la imagen en Logos y firmas e insértala desde esa biblioteca. Las imágenes externas de seguimiento están bloqueadas.",
-  email_unknown_variable: "La plantilla tiene una variable desconocida. Usa únicamente las variables que aparecen debajo de la vista previa.",
-  email_missing_variables: "Faltan valores para completar la plantilla. Revisa sus variables antes de enviarla.",
-  email_invalid_address: "El correo destinatario o remitente no es válido. Escribe sólo la dirección, sin nombres ni saltos de línea.",
-  email_invalid_schedule: "Revisa la hora, el día y la zona horaria IANA; por ejemplo America/Bogota.",
-  email_not_cancellable: "El envío ya comenzó o terminó. Actualiza el historial; no se puede cancelar una entrega aceptada por Oracle.",
-  comment_source_unavailable: "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
-  comment_is_account_reply: "Esta respuesta pertenece a la cuenta conectada. Abre el hilo y selecciona el comentario de la persona a la que quieres responder.",
-  invalid_notification_cutoff: "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",
-  learning_purpose_authorization_required: "Esta finalidad necesita una autorización vigente. Revisa las autorizaciones del pack.",
-  learning_authorization_changed_rebuild_required: "Cambió una autorización usada por el dataset. Revisa las muestras y crea un dataset nuevo.",
-  learning_dataset_corrected_rebuild_required: "Una muestra fue corregida. Crea un dataset nuevo para incorporar la revisión.",
-  learning_temporal_group_split_insufficient: "Se necesitan al menos 16 muestras de entrenamiento y 8 de validación, con ambas clases y sujetos separados por el corte temporal.",
-  learning_samples_24_to_1000_required: "El dataset necesita entre 24 y 1000 muestras revisadas.",
-  learning_shadow_observations_required: "Registra al menos cuatro predicciones en sombra antes de promover esta versión.",
-  learning_shadow_required: "Selecciona primero esta versión para evaluar en sombra.",
-  learning_drift_review_required: "Las observaciones muestran deriva. Revisa los datos y la evaluación antes de promover el modelo.",
-  learning_evaluation_gate_failed: "El modelo no supera la evaluación frente al baseline y por segmento.",
-  learning_training_paused: "Este pack tiene detenidos los nuevos entrenamientos. Puedes habilitarlos al editar el pack.",
+  password_policy:
+    "La contraseña debe tener entre 15 y 128 caracteres y no puede ser una secuencia o clave demasiado común. Elige una frase personal más segura y vuelve a guardarla; el enlace sigue disponible si no ha vencido.",
+  email_access_link_required:
+    "La plantilla de invitación o recuperación debe incluir {{enlace}} para que la persona pueda crear su contraseña. Añade un enlace HTTPS usando esa variable, valida y publica la plantilla.",
+  email_template_not_published:
+    "Selecciona una plantilla publicada antes de activar esta regla o informe.",
+  email_recipient_selection_required:
+    "Selecciona al menos un usuario, rol o grupo de destinatarios antes de activar esta regla o informe.",
+  email_invalid_configuration:
+    "Hay un valor de configuración no permitido. Revisa identificador, evento, destinatarios y plantilla antes de guardar.",
+  email_invalid_header:
+    "Revisa el nombre o asunto del correo: debe contener texto y no incluir saltos de línea.",
+  email_template_too_large:
+    "El HTML debe ocupar entre 1 byte y 100 KB. Reduce su tamaño e incrusta las imágenes desde la biblioteca.",
+  email_invalid_image:
+    "Usa una imagen PNG, JPEG o WebP estática, de hasta 1 MB y 2048 píxeles.",
+  email_asset_quota:
+    "La biblioteca llegó a 20 MB. Solicita revisión del almacenamiento antes de cargar más recursos.",
+  email_asset_not_found:
+    "Una imagen de la plantilla no está en esta biblioteca. Vuelve a subirla e insértala desde Logos y firmas.",
+  email_user_already_activated:
+    "Esta cuenta ya tiene contraseña. Su titular puede usar Olvidé mi contraseña en el login si necesita recuperar el acceso.",
+  email_invalid_receipt:
+    "Revisa el correo y la fecha del recibo de Oracle. Debe corresponder a un envío aceptado o incierto y a una observación posterior a su creación.",
+  email_invalid_daily_limit:
+    "El límite diario de correo debe ser un número entero entre 1 y 10.000.",
+  email_migration_required:
+    "Notificaciones necesita su instalación en PostgreSQL. Un administrador debe aplicar la migración P15 antes de guardar; la salida está pausada.",
+  email_provider_not_configured:
+    "Faltan las credenciales SMTP de Oracle. Guarda CRM_SMTP_HOST, CRM_SMTP_USERNAME y CRM_SMTP_PASSWORD en las variables de producción del backend y redespliega.",
+  email_sending_paused:
+    "El correo está pausado. Revisa Habilitar salida en Notificaciones y CRM_EMAIL_ENABLED en Coolify antes de enviar la prueba.",
+  email_unsafe_html:
+    "El HTML contiene scripts, formularios o atributos no permitidos. Retíralos y vuelve a validar la vista previa.",
+  email_unsafe_css:
+    "El estilo del correo incluye una propiedad o instrucción no permitida. Usa colores, tipografía, márgenes y tablas sin scripts ni recursos externos.",
+  email_unsafe_url:
+    "Los enlaces del correo deben usar HTTPS y no contener credenciales. Corrige el enlace y vuelve a validar.",
+  email_image_requires_library:
+    "Sube la imagen en Logos y firmas e insértala desde esa biblioteca. Las imágenes externas de seguimiento están bloqueadas.",
+  email_unknown_variable:
+    "La plantilla tiene una variable desconocida. Usa únicamente las variables que aparecen debajo de la vista previa.",
+  email_missing_variables:
+    "Faltan valores para completar la plantilla. Revisa sus variables antes de enviarla.",
+  email_invalid_address:
+    "El correo destinatario o remitente no es válido. Escribe sólo la dirección, sin nombres ni saltos de línea.",
+  email_invalid_schedule:
+    "Revisa la hora, el día y la zona horaria IANA; por ejemplo America/Bogota.",
+  email_not_cancellable:
+    "El envío ya comenzó o terminó. Actualiza el historial; no se puede cancelar una entrega aceptada por Oracle.",
+  comment_source_unavailable:
+    "Meta no permite consultar este comentario. Revisa la publicación y los permisos del canal; luego pulsa Sincronizar comentario.",
+  comment_is_account_reply:
+    "Esta respuesta pertenece a la cuenta conectada. Abre el hilo y selecciona el comentario de la persona a la que quieres responder.",
+  invalid_notification_cutoff:
+    "La lista de notificaciones cambió. Actualízala y vuelve a marcarla como leída.",
+  learning_purpose_authorization_required:
+    "Esta finalidad necesita una autorización vigente. Revisa las autorizaciones del pack.",
+  learning_authorization_changed_rebuild_required:
+    "Cambió una autorización usada por el dataset. Revisa las muestras y crea un dataset nuevo.",
+  learning_dataset_corrected_rebuild_required:
+    "Una muestra fue corregida. Crea un dataset nuevo para incorporar la revisión.",
+  learning_temporal_group_split_insufficient:
+    "Se necesitan al menos 16 muestras de entrenamiento y 8 de validación, con ambas clases y sujetos separados por el corte temporal.",
+  learning_samples_24_to_1000_required:
+    "El dataset necesita entre 24 y 1000 muestras revisadas.",
+  learning_shadow_observations_required:
+    "Registra al menos cuatro predicciones en sombra antes de promover esta versión.",
+  learning_shadow_required:
+    "Selecciona primero esta versión para evaluar en sombra.",
+  learning_drift_review_required:
+    "Las observaciones muestran deriva. Revisa los datos y la evaluación antes de promover el modelo.",
+  learning_evaluation_gate_failed:
+    "El modelo no supera la evaluación frente al baseline y por segmento.",
+  learning_training_paused:
+    "Este pack tiene detenidos los nuevos entrenamientos. Puedes habilitarlos al editar el pack.",
   learning_inference_paused: "La predicción de este pack está pausada.",
-  learning_model_not_selected: "Selecciona un modelo en sombra o una versión aprobada antes de calcular la predicción.",
-  learning_pack_version_changed: "El pack cambió de versión. Revisa sus muestras y crea un dataset actualizado.",
-  learning_subject_changed_rebuild_required: "Cambió la identidad del contacto en CRM. Revisa la autorización y reconstruye el dataset.",
-  learning_source_not_found: "El origen no pertenece al contacto autorizado o ya no está disponible.",
-  learning_source_after_features: "La fecha de observación precede a la creación del registro de origen.",
-  learning_feature_schema: "Completa exactamente las observaciones numéricas del objetivo seleccionado.",
-  learning_feature_range: "Los valores deben ser números finitos entre 0 y 1000000.",
-  learning_correction_already_superseded: "Esta muestra ya tiene una corrección. Revisa su versión más reciente.",
-  learning_previous_approved_required: "Sólo puedes revertir a una versión previamente aprobada.",
- ads_comment_link_ambiguous:"El comentario tiene varios vínculos en CRM. Revisa las cuentas y los contactos antes de convertirlo.",
+  learning_model_not_selected:
+    "Selecciona un modelo en sombra o una versión aprobada antes de calcular la predicción.",
+  learning_pack_version_changed:
+    "El pack cambió de versión. Revisa sus muestras y crea un dataset actualizado.",
+  learning_subject_changed_rebuild_required:
+    "Cambió la identidad del contacto en CRM. Revisa la autorización y reconstruye el dataset.",
+  learning_source_not_found:
+    "El origen no pertenece al contacto autorizado o ya no está disponible.",
+  learning_source_after_features:
+    "La fecha de observación precede a la creación del registro de origen.",
+  learning_feature_schema:
+    "Completa exactamente las observaciones numéricas del objetivo seleccionado.",
+  learning_feature_range:
+    "Los valores deben ser números finitos entre 0 y 1000000.",
+  learning_correction_already_superseded:
+    "Esta muestra ya tiene una corrección. Revisa su versión más reciente.",
+  learning_previous_approved_required:
+    "Sólo puedes revertir a una versión previamente aprobada.",
+  ads_comment_link_ambiguous:
+    "El comentario tiene varios vínculos en CRM. Revisa las cuentas y los contactos antes de convertirlo.",
   ads_account_not_found: "La cuenta publicitaria ya no está disponible.",
   ads_record_not_found: "El registro de captación ya no está disponible.",
   ads_account_identity_immutable:
@@ -237,17 +337,28 @@ const messages: Record<string, string> = {
     "Falta un dato del contacto para completar esta plantilla. Completa su ficha del CRM o exclúyelo de este envío.",
   template_header_one_variable:
     "La cabecera de texto admite una variable. Conserva un solo campo del CRM en la cabecera.",
-  template_sample_format_invalid: "El archivo de muestra no coincide con el formato. Usa JPG/PNG para imagen, MP4 para video o PDF para documento.",
-  template_sample_upload_rejected: "Meta rechazó la muestra. Comprueba el formato, el tamaño y que el acceso de esta cuenta siga vigente.",
-  template_sample_upload_unknown: "Meta no confirmó la carga. Conserva el borrador y revisa Actividad en Canales antes de repetirla. No se ha activado ninguna campaña.",
-  template_sample_handle_missing: "Meta no devolvió el identificador del archivo. Revisa el estado de la conexión antes de repetir la carga.",
-  template_sample_session_invalid: "Meta devolvió una sesión de carga que RinovaPlus no puede usar. Revisa el acceso de la cuenta y contacta al administrador.",
-  template_sample_confirmation_required: "Confirma que autorizas enviar el archivo de muestra a Meta antes de cargarlo.",
-  broadcast_media_upload_required: "El adjunto ya no está vinculado a esta cuenta o cambió su conexión. Vuelve a cargar el archivo en la campaña y revisa los destinatarios.",
-  template_button_type_limit: "La plantilla permite hasta dos botones de enlace y uno de teléfono. Los demás pueden ser respuestas rápidas, hasta diez botones en total.",
-  template_button_grouping_invalid: "Agrupa juntas las respuestas rápidas y después los enlaces/teléfono, o al revés. Usa Subir/Bajar para ordenarlos.",
-  template_button_url_variable_invalid: "El enlace admite una variable {{1}} al final de la URL. Corrige su posición o usa un enlace fijo.",
-  template_button_url_example_required: "Añade un ejemplo ficticio para la variable del enlace. Meta lo necesita para revisar la plantilla.",
+  template_sample_format_invalid:
+    "El archivo de muestra no coincide con el formato. Usa JPG/PNG para imagen, MP4 para video o PDF para documento.",
+  template_sample_upload_rejected:
+    "Meta rechazó la muestra. Comprueba el formato, el tamaño y que el acceso de esta cuenta siga vigente.",
+  template_sample_upload_unknown:
+    "Meta no confirmó la carga. Conserva el borrador y revisa Actividad en Canales antes de repetirla. No se ha activado ninguna campaña.",
+  template_sample_handle_missing:
+    "Meta no devolvió el identificador del archivo. Revisa el estado de la conexión antes de repetir la carga.",
+  template_sample_session_invalid:
+    "Meta devolvió una sesión de carga que RinovaPlus no puede usar. Revisa el acceso de la cuenta y contacta al administrador.",
+  template_sample_confirmation_required:
+    "Confirma que autorizas enviar el archivo de muestra a Meta antes de cargarlo.",
+  broadcast_media_upload_required:
+    "El adjunto ya no está vinculado a esta cuenta o cambió su conexión. Vuelve a cargar el archivo en la campaña y revisa los destinatarios.",
+  template_button_type_limit:
+    "La plantilla permite hasta dos botones de enlace y uno de teléfono. Los demás pueden ser respuestas rápidas, hasta diez botones en total.",
+  template_button_grouping_invalid:
+    "Agrupa juntas las respuestas rápidas y después los enlaces/teléfono, o al revés. Usa Subir/Bajar para ordenarlos.",
+  template_button_url_variable_invalid:
+    "El enlace admite una variable {{1}} al final de la URL. Corrige su posición o usa un enlace fijo.",
+  template_button_url_example_required:
+    "Añade un ejemplo ficticio para la variable del enlace. Meta lo necesita para revisar la plantilla.",
   template_footer_variables_unsupported:
     "El pie de la plantilla debe ser texto fijo. Coloca los campos del CRM en el cuerpo o en la cabecera.",
   template_example_unused:
@@ -315,36 +426,71 @@ const messages: Record<string, string> = {
     "El proveedor eliminó este comentario; sus acciones están bloqueadas.",
   comment_reply_already_pending:
     "Esta respuesta ya está en curso. Consulta su estado antes de repetirla.",
-  comment_private_already_attempted: "Este comentario ya tiene un intento de mensaje privado. Revisa su historial antes de repetir; un resultado incierto puede haber llegado a Meta.",
-  meta_history_provider_permission_or_request_rejected: "Meta no permitió consultar el historial con esta cuenta. Revisa su conexión y los permisos de mensajería; no se enviaron mensajes.",
-  meta_history_account_changed: "La cuenta o su credencial cambió durante la consulta. Vuelve a abrir el historial.",
-  comment_ai_reply_too_long: "El modelo devolvió más de 900 caracteres. No se envió ese borrador; revisa una respuesta manual antes de enviarla.",
-  comment_ai_reply_incomplete: "El modelo no completó la respuesta. No se envió ese borrador.",
-  comment_ai_reply_contract_invalid: "El modelo no devolvió una decisión de canal válida. No se envió ese borrador.",
-  meta_history_connected_account_required: "Selecciona una cuenta conectada y verificada de Messenger o Instagram.",
-  comment_private_window_closed: "Pasaron siete días desde el comentario o su fecha no es válida. Meta no permite iniciar este privado; puedes responder públicamente.",
-  comment_private_creation_unknown: "No se pudo confirmar con Meta la fecha original del comentario. No se envió el privado.",
-  comment_private_source_changed: "El comentario cambió en Meta. Sincronízalo y revisa la respuesta antes de enviarla.",
-  comment_private_source_unavailable: "Este comentario no está disponible para iniciar un privado.",
-  comment_private_live_requires_review: "Los privados de Instagram Live requieren una transmisión activa. Este comentario queda para revisión.",
-  comment_private_person_required: "Los privados desde comentarios requieren una persona; no pueden enviarse a la propia cuenta o a otra Página.",
-  comment_private_text_limit: "El primer privado debe tener como máximo 900 caracteres. Resume el mensaje conservando las condiciones solicitadas.",
-  comment_private_channel_unavailable: "Los privados desde comentarios están disponibles para Facebook e Instagram.",
+  comment_private_already_attempted:
+    "Este comentario ya tiene un intento de mensaje privado. Revisa su historial antes de repetir; un resultado incierto puede haber llegado a Meta.",
+  meta_history_provider_permission_or_request_rejected:
+    "Meta no permitió consultar el historial con esta cuenta. Revisa su conexión y los permisos de mensajería; no se enviaron mensajes.",
+  meta_history_account_changed:
+    "La cuenta o su credencial cambió durante la consulta. Vuelve a abrir el historial.",
+  comment_ai_reply_too_long:
+    "El modelo devolvió más de 900 caracteres. No se envió ese borrador; revisa una respuesta manual antes de enviarla.",
+  reply_turn_delivery_uncertain:
+    "Hay un envío anterior sin confirmación. Revisa la actividad del canal antes de generar otra respuesta para evitar duplicados.",
+  reply_turn_batch_review_required:
+    "Hay demasiadas consultas pendientes para un solo turno. Revisa el hilo y atiéndelo en Humano; no se omitieron preguntas para generar una respuesta parcial.",
+  reply_turn_source_changed:
+    "El turno cambió antes de responder. Se conservaron los mensajes para su revisión.",
+  reply_turn_waiting_previous:
+    "El turno espera a que termine el procesamiento anterior; todavía no inicia otra generación.",
+  reply_turn_no_response:
+    "El turno ya estaba atendido y sólo contenía un acuse o agradecimiento. No se envió otra respuesta ni se cambió a Humano.",
+  comment_ai_reply_incomplete:
+    "El modelo no completó la respuesta. No se envió ese borrador.",
+  comment_ai_reply_contract_invalid:
+    "El modelo no devolvió una decisión de canal válida. No se envió ese borrador.",
+  meta_history_connected_account_required:
+    "Selecciona una cuenta conectada y verificada de Messenger o Instagram.",
+  comment_private_window_closed:
+    "Pasaron siete días desde el comentario o su fecha no es válida. Meta no permite iniciar este privado; puedes responder públicamente.",
+  comment_private_creation_unknown:
+    "No se pudo confirmar con Meta la fecha original del comentario. No se envió el privado.",
+  comment_private_source_changed:
+    "El comentario cambió en Meta. Sincronízalo y revisa la respuesta antes de enviarla.",
+  comment_private_source_unavailable:
+    "Este comentario no está disponible para iniciar un privado.",
+  comment_private_live_requires_review:
+    "Los privados de Instagram Live requieren una transmisión activa. Este comentario queda para revisión.",
+  comment_private_person_required:
+    "Los privados desde comentarios requieren una persona; no pueden enviarse a la propia cuenta o a otra Página.",
+  comment_private_text_limit:
+    "El primer privado debe tener como máximo 900 caracteres. Resume el mensaje conservando las condiciones solicitadas.",
+  comment_private_channel_unavailable:
+    "Los privados desde comentarios están disponibles para Facebook e Instagram.",
   initial_stage_review_required:
     "Revisa la etapa inicial del CRM en la configuración de esta cuenta.",
   tiktok_accounts_authorization_profile_required:
     "La autorización de TikTok Accounts requiere configurar su aplicación y producto. Login Kit tiene permisos distintos.",
   invalid_credentials: "Correo o contraseña incorrectos.",
-  provider_key_missing: "Guarda una clave de este proveedor en Credenciales y vuelve a consultar el catálogo.",
-  provider_key_rejected: "El proveedor rechazó la clave guardada. Actualízala en Credenciales y vuelve a consultar.",
-  provider_balance_timeout: "El proveedor tardó en responder sobre el saldo. La configuración y los límites se conservan. Vuelve a consultar el detalle en unos momentos.",
-  provider_balance_changed: "La credencial o los permisos cambiaron durante la consulta. Vuelve a abrir Saldo y consumo para obtener información de la cuenta vigente.",
-  provider_endpoint_missing: "Configura la dirección del proveedor antes de consultar sus modelos.",
-  provider_rate_limited: "El proveedor limitó las consultas. Espera un momento y actualiza el catálogo.",
-  openrouter_payment_required: "OpenRouter rechazó la consulta por crédito insuficiente en la cuenta o la API key. Revisa Credits y el límite de esa clave en OpenRouter. Tener una tarjeta guardada no garantiza saldo disponible. No se reintentará automáticamente.",
-  voice_prior_audio_review_required: "Una nota anterior quedó sin interpretación confirmada después de un intento de IA. Revisa esa ejecución antes de repetirla. Puedes pasar a Humano y pedir que escriban o repitan la parte que falta; RinovaPlus no vuelve a consumir automáticamente una solicitud incierta.",
-  voice_batch_review_required: "Hay demasiadas notas de voz pendientes en el mismo grupo. Revisa el hilo en modo Humano y pide la consulta por escrito o en una sola nota. Se conserva el historial completo y no se descarta ninguna nota para inventar la respuesta.",
-  provider_catalog_timeout: "El catálogo tardó en responder. Actualízalo para volver a intentarlo.",
+  provider_key_missing:
+    "Guarda una clave de este proveedor en Credenciales y vuelve a consultar el catálogo.",
+  provider_key_rejected:
+    "El proveedor rechazó la clave guardada. Actualízala en Credenciales y vuelve a consultar.",
+  provider_balance_timeout:
+    "El proveedor tardó en responder sobre el saldo. La configuración y los límites se conservan. Vuelve a consultar el detalle en unos momentos.",
+  provider_balance_changed:
+    "La credencial o los permisos cambiaron durante la consulta. Vuelve a abrir Saldo y consumo para obtener información de la cuenta vigente.",
+  provider_endpoint_missing:
+    "Configura la dirección del proveedor antes de consultar sus modelos.",
+  provider_rate_limited:
+    "El proveedor limitó las consultas. Espera un momento y actualiza el catálogo.",
+  openrouter_payment_required:
+    "OpenRouter rechazó la consulta por crédito insuficiente en la cuenta o la API key. Revisa Credits y el límite de esa clave en OpenRouter. Tener una tarjeta guardada no garantiza saldo disponible. No se reintentará automáticamente.",
+  voice_prior_audio_review_required:
+    "Una nota anterior quedó sin interpretación confirmada después de un intento de IA. Revisa esa ejecución antes de repetirla. Puedes pasar a Humano y pedir que escriban o repitan la parte que falta; RinovaPlus no vuelve a consumir automáticamente una solicitud incierta.",
+  voice_batch_review_required:
+    "Hay demasiadas notas de voz pendientes en el mismo grupo. Revisa el hilo en modo Humano y pide la consulta por escrito o en una sola nota. Se conserva el historial completo y no se descarta ninguna nota para inventar la respuesta.",
+  provider_catalog_timeout:
+    "El catálogo tardó en responder. Actualízalo para volver a intentarlo.",
   confirmation_failed: "No se pudo confirmar tu identidad.",
   invalid_request: "Revisa los campos y sus límites antes de guardar.",
   revision_conflict:
@@ -406,11 +552,18 @@ export async function send<T>(
   if (method === "GET") {
     const seconds = readRetrySeconds();
     if (seconds) throw new ApiError(429, "rate_limited", seconds);
-    return coordinatedRead(`${csrf}:${path}`, () => request<T>(path, method, body, csrf));
+    return coordinatedRead(`${csrf}:${path}`, () =>
+      request<T>(path, method, body, csrf),
+    );
   }
   return request<T>(path, method, body, csrf);
 }
-async function request<T>(path: string, method: string, body: unknown, csrf: string): Promise<T> {
+async function request<T>(
+  path: string,
+  method: string,
+  body: unknown,
+  csrf: string,
+): Promise<T> {
   const response = await fetch(`/api/institution/${path}`, {
     method,
     credentials: "same-origin",
@@ -423,16 +576,23 @@ async function request<T>(path: string, method: string, body: unknown, csrf: str
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(45000),
   });
-  const result = (await response.json().catch(() => null)) as { detail?: string } | null;
-  if (response.ok && result === null) throw new ApiError(502, "invalid_server_response");
+  const result = (await response.json().catch(() => null)) as {
+    detail?: string;
+  } | null;
+  if (response.ok && result === null)
+    throw new ApiError(502, "invalid_server_response");
   if (!response.ok) {
     if (response.status === 401 && result?.detail === "session_required")
       institutionUnauthorized(401);
     const retryAfter = Number(response.headers.get("Retry-After"));
-    if (response.status === 429) observeReadLimit(response.headers.get("Retry-After"));
+    if (response.status === 429)
+      observeReadLimit(response.headers.get("Retry-After"));
     throw new ApiError(
       response.status,
-      result?.detail ?? ([502, 503, 504].includes(response.status) ? "server_temporarily_unavailable" : "request_failed"),
+      result?.detail ??
+        ([502, 503, 504].includes(response.status)
+          ? "server_temporarily_unavailable"
+          : "request_failed"),
       retryAfter > 0 ? retryAfter : undefined,
     );
   }
@@ -466,12 +626,15 @@ export function SessionBoundary({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const pending = useRef<((accepted: boolean) => void) | null>(null);
-  const ask = useCallback(() =>
-    new Promise<boolean>((resolve) => {
-      if (pending.current) return resolve(false);
-      pending.current = resolve;
-      setConfirm(true);
-    }), []);
+  const ask = useCallback(
+    () =>
+      new Promise<boolean>((resolve) => {
+        if (pending.current) return resolve(false);
+        pending.current = resolve;
+        setConfirm(true);
+      }),
+    [],
+  );
   const close = (accepted: boolean) => {
     pending.current?.(accepted);
     pending.current = null;
@@ -488,27 +651,30 @@ export function SessionBoundary({
       pending.current = null;
     };
   }, [session.csrf_token, expire]);
-  const call = useCallback<Call>(async (path, method, body) => {
-    try {
-      return await send(path, method, body, session.csrf_token);
-    } catch (failure) {
-      if (
-        failure instanceof ApiError &&
-        failure.status === 428 &&
-        (await ask())
-      )
-        return send(path, method, body, session.csrf_token);
-      if (
-        failure instanceof ApiError &&
-        failure.status === 401 &&
-        failure.detail === "session_required"
-      ) {
-        bindInstitutionSession("");
-        expire();
+  const call = useCallback<Call>(
+    async (path, method, body) => {
+      try {
+        return await send(path, method, body, session.csrf_token);
+      } catch (failure) {
+        if (
+          failure instanceof ApiError &&
+          failure.status === 428 &&
+          (await ask())
+        )
+          return send(path, method, body, session.csrf_token);
+        if (
+          failure instanceof ApiError &&
+          failure.status === 401 &&
+          failure.detail === "session_required"
+        ) {
+          bindInstitutionSession("");
+          expire();
+        }
+        throw failure;
       }
-      throw failure;
-    }
-  }, [session.csrf_token, ask, expire]);
+    },
+    [session.csrf_token, ask, expire],
+  );
   const refresh = async () => {
     const next = await call<Session>("auth/me");
     setSession(next);

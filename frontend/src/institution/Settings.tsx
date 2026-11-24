@@ -116,7 +116,10 @@ function SettingEditor({
       {section === "ai" && (
         <Notice>
           Los modelos guardados se seleccionan en APIs y modelos. Las claves de
-          acceso se conservan cifradas.{" "}
+          acceso se conservan cifradas. La espera cuenta desde el último mensaje
+          recibido: 60 segundos permite reunir las preguntas antes de responder.
+          Si el cliente vuelve a escribir, se revisa el turno con lo que ya
+          recibió para completar o aclarar sin repetir.{" "}
           {contract.channel_operations
             ? liveModels
               ? "La atención automática sigue las instrucciones del agente, el modo IA/Humano y los permisos de cada canal. Requiere un modelo, credencial y presupuesto válidos."
@@ -201,14 +204,27 @@ function SettingEditor({
         }}
       >
         <fieldset disabled={task.busy || !writable}>
-          {section === "institution" && <InstitutionContacts value={draft.public_contacts} onChange={value => setDraft({ ...draft, public_contacts: value })} />}
+          {section === "institution" && (
+            <InstitutionContacts
+              value={draft.public_contacts}
+              onChange={(value) =>
+                setDraft({ ...draft, public_contacts: value })
+              }
+            />
+          )}
           {section === "ai" && liveModels && (
             <LanguageResilience
               value={draft.language_resilience}
               onSave={async () => {
                 await task.run(async () => {
-                  const body = {revision: initial.revision, language_resilience: draft.language_resilience};
-                  await call("settings/ai/language-policy", "PUT", {...body, operation_id: intent.get(body)});
+                  const body = {
+                    revision: initial.revision,
+                    language_resilience: draft.language_resilience,
+                  };
+                  await call("settings/ai/language-policy", "PUT", {
+                    ...body,
+                    operation_id: intent.get(body),
+                  });
                   await reload();
                 }, "Motor de conversaciones y respaldos guardados.");
               }}
@@ -908,12 +924,31 @@ export function ProviderKeys({ contract }: { contract: Contract }) {
         }}
       />
       <ProviderAccount key={`balance-${provider}`} provider={provider} />
-      {provider === "openrouter" && <p>La clave de modelos permite generar respuestas. La Management API key es opcional y permite consultar el saldo global; se guarda cifrada y se usa sólo para esa consulta. Se crea en la cuenta oficial de OpenRouter y tiene permisos administrativos en el proveedor. RinovaPlus no la utiliza para generar mensajes ni para crear o revocar claves.</p>}
+      {provider === "openrouter" && (
+        <p>
+          La clave de modelos permite generar respuestas. La Management API key
+          es opcional y permite consultar el saldo global; se guarda cifrada y
+          se usa sólo para esa consulta. Se crea en la cuenta oficial de
+          OpenRouter y tiene permisos administrativos en el proveedor.
+          RinovaPlus no la utiliza para generar mensajes ni para crear o revocar
+          claves.
+        </p>
+      )}
       <Credentials
         key={provider}
         scope="provider"
         owner={provider}
-        kinds={[{ id: "api_key", label: "Clave de API" }, ...(provider === "openrouter" ? [{ id: "management_key", label: "Clave de administración de OpenRouter (opcional)" }] : [])]}
+        kinds={[
+          { id: "api_key", label: "Clave de API" },
+          ...(provider === "openrouter"
+            ? [
+                {
+                  id: "management_key",
+                  label: "Clave de administración de OpenRouter (opcional)",
+                },
+              ]
+            : []),
+        ]}
       />
     </>
   );

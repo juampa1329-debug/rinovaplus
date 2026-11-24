@@ -113,11 +113,11 @@ async def generate(gateway, route, body, guard):
                          "content": "\n".join(p["text"] for p in content["parts"])})
     response_format = {"type": "json_object"}
     if (set(schema.get("properties", {})) in ({"decision", "text"}, {"decision", "text", "crm_observations"})
-            and schema["properties"]["decision"].get("enum") == ["responder", "revisar"]):
+            and schema["properties"]["decision"].get("enum") in (["responder", "revisar"], ["responder", "revisar", "esperar"])):
         # JSON mode alone does not enforce the responder/revisar dispatch
         # contract. The same schema is used for the primary and each backup.
         properties = {
-            "decision": {"type": "string", "enum": ["responder", "revisar"]},
+            "decision": {"type": "string", "enum": schema["properties"]["decision"]["enum"]},
             "text": {"type": "string", "description": "Respuesta completa, como máximo 3000 caracteres; nunca inventes datos."},
         }
         if not route["model"].startswith("anthropic/"):

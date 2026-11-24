@@ -91,7 +91,7 @@ def recommended_delivery():
     return {
         "brief_responses": True,
         "split_responses": True,
-        "wait_seconds": 3,
+        "wait_seconds": 60,
         "typing_ms": 1500,
         "fragment_delay_ms": 3000,
         "reply_min_chunk_delay_ms": 3000,
