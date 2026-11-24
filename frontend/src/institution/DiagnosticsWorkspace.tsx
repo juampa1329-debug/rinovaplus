@@ -18,6 +18,8 @@ type Entry = {
   fallback_used?: boolean;
   context_changes?: string[];
   own_projection_context_refreshed?: boolean;
+  campaign_entry_context?: boolean;
+  masterclass_context?: boolean;
   attempt_count?: number;
   conversation_id?: string;
   attempts?: {
@@ -135,6 +137,7 @@ export function DiagnosticsWorkspace() {
       )}
       {data.error && <Notice error>{data.error}</Notice>}
       <MissingReplies conversation={selectedConversation} />
+      <MissingReplies conversation={selectedConversation} advisor />
       {!items.length && <Notice>No hay registros para estos filtros.</Notice>}
       <ol className="diagnostic-timeline">
         {items.map((item) => {
@@ -187,6 +190,7 @@ export function DiagnosticsWorkspace() {
                     Acción: {item.action}. Código: {item.code || "sin error"}.
                     Referencia: {item.id}
                   </p>
+                  {item.section === "ai" && <p>Contexto del botón comercial: {item.campaign_entry_context ? "incluido" : "no acreditado"}. Opciones de masterclass: {item.masterclass_context ? "incluidas" : "no incluidas"}.</p>}
                   {!!item.context_changes?.length && <p>Partes del contexto que cambiaron: {item.context_changes.join(", ")}</p>}
                   {item.own_projection_context_refreshed && <p>La ficha se actualizó y la autorización quedó ligada a esa misma versión, dentro de la transacción.</p>}
                   {item.attempts?.map((a, i) => (

@@ -40,7 +40,7 @@ def targets(source, programs):
         pattern = r"baris|bartend"
     elif re.search(r"repost|pastel|cupcake|dulce", text):
         pattern = r"repost|pastel"
-    elif re.search(r"cocina|culinari", text):
+    elif re.search(r"cocina|culinari|pasta artesanal|sabores de latinoamerica", text):
         pattern = r"cocina nacional"
     elif re.search(r"turism|hoteler", text):
         pattern = r"servicios hoteleros"

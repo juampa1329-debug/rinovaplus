@@ -37,7 +37,7 @@ PUBLIC = {
 def core_permission(path, method):
     if path == "/api/institution/provider-balance/openrouter/alert":
         return "settings.budgets.read", "settings"
-    if path == "/api/institution/reply-recovery":
+    if path in {"/api/institution/reply-recovery", "/api/institution/advisor-recovery"}:
         return "inbox." + ("read" if method == "GET" else "write"), "inbox"
     if path.startswith("/api/institution/language-rehearsals"):
         return "settings.ai." + ("read" if method == "GET" else "write"), "settings"

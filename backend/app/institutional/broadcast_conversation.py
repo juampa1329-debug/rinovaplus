@@ -44,9 +44,10 @@ def origin(c, settings, conversation, history):
         "AND ir.IntegrationId=x.IntegrationId AND ir.MessageId=m.MessageId "
         "JOIN crm_channels2.WebhookEvent e ON e.InstitutionId=x.InstitutionId AND e.IntegrationId=x.IntegrationId "
         "AND e.Kind='message' AND e.Status='processed' "
-        "AND JSON_VALUE(e.Payload,'$.external') COLLATE Latin1_General_100_BIN2=x.ExternalId "
+        "AND e.ProviderEventId COLLATE Latin1_General_100_BIN2=x.ExternalId "
         "JOIN crm_channels2.SendJob q ON q.InstitutionId=x.InstitutionId AND q.IntegrationId=x.IntegrationId "
-        "AND q.ExternalId=JSON_VALUE(e.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2 "
+        "AND (JSON_VALUE(e.Payload,'$.provider.context.id') IS NULL OR "
+        "q.ExternalId=JSON_VALUE(e.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2) "
         "JOIN crm.Message om ON om.MessageId=q.MessageId AND om.ConversationId=m.ConversationId AND om.Sequence<m.Sequence "
         "JOIN crm_broadcast7.Attempt a ON a.InstitutionId=q.InstitutionId AND a.QueueId=q.QueueId "
         "JOIN crm_broadcast7.Recipient r ON r.InstitutionId=a.InstitutionId AND r.RecipientId=a.RecipientId "
@@ -55,7 +56,7 @@ def origin(c, settings, conversation, history):
         "AND b.IntegrationId=q.IntegrationId "
         "WHERE x.InstitutionId=? AND m.ConversationId=? AND m.MessageId=? AND m.Direction='incoming' "
         "AND q.ExternalId IS NOT NULL AND q.State IN('accepted','sent','delivered','read') "
-        "ORDER BY e.CreatedAt DESC",
+        "ORDER BY om.Sequence DESC,e.CreatedAt DESC",
         db.institution(settings), conversation, incoming["MessageId"])
     if not row:
         return None
@@ -72,3 +73,15 @@ def origin(c, settings, conversation, history):
         "routing_text": snapshot.get("body", "")[:1600],
         "academic_confirmation": False,
     }
+
+
+def enrich(c, settings, conversation, selected, sequence):
+    """The verified button also applies to confirmed or manually assigned agents."""
+    if selected.get("campaign_reply"):
+        return selected
+    from app.institutional.sales_context import history
+    campaign = origin(c, settings, conversation, history(c, conversation, sequence))
+    if not campaign:
+        return selected
+    campaign.pop("routing_text", None)
+    return {**selected, "campaign_reply": campaign}

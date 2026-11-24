@@ -36,7 +36,8 @@ def person(text):
     ("MASTERCLASS TIC", [4]), ("MASTERCLASS GASTRONOMÍA", [5, 6, 7]),
     ("MASTERCLASS EL MUNDO DE LOS CUPCAKES", [6]), ("MASTERCLASS EL ARTE DEL CAFÉ", [7]),
     ("MASTERCLASS COCINA NAVIDEÑA", [5]), ("MASTERCLASS CENTRO IDIOMAS", [8]),
-    ("MASTERCLASS LOGISTICA", [10]), ("MASTERCLASS ADUANAS", [11])])
+    ("MASTERCLASS EL SECRETO DE LA PASTA ARTESANAL ITALIANA", [5]),
+    ("MASTERCLASS SABORES DE LATINOAMÉRICA", [5]), ("MASTERCLASS LOGISTICA", [10]), ("MASTERCLASS ADUANAS", [11])])
 def test_related_programs_follow_specific_topic_or_whole_school_without_selecting_schedule(source, ids):
     plan = master.proposal(person(source), PROGRAMS)
     assert not plan["reason"]

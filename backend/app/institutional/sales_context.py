@@ -79,6 +79,8 @@ def catalog_data(c, settings):
 
 
 def configure(c, settings):
+    from app.institutional.broadcast_conversation import enrich
+    c.campaign_reply_context = lambda conversation, selected, sequence: enrich(c, settings, conversation, selected, sequence)
     from app.institutional.institution_contacts import directory, sources
     c.public_contact_context = lambda: directory(c, settings)
     c.public_contact_sources = lambda: sources(directory(c, settings))

@@ -78,7 +78,7 @@ def available(settings, integration, channel="whatsapp"):
     )
 
 
-def schedule(c, settings, item, linked, message):
+def schedule(c, settings, item, linked, message, *, operation_id=None):
     if not available(settings, item["IntegrationId"], item["Channel"]):
         return
     state = configuration(c, settings)
@@ -90,6 +90,7 @@ def schedule(c, settings, item, linked, message):
     ):
         return
     inst = institution(settings)
+    operation_id = operation_id or message
     control = one(
         c,
         "SELECT ctrl.Epoch FROM crm.Conversation v "
@@ -104,7 +105,7 @@ def schedule(c, settings, item, linked, message):
         "SELECT 1 FROM crm_channels2.ProviderOperation WITH(UPDLOCK,HOLDLOCK) "
         "WHERE InstitutionId=? AND OperationId=?",
         inst,
-        message,
+        operation_id,
     ).fetchone():
         return
     data = {
@@ -121,7 +122,7 @@ def schedule(c, settings, item, linked, message):
         "ActorRef,Action,RequestDigest,EffectKey,Status,ResultMetadata,CreatedAt) "
         "VALUES(?,?,?,?,?,?,?,?,'pending',?,SYSUTCDATETIME())",
         inst,
-        message,
+        operation_id,
         item["ApplicationId"],
         item["IntegrationId"],
         ACTOR,
@@ -315,6 +316,7 @@ def reply_context(c, settings, data, source_value):
     selected = resolve_conversation(
         c, data["conversation"], "facebook" if channel == "messenger" else channel
     )
+    selected = getattr(c, "campaign_reply_context", lambda _, value, __: value)(data["conversation"], selected, source_value["Sequence"])
     result = grounded_replies.context(
         c,
         settings,

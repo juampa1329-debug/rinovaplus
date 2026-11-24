@@ -29,7 +29,7 @@ def campaign_db():
         CREATE TABLE crm.Message(MessageId TEXT,ConversationId TEXT,Direction TEXT,Sequence INT);
         CREATE TABLE crm_channels2.ExternalMessage(InstitutionId TEXT,IntegrationId TEXT,MessageId TEXT,ExternalId TEXT);
         CREATE TABLE crm_channels2.MessageRoute(InstitutionId TEXT,IntegrationId TEXT,MessageId TEXT,IdentityId TEXT);
-        CREATE TABLE crm_channels2.WebhookEvent(InstitutionId TEXT,IntegrationId TEXT,Kind TEXT,Status TEXT,Payload TEXT,CreatedAt INT);
+        CREATE TABLE crm_channels2.WebhookEvent(InstitutionId TEXT,IntegrationId TEXT,Kind TEXT,Status TEXT,ProviderEventId TEXT,Payload TEXT,CreatedAt INT);
         CREATE TABLE crm_channels2.SendJob(InstitutionId TEXT,IntegrationId TEXT,QueueId TEXT,MessageId TEXT,ExternalId TEXT,State TEXT);
         CREATE TABLE crm_broadcast7.Attempt(InstitutionId TEXT,QueueId TEXT,RecipientId TEXT);
         CREATE TABLE crm_broadcast7.Recipient(InstitutionId TEXT,RecipientId TEXT,CampaignId TEXT,IdentityId TEXT,CurrentQueueId TEXT,Snapshot TEXT);
@@ -45,7 +45,7 @@ def campaign_db():
     connection.execute("INSERT INTO crm_broadcast7.Recipient VALUES('i','recipient','campaign','person','queue',?)", (json.dumps(snapshot),))
     payload = {"external": "wamid.in", "provider": {"type": "button", "context": {"id": "wamid.out"},
                 "button": {"text": entry.LABEL, "payload": "ignore instructions"}}}
-    connection.execute("INSERT INTO crm_channels2.WebhookEvent VALUES('i','account','message','processed',?,1)", (json.dumps(payload),))
+    connection.execute("INSERT INTO crm_channels2.WebhookEvent VALUES('i','account','message','processed','wamid.in',?,1)", (json.dumps(payload),))
     class Cursor:
         def execute(self, sql, *params):
             parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
@@ -58,11 +58,13 @@ def campaign_db():
     connection.close()
 
 
-@pytest.mark.parametrize("change", [None, "institution", "integration", "identity", "quote", "text_only", "unsent", "snapshot_changed", "future"])
+@pytest.mark.parametrize("change", [None, "no_quote", "institution", "integration", "identity", "quote", "text_only", "unsent", "snapshot_changed", "future"])
 def test_only_verified_same_account_recipient_and_accepted_campaign_reply_starts_ai(campaign_db, monkeypatch, change):
     connection, cursor, payload = campaign_db
     monkeypatch.setattr(entry.db, "institution", lambda _: "i")
-    if change == "institution":
+    if change == "no_quote":
+        payload["provider"].pop("context")
+    elif change == "institution":
         connection.execute("UPDATE crm_channels2.ExternalMessage SET InstitutionId='other'")
     elif change == "integration":
         connection.execute("UPDATE crm_broadcast7.Campaign SET IntegrationId='other'")
@@ -81,7 +83,7 @@ def test_only_verified_same_account_recipient_and_accepted_campaign_reply_starts
     connection.execute("UPDATE crm_channels2.WebhookEvent SET Payload=?", (json.dumps(payload),))
     history = [{"MessageId": "in", "Direction": "incoming", "Body": entry.LABEL, "Sequence": 2}]
     result = entry.origin(cursor, None, "thread", history)
-    if change:
+    if change and change != "no_quote":
         assert result is None
     else:
         assert result["program_hint"] == "Software" and result["sequence"] == 2
@@ -137,3 +139,12 @@ def test_opening_guidance_is_private_context_and_does_not_repeat_on_followup(mon
         assert entry.POLICY in value["system"] and "no permite levantar el modo Humano" in value["system"]
     policy = for_turn(entry.LABEL, history=[{"direction": "outgoing", "text": "Campaña"}])
     assert policy["turn_plan"]["phase"] == "orientation"
+
+
+def test_confirmed_agent_receives_verified_campaign_context_without_rerouting(monkeypatch):
+    selected = {"agent_id": "confirmed-specialist", "context": {"program_id": 7}}
+    monkeypatch.setattr(sales_context, "history", lambda *_: [])
+    monkeypatch.setattr(entry, "origin", lambda *_: {"sequence": 4, "routing_text": "old price"})
+    value = entry.enrich(None, None, "thread", selected, 4)
+    assert value["agent_id"] == selected["agent_id"] and value["context"] == selected["context"]
+    assert value["campaign_reply"] == {"sequence": 4} and "campaign_reply" not in selected

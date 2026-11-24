@@ -16,6 +16,8 @@ def projection(value):
             "fallback_used": trace.get("fallback_used") is True,
             "context_changes": data.get("dispatch_context_changes", [])[:30],
             "own_projection_context_refreshed": data.get("own_projection_context_refreshed") is True,
+            "campaign_entry_context": "inicio_comercial_campana" in data.get("contextComponents", {}),
+            "masterclass_context": "opciones_relacionadas_masterclass" in data.get("contextComponents", {}),
             "attempts": [{k: a.get(k) for k in ("provider", "model", "role", "state", "code")}
                          for a in trace.get("attempts", [])[:4] if isinstance(a, dict)],
             "conversation_id": str(data.get("conversation") or "")[:36]}
@@ -57,6 +59,8 @@ def read(c, settings, conversation=None):
 def install(app, settings):
     from app.institutional.reply_recovery import install as install_recovery
     install_recovery(app, settings)
+    from app.institutional.advisor_recovery import install as install_advisor_recovery
+    install_advisor_recovery(app, settings)
     @app.get("/api/institution/diagnostics")
     def overview(request: Request, conversation_id: str | None = None):
         with transaction(settings, anonymous=True) as c:

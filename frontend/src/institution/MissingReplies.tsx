@@ -14,20 +14,21 @@ type Candidate = {
   proof: string;
 };
 
-export function MissingReplies({ conversation }: { conversation?: string }) {
+export function MissingReplies({ conversation, advisor = false }: { conversation?: string; advisor?: boolean }) {
   const [opened, setOpened] = useState(false);
   return opened ? (
-    <Recovery conversation={conversation} />
+    <Recovery conversation={conversation} advisor={advisor} />
   ) : (
     <Button variant="secondary" onClick={() => setOpened(true)}>
-      Revisar entradas sin solicitud de IA
+      {advisor ? "Revisar solicitudes del botón comercial" : "Revisar entradas sin solicitud de IA"}
     </Button>
   );
 }
 
-function Recovery({ conversation }: { conversation?: string }) {
+function Recovery({ conversation, advisor }: { conversation?: string; advisor: boolean }) {
+  const endpoint = advisor ? "advisor-recovery" : "reply-recovery";
   const data = useResource<{ items: Candidate[] }>(
-    `reply-recovery${conversation ? `?conversation_id=${encodeURIComponent(conversation)}` : ""}`,
+    `${endpoint}${conversation ? `?conversation_id=${encodeURIComponent(conversation)}` : ""}`,
   );
   const { call, session } = useInstitution();
   const task = useTask();
@@ -37,12 +38,10 @@ function Recovery({ conversation }: { conversation?: string }) {
   const chosen = data.value?.items.filter((v) => selected.includes(v.id)) ?? [];
   if (!data.value) return <ResourceState error={data.error} />;
   return (
-    <section className="panel" aria-label="Entradas sin solicitud de IA">
-      <h3>Consultas que no llegaron a iniciar la IA</h3>
+    <section className="panel" aria-label={advisor ? "Solicitudes comerciales derivadas por error" : "Entradas sin solicitud de IA"}>
+      <h3>{advisor ? "Solicitudes del botón sin respuesta" : "Consultas que no llegaron a iniciar la IA"}</h3>
       <p>
-        Sólo aparecen las últimas entradas vigentes de chats en IA, recibidas en
-        las últimas 24 horas, sin respuesta posterior ni operación de IA. No se
-        repiten generaciones fallidas o envíos inciertos.
+        {advisor ? "Sólo botones de campañas verificadas de las últimas 24 horas, derivados automáticamente a Humano sin respuesta. Si hubo una intervención posterior, no se recuperan. Al confirmar vuelven a IA con una generación nueva; se conserva el registro anterior." : "Sólo aparecen las últimas entradas vigentes de chats en IA, recibidas en las últimas 24 horas, sin respuesta posterior ni operación de IA. No se repiten generaciones fallidas o envíos inciertos."}
       </p>
       {data.error && <Notice error>{data.error}</Notice>}
       {task.notices}
@@ -54,7 +53,7 @@ function Recovery({ conversation }: { conversation?: string }) {
         Actualizar pendientes
       </Button>
       {!data.value.items.length && (
-        <p>No hay entradas sin solicitud de IA para este filtro.</p>
+        <p>{advisor ? "No hay solicitudes comerciales recuperables para este filtro." : "No hay entradas sin solicitud de IA para este filtro."}</p>
       )}
       {!!data.value.items.length && (
         <>
@@ -106,8 +105,8 @@ function Recovery({ conversation }: { conversation?: string }) {
       {review && (
         <OperationDialog
           guidance={{
-            title: "Preparar las respuestas pendientes",
-            detail: `Se preparará una respuesta para ${chosen.length} conversaciones seleccionadas usando el contexto actual, las fuentes y las skills. Se conservan la espera configurada, los presupuestos y el modo Humano. No se reenvían mensajes anteriores.`,
+            title: advisor ? "Recuperar atención comercial" : "Preparar las respuestas pendientes",
+            detail: `Se preparará una respuesta para ${chosen.length} conversaciones seleccionadas usando el contexto actual, las fuentes y las skills. ${advisor ? "Los chats seleccionados vuelven a IA porque su único cambio a Humano fue la derivación automática del botón. Otras intervenciones humanas quedan excluidas." : "Se conserva el modo Humano."} Se conservan la espera y los presupuestos. No se reenvían mensajes anteriores.`,
             nextStep: chosen.map((v) => v.name).join(" · "),
           }}
           dismiss={() => setReview(false)}
@@ -116,7 +115,7 @@ function Recovery({ conversation }: { conversation?: string }) {
             run: () =>
               void task.run(async () => {
                 const result = await call<{ queued: number }>(
-                  "reply-recovery",
+                  endpoint,
                   "POST",
                   {
                     operation_id: operation.current,
