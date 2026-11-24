@@ -20,7 +20,7 @@ PERSUASION = ["reciprocity", "commitment_consistency", "social_proof", "authorit
 GROUPS = (
     ("discovery", r"interes|quiero|estudi|program|jornada|horario|duracion|materia|requisit|informacion",
      {"lead-triage", "lead-intelligence", "sales-discovery-questions", "meddpicc-scorecard", "deal-review"}),
-    ("pricing", r"precio|cuanto|cuesta|valor|abono|cuota|financi|contado|pago|beca|matricul",
+    ("pricing", r"precio|cuanto|cuesta|valor|\babon|cuota|financi|contado|pago|beca|matricul",
      {"pricing", "deal-value-calc"}),
     ("objection", r"caro|costoso|no puedo|no tengo|preocupa|duda|pensar|competencia|otra institucion|descuento|rebaj",
      {"handle-objection", "sales-objection-handling", "negotiation", "negotiation-concession-planner", "deal-red-flags"}),
@@ -51,7 +51,7 @@ SIMULATION_FOCUS = {
 def turn_plan(question, *, has_history=False, public=False):
     current = "".join(c for c in unicodedata.normalize("NFKD", str(question).casefold()) if not unicodedata.combining(c))[:4000]
     current = current.replace("optras", "otras").replace("voya", "voy a")
-    financial = bool(re.search(r"precio|cuesta|valor|abono|cuota|financi|contado|forma.*pago|\bplan\b", current)
+    financial = bool(re.search(r"precio|cuesta|valor|\babon|cuota|financi|contado|forma.*pago|\bplan\b", current)
                      or re.search(r"\bcuanto\s+(?:puedo\s+)?(?:empez|inici|pag|abon|invert|necesit)", current)
                      or re.search(r"\bcuanto\b", current) and not re.search(r"cuanto\s+(?:dura|tiempo|tarda)", current))
     commitment = bool(re.search(r"quiero.*(?:matricular|inscribir)|como.*(?:matricul|inscri)|listo para", current))
@@ -190,6 +190,9 @@ def instructions(trace):
         "Si entry_payment_offer incluye calendar_benefit, explica explícitamente ese margen para organizar la siguiente cuota "
         "junto al abono, sin prometer ausencia de otros gastos. "
         "Si no existe ese dato no inventes una pausa de pagos ni digas año entrante. "
+        "Si desea un abono inicial mayor, compara el plan vigente con mayor abono del mismo programa y jornada, si existe, con sus cuotas y total reales. "
+        "Para un importe diferente del plan aprobado, explica que puede permitir cuotas más bajas, pero Tesorería debe revisar y aprobar el reajuste del plan financiero y confirmar valores y fechas; no recalcules ni prometas nuevas cuotas o descuentos. "
+        "Pregunta cuánto desea abonar. Mientras Tesorería revisa, puede adelantar la inscripción; usa sólo un enlace oficial suministrado para ese programa, sin dar por confirmados pago, reserva, matrícula ni una remisión no ejecutada. "
         "Responde todo lo pedido sin repetir lo ya resuelto; el límite de palabras es orientativo. "
         "Seguimientos y gestiones requieren sus permisos y resultado real del backend."
     )

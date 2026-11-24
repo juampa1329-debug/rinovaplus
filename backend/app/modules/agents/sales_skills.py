@@ -1,6 +1,6 @@
 """Reviewed sales procedures. No downloaded skill can execute tools in the CRM."""
 
-VERSION = "cbn-sales-skills-v7"
+VERSION = "cbn-sales-skills-v8"
 # Adapted procedures, not the upstream coding/connector runtimes or their permissions.
 SKILLS = [
     ("social-comment-intent", "Intención de comentarios", "Comunicación", "Distingue solicitudes de información, apoyo, preguntas y quejas con el contexto de la publicación. No envíes publicidad privada ante cualquier interacción."),

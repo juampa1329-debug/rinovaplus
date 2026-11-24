@@ -167,8 +167,8 @@
     "pricing": {
       "name": "Presentación transparente de financiación",
       "source": "owner_requested_methodology_native_adaptation",
-      "sha256": "c4e3b024ef61e985f8fb4311a56e2de0c5f2c0e9f4b34c819cc72d5803763880",
-      "bytes": 2355
+      "sha256": "676fc5251411545ae868dde636dea23cd5a882a5d2a5136ba3459f4746ba9cb8",
+      "bytes": 2808
     },
     "negotiation-concession-planner": {
       "name": "Límites de concesiones",
