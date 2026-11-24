@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-24",
+  "deployment": "pending",
+  "button": "Hablar con Juan Pablo",
+  "authority": "accepted_broadcast_button_v1",
+  "inbox_promotion": "existing_real_inbound_filter_preserved",
+  "validation": {
+    "focused_tests": 181,
+    "ruff": "passed",
+    "broad_selection_failures": 8,
+    "same_failures_reproduced_on_previous_head": true,
+    "full_suite_green": false
+  },
+  "real_button_pilot": "not_run",
+  "model_calls": 0,
+  "customer_messages_sent": 0,
+  "human_control_changed": false,
+  "campaigns_activated": false,
+  "siie_writes": false,
+  "roadmap_acceptances_changed": false
+}

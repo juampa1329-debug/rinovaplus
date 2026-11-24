@@ -63,7 +63,8 @@ def turn_plan(question, *, has_history=False, public=False):
         current,
     ))
     detail = bool(re.search(r"materias|temario|requisitos|cuanto dura|duracion|horarios|beca|diplomas|titulos", current))
-    orientation = bool(re.search(r"\binfo\b|informacion|me interesa|conocer.*programa", current))
+    orientation = bool(re.search(r"\binfo\b|informacion|me interesa|conocer.*programa", current)
+                       or re.fullmatch(r"\W*hablar\s+con\s+juan\s+pablo\W*", current))
     phase = "objection" if objection else "financial" if financial else "comparison" if comparison else "next_step" if commitment else "specific_information" if detail else "value_alignment" if goal else "orientation" if orientation or not has_history else "continue"
     price_objection = bool(re.search(r"caro|costoso|barat|presupuesto|plata|dinero|no puedo pagar", current))
     return {"phase": phase, "money_relevant": financial or commitment or price_objection,

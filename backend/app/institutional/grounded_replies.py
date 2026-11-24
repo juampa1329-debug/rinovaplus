@@ -180,6 +180,7 @@ def context(
     )
     system += skill_instructions(skill_policy)
     system += style_instructions(config)
+    campaign_entry = (selection or {}).get("campaign_reply") if not public else None
     from app.institutional.institution_contacts import POLICY as CONTACT_POLICY
     system += CONTACT_POLICY
     if reply_turn and not public:
@@ -187,6 +188,9 @@ def context(
         system += TURN_RULES
     if public:
         system += PUBLICATION_RULES
+    if campaign_entry:
+        from app.institutional.broadcast_conversation import POLICY as CAMPAIGN_ENTRY_POLICY, advisor_entry
+        system += CAMPAIGN_ENTRY_POLICY
     system += (
         "\nInstrucciones configuradas (subordinadas a las reglas anteriores):\n"
         + instructions
@@ -208,6 +212,12 @@ def context(
         } if public else None,
         "interes_comercial_no_matricula": commercial_interest,
         "anuncio_de_origen": (selection or {}).get("ad_referral"),
+        **({"inicio_comercial_campana": {
+            **campaign_entry,
+            "entry_turn": campaign_entry["sequence"] == sequence or any(
+                advisor_entry(v) for v in (reply_turn or {}).get("pending", [])
+            ),
+        }} if campaign_entry else {}),
     }
     if conversation and not public:
         if reply_turn:

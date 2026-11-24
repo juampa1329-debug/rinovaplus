@@ -95,7 +95,20 @@ def configure(c, settings):
         programs, profiles = catalog_data(c, settings)
         # Bind only to incoming messages: our queued reply cannot change its own route.
         seq = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=? AND Direction='incoming'", conversation).fetchval()
-        detected = interest(programs, profiles, history(c, conversation, seq))
+        messages = history(c, conversation, seq)
+        detected = interest(programs, profiles, messages)
+        from app.institutional.broadcast_conversation import origin as campaign_origin
+        campaign = campaign_origin(c, settings, conversation, messages)
+        if campaign:
+            topic = matches(programs, profiles, campaign.pop("routing_text"))
+            found = matches(programs, profiles, campaign["program_hint"] + " " + campaign["schedule_hint"])
+            if topic:
+                overlap = [p for p in found if p in topic]
+                found = overlap or topic
+            if len(found) == 1 and (not detected or campaign["sequence"] > detected.get("sequence", 0)):
+                detected = {"program_id": found[0]["program_id"], "candidates": found,
+                            "status": "campaign_reply_context", "academic_confirmation": False,
+                            "source_message_id": campaign["source_message_id"], "sequence": campaign["sequence"]}
         from app.institutional.sales_referrals import origin
         referral = origin(c, settings, conversation, seq)
         if referral and referral.get("sequence", 0) <= c.context_cutoff(conversation):
@@ -118,7 +131,8 @@ def configure(c, settings):
                 detected = {**detected, "specialist_unavailable": True}
         value["commercial_interest"] = detected
         value["ad_referral"] = referral
-        value["binding"] = digest([value["binding"], detected, referral, seq])
+        value["campaign_reply"] = campaign
+        value["binding"] = digest([value["binding"], detected, referral, campaign, seq])
         value["reason"] = "commercial_interest" if detected and detected.get("program_id") and not detected.get("specialist_unavailable") else "commercial_clarification"
         return value
 
