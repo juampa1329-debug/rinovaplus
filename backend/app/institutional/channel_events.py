@@ -43,10 +43,28 @@ def replyable_message(channel, provider):
     if channel == "whatsapp":
         if provider.get("type") == "text":
             return True
+        if provider.get("type") in {"button", "interactive"}:
+            return bool(whatsapp_reply_text(provider))
         audio = provider.get("audio")
         return provider.get("type") == "audio" and isinstance(audio, dict) and valid_external(audio.get("id"))
     text = (provider.get("message") or {}).get("text")
     return channel in {"messenger", "instagram"} and isinstance(text, str) and bool(text.strip())
+
+
+def whatsapp_reply_text(message):
+    """Provider button titles are customer text, never executable payloads."""
+    if message.get("type") == "button":
+        value = (message.get("button") or {}).get("text")
+    elif message.get("type") == "interactive":
+        interactive = message.get("interactive")
+        if not isinstance(interactive, dict):
+            return ""
+        kind = interactive.get("type")
+        part = interactive.get(kind) if kind in {"button_reply", "list_reply"} else None
+        value = part.get("title") if isinstance(part, dict) else None
+    else:
+        value = None
+    return value.strip() if isinstance(value, str) and value.strip() else ""
 
 
 def bounded_provider(value, depth=0):
@@ -66,6 +84,7 @@ def bounded_provider(value, depth=0):
         "document",
         "video",
         "button",
+        "interactive", "button_reply", "list_reply", "title", "description",
         "caption",
         "filename",
         "mime_type",
@@ -216,6 +235,7 @@ def normalize(provider, payload, *, whatsapp_names=True, whatsapp_identifiers=Tr
                     text = (
                         (message.get("text") or {}).get("body")
                         or (message.get("button") or {}).get("text")
+                        or whatsapp_reply_text(message)
                         or "[" + str(message.get("type", "multimedia")) + "]"
                     )
                     effect = event(

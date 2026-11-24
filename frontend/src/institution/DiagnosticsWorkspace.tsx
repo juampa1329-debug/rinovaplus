@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Button, Notice, SelectField } from "../shared/ui";
 import { useResource, ResourceState } from "./Settings";
 import { explainInboxError } from "./InboxDelivery";
+import { MissingReplies } from "./MissingReplies";
 
 type Entry = {
   id: string;
@@ -133,6 +134,7 @@ export function DiagnosticsWorkspace() {
         </p>
       )}
       {data.error && <Notice error>{data.error}</Notice>}
+      <MissingReplies conversation={selectedConversation} />
       {!items.length && <Notice>No hay registros para estos filtros.</Notice>}
       <ol className="diagnostic-timeline">
         {items.map((item) => {
