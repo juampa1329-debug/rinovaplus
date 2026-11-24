@@ -66,6 +66,10 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  masterclass_preview_changed:
+    "Un contacto o programa cambió desde la revisión. Consulta el resultado y vuelve a revisar los intereses antes de continuar.",
+  masterclass_scope_limit:
+    "Hay demasiados contactos para esta revisión. Divide la actualización antes de continuar.",
   language_rehearsal_free_backup_required:
     "Este ensayo necesita respaldos de OpenRouter guardados. Revisa la política antes de probar.",
   language_rehearsal_paid_confirmation_required:

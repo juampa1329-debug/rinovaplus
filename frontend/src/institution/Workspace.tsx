@@ -33,6 +33,7 @@ import { InboxSuggestion } from "./InboxSuggestion";
 import { MetaAutomationHelp } from "./MetaAutomationHelp";
 import { MetaHistorySync } from "./MetaHistorySync";
 import { ProspectImport } from "./ProspectImport";
+import { MasterclassInterests } from "./MasterclassInterests";
 import {
   ChannelLabel,
   ConversationRow,
@@ -786,6 +787,7 @@ function WorkspaceView({
       ) : (
         <>
           {page === "clients" && <ProspectImport changed={changed} />}
+          {page === "clients" && <MasterclassInterests changed={changed} />}
           {!inbox && (
             <section
               className="panel p3-filters"

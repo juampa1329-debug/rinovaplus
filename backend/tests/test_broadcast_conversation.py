@@ -98,6 +98,8 @@ def test_exact_button_title_does_not_swallow_explicit_human_requests(text, expec
 
 @pytest.mark.parametrize("latest,expected", [(None, 2), ("Ahora prefiero Enfermería", 1), ("Quiero otro programa", None)])
 def test_campaign_program_routes_specialist_but_recent_customer_change_wins(monkeypatch, latest, expected):
+    from app.institutional import masterclass_interests
+    monkeypatch.setattr(masterclass_interests, "orientation", lambda *_: None)
     programs = [{"program_id": 1, "name": "Enfermería", "schedule": "DIURNA"},
                 {"program_id": 2, "name": "Software", "schedule": "DIURNA"}]
     history = [{"Direction": "incoming", "Body": entry.LABEL, "MessageId": "entry", "Sequence": 2}]

@@ -93,6 +93,13 @@ def configure(c, settings):
         if len(guides) != 1 or not guides[0]["configuration"].get("sales_routing_enabled"):
             return None
         programs, profiles = catalog_data(c, settings)
+        from app.institutional.masterclass_interests import orientation
+        suggested = orientation(c, settings, conversation)
+        if suggested:
+            ids = {v["program_id"] for v in suggested["programs"]}
+            suggested["programs"] = [{k: p.get(k, "") for k in ("program_id", "name", "school", "schedule")}
+                                     for p in programs if p["program_id"] in ids]
+            suggested = suggested if suggested["programs"] else None
         # Bind only to incoming messages: our queued reply cannot change its own route.
         seq = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=? AND Direction='incoming'", conversation).fetchval()
         messages = history(c, conversation, seq)
@@ -132,7 +139,8 @@ def configure(c, settings):
         value["commercial_interest"] = detected
         value["ad_referral"] = referral
         value["campaign_reply"] = campaign
-        value["binding"] = digest([value["binding"], detected, referral, campaign, seq])
+        value["masterclass_orientation"] = suggested
+        value["binding"] = digest([value["binding"], detected, referral, campaign, suggested, seq])
         value["reason"] = "commercial_interest" if detected and detected.get("program_id") and not detected.get("specialist_unavailable") else "commercial_clarification"
         return value
 

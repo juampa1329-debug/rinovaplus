@@ -97,6 +97,7 @@ def context(
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions, project_facts
     prior_history = history[:-1] if history and history[-1]["direction"] == "incoming" and history[-1]["text"] == redact(question[:1600]) else history
     turn_text = "\n".join(reply_turn["pending"]) if reply_turn and not public else ""
+    related = (selection or {}).get("masterclass_orientation") if not public else None
     skill_policy = for_turn(turn_text or question, history=prior_history, public=public)
     if hasattr(c, "__dict__"):
         c.agent_turn_policy = skill_policy
@@ -107,6 +108,8 @@ def context(
         + post[:1600]
         + " "
         + " ".join(v["text"] for v in history if v["direction"] == "incoming")
+        + (" " + " ".join(dict.fromkeys(p["name"] for p in related["programs"]))
+           if related and not program and not commercial_interest else "")
     )
     catalog = Catalog(settings).read_context(c, retrieval, program)
     capabilities = config.get("capabilities", ["program.read", "sources.read"])
@@ -191,6 +194,9 @@ def context(
     if campaign_entry:
         from app.institutional.broadcast_conversation import POLICY as CAMPAIGN_ENTRY_POLICY, advisor_entry
         system += CAMPAIGN_ENTRY_POLICY
+    if related:
+        from app.institutional.masterclass_interests import POLICY as MASTERCLASS_POLICY
+        system += MASTERCLASS_POLICY
     system += (
         "\nInstrucciones configuradas (subordinadas a las reglas anteriores):\n"
         + instructions
@@ -212,6 +218,7 @@ def context(
         } if public else None,
         "interes_comercial_no_matricula": commercial_interest,
         "anuncio_de_origen": (selection or {}).get("ad_referral"),
+        **({"opciones_relacionadas_masterclass": related} if related else {}),
         **({"inicio_comercial_campana": {
             **campaign_entry,
             "entry_turn": campaign_entry["sequence"] == sequence or any(
