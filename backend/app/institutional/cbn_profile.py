@@ -4,6 +4,17 @@ from uuid import NAMESPACE_URL, uuid5
 
 REVIEWED = "2026-11-20"
 ADMISSIONS_LOCATION = "Avenida del Libertador #13-45, frente a la Registraduría, Santa Marta"
+REGISTRATION_URL = "https://siieplus.online/SIIEWebPlus/inscripciones"
+PREICFES_REGISTRATION_URL = "https://siieplus.online/SIIEWEBPLUS/PreIcfes/Inscripcion.html"
+REGISTRATION_POLICY = (
+    "\nINSCRIPCIÓN REVISADA POR EL TITULAR (2026-11-24): cuando la persona manifieste que desea "
+    "inscribirse o adelantar ese proceso, comparte el formulario oficial de las fuentes revisadas. "
+    "Para PRE-ICFES usa su formulario específico; para los demás programas usa el formulario general, "
+    "en el que la persona elige programa y jornada y completa sus datos. No intercambies ambos enlaces. "
+    "Puede adelantar la inscripción mientras Contabilidad o Tesorería revisan un reajuste financiero; "
+    "el formulario no aprueba el plan, confirma pagos, reserva un cupo ni acredita una matrícula. "
+    "No afirmes que lo llenaste, enviaste o que ya se confirmó una inscripción sin evidencia del sistema."
+)
 LOCATION_POLICY = (
     "\nUBICACIÓN Y ATENCIÓN PRESENCIAL REVISADAS POR EL TITULAR (2026-11-20): "
     "La oficina de Admisiones de CBN está en " + ADMISSIONS_LOCATION + ". "
@@ -17,6 +28,18 @@ LOCATION_POLICY = (
     "Si preguntan expresamente si eres IA, responde con transparencia."
 )
 FACTS = [
+    {
+        "topic": "inscripcion_general",
+        "text": "Formulario oficial para adelantar la inscripción a los programas de CBN distintos de PRE-ICFES: " + REGISTRATION_URL + ". La persona elige programa y jornada y completa sus datos. No confirma por sí solo un pago, reajuste financiero, cupo o matrícula.",
+        "source": REGISTRATION_URL,
+        "reviewed_at": "2026-11-24",
+    },
+    {
+        "topic": "inscripcion_preicfes",
+        "text": "Formulario oficial exclusivo para la inscripción a PRE-ICFES CBN: " + PREICFES_REGISTRATION_URL + ". La persona completa sus datos y elige el grupo. PRE-ICFES conserva este formulario específico en lugar del formulario general de los otros programas.",
+        "source": PREICFES_REGISTRATION_URL,
+        "reviewed_at": "2026-11-24",
+    },
     {
         "topic": "oficina_admisiones",
         "text": "Oficina de Admisiones: " + ADMISSIONS_LOCATION + ". Ubicación confirmada por el titular; no confirma horarios ni la presencia de un asesor específico.",
@@ -55,10 +78,11 @@ def reviewed_sources(sources):
     values = list(sources)
     known = {source["id"] for source in values}
     for fact in FACTS:
-        identifier = str(uuid5(NAMESPACE_URL, "cbn-reviewed:" + REVIEWED + ":" + fact["topic"]))
+        reviewed_at = fact.get("reviewed_at", REVIEWED)
+        identifier = str(uuid5(NAMESPACE_URL, "cbn-reviewed:" + reviewed_at + ":" + fact["topic"]))
         if identifier not in known:
             values.append({"id": identifier, "title": "CBN · fuente institucional revisada · " + fact["topic"],
-                           "text": fact["text"], "provenance": fact["source"], "revision": REVIEWED,
+                           "text": fact["text"], "provenance": fact["source"], "revision": reviewed_at,
                            "source_kind": "reviewed_institutional_fact", "financial_source": False})
             known.add(identifier)
     return values

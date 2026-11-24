@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-24",
+  "deployment": "pending",
+  "general_registration_url": "https://siieplus.online/SIIEWebPlus/inscripciones",
+  "preicfes_registration_url": "https://siieplus.online/SIIEWEBPLUS/PreIcfes/Inscripcion.html",
+  "public_general_form_opened": true,
+  "form_submitted": false,
+  "urgent_replies": [
+    {
+      "reason": "reply_context_changed_before_provider",
+      "discarded_parts": 5,
+      "prior_provider_attempts": 0,
+      "new_reply_receipt": "read",
+      "ai_restored": true
+    },
+    {
+      "prior_receipt": "delivered",
+      "deletion_available_in_inbox": false,
+      "prior_message_deleted": false,
+      "clarification_receipt": "sent",
+      "ai_restored": true
+    }
+  ],
+  "validation": {
+    "backend_focused_tests": 191,
+    "ruff": "passed",
+    "model_test_calls": 0
+  },
+  "siie_writes": false,
+  "financial_plans_changed": false,
+  "roadmap_acceptances_changed": false
+}
