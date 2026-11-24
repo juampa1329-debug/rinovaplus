@@ -981,13 +981,14 @@ class Broadcasts:
             found = rows(
                 c,
                 (
-                    "SELECT i.IdentityId,i.Externa"
-                    "lId,i.ContactId,i.ConversationId,p.Nam"
+                    "WITH base AS (SELECT i.IdentityId,i.ExternalId,"
+                    "i.ExternalId AS Phone,i.ContactId,i.ConversationId,p.Nam"
                     "e FROM crm_channels2.ExternalIdentity "
                     "i JOIN crm.Contact p ON p.ContactId=i."
                     "ContactId WHERE i.InstitutionId=? AND "
-                    "i.IntegrationId=? AND (?='' OR CHARINDEX(?,p.Name)>0 "
-                    "OR CHARINDEX(?,i.ExternalId)>0) ORDER BY p.Name,i.IdentityId "
+                    "i.IntegrationId=?) SELECT * FROM base "
+                    "WHERE (?='' OR CHARINDEX(?,Name)>0 "
+                    "OR CHARINDEX(?,Phone)>0) ORDER BY Name,IdentityId "
                     "OFFSET ? ROWS FETCH NEXT 101 ROWS ONLY"
                 ),
                 institution(self.settings),

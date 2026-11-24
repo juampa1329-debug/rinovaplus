@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 from app.institutional import broadcasts
+from app.institutional.postgres_dialect import postgres_sql
 
 
 def test_consent_search_is_scoped_bound_and_paginated_above_500(monkeypatch):
@@ -35,3 +36,10 @@ def test_consent_search_is_scoped_bound_and_paginated_above_500(monkeypatch):
     assert params == (
         "institution", "selected-account", "Ana %'", "Ana %'", "Ana %'", 600,
     )
+    converted = postgres_sql(sql, {
+        "crm.Contact": "dbo.CRMContacto",
+        "crm_channels2.ExternalIdentity": "dbo.CRMIdentidadExterna",
+    })
+    assert "CHARINDEX" not in converted
+    assert 'strpos(lower(Name COLLATE "default"),lower(%s))' in converted
+    assert "OFFSET %s ROWS FETCH NEXT 101 ROWS ONLY" in converted
