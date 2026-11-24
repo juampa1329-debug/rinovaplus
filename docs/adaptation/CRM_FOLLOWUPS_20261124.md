@@ -33,3 +33,11 @@ Recuperación administrativa explícita de handoffs vacíos: sólo últimas 24 h
 - Base de seguimiento explícita: marketing sigue siendo el valor histórico predeterminado. `customer_request` sólo con `followup_only`, entrada real y últimas24horas, modoIA, sinNoContact y conguardas. Permite la plantillaCRM de atención solicitada sin exigir un consentimiento de campaña masiva. Fuera de esa ventana siguen consentimiento y plantillaMeta; no se crean autorizaciones ni se extiende su vigencia. Envíos conservan límite/cadencia, vínculo de cuenta y versión de consentimiento si existe.
 - Continuidad de recuperación: las operaciones nuevas se vinculan a su entrada original para el manifiesto de preguntas atendidas; no se borra ni sustituye la derivación anterior. Se reconoce también la solicitud explícita de pausa, sin confundir «no quiero pausar» con una baja.
 -125pruebas backend del ajuste pasan, incluyendo consentimiento/ventana/Humano/baja, preparación CRM sin permiso de marketing y diagnóstico privado. Selección solapada con las244previas. Publicación del ajuste optimizado y secuencia completa aún pendientes en este corte.
+
+Fuente primaria revisada para la ventana de respuesta: [Política de mensajes de WhatsApp Business](https://business.whatsapp.com/policy/preview?lang=es_LA). Se conserva la separación entre respuesta solicitada dentro de24horas y plantilla aprobada fuera de esa ventana; no se deducen tarifas ni autorizaciones del contacto a partir de la aprobación.
+
+## Ajuste de observación y despliegue adicional
+
+897391e se publicó con backend Success4m41 y frontend Success43s. La secuencia completa quedó Activa v2; el activador v2 se guardó en borrador con cadencia1440min, pero su activación devolvió503 y no se considera aplicada. Logs nativos acotados muestran55P03, sin leer SQL ni parámetros. Se evita el recorrido de observación global cuando no existen activadores de entrada/cambio; un activador sólo de inactividad conserva su detección sin ese recorrido innecesario.73pruebas focalizadas yRuff pasan. No se modifica el bloqueo de seguridad institucional ni sus tiempos.
+
+Se observó una restauración de control transitoria durante una acción rechazada por revisión automática; se comprobó y devolvió el chat a su modo IA original. No se usó ese cambio para enviar. La revisión no bloqueó la activación del flujo por separado.

@@ -1,5 +1,7 @@
 import json
+from contextlib import contextmanager
 from types import SimpleNamespace
+from unittest.mock import Mock
 from uuid import uuid4
 
 import pytest
@@ -10,6 +12,37 @@ from app.institutional import campaign_runtime as runtime, campaigns, contact_pr
 from app.institutional.campaign_models import Flow
 from app.institutional.operations_policy import layout
 from app.institutional.postgres_dialect import postgres_sql
+
+
+@pytest.mark.parametrize("types,observe,inactivity,triggers", [
+    ([], False, False, False),
+    (["inactivity"], False, True, True),
+    (["message_in"], True, False, True),
+    (["stage_changed", "inactivity"], True, True, True),
+])
+def test_idle_worker_does_not_scan_contacts_without_change_consumers(
+    monkeypatch, types, observe, inactivity, triggers
+):
+    settings = SimpleNamespace(ticket={"context": [[1, str(uuid4())]]})
+    @contextmanager
+    def tx(*args, **kwargs):
+        yield Mock()
+    monkeypatch.setattr(runtime, "transaction", tx)
+    monkeypatch.setattr(runtime, "enabled", lambda *_: True)
+    def selected(_c, sql, *args):
+        if "AS EventType" in sql:
+            parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+            return [{"EventType": value} for value in types]
+        assert "Enrollment" in sql
+        return []
+    monkeypatch.setattr(runtime, "rows", selected)
+    monkeypatch.setattr(runtime, "one", lambda *_: None)
+    worker = runtime.Worker(settings)
+    worker.observe, worker.inactivity, worker.triggers = Mock(), Mock(), Mock()
+    assert worker.once() is False
+    assert worker.observe.called is observe
+    assert worker.inactivity.called is inactivity
+    assert worker.triggers.called is triggers
 
 
 @pytest.mark.parametrize("quiet,exit_response,allowed", [(True, True, True), (False, True, False), (True, False, False)])

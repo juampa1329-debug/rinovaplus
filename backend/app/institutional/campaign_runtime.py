@@ -899,9 +899,23 @@ class Worker:
                 except HTTPException as error:
                     stop(c, self.settings, run, str(error.detail))
                     return True
-            self.observe(c)
-            self.inactivity(c)
-            self.triggers(c)
+            trigger_types = rows(
+                c,
+                "SELECT TOP(101) JSON_VALUE(Document,'$.event_type') AS EventType FROM crm_campaign8.Record WHERE InstitutionId=? AND Kind='trigger' AND State='active'",
+                institution(self.settings),
+            )
+            if len(trigger_types) > 100:
+                raise HTTPException(413, "campaign_trigger_scope_limit")
+            # Observation scans are needed only for change-based triggers.
+            # Do not hold the institutional write lock scanning every contact
+            # when no trigger consumes those signals (including inactivity-only).
+            kinds = {v["EventType"] for v in trigger_types}
+            if kinds & {"message_in", "stage_changed", "program_changed"}:
+                self.observe(c)
+            if "inactivity" in kinds:
+                self.inactivity(c)
+            if kinds:
+                self.triggers(c)
             run = one(
                 c,
                 "SELECT TOP(1) * FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND State IN('waiting','queued') AND DueAt<=SYSUTCDATETIME() ORDER BY DueAt,EnrollmentId",
