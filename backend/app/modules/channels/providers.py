@@ -348,7 +348,7 @@ def meta_reply_context(account, payload):
     reference = payload.get("replyToMessageId")
     if reference is None:
         return {}
-    if (payload.get("kind") != "message" or not isinstance(reference, str)
+    if (payload.get("kind") not in {"chat", "message"} or not isinstance(reference, str)
             or not reference or len(reference) > 2000 or any(v.isspace() for v in reference)):
         raise ProviderFailure("meta_reply_reference_invalid")
     # Official quoted Instagram replies are documented for Facebook Login.

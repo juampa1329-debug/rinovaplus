@@ -307,7 +307,7 @@ def test_meta_text_quote_is_top_level_and_never_retried_without_reference(monkey
     calls = []
     monkeypatch.setattr(providers, "request", lambda _a, _m, _p, body: calls.append(body) or {"message_id": "accepted"})
     account = {"channel": channel, "configuration": {"pageId": "page", "accountId": "ig", "instagramLogin": "facebook"}}
-    payload = {"kind": "message", "target": "person", "body": "Respuesta completa", "replyToMessageId": "m_oldest"}
+    payload = {"kind": "chat", "target": "person", "body": "Respuesta completa", "replyToMessageId": "m_oldest"}
     assert providers.send(account, payload) == "accepted"
     assert calls[0]["reply_to"] == {"mid": "m_oldest"}
     assert "reply_to" not in calls[0]["message"]
@@ -315,6 +315,9 @@ def test_meta_text_quote_is_top_level_and_never_retried_without_reference(monkey
         with pytest.raises(providers.ProviderFailure, match="meta_reply_reference_invalid"):
             providers.send(account, {**payload, "replyToMessageId": invalid})
     assert len(calls) == 1
+    for kind in ["comment", "private_reply"]:
+        with pytest.raises(providers.ProviderFailure, match="meta_reply_reference_invalid"):
+            providers.meta_reply_context(account, {**payload, "kind": kind})
 
 
 def test_whatsapp_provider_preserves_context_only_when_requested(monkeypatch):
