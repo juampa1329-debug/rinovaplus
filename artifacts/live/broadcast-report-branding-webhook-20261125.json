@@ -12,7 +12,10 @@
     "pull_request": "https://github.com/juampa1329-debug/rinovaplus/pull/1",
     "merge": "60dceb6",
     "pull_request_state": "merged",
-    "ci_checks_on_pr": 0
+    "ci_checks_on_pr": 0,
+    "diagnostic_pull_request": "https://github.com/juampa1329-debug/rinovaplus/pull/2",
+    "diagnostic_merge": "813fbaf",
+    "diagnostic_pull_request_state": "merged"
   },
   "deployments": {
     "backend_report_fix": {
@@ -31,6 +34,18 @@
       "state": "Success",
       "duration": "00m44s",
       "revision": "60dceb6"
+    },
+    "backend_signature_diagnostics": {
+      "id": "g8umqbsbdmfhbuhdfyl4tivf",
+      "state": "Success",
+      "application_state": "Running",
+      "duration": "04m18s",
+      "revision": "813fbaf"
+    },
+    "frontend_webhook_http_log": {
+      "state": "Success",
+      "duration": "00m25s",
+      "revision": "813fbaf"
     }
   },
   "local_checks": {
@@ -114,10 +129,10 @@
       "real_person_documents_used": false,
       "verified_inbound_events_after_registration": 0,
       "remote_event_injected_by_agent": false,
-      "producer_http_status_pending": true,
+      "producer_http_status_pending": false,
       "producer_reported_http": 403,
       "producer_event_id": "edd87d5d-dd6a-49dc-a6cc-147facb87659",
-      "producer_timestamp_header_pending": true,
+      "producer_timestamp_header_pending": false,
       "producer_event_json_validated_locally": true,
       "invalid_fields": [
         "occurred_at"
@@ -125,7 +140,36 @@
       "received_occurred_at": "2026-11-26T01:25:23.0000000Z",
       "local_validation_utc": "2026-11-25T22:35:27Z",
       "ahead_seconds_at_validation": 10196,
-      "other_fields_valid_with_valid_time": true
+      "other_fields_valid_with_valid_time": true,
+      "raw_timestamp_header_obtained": false
+    },
+    "native_ingress_diagnostic": {
+      "observed_at_utc": "2026-11-25T22:44:00Z",
+      "backend_reason": "clock_skew",
+      "skew_seconds": -10809,
+      "signature_matches": true,
+      "producer_ahead_seconds": 10809,
+      "proxy_attempts": [
+        {
+          "at_utc": "2026-11-25T22:42:31Z",
+          "status": 403,
+          "upstream": 403,
+          "duration_seconds": 0.066
+        },
+        {
+          "at_utc": "2026-11-25T22:43:51Z",
+          "status": 403,
+          "upstream": 403,
+          "duration_seconds": 0.067
+        }
+      ],
+      "event_id_in_logs": false,
+      "payload_or_headers_logged": false,
+      "event_attribution_from_status_only_claimed": false,
+      "acceptance_claimed": false,
+      "fresh_authenticated_receipt_read_after_rollout": false,
+      "receipt_read_blocker": "institutional_session_expired",
+      "producer_clock_correction_and_retry_pending": true
     }
   }
 }
