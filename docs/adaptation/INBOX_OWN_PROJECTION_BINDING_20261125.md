@@ -8,6 +8,8 @@ La ficha confirmó que el interés declarado se guardó desde ese mismo mensaje.
 
 Se envió una orientación nueva, sin relanzar la cola descartada. WhatsApp la confirmó Entregada y después Leída, a las 11:56 de Bogotá. Se restauró IA y se comprobó el control desactivado para Humano. El historial anterior se conserva.
 
+El contacto continuó eligiendo fines de semana y preguntando si la formación era gratuita. Dos partes automáticas posteriores quedaron Leídas; otras dos quedaron sin enviar por contexto cambiado/parte anterior. No se atribuye ese segundo descarte al mismo fallo sin una comparación persistida de componentes. Se atendió la pregunta pendiente con una aclaración nueva de coste, abono, cuotas y alcance de la beca opcional; quedó **Entregada** a las 12:06 y se restauró IA. No se repitieron los fragmentos anteriores ni se inventó su entrega.
+
 ## Causa y corrección
 
 La selección del agente incluye un digest del contexto comercial, además de identidad de agente, modelo y credencial. Al guardar el interés declarado, deja de aplicar la sugerencia anterior de masterclass. El digest cambia aunque el agente y la configuración efectiva sean los mismos.
@@ -28,6 +30,8 @@ El diagnóstico ahora distingue un cambio de selección/configuración de un pro
 
 ## Publicación y límites
 
-Corrección preparada para publicar; el cierre con referencia de imagen y comprobación operativa se registra en la evidencia `artifacts/live/inbox-own-projection-binding-20261125.json`.
+Código `55e4941` publicado tras integrar, sin sobrescribir, la corrección remota de importación `feca36a`/`fc14046`. Backend Coolify `u8x79ldqhvbhs3cz215nzs6d`: **Success/Running, 4m32s**. Frontend `gw7304xqpx09aylmvgx51cv4`: **Success, 51s**. La interfaz recargada muestra la explicación específica de cambio de selección del agente, en lugar de atribuirlo a la conexión del canal. A las **12:08:55 de Bogotá**, PostgreSQL respondía y los nueve procesos estaban **Al día**.
+
+La regresión de proyección→primer despacho se verificó localmente. No se inyectaron fallos en producción ni se provocó un nuevo turno pagado para este ensayo; no se acredita todavía un nuevo caso real posterior al redeploy que retire la sugerencia de masterclass. Evidencia agregada: `artifacts/live/inbox-own-projection-binding-20261125.json`.
 
 Las pruebas locales no acreditan entrega perpetua ni todos los mensajes históricos atendidos. La orientación manual sí tiene recibo real. No se cambian modelos activos, claves, límites, consentimientos ni fases aceptadas. Sin DDL, seeds, servicios nuevos, escrituras SIIE ni nuevas pruebas pagadas de LLM.

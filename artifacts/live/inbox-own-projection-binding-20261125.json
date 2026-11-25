@@ -1,6 +1,6 @@
 {
   "date": "2026-11-25",
-  "stage": "prepared_tested_for_publication",
+  "stage": "published_verified_specific_projection_defect",
   "incident": {
     "channel": "whatsapp",
     "first_part_code": "gemini_whatsapp_model_changed",
@@ -12,11 +12,17 @@
     "masterclass_orientation_retired_after_customer_choice": true
   },
   "recovery": {
-    "new_orientations": 1,
+    "new_orientations": 2,
     "sent_bogota": "2026-11-25 11:56",
     "receipt_observed": "read",
     "ai_control_restored": true,
-    "historical_jobs_replayed": false
+    "historical_jobs_replayed": false,
+    "receipts_observed": {
+      "read": 1,
+      "delivered": 1
+    },
+    "later_price_clarification_bogota": "2026-11-25 12:06",
+    "subsequent_customer_questions_seen": true
   },
   "fix": {
     "same_transaction_context_and_model_binding_refresh": true,
@@ -38,5 +44,34 @@
   "ddl_seeds_or_new_services": false,
   "real_siie_writes": 0,
   "phase_acceptances_changed": false,
-  "contains_personal_data_or_credentials": false
+  "contains_personal_data_or_credentials": false,
+  "code_commit": "55e4941",
+  "observation_limits": {
+    "later_partial_response_context_change_seen_before_deploy": true,
+    "same_cause_proven_for_later_context_change": false,
+    "later_price_question_manually_answered": true,
+    "new_post_deploy_real_projection_turn_observed": false,
+    "all_historical_conversations_claimed_served": false
+  },
+  "deployments": {
+    "backend": {
+      "commit": "55e4941",
+      "id": "u8x79ldqhvbhs3cz215nzs6d",
+      "state": "Success",
+      "application_state": "Running",
+      "duration": "04m32s"
+    },
+    "frontend": {
+      "commit": "55e4941",
+      "id": "gw7304xqpx09aylmvgx51cv4",
+      "state": "Success",
+      "duration": "00m51s"
+    }
+  },
+  "live_checks": {
+    "operations_bogota": "2026-11-25 12:08:55",
+    "processes_up_to_date": 9,
+    "database_responding": true,
+    "specific_model_change_guidance_visible": true
+  }
 }
