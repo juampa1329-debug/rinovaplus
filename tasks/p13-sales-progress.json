@@ -204,7 +204,8 @@
     "code": "55cbb66",
     "library_guides": 37,
     "new_acceptance_claimed": false,
-    "remaining": ["General day start times and weekdays", "General night weekdays", "Customs shift", "Pastry weekend hours", "Technical/English class start dates", "Detailed PRE calendar", "Intermittent HTTP rate limiting and SQL lock contention"]
+    "storage_incident_followup": "artifacts/live/inbox-storage-contention-20261124.json",
+    "remaining": ["General day start times and weekdays", "General night weekdays", "Customs shift", "Pastry weekend hours", "Technical/English class start dates", "Detailed PRE calendar", "Operational monitoring beyond bounded native checks; HTTP120 preserved"]
   },
   "acceptance": {
     "requested_by_owner": true,

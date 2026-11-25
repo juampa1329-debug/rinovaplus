@@ -204,3 +204,7 @@ Auditoría27fichas/51planes, sin diferencias aritméticas y con precio/duración
 ## Corrección de contención del Inbox preparada — 24 de noviembre de 2026
 
 Transacciones de seguimientos separadas por contacto y por etapa de mantenimiento; filtro temprano de inactividad necesario y relectura actual antes de cada guardia. `storage_busy` sólo para55P03antesdeltrabajo, diagnóstico sanitizado y una recuperación GET sin repetir mutaciones ni omitir429.106backend/21frontend, tipos, Ruff, ESLint y build institucional pasan; bundle histórico. Publicación/prueba real pendientes en este corte. [Incidente y garantías](INBOX_STORAGE_CONTENTION_20261124.md). No cambia fases/aceptaciones ni presupuesto/modelos.
+
+## Contención del Inbox publicada y comprobada — 24 de noviembre de 2026
+
+653411f: backendSuccess/Running5m34 y frontendSuccess1m05. Cinco cargas en treshilos, mensajes21/27/29, contexto y ficha disponibles, ceroalertas; Humano guardado eIA restaurada y confirmada trasrecarga. Sin mensajes nuevos de prueba ni replay incierto. Registros nuevos identifican55P03eninstitution_lock; cuatroesperas duranteelrollout00:14:27–28UTC se conservan y no hay adicionales enla muestra actualizada traslascomprobaciones. Transaccioneslentas aún observadas: sinpromesa deSLA ni carga máxima. No cambiaHTTP120 ni fases/P22. [Evidencia](../../artifacts/live/inbox-storage-contention-20261124.json), [incidente](INBOX_STORAGE_CONTENTION_20261124.md).

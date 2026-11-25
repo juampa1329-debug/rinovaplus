@@ -19,3 +19,13 @@ El frontend de Inbox y Agentes distingue servidor ocupado de identidad/clave. Un
 - Ruff seleccionado, tipos, ESLint y compilación institucional pasan. Advertencia histórica de tamaño de bundle conservada.
 
 Publicación y observación real posteriores se registrarán al verificar Coolify. Estas pruebas no acreditan por sí solas que desaparezca toda contención futura ni una carga máxima institucional. No se reenvían mensajes de clientes para ensayar.
+
+## Publicación y comprobación nativa
+
+653411f publicado: backend `vkkldoyuggtjjlkxwqlwrsw4`, Success/Running, 5m34s; frontend `h1mhsciuydngvbsri7rl0lcm`, Success/Running, 1m05s. Se comprobó la versión nueva desde la interfaz, sin acceso directo a SQL ni credenciales.
+
+Cinco cargas satisfactorias en tres hilos reales: 21, 27 y 29 mensajes en sus respectivos tramos; apartado de agentes y ficha CRM disponibles, cero alertas en las comprobaciones. En el caso original se guardó Humano y se restauró IA; una recarga posterior confirmó IA y el mismo historial, incluida la orientación previamente Entregada. No se envió ningún mensaje nuevo para probar la corrección ni se repitió el envío antiguo Sin confirmar.
+
+El diagnóstico nuevo confirma que las esperas son al adquirir el bloqueo institucional (`institution_lock`), no fallos de clave/modelo. La muestra nativa de registros conserva cuatro55P03 a00:14:27–28UTC del25Nov durante el rollout; se reconocen, no se borran ni se afirma cero errores desde el arranque. Después de las comprobaciones y de actualizar los registros, no aparecieron errores nuevos de ese tipo en la muestra. También se conservan avisos de transacciones lentas (máximo observado3432ms); esta observación acotada no sustituye una prueba de carga institucional ni garantiza ausencia perpetua de contención.
+
+Evidencia agregada sin nominales: `artifacts/live/inbox-storage-contention-20261124.json`. El roadmap y la auditoría académica se actualizan en el mismo repositorio, conservando las aceptaciones de fases.
