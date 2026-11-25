@@ -1,8 +1,11 @@
 """Four Registration 2 routes, one existing key, no automatic POST retries."""
 
 import json
+import logging
 import os
 import re
+from contextlib import contextmanager
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import httpx2 as httpx
 from fastapi import HTTPException
@@ -19,6 +22,7 @@ PATHS = {
 }
 MAX_FILE = 10 * 1024 * 1024
 MAX_TOTAL = 50 * 1024 * 1024
+LOG = logging.getLogger("uvicorn.error")
 UNCERTAIN = {
     "commit_outcome_unknown",
     "storage_outcome_unknown",
@@ -125,6 +129,36 @@ def _reference(value):
     return value if re.fullmatch(r"[A-Za-z0-9_-]{1,100}", value) else None
 
 
+@contextmanager
+def response_for(client, method, url, headers, kwargs):
+    with client.stream(method, url, headers=headers, **kwargs) as response:
+        if method == "GET" and response.status_code == 301:
+            actual = urlsplit(str(response.url))
+            target = urlsplit(
+                urljoin(str(response.url), response.headers.get("Location", ""))
+            )
+            # ASP.NET Friendly URLs: same origin, exact extensionless path,
+            # same query (or omitted query which we restore). No POST replay.
+            if (
+                actual.path.endswith(".aspx")
+                and target.scheme == actual.scheme
+                and target.netloc == actual.netloc
+                and target.path == actual.path[:-5]
+                and target.query in {"", actual.query}
+                and not target.fragment
+            ):
+                response.close()
+                destination = urlunsplit(
+                    (actual.scheme, actual.netloc, target.path, "", "")
+                )
+                with client.stream(
+                    method, destination, headers=headers, **kwargs
+                ) as redirected:
+                    yield redirected
+                return
+        yield response
+
+
 def request(kind, payload, files=(), *, transport=None):
     url, headers = endpoint(kind)
     method = "GET" if kind == "requirements" else "POST"
@@ -138,6 +172,8 @@ def request(kind, payload, files=(), *, transport=None):
             else {k: str(v) for k, v in payload.items()},
             "files": file_parts,
         }
+    read_status = None
+    reference = None
     try:
         with httpx.Client(
             timeout=httpx.Timeout(30, connect=5),
@@ -145,8 +181,31 @@ def request(kind, payload, files=(), *, transport=None):
             follow_redirects=False,
             transport=transport,
         ) as client:
-            with client.stream(method, url, headers=headers, **kwargs) as response:
+            with response_for(client, method, url, headers, kwargs) as response:
+                read_status = response.status_code
                 reference = _reference(response.headers.get("X-Correlation-ID", ""))
+                if method == "GET" and response.status_code != 200:
+                    detail = {
+                        401: "siie_registration_access_rejected",
+                        403: "siie_registration_access_rejected",
+                        404: "siie_registration_route_not_found",
+                        429: "siie_registration_rate_limited",
+                        301: "siie_registration_read_redirect",
+                        302: "siie_registration_read_redirect",
+                    }.get(response.status_code, "siie_registration_source_unavailable")
+                    LOG.warning(
+                        "siie_registration_read_failed kind=%s status=%s reason=%s",
+                        kind,
+                        read_status,
+                        detail,
+                    )
+                    raise HTTPException(
+                        502,
+                        detail,
+                        headers={"X-SIIE-Correlation-ID": reference}
+                        if reference
+                        else None,
+                    )
                 raw = bytearray()
                 for chunk in response.iter_bytes():
                     raw.extend(chunk)
@@ -257,7 +316,25 @@ def request(kind, payload, files=(), *, transport=None):
         if method == "GET":
             if isinstance(error, HTTPException):
                 raise
-            raise HTTPException(502, "siie_registration_read_failed") from None
+            reason = (
+                str(error)
+                if type(error) is ValueError
+                and str(error)
+                in {"invalid_requirements", "invalid_response", "oversized_response"}
+                else type(error).__name__
+            )
+            LOG.warning(
+                "siie_registration_read_failed kind=%s status=%s reason=%s",
+                kind,
+                read_status,
+                reason,
+            )
+            raise HTTPException(
+                502,
+                "siie_registration_invalid_response"
+                if read_status == 200
+                else "siie_registration_read_failed",
+            ) from None
         return {
             "state": "uncertain",
             "data": {},

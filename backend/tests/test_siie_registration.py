@@ -402,6 +402,72 @@ def test_native_document_catalog_supports_only_same_origin_friendly_url_redirect
     assert len(calls) == 1
 
 
+def test_requirement_friendly_url_preserves_scope_and_never_sends_key_to_foreign_target(
+    settings,
+):
+    seen = []
+
+    def remote(request):
+        seen.append(request)
+        assert (
+            request.url.params["idOferta"] == "21"
+            and request.url.params["idPeriodo"] == "9"
+        )
+        if request.url.path.endswith(".aspx"):
+            return httpx.Response(
+                301,
+                headers={"Location": "/SIIEWebPlus/Api/CRM/v1/DocumentosRequeridos"},
+            )
+        return httpx.Response(
+            200, json={"status": "ok", "data": {"oferta": {}, "items": []}}
+        )
+
+    assert (
+        client.request(
+            "requirements",
+            {"idOferta": 21, "idPeriodo": 9},
+            transport=httpx.MockTransport(remote),
+        )["state"]
+        == "confirmed"
+    )
+    assert len(seen) == 2
+    calls = []
+
+    def foreign(request):
+        calls.append(request)
+        return httpx.Response(
+            301, headers={"Location": "https://untrusted.test/DocumentosRequeridos"}
+        )
+
+    with pytest.raises(HTTPException, match="siie_registration_read_redirect"):
+        client.request(
+            "requirements", {"idOferta": 21}, transport=httpx.MockTransport(foreign)
+        )
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize(
+    "status,code",
+    [
+        (401, "siie_registration_access_rejected"),
+        (404, "siie_registration_route_not_found"),
+        (500, "siie_registration_source_unavailable"),
+    ],
+)
+def test_requirement_diagnostics_distinguish_source_failures_without_reading_html(
+    settings, caplog, status, code
+):
+    with pytest.raises(HTTPException, match=code):
+        client.request(
+            "requirements",
+            {"idOferta": 21},
+            transport=httpx.MockTransport(
+                lambda r: httpx.Response(status, text="PRIVATE IIS BODY")
+            ),
+        )
+    assert "PRIVATE" not in caplog.text and "fixture-original" not in caplog.text
+
+
 def test_eleven_sections_keep_native_misspellings_and_unknown_fields_rejected():
     assert len(forms.SCHEMA) == 11
     names = {f["name"] for s in forms.SCHEMA for f in s["fields"]}
@@ -742,6 +808,78 @@ def test_registered_guard_cannot_be_bypassed_by_customer_requested_followup(
         person,
     )
     assert reasons == ["siie_registered_no_promotions"]
+
+
+def complete_form():
+    result, choices = {}, {}
+    for section in forms.SCHEMA:
+        if section.get("optional"):
+            continue
+        row = {}
+        for f in section["fields"]:
+            if not f["required"]:
+                continue
+            if f["options"]:
+                value = f["options"][0]
+            elif f["catalog"]:
+                value = 1 if f["kind"] == "integer" else "1"
+                choices[f["catalog"]] = [{"value": 1, "label": "CATALOGO SINTETICO"}]
+            elif f["kind"] == "date":
+                value = "2000-01-01"
+            elif f["kind"] == "email":
+                value = "synthetic@example.invalid"
+            elif f["kind"] == "document":
+                value = "TEST123"
+            else:
+                value = "ENSAYO"
+            row[f["name"]] = value
+        result[section["name"]] = [row] if section.get("max_items") else row
+    result["referencia"]["Direccion"] = "DIRECCION DIFERENTE"
+    result["aceptaTratamientoDatos"] = True
+    return result, choices
+
+
+def test_complete_native_registration_and_consent_are_validated_before_transport():
+    value, choices = complete_form()
+    forms.validate(
+        "registration", value, final=True, catalogs=choices, program_name="PRE-ICFES"
+    )
+    value["aceptaTratamientoDatos"] = False
+    with pytest.raises(HTTPException, match="siie_consent_required"):
+        forms.validate(
+            "registration",
+            value,
+            final=True,
+            catalogs=choices,
+            program_name="PRE-ICFES",
+        )
+
+
+def test_under_sixteen_requires_review_except_preicfes_and_never_invents_catalog_ids():
+    from zoneinfo import ZoneInfo
+    from datetime import date
+
+    value, choices = complete_form()
+    today = datetime.now(ZoneInfo("America/Bogota")).date()
+    value["estudiante"]["FechaNacimento"] = date(
+        today.year - 15, today.month, min(today.day, 28)
+    ).isoformat()
+    forms.validate(
+        "registration", value, final=True, catalogs=choices, program_name="PRE-ICFES"
+    )
+    with pytest.raises(HTTPException, match="siie_minimum_age_review_required"):
+        forms.validate(
+            "registration", value, final=True, catalogs=choices, program_name="COCINA"
+        )
+    value["estudiante"]["Id_Genero"] = 99
+    with pytest.raises(HTTPException, match="siie_form_catalog_changed"):
+        forms.validate(
+            "registration",
+            value,
+            final=True,
+            catalogs=choices,
+            program_name="PRE-ICFES",
+        )
 
 
 @pytest.mark.parametrize(
