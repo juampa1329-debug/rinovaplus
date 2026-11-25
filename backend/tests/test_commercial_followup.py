@@ -254,3 +254,17 @@ def test_incoming_opt_out_cancels_only_own_pending_tasks_without_new_messages(
         for sql, args in queries
     )
     assert len({args[1] for sql, args in queries}) == 4
+
+
+def test_history_search_uses_portable_case_insensitive_collation(monkeypatch):
+    from app.institutional.campaign_policy import layout
+    from app.institutional.postgres_dialect import postgres_sql
+
+    sqls = []
+    monkeypatch.setattr(f.db, "institution", lambda s: "institution")
+    monkeypatch.setattr(f.db, "rows", lambda c, sql, *args: sqls.append(sql) or [])
+    f.signals(None, None)
+    converted = postgres_sql(sqls[0], layout()["tables"])
+    assert "LOWER(m.Body) LIKE" not in converted
+    assert '(m.Body COLLATE "default") ILIKE' in converted
+    assert "meta_confirmed_outgoing" in converted
