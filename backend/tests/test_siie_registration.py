@@ -765,6 +765,35 @@ def test_delayed_registration_proof_still_suppresses_after_newer_pre_registratio
     assert classification.blocked(cursor, settings, identity)
 
 
+def test_pre_registration_without_document_uses_native_pre_id_until_completed(
+    settings, projection_db
+):
+    from app.institutional import siie_classification as classification
+
+    db, cursor = projection_db
+    preliminary = hook.Event.model_validate(event(documento=None))
+    identity = hook.project(cursor, settings, preliminary, {"stage_key": "nuevo"})[
+        "contact_id"
+    ]
+    completed = hook.Event.model_validate(
+        event(
+            sequence=2,
+            event_type="registration.created",
+            idEstudiante=4,
+            idInscripcion=5,
+        )
+    )
+    assert (
+        hook.project(cursor, settings, completed, {"stage_key": "nuevo"})["contact_id"]
+        == identity
+    )
+    assert db.execute("SELECT COUNT(*) FROM crm.Contact").fetchone()[0] == 1
+    assert classification.blocked(cursor, settings, identity)
+    changed = hook.Event.model_validate(event(sequence=3, documento="OTHER123"))
+    with pytest.raises(HTTPException, match="siie_webhook_person_conflict"):
+        hook.project(cursor, settings, changed, {"stage_key": "nuevo"})
+
+
 def test_router_installs_and_query_paths_do_not_require_agent_management(
     settings, memory
 ):
@@ -853,6 +882,58 @@ def test_complete_native_registration_and_consent_are_validated_before_transport
             catalogs=choices,
             program_name="PRE-ICFES",
         )
+
+
+def test_requirements_without_student_preserve_unknown_file_and_delivery_flags(
+    settings,
+):
+    data = {
+        "oferta": {},
+        "items": [
+            {
+                "idDocumento": 1,
+                "nombre": "Identidad",
+                "obligatorioAlInscribir": True,
+                "soportado": True,
+                "recibido": None,
+                "archivoExistente": None,
+                "aplica": None,
+            }
+        ],
+    }
+    result = client.request(
+        "requirements",
+        {"idOferta": 21},
+        transport=httpx.MockTransport(
+            lambda r: httpx.Response(200, json={"status": "ok", "data": data})
+        ),
+    )
+    assert result["data"]["items"][0]["archivoExistente"] is None
+    data["items"][0]["obligatorioAlInscribir"] = None
+    with pytest.raises(HTTPException, match="siie_registration_invalid_response"):
+        client.request(
+            "requirements",
+            {"idOferta": 21},
+            transport=httpx.MockTransport(
+                lambda r: httpx.Response(200, json={"status": "ok", "data": data})
+            ),
+        )
+
+
+def test_siie_pre_registration_is_available_in_existing_reviewed_prospect_workflow():
+    from app.institutional.broadcast_prospects import reviewed_contact
+
+    contact = {
+        "Type": "Preinscrito",
+        "Phone": "3000000000",
+        "CustomValues": json.dumps(
+            {"pre_import_ref": "SIIE-" + "a" * 32, "pre_programas": "PRE ICFES SABADO"}
+        ),
+    }
+    assert reviewed_contact(contact, "all") == "573000000000"
+    contact["Type"] = "Inscrito"
+    with pytest.raises(HTTPException):
+        reviewed_contact(contact, "all")
 
 
 def test_under_sixteen_requires_review_except_preicfes_and_never_invents_catalog_ids():

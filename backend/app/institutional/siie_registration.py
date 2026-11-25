@@ -3,7 +3,6 @@
 import hashlib
 import re
 from typing import Annotated, Literal
-from uuid import UUID, uuid5
 
 from fastapi import HTTPException, Request
 from pydantic import Field
@@ -18,7 +17,7 @@ from app.institutional.crypto import canonical
 from app.institutional.db import audit, bound_hash, institution, uid
 from app.institutional.models import Strict
 from app.institutional.policy import request_authority
-from app.institutional.siie_webhook import HOOK_PATH, config, secret
+from app.institutional.siie_webhook import HOOK_PATH, config, person_ref, secret
 from app.institutional.store import transaction
 
 PREFIX = "/api/institution/siie-registration"
@@ -114,12 +113,7 @@ class Registration:
             if kind == "se" and private.get("event"):
                 from app.institutional.db import rows
 
-                link_id = str(
-                    uuid5(
-                        UUID(institution(self.settings)),
-                        "siie-person:" + private["event"]["documento"].upper(),
-                    )
-                )
+                link_id = person_ref(self.settings, private["event"])
                 link = records.get(c, self.settings, "sl", link_id)
                 ids = link["private"].get("candidates", []) if link else []
                 result["candidates"] = (
@@ -148,12 +142,7 @@ class Registration:
             if not receipt:
                 raise HTTPException(404, "siie_draft_not_found")
             event = receipt["private"]["event"]
-            link_id = str(
-                uuid5(
-                    UUID(institution(self.settings)),
-                    "siie-person:" + event["documento"].upper(),
-                )
-            )
+            link_id = person_ref(self.settings, event)
             link = records.get(c, self.settings, "sl", link_id)
             private = link["private"] if link else {}
             if private.get("contact_id") == contact_id:

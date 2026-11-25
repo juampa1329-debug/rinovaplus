@@ -226,6 +226,11 @@ def request(kind, payload, files=(), *, transport=None):
                             or not isinstance(data.get("items"), list)
                             or len(data["items"]) > 200
                         ):
+                            LOG.warning(
+                                "siie_requirements_shape oferta_type=%s items_type=%s",
+                                type(data.get("oferta")).__name__,
+                                type(data.get("items")).__name__,
+                            )
                             raise ValueError("invalid_requirements")
                         for item in data["items"]:
                             if not isinstance(item, dict):
@@ -239,13 +244,25 @@ def request(kind, payload, files=(), *, transport=None):
                                     for k in (
                                         "obligatorioAlInscribir",
                                         "soportado",
-                                        "recibido",
-                                        "archivoExistente",
                                     )
+                                )
+                                or any(
+                                    item.get(k) is not None
+                                    and type(item[k]) is not bool
+                                    for k in ("recibido", "archivoExistente")
                                 )
                                 or item.get("aplica") is not None
                                 and type(item["aplica"]) is not bool
                             ):
+                                LOG.warning(
+                                    "siie_requirements_item_types nombre=%s obligatorio=%s soportado=%s recibido=%s archivo=%s aplica=%s",
+                                    type(item.get("nombre")).__name__,
+                                    type(item.get("obligatorioAlInscribir")).__name__,
+                                    type(item.get("soportado")).__name__,
+                                    type(item.get("recibido")).__name__,
+                                    type(item.get("archivoExistente")).__name__,
+                                    type(item.get("aplica")).__name__,
+                                )
                                 raise ValueError("invalid_requirements")
                     else:
                         for name in ("idOferta", "idPeriodo") + (

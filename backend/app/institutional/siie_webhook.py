@@ -55,7 +55,7 @@ class Event(Strict):
     ]
     occurred_at: Annotated[str, Field(max_length=40)]
     sequence: Annotated[int, Field(strict=True, ge=1, le=9223372036854775807)]
-    documento: Annotated[str, Field(pattern=r"^[A-Za-z0-9]{1,16}$")]
+    documento: Annotated[str, Field(pattern=r"^[A-Za-z0-9]{1,16}$")] | None = None
     idOferta: Positive
     idPeriodo: Positive
     idAspirante: Positive | None = None
@@ -149,6 +149,17 @@ def phone(value):
     )
 
 
+def person_ref(settings, event):
+    value = event.model_dump() if isinstance(event, Event) else event
+    if value.get("idPreinscripcion"):
+        reference = "siie-pre:" + str(value["idPreinscripcion"])
+    elif value.get("documento"):
+        reference = "siie-person:" + value["documento"].upper()
+    else:
+        raise HTTPException(422, "siie_webhook_invalid_event")
+    return str(uuid5(UUID(institution(settings)), reference))
+
+
 def project(c, settings, event, cfg):
     """A document-bound link is authority; a shared phone alone never is."""
     from app.modules.crm_configuration.application.service import (
@@ -157,10 +168,17 @@ def project(c, settings, event, cfg):
     )
     from app.sql_workspace import Contact
 
-    link_id = str(
-        uuid5(UUID(institution(settings)), "siie-person:" + event.documento.upper())
-    )
+    link_id = person_ref(settings, event)
     prior = records.get(c, settings, "sl", link_id)
+    original_document = (
+        prior["private"].get("snapshot", {}).get("documento") if prior else None
+    )
+    if (
+        original_document
+        and event.documento
+        and original_document.upper() != event.documento.upper()
+    ):
+        raise HTTPException(409, "siie_webhook_person_conflict")
     from app.institutional.siie_classification import mark
 
     if prior and event.sequence <= prior["private"]["sequence"]:
@@ -325,16 +343,19 @@ class Ingress:
             ):
                 raise ValueError("pre_registration_reference_required")
             if event.event_type == "applicant.created" and (
-                not event.idAspirante or event.persona is None
+                not event.idAspirante or event.persona is None or not event.documento
             ):
                 raise ValueError("applicant_reference_required")
             if event.event_type.startswith("registration.") and (
                 not event.idEstudiante
                 or not event.idInscripcion
                 or event.persona is None
+                or not event.documento
             ):
                 raise ValueError("registration_reference_required")
-            if event.event_type == "documents.updated" and not event.idEstudiante:
+            if event.event_type == "documents.updated" and (
+                not event.idEstudiante or not event.documento
+            ):
                 raise ValueError("student_reference_required")
         except (ValidationError, ValueError, TypeError, UnicodeError, RecursionError):
             raise HTTPException(422, "siie_webhook_invalid_event") from None

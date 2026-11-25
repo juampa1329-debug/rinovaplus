@@ -80,8 +80,8 @@ type Requirements = {
   soloMenores?: boolean;
   aplica: boolean | null;
   soportado: boolean;
-  recibido: boolean;
-  archivoExistente: boolean;
+  recibido: boolean | null;
+  archivoExistente: boolean | null;
 };
 const base = "siie-registration";
 const states: Record<string, string> = {
@@ -814,13 +814,17 @@ export function SiieRegistration() {
                               ? "Obligatorio inicial"
                               : "Entrega posterior"}{" "}
                             ·{" "}
-                            {item.recibido
-                              ? "Entrega registrada"
-                              : "Sin marca de entrega"}{" "}
+                            {item.recibido == null
+                              ? "Entrega sin consultar para una persona"
+                              : item.recibido
+                                ? "Entrega registrada"
+                                : "Sin marca de entrega"}{" "}
                             ·{" "}
-                            {item.archivoExistente
-                              ? "Archivo encontrado"
-                              : "Archivo no acreditado"}
+                            {item.archivoExistente == null
+                              ? "Archivo sin comprobar"
+                              : item.archivoExistente
+                                ? "Archivo encontrado"
+                                : "Archivo no acreditado"}
                             {item.aplica === null
                               ? " · Aplicación pendiente de edad"
                               : item.aplica === false

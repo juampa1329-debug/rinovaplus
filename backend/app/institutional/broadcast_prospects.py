@@ -45,7 +45,7 @@ def reviewed_contact(value, program):
     interests = {normalize(v) for v in custom.get("pre_programas", "").split("|")}
     if (
         value["Type"] != "Preinscrito"
-        or not re.fullmatch(r"PRE-[a-f0-9]{16}", custom.get("pre_import_ref", ""))
+        or not re.fullmatch(r"(?:PRE-[a-f0-9]{16}|SIIE-[a-f0-9]{32})", custom.get("pre_import_ref", ""))
         or not any(interests)
         or (program != "all" and PROGRAMS[program] not in interests)
         or not phone(value["Phone"])

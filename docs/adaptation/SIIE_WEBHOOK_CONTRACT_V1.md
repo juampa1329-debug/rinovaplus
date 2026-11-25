@@ -70,7 +70,9 @@ Los identificadores siguientes son sintéticos. Los reales proceden de las filas
 }
 ```
 
-Campos comunes: `schema_version`, GUID global `event_id`, `event_type`, `occurred_at` con zona, `sequence` entero positivo, `documento` alfanumérico de hasta 16 caracteres, `idOferta` e `idPeriodo` nativos positivos. `idOferta` es `ACProgramaOfrecido.Id_PrgOfrecido`, no el programa base ni el identificador comercial compuesto. Los campos desconocidos se rechazan.
+Campos comunes: `schema_version`, GUID global `event_id`, `event_type`, `occurred_at` con zona, `sequence` entero positivo, `idOferta` e `idPeriodo` nativos positivos. `documento` alfanumérico de hasta 16 caracteres es obligatorio para aspirante/inscripción/documentos; en preinscripción puede omitirse si aún no se ha solicitado. En ese caso se usa `idPreinscripcion` como referencia estable. `idOferta` es `ACProgramaOfrecido.Id_PrgOfrecido`, no el programa base ni el identificador comercial compuesto. Los campos desconocidos se rechazan.
+
+Cuando una preinscripción se convierta en inscripción, conservar `idPreinscripcion` en el evento junto a los IDs nuevos y al documento ya verificado por SIIE. Así se actualiza el mismo contacto sin inventar una cédula para el prospecto. No reutilizar ese ID para otra persona. Un documento diferente del ya vinculado devuelve 409 `siie_webhook_person_conflict` para revisión. Si no se conserva la referencia previa, una coincidencia sólo por teléfono requiere la revisión de vínculo prevista más abajo.
 
 `sequence` debe crecer para una misma persona/documento **a través de todos sus tipos de evento y ofertas**. El emisor puede usar un número global persistente de su outbox. No reiniciarlo por intento ni por proceso. `occurred_at` es la fecha original del cambio; no el momento del reintento. El reloj de firma sí se actualiza en cada envío.
 
