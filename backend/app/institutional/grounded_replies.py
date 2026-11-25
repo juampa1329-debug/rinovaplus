@@ -4,7 +4,7 @@ import json
 import re
 
 from app.institutional.agent_catalog import Catalog
-from app.institutional.db import rows
+from app.institutional.db import institution, rows
 from app.institutional.knowledge import effective, search
 from app.institutional.settings import setting
 from app.modules.agents.domain import digest
@@ -68,6 +68,7 @@ def context(
     post="",
     structured=True,
     reply_turn=None,
+    accepted_continuation=None,
 ):
     ai = setting(c, settings, "ai")
     config = selection["configuration"] if selection else {}
@@ -77,17 +78,30 @@ def context(
     history = []
     if conversation and not public:
         boundary = getattr(c, "context_cutoff", lambda _: 0)(conversation)
+        continuation = accepted_continuation or {}
+        accepted_ids = continuation.get("ids", [])
+        continuation_sql = (
+            " OR (m.MessageId IN(" + ",".join("?" for _ in accepted_ids) + ") "
+            "AND m.Direction='outgoing' AND EXISTS(SELECT 1 FROM crm_channels2.MessageRoute acceptedRoute "
+            "JOIN crm_channels2.SendJob acceptedJob ON acceptedJob.InstitutionId=acceptedRoute.InstitutionId "
+            "AND acceptedJob.QueueId=acceptedRoute.QueueId WHERE acceptedRoute.MessageId=m.MessageId "
+            "AND acceptedRoute.InstitutionId=? AND acceptedRoute.IntegrationId=? AND acceptedRoute.IdentityId=? "
+            "AND acceptedRoute.ActorKind='bot' AND acceptedJob.State IN('accepted','sent','delivered','read')))"
+            if accepted_ids else ""
+        )
         history = list(
             reversed(
                 rows(
                     c,
                     "SELECT TOP(12) m.MessageId,m.Sequence,m.Direction,m.Body FROM crm.Message m WHERE m.ConversationId=? AND " + pending_bot_history() + " "
                     + ("AND Sequence>? " if boundary else "")
-                    + ("AND Sequence<=? " if sequence is not None else "")
+                    + ("AND (Sequence<=?" + continuation_sql + ") " if sequence is not None else "")
                     + "ORDER BY Sequence DESC",
                     conversation,
                     *((boundary,) if boundary else ()),
                     *((sequence,) if sequence is not None else ()),
+                    *((*accepted_ids, institution(settings), continuation["integration"], continuation["identity"])
+                      if sequence is not None and accepted_ids else ()),
                 )
             )
         )

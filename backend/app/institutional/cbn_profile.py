@@ -34,6 +34,20 @@ LOCATION_POLICY = (
 )
 FACTS = [
     {
+        "topic": "preicfes_volante_provisional",
+        "reviewed_at": "2026-11-25",
+        "source": "owner_reviewed:2026-11-25:preicfes-payment-slip-next-day",
+        "text": (
+            "INDICACIÓN OPERATIVA PROVISIONAL DEL TITULAR, sólo para PRE-ICFES: "
+            "si la persona ya diligenció el formulario y pregunta cuándo pagar, indicarle que "
+            "se le enviará el volante de pago al día siguiente. La gestión es manual del equipo "
+            "mientras se integra y prueba el volante automático de SIIE. No afirmar que ya se "
+            "generó o envió, ni que su inscripción o pago se corroboraron en SIIE sin un recibo. "
+            "No inventar cuenta bancaria, enlace de pago, fecha de vencimiento ni exigir pago "
+            "presencial. Esta indicación no modifica las tarifas ni las cuotas de la ficha."
+        ),
+    },
+    {
         "topic": "inscripcion_general",
         "text": "Formulario oficial para adelantar la inscripción a los programas de CBN distintos de PRE-ICFES: " + REGISTRATION_URL + ". La persona elige programa y jornada y completa sus datos. No confirma por sí solo un pago, reajuste financiero, cupo o matrícula.",
         "source": REGISTRATION_URL,

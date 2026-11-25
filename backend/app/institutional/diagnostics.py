@@ -15,6 +15,8 @@ def projection(value):
     return {"provider": str(trace.get("provider") or "")[:40], "model": str(trace.get("model") or "")[:180],
             "fallback_used": trace.get("fallback_used") is True,
             "context_changes": data.get("dispatch_context_changes", [])[:30],
+            "context_replans": min(3, max(0, data.get("context_replans", 0))) if type(data.get("context_replans", 0)) is int else 0,
+            "context_recovery_scheduled": isinstance(data.get("recovery_operation"), str) and len(data["recovery_operation"]) == 36,
             "own_projection_context_refreshed": data.get("own_projection_context_refreshed") is True,
             "own_projection_binding_refreshed": data.get("own_projection_binding_refreshed") is True,
             "campaign_entry_context": "inicio_comercial_campana" in data.get("contextComponents", {}),

@@ -692,7 +692,11 @@ class Workspace:
                         "Active=1 AND g.TargetContactId=p.Contact"
                         "Id AND g.SourceContactId=f.ContactId)) A"
                         "ND (?='' OR f.Name LIKE ? OR f.Phone LIK"
-                        "E ?)) AND (?='' OR p.Stage=?) AND (?='' "
+                        "E ?"
+                        + (" OR EXISTS(SELECT 1 FROM crm_channels2.ExternalIdentity phoneIdentity "
+                           "WHERE phoneIdentity.InstitutionId=? AND phoneIdentity.ContactId=f.ContactId "
+                           "AND phoneIdentity.ExternalId LIKE ?)" if self.operational_channels else "")
+                        + ")) AND (?='' OR p.Stage=?) AND (?='' "
                         "OR EXISTS(SELECT 1 FROM STRING_SPLIT(p.T"
                         "ags,',') WHERE LTRIM(RTRIM(value))=?)) A"
                         "ND (?='' OR p.City=?) AND (?='' OR p.Typ"
@@ -704,6 +708,7 @@ class Workspace:
                         q,
                         pattern(q),
                         pattern(q),
+                        *([db.institution(self.profile), pattern(q)] if self.operational_channels else []),
                         stage,
                         stage,
                         tag,
@@ -720,10 +725,16 @@ class Workspace:
                         "(?='' OR p.Name LIKE ? OR p.Phone LIKE ?"
                         " OR EXISTS(SELECT 1 FROM crm.Message WHE"
                         "RE ConversationId=v.ConversationId AND B"
-                        "ody LIKE ?)) AND (?='' OR p.Stage=?)"
+                        "ody LIKE ?)"
+                        + (" OR EXISTS(SELECT 1 FROM crm_channels2.ExternalIdentity phoneIdentity "
+                           "WHERE phoneIdentity.InstitutionId=? AND phoneIdentity.ContactId=p.ContactId "
+                           "AND phoneIdentity.ConversationId=v.ConversationId AND phoneIdentity.ExternalId LIKE ?)"
+                           if self.operational_channels else "")
+                        + ") AND (?='' OR p.Stage=?)"
                     )
                 )
-                params.extend([q, pattern(q), pattern(q), pattern(q), stage, stage])
+                params.extend([q, pattern(q), pattern(q), pattern(q),
+                               *([db.institution(self.profile), pattern(q)] if self.operational_channels else []), stage, stage])
             if queue == "unread":
                 where.append("v.Unread=1")
             elif queue == "mine":

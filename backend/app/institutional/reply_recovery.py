@@ -36,7 +36,11 @@ def missing(c, s, conversation=None):
         "JOIN crm_channels2.Integration a ON a.InstitutionId=r.InstitutionId AND a.IntegrationId=r.IntegrationId "
         "WHERE m.Direction='incoming' AND v.ControlMode='ai' AND v.State<>'closed' "
         "AND a.Channel IN('whatsapp','messenger','instagram') AND a.RequestedStatus='connected' AND a.VerifiedStatus='verified' "
-        "AND m.CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) AND m.Body<>'' AND LEFT(m.Body,1)<>'[' "
+        "AND m.CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) "
+        "AND ((m.Body<>'' AND LEFT(m.Body,1)<>'[') OR EXISTS(SELECT 1 FROM crm_channels4.MediaAsset image "
+        "WHERE image.InstitutionId=r.InstitutionId AND image.IntegrationId=r.IntegrationId "
+        "AND image.IdentityId=r.IdentityId AND image.ConversationId=m.ConversationId "
+        "AND image.MessageId=m.MessageId AND image.SourceKind='provider' AND image.Kind='image')) "
         "AND NOT EXISTS(SELECT 1 FROM crm.Message newer WHERE newer.ConversationId=m.ConversationId AND newer.Sequence>m.Sequence) "
         "AND NOT EXISTS(SELECT 1 FROM crm_channels2.ProviderOperation op WHERE op.InstitutionId=r.InstitutionId AND op.OperationId=m.MessageId) "
         + ("AND m.ConversationId=? " if conversation else "")

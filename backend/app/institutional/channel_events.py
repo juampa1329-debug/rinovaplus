@@ -42,15 +42,27 @@ def replyable_message(channel, provider):
     """
     from app.institutional.contact_intent import opted_out
     if channel == "whatsapp":
+        if provider.get("type") == "unsupported":
+            return valid_external(provider.get("id"))
         if provider.get("type") == "text":
             return not opted_out((provider.get("text") or {}).get("body", ""))
         if provider.get("type") in {"button", "interactive"}:
             text = whatsapp_reply_text(provider)
             return bool(text) and not opted_out(text)
-        audio = provider.get("audio")
-        return provider.get("type") == "audio" and isinstance(audio, dict) and valid_external(audio.get("id"))
+        kind = provider.get("type")
+        asset = provider.get(kind) if kind in {"audio", "image"} else None
+        return isinstance(asset, dict) and valid_external(asset.get("id")) and not opted_out(asset.get("caption", ""))
     text = (provider.get("message") or {}).get("text")
-    return channel in {"messenger", "instagram"} and isinstance(text, str) and bool(text.strip()) and not opted_out(text)
+    if channel not in {"messenger", "instagram"}:
+        return False
+    if isinstance(text, str) and text.strip():
+        return not opted_out(text)
+    attachments = (provider.get("message") or {}).get("attachments")
+    return isinstance(attachments, list) and any(isinstance(v, dict) and v.get("type") == "image"
+               and isinstance(v.get("payload"), dict)
+               and isinstance(v["payload"].get("url"), str)
+               and v["payload"]["url"].startswith("https://")
+               for v in attachments)
 
 
 def whatsapp_reply_text(message):
@@ -578,7 +590,9 @@ def incoming(c, settings, item, effect):
     if replyable_message(item["Channel"], effect["provider"]):
         from app.institutional.whatsapp_gemini import schedule
 
-        schedule(c, settings, item, linked, message)
+        schedule(c, settings, item, linked, message,
+                 **({"input_kind": "unsupported"} if item["Channel"] == "whatsapp"
+                    and effect["provider"].get("type") == "unsupported" else {}))
     if settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}:
         from app.institutional.campaign_runtime import observe_identity
 

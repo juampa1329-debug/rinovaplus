@@ -78,7 +78,7 @@ def available(settings, integration, channel="whatsapp"):
     )
 
 
-def schedule(c, settings, item, linked, message, *, operation_id=None):
+def schedule(c, settings, item, linked, message, *, operation_id=None, input_kind=None):
     if not available(settings, item["IntegrationId"], item["Channel"]):
         return
     state = configuration(c, settings)
@@ -114,6 +114,7 @@ def schedule(c, settings, item, linked, message, *, operation_id=None):
         "incoming": message,
         "epoch": control["Epoch"],
         "channel": item["Channel"],
+        **({"input_kind": "unsupported"} if input_kind == "unsupported" else {}),
     }
     digest = bound_hash(settings, data, ACTION)
     c.execute(
@@ -341,8 +342,29 @@ def reply_context(c, settings, data, source_value):
         conversation=data["conversation"],
         sequence=source_value["Sequence"],
         reply_turn=reply_turns.snapshot(c, settings, data, source_value),
+        accepted_continuation={"ids": data.get("accepted_continuation_ids", []),
+                               "integration": data["integration"], "identity": data["identity"]},
     )
     result["fingerprint"] = grounded_replies.digest([result["fingerprint"], result["reply_turn"]])
+    if data.get("input_kind") == "unsupported":
+        result["system"] += (
+            "\nEl canal marcó el mensaje actual como no compatible y no entregó su contenido. "
+            "No finjas que lo leíste ni adivines si es una imagen, pago o pregunta. "
+            "Explica brevemente que no se pudo abrir ese mensaje y pide que lo reenvíe "
+            "como texto, imagen o audio normal; atiende también las dudas legibles pendientes."
+        )
+        result["fingerprint"] = grounded_replies.digest([result["fingerprint"], result["system"], "unsupported"])
+        result["components"]["system"] = grounded_replies.digest(result["system"])
+    from app.institutional import image_inputs
+
+    images, image_evidence = image_inputs.for_turn(c, settings, data, result["reply_turn"])
+    if image_evidence:
+        result["system"] += image_inputs.GUIDANCE
+        result["query"] = json.dumps({**json.loads(result["query"]), "imagenes_del_turno": image_evidence}, ensure_ascii=False)
+        result["fingerprint"] = grounded_replies.digest([result["fingerprint"], image_evidence, result["system"]])
+        result["components"]["system"] = grounded_replies.digest(result["system"])
+        result["components"]["imagenes_del_turno"] = grounded_replies.digest(image_evidence)
+        result["input_images"] = images
     material = json.loads(result["query"]).get("catalogo", {})
     selected_program = material.get("selected") if isinstance(material, dict) else None
     result["voice_schools"] = (
@@ -519,6 +541,7 @@ class Worker:
                 input_tokens = (
                     len((grounded["system"] + grounded["query"]).encode()) + 512
                 )
+                input_tokens += 32_768 * len(grounded.get("input_images", []))
                 if grounded.get("input_audio") and not grounded.get("audio_transcribed"):
                     input_tokens += (
                         10_240  # Conservative reserve for the inspected <=300s asset.
@@ -556,7 +579,7 @@ class Worker:
                     return True
                 if (
                     isinstance(error, HTTPException)
-                    and error.detail == "voice_input_pending"
+                    and error.detail in {"voice_input_pending", "image_input_pending"}
                 ):
                     return False  # Wait for the existing media downloader, without claiming/generating.
                 finish(
@@ -648,6 +671,9 @@ class Worker:
                     grounded_replies.request_body(grounded, output_tokens, config.get("temperature", 0.3)),
                     None if grounded.get("audio_transcribed") else grounded.get("input_audio"),
                 )
+                from app.institutional.image_inputs import request_with_images
+
+                request_body = request_with_images(request_body, grounded.get("input_images", []))
                 async def primary():
                     return await self.gateway_factory({"gemini": secret_value}).gemini_generation(
                         binding["model"], request_body, before_attempt=before_attempt)
@@ -720,7 +746,10 @@ class Worker:
                 state, code = "failed", error.detail
         with transaction(settings, True, anonymous=True) as c:
             if state != "confirmed":
-                finish(c, settings, operation, state, code, data, lease)
+                if finish(c, settings, operation, state, code, data, lease):
+                    from app.institutional.context_recovery import replan
+
+                    replan(c, settings, operation, integration, code)
                 return True
             try:
                 item, context, _ = source(c, settings, integration, data)
@@ -732,7 +761,7 @@ class Worker:
                 ):
                     raise HTTPException(409, "gemini_reply_context_changed")
             except (HTTPException, AiError) as error:
-                finish(
+                changed = finish(
                     c,
                     settings,
                     operation,
@@ -741,6 +770,11 @@ class Worker:
                     data,
                     lease,
                 )
+                if changed:
+                    from app.institutional.context_recovery import replan
+
+                    replan(c, settings, operation, integration,
+                           getattr(error, "code", None) or error.detail)
                 return True
             reply = parts[0]["id"] if parts else None
             if not finish(

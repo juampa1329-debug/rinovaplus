@@ -6,6 +6,7 @@ any channel dispatch, with the original reservation retained.
 """
 
 import asyncio
+import base64
 import copy
 import json
 import math
@@ -71,12 +72,19 @@ def reservation(settings, saved, route, incoming, outgoing):
 
 
 async def compatible(gateway, route, body):
-    models = await gateway.models(route["provider"], account_catalog=True)
+    parts = [part for content in body["contents"] for part in content["parts"]]
+    images = [part for part in parts if "inlineData" in part]
+    for content in body["contents"]:
+        message_content(content)  # Validate before catalog/reservation/paid IO.
+    models = await gateway.models(route["provider"], account_catalog=True, **({"kind": "vision"} if images else {}))
     model = next((m for m in models if m.id == route["model"]), None)
     if not model:
         raise AiError("language_backup_model_unavailable", 409)
     details = gateway.catalog_details.get(route["provider"], {}).get(route["model"], {})
-    incoming = len(json.dumps(body, ensure_ascii=False).encode()) + 512
+    incoming = (len(json.dumps(body, ensure_ascii=False).encode()) + 512 if not images else
+                sum(len(part.get("text", "").encode()) for part in parts)
+                + len(json.dumps(body.get("systemInstruction", {}), ensure_ascii=False).encode())
+                + 512 + 32_768 * len(images))
     outgoing = body["generationConfig"]["maxOutputTokens"]
     context = details.get("context_length")
     if not context or incoming + outgoing > context or not model.output_limit or outgoing > model.output_limit:
@@ -98,6 +106,36 @@ async def compatible(gateway, route, body):
     return incoming, outgoing
 
 
+def message_content(content):
+    """Only private inline images, never caller URLs, arbitrary files or audio."""
+    parts = content["parts"]
+    if all(set(part) == {"text"} and isinstance(part["text"], str) for part in parts):
+        return "\n".join(part["text"] for part in parts)
+    texts, images = [], []
+    for part in parts:
+        if set(part) == {"text"} and isinstance(part["text"], str):
+            texts.append(part["text"])
+            continue
+        inline = part.get("inlineData")
+        if (set(part) != {"inlineData"} or not isinstance(inline, dict)
+                or set(inline) != {"mimeType", "data"}
+                or inline.get("mimeType") not in {"image/jpeg", "image/png", "image/webp"}
+                or not isinstance(inline.get("data"), str)
+                or len(inline["data"]) > 5_333_336):
+            raise AiError("language_backup_text_only", 409)
+        try:
+            raw = base64.b64decode(inline["data"], validate=True)
+        except ValueError:
+            raise AiError("language_backup_image_invalid", 409) from None
+        if not 0 < len(raw) <= 4_000_000 or content.get("role") == "model":
+            raise AiError("language_backup_image_invalid", 409)
+        images.append({"type": "image_url", "image_url": {
+            "url": "data:" + inline["mimeType"] + ";base64," + inline["data"], "detail": "auto"}})
+    if len(images) > 3:
+        raise AiError("language_backup_image_invalid", 409)
+    return [{"type": "text", "text": "\n".join(texts)}, *images]
+
+
 async def generate(gateway, route, body, guard):
     guard()
     if route["provider"] == "gemini":
@@ -108,10 +146,8 @@ async def generate(gateway, route, body, guard):
     system += "\nDevuelve sólo JSON válido con este contrato: " + json.dumps(schema, ensure_ascii=False)
     messages = [{"role": "system", "content": system}]
     for content in body["contents"]:
-        if any("text" not in p for p in content["parts"]):
-            raise AiError("language_backup_text_only", 409)
         messages.append({"role": "assistant" if content.get("role") == "model" else "user",
-                         "content": "\n".join(p["text"] for p in content["parts"])})
+                         "content": message_content(content)})
     response_format = {"type": "json_object"}
     if (set(schema.get("properties", {})) in ({"decision", "text"}, {"decision", "text", "crm_observations"})
             and schema["properties"]["decision"].get("enum") in (["responder"], ["responder", "revisar"], ["responder", "revisar", "esperar"])):

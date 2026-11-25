@@ -657,6 +657,11 @@ class Dispatcher:
                         "CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND OperationId=? AND Status='pending'",
                         str(error.detail)[:64], inst, job["OperationId"],
                     )
+                    from app.institutional.context_recovery import REASONS, replan
+
+                    if origin == "gemini_whatsapp" and error.detail in REASONS:
+                        replan(c, self.settings, json.loads(job["Payload"])["automationId"],
+                               job["IntegrationId"], error.detail)
                     return True
                 # Pauses and budgets retain queued work, with a bounded next inspection.
                 c.execute(

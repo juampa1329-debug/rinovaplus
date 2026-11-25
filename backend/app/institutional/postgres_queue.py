@@ -27,10 +27,39 @@ def outbound(c, institution):
 
 
 def lease(c, institution, queue_id, lease_id, reservation):
-    return c.native(
+    claimed = c.native(
         "SELECT rinovaplus_crm.lease_outbound(%s,%s,%s,%s)",
         institution, queue_id, lease_id, reservation,
     ).fetchval()
+    if not claimed:
+        return False
+    # Existing stored claim grants 60 s. Bound the live dispatch to 180 s so
+    # current authority/context checks, typing and the provider's 12 s request
+    # can finish under contention. Same nonexpired lease only; no resurrection,
+    # retry, extra attempt, quota change or migration of the frozen SQL unit.
+    renewed = c.native("""
+        WITH active AS (
+          UPDATE rinovaplus_crm.crmcanalinstitucionalenviotrabajo q
+          SET leaseuntil=(statement_timestamp() AT TIME ZONE 'UTC')+interval '180 seconds'
+          WHERE q.institutionid=%s AND q.queueid=%s AND q.leaseid=%s
+            AND q.state='sending' AND q.leaseuntil>statement_timestamp() AT TIME ZONE 'UTC'
+            AND EXISTS(SELECT 1 FROM rinovaplus_crm.crmcanalinstitucionaloperacionproveedor o
+              WHERE o.institutionid=q.institutionid AND o.integrationid=q.integrationid
+                AND o.operationid=q.operationid AND o.status='running' AND o.leaseid=q.leaseid
+                AND o.leaseuntil>statement_timestamp() AT TIME ZONE 'UTC')
+          RETURNING q.institutionid,q.integrationid,q.operationid,q.leaseid,q.leaseuntil
+        )
+        UPDATE rinovaplus_crm.crmcanalinstitucionaloperacionproveedor o
+        SET leaseuntil=active.leaseuntil FROM active
+        WHERE o.institutionid=active.institutionid AND o.integrationid=active.integrationid
+          AND o.operationid=active.operationid AND o.status='running' AND o.leaseid=active.leaseid
+        RETURNING true
+    """, institution, queue_id, lease_id).fetchval()
+    if not renewed:
+        from fastapi import HTTPException
+
+        raise HTTPException(409, "send_lease_lost")
+    return True
 
 
 def expire(c, institution):
