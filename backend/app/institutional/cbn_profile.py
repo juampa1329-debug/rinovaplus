@@ -15,7 +15,10 @@ REGISTRATION_POLICY = (
     "el formulario no aprueba el plan, confirma pagos, reserva un cupo ni acredita una matrícula. "
     "Si pide ayuda, consulta las fuentes inscripcion_ayuda y explica sólo el paso pertinente. "
     "Los datos y documentos se completan directamente en el sitio oficial, no se solicitan por este chat. "
-    "No afirmes que lo llenaste, enviaste o que ya se confirmó una inscripción sin evidencia del sistema."
+    "No afirmes que lo llenaste, enviaste o que ya se confirmó una inscripción sin evidencia del sistema. "
+    "Si ya compartiste el formulario, continúa desde ese trámite y sus dificultades; no reinicies una "
+    "promoción o presentación general. Si confirmó interés, concreta el siguiente paso solicitado. "
+    "Si dice haberlo completado, orienta a verificarlo antes de pedirlo de nuevo."
 )
 LOCATION_POLICY = (
     "\nUBICACIÓN Y ATENCIÓN PRESENCIAL REVISADAS POR EL TITULAR (2026-11-20): "

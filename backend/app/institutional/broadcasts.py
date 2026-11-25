@@ -291,11 +291,17 @@ def audience(c, s, campaign, *, controlled=False):
     )
     from app.institutional.siie_classification import phone_hash, promotion_exclusions
     registered_siie, registered_phones = promotion_exclusions(c, s)
+    from app.institutional.commercial_followup import progress_map, exclusion
+    progress = progress_map(c, s)
     candidates = []
     for person in candidate_rows(c, s, document):
         if not segments.matches(person, document, as_of):
             continue
         reasons = list(global_reasons)
+        if getattr(s, "postgres_deployment", False):
+            progress_reason = exclusion(progress.get(uid(str(person["ContactId"])), {}), person["Stage"], document)
+            if progress_reason:
+                reasons.append(progress_reason)
         if uid(str(person["ContactId"])) in registered_siie or phone_hash(s, person.get("Phone", "")) in registered_phones:
             reasons.append("siie_registered_no_promotions")
         if s.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}:

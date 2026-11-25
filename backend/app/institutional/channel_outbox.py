@@ -902,6 +902,22 @@ class Dispatcher:
                 from app.institutional.email_notifications import observe_service
                 observe_service(c, self.settings, "channel-send:" + str(job["IntegrationId"]), failed=state != "accepted", module="channels", account=str(job["IntegrationId"]))
         if state == "accepted":
+            if (getattr(self.settings, "postgres_deployment", False) and job.get("MessageId")
+                    and "siieplus.online/" in str(payload.get("body", "")).lower()):
+                # Acceptance is durable: projection failures never replay Meta.
+                try:
+                    from app.institutional.commercial_followup import observe
+                    with transaction(self.settings, True, anonymous=True) as c:
+                        contact = one(c, "SELECT COALESCE(g.TargetContactId,i.ContactId) AS ContactId "
+                            "FROM crm_channels2.MessageRoute r JOIN crm_channels2.ExternalIdentity i "
+                            "ON i.InstitutionId=r.InstitutionId AND i.IdentityId=r.IdentityId "
+                            "LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=i.ContactId AND g.Active=1 "
+                            "WHERE r.InstitutionId=? AND r.MessageId=?", institution(self.settings), job["MessageId"])
+                        if contact:
+                            observe(c, self.settings, contact["ContactId"])
+                except Exception:
+                    import logging
+                    logging.getLogger(__name__).warning("commercial_followup_projection_pending")
             if payload.get("privateReply"):
                 # Acceptance is already durable. A failed CRM projection must
                 # never cause the provider message to be sent for a second time.

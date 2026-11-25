@@ -591,6 +591,11 @@ def incoming(c, settings, item, effect):
             incoming_id=message,
         )
 
+    if getattr(settings, "postgres_deployment", False):
+        from app.institutional.commercial_followup import observe
+        canonical = one(c, "SELECT TargetContactId FROM crm_workspace.Merge WHERE SourceContactId=? AND Active=1", linked["ContactId"])
+        observe(c, settings, canonical["TargetContactId"] if canonical else linked["ContactId"])
+
 
 def delivery(previous, incoming):
     order = {

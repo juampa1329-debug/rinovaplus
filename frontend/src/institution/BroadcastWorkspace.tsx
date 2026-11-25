@@ -179,6 +179,8 @@ const stateLabel: Record<string, string> = {
   blocked: "Bloqueado",
 };
 const reasonLabel: Record<string, string> = {
+  commercial_progress_requires_case_followup: "Ya avanzó: requiere seguimiento de su caso, sin reactivación general",
+  advanced_stage_no_reactivation: "Etapa avanzada: no corresponde reactivación general",
   broadcast_template_still_in_campaign:
     "Cambia la plantilla de las campañas que todavía la usan antes de eliminarla de la biblioteca.",
   broadcast_template_removed_from_library:

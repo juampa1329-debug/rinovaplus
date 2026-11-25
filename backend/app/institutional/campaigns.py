@@ -138,12 +138,17 @@ def person(c, s, identity):
         institution(s),
         identity,
     )
+    if getattr(s, "postgres_deployment", False):
+        from app.institutional.commercial_followup import read
+        v["CommercialProgress"], _ = read(c, s, v["CanonicalContactId"])
     v["LastIncomingId"] = latest["MessageId"] if latest else None
     v["IncomingText"] = latest["Body"] if latest else ""
     return v
 
 
 def matches(v, filters):
+    if filters.get("followup_states") and v.get("CommercialProgress", {}).get("state") not in filters["followup_states"]:
+        return False
     for name, col in [
         ("contact_ids", "CanonicalContactId"),
         ("program_ids", "ProgramId"),
@@ -232,6 +237,15 @@ def reasons(c, s, doc, p):
     from app.institutional.siie_classification import blocked as siie_registered
     if siie_registered(c, s, p.get("CanonicalContactId") or p.get("ContactId"), p.get("Phone", "")):
         found.append("siie_registered_no_promotions")
+    if getattr(s, "postgres_deployment", False):
+        from app.institutional.commercial_followup import read, exclusion
+        progress, _ = read(c, s, p.get("CanonicalContactId") or p["ContactId"])
+        reason = exclusion(progress, p.get("Stage"), doc)
+        if reason:
+            found.append(reason)
+        allowed = doc.get("entry_conditions", {}).get("followup_states", [])
+        if allowed and progress.get("state") not in allowed:
+            found.append("campaign_followup_case_changed")
     if not same(p["IntegrationId"], doc["integration_id"]):
         found.append("campaign_account_mismatch")
     if p["ControlMode"] == "human":
@@ -264,6 +278,8 @@ def send_document(doc, step, variant):
         if b
         else step["meta_template_version"],
         filters={},
+        followup_only=doc.get("followup_only", False),
+        entry_conditions={"followup_states": doc.get("entry_conditions", {}).get("followup_states", [])},
         variables=step["variant_b_variables"] if b else step["variables"],
         header_media_url=step["header_media_url"],
         timezone=doc["timezone"],
