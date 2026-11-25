@@ -1,0 +1,98 @@
+{
+  "reviewed_at": "2026-11-25T10:12:00-05:00",
+  "scope": "Inbox storage waits and PRE-ICFES update",
+  "code_commits": [
+    "f19cd38",
+    "466bc15",
+    "2b80de2"
+  ],
+  "deployments": {
+    "backend": {
+      "commit": "2b80de2",
+      "id": "xryds68h3re2a8audfeoj12k",
+      "status": "Success",
+      "duration": "04m23s"
+    },
+    "frontend": {
+      "commit": "2b80de2",
+      "id": "vcwm3joxb5cxhlxcxmxxyqrs",
+      "status": "Success",
+      "duration": "00m27s"
+    }
+  },
+  "incident": {
+    "first_part_code": "storage_busy",
+    "following_parts": "gemini_whatsapp_previous_part_not_sent",
+    "slow_statement_id": "c01a0c3f0050",
+    "function": "reply_turns.snapshot",
+    "statement_ms_observed": [
+      3559,
+      3789
+    ],
+    "transaction_ms_max_observed": 8151,
+    "root_fix": "single receipt aggregation scoped to institution/account/identity"
+  },
+  "priority_recovery": {
+    "threads": 3,
+    "new_messages_delivered": 4,
+    "human_controls_restored_to_ai": 3,
+    "historical_jobs_replayed": 0
+  },
+  "pre_icfes": {
+    "revision": 7,
+    "regular_price_cop": 1600000,
+    "cash_discount_percent": 50,
+    "cash_price_cop": 800000,
+    "cash_valid_until": "2026-12-16",
+    "classes_start": "2027-02-13",
+    "finance_deadline_preserved": "2026-12-15"
+  },
+  "isolated_model_check": {
+    "provider": "openrouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "prompt_tokens": 16784,
+    "completion_tokens": 507,
+    "latency_ms": 20721,
+    "estimated_usd": 0.057957,
+    "corrected_stale_dates": true,
+    "crm_written": false,
+    "delivered": false,
+    "active_agents_changed": false
+  },
+  "post_deployment": {
+    "checked_at": "2026-11-25T10:11:37-05:00",
+    "workers_current": 9,
+    "fresh_threads_ui_load_ms": [
+      1493,
+      1507,
+      1395
+    ],
+    "thread_2_message_count": 32,
+    "thread_3_message_count": 36,
+    "queued_or_sending_outbound_in_cut": 0,
+    "historical_uncertain_outbound": 12,
+    "observed_alerts_in_fresh_thread_checks": 0,
+    "latest_visible_ai_incident_before_final_deploy": "2026-11-25T10:02:23-05:00",
+    "new_container_log_sample": "startup only in refreshed sample"
+  },
+  "validation": {
+    "backend_first_selection_passed": 183,
+    "backend_additional_selection_passed": 61,
+    "backend_final_selection_passed": 171,
+    "selections_overlap": true,
+    "legacy_failures_reproduced_in_previous_head": 6,
+    "frontend_selected_passed": 15,
+    "ruff": "passed",
+    "typescript": "passed",
+    "eslint": "passed",
+    "institutional_build": "passed",
+    "bundle_warning": "historical"
+  },
+  "limits": [
+    "No maximum-load or SLA certification",
+    "No automatic replay of uncertain effects",
+    "No claim that all historical failed entries were recovered",
+    "No new phase acceptance",
+    "No DDL, seeds, new services, model changes or SIIE writes"
+  ]
+}

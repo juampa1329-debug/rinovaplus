@@ -1,3 +1,5 @@
+Cierre25Nov: `2b80de2` backend/frontendSuccess, cola/cobertura y PRE comprobados en alcance descrito. [Informe](INBOX_QUEUE_STORAGE_WAIT_20261125.md). P23Registration2 y webhook SIIE→CRM pasan a trabajo autorizado; hitos/porcentajes todavía conservados.
+
 25Nov: cobertura de turnos optimizada preparada tras medir consulta3,6–3,8s; frontend466bc15 publicado. [Detalle](INBOX_QUEUE_STORAGE_WAIT_20261125.md). Siguiente petición: implementarRegistration2/P23 y webhook SIIE haciaCRM; porcentajes conservados.
 
 Corte25Nov: `f19cd38` publicado; PRE-ICFES y tres hilos comprobados. Mejora de espera visual/GET en preparación. [Evidencia y límites](INBOX_QUEUE_STORAGE_WAIT_20261125.md); porcentajes conservados.

@@ -40,3 +40,10 @@ La telemetría publicada localizó `statement_id=c01a0c3f0050`: cálculo de cobe
 Se sustituye por una sola agregación acotada a institución/cuenta/identidad, enlazada por operación. Un turno sólo se considera atendido si tiene al menos una parte y todas están aceptadas/enviadas/entregadas/leídas, o existe la decisión expresa confirmada de no responder. Partes en cola, fallidas, canceladas o inciertas conservan la consulta pendiente. Registros de otra identidad/cuenta/institución no acreditan cobertura. No se cambian bloqueos de autorización, límites HTTP, esquemas ni se crean índices.
 
 171 pruebas backend focalizadas pasan, incluidas14 historias SQL ejecutadas en memoria con estados mixtos y registros ajenos y validación de sintaxis PostgreSQL. Selección solapada con las anteriores; Ruff pasa. La nueva consulta requiere publicación y observación real antes de atribuirle una mejora de latencia. Frontend466bc15 ya está Success44s, desplieguezqxp68nlc62cqrh9qwlycnj0.
+
+
+## Cierre de publicación y observación
+
+`2b80de2` backend**Success4m23**, despliegue`xryds68h3re2a8audfeoj12k`; frontend**Success27s**, `vcwm3joxb5cxhlxcxmxxyqrs`. Tres aperturas nativas posteriores cargan en1493/1507/1395ms, sin alertas, con IA recargada en los tres hilos; son tiempos de UI, no latencias SQL ni un SLA. Dos hilos contienen32/36mensajes. Los nueve procesos figuranAl día a10:11:37Bogotá; noqueued/sending en el corte, conserva12salidasinciertas históricas. La muestra refrescada del nuevo contenedor sólo muestra su arranque; no prueba ausencia permanente de fallos. La última incidenciaIA visible a10:02:23 precede al despliegue final y es por cambio de contexto, no por el proveedor.
+
+Evidencia agregada sin nombres/cuerpos/documentos: `artifacts/live/inbox-queue-storage-wait-20261125.json`. La recuperación forzada de contención se probó localmente, sin inyectar fallos en producción. No se modifican las aceptaciones de fases. Siguiente encargo autorizado: P23/Registration2 y recepción webhook de SIIE.

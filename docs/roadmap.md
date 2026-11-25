@@ -1,3 +1,5 @@
+Cierre operativo25Nov: `2b80de2` backend/frontendSuccess; causa de contención corregida en cobertura de turnos, tres aperturas sin alertas, cuatro orientaciones Entregadas y PRE-ICFES actualizado. [Informe](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md) y [evidencia](../artifacts/live/inbox-queue-storage-wait-20261125.json). Siguiente encargo autorizado: P23Registration2 y webhook SIIE→CRM; aún sin nueva aceptación.
+
 25Nov: causa de contención identificada en cobertura de turnos (consulta3,6–3,8s). Agregación por identidad preparada y171pruebas pasan; publicación/medición pendientes. Frontend466bc15 publicado con espera visible y recuperación GET acotada. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). P23/webhook SIIE sigue como siguiente encargo, sin nueva aceptación.
 
 Corte25Nov: cola de espera interna publicada `f19cd38`; cuatro orientaciones Entregadas en tres hilos, nueve procesos Al día. PRE-ICFES revisión7: descuento hasta16Dic2026 e inicio13Feb2027 comprobados en simulación aislada. Mejora visual y recuperación GET acotada preparadas; [detalle y límites](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Sin nuevas aceptaciones de fases.
