@@ -82,7 +82,9 @@ def turn_plan(question, *, has_history=False, public=False):
                 ("syllabus", r"materia|temario|pensum|plan(?:es)?\s+de\s+estudio|asignatura|que.*aprend|que.*estudi"),
                 ("requirements", r"requisito|document|inscri|matricul"),
                 ("career_outcomes", r"trabaj|salida|laboral|empleo|remoto|crucero|emprend|negocio"),
-                ("presentation", r"por que|porque|beneficio|ventaja|vale la pena|que.*ofrece"),
+                # Confirmed class dates may live in the reviewed presentation.
+                # A simultaneous price/objection must not hide that source.
+                ("presentation", r"por que|porque|beneficio|ventaja|vale la pena|que.*ofrece|\bfechas?\b|\bano\b|(?:cuando|que dia).{0,30}(?:inici|comienz|empiez|arranc)|(?:inici|comienz|empiez|arranc).{0,24}(?:clase|curso|semestre)|calendario|clases"),
             ) if re.search(pattern, current)],
             "brief_target_words": 110 if financial or detail else 75,
             "one_useful_question_max": True, "respect_explicit_questions": True,

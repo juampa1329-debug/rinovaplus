@@ -1,6 +1,9 @@
 """Compatibility for legacy statements used by the PostgreSQL rehearsal flows."""
 
+import hashlib
 import re
+import sys
+from time import monotonic
 from uuid import UUID
 
 
@@ -230,6 +233,7 @@ class Cursor:
         self._table_map = table_map
         self._columns = columns
         self._aliases = {}
+        self.slowest = (0, "none", "none")
 
     def execute(self, statement, *parameters):
         if BOUND_TOP.match(statement.strip()):
@@ -252,7 +256,20 @@ class Cursor:
         self._aliases = {
             alias.lower(): alias for alias in re.findall(r"\bAS\s+([a-zA-Z_]\w*)", unquoted, re.I)
         }
-        self._cursor.execute(sql, parameters if parameters else None)
+        started = monotonic()
+        try:
+            self._cursor.execute(sql, parameters if parameters else None)
+        finally:
+            elapsed = round((monotonic() - started) * 1000)
+            if elapsed > self.slowest[0]:
+                frame = sys._getframe(1)
+                if frame.f_code.co_name == "execute" and frame.f_code.co_filename == __file__:
+                    frame = frame.f_back
+                # Static source location and digest only: no SQL, parameters,
+                # exception bodies, identities or credentials enter telemetry.
+                source = frame.f_code.co_name + ":" + str(frame.f_lineno)
+                self.slowest = (elapsed, hashlib.sha256(sql.encode()).hexdigest()[:12], source)
+                del frame
         return self
 
     @property

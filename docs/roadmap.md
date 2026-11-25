@@ -1,3 +1,5 @@
+Corrección en preparación 25Nov: espera interna anterior al envío, continuidad de partes y fechas confirmadas. Dos orientaciones prioritarias Entregadas; PRE-ICFES actualizado hasta16Dic2026 e inicio13Feb2027. Publicación/diagnóstico de contención pendientes. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Fases y aceptaciones conservadas.
+
 ## Estado vigente del roadmap — 2026-11-24
 
 ### Correcciones de atención del 25 de noviembre de 2026

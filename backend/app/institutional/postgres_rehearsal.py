@@ -202,6 +202,7 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
     stage = "connect"
     started = monotonic()
     acquired = None
+    cursor = None
     try:
         with closing(settings.postgres_connect()) as conn, conn, conn.cursor() as raw:
             if not write:
@@ -246,7 +247,9 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
         raise HTTPException(503, "general_storage_unavailable") from None
     finally:
         if acquired is not None and (held := monotonic() - acquired) >= 1:
-            LOG.warning("postgres_transaction_slow write=%s held_ms=%s stage=%s", write, round(held * 1000), stage)
+            timing = getattr(cursor, "slowest", None)
+            statement_ms, statement_id, source = timing if isinstance(timing, tuple) else (0, "none", "none")
+            LOG.warning("postgres_transaction_slow write=%s held_ms=%s stage=%s statement_ms=%s statement_id=%s source=%s", write, round(held * 1000), stage, statement_ms, statement_id, source)
 
 
 def network_disabled(*_args, **_options):

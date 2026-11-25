@@ -4,7 +4,31 @@ from fastapi import HTTPException
 
 from app.institutional.db import institution, one, uid
 
-KNOWN_WAITS = {"broadcast_cadence_wait", "campaign_quiet_or_not_due"}
+KNOWN_WAITS = {"broadcast_cadence_wait", "campaign_quiet_or_not_due", "outbound_storage_wait"}
+
+
+class PreProviderStorageWait(HTTPException):
+    """Only a locally proven pre-send guard may create this retryable marker."""
+
+    def __init__(self):
+        super().__init__(503, "outbound_storage_wait")
+
+
+def before_text_send(check):
+    """A text transport calls this guard before its first message POST."""
+    try:
+        return check()
+    except HTTPException as error:
+        if error.status_code == 503 and error.detail == "storage_busy":
+            raise PreProviderStorageWait() from None
+        raise
+
+
+def storage_wait(error, transport_entered):
+    return isinstance(error, PreProviderStorageWait) or (
+        not transport_entered and isinstance(error, HTTPException)
+        and error.status_code == 503 and error.detail == "storage_busy"
+    )
 
 
 def preflight_reservation(c, settings, job):

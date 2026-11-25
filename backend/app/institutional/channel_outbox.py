@@ -680,6 +680,7 @@ class Dispatcher:
                 mark_sending(c, inst, job, lease, reservation)
         # Recheck just before the provider effect; authority/account changes fence the
         # intent.
+        transport_entered = False
         try:
             with transaction(self.settings, True, anonymous=True) as c:
                 current = one(
@@ -727,12 +728,22 @@ class Dispatcher:
             if payload.get("origin") == "gemini_whatsapp" and payload.get("showTyping"):
                 from app.institutional.reply_delivery import typing
                 typing(adapter, payload["target"], payload.get("typingMessageId"), before=lambda: self.frontier(job["QueueId"], lease))
+            # Only the built-in text transport has the proven pre-message POST
+            # callback contract. Never infer safety after media/provider IO.
+            def message_frontier():
+                def check():
+                    return self.frontier(job["QueueId"], lease)
+                if not media and self.transport is providers.send and payload.get("origin") == "gemini_whatsapp":
+                    from app.institutional.channel_reservations import before_text_send
+                    return before_text_send(check)
+                return check()
+            transport_entered = True
             external = (
                 self.transport(
                     adapter,
                     payload,
                     media=media,
-                    before_send=lambda: self.frontier(job["QueueId"], lease),
+                    before_send=message_frontier,
                 )
                 if media
                 or self.settings.ticket.get("version")
@@ -749,14 +760,16 @@ class Dispatcher:
                 )
             state, code = "accepted", None
         except HTTPException as error:
+            from app.institutional.channel_reservations import storage_wait
+            waiting_for_storage = storage_wait(error, transport_entered)
             state, code, external = (
                 (
                     "queued"
-                    if error.detail
+                    if waiting_for_storage or error.detail
                     in {"broadcast_cadence_wait", "campaign_quiet_or_not_due"}
                     else "failed"
                 ),
-                str(error.detail)[:64],
+                "outbound_storage_wait" if waiting_for_storage else str(error.detail)[:64],
                 None,
             )
         except providers.ProviderFailure as error:
@@ -802,6 +815,12 @@ class Dispatcher:
                 job["QueueId"],
                 lease,
             )
+            if state == "queued" and code == "outbound_storage_wait":
+                c.execute(
+                    "UPDATE crm_channels2.SendJob SET DueAt=DATEADD(second,5,SYSUTCDATETIME()) "
+                    "WHERE InstitutionId=? AND QueueId=? AND State='queued' AND LastErrorCode='outbound_storage_wait'",
+                    inst, job["QueueId"],
+                )
             c.execute(
                 (
                     "UPDATE crm_channels2.ProviderOperation"
