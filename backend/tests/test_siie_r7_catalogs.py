@@ -206,6 +206,48 @@ def test_changed_mapping_metadata_is_not_used_to_guess_another_value(official):
         catalogs.read()
 
 
+@pytest.mark.parametrize(
+    "name", ["municipios.items", "data.municipios.items", "catalogos.municipios"]
+)
+def test_equivalent_municipal_collection_paths_preserve_native_value(official, name):
+    data, _ = official
+    data["campos"][0]["catalogo"] = name
+    assert catalogs.read()["municipal_text"][0]["value"] == "47001"
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["estadosCiviles", "opciones.estadosCiviles", "data.opciones.estadosCiviles"],
+)
+def test_fixed_option_metadata_paths_use_same_reviewed_collection(official, name):
+    data, _ = official
+    data["campos"] = [
+        {
+            "campo": "estudiante.EstadoCivil",
+            "catalogo": name,
+            "propiedad": "valor",
+            "tipo": "string",
+        }
+    ]
+    assert (
+        catalogs.read()["items"]["estudiante.EstadoCivil"][0]["value"] == "SOLTERO(A)"
+    )
+
+
+def test_contract_mismatch_does_not_log_unreviewed_provider_strings(official, caplog):
+    data, _ = official
+    data["campos"][0].update(catalogo="PRIVATE", propiedad="PRIVATE")
+    with pytest.raises(
+        HTTPException, match="siie_registration_catalog_contract_changed"
+    ):
+        catalogs.read()
+    assert "PRIVATE" not in caplog.text
+    assert (
+        "field=estudiante.CiudadNacimiento catalog=unrecognized property=unrecognized"
+        in caplog.text
+    )
+
+
 def test_employment_department_and_municipality_must_share_the_selected_scope(official):
     with pytest.raises(HTTPException, match="siie_work_location_mismatch"):
         catalogs.final_choices(

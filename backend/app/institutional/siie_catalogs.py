@@ -1,10 +1,13 @@
 """Reviewed R7 enrollment selectors. Native values, scoped geography, no writes."""
 
+import logging
 import re
 
 from fastapi import HTTPException
 
 from app.institutional import siie_registration_client as source
+
+LOG = logging.getLogger("uvicorn.error")
 
 # Field -> native catalog path/property. Labels never substitute for these values.
 MAPPING = {
@@ -99,6 +102,37 @@ def collection(data, path):
     return current
 
 
+def matching_metadata(item, expected):
+    """Equivalent collection paths do not change the native value property."""
+    name, prop = expected
+    aliases = {name}
+    if name == "municipios":
+        aliases.add("municipios.items")
+    if name.startswith("opciones."):
+        aliases.add(name.removeprefix("opciones."))
+    aliases |= {
+        prefix + path for path in tuple(aliases) for prefix in ("data.", "catalogos.")
+    }
+    if item.get("catalogo") in aliases and item.get("propiedad") == prop:
+        return True
+    # Only reviewed field/path/property names are logged, never arbitrary values.
+    known_paths = {path for path, _ in MAPPING.values()} | {
+        "municipios",
+        "municipios.items",
+        "departamentos",
+    }
+    known_paths |= {path.removeprefix("opciones.") for path in tuple(known_paths)}
+    LOG.warning(
+        "siie_catalog_contract_mismatch field=%s catalog=%s property=%s",
+        item["campo"],
+        item.get("catalogo") if item.get("catalogo") in known_paths else "unrecognized",
+        item.get("propiedad")
+        if item.get("propiedad") in {"valor", "valorTexto", "nombre"}
+        else "unrecognized",
+    )
+    return False
+
+
 def choices(values, prop="valor", *, limit=1000, max_length=None):
     if not isinstance(values, list) or len(values) > limit:
         raise HTTPException(502, "siie_registration_invalid_catalog")
@@ -159,7 +193,7 @@ def read(context=None, geo=None):
                     "departamentos" if path.endswith(".Departamento") else "municipios",
                     GEOGRAPHY[path],
                 )
-            if expected and (item.get("catalogo"), item.get("propiedad")) != expected:
+            if expected and not matching_metadata(item, expected):
                 raise HTTPException(502, "siie_registration_catalog_contract_changed")
     result = {}
     for path, (name, prop) in MAPPING.items():
