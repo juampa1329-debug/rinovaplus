@@ -489,7 +489,7 @@ export function SiieRegistration() {
                     key={row.id}
                     variant="secondary"
                     aria-pressed={selected?.id === row.id}
-                    disabled={task.busy || dirty}
+                    disabled={task.busy || dirty || !editable}
                     onClick={() => void task.run(() => open(row.id), "")}
                   >
                     <strong>{row.program_name || "Solicitud SIIE"}</strong>
@@ -785,7 +785,7 @@ export function SiieRegistration() {
                     )}
                     <Button
                       variant="secondary"
-                      disabled={task.busy || dirty}
+                      disabled={task.busy || dirty || !editable}
                       onClick={() =>
                         void task.run(
                           loadRequirements,
@@ -979,7 +979,7 @@ export function SiieRegistration() {
                 <Button
                   key={row.id}
                   variant="secondary"
-                  disabled={task.busy}
+                  disabled={task.busy || !editable}
                   onClick={() =>
                     void task.run(async () => {
                       const value = await call<{

@@ -595,6 +595,9 @@ def test_private_record_encryption_and_section_fit_installed_schema(settings):
 
 
 def test_registration_routes_have_admissions_crm_and_config_has_recent_admin_boundary():
+    assert core_permission(registration.PREFIX + "/records/sd/id", "GET") == ("crm.write", "admissions")
+    assert core_permission(registration.PREFIX + "/records/sw/id", "GET") == ("crm.write", "admissions")
+    assert core_permission(registration.PREFIX + "/records/se/id", "GET") == ("crm.write", "admissions")
     assert core_permission(registration.PREFIX + "/records/se", "GET") == (
         "crm.read",
         "admissions",

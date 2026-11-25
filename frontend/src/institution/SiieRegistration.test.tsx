@@ -79,6 +79,7 @@ const status = {
 };
 beforeEach(() => {
   mock.mode = "empty";
+  mock.actions = ["crm.read", "crm.write", "settings.webhooks.write"];
   mock.call.mockReset();
   mock.call.mockImplementation(async (path: string) => {
     if (path.endsWith("/status")) return status;
@@ -129,6 +130,18 @@ beforeEach(() => {
     if (path.includes("/events/")) return { linked: true };
     throw Error(`Unexpected synthetic route ${path}`);
   });
+});
+
+it("does not open private registration dossiers for a read-only CRM viewer", async () => {
+  mock.mode = "draft";
+  mock.actions = ["crm.read"];
+  render(<SiieRegistration />);
+  expect(
+    await screen.findByRole("button", { name: /PRE-ICFES/ }),
+  ).toBeDisabled();
+  expect(
+    mock.call.mock.calls.some((c) => String(c[0]).includes("/records/sd/")),
+  ).toBe(false);
 });
 
 it("shows the webhook setup without silently enabling reception or creating students", async () => {

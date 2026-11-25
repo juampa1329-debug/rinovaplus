@@ -38,6 +38,10 @@ def core_permission(path, method):
     if path.startswith("/api/institution/siie-registration"):
         if path.endswith("/configuration"):
             return "settings.webhooks.write", "admissions"
+        if any(part in path for part in ("/records/sd/", "/records/sw/", "/records/se/", "/drafts/")):
+            # Complete forms include health and third-party family data. A
+            # read-only CRM viewer may see list metadata, not private dossiers.
+            return "crm.write", "admissions"
         return "crm." + ("read" if method == "GET" else "write"), "admissions"
     if path == "/api/institution/provider-balance/openrouter/alert":
         return "settings.budgets.read", "settings"
