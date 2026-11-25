@@ -247,6 +247,7 @@ def test_webhook_http_rejects_duplicate_headers_duplicate_json_keys_and_oversize
         ("registration", "Inscripcion.aspx"),
         ("documents", "Documentos.aspx"),
         ("requirements", "DocumentosRequeridos.aspx"),
+        ("catalogs", "CatalogosInscripcion.aspx"),
     ],
 )
 def test_all_four_paths_keep_deployed_folder_and_original_key(settings, kind, path):
@@ -508,7 +509,7 @@ def test_intent_is_durable_before_io_unknown_result_is_never_resent(
     }
     monkeypatch.setattr(client, "offer_context", lambda *a: copy.deepcopy(context))
     monkeypatch.setattr(
-        registration, "catalogs", lambda *a: {"items": {}, "missing": []}
+        registration.native_catalogs, "final_choices", lambda *a: {}
     )
     monkeypatch.setattr(forms, "validate", lambda *a, **k: None)
     calls = []
@@ -865,6 +866,8 @@ def complete_form():
             else:
                 value = "ENSAYO"
             row[f["name"]] = value
+            if f["catalog"]:
+                choices[f["catalog"]] = [{"value": value, "label": "CATALOGO SINTETICO"}]
         result[section["name"]] = [row] if section.get("max_items") else row
     result["referencia"]["Direccion"] = "DIRECCION DIFERENTE"
     result["aceptaTratamientoDatos"] = True

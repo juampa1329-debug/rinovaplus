@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-25",
+  "stage": "prepared_tested_for_deployment",
+  "source": "GuiaImplementacionCRM.md",
+  "source_sha256": "12d9462eeb5c1f18dab11292f1dca327697c9accd7594743f5a31e6764589c52",
+  "catalog_path": "/Api/CRM/v1/CatalogosInscripcion.aspx",
+  "outbound_credential": "existing_SIIE_API_TOKEN",
+  "verification": {
+    "backend_selected_passed": 175,
+    "frontend_selected_passed": 18,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false
+  },
+  "real_catalog_reads_verified": false,
+  "real_siie_writes": 0,
+  "files_uploaded": 0,
+  "new_paid_model_calls": 0,
+  "webhook_enabled": false,
+  "writes_enabled": false,
+  "ddl_seeds_or_new_services": false,
+  "phase_acceptances_changed": false,
+  "contains_personal_data_or_secrets": false
+}

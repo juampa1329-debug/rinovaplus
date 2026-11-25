@@ -11,6 +11,7 @@ from starlette.concurrency import run_in_threadpool
 from app.institutional import siie_forms as forms
 from app.institutional import siie_records as records
 from app.institutional import siie_registration_client as source
+from app.institutional import siie_catalogs as native_catalogs
 from app.institutional.auth import authorize, rate
 from app.institutional.channel_ingress import strict_json
 from app.institutional.crypto import canonical
@@ -29,6 +30,7 @@ class Draft(Strict):
     kind: Literal["applicant", "registration"]
     selection: dict
     form: dict
+    geography: dict = Field(default_factory=dict)
 
 
 class Command(Strict):
@@ -56,23 +58,8 @@ def own(c, settings, identity):
     return value
 
 
-def catalogs(context=None):
-    result = {}
-    try:
-        result["tiposDocumento"] = source.document_types()
-    except HTTPException:
-        result["tiposDocumento"] = []
-    if context and context.get("shift_id"):
-        result["jornadas"] = [
-            {
-                "value": int(source.siie_api.positive(context["shift_id"])),
-                "label": context.get("schedule") or "Jornada de la oferta",
-            }
-        ]
-    return {
-        "items": result,
-        "missing": [name for name in forms.CATALOGS if not result.get(name)],
-    }
+def catalogs(context=None, geography=None):
+    return native_catalogs.read(context, geography)
 
 
 class Registration:
@@ -107,6 +94,7 @@ class Registration:
                         "event",
                         "contact_id",
                         "pending_operation",
+                        "geography",
                     }
                 },
             }
@@ -207,6 +195,7 @@ class Registration:
         if len(canonical(body.form)) > 262144:
             raise HTTPException(413, "siie_form_too_large")
         forms.validate(body.kind, body.form)
+        geography = native_catalogs.locations(body.geography)
         allowed = {"program_id", "program_cursor", "offer_cursor", "offer_ref"}
         if (
             set(body.selection) - allowed
@@ -238,6 +227,7 @@ class Registration:
                     "form": body.form,
                     "context": context,
                     "actor_id": str(actor["UserId"]),
+                    "geography": geography,
                 },
                 old,
             )
@@ -309,12 +299,12 @@ class Registration:
                 raise HTTPException(409, "siie_confirmed_registration_required")
             payload["idEstudiante"] = result["data"]["idEstudiante"]
         else:
-            choices = catalogs(context)
+            choices = native_catalogs.final_choices(context, private["form"], private.get("geography", {}), kind)
             forms.validate(
                 kind,
                 private["form"],
                 final=True,
-                catalogs=choices["items"],
+                catalogs=choices,
                 program_name=context["program_name"],
             )
             payload.update(private["form"])
@@ -542,14 +532,29 @@ def install(app, settings):
         return {"revision": old["revision"] + 1, **document}
 
     @app.get(PREFIX + "/catalogs")
-    def query_catalogs(draft_id: str | None = None):
+    def query_catalogs(request: Request, draft_id: str | None = None):
+        pairs = list(request.query_params.multi_items())
+        if len({k for k, _ in pairs}) != len(pairs):
+            raise HTTPException(422, "siie_catalog_filters_invalid")
+        parameters = {}
+        for name, value in pairs:
+            if name == "draft_id":
+                continue
+            if name in {"idPais", "idDepartamento", "offset"}:
+                if not re.fullmatch(r"0|[1-9][0-9]{0,9}", value):
+                    raise HTTPException(422, "siie_catalog_filters_invalid")
+                value = int(value)
+            parameters[name] = value
+        parameters = native_catalogs.filters(parameters)
         with service.tx() as c:
+            if draft_id:
+                authorize(c, settings, request_authority.get(), "crm.write")
             context = (
                 own(c, settings, uid(draft_id))["private"]["context"]
                 if draft_id
                 else None
             )
-        result = catalogs(context)
+        result = catalogs(context, parameters)
         with service.tx():
             pass
         return result
