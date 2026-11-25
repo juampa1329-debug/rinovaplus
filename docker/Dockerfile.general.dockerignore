@@ -19,6 +19,8 @@
 !frontend/general.html
 !frontend/src/
 !frontend/src/**
+!frontend/public/
+!frontend/public/**
 !docs/
 !docs/adaptation/
 !docs/adaptation/phase-progress-contract.json

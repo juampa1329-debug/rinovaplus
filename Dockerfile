@@ -5,6 +5,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/tsconfig.json frontend/vite.config.ts frontend/index.html ./
 COPY frontend/src ./src
+COPY frontend/public ./public
 # Relative catalog requests contain no credential or environment-specific backend URL.
 ENV VITE_CATALOG_API_BASE_URL=""
 RUN npm run build

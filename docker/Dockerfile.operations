@@ -5,6 +5,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/tsconfig.json frontend/vite.workspace.config.ts frontend/workspace.html ./
 COPY frontend/src ./src
+COPY frontend/public ./public
 RUN ./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/vite build --config vite.workspace.config.ts
 FROM crm-cbn-workspace:p10es-r2@sha256:d053356e8ea6b5aa23d09ae9422a9e6d1464955748dfc0ca9ce9bcee567e08c1
 COPY backend/app ./app
