@@ -16,9 +16,15 @@ Los resultados conservan correlación y límites/espera disponibles. Un conflict
 
 ## Verificación
 
-175 pruebas backend focalizadas de SIIE y 18 frontend pasan, con solapamiento respecto de selecciones anteriores. Tipos, ESLint, Ruff y build institucional pasan; aviso histórico de bundle grande. Incluye tipado de selectores, filtros inválidos sin IO, búsqueda/paginación con ámbito, cambios de país y respuestas tardías, períodos históricos, tipos/títulos incompatibles y ubicación laboral coherente. No se declara la suite completa verde.
+182 pruebas backend focalizadas de SIIE y 18 frontend pasan, con solapamiento respecto de selecciones anteriores. Tipos, ESLint, Ruff y build institucional pasan; aviso histórico de bundle grande. Incluye tipado de selectores, filtros inválidos sin IO, búsqueda/paginación con ámbito, cambios de país y respuestas tardías, períodos históricos, tipos/títulos incompatibles y ubicación laboral coherente. No se declara la suite completa verde.
 
-Publicación y lectura protegida real de R7 pendientes en este corte. La evidencia final se conserva en `artifacts/live/p23-siie-r7-catalogs-20261125.json`. No hay pruebas pagadas de modelos ni creación de personas, inscripción, archivos o documentos privados en SIIE por esta implementación.
+Publicación comprobada: código inicial `5dd1fc9`, seguido por compatibilidad `8f9143c`. La primera lectura real detuvo la carga porque la metadata usa rutas equivalentes de colecciones. Se admiten únicamente equivalencias revisadas como `municipios.items` y nombres de opciones, conservando la propiedad nativa. Una propiedad distinta sigue bloqueada; diagnóstico sólo con nombres de campo/ruta/propiedad conocidos, sin valores arbitrarios.
+
+Backend `ghwuy168521ldptx3hfjzvnw`: **Success**, 4m22; frontend `dg4ieov07hbut2syrukhypws`: **Success**, 26s. La versión inicial también pasó salud (4m20/46s). Con la clave existente y el borrador vacío de PRE-ICFES se comprobaron las seis clases de catálogos antes pendientes y sus opciones por campo: seis tipos de documento, dos géneros, dos modalidades, 21 EPS y jornada nativa. País→departamento→municipio funciona: Colombia/Magdalena, búsqueda «Santa» que limpia la selección anterior; Antioquia tiene primera página de 100 y segunda de 25, sin conservar una selección de otra página. Se descartaron todas las selecciones temporales mediante recarga, sin guardar datos personales ni aceptar tratamiento. Los dos requisitos de la oferta se volvieron a consultar; archivo desconocido permanece sin comprobar.
+
+Nueve procesos **Al día**, última consulta nativa 12:45:36 Bogotá. Un GET de ajustes durante el rollout mostró un timeout; la recarga posterior respondió correctamente. Esto acredita esa observación, no ausencia universal de fallos ni SLA. El catálogo nativo contiene etiquetas municipales repetidas con IDs distintos y algunas etiquetas de opciones con caracteres mal codificados; se conservan sin fusionar IDs ni alterar valores de solicitud. La limpieza de esos datos corresponde al productor SIIE.
+
+La evidencia final se conserva en `artifacts/live/p23-siie-r7-catalogs-20261125.json`. No hay pruebas pagadas de modelos ni creación de personas, inscripción, archivos o documentos privados en SIIE por esta implementación.
 
 ## Dependencias conservadas
 
