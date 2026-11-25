@@ -15,12 +15,14 @@ export type DemographicFields = Partial<
 >;
 export type AudienceFilters = {
   contact_ids: string[];
+  identity_ids?: string[];
   program_ids: number[];
   stages: string[];
   cities: string[];
   tags: string[];
   audience_mode?: "segment" | "contacts";
-  last_incoming_bucket?: "any" | "unknown" | "0_29" | "30_59" | "60_89" | "90_plus";
+  last_incoming_bucket?:
+    "any" | "unknown" | "0_29" | "30_59" | "60_89" | "90_plus";
   tag_match?: "all" | "any";
   schedules?: string[];
   contact_types?: string[];
@@ -29,7 +31,11 @@ export type AudienceFilters = {
   countries?: string[];
   age_min?: number | null;
   age_max?: number | null;
-  custom_fields?: { field_key: string; values: string[]; match?: "exact" | "contains" }[];
+  custom_fields?: {
+    field_key: string;
+    values: string[];
+    match?: "exact" | "contains";
+  }[];
 };
 
 function TokenField(props: ComponentProps<typeof Field>) {
@@ -253,16 +259,31 @@ export function BroadcastAudience({
             update({
               audience_mode: e.target.checked ? "contacts" : "segment",
               contact_ids: [],
+              identity_ids: [],
             })
           }
         />
         Elegir personas específicas
       </label>
       <BroadcastContactSelection
-        change={(contact_ids) =>
-          update({ audience_mode: "contacts", contact_ids })
+        change={(contact_ids, identity_ids) =>
+          update({
+            audience_mode: "contacts",
+            contact_ids,
+            identity_ids: identity_ids || [],
+          })
         }
       />
+      {!!filters.identity_ids?.length && (
+        <Notice>
+          {filters.contact_ids.length} personas · {filters.identity_ids.length}{" "}
+          destinos de cuenta revisados. Se mantienen la autorización, las bajas
+          y un envío por ficha en esta campaña.
+          <Button variant="quiet" onClick={() => update({ identity_ids: [] })}>
+            Quitar restricción de destinos revisados
+          </Button>
+        </Notice>
+      )}
       <SelectField
         id="audience-last-incoming"
         label="Tiempo desde el último mensaje recibido"
@@ -287,7 +308,9 @@ export function BroadcastAudience({
         Una preinscripción o gestión administrativa no demuestra una
         conversación; sin evidencia queda en su grupo propio.
       </p>
-      {(filters.audience_mode === "contacts" || !!filters.contact_ids.length) &&
+      {!filters.identity_ids?.length &&
+        (filters.audience_mode === "contacts" ||
+          !!filters.contact_ids.length) &&
         (account ? (
           <People
             key={account}

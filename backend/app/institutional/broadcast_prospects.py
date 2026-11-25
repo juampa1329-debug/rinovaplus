@@ -9,6 +9,7 @@ from uuid import UUID, uuid4, uuid5
 from fastapi import HTTPException
 from pydantic import Field, model_validator
 
+from app.institutional import broadcast_alternate_phones as alternate
 from app.institutional import db
 from app.institutional.auth import authorize
 from app.institutional.broadcast_models import ConsentWrite
@@ -26,12 +27,21 @@ class ProspectSetup(ConsentWrite):
     state: Literal["granted"] = "granted"
     program: Literal["logistica", "aduanas", "all"]
     contact_ids: list[str] = Field(min_length=1, max_length=10)
+    additional_phones: dict[str, str] = Field(default_factory=dict, max_length=10)
 
     @model_validator(mode="after")
     def bounded_setup(self):
         self.contact_ids = [str(UUID(v)) for v in self.contact_ids]
         if len(set(self.contact_ids)) != len(self.contact_ids):
             raise ValueError("prospect_contacts_duplicate")
+        additional = {str(UUID(k)): phone(v) for k, v in self.additional_phones.items()}
+        if (
+            set(additional) - set(self.contact_ids)
+            or any(not value for value in additional.values())
+            or len(set(additional.values())) != len(additional)
+        ):
+            raise ValueError("prospect_alternate_phone_review_required")
+        self.additional_phones = additional
         expires = datetime.fromisoformat(self.expires_at.replace("Z", "+00:00"))
         if expires > datetime.now(timezone.utc) + timedelta(days=2):
             raise ValueError("prospect_setup_expiry_maximum_two_days")
@@ -45,7 +55,10 @@ def reviewed_contact(value, program):
     interests = {normalize(v) for v in custom.get("pre_programas", "").split("|")}
     if (
         value["Type"] != "Preinscrito"
-        or not re.fullmatch(r"(?:PRE-[a-f0-9]{16}|SIIE-[a-f0-9]{32})", custom.get("pre_import_ref", ""))
+        or not re.fullmatch(
+            r"(?:PRE-[a-f0-9]{16}|SIIE-[a-f0-9]{32})",
+            custom.get("pre_import_ref", ""),
+        )
         or not any(interests)
         or (program != "all" and PROGRAMS[program] not in interests)
         or not phone(value["Phone"])
@@ -173,9 +186,32 @@ def setup(service, auth, integration, body):
                 or item["VerifiedStatus"] != "verified"
             ):
                 raise HTTPException(409, "broadcast_verified_whatsapp_account_required")
-            items, held = [], []
+            items, held, additional_items = [], [], []
             for contact_id in body.contact_ids:
                 try:
+                    planned, alternate_consent = None, None
+                    if contact_id in body.additional_phones:
+                        planned = alternate.plan(
+                            c, service.settings, integration, contact_id,
+                            body.additional_phones[contact_id], body.program,
+                        )
+                        if planned["IdentityId"]:
+                            alternate_consent = consent(
+                                c, service.settings, str(planned["IdentityId"]),
+                            )
+                            if (
+                                alternate_consent
+                                and alternate_consent["State"] == "revoked"
+                            ):
+                                raise HTTPException(
+                                    409, "prospect_revoked_consent_review_required",
+                                )
+                            if prior_opt_out(
+                                c, service.settings, str(planned["IdentityId"]),
+                            ):
+                                raise HTTPException(
+                                    409, "prospect_opt_out_review_required",
+                                )
                     identity = link(
                         c, service.settings, integration, contact_id, body.program,
                     )
@@ -205,19 +241,41 @@ def setup(service, auth, integration, body):
                         )
                     ),
                 })
-            result = {"items": items, "held": held, "program": body.program}
+                if planned:
+                    additional_identity = alternate.link(
+                        c, service.settings, integration, planned,
+                    )
+                    additional_items.append({
+                        "contact_id": contact_id, "identity_id": additional_identity,
+                        "consent_revision": (
+                            alternate_consent["VersionNo"] if alternate_consent else 0
+                        ),
+                        "preserve_consent": bool(
+                            alternate_consent
+                            and alternate_consent["State"] == "granted"
+                            and alternate_consent["ExpiresAt"]
+                            and alternate_consent["ExpiresAt"] > datetime.now(
+                                timezone.utc,
+                            ).replace(tzinfo=None)
+                        ),
+                    })
+            result = {
+                "items": items, "additional_items": additional_items,
+                "held": held, "program": body.program,
+            }
             db.record_operation(
                 c, service.settings, actor["UserId"], str(body.operation_id),
                 "broadcast.prospect_setup", integration, digest, result,
             )
             db.audit(
                 c, service.settings, actor["UserId"], "broadcast.prospect_setup",
-                integration, count=len(items), scope=body.program,
+                integration, count=len(items) + len(additional_items),
+                scope=body.program,
                 fields=["outbound_whatsapp_route", "untouched_import_control"],
             )
     # Separate native consent transactions retain existing CAS/reauth/revocation
     # rules. Deterministic operation IDs recover a partial HTTP response safely.
-    for item in result["items"]:
+    for item in [*result["items"], *result.get("additional_items", [])]:
         if item.get("preserve_consent"):
             continue
         command = ConsentWrite(

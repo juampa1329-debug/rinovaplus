@@ -165,6 +165,7 @@ def candidate_rows(c, s, document):
     args = [institution(s), document["integration_id"]]
     for field, column in [
         ("contact_ids", "p.ContactId"),
+        ("identity_ids", "i.IdentityId"),
         ("program_ids", "p.ProgramId"),
         ("stages", "p.Stage"),
         ("cities", "p.City"),
@@ -175,7 +176,7 @@ def candidate_rows(c, s, document):
         if values:
             cast = (
                 "CONVERT(uniqueidentifier,value)"
-                if field == "contact_ids"
+                if field in {"contact_ids", "identity_ids"}
                 else "TRY_CONVERT(int,value)"
                 if field == "program_ids"
                 else "value"
@@ -224,6 +225,10 @@ def candidate_rows(c, s, document):
 
 def audience(c, s, campaign, *, controlled=False):
     document = json.loads(campaign["Document"])
+    if document["filters"].get("identity_ids"):
+        from app.institutional.broadcast_routes import validate_selection
+
+        validate_selection(c, s, document)
     from app.modules.crm_configuration.application.service import read_configuration
 
     crm_config, _ = read_configuration(c, foundation=True)
@@ -567,6 +572,10 @@ class Broadcasts:
             if prior:
                 return prior
             item = account(c, self.settings, str(body.integration_id))
+            if body.filters.identity_ids:
+                from app.institutional.broadcast_routes import validate_selection
+
+                validate_selection(c, self.settings, document)
             if item["Channel"] != "whatsapp":
                 raise HTTPException(422, "broadcast_whatsapp_required")
             template = templates.latest(

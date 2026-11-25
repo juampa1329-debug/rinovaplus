@@ -42,3 +42,40 @@ it("rejects duplicate contacts without changing the current audience", async () 
   );
   expect(change).not.toHaveBeenCalled();
 });
+
+it("pins reviewed account routes only after explicit apply", async () => {
+  const change = vi.fn();
+  render(<BroadcastContactSelection change={change} />);
+  fireEvent.click(screen.getByText("Cargar selección revisada de contactos"));
+  upload({
+    version: "rinovaplus-broadcast-routes-v1",
+    contact_ids: ids,
+    identity_ids: [ids[1]],
+  });
+  const apply = await screen.findByRole("button", {
+    name: "Aplicar selección de 2 contactos",
+  });
+  expect(change).not.toHaveBeenCalled();
+  expect(screen.getByText(/La selección fija 1 destinos/)).toBeInTheDocument();
+  fireEvent.click(apply);
+  expect(change).toHaveBeenCalledExactlyOnceWith(ids, [ids[1]]);
+});
+
+it("rejects incomplete routes and routes hidden in an old contact-only file", async () => {
+  const change = vi.fn();
+  render(<BroadcastContactSelection change={change} />);
+  fireEvent.click(screen.getByText("Cargar selección revisada de contactos"));
+  upload({
+    version: "rinovaplus-broadcast-routes-v1",
+    contact_ids: ids,
+    identity_ids: [],
+  });
+  expect(await screen.findByRole("alert")).toBeInTheDocument();
+  upload({
+    version: "rinovaplus-broadcast-selection-v1",
+    contact_ids: ids,
+    identity_ids: [ids[0]],
+  });
+  expect(await screen.findByRole("alert")).toBeInTheDocument();
+  expect(change).not.toHaveBeenCalled();
+});

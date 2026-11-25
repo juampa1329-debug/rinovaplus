@@ -111,6 +111,7 @@ class Filters(Strict):
         "any", "unknown", "0_29", "30_59", "60_89", "90_plus"
     ] = "any"
     contact_ids: list[JsonUUID] = Field(default_factory=list, max_length=5000)
+    identity_ids: list[JsonUUID] = Field(default_factory=list, max_length=5000)
     program_ids: list[int] = Field(default_factory=list, max_length=100)
     stages: list[str] = Field(default_factory=list, max_length=100)
     cities: list[str] = Field(default_factory=list, max_length=100)
@@ -127,6 +128,12 @@ class Filters(Strict):
 
     @model_validator(mode="after")
     def safe(self):
+        if self.identity_ids and (
+            self.audience_mode != "contacts" or not self.contact_ids
+            or len(set(self.identity_ids)) != len(self.identity_ids)
+            or len(self.identity_ids) > len(self.contact_ids)
+        ):
+            raise ValueError("identity_selection_requires_contacts")
         if any(v <= 0 for v in self.program_ids):
             raise ValueError("program_id_invalid")
         if self.age_min is not None and self.age_max is not None and self.age_min > self.age_max:
