@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-25",
+  "stage": "prepared_tested_for_publication",
+  "incident": {
+    "channel": "whatsapp",
+    "first_part_code": "gemini_whatsapp_model_changed",
+    "later_part_code": "gemini_whatsapp_previous_part_not_sent",
+    "parts_discarded": 2,
+    "provider_send_attempts": 0,
+    "generation_confirmed": true,
+    "own_crm_interest_projection_observed": true,
+    "masterclass_orientation_retired_after_customer_choice": true
+  },
+  "recovery": {
+    "new_orientations": 1,
+    "sent_bogota": "2026-11-25 11:56",
+    "receipt_observed": "read",
+    "ai_control_restored": true,
+    "historical_jobs_replayed": false
+  },
+  "fix": {
+    "same_transaction_context_and_model_binding_refresh": true,
+    "requires_identical_agent_model_credential_and_effective_configuration": true,
+    "later_dispatch_guards_preserved": true,
+    "diagnostic_operational_flags_only": true
+  },
+  "verification": {
+    "regression_failed_before_fix": "gemini_whatsapp_model_changed at dispatch_authorized",
+    "backend_selected_passed": 180,
+    "frontend_selected_passed": 15,
+    "types": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false,
+    "new_paid_model_test_calls": 0
+  },
+  "ddl_seeds_or_new_services": false,
+  "real_siie_writes": 0,
+  "phase_acceptances_changed": false,
+  "contains_personal_data_or_credentials": false
+}
