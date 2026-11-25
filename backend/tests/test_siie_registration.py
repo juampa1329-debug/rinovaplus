@@ -508,9 +508,7 @@ def test_intent_is_durable_before_io_unknown_result_is_never_resent(
         "private": {"form": {"documento": "TEST123"}, "context": context},
     }
     monkeypatch.setattr(client, "offer_context", lambda *a: copy.deepcopy(context))
-    monkeypatch.setattr(
-        registration.native_catalogs, "final_choices", lambda *a: {}
-    )
+    monkeypatch.setattr(registration.native_catalogs, "final_choices", lambda *a: {})
     monkeypatch.setattr(forms, "validate", lambda *a, **k: None)
     calls = []
 
@@ -596,9 +594,18 @@ def test_private_record_encryption_and_section_fit_installed_schema(settings):
 
 
 def test_registration_routes_have_admissions_crm_and_config_has_recent_admin_boundary():
-    assert core_permission(registration.PREFIX + "/records/sd/id", "GET") == ("crm.write", "admissions")
-    assert core_permission(registration.PREFIX + "/records/sw/id", "GET") == ("crm.write", "admissions")
-    assert core_permission(registration.PREFIX + "/records/se/id", "GET") == ("crm.write", "admissions")
+    assert core_permission(registration.PREFIX + "/records/sd/id", "GET") == (
+        "crm.write",
+        "admissions",
+    )
+    assert core_permission(registration.PREFIX + "/records/sw/id", "GET") == (
+        "crm.write",
+        "admissions",
+    )
+    assert core_permission(registration.PREFIX + "/records/se/id", "GET") == (
+        "crm.write",
+        "admissions",
+    )
     assert core_permission(registration.PREFIX + "/records/se", "GET") == (
         "crm.read",
         "admissions",
@@ -621,7 +628,8 @@ def projection_db(settings, monkeypatch):
     from app.institutional.postgres_dialect import postgres_sql
     from app.modules.crm_configuration.application import service as crm
 
-    db = sqlite3.connect(":memory:")
+    # The HTTP rehearsal executes the synchronous receiver on its worker thread.
+    db = sqlite3.connect(":memory:", check_same_thread=False)
     db.executescript("""
       ATTACH ':memory:' AS crm_access; ATTACH ':memory:' AS crm;
       ATTACH ':memory:' AS crm_workspace;
@@ -742,6 +750,188 @@ def test_ambiguous_existing_phone_is_not_merged_but_registration_stops_promotion
     later_contact = str(uuid4())
     assert classification.blocked(cursor, settings, later_contact, "3000000000")
     assert not classification.blocked(cursor, settings, later_contact, "3000000001")
+
+
+@pytest.fixture
+def identity_review(settings, projection_db, monkeypatch):
+    db, cursor = projection_db
+    existing = str(uuid4())
+    db.execute(
+        "INSERT INTO crm.Contact(ContactId,Name,Phone) VALUES(?, 'NOMBRE CRM REVISADO', '+573000000000')",
+        (existing,),
+    )
+    original = hook.Event.model_validate(event())
+    projection = hook.project(cursor, settings, original, {"stage_key": "nuevo"})
+    records.put(
+        cursor,
+        settings,
+        "se",
+        original.event_id,
+        {"event_type": original.event_type, "projection": projection["projection"]},
+        {"event": original.model_dump(), **projection},
+    )
+
+    @contextmanager
+    def tx(*args, **kwargs):
+        yield cursor
+
+    monkeypatch.setattr(registration, "transaction", tx)
+    monkeypatch.setattr(
+        registration, "authorize", lambda *a, **k: {"UserId": str(uuid4())}
+    )
+    monkeypatch.setattr(registration, "audit", lambda *a, **k: None)
+    return db, cursor, existing, original, registration.Registration(settings)
+
+
+def test_old_receipt_review_shows_latest_identity_snapshot_not_just_old_names(
+    settings, identity_review
+):
+    _, cursor, existing, original, service = identity_review
+    latest = hook.Event.model_validate(
+        event(
+            sequence=2,
+            persona={**original.persona.model_dump(), "nombres": "NOMBRE ACTUAL SIIE"},
+        )
+    )
+    hook.project(cursor, settings, latest, {"stage_key": "nuevo"})
+    detail = service.read("se", original.event_id)
+    assert detail["event"]["persona"]["nombres"] == original.persona.nombres
+    assert (
+        detail["link_review"]["snapshot"]["persona"]["nombres"] == "NOMBRE ACTUAL SIIE"
+    )
+    assert detail["link_review"]["revision"] == 2
+    assert detail["candidates"][0]["id"] == existing
+    assert "digest" not in detail and "actor_id" not in detail
+
+
+def test_reviewed_identity_link_stops_when_new_siie_event_arrived(
+    settings, identity_review
+):
+    db, cursor, existing, original, service = identity_review
+    initial = service.read("se", original.event_id)["link_review"]
+    hook.project(
+        cursor,
+        settings,
+        hook.Event.model_validate(event(sequence=2)),
+        {"stage_key": "nuevo"},
+    )
+    body = registration.Link(
+        contact_id=existing, reviewed=True, link_revision=initial["revision"]
+    )
+    with pytest.raises(HTTPException, match="siie_contact_link_changed"):
+        service.link(original.event_id, body)
+    assert (
+        records.get(cursor, settings, "sl", hook.person_ref(settings, original))[
+            "private"
+        ]["contact_id"]
+        is None
+    )
+    assert (
+        db.execute("SELECT Name FROM crm.Contact").fetchone()[0]
+        == "NOMBRE CRM REVISADO"
+    )
+
+
+def test_current_identity_review_links_once_and_keeps_registered_suppression(
+    settings, identity_review
+):
+    from app.institutional import siie_classification as classification
+
+    db, cursor, existing, original, service = identity_review
+    registered = hook.Event.model_validate(
+        event(
+            event_type="registration.created",
+            sequence=2,
+            idEstudiante=4,
+            idInscripcion=5,
+        )
+    )
+    hook.project(cursor, settings, registered, {"stage_key": "nuevo"})
+    detail = service.read("se", original.event_id)
+    assert detail["link_review"]["registered"] is True
+    body = registration.Link(
+        contact_id=existing,
+        reviewed=True,
+        link_revision=detail["link_review"]["revision"],
+    )
+    assert service.link(original.event_id, body) == {
+        "linked": True,
+        "contact_id": existing,
+    }
+    assert service.link(original.event_id, body)["linked"] is True
+    assert db.execute("SELECT COUNT(*) FROM crm.Contact").fetchone()[0] == 1
+    assert db.execute("SELECT Name,Type FROM crm.Contact").fetchone() == (
+        "NOMBRE CRM REVISADO",
+        "Inscrito",
+    )
+    assert classification.blocked(cursor, settings, existing)
+    with pytest.raises(HTTPException, match="siie_contact_link_changed"):
+        service.link(
+            original.event_id,
+            registration.Link(
+                contact_id=str(uuid4()),
+                reviewed=True,
+                link_revision=detail["link_review"]["revision"],
+            ),
+        )
+
+
+def test_signed_http_pre_registration_and_enrollment_persist_one_crm_contact(
+    settings, projection_db, monkeypatch
+):
+    from app.institutional import siie_classification as classification
+
+    db, cursor = projection_db
+
+    @contextmanager
+    def tx(*args, **kwargs):
+        try:
+            yield cursor
+            db.commit()
+        except BaseException:
+            db.rollback()
+            raise
+
+    monkeypatch.setattr(hook, "transaction", tx)
+    monkeypatch.setattr(
+        hook, "config", lambda *a: {"webhook_enabled": True, "stage_key": "nuevo"}
+    )
+    monkeypatch.setattr(hook, "audit", lambda *a, **k: None)
+    monkeypatch.setattr(
+        client,
+        "request",
+        lambda *a, **k: pytest.fail(
+            "A webhook never calls SIIE registration or payment routes"
+        ),
+    )
+    app = FastAPI()
+    hook.install(app, settings)
+    browser = TestClient(app)
+    first = event()
+    raw = json.dumps(first).encode()
+    response = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    assert response.status_code == 200 and response.json()["projection"] == "created"
+    duplicate = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    assert duplicate.json()["duplicate"] is True
+    final = event(
+        event_type="registration.created", sequence=2, idEstudiante=4, idInscripcion=5
+    )
+    raw = json.dumps(final).encode()
+    response = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    assert response.status_code == 200 and response.json()["projection"] == "linked"
+    assert db.execute("SELECT COUNT(*) FROM crm.Contact").fetchone()[0] == 1
+    identity, kind = db.execute("SELECT ContactId,Type FROM crm.Contact").fetchone()
+    assert kind == "Inscrito" and classification.blocked(cursor, settings, identity)
+    assert db.execute("SELECT ControlMode,Unread FROM crm.Conversation").fetchone() == (
+        "human",
+        0,
+    )
+    assert (
+        db.execute(
+            "SELECT COUNT(*) FROM crm_access.Setting WHERE Section LIKE 'se:%'"
+        ).fetchone()[0]
+        == 2
+    )
 
 
 def test_delayed_registration_proof_still_suppresses_after_newer_pre_registration(
@@ -867,7 +1057,9 @@ def complete_form():
                 value = "ENSAYO"
             row[f["name"]] = value
             if f["catalog"]:
-                choices[f["catalog"]] = [{"value": value, "label": "CATALOGO SINTETICO"}]
+                choices[f["catalog"]] = [
+                    {"value": value, "label": "CATALOGO SINTETICO"}
+                ]
         result[section["name"]] = [row] if section.get("max_items") else row
     result["referencia"]["Direccion"] = "DIRECCION DIFERENTE"
     result["aceptaTratamientoDatos"] = True

@@ -49,6 +49,7 @@ class Configuration(Strict):
 class Link(Strict):
     contact_id: str
     reviewed: bool
+    link_revision: Annotated[int, Field(ge=1)]
 
 
 def own(c, settings, identity):
@@ -104,6 +105,17 @@ class Registration:
                 link_id = person_ref(self.settings, private["event"])
                 link = records.get(c, self.settings, "sl", link_id)
                 ids = link["private"].get("candidates", []) if link else []
+                result["link_review"] = (
+                    {
+                        "revision": link["revision"],
+                        "state": link["metadata"]["state"],
+                        "registered": bool(link["private"].get("registered")),
+                        "contact_id": link["private"].get("contact_id"),
+                        "snapshot": link["private"].get("snapshot", {}),
+                    }
+                    if link
+                    else None
+                )
                 result["candidates"] = (
                     rows(
                         c,
@@ -135,6 +147,8 @@ class Registration:
             private = link["private"] if link else {}
             if private.get("contact_id") == contact_id:
                 return {"linked": True, "contact_id": contact_id}
+            if not link or link["revision"] != body.link_revision:
+                raise HTTPException(409, "siie_contact_link_changed")
             if private.get("contact_id") or contact_id not in private.get(
                 "candidates", []
             ):
@@ -299,7 +313,9 @@ class Registration:
                 raise HTTPException(409, "siie_confirmed_registration_required")
             payload["idEstudiante"] = result["data"]["idEstudiante"]
         else:
-            choices = native_catalogs.final_choices(context, private["form"], private.get("geography", {}), kind)
+            choices = native_catalogs.final_choices(
+                context, private["form"], private.get("geography", {}), kind
+            )
             forms.validate(
                 kind,
                 private["form"],

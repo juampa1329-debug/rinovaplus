@@ -7,6 +7,7 @@ import {
 import { useInstitution, useTask } from "./api";
 import "./siieRegistration.css";
 import { SiieGeography, type GeographySelection } from "./SiieGeography";
+import { SiieWebhookReadiness, SiieWebhookReceipts } from "./SiieWebhookPanel";
 
 type Values = Record<string, unknown>;
 type Choice = { value: string | number; label: string };
@@ -98,14 +99,6 @@ const states: Record<string, string> = {
   conflict: "Registro existente · Conciliar",
   uncertain: "Resultado incierto · No repetir",
 };
-const eventTypes: Record<string, string> = {
-  "pre_registration.created": "Preinscripción nueva",
-  "pre_registration.updated": "Preinscripción actualizada",
-  "applicant.created": "Aspirante nuevo",
-  "registration.created": "Inscripción nueva",
-  "registration.updated": "Inscripción actualizada",
-  "documents.updated": "Documentos actualizados",
-};
 const referenceLabels: Record<string, string> = {
   idAspirante: "Aspirante SIIE",
   idEstudiante: "Estudiante SIIE",
@@ -122,7 +115,6 @@ export function SiieRegistration() {
   const task = useTask();
   const [status, setStatus] = useState<Status | null>(null);
   const [drafts, setDrafts] = useState<RecordRow[]>([]);
-  const [events, setEvents] = useState<RecordRow[]>([]);
   const [selected, setSelected] = useState<Draft | null>(null);
   const [form, setForm] = useState<Values>({});
   const [dirty, setDirty] = useState(false);
@@ -139,13 +131,11 @@ export function SiieRegistration() {
   const [review, setReview] = useState<"submit" | "documents" | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [operation, setOperation] = useState("");
-  const [event, setEvent] = useState<Values | null>(null);
-  const [eventId, setEventId] = useState("");
-  const [candidates, setCandidates] = useState<
-    { id: string; name: string; phone: string }[]
-  >([]);
-  const [candidateId, setCandidateId] = useState("");
-  const [linkReviewed, setLinkReviewed] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [configuration, setConfiguration] = useState<Pick<
+    Status,
+    "revision" | "webhook_enabled" | "writes_enabled" | "stage_key"
+  > | null>(null);
   const [newKind, setNewKind] = useState<"applicant" | "registration">(
     "applicant",
   );
@@ -162,15 +152,21 @@ export function SiieRegistration() {
   const configurable = session.actions.includes("settings.webhooks.write");
   const activeDraft =
     !!selected && ["draft", "rejected"].includes(selected.state);
+  const configurationDirty =
+    !!status &&
+    !!configuration &&
+    (status.webhook_enabled !== configuration.webhook_enabled ||
+      status.writes_enabled !== configuration.writes_enabled ||
+      status.stage_key !== configuration.stage_key);
   const refresh = async () => {
-    const [s, d, e] = await Promise.all([
+    const [s, d] = await Promise.all([
       call<Status>(`${base}/status`),
       call<{ items: RecordRow[] }>(`${base}/records/sd`),
-      call<{ items: RecordRow[] }>(`${base}/records/se`),
     ]);
     setStatus(s);
     setDrafts(d.items);
-    setEvents(e.items);
+    setConfiguration(s);
+    setRefreshKey((v) => v + 1);
   };
   const initialRead = useEffectEvent(() => {
     void task.run(refresh, "");
@@ -445,7 +441,7 @@ export function SiieRegistration() {
         </div>
         <Button
           variant="secondary"
-          disabled={task.busy}
+          disabled={task.busy || configurationDirty}
           onClick={() => void task.run(refresh, "Estado actualizado")}
         >
           Actualizar estado
@@ -473,6 +469,13 @@ export function SiieRegistration() {
                 : "Envíos finales desactivados"}
             </span>
           </div>
+          <SiieWebhookReadiness status={status} />
+          {configurationDirty && (
+            <Notice>
+              Hay cambios de preparación sin guardar. Guárdalos o descártalos
+              antes de actualizar el estado.
+            </Notice>
+          )}
           <details>
             <summary>Conexión del webhook y permisos de operación</summary>
             <p>Comparte esta dirección con el desarrollador de SIIE:</p>
@@ -495,23 +498,43 @@ export function SiieRegistration() {
             <SelectField
               id="siie-initial-stage"
               label="Etapa inicial de los preinscritos de SIIE"
-              value={status.stage_key}
+              value={configuration?.stage_key ?? status.stage_key}
               disabled={!configurable || task.busy}
               options={[
                 { value: "", label: "Selecciona la etapa" },
                 ...status.stages.map((v) => ({ value: v.key, label: v.label })),
               ]}
               onChange={(e) =>
-                setStatus({ ...status, stage_key: e.target.value })
+                setConfiguration({
+                  ...(configuration ?? status),
+                  stage_key: e.target.value,
+                })
               }
             />
             <label>
               <input
                 type="checkbox"
-                checked={status.webhook_enabled}
-                disabled={!configurable || !status.webhook_secret_configured}
+                checked={
+                  configuration?.webhook_enabled ?? status.webhook_enabled
+                }
+                disabled={
+                  task.busy ||
+                  !configurable ||
+                  (!(
+                    configuration?.webhook_enabled ?? status.webhook_enabled
+                  ) &&
+                    (!status.webhook_secret_configured ||
+                      !status.stages.some(
+                        (stage) =>
+                          stage.key ===
+                          (configuration?.stage_key ?? status.stage_key),
+                      )))
+                }
                 onChange={(e) =>
-                  setStatus({ ...status, webhook_enabled: e.target.checked })
+                  setConfiguration({
+                    ...(configuration ?? status),
+                    webhook_enabled: e.target.checked,
+                  })
                 }
               />{" "}
               Recibir eventos firmados de SIIE
@@ -519,31 +542,47 @@ export function SiieRegistration() {
             <label>
               <input
                 type="checkbox"
-                checked={status.writes_enabled}
-                disabled={!configurable}
+                checked={configuration?.writes_enabled ?? status.writes_enabled}
+                disabled={task.busy || !configurable}
                 onChange={(e) =>
-                  setStatus({ ...status, writes_enabled: e.target.checked })
+                  setConfiguration({
+                    ...(configuration ?? status),
+                    writes_enabled: e.target.checked,
+                  })
                 }
               />{" "}
               Habilitar envíos finales revisados a SIIE
             </label>
             {configurable && (
-              <Button
-                disabled={task.busy}
-                onClick={() =>
-                  void task.run(async () => {
-                    await call(`${base}/configuration`, "PUT", {
-                      revision: status.revision,
-                      webhook_enabled: status.webhook_enabled,
-                      writes_enabled: status.writes_enabled,
-                      stage_key: status.stage_key,
-                    });
-                    await refresh();
-                  }, "Configuración guardada")
-                }
-              >
-                Guardar preparación de SIIE
-              </Button>
+              <div className="siie-registration-actions">
+                <Button
+                  disabled={task.busy || !configurationDirty}
+                  onClick={() =>
+                    void task.run(async () => {
+                      await call(`${base}/configuration`, "PUT", {
+                        revision: status.revision,
+                        webhook_enabled:
+                          configuration?.webhook_enabled ??
+                          status.webhook_enabled,
+                        writes_enabled:
+                          configuration?.writes_enabled ??
+                          status.writes_enabled,
+                        stage_key: configuration?.stage_key ?? status.stage_key,
+                      });
+                      await refresh();
+                    }, "Configuración guardada")
+                  }
+                >
+                  Guardar preparación de SIIE
+                </Button>
+                <Button
+                  variant="quiet"
+                  disabled={task.busy || !configurationDirty}
+                  onClick={() => setConfiguration(status)}
+                >
+                  Descartar cambios de preparación
+                </Button>
+              </div>
             )}
           </details>
           <div className="siie-registration-grid">
@@ -1094,113 +1133,7 @@ export function SiieRegistration() {
               )}
             </div>
           </div>
-          <section>
-            <h4>Recepción desde SIIE</h4>
-            <p>
-              Los inscritos quedan fuera de promociones. Las coincidencias con
-              contactos existentes se conservan para revisar el vínculo.
-            </p>
-            <div className="siie-registration-list">
-              {events.map((row) => (
-                <Button
-                  key={row.id}
-                  variant="secondary"
-                  disabled={task.busy || !editable}
-                  onClick={() =>
-                    void task.run(async () => {
-                      const value = await call<{
-                        event: Values;
-                        candidates: typeof candidates;
-                      }>(`${base}/records/se/${row.id}`);
-                      setEvent(value.event);
-                      setEventId(row.id);
-                      setCandidates(value.candidates);
-                      setCandidateId("");
-                      setLinkReviewed(false);
-                    }, "")
-                  }
-                >
-                  <strong>
-                    {eventTypes[row.event_type ?? ""] ?? row.event_type}
-                  </strong>
-                  <span>
-                    {row.projection === "created"
-                      ? "Contacto creado en CRM"
-                      : row.projection === "linked"
-                        ? "Vínculo actualizado"
-                        : row.projection === "stale_ignored"
-                          ? "Evento anterior conservado"
-                          : "Vínculo por revisar"}
-                  </span>
-                </Button>
-              ))}
-              {!events.length && <p>No se han recibido eventos verificados.</p>}
-            </div>
-            {event && (
-              <div className="panel">
-                <h4>{eventTypes[valueOf(event.event_type)]}</h4>
-                <p>
-                  {valueOf((event.persona as Values | undefined)?.nombres)}{" "}
-                  {valueOf(
-                    (event.persona as Values | undefined)?.primerApellido,
-                  )}{" "}
-                  · {valueOf(event.programa)}
-                </p>
-                <p>
-                  {valueOf(event.event_type).startsWith("registration.")
-                    ? "Inscrito en SIIE · Sin promociones"
-                    : "Origen SIIE"}
-                </p>
-                {editable && candidates.length > 0 && (
-                  <section aria-label="Revisión del vínculo de SIIE">
-                    <SelectField
-                      id="siie-link-candidate"
-                      label="Contacto existente que corresponde a esta persona"
-                      value={candidateId}
-                      options={[
-                        { value: "", label: "Selecciona después de verificar" },
-                        ...candidates.map((v) => ({
-                          value: v.id,
-                          label: `${v.name} · ${v.phone}`,
-                        })),
-                      ]}
-                      onChange={(e) => {
-                        setCandidateId(e.target.value);
-                        setLinkReviewed(false);
-                      }}
-                    />
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={linkReviewed}
-                        onChange={(e) => setLinkReviewed(e.target.checked)}
-                      />{" "}
-                      Verifiqué que la inscripción y el contacto pertenecen a la
-                      misma persona
-                    </label>
-                    <Button
-                      disabled={task.busy || !candidateId || !linkReviewed}
-                      onClick={() =>
-                        void task.run(async () => {
-                          await call(`${base}/events/${eventId}/link`, "POST", {
-                            contact_id: candidateId,
-                            reviewed: true,
-                          });
-                          setCandidates([]);
-                          await refresh();
-                        }, "Vínculo de SIIE confirmado")
-                      }
-                    >
-                      Confirmar vínculo con el contacto
-                    </Button>
-                  </section>
-                )}
-                <Button variant="quiet" onClick={() => setEvent(null)}>
-                  Cerrar detalle del evento
-                </Button>
-              </div>
-            )}
-          </section>
+          <SiieWebhookReceipts refreshKey={refreshKey} />
         </>
       )}
     </section>

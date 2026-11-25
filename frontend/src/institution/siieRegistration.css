@@ -92,6 +92,25 @@
   margin: 0.5rem 0;
   overflow-wrap: anywhere;
 }
+.siie-webhook-readiness {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  margin-block: 1rem;
+}
+.siie-registration .siie-webhook-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.5rem;
+  max-height: none;
+  overflow: visible;
+}
+.siie-webhook-checks dt {
+  margin-top: 0;
+}
+.siie-webhook-checks dd {
+  margin-inline: 0;
+}
 .siie-registration .siie-geography {
   grid-column: 1 / -1;
   display: grid;
@@ -106,6 +125,9 @@
   grid-column: 1 / -1;
 }
 @media (max-width: 900px) {
+  .siie-registration .siie-webhook-checks {
+    grid-template-columns: 1fr;
+  }
   .siie-registration .siie-geography {
     grid-template-columns: 1fr;
   }

@@ -96,7 +96,7 @@ beforeEach(() => {
               ]
             : [],
       };
-    if (path.endsWith("/records/se"))
+    if (path.includes("/records/se?"))
       return {
         items:
           mock.mode === "event"
@@ -126,6 +126,22 @@ beforeEach(() => {
             phone: "+573000000000",
           },
         ],
+        link_review: {
+          revision: 3,
+          state: "review_required",
+          registered: true,
+          snapshot: {
+            documento: "TEST123",
+            persona: {
+              nombres: "NOMBRE VIGENTE",
+              primerApellido: "PRUEBA",
+              celular: "3000000000",
+            },
+            idPreinscripcion: 80,
+            idInscripcion: 5,
+            programa: "PRE-ICFES",
+          },
+        },
       };
     if (path.includes("/events/")) return { linked: true };
     throw Error(`Unexpected synthetic route ${path}`);
@@ -203,7 +219,134 @@ it("requires explicit identity review before linking an existing CRM contact", a
     expect(mock.call).toHaveBeenCalledWith(
       "siie-registration/events/event-one/link",
       "POST",
-      { contact_id: "contact-one", reviewed: true },
+      { contact_id: "contact-one", reviewed: true, link_revision: 3 },
     ),
   );
+});
+
+it("keeps preparation and final-send controls on saved state until explicitly saved", async () => {
+  render(<SiieRegistration />);
+  await screen.findByText("Preparación de la prueba conjunta");
+  fireEvent.change(
+    screen.getByLabelText("Etapa inicial de los preinscritos de SIIE"),
+    { target: { value: "nuevo" } },
+  );
+  expect(
+    screen.getByText("Pendiente de seleccionar una etapa activa"),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Hay cambios de preparación sin guardar/),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Actualizar estado" }),
+  ).toBeDisabled();
+  expect(mock.call.mock.calls.every((c) => !c[1] || c[1] === "GET")).toBe(true);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Descartar cambios de preparación" }),
+  );
+  expect(
+    screen.getByLabelText("Etapa inicial de los preinscritos de SIIE"),
+  ).toHaveValue("");
+  expect(
+    screen.getByRole("button", { name: "Guardar preparación de SIIE" }),
+  ).toBeDisabled();
+});
+
+it("shows current private identity only after opening a receipt and never enables payments", async () => {
+  mock.mode = "event";
+  render(<SiieRegistration />);
+  expect(
+    await screen.findByText("Contrato de pagos pendiente de SIIE"),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("TEST123")).not.toBeInTheDocument();
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Inscripción nueva/ }),
+  );
+  expect(await screen.findByText("TEST123")).toBeInTheDocument();
+  expect(screen.getByText("NOMBRE VIGENTE PRUEBA")).toBeInTheDocument();
+  expect(screen.getByText("Preinscripción SIIE")).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /Generar volante/ }),
+  ).not.toBeInTheDocument();
+  expect(mock.call.mock.calls.every((c) => !c[1] || c[1] === "GET")).toBe(true);
+});
+
+it("paginates bounded receipts and closes the previous private review", async () => {
+  const original = mock.call.getMockImplementation()!;
+  mock.call.mockImplementation(async (...args: unknown[]) => {
+    const path = String(args[0]);
+    if (path === "siie-registration/records/se?offset=0")
+      return {
+        items: [
+          {
+            id: "first",
+            event_type: "registration.created",
+            projection: "review_required",
+          },
+        ],
+        has_more: true,
+      };
+    if (path === "siie-registration/records/se?offset=25")
+      return {
+        items: [
+          {
+            id: "older",
+            event_type: "pre_registration.created",
+            projection: "created",
+          },
+        ],
+        has_more: false,
+      };
+    return original(...args);
+  });
+  render(<SiieRegistration />);
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Inscripción nueva/ }),
+  );
+  expect(await screen.findByText("TEST123")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Más recepciones" }));
+  expect(
+    await screen.findByRole("button", { name: /Preinscripción nueva/ }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("Página 2 · hasta 25 recepciones"),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("TEST123")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Más recepciones" }),
+  ).toBeDisabled();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Actualizar recepciones" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByText("Página 1 · hasta 25 recepciones"),
+    ).toBeInTheDocument(),
+  );
+  expect(mock.call.mock.calls.every((c) => !c[1] || c[1] === "GET")).toBe(true);
+});
+
+it("keeps final-send status saved when an unsaved configuration checkbox changes", async () => {
+  render(<SiieRegistration />);
+  await screen.findByText("Envíos revisados habilitados");
+  fireEvent.click(
+    screen.getByLabelText("Habilitar envíos finales revisados a SIIE"),
+  );
+  expect(screen.getByText("Envíos revisados habilitados")).toBeInTheDocument();
+  expect(mock.call.mock.calls.some((c) => c[1] === "PUT")).toBe(false);
+});
+
+it("allows disabling reception when a saved signature or stage configuration needs review", async () => {
+  const original = mock.call.getMockImplementation()!;
+  mock.call.mockImplementation(async (...args: unknown[]) =>
+    String(args[0]).endsWith("/status")
+      ? { ...status, webhook_enabled: true }
+      : original(...args),
+  );
+  render(<SiieRegistration />);
+  await screen.findByText("Requiere revisar firma o etapa antes del piloto");
+  const checkbox = screen.getByLabelText("Recibir eventos firmados de SIIE");
+  expect(checkbox).toBeEnabled();
+  fireEvent.click(checkbox);
+  expect(checkbox).not.toBeChecked();
 });
