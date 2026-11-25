@@ -1,0 +1,14 @@
+{
+  "cut_utc": "2026-11-25T22:37:04Z",
+  "code_commit": "20fb562",
+  "backend": {"deployment": "iqaw3swbpygy56gfsmuwrrbv", "status": "Success", "duration_seconds": 265},
+  "frontend": {"deployment": "tj9dw9sqdzhbrmatouozogd0", "status": "Success", "duration_seconds": 27},
+  "classification": {"registered": 61, "form_sent": 48, "interest_confirmed": 3, "positive_for_review": 10, "form_reported_complete": 0, "pending_tasks": 61, "unregistered_ready_on_recheck": 0, "unregistered_review_on_recheck": 0},
+  "live_checks": {"initial_stage_changed_to_followup": true, "progress_and_next_action_visible": true, "general_reactivation_exclusion_visible": true, "preicfes_campaign_candidates": 100, "preicfes_progress_exclusions": 27, "preview_only_no_preparation": true},
+  "drafts": {"crm_templates": 3, "case_flows": 3, "state": "draft", "version": 1, "delay_minutes": 480, "customer_request_window_hours": 24, "quiet_hours_local": "21:00–08:00 America/Bogota", "new_triggers": 0, "new_enrollments": 0, "activations": 0, "meta_approval_claimed": false},
+  "preicfes_delivery_cut": {"main": {"total": 100, "states": {"delivered": 67, "read": 23, "failed": 8, "sent": 2}, "attributed_responses": 40, "max_attempts": 1}, "alternate": {"total": 2, "states": {"delivered": 1, "read": 1}, "attributed_responses": 1, "max_attempts": 1}, "retries": 0},
+  "validation": {"backend_selected_passed": 192, "frontend_selected_passed": 38, "sql_parsed": 18, "types": "passed", "changed_frontend_eslint": "passed", "new_files_ruff": "passed", "institution_build": "passed_with_historical_bundle_warning"},
+  "limitations": {"institutional_lock_contention_observed": true, "ambiguous_yes_is_not_confirmed_interest": true, "form_is_not_academic_registration": true, "new_live_automatic_transition_after_backfill_proven": false},
+  "scope": {"ddl": false, "seeds": false, "new_services": false, "siie_business_writes": false, "model_changes": false, "new_phase_acceptance": false},
+  "private_evidence": ".local/commercial-followup-20261125/"
+}

@@ -1,5 +1,23 @@
 # Clasificación comercial y seguimiento por avance — 25Nov2026
 
+## Publicación y clasificación comprobadas · corte 22:37 UTC
+
+04a9109 integrado en d9cfbe2 y corrección final 20fb562, publicados en ambas ramas. Backend iqaw3swbpygy56gfsmuwrrbv: Success, 4m25s; frontend tj9dw9sqdzhbrmatouozogd0: Success, 27s. Se conservaron la marca/acceso y la optimización de informes ya publicados por otras tareas.
+
+La primera revisión falló con error de almacenamiento. La consulta de señales usaba LOWER(columna) LIKE, que el adaptador no convertía a la colación portable; se observó SQLSTATE 0A000. La corrección usa columna LIKE, traducido a COLLATE default / ILIKE, con prueba específica. La revisión posterior sí completó: 61 casos, 48 con formulario enviado, tres con interés confirmado y diez respuestas positivas por aclarar; ninguna declaración clara de formulario completado en ese corte. No se interpretan las 41 respuestas atribuidas de campaña como 41 confirmaciones de interés.
+
+Se registraron los 61 avances y 61 tareas pendientes mediante los controles nativos y confirmación reciente. Hubo dos rechazos storage_busy antes de iniciar sus escrituras: 50 confirmados inicialmente, diez después y uno al reanudar la misma operación. Una reconsulta descartó los 50 ya registrados antes de continuar. La revisión final devuelve cero claros y cero por revisar pendientes de registrar; los diez ambiguos permanecen en tarea de revisión, sin convertirlos en interés confirmado. El panel CRM → Tareas muestra 61, y una ficha antes en Nuevo muestra ahora Seguimiento, Formulario enviado pendiente de diligenciar y exclusión de reactivación general, con recibo Entregado.
+
+Previsualización de sólo lectura de la campaña PRE-ICFES ya completada: 100 candidatos, 27 excluidos con el motivo legible Ya avanzó: requiere seguimiento de su caso, sin reactivación general. No se preparó ni activó otro envío para esta comprobación. Los demás avances son de otros historiales revisados. Las protecciones se aplican a todos los casos registrados, no sólo a PRE-ICFES.
+
+Tres plantillas CRM nuevas y tres flujos específicos permanecen en Borrador v1: interés confirmado, formulario enviado y formulario completado por verificar. Cada flujo selecciona sólo su avance, espera ocho horas, usa atención solicitada dentro de la ventana real de 24 horas, silencio 21–08 Bogotá y salida ante respuesta. Referencian sus plantillas CRM en borrador; no tienen nuevos activadores ni destinatarios inscritos. No representan aprobación de Meta ni autorización para enviar fuera de ventana. Cero activaciones o envíos manuales nuevos por esta clasificación.
+
+Corte independiente de campaña PRE-ICFES: principal 67 Entregados, 23 Leídos, ocho Fallidos y dos Enviados; 40 respuestas atribuidas. Alternativa: un Entregado, un Leído y una respuesta atribuida. Total 92 destinos con entrega acreditada, ocho fallidos y dos aún en Enviado; máximo un intento por destinatario, sin reintentos. No acreditar entrega completa ni costo facturado.
+
+Validación final: 192 backend seleccionadas y 38 frontend, tipos, ESLint, Ruff de los archivos nuevos y compilación institucional pasan; 18 sentencias parseadas, aviso histórico del bundle. Los cortes de pruebas se solapan. Persistieron esperas 55P03 en el bloqueo institucional y lecturas de listado de unos cinco segundos en el diagnóstico; no se declara resuelta toda contención ni se cambiaron sus límites. Sin DDL, seeds, servicios nuevos, cambios de modelo, escrituras SIIE ni nuevas aceptaciones. Evidencia agregada en artifacts/live/commercial-progress-followup-20261125.json; mensajes, nombres y recibos nominales sólo en .local/commercial-followup-20261125/.
+
+## Corte previo de preparación
+
 El titular solicita distinguir a quienes confirmaron interés o recibieron el formulario, mantener su seguimiento y evitar nuevas presentaciones o reactivación general. La revisión nativa encontró una ficha con formulario compartido todavía en Nuevo y otras en Seguimiento; CRM → Tareas mostraba cero pendientes. No se infiere una inscripción a partir de un sí o de un enlace.
 
 Se añade avance comercial por contacto canónico, con mensaje de origen y recibo, separado del expediente académico: Interés confirmado; Formulario enviado pendiente de diligenciar; Formulario diligenciado según la persona, por verificar. Las respuestas positivas ambiguas quedan por aclarar. Un formulario requiere su URL oficial exacta en una salida aceptada, enviada, entregada o leída, o un historial saliente confirmado por Meta; los borradores no cuentan. Un sí sólo confirma interés si responde directamente a una pregunta acotada de inscripción o formulario en las últimas 24 horas, sin otra entrada intermedia ni alternativas o negaciones.
