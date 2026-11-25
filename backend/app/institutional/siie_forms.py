@@ -5,6 +5,7 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
+from app.institutional.siie_catalogs import GEOGRAPHY, MAPPING
 
 
 def field(
@@ -300,10 +301,17 @@ APPLICANT = [
     F("celular", "Celular", 50),
     F("correo", "Correo", 50, kind="email"),
 ]
+for _section in SCHEMA:
+    for _field in _section["fields"]:
+        _path = _section["name"] + ("[]" if "max_items" in _section else "") + "." + _field["name"]
+        if _path in MAPPING or _path in GEOGRAPHY:
+            _field["catalog"] = _path
+            _field["geography"] = "department" if _path.endswith(".Departamento") else "municipality" if _path in GEOGRAPHY else None
+APPLICANT[1]["catalog"] = "tipoId"
 CATALOGS = sorted({f["catalog"] for s in SCHEMA for f in s["fields"] if f["catalog"]})
 
 
-def validate_fields(fields, values, *, final=False, catalogs=None):
+def validate_fields(fields, values, *, final=False, catalogs=None, prefix=""):
     if not isinstance(values, dict) or set(values) - {f["name"] for f in fields}:
         raise HTTPException(422, "siie_form_invalid_fields")
     for f in fields:
@@ -323,6 +331,8 @@ def validate_fields(fields, values, *, final=False, catalogs=None):
             raise HTTPException(422, "siie_form_invalid_fields")
         elif f["kind"] == "document" and not re.fullmatch(r"[A-Za-z0-9]{1,16}", value):
             raise HTTPException(422, "siie_form_invalid_document")
+        elif f["kind"] == "document" and re.fullmatch(r"CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9]", value, re.I):
+            raise HTTPException(422, "siie_form_invalid_document")
         elif f["kind"] == "email" and not re.fullmatch(
             r"[^\s@]+@[^\s@]+\.[^\s@]+", value
         ):
@@ -333,13 +343,16 @@ def validate_fields(fields, values, *, final=False, catalogs=None):
                     raise ValueError()
             except ValueError:
                 raise HTTPException(422, "siie_form_invalid_date") from None
-        if f["options"] and value not in f["options"]:
+        if f["options"] and not f["catalog"] and value not in f["options"]:
             raise HTTPException(422, "siie_form_invalid_option")
         if final and f["catalog"]:
-            choices = (catalogs or {}).get(f["catalog"], [])
+            field_path = prefix + f["name"]
+            choices = (catalogs or {}).get(field_path, (catalogs or {}).get(f["catalog"], []))
+            if f.get("geography") and field_path not in (catalogs or {}):
+                raise HTTPException(409, "siie_geography_selection_required")
             if not choices:
                 raise HTTPException(409, "siie_registration_catalogs_required")
-            if str(value) not in {str(v["value"]) for v in choices}:
+            if not any(type(value) is type(v["value"]) and value == v["value"] for v in choices):
                 raise HTTPException(422, "siie_form_catalog_changed")
 
 
@@ -357,19 +370,21 @@ def validate(kind, values, *, final=False, catalogs=None, program_name=""):
     for s in SCHEMA:
         value = values.get(s["name"])
         if value is None:
+            if s["name"] in values:
+                raise HTTPException(422, "siie_form_invalid_fields")
             if final and not s.get("optional"):
                 raise HTTPException(422, "siie_form_required_fields")
             continue
         if "max_items" in s:
             if (
                 not isinstance(value, list)
-                or not s.get("min_items", 1) <= len(value) <= s["max_items"]
+                or not s.get("min_items", 0 if s.get("optional") else 1) <= len(value) <= s["max_items"]
             ):
                 raise HTTPException(422, "siie_form_invalid_fields")
-            for row in value:
-                validate_fields(s["fields"], row, final=final, catalogs=catalogs)
+            for index, row in enumerate(value):
+                validate_fields(s["fields"], row, final=final, catalogs=catalogs, prefix=f"{s['name']}.{index}.")
         else:
-            validate_fields(s["fields"], value, final=final, catalogs=catalogs)
+            validate_fields(s["fields"], value, final=final, catalogs=catalogs, prefix=s["name"] + ".")
     condition = values.get("condicion", "")
     if not isinstance(condition, str) or len(condition) > 4000:
         raise HTTPException(422, "siie_form_invalid_fields")

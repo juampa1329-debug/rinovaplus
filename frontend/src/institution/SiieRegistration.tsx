@@ -6,6 +6,7 @@ import {
 } from "../shared/institutionSession";
 import { useInstitution, useTask } from "./api";
 import "./siieRegistration.css";
+import { SiieGeography, type GeographySelection } from "./SiieGeography";
 
 type Values = Record<string, unknown>;
 type Choice = { value: string | number; label: string };
@@ -17,6 +18,7 @@ type FieldSpec = {
   max_length: number;
   options: (string | number)[];
   catalog: string | null;
+  geography?: "municipality" | "department" | null;
 };
 type Section = {
   name: string;
@@ -54,6 +56,7 @@ type Draft = {
   result?: Result;
   last_result?: Result;
   pending_operation?: string;
+  geography?: Record<string, GeographySelection>;
 };
 type Result = {
   state: string;
@@ -62,6 +65,9 @@ type Result = {
   data?: Values;
   revision?: number;
   operation_id?: string;
+  references?: Record<string, number>[];
+  retry_after?: number;
+  rate_remaining?: number;
 };
 type RecordRow = {
   id: string;
@@ -100,6 +106,15 @@ const eventTypes: Record<string, string> = {
   "registration.updated": "Inscripción actualizada",
   "documents.updated": "Documentos actualizados",
 };
+const referenceLabels: Record<string, string> = {
+  idAspirante: "Aspirante SIIE",
+  idEstudiante: "Estudiante SIIE",
+  idInscripcion: "Inscripción SIIE",
+  idAcudiente: "Acudiente SIIE",
+  idOferta: "Oferta SIIE",
+  idPeriodo: "Período SIIE",
+  idDocumento: "Tipo de documento",
+};
 const valueOf = (value: unknown) => (value == null ? "" : String(value));
 
 export function SiieRegistration() {
@@ -113,6 +128,12 @@ export function SiieRegistration() {
   const [dirty, setDirty] = useState(false);
   const [catalogs, setCatalogs] = useState<Record<string, Choice[]>>({});
   const [missing, setMissing] = useState<string[]>([]);
+  const [countries, setCountries] = useState<Choice[]>([]);
+  const [geography, setGeography] = useState<
+    Record<string, GeographySelection>
+  >({});
+  const [geoVersion, setGeoVersion] = useState(0);
+  const [allowsCreation, setAllowsCreation] = useState(true);
   const [requirements, setRequirements] = useState<Requirements[] | null>(null);
   const [files, setFiles] = useState<Record<number, File>>({});
   const [review, setReview] = useState<"submit" | "documents" | null>(null);
@@ -168,12 +189,18 @@ export function SiieRegistration() {
     const choices = await call<{
       items: Record<string, Choice[]>;
       missing: string[];
+      countries?: Choice[];
+      allows_creation?: boolean;
     }>(`${base}/catalogs?draft_id=${id}`);
     if (ticket !== epoch.current) return;
     setSelected(draft);
     setForm(draft.form);
     setCatalogs(choices.items);
     setMissing(choices.missing);
+    setCountries(choices.countries ?? []);
+    setAllowsCreation(choices.allows_creation !== false);
+    setGeography(draft.geography ?? {});
+    setGeoVersion((v) => v + 1);
     setDirty(false);
     setResult(draft.last_result ?? draft.result ?? null);
     setRequirements(null);
@@ -229,6 +256,7 @@ export function SiieRegistration() {
       kind: selected.kind,
       selection: selected.context.selection,
       form,
+      geography,
     });
     await open(selected.id);
     await refresh();
@@ -302,9 +330,11 @@ export function SiieRegistration() {
     row: Values,
     update: (value: Values) => void,
     prefix: string,
+    path = "",
   ) => (
     <div className="form-grid">
       {fields.map((f) => {
+        const fieldPath = `${path}${f.name}`;
         const options = f.catalog
           ? (catalogs[f.catalog] ?? [])
           : f.options.map((v) => ({ value: v, label: String(v) }));
@@ -313,7 +343,43 @@ export function SiieRegistration() {
             ...row,
             [f.name]:
               f.kind === "integer" && value !== "" ? Number(value) : value,
+            ...(f.catalog === "otrosEstudios[].Id_TipoEstudio" && value
+              ? {
+                  TituloCarrera:
+                    options.find((v) => String(v.value) === value)?.label ?? "",
+                }
+              : f.catalog === "otrosEstudios[].TituloCarrera" &&
+                  row.Id_TipoEstudio &&
+                  catalogs["otrosEstudios[].Id_TipoEstudio"]?.find(
+                    (v) => v.value === row.Id_TipoEstudio,
+                  )?.label !== value
+                ? { Id_TipoEstudio: "" }
+                : {}),
           });
+        if (f.geography && selected)
+          return (
+            <SiieGeography
+              key={`${selected.id}-${selected.revision}-${geoVersion}-${fieldPath}`}
+              id={`${prefix}-${f.name}`}
+              draftId={selected.id}
+              label={`${f.label}${f.required ? " *" : ""}`}
+              value={valueOf(row[f.name])}
+              numeric={f.kind === "integer"}
+              departmentOnly={f.geography === "department"}
+              countries={countries}
+              initial={geography[fieldPath]}
+              disabled={!activeDraft || !editable}
+              call={call}
+              onChange={(value, scope) => {
+                updateValue(value);
+                setGeography((previous) => ({
+                  ...previous,
+                  [fieldPath]: scope,
+                }));
+                setDirty(true);
+              }}
+            />
+          );
         return options.length || f.catalog || f.options.length ? (
           <div key={f.name}>
             <SelectField
@@ -625,6 +691,36 @@ export function SiieRegistration() {
                       reales de SIIE antes del envío.
                     </Notice>
                   )}
+                  {!!result?.references?.length && (
+                    <details>
+                      <summary>Referencias para conciliar con SIIE</summary>
+                      <p>
+                        Estos registros existentes no confirman que el último
+                        formulario se haya guardado. No repitas la operación sin
+                        revisar su resultado.
+                      </p>
+                      {result.references.map((reference, index) => (
+                        <dl key={index}>
+                          {Object.entries(referenceLabels)
+                            .filter(
+                              ([key]) => typeof reference[key] === "number",
+                            )
+                            .map(([key, label]) => (
+                              <div key={key}>
+                                <dt>{label}</dt>
+                                <dd>{reference[key]}</dd>
+                              </div>
+                            ))}
+                        </dl>
+                      ))}
+                    </details>
+                  )}
+                  {!allowsCreation && (
+                    <Notice error>
+                      El período consultado permite revisión histórica, pero
+                      SIIE no permite crear una inscripción en él.
+                    </Notice>
+                  )}
                   {selected.kind === "applicant"
                     ? renderFields(
                         status.applicant_fields,
@@ -698,12 +794,40 @@ export function SiieRegistration() {
                                       } else change(section.name, value);
                                     },
                                     `siie-${section.name}-${index}`,
+                                    `${section.name}.${section.max_items ? `${index}.` : ""}`,
                                   )}
                                   {section.max_items && index > 0 && (
                                     <Button
                                       variant="quiet"
                                       disabled={!activeDraft || !editable}
                                       onClick={() => {
+                                        setGeoVersion((v) => v + 1);
+                                        setGeography((previous) =>
+                                          Object.fromEntries(
+                                            Object.entries(previous).flatMap(
+                                              ([key, scope]) => {
+                                                const match = key.match(
+                                                  new RegExp(
+                                                    `^${section.name}\\.(\\d)\\.(.+)$`,
+                                                  ),
+                                                );
+                                                if (!match)
+                                                  return [[key, scope]];
+                                                const position = Number(
+                                                  match[1],
+                                                );
+                                                return position === index
+                                                  ? []
+                                                  : [
+                                                      [
+                                                        `${section.name}.${position > index ? position - 1 : position}.${match[2]}`,
+                                                        scope,
+                                                      ],
+                                                    ];
+                                              },
+                                            ),
+                                          ),
+                                        );
                                         setForm({
                                           ...form,
                                           [section.name]: rows.filter(
@@ -869,6 +993,7 @@ export function SiieRegistration() {
                         task.busy ||
                         dirty ||
                         !status.writes_enabled ||
+                        (!allowsCreation && activeDraft) ||
                         !(
                           activeDraft ||
                           (selected.state === "confirmed" &&
@@ -876,7 +1001,8 @@ export function SiieRegistration() {
                         ) ||
                         (selected.kind === "registration" &&
                           activeDraft &&
-                          missing.includes("generos"))
+                          (missing.includes("generos") ||
+                            missing.includes("estudiante.Id_Genero")))
                       }
                       onClick={() => {
                         setReview(

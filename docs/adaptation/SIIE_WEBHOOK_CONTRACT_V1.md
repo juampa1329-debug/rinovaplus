@@ -110,7 +110,7 @@ Los datos de registro se conservan cifrados en el almacén institucional existen
 
 ## Piloto PRE-ICFES aprobado: siguiente contrato de SIIE
 
-El titular aprobó preparar: **inscripción corroborada → vínculo seguro con conversación → elección expresa contado/financiado → volante SIIE → PDF privado al mismo contacto verificado**. No se ha implementado generación ni envío de volantes; las cuatro rutas de Registration 2 no documentan esa capacidad.
+El titular aprobó preparar: **inscripción corroborada → vínculo seguro con conversación → elección expresa contado/financiado → volante SIIE → PDF privado al mismo contacto verificado**. No se ha implementado generación ni envío de volantes; las cuatro rutas de Registration 2 ni el catálogo adicional de GuiaImplementacionCRM documentan esa capacidad.
 
 El desarrollador debe aportar:
 

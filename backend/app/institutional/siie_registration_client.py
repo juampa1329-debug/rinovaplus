@@ -15,6 +15,7 @@ from app.institutional.channel_ingress import strict_json
 from app.institutional.program_commercial import approved_url
 
 PATHS = {
+    "catalogs": "CatalogosInscripcion.aspx",
     "applicant": "AspiranteRegistro.aspx",
     "registration": "Inscripcion.aspx",
     "documents": "Documentos.aspx",
@@ -52,6 +53,12 @@ KNOWN_ERRORS = UNCERTAIN | {
     "unauthorized",
     "forbidden",
     "rate_limited",
+    "invalid_filter_combination",
+    "offer_not_in_period",
+    "department_not_in_country",
+    "offered_period_unavailable",
+    "registration_unavailable",
+    "unsupported_text_characters",
 }
 
 
@@ -129,6 +136,25 @@ def _reference(value):
     return value if re.fullmatch(r"[A-Za-z0-9_-]{1,100}", value) else None
 
 
+def support_metadata(headers):
+    result = {}
+    for header, name in (("Retry-After", "retry_after"), ("X-RateLimit-Limit", "rate_limit"), ("X-RateLimit-Remaining", "rate_remaining")):
+        value = headers.get(header, "")
+        if re.fullmatch(r"[0-9]{1,8}", value):
+            result[name] = int(value)
+    return result
+
+
+def reconciliation_references(value):
+    data = value.get("data")
+    if not isinstance(data, dict):
+        return []
+    keys = {"idAspirante", "idEstudiante", "idInscripcion", "idAcudiente", "idOferta", "idPeriodo", "idDocumento"}
+    items = [data, *(data.get("items", [])[:100] if isinstance(data.get("items"), list) else [])]
+    return [clean for item in items if isinstance(item, dict)
+            if (clean := {k: v for k, v in item.items() if k in keys and type(v) is int and 1 <= v <= 2147483647})]
+
+
 @contextmanager
 def response_for(client, method, url, headers, kwargs):
     with client.stream(method, url, headers=headers, **kwargs) as response:
@@ -161,7 +187,7 @@ def response_for(client, method, url, headers, kwargs):
 
 def request(kind, payload, files=(), *, transport=None):
     url, headers = endpoint(kind)
-    method = "GET" if kind == "requirements" else "POST"
+    method = "GET" if kind in {"requirements", "catalogs"} else "POST"
     file_parts = files_for(files)
     params = {k: str(v) for k, v in payload.items()} if method == "GET" else None
     kwargs = {"params": params} if method == "GET" else {"json": payload}
@@ -174,6 +200,7 @@ def request(kind, payload, files=(), *, transport=None):
         }
     read_status = None
     reference = None
+    support = {}
     try:
         with httpx.Client(
             timeout=httpx.Timeout(30, connect=5),
@@ -184,6 +211,7 @@ def request(kind, payload, files=(), *, transport=None):
             with response_for(client, method, url, headers, kwargs) as response:
                 read_status = response.status_code
                 reference = _reference(response.headers.get("X-Correlation-ID", ""))
+                support = support_metadata(response.headers)
                 if method == "GET" and response.status_code != 200:
                     detail = {
                         401: "siie_registration_access_rejected",
@@ -200,16 +228,15 @@ def request(kind, payload, files=(), *, transport=None):
                         detail,
                     )
                     raise HTTPException(
-                        502,
+                        429 if response.status_code == 429 else 502,
                         detail,
-                        headers={"X-SIIE-Correlation-ID": reference}
-                        if reference
-                        else None,
+                        headers={**({"X-SIIE-Correlation-ID": reference} if reference else {}),
+                                 **({"Retry-After": str(support["retry_after"])} if "retry_after" in support else {})} or None,
                     )
                 raw = bytearray()
                 for chunk in response.iter_bytes():
                     raw.extend(chunk)
-                    if len(raw) > 524288:
+                    if len(raw) > (2 * 1024 * 1024 if kind == "catalogs" else 524288):
                         raise ValueError("oversized_response")
                 value = strict_json(raw)
                 if not isinstance(value, dict):
@@ -264,7 +291,7 @@ def request(kind, payload, files=(), *, transport=None):
                                     type(item.get("aplica")).__name__,
                                 )
                                 raise ValueError("invalid_requirements")
-                    else:
+                    elif kind != "catalogs":
                         for name in ("idOferta", "idPeriodo") + (
                             ("idAspirante",)
                             if kind == "applicant"
@@ -291,6 +318,7 @@ def request(kind, payload, files=(), *, transport=None):
                         "data": data,
                         "correlation_id": reference,
                         "code": "ok",
+                        **support,
                     }
                 code = (
                     value.get("code")
@@ -318,9 +346,11 @@ def request(kind, payload, files=(), *, transport=None):
                 return {
                     "state": state,
                     "data": {},
+                    "references": reconciliation_references(value),
                     "http_status": response.status_code,
                     "code": code,
                     "correlation_id": reference,
+                    **support,
                 }
     except (
         httpx.HTTPError,
@@ -356,7 +386,8 @@ def request(kind, payload, files=(), *, transport=None):
             "state": "uncertain",
             "data": {},
             "code": "siie_write_outcome_unknown",
-            "correlation_id": None,
+            "correlation_id": reference,
+            **support,
         }
 
 

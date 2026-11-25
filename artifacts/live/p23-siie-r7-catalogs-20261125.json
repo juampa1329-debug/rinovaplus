@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-25",
+  "stage": "deployed_read_verified",
+  "source": "GuiaImplementacionCRM.md",
+  "source_sha256": "12d9462eeb5c1f18dab11292f1dca327697c9accd7594743f5a31e6764589c52",
+  "catalog_path": "/Api/CRM/v1/CatalogosInscripcion.aspx",
+  "outbound_credential": "existing_SIIE_API_TOKEN",
+  "verification": {
+    "backend_selected_passed": 182,
+    "frontend_selected_passed": 18,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false
+  },
+  "real_catalog_reads_verified": true,
+  "real_siie_writes": 0,
+  "files_uploaded": 0,
+  "new_paid_model_calls": 0,
+  "webhook_enabled": false,
+  "writes_enabled": false,
+  "ddl_seeds_or_new_services": false,
+  "phase_acceptances_changed": false,
+  "contains_personal_data_or_secrets": false,
+  "code_commit": "8f9143c",
+  "deployment": {
+    "backend": {
+      "id": "ghwuy168521ldptx3hfjzvnw",
+      "status": "Success",
+      "duration": "04m22s"
+    },
+    "frontend": {
+      "id": "dg4ieov07hbut2syrukhypws",
+      "status": "Success",
+      "duration": "00m26s"
+    },
+    "initial_backend": {
+      "commit": "5dd1fc9",
+      "id": "xnvxybx3xsxfx61od3udger7",
+      "status": "Success",
+      "duration": "04m20s"
+    },
+    "initial_frontend": {
+      "id": "zgil1lnmjhcsj92visbvgbag",
+      "status": "Success",
+      "duration": "00m46s"
+    }
+  },
+  "native_ui_checks": {
+    "offer_family": "PRE-ICFES",
+    "existing_empty_draft_used": true,
+    "document_types": 6,
+    "genders": 2,
+    "modalities": 2,
+    "eps_options": 21,
+    "country_department_municipality": true,
+    "search_clears_old_selection": true,
+    "municipal_pages": [
+      100,
+      25
+    ],
+    "documents_required": 2,
+    "temporary_selections_discarded_without_save": true,
+    "treatment_consent_checked": false,
+    "operations_up_to_date": 9,
+    "operations_checked_bogota": "2026-11-25 12:45:36"
+  },
+  "observed_limits": [
+    "First protected catalog read rejected equivalent collection metadata; reviewed aliases added and native read then passed.",
+    "Some native municipality labels have multiple distinct IDs; no merging or manual IDs.",
+    "Some native option labels contain encoding artifacts; original submission values preserved.",
+    "One settings GET timed out during rollout; subsequent reload and nine process checks passed.",
+    "No real remote write, file upload, webhook producer pilot or payment/PDF route verified."
+  ]
+}
