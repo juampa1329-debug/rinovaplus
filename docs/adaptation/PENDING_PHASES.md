@@ -1,3 +1,5 @@
+25Nov: cobertura de turnos optimizada preparada tras medir consulta3,6–3,8s; frontend466bc15 publicado. [Detalle](INBOX_QUEUE_STORAGE_WAIT_20261125.md). Siguiente petición: implementarRegistration2/P23 y webhook SIIE haciaCRM; porcentajes conservados.
+
 Corte25Nov: `f19cd38` publicado; PRE-ICFES y tres hilos comprobados. Mejora de espera visual/GET en preparación. [Evidencia y límites](INBOX_QUEUE_STORAGE_WAIT_20261125.md); porcentajes conservados.
 
 Corrección operativa preparada 25Nov: cola ante espera local previa al proveedor, fechas de PRE-ICFES y atención prioritaria. [Detalle](INBOX_QUEUE_STORAGE_WAIT_20261125.md). Publicación/observación pendientes; porcentajes y aceptaciones conservados.

@@ -31,3 +31,12 @@ Se localizaron otros dos turnos con el mismo `storage_busy`, de las 09:28 y 09:2
 Prueba nativa aislada del especialista PRE-ICFES con Sonnet4.6 y un historial ficticio con fecha antigua/año desconocido: responde tarifa regular1.600.000, descuento50%800.000 hasta16Dic2026 e inicio13Feb2027. Mantiene el alcance separado de la financiación. 16.784 tokens de entrada,507 de salida,20.721ms; estimación USD0,057957. No escribió CRM, no envió mensajes y no cambió el agente activo. La revisión7 retira expresiones internas sobre el propietario de la presentación, conservando los hechos y su año.
 
 61 pruebas adicionales de PostgreSQL/operación/seguimientos/fechas pasan, con solapamientos respecto de la selección anterior. El frontend añade recuperación coalescida de hasta dos GET adicionales (pausas1s/3s) sólo para storage_busy; mantiene429, permisos y mutaciones sin repetición. Una espera acreditada de salida se muestra **Esperando al servidor**, no como fallo ni invitación a reenviar. 15 pruebas frontend, tipos, ESLint y build institucional pasan; aviso histórico de bundle grande. La publicación de esta última ampliación visual se comprueba después del siguiente push.
+
+
+## Causa de contención localizada y ajuste preparado
+
+La telemetría publicada localizó `statement_id=c01a0c3f0050`: cálculo de cobertura de turnos en `reply_turns.snapshot`. Tardaba3559–3789ms por consulta en la muestra de15:00UTC y se repetía en lecturas y guardianes de envío; una transacción alcanzó8151ms. Dos subconsultas correlacionadas volvían a recorrer y convertir los JSON de todos los envíos de la cuenta para cada operación anterior.
+
+Se sustituye por una sola agregación acotada a institución/cuenta/identidad, enlazada por operación. Un turno sólo se considera atendido si tiene al menos una parte y todas están aceptadas/enviadas/entregadas/leídas, o existe la decisión expresa confirmada de no responder. Partes en cola, fallidas, canceladas o inciertas conservan la consulta pendiente. Registros de otra identidad/cuenta/institución no acreditan cobertura. No se cambian bloqueos de autorización, límites HTTP, esquemas ni se crean índices.
+
+171 pruebas backend focalizadas pasan, incluidas14 historias SQL ejecutadas en memoria con estados mixtos y registros ajenos y validación de sintaxis PostgreSQL. Selección solapada con las anteriores; Ruff pasa. La nueva consulta requiere publicación y observación real antes de atribuirle una mejora de latencia. Frontend466bc15 ya está Success44s, desplieguezqxp68nlc62cqrh9qwlycnj0.

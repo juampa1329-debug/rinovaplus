@@ -105,15 +105,15 @@ def snapshot(c, settings, data, source):
         "AND op.InstitutionId=? AND op.IntegrationId=? AND op.Action=? AND op.Status='confirmed' "
         "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=op.InstitutionId "
         "AND r.IntegrationId=op.IntegrationId AND r.IdentityId=? AND r.ActorKind='external' "
+        # Aggregate this identity's parts once instead of repeatedly scanning
+        # the whole account's JSON payloads for every historical operation.
+        "LEFT JOIN (SELECT TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId')) AS AutomationId,"
+        "COUNT_BIG(*) AS PartCount,SUM(CASE WHEN j.State IN('accepted','sent','delivered','read') THEN 1 ELSE 0 END) AS AcceptedCount "
+        "FROM crm_channels2.SendJob j WHERE j.InstitutionId=? AND j.IntegrationId=? AND j.IdentityId=? "
+        "GROUP BY TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))) coverage ON coverage.AutomationId=op.OperationId "
         "WHERE m.ConversationId=? AND m.Direction='incoming' AND m.Sequence<? AND ("
-        "op.ResultCode='reply_turn_no_response' OR ("
-        "EXISTS(SELECT 1 FROM crm_channels2.SendJob j WHERE j.InstitutionId=op.InstitutionId "
-        "AND j.IntegrationId=op.IntegrationId AND TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))=op.OperationId "
-        "AND j.State IN('accepted','sent','delivered','read')) "
-        "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob j WHERE j.InstitutionId=op.InstitutionId "
-        "AND j.IntegrationId=op.IntegrationId AND TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))=op.OperationId "
-        "AND j.State NOT IN('accepted','sent','delivered','read'))))",
-        inst, integration, ACTION, data["identity"], conversation, source["Sequence"])
+        "op.ResultCode='reply_turn_no_response' OR (coverage.AcceptedCount>0 AND coverage.AcceptedCount=coverage.PartCount))",
+        inst, integration, ACTION, data["identity"], inst, integration, data["identity"], conversation, source["Sequence"])
     human = db.one(c,
         "SELECT MAX(m.Sequence) AS Sequence FROM crm.Message m "
         "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=? "

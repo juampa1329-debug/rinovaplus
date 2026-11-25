@@ -1,3 +1,5 @@
+25Nov: causa de contención identificada en cobertura de turnos (consulta3,6–3,8s). Agregación por identidad preparada y171pruebas pasan; publicación/medición pendientes. Frontend466bc15 publicado con espera visible y recuperación GET acotada. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). P23/webhook SIIE sigue como siguiente encargo, sin nueva aceptación.
+
 Corte25Nov: cola de espera interna publicada `f19cd38`; cuatro orientaciones Entregadas en tres hilos, nueve procesos Al día. PRE-ICFES revisión7: descuento hasta16Dic2026 e inicio13Feb2027 comprobados en simulación aislada. Mejora visual y recuperación GET acotada preparadas; [detalle y límites](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Sin nuevas aceptaciones de fases.
 
 Corrección en preparación 25Nov: espera interna anterior al envío, continuidad de partes y fechas confirmadas. Dos orientaciones prioritarias Entregadas; PRE-ICFES actualizado hasta16Dic2026 e inicio13Feb2027. Publicación/diagnóstico de contención pendientes. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Fases y aceptaciones conservadas.
