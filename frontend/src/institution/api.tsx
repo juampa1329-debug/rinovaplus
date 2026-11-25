@@ -531,6 +531,8 @@ const messages: Record<string, string> = {
   module_disabled: "Este módulo está deshabilitado por la institución.",
   server_temporarily_unavailable:
     "El servidor tardó demasiado o no pudo completar la consulta. Tu configuración se conserva. Espera unos segundos y vuelve a cargar RinovaPlus.",
+  general_storage_unavailable:
+    "El servidor no pudo completar la consulta a la base de datos. Tu borrador se conserva. Espera unos segundos y vuelve a consultar.",
   storage_busy:
     "El servidor está ocupado procesando otras operaciones. Tu borrador se conserva. Espera unos segundos y consulta el estado actual antes de volver a guardar o enviar. Este aviso no indica un problema con tus claves de IA.",
   invalid_server_response:
