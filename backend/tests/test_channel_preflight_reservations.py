@@ -107,3 +107,19 @@ def test_later_template_refresh_does_not_erase_proof_of_unsent_wait(monkeypatch)
     )
     assert outbox.reserve(c, settings, job) == previous["ReservationId"]
     assert c.increments == 1 and previous["Status"] == "reserved"
+
+
+def test_proven_pre_provider_storage_wait_reuses_released_reservation(monkeypatch):
+    c, job, previous, provider, settings = harness(monkeypatch)
+    provider["ResultCode"] = "outbound_storage_wait"
+    job["LastErrorCode"] = "outbound_storage_wait"
+    assert outbox.reserve(c, settings, job) == previous["ReservationId"]
+    assert c.increments == 1
+
+
+def test_old_storage_failure_is_not_automatically_retried(monkeypatch):
+    c, job, _, provider, settings = harness(monkeypatch)
+    provider.update(Status="failed", ResultCode="storage_busy")
+    with pytest.raises(HTTPException):
+        outbox.reserve(c, settings, job)
+    assert c.increments == 0

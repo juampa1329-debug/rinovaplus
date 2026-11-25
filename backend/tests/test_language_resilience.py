@@ -159,7 +159,7 @@ def test_human_or_epoch_change_after_catalog_stops_before_reservation_and_post()
     assert state.calls == [("GET", "/api/v1/models/user")] and not state.reservations
 
 
-def test_budget_failure_blocks_backup_and_truncated_response_is_not_retried():
+def test_budget_failure_blocks_backup_and_truncation_has_only_one_reserved_recovery():
     state = setup()
     def reserve(*_):
         raise HTTPException(429, "budget_exhausted")
@@ -169,9 +169,12 @@ def test_budget_failure_blocks_backup_and_truncated_response_is_not_retried():
     assert all(method == "GET" for method, _ in state.calls)
     state = setup(finish="length")
     state.saved["routes"].append({**ROUTE, "model": "second"})
-    with pytest.raises(AiError, match="language_backup_invalid_response"):
+    with pytest.raises(AiError, match="language_reply_truncated"):
         run(state)
-    assert sum(method == "POST" for method, _ in state.calls) == 1
+    assert sum(method == "POST" for method, _ in state.calls) == 2
+    assert len(state.reservations) == 2
+    assert len(state.trace["completion_recoveries"]) == 1
+    assert state.trace["completion_recoveries"][0]["state"] == "failed"
 
 
 def test_disabled_policy_and_duplicate_or_batch_models():
@@ -274,3 +277,19 @@ def test_human_change_during_backup_discards_result_before_any_dispatch():
         run(state, guard=guard)
     assert sum(method == "POST" for method, _ in state.calls) == 1
     assert not state.trace.get("fallback_used")
+
+
+def test_verified_commercial_button_keeps_response_only_schema_on_openrouter():
+    import json
+    from app.institutional.language_resilience import generate
+    calls = []
+    class Gateway:
+        async def request(self, provider, method, path, outgoing):
+            calls.append(outgoing)
+            return {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"decision":"responder", "text":"Conversemos sobre tu formación.", "crm_observations":[]})}}]}
+    body = grounded_replies.request_body({"system":"Botón comercial verificado", "query":"Consulta", "campaign_entry_turn":True})
+    result = asyncio.run(generate(Gateway(), {**ROUTE,"model":"anthropic/fixture"}, body, lambda: None))
+    assert grounded_replies.parse(result)
+    schema = calls[0]["response_format"]["json_schema"]["schema"]
+    assert schema["properties"]["decision"]["enum"] == ["responder"]
+    assert len(calls) == 1

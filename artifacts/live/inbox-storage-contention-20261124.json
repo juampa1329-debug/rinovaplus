@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-24",
+  "timezone": "America/Bogota",
+  "code": "653411ff374fa49e540283345be2ae58d16f91e1",
+  "cause_observed": "postgres_institutional_advisory_lock_timeout_55P03",
+  "changes": ["Release campaign write lock between live execution checks", "Release lock between maintenance stages", "Early necessary inactivity cutoff filter", "Sanitized phase and duration diagnostics", "Specific pre-work storage_busy classification", "One coalesced GET recovery, never replay mutations"],
+  "preserved": ["read/write institution locks", "authorization and identity guards", "3s lock timeout and 8s statement timeout", "human and consent checks", "HTTP120 rate limit", "uncertain effects are not replayed"],
+  "tests": {"backend_selected":106,"frontend_selected":21,"ruff":"passed","types":"passed","eslint":"passed","workspace_build":"passed","historical_bundle_warning":true},
+  "deployment": {
+    "backend": {"id":"vkkldoyuggtjjlkxwqlwrsw4","state":"Success/Running","seconds":334},
+    "frontend": {"id":"h1mhsciuydngvbsri7rl0lcm","state":"Success/Running","seconds":65}
+  },
+  "native_observation": {
+    "distinct_conversations":3,
+    "successful_loads":5,
+    "message_counts_by_anonymous_case":[21,27,29],
+    "agent_context_and_CRM_loaded":true,
+    "alerts_during_checks":0,
+    "human_toggle_saved":true,
+    "ai_restored_and_reloaded":true,
+    "original_delivered_reply_preserved":true,
+    "test_messages_sent":0,
+    "uncertain_messages_replayed":0,
+    "runtime_sample_lines":42,
+    "rollout_lock_timeouts":4,
+    "rollout_lock_timeout_range_UTC":["2026-11-25T00:14:27Z","2026-11-25T00:14:28Z"],
+    "observed_error_stage":"institution_lock",
+    "additional_lock_errors_in_refreshed_sample":0,
+    "maximum_slow_transaction_ms_observed":3432,
+    "universal_zero_failure_or_load_SLA_claimed":false
+  },
+  "customer_names_bodies_phone_numbers_in_artifact":false,
+  "DDL_seeds_new_services_or_SIIE_writes":false,
+  "phase_acceptances_changed":false
+}

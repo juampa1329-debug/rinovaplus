@@ -4,12 +4,12 @@ import json
 import re
 from difflib import SequenceMatcher
 
-from app.institutional.agent_catalog import Catalog, normalized
+from app.institutional.agent_catalog import Catalog, normalized, admission_question, preparatory_program
 from app.institutional.db import institution, rows
 from app.modules.agents.domain import digest, resolve
 from app.modules.ai.infrastructure.providers import AiError
 
-STOP = set("a al de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me mi mis yo tu tus se es si no lo le les nos sobre como que ofrecen tienen".split())
+STOP = set("a al de del el la los las y en un una para por programa programas tecnico tecnica laboral auxiliar quiero interesa informacion saber conocer estudiar curso me mi mis yo tu tus se es si no lo le les nos sobre como que ofrecen tienen cbn corporacion bolivariana norte".split())
 
 
 def matches(programs, profiles, text):
@@ -21,6 +21,8 @@ def matches(programs, profiles, text):
     words = {word for word in re.findall(r"[a-z0-9]+", text) if len(word) >= 3} - STOP
     scores = []
     for p in programs:
+        if admission_question(text) and preparatory_program(p):
+            continue
         names = set(re.findall(r"[a-z0-9]+", normalized(p["name"]))) - STOP
         aliases = [normalized(v.strip()) for v in re.split(r"[,;\n]", profiles.get(p["program_id"], {}).get("aliases", "")) if v.strip()]
         exact_alias = any(len(alias) >= 3 and alias not in STOP and re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text) for alias in aliases)
@@ -79,6 +81,8 @@ def catalog_data(c, settings):
 
 
 def configure(c, settings):
+    from app.institutional.broadcast_conversation import enrich
+    c.campaign_reply_context = lambda conversation, selected, sequence: enrich(c, settings, conversation, selected, sequence)
     from app.institutional.institution_contacts import directory, sources
     c.public_contact_context = lambda: directory(c, settings)
     c.public_contact_sources = lambda: sources(directory(c, settings))
@@ -93,9 +97,29 @@ def configure(c, settings):
         if len(guides) != 1 or not guides[0]["configuration"].get("sales_routing_enabled"):
             return None
         programs, profiles = catalog_data(c, settings)
+        from app.institutional.masterclass_interests import orientation
+        suggested = orientation(c, settings, conversation)
+        if suggested:
+            ids = {v["program_id"] for v in suggested["programs"]}
+            suggested["programs"] = [{k: p.get(k, "") for k in ("program_id", "name", "school", "schedule")}
+                                     for p in programs if p["program_id"] in ids]
+            suggested = suggested if suggested["programs"] else None
         # Bind only to incoming messages: our queued reply cannot change its own route.
         seq = c.execute("SELECT COALESCE(MAX(Sequence),0) FROM crm.Message WHERE ConversationId=? AND Direction='incoming'", conversation).fetchval()
-        detected = interest(programs, profiles, history(c, conversation, seq))
+        messages = history(c, conversation, seq)
+        detected = interest(programs, profiles, messages)
+        from app.institutional.broadcast_conversation import origin as campaign_origin
+        campaign = campaign_origin(c, settings, conversation, messages)
+        if campaign:
+            topic = matches(programs, profiles, campaign.pop("routing_text"))
+            found = matches(programs, profiles, campaign["program_hint"] + " " + campaign["schedule_hint"])
+            if topic:
+                overlap = [p for p in found if p in topic]
+                found = overlap or topic
+            if len(found) == 1 and (not detected or campaign["sequence"] > detected.get("sequence", 0)):
+                detected = {"program_id": found[0]["program_id"], "candidates": found,
+                            "status": "campaign_reply_context", "academic_confirmation": False,
+                            "source_message_id": campaign["source_message_id"], "sequence": campaign["sequence"]}
         from app.institutional.sales_referrals import origin
         referral = origin(c, settings, conversation, seq)
         if referral and referral.get("sequence", 0) <= c.context_cutoff(conversation):
@@ -118,7 +142,9 @@ def configure(c, settings):
                 detected = {**detected, "specialist_unavailable": True}
         value["commercial_interest"] = detected
         value["ad_referral"] = referral
-        value["binding"] = digest([value["binding"], detected, referral, seq])
+        value["campaign_reply"] = campaign
+        value["masterclass_orientation"] = suggested
+        value["binding"] = digest([value["binding"], detected, referral, campaign, suggested, seq])
         value["reason"] = "commercial_interest" if detected and detected.get("program_id") and not detected.get("specialist_unavailable") else "commercial_clarification"
         return value
 

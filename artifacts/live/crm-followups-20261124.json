@@ -1,0 +1,117 @@
+{
+  "observed_date": "2026-11-24",
+  "scope": "CRM followups and campaign advisor recovery",
+  "masterclass_interests": {
+    "updated": 217,
+    "remaining_ready": 0,
+    "remaining_review": 0,
+    "prior_source_preserved": true,
+    "customer_choice_not_inferred": true
+  },
+  "recovery": {
+    "first_case_generation_confirmed": true,
+    "first_case_read_parts_observed": true,
+    "additional_inputs_queued": 23,
+    "all_additional_deliveries_verified": false,
+    "old_operations_preserved": true,
+    "uncertain_sends_replayed": false,
+    "reviewed_threads": 24,
+    "threads_with_real_post_button_receipts": 22,
+    "threads_without_post_button_response": 2,
+    "later_questions_with_discarded_drafts_observed": 2,
+    "manual_attention_waiting_explicit_control_approval": true
+  },
+  "templates": {
+    "crm_saved": 4,
+    "meta_followup_approved": 3,
+    "marketing_broadcast_campaigns_activated_by_this_task": 0
+  },
+  "journey": {
+    "entry_idle_minutes": 480,
+    "target_elapsed_minutes": [
+      480,
+      2160,
+      3600,
+      30240
+    ],
+    "sequential_wait_minutes": [
+      1680,
+      1440,
+      26640
+    ],
+    "timezone": "America/Bogota",
+    "send_window_local": {
+      "from": "09:00",
+      "until": "19:00"
+    },
+    "trigger_temporarily_paused": false,
+    "complete_sequence_saved": true,
+    "flow_version": 2,
+    "flow_state": "active",
+    "trigger_version": 2,
+    "trigger_state": "active",
+    "active_executions_observed": 12,
+    "first_crm_step_completed_observed": true,
+    "all_stages_delivered": false,
+    "assets_attached": 0
+  },
+  "no_contact": {
+    "native_positive_case_verified": true,
+    "canonical_contact_scope": true,
+    "consent_unchanged": true,
+    "sales_stage_unchanged": true
+  },
+  "operations": {
+    "sqlstates_observed": [
+      "57014",
+      "55P03"
+    ],
+    "all_stages_ready_observed_after_pause": true,
+    "optimized_rollout_pending": false,
+    "all_stages_ready_observed_after_optimization": true,
+    "ready_observation_local": "2026-11-24 17:45:08 America/Bogota",
+    "serialized_write_security_unchanged": true,
+    "all_stages_ready_after_final_rollout": true
+  },
+  "validation": {
+    "backend_selected": 125,
+    "frontend_previous_selected": 5,
+    "typecheck": true,
+    "eslint": true,
+    "ruff": true,
+    "institutional_build": true,
+    "historical_bundle_warning": true,
+    "test_selections_overlap": true,
+    "final_routing_selected": 84,
+    "lock_scan_selected": 73
+  },
+  "roadmap": {
+    "P23": "planned 0/7",
+    "previous_acceptances_changed": false,
+    "P22_commercial_acceptance": "0/5"
+  },
+  "siie_writes": 0,
+  "ddl": false,
+  "seeds": false,
+  "new_services": false,
+  "deployments": {
+    "897391e": {
+      "backend": "Success 4m41",
+      "frontend": "Success 43s"
+    },
+    "dbbf867": {
+      "backend": "Success 4m18"
+    },
+    "f9eda59": {
+      "backend": "Success 4m23",
+      "backend_deployment": "9glie98alsflvcgtnakgeh40",
+      "frontend": "Success 26s",
+      "frontend_deployment": "wi9nckrdfxhbsswfismb8e4y"
+    }
+  },
+  "model_routing_fix": {
+    "institution_brand_not_program_signal": true,
+    "manual_academic_assignments_unchanged": true,
+    "explicit_customer_interest_preserved": true
+  }
+}

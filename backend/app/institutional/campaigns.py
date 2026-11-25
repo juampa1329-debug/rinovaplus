@@ -221,25 +221,34 @@ def marketing_allowed(c, s, p):
     return not last or g["CreatedAt"] > last["CreatedAt"]
 
 
+def customer_window(doc, p):
+    return bool(doc.get("followup_only") and doc.get("contact_basis") == "customer_request"
+                and p.get("IncomingCount", 0) > 0 and p.get("LastIncomingAt")
+                and now() - timedelta(hours=24) < p["LastIncomingAt"] <= now())
+
+
 def reasons(c, s, doc, p):
     found = []
+    from app.institutional.siie_classification import blocked as siie_registered
+    if siie_registered(c, s, p.get("CanonicalContactId") or p.get("ContactId"), p.get("Phone", "")):
+        found.append("siie_registered_no_promotions")
     if not same(p["IntegrationId"], doc["integration_id"]):
         found.append("campaign_account_mismatch")
     if p["ControlMode"] == "human":
         found.append("human_control")
     if p["ConversationState"] == "closed":
         found.append("conversation_closed")
-    if not marketing_allowed(c, s, p):
+    if doc.get("followup_only") and not (p.get("IncomingCount") and p.get("LastIncomingAt")):
+        found.append("genuine_incoming_required")
+    if not marketing_allowed(c, s, p) and not customer_window(doc, p):
         found.append("marketing_consent_required")
     try:
         if any(not matches(p, f) for f in filters_for(c, s, doc)):
             found.append("campaign_segment_excluded")
     except HTTPException as error:
         found.append(str(error.detail))
-    denied = c.execute(
-        "SELECT 1 FROM crm_strategy.EvaluationPlan e JOIN crm.Conversation v ON v.ConversationId=e.ConversationId LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=v.ContactId AND g.Active=1 WHERE COALESCE(g.TargetContactId,v.ContactId)=? AND JSON_VALUE(e.DocumentJson,'$.noContact')='true'",
-        p["CanonicalContactId"],
-    ).fetchone()
+    from app.institutional.contact_preference import blocked
+    denied = blocked(c, s, p["CanonicalContactId"])
     if denied:
         found.append("no_contact")
     return found

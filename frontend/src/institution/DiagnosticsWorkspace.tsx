@@ -16,8 +16,11 @@ type Entry = {
   provider?: string;
   model?: string;
   fallback_used?: boolean;
+  completion_recoveries?: { provider: string; model: string; reason: string; state: string; code?: string }[];
   context_changes?: string[];
   own_projection_context_refreshed?: boolean;
+  campaign_entry_context?: boolean;
+  masterclass_context?: boolean;
   attempt_count?: number;
   conversation_id?: string;
   attempts?: {
@@ -135,6 +138,7 @@ export function DiagnosticsWorkspace() {
       )}
       {data.error && <Notice error>{data.error}</Notice>}
       <MissingReplies conversation={selectedConversation} />
+      <MissingReplies conversation={selectedConversation} advisor />
       {!items.length && <Notice>No hay registros para estos filtros.</Notice>}
       <ol className="diagnostic-timeline">
         {items.map((item) => {
@@ -187,6 +191,7 @@ export function DiagnosticsWorkspace() {
                     Acción: {item.action}. Código: {item.code || "sin error"}.
                     Referencia: {item.id}
                   </p>
+                  {item.section === "ai" && <p>Contexto del botón comercial: {item.campaign_entry_context ? "incluido" : "no acreditado"}. Opciones de masterclass: {item.masterclass_context ? "incluidas" : "no incluidas"}.</p>}
                   {!!item.context_changes?.length && <p>Partes del contexto que cambiaron: {item.context_changes.join(", ")}</p>}
                   {item.own_projection_context_refreshed && <p>La ficha se actualizó y la autorización quedó ligada a esa misma versión, dentro de la transacción.</p>}
                   {item.attempts?.map((a, i) => (
@@ -194,6 +199,9 @@ export function DiagnosticsWorkspace() {
                       {a.provider} · {a.model} · {a.state} {a.code}
                     </p>
                   ))}
+                  {item.completion_recoveries?.map((a, i) => <p key={`recovery-${i}`}>
+                    Recuperación de salida truncada · {a.provider} · {a.model} · {a.state} {a.code}
+                  </p>)}
                 </details>
               </article>
             </li>

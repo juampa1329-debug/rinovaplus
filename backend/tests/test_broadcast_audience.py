@@ -70,9 +70,11 @@ def test_statistics_count_receipts_not_acceptance_and_keep_legacy_unknown():
     assert audience.analytics([])["totals"]["total"] == 0
 
 
-def test_two_consent_guards_exclude_one_person_once(monkeypatch):
+@pytest.mark.parametrize("registered", [False, True])
+def test_two_consent_guards_exclude_one_person_once(monkeypatch, registered):
     from app.institutional import broadcasts
     from app.institutional import campaigns
+    from app.institutional import siie_classification
     from app.modules.crm_configuration.application import service
 
     person=dict(PERSON,IdentityId=str(uuid4()),ContactId=str(uuid4()),ConversationId=str(uuid4()),ExternalId="573000000000",ConversationState="open",ControlMode="ai",LastIncomingAt=None)
@@ -87,12 +89,13 @@ def test_two_consent_guards_exclude_one_person_once(monkeypatch):
     monkeypatch.setattr(broadcasts,"candidate_rows",lambda *a:[person])
     monkeypatch.setattr(broadcasts,"consent",lambda *a:None)
     monkeypatch.setattr(campaigns,"marketing_allowed",lambda *a:False)
+    monkeypatch.setattr(siie_classification,"promotion_exclusions",lambda *a:({person["ContactId"]} if registered else set(),set()))
     cursor=SimpleNamespace(execute=lambda *a:SimpleNamespace(fetchall=lambda:[]))
     campaign=dict(CampaignId=str(uuid4()),IntegrationId=account["IntegrationId"],Name="Test",Document=json.dumps({"filters":{}}))
     result=broadcasts.preview(cursor,settings,campaign)
     assert result["counts"]==dict(matched=1,eligible=0,excluded=1)
-    assert result["exclusions"]=={"marketing_consent_required":1}
-    assert result["items"][0]["reasons"]==["marketing_consent_required"]
+    assert result["exclusions"]==({"siie_registered_no_promotions":1,"marketing_consent_required":1} if registered else {"marketing_consent_required":1})
+    assert result["items"][0]["reasons"]==(["siie_registered_no_promotions","marketing_consent_required"] if registered else ["marketing_consent_required"])
 
 
 @pytest.mark.parametrize("state,external,attempts,allowed",[("failed",None,1,True),("failed","accepted-id",1,False),("uncertain",None,1,False),("sending",None,1,False),("failed",None,20,False)])

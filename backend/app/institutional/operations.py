@@ -6,6 +6,7 @@ import hmac
 import json
 import math
 import os
+import re
 import threading
 import time
 from pathlib import Path
@@ -33,6 +34,23 @@ WORKER_MAX_AGE = 180
 BACKUP_MAX_AGE = 86400
 
 
+def safe_failure(error):
+    """Only bounded class/SQLSTATE; never exception messages, SQL or parameters."""
+    seen = set()
+    for _ in range(4):
+        if error is None or id(error) in seen:
+            break
+        seen.add(id(error))
+        code = getattr(error, "pgcode", None)
+        if isinstance(code, str) and re.fullmatch(r"[A-Z0-9]{5}", code):
+            return {"type": type(error).__name__[:60], "sqlstate": code}
+        following = error.__cause__ or error.__context__
+        if following is None:
+            break
+        error = following
+    return {"type": type(error).__name__[:60] if error else "Exception", "sqlstate": "none"}
+
+
 class Pulse:
     """A stage succeeds only after its consumer returns, including a no-work poll."""
 
@@ -47,14 +65,16 @@ class Pulse:
     def observe(self, stage, action):
         try:
             result = action()
-        except Exception:
+        except Exception as error:
             with self.lock:
                 self.values[stage]["failure"] = self.clock()
                 self.values[stage]["failures"] += 1
+                self.values[stage]["last_error"] = safe_failure(error)
             raise
         with self.lock:
             self.values[stage]["success"] = self.clock()
             self.values[stage]["failures"] = 0
+            self.values[stage].pop("last_error", None)
         return result
 
     def snapshot(self, alive):
@@ -82,6 +102,7 @@ class Pulse:
                         state=state,
                         last_success_age_seconds=age,
                         consecutive_failures=value["failures"],
+                        **({"last_error": value["last_error"]} if value.get("last_error") else {}),
                     )
                 )
         return {

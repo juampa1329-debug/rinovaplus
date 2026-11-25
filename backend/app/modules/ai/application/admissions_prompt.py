@@ -8,7 +8,7 @@ from pydantic import Field, ValidationError
 
 from app.modules.ai.domain.models import StrictModel
 from app.modules.ai.infrastructure.providers import AiError
-from app.institutional.cbn_profile import LOCATION_POLICY, reviewed_sources
+from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY, reviewed_sources
 
 
 class AdmissionsPolicy(StrictModel):
@@ -70,7 +70,7 @@ No vuelvas a preguntar datos ya declarados en memoria, salvo contradicción que 
 Si solicita una persona, hay conflicto o no conoces la respuesta, deriva a un asesor. No inventes costos, fechas ni requisitos.
 """
 
-INSTITUTIONAL_SAFETY += LOCATION_POLICY
+INSTITUTIONAL_SAFETY += LOCATION_POLICY + REGISTRATION_POLICY
 
 SAFETY = INSTITUTIONAL_SAFETY + """En una derivación usa handoff=true.
 Responde exclusivamente JSON: {"answer":"...","handoff":false,"references":["chunk uuid"],"memory":[{"field":"program_interest|schedule_availability|registration_reported","value":"declaración literal","source_message_id":"uuid del mensaje entrante","quote":"cita exacta"}]}.
@@ -82,7 +82,7 @@ def assemble_prompt(policy, question, memory, sources, history, *, structured=Tr
     from app.modules.agents.skill_policy import for_turn, prompt_trace, instructions as skill_instructions
     skill_policy = for_turn(question, history=[{"direction": h["role"], "text": h["text"]} for h in history],
                             simulation_focus=simulation_skill_focus)
-    sources = reviewed_sources(sources)
+    sources = reviewed_sources(sources, question)
     evidence = {"memory": memory, "institutional_sources_sql_primary_documents_supplemental": sources,
                 "skill_policy": prompt_trace(skill_policy),
                 "history": [{"id": h["id"], "role": h["role"], "text": h["text"][-1600:]} for h in history[-12:]]}

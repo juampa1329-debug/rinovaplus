@@ -39,11 +39,32 @@ export function coordinatedRead<T>(
 ): Promise<T> {
   const existing = pending.get(key);
   if (existing) return existing as Promise<T>;
-  const promise = load().finally(() => {
+  const promise = recoverBusyRead(load).finally(() => {
     if (pending.get(key) === promise) pending.delete(key);
   });
   pending.set(key, promise);
   return promise;
+}
+async function recoverBusyRead<T>(load: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await load();
+    } catch (error) {
+      if (
+        attempt >= 2 ||
+        !(error instanceof Error) ||
+        !("status" in error) ||
+        error.status !== 503 ||
+        !("detail" in error) ||
+        error.detail !== "storage_busy"
+      )
+        throw error;
+      // One coalesced GET, at most two additional reads across a short burst.
+      // No mutation, generic storage failure or uncertain provider effect enters.
+      await new Promise((resolve) => setTimeout(resolve, attempt === 0 ? 1000 : 3000));
+      if (readRetrySeconds()) throw error;
+    }
+  }
 }
 export function foregroundPolling() {
   return !document.hidden && document.hasFocus();

@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-24",
+  "program_count": 27,
+  "minimum_age_applied": 16,
+  "program_profiles_updated_and_verified_after_reload": 26,
+  "specific_requirements_and_guardian_documents_preserved": true,
+  "preicfes": {
+    "revision": 2,
+    "minimum_age_16_exempt": true,
+    "registration_url": "https://siieplus.online/SIIEWEBPLUS/PreIcfes/Inscripcion.html",
+    "stored_in": [
+      "presentation",
+      "requirements"
+    ],
+    "public_form_opened": true,
+    "form_submitted": false,
+    "end_to_end_registration_validated": false
+  },
+  "code_changed": false,
+  "model_calls": 0,
+  "messages_sent": 0,
+  "siie_writes": false,
+  "phase_acceptances_changed": false
+}

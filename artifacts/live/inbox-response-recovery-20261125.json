@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-25",
+  "prior_head": "2ef8f73",
+  "scope": "inbox_response_context_reactions_language_recovery",
+  "contains_customer_names_bodies_or_credentials": false,
+  "runtime_budget": {
+    "revision": 5,
+    "requests_per_minute_per_user": 600,
+    "saved_and_reloaded": true,
+    "ai_unlimited_preserved": true
+  },
+  "manual_attention_previous_evening": {
+    "audio_and_link_delivered": 2,
+    "program_context_correction_delivered": 1,
+    "public_comment_replies_published": 6,
+    "new_first_private_accepted": 1,
+    "existing_privates_not_repeated": 2,
+    "messenger_schedule_update_delivered": 1,
+    "temporary_controls_restored_to_ai": 9,
+    "entire_backlog_claimed_complete": false,
+    "uncertain_operations_replayed": 0,
+    "additional_private_rejected_without_retry": 1,
+    "additional_private_rejection_code": "provider_permission_or_request_rejected",
+    "supplemental_schedule_text_read": 1,
+    "supplemental_schedule_audio_delivered": {
+      "count": 1,
+      "seconds": 22
+    },
+    "initial_audio_and_link_later_read": 2
+  },
+  "validation": {
+    "backend_selected_passed": 213,
+    "backend_preexisting_excluded_reproduced_on_prior_head": 3,
+    "frontend_selected_passed": 19,
+    "frontend_preexisting_failures_reproduced_on_prior_head": 2,
+    "types": "passed",
+    "selected_eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false,
+    "primary_timeout_then_truncated_backup_recovery": "passed_mock_transport",
+    "live_reaction_and_transcript": {
+      "reaction_emoji": "heart",
+      "exact_scoped_target_quote_visible": true,
+      "legacy_receipt_recovered_without_replay": true,
+      "saved_voice_transcripts_visible": 3,
+      "additional_asr_inferences_for_display": 0
+    },
+    "live_language_failure_simulation": "not_run_with_paid_provider; exact combined failure exercised with mock transport"
+  },
+  "deployment": {
+    "status": "verified",
+    "code_commit": "bd830ba",
+    "backend": {
+      "id": "urwphdbhl3cpjit6tts4a5iy",
+      "status": "Success",
+      "duration": "04m21s"
+    },
+    "frontend": {
+      "id": "s0mdzbhraxicjgumaonssu8a",
+      "status": "Success",
+      "duration": "00m46s"
+    }
+  },
+  "no_schema_or_seed_changes": true,
+  "siie_writes": 0,
+  "phase_acceptances_changed": false,
+  "remaining_limits": [
+    "Exact tourism start time and weekdays need institutional confirmation",
+    "One additional Facebook private rejected by Meta; public answer published; no automatic retry",
+    "No claim of full backlog clearance or maximum concurrent user capacity",
+    "Five preexisting test failures are documented; full suites not claimed green"
+  ]
+}

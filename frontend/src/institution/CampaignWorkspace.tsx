@@ -61,6 +61,8 @@ type Doc = {
   description?: string;
   integration_id?: string;
   objective?: string;
+  followup_only?: boolean;
+  contact_basis?: "marketing" | "customer_request";
   segment_id?: string | null;
   segment_version?: number;
   crm_template_id?: string | null;
@@ -218,6 +220,7 @@ const labels: Record<string, string> = {
   human_control: "Atención humana",
   conversation_closed: "Conversación cerrada",
   no_contact: "No contactar",
+  genuine_incoming_required: "La persona aún no inició una conversación",
   campaign_cadence_required: "Configura el intervalo de envío de esta cuenta",
   verified_connected_account_required:
     "Verifica y conecta la cuenta en Canales",
@@ -1057,6 +1060,12 @@ function Editor({
               maxLength={1000}
               onChange={(e) => update({ objective: e.target.value })}
             />
+            <label>
+              <input type="checkbox" checked={doc.followup_only ?? false} onChange={(e) => update({ followup_only: e.target.checked, ...(!e.target.checked ? {contact_basis: "marketing" as const} : {}), ...(e.target.checked ? {exit_on_response: true, quiet_hours: {...doc.quiet_hours!, enabled: true}} : {}) })} />
+              Sólo seguimiento de personas que ya conversaron
+            </label>
+            {doc.followup_only && <SelectField id="flow-contact-basis" label="Base del seguimiento" value={doc.contact_basis || "marketing"} options={[{value:"marketing",label:"Consentimiento de marketing vigente"},{value:"customer_request",label:"Solicitud del contacto dentro de la ventana del chat"}]} onChange={(e) => update({contact_basis: e.target.value as "marketing" | "customer_request"})} />}
+            {doc.followup_only && <Notice>Requiere una entrada real del contacto, modo IA y horario de silencio activo. La atención solicitada permite la plantilla CRM sólo durante 24 horas desde la última entrada real; el remarketing posterior conserva el consentimiento vigente. Una respuesta, baja o intervención humana detiene el flujo. Fuera de la ventana del canal se necesita una plantilla Meta aprobada para WhatsApp.</Notice>}
             <SelectField
               id="flow-segment"
               label="Segmento guardado"

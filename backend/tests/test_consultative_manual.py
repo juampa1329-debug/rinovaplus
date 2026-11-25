@@ -65,3 +65,32 @@ def test_focus_still_preserves_all_seventeen_complete_guides_with_manual():
         assert manual.VERSION in rendered
         for skill_id in ids:
             assert read(skill_id)["content"] in rendered
+
+
+@pytest.mark.parametrize("question,ambiguous,financial", [
+    ("¿El plan de estudio es gratuito o hay que pagar?", True, True),
+    ("¿Cobran por consultar el pensum?", True, True),
+    ("Quiero conocer el plan de estudios", False, False),
+    ("¿El semestre es gratuito o cuánto cuesta?", False, True),
+    ("¿Cuánto vale el semestre y qué materias tiene el plan de estudios?", False, True),
+    ("¿El programa es gratuito? Envíame también el plan de estudios", False, True),
+])
+def test_curriculum_and_tuition_scope_selects_clarification_without_losing_facts(question, ambiguous, financial):
+    from app.modules.agents.skill_policy import project_facts
+    trace = for_turn(question, history=[{"role": "assistant", "content": "Hablemos del programa."}])
+    assert trace["turn_plan"]["possible_cost_scope_ambiguity"] is ambiguous
+    assert trace["turn_plan"]["money_relevant"] is financial
+    if ambiguous:
+        ids = {v["id"] for v in trace["consulted_resources"]}
+        assert {"pricing", "sales-discovery-questions"} <= ids
+        assert "ACLARAR EL CONCEPTO ANTES DE COTIZAR" in instructions(trace)
+        assert "Si el contacto ya aclaró el concepto" in instructions(trace)
+    facts = {"price_cop": 1374500, "financial_plans": [{"initial_payment_cop": 365000}],
+             "syllabus": "Materias revisadas", "price_concept": "Primer semestre"}
+    projected = project_facts(facts, trace)
+    # The model can resolve an already clarified scope using the supplied facts;
+    # a clarification instruction must not itself erase a valid financial plan.
+    if financial:
+        assert projected["financial_plans"] == facts["financial_plans"]
+    if "plan de estudio" in question.lower() or "pensum" in question.lower():
+        assert projected["syllabus"] == facts["syllabus"]

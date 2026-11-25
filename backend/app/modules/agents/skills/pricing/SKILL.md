@@ -7,6 +7,7 @@ kind: reviewed_native_crm_adaptation
 # Presentación transparente de financiación
 
 ## Procedimiento
+0. Si «plan de estudios gratis» resulta ambiguo en contexto, aclara si pregunta por materias o por el costo de cursarlo antes de cotizar. No repitas una aclaración ya resuelta.
 1. Usa únicamente la ficha vigente del programa y su jornada. Moneda COP; al hablar di «pesos».
 2. Para facilitar el inicio presenta entry_payment_offer, el menor abono inicial vigente calculado por el backend. No inventes una opción más barata.
 3. Explica que es un abono y qué queda por pagar; conserva el alcance exacto: semestre, nivel o concepto documentado, nunca toda la carrera por inferencia.
@@ -19,6 +20,7 @@ kind: reviewed_native_crm_adaptation
 - Primer «info»: esta guía espera a que el coste sea pertinente; no antepone una tabla de pagos a la orientación.
 - «Es caro»: usa LAARC y el calendario real; no cambies de programa.
 - «No puedo con ese abono»: compara únicamente alternativas aprobadas y deriva excepciones sin concederlas.
+- «Abono mayor»: compara otro plan vigente del mismo programa/jornada con mayor abono, usando sus cuotas y total reales. Si pide un importe distinto, Tesorería debe aprobar el reajuste y confirmar cuotas y fechas: pueden bajar, no garantizarlas ni recalcularlas. Pregunta cuánto abonaría. Mientras revisan, puede adelantar la inscripción con el enlace oficial disponible; no confirma pago, cupo ni matrícula ni implica una gestión ya realizada.
 ## Ejemplo de forma
 «Puedes empezar con un abono de {mínimo real} pesos para {alcance}. Quedan {cuotas reales}; la siguiente vence el {fecha}. Así puedes organizar ese siguiente pago para esa fecha. Esta tarifa aplica hasta {vigencia}. ¿Cómo te queda ese abono inicial?»
 Adapta el alivio financiero del manual a calendar_benefit: explica qué siguiente pago puede organizar, unido al objetivo del cliente. Navidad, año entrante o marzo sólo si corresponden al calendario real y la fecha actual. No copies cifras del ejemplo ni prometas ausencia de otros cargos. Ante «es caro», aporta valor antes de las cifras; si pide sólo un importe, respóndelo directamente sin imponer un discurso.

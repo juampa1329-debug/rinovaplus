@@ -7,6 +7,16 @@ import {
 } from "./ErrorFeedback";
 
 const details: Record<string, [string, string, string]> = {
+  outbound_storage_wait: [
+    "El envío espera al servidor",
+    "El mensaje sigue en cola. RinovaPlus volverá a comprobar la conversación antes de enviarlo.",
+    "No hace falta volver a enviarlo; consulta su estado en unos segundos.",
+  ],
+  storage_busy: [
+    "La operación se detuvo al esperar la base de datos",
+    "El servidor estaba procesando otras operaciones. Este registro conserva el resultado de aquel intento.",
+    "Consulta el último mensaje y el diagnóstico antes de preparar una respuesta nueva; no repitas un envío sin confirmar.",
+  ],
   broadcast_template_refresh_required: [
     "Actualiza la verificación de la plantilla",
     "El mensaje sigue en cola porque hace falta comprobar de nuevo su estado actual en Meta.",
@@ -133,6 +143,11 @@ details.provider_outcome_unknown = details.delivery_uncertain;
 details.provider_result_unknown = details.delivery_uncertain;
 details.send_lease_expired = details.delivery_uncertain;
 details.provider_response_timeout = ["El modelo agotó el tiempo de respuesta", "El proveedor no confirmó una respuesta dentro del plazo.", "Revisa el intento de respaldo en Diagnósticos y la configuración de OpenRouter. No repitas una salida que ya esté confirmada."];
+details.provider_timeout_or_network = details.provider_response_timeout;
+details.language_reply_truncated = ["El modelo devolvió una respuesta cortada", "La generación terminó al alcanzar su límite de salida. Ese texto incompleto no se envió al contacto.", "Diagnósticos muestra la recuperación breve y los respaldos configurados. Si se agotaron, atiende la consulta pendiente sin repetir envíos confirmados."];
+details.language_reply_invalid_contract = ["La respuesta del modelo no pudo validarse", "El contenido recibido no cumplió el formato requerido para una respuesta segura. No se envió ese contenido.", "Revisa los respaldos en Diagnósticos y atiende la consulta si ninguno pudo completarla."];
+details.language_backup_invalid_response = details.language_reply_invalid_contract;
+details.language_reply_incomplete = details.language_reply_invalid_contract;
 details.openrouter_payment_required = ["OpenRouter rechazó la consulta por saldo o cupo", "La cuenta o la API key no tuvo crédito disponible para ese intento.", "Revisa Credits y el límite de la clave en OpenRouter. Tener una tarjeta guardada no acredita saldo disponible."];
 details.media_story_source_unavailable = ["No está disponible la fuente de la historia", "El evento conservado no incluye una mención recuperable.", "Consulta la historia en Instagram. No se fabricará una imagen ni se enviará una respuesta automática a este evento."];
 details.gemini_reply_context_changed = [
@@ -197,6 +212,14 @@ export function MessageDelivery({
   unsentDraft?: boolean;
 }) {
   const report = useContext(ErrorFeedbackContext);
+  if (state === "queued" && reason === "outbound_storage_wait") {
+    return (
+      <small className="inbox-delivery" data-state="queued"
+        title="El mensaje se conserva en cola y se comprobará de nuevo antes de enviarlo.">
+        Esperando al servidor
+      </small>
+    );
+  }
   if (state === "cancelled" && unsentDraft) {
     return (
       <small className="inbox-delivery" data-state="discarded"

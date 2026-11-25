@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-24",
+  "deployment": {
+    "code_commit": "b3e68e2",
+    "backend": {
+      "id": "vfrsuqistgptrryfvwkcrtlm",
+      "status": "Success",
+      "running": true,
+      "duration": "04m20s"
+    },
+    "frontend": {
+      "id": "s5ngszwmokfyghwjllpwkmkq",
+      "status": "Success",
+      "duration": "00m25s"
+    }
+  },
+  "button": "Hablar con Juan Pablo",
+  "authority": "accepted_broadcast_button_v1",
+  "inbox_promotion": "existing_real_inbound_filter_preserved",
+  "validation": {
+    "focused_tests": 181,
+    "ruff": "passed",
+    "broad_selection_failures": 8,
+    "same_failures_reproduced_on_previous_head": true,
+    "full_suite_green": false,
+    "additional_tests": 88,
+    "selections_overlap": true
+  },
+  "real_button_pilot": "not_run",
+  "model_calls": 0,
+  "customer_messages_sent": 0,
+  "human_control_changed": false,
+  "campaigns_activated": false,
+  "siie_writes": false,
+  "roadmap_acceptances_changed": false
+}

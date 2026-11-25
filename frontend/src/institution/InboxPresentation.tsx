@@ -501,6 +501,7 @@ function ConversationPreview({ preview, kind, duration }: {
   duration?: string | null;
 }) {
   const text = preview?.trim() || "";
+  if (text === "[reaction]") return "Reacción a un mensaje";
   const marker = /^\[(audio|image|video|sticker|document)\]$/i.exec(text)?.[1]?.toLowerCase();
   const media = previewMedia[(kind || marker || "") as keyof typeof previewMedia];
   if (!media) return text || "Sin mensajes";

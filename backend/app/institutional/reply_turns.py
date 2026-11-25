@@ -53,7 +53,7 @@ def require_settled(c, settings, data, source):
         raise HTTPException(409, "reply_turn_delivery_uncertain" if state["State"] == "uncertain" else "reply_turn_waiting_previous")
     running = db.one(c,
         "SELECT TOP(1) op.OperationId FROM crm_channels2.ProviderOperation op "
-        "JOIN crm.Message m ON m.MessageId=op.OperationId "
+        "JOIN crm.Message m ON m.MessageId=COALESCE(TRY_CONVERT(uniqueidentifier,JSON_VALUE(op.ResultMetadata,'$.incoming')),op.OperationId) "
         "WHERE op.InstitutionId=? AND op.IntegrationId=? AND op.Action=? "
         "AND op.Status='running' AND op.LeaseUntil>SYSUTCDATETIME() "
         "AND m.ConversationId=? AND m.Sequence<? ORDER BY m.Sequence",
@@ -101,19 +101,19 @@ def snapshot(c, settings, data, source):
     integration, conversation = data["integration"], data["conversation"]
     complete = db.one(c,
         "SELECT MAX(m.Sequence) AS Sequence FROM crm.Message m "
-        "JOIN crm_channels2.ProviderOperation op ON op.OperationId=m.MessageId "
+        "JOIN crm_channels2.ProviderOperation op ON COALESCE(TRY_CONVERT(uniqueidentifier,JSON_VALUE(op.ResultMetadata,'$.incoming')),op.OperationId)=m.MessageId "
         "AND op.InstitutionId=? AND op.IntegrationId=? AND op.Action=? AND op.Status='confirmed' "
         "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=op.InstitutionId "
         "AND r.IntegrationId=op.IntegrationId AND r.IdentityId=? AND r.ActorKind='external' "
+        # Aggregate this identity's parts once instead of repeatedly scanning
+        # the whole account's JSON payloads for every historical operation.
+        "LEFT JOIN (SELECT TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId')) AS AutomationId,"
+        "COUNT_BIG(*) AS PartCount,SUM(CASE WHEN j.State IN('accepted','sent','delivered','read') THEN 1 ELSE 0 END) AS AcceptedCount "
+        "FROM crm_channels2.SendJob j WHERE j.InstitutionId=? AND j.IntegrationId=? AND j.IdentityId=? "
+        "GROUP BY TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))) coverage ON coverage.AutomationId=op.OperationId "
         "WHERE m.ConversationId=? AND m.Direction='incoming' AND m.Sequence<? AND ("
-        "op.ResultCode='reply_turn_no_response' OR ("
-        "EXISTS(SELECT 1 FROM crm_channels2.SendJob j WHERE j.InstitutionId=op.InstitutionId "
-        "AND j.IntegrationId=op.IntegrationId AND TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))=op.OperationId "
-        "AND j.State IN('accepted','sent','delivered','read')) "
-        "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob j WHERE j.InstitutionId=op.InstitutionId "
-        "AND j.IntegrationId=op.IntegrationId AND TRY_CONVERT(uniqueidentifier,JSON_VALUE(j.Payload,'$.automationId'))=op.OperationId "
-        "AND j.State NOT IN('accepted','sent','delivered','read'))))",
-        inst, integration, ACTION, data["identity"], conversation, source["Sequence"])
+        "op.ResultCode='reply_turn_no_response' OR (coverage.AcceptedCount>0 AND coverage.AcceptedCount=coverage.PartCount))",
+        inst, integration, ACTION, data["identity"], inst, integration, data["identity"], conversation, source["Sequence"])
     human = db.one(c,
         "SELECT MAX(m.Sequence) AS Sequence FROM crm.Message m "
         "JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=? "

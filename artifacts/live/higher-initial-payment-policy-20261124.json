@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-24",
+  "code_commit": "9d265df",
+  "policy_version": "cbn-sales-skills-v8",
+  "backend": {
+    "deployment": "b7nyedvu3b4osdirfnhjzjtb",
+    "status": "Success",
+    "duration": "04m18s"
+  },
+  "frontend": {
+    "deployment": "voxlnm7bwrr3zywpa2ldicci",
+    "status": "Success",
+    "duration": "00m25s"
+  },
+  "pricing_guide": {
+    "native_publication_verified": true,
+    "sha256": "676fc5251411545ae868dde636dea23cd5a882a5d2a5136ba3459f4746ba9cb8"
+  },
+  "native_context_preview": {
+    "program": "BARISMO Y BARTENDER",
+    "resolved": true,
+    "provider_call": false
+  },
+  "validation": {
+    "focused_tests": 185,
+    "additional_tests": 281,
+    "selections_overlap": true,
+    "preexisting_broad_selection_failures": 6,
+    "full_suite_green": false,
+    "ruff": "passed"
+  },
+  "provider_calls": 0,
+  "customer_messages_sent": 0,
+  "financial_plans_changed": false,
+  "treasury_request_executed": false,
+  "siie_writes": false,
+  "roadmap_acceptances_changed": false
+}

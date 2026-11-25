@@ -617,7 +617,7 @@ def public_sources(cursor, question, program_id, stage_id, config):
     contacts = getattr(cursor, "public_contact_sources", lambda: [])()
     if contacts:
         institutional = {**institutional, "fingerprint": digest([institutional["fingerprint"], contacts])}
-    return institutional, [*reviewed_sources(selected_sources), *contacts]
+    return institutional, [*reviewed_sources(selected_sources, question), *contacts]
 
 
 class AgentPolicy(AdmissionsPolicy):

@@ -1,4 +1,18 @@
-## Estado vigente del roadmap — 2026-11-22
+P23 · 25Nov: preparación publicada hasta `158be10`, backend Finished/Running4m21 y frontend Success45s. Receptor SIIE firmado, recibos cifrados/dedupe, filtros CRM y exclusión de inscritos de promociones; cuatro contratos Registration2 con clave única, once secciones y documentos. Lecturas reales: tres ofertas PRE-ICFES, seis tipos de documento y dos requisitos sin alerta tras corregir `archivoExistente=null`; SIIE0/Excel772. Nueve procesos Al día11:36:46Bogotá. La cédula ya se exige al preinscribirse; `idPreinscripcion` conserva continuidad y los cambios de documento se revisan. Firma/emisor, seis catálogos, retención, piloto remoto y contrato de volante/PDF pendientes; recepción/envíos finales siguen desactivados, cero escrituras SIIE. [Informe y pruebas](adaptation/P23_SIIE_IMPLEMENTATION_20261125.md), [criterios](adaptation/P23_SIIE_REGISTRATION.md), [contrato del webhook](adaptation/SIIE_WEBHOOK_CONTRACT_V1.md). 0/9 aceptados; otras fases conservadas.
+
+Cierre operativo25Nov: `2b80de2` backend/frontendSuccess; causa de contención corregida en cobertura de turnos, tres aperturas sin alertas, cuatro orientaciones Entregadas y PRE-ICFES actualizado. [Informe](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md) y [evidencia](../artifacts/live/inbox-queue-storage-wait-20261125.json). Siguiente encargo autorizado: P23Registration2 y webhook SIIE→CRM; aún sin nueva aceptación.
+
+25Nov: causa de contención identificada en cobertura de turnos (consulta3,6–3,8s). Agregación por identidad preparada y171pruebas pasan; publicación/medición pendientes. Frontend466bc15 publicado con espera visible y recuperación GET acotada. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). P23/webhook SIIE sigue como siguiente encargo, sin nueva aceptación.
+
+Corte25Nov: cola de espera interna publicada `f19cd38`; cuatro orientaciones Entregadas en tres hilos, nueve procesos Al día. PRE-ICFES revisión7: descuento hasta16Dic2026 e inicio13Feb2027 comprobados en simulación aislada. Mejora visual y recuperación GET acotada preparadas; [detalle y límites](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Sin nuevas aceptaciones de fases.
+
+Corrección en preparación 25Nov: espera interna anterior al envío, continuidad de partes y fechas confirmadas. Dos orientaciones prioritarias Entregadas; PRE-ICFES actualizado hasta16Dic2026 e inicio13Feb2027. Publicación/diagnóstico de contención pendientes. [Detalle](adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md). Fases y aceptaciones conservadas.
+
+## Estado vigente del roadmap — 2026-11-24
+
+### Correcciones de atención del 25 de noviembre de 2026
+
+Atención prioritaria de audio, continuidad de Cocina y tres comentarios PRE-ICFES realizada con recibos nativos. Límite HTTP por usuario ampliado de 120 a 600 (revisión 5 recargada), separado del presupuesto de IA. Recuperación limitada de salida truncada, plazos de OpenRouter, reacción con referencia real y transcripciones publicados en bd830ba. Backend Success04m21s e interfaz Success00m46s. Reacción real y tres transcripciones comprobadas, seis hilos públicos atendidos y aclaración de horarios por texto Leído/audio Entregado; un privado adicional rechazado por Meta no se repitió. Horario exacto de Turismo pendiente de la institución; ver [informe de incidencia](adaptation/INBOX_RESPONSE_RECOVERY_20261125.md). Las aceptaciones y pendientes de fases se conservan.
 
 El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y 279/279 hitos**, dentro del alcance PostgreSQL aceptado y sus límites operativos documentados. P12 de puesta online también está aceptada. Los cortes inferiores son historia; sus porcentajes anteriores no describen la versión actual.
 
@@ -6,7 +20,7 @@ El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y
 |---|---|---|
 | P0–P11 | Base del CRM, canales Meta, IA, conocimiento, broadcasting, seguimientos, publicidad, inteligencia y operación | 100% del alcance original aceptado. No incluye automáticamente las ampliaciones posteriores. |
 | P12 | Puesta online en PostgreSQL/Coolify y Meta | 100% del alcance aceptado. |
-| P13 | Académico y agentes comerciales por programa, skills, memoria y ficha CRM | 4/4, 100% inicial. Calidad comercial continua y modelos por etapa se evalúan en P22. Inglés aún sin alcance tarifario confirmado; SLA institucional sin plazo configurado. |
+| P13 | Académico y agentes comerciales por programa, skills, memoria y ficha CRM | 4/4, 100% inicial. Inglés A1+A2 en un semestre: precios, financiación, requisitos y fechas confirmados el24Nov en ambas jornadas. PRE-ICFES: grupos e inicio13Feb2027 confirmados. Auditoría27fichas/51planes y faltantes de horarios/calendarios en [informe](adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md). SLA sin plazo configurado; calidad comparativa y modelos por etapa siguen P22. |
 | P14 | Entrenamiento y mejora comercial basada en datos | Plan pendiente; implementación no iniciada, 0%. |
 | P15 | Correos, recuperación, invitaciones, alertas y plantillas | 7/7, 100% inicial. Mejoras de monitorización operativa siguen separadas. |
 | P16 | API SIIE para programas, aspirantes, estudiantes y finanzas | Parcial; 0/5 aceptadas (0% de aceptación). Hay lecturas reales y catálogo local de 25 programas. Falta completar/verificar finanzas y sincronización de origen. |

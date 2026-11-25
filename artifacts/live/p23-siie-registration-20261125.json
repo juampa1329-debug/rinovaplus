@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-25",
+  "stage": "published_preparation_verified_with_external_dependencies",
+  "scope": "P23 registration contracts, incoming SIIE events, CRM source classification and promotional exclusions",
+  "real_siie_writes": 0,
+  "actual_webhook_events_received": 0,
+  "new_messages_sent": 0,
+  "payment_orders_created": 0,
+  "payment_pdfs_sent": 0,
+  "ddl_or_new_services": false,
+  "default_webhook_enabled": false,
+  "default_writes_enabled": false,
+  "outbound_credential": "existing_SIIE_API_TOKEN",
+  "incoming_signature_credential": "SIIE_WEBHOOK_SECRET_required",
+  "public_document_catalog_observed": {
+    "base_folder": "SIIEWebPlus",
+    "native_fields": [
+      "Identificacion",
+      "Abreviatura"
+    ],
+    "sentinel_excluded": true,
+    "protected_endpoint_access_not_yet_verified": false
+  },
+  "verification": {
+    "backend_selected_passed": 298,
+    "p23_tests_within_selection": 54,
+    "frontend_selected_passed": 19,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "ruff_new_modules": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false,
+    "sql": "generated classification queries and projection/receipt queries parsed as PostgreSQL; projection exercised with synthetic SQLite records",
+    "followup_backend_selected_passed": [
+      118,
+      160,
+      113
+    ],
+    "followup_selections_overlap": true,
+    "frontend_privacy_selected_passed": 4
+  },
+  "phase_acceptance": {
+    "p23": "0/9; seven original criteria retained plus webhook and PRE-ICFES payment pilot",
+    "other_phases": "unchanged"
+  },
+  "remaining": [
+    "runtime webhook signing secret and explicit receiver activation",
+    "producer implementation and end-to-end signed event test",
+    "official enrollment selector catalogs",
+    "authorized remote registration and file pilot with reconciliation",
+    "retention policy acceptance",
+    "PRE-ICFES order generation/query and authenticated PDF download contract"
+  ],
+  "contains_personal_data_or_secrets": false,
+  "current_code": "158be10",
+  "local_empty_drafts_created": 1,
+  "live_checks": {
+    "siie_source_filter_before_events": 0,
+    "excel_imported_filter_results": 772,
+    "crm_filter_alerts": 0,
+    "document_types_count": 6,
+    "preicfes_groups_from_siie": 3,
+    "requirements_count": 2,
+    "requirements_alerts_after_fix": 0,
+    "requirements_file_flag": "unknown_without_student",
+    "missing_catalogs": [
+      "departamentos",
+      "eps",
+      "generos",
+      "modalidades",
+      "municipios",
+      "tiposEstudio"
+    ],
+    "webhook_enabled": false,
+    "writes_enabled": false,
+    "operations_checked_bogota": "2026-11-25 11:36:46",
+    "processes_up_to_date": 9,
+    "database_responding": true,
+    "final_runtime_requirements_alerts": 0
+  },
+  "deployments": {
+    "initial_backend": {
+      "commit": "6d94350",
+      "deployment": "muhx2pkozoladedthupn7mpq",
+      "state": "Success",
+      "duration": "04m32s"
+    },
+    "initial_frontend": {
+      "commit": "6d94350",
+      "deployment": "j79mjet5crnu2uesisjpnzbs",
+      "state": "Success",
+      "duration": "00m45s"
+    },
+    "read_followup_backend": {
+      "commit": "c6efe9d",
+      "state": "Success",
+      "duration": "04m30s"
+    },
+    "final_runtime_backend": {
+      "commit": "158be10",
+      "deployment": "d3cf5mcupoxqkrleycbfrjkm",
+      "state_observed": "Finished",
+      "application_state_observed": "Running",
+      "duration": "04m21s"
+    },
+    "final_runtime_frontend": {
+      "commit": "158be10",
+      "deployment": "tz7xw0hdvqiyu56ldyxyejzc",
+      "state": "Success",
+      "duration": "00m45s"
+    }
+  },
+  "identity_contract": {
+    "normal_pre_registration_document_required_by_source_form": true,
+    "pre_registration_id_is_stable_reference_not_identity_proof": true,
+    "missing_pre_registration_document_exception": "retains_technical_reference_without_private_access_authority",
+    "malformed_document_rejected": true,
+    "changed_linked_document_requires_review": true,
+    "official_document_registry_validation_performed": false
+  }
+}

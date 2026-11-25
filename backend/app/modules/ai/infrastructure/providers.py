@@ -89,6 +89,9 @@ class ProviderGateway:
             and path.startswith("models/")
             and path.endswith(":generateContent")
         )
+        language_generation = gemini_generation or (
+            provider == "openrouter" and method == "POST" and path == "chat/completions"
+        )
         diagnostic = {"upstream_status": None, "response_bytes": 0, "content_type": "unknown"}
         retry_after = None
 
@@ -105,9 +108,9 @@ class ProviderGateway:
             )
             return error
         try:
-            async with asyncio.timeout(35 if gemini_generation else 12):
+            async with asyncio.timeout(35 if language_generation else 12):
                 async with httpx.AsyncClient(
-                    timeout=httpx.Timeout(10, read=30) if gemini_generation else 10,
+                    timeout=httpx.Timeout(10, read=30) if language_generation else 10,
                     follow_redirects=False,
                     trust_env=False,
                     transport=self.transport,

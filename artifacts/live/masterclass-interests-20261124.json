@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-24",
+  "deployment": "published",
+  "live_update": "verified",
+  "authority": "owner_masterclass_related_programs_v1",
+  "multiple_programs": "offer_related_school_programs_and_ask_customer",
+  "validation": {
+    "backend": 126,
+    "frontend": 6,
+    "types": "passed",
+    "lint": "passed",
+    "ruff": "passed",
+    "build": "passed",
+    "historical_bundle_warning": true
+  },
+  "messages_sent": 0,
+  "siie_writes": false,
+  "roadmap_acceptances_changed": false,
+  "updated_contacts": 217,
+  "remaining_ready": 0,
+  "remaining_review": 0,
+  "source_preserved": true,
+  "manual_and_academic_assignments_unchanged": true
+}

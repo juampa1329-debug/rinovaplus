@@ -53,8 +53,11 @@ def test_pending_batch_keeps_old_question_quotes_first_and_binds_every_query_to_
     assert value["quote_incoming"] == messages[0]["MessageId"]
     assert value["quote_external"] == "mid.oldest"
     coverage = statements[0]
-    assert "AND NOT EXISTS" in coverage and "j.State NOT IN('accepted','sent','delivered','read')" in coverage
+    assert "coverage.AcceptedCount>0 AND coverage.AcceptedCount=coverage.PartCount" in coverage
+    assert "j.InstitutionId=? AND j.IntegrationId=? AND j.IdentityId=?" in coverage
+    assert coverage.count("FROM crm_channels2.SendJob j") == 1
     assert "reply_turn_no_response" in coverage and "op.Status='confirmed'" in coverage
+    assert "COALESCE(TRY_CONVERT(uniqueidentifier,JSON_VALUE(op.ResultMetadata,'$.incoming')),op.OperationId)=m.MessageId" in coverage
 
 
 @pytest.mark.parametrize("case", ["reset", "too_many", "too_long", "missing_latest"])

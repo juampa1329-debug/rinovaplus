@@ -1,7 +1,7 @@
 {
   "phase": "P13",
   "name": "Académico y agentes de venta por programa",
-  "updated": "2026-11-20",
+  "updated": "2026-11-24",
   "status": "accepted_initial_scope",
   "accepted_units": 4,
   "total_units": 4,
@@ -11,7 +11,7 @@
       "id": "P13.1",
       "name": "Ficha comercial",
       "status": "accepted",
-      "evidence": "Current reviewed commercial profiles accepted with known/unknown fields explicit; English remains unpriced until confirmation."
+      "evidence": "Current reviewed commercial profiles accepted with known/unknown fields explicit. On 24Nov the owner confirmed English A1+A2 together in one semester; cash/financed prices, dates, book exclusion and requirements saved and reloaded in both shifts. Audit: 27 profiles/51 reconciled plans; operational schedule gaps remain explicit."
     },
     {
       "id": "P13.2",
@@ -197,6 +197,15 @@
     "automatic_model_handoffs": false,
     "paid_models": "P21 controlled fallback accepted; model candidates and stage handoffs remain P22.",
     "model_selection_phase": "P22"
+  },
+  "post_acceptance_review_20261124": {
+    "evidence": "artifacts/live/program-hours-academic-audit-20261124.json",
+    "runbook": "docs/adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md",
+    "code": "55cbb66",
+    "library_guides": 37,
+    "new_acceptance_claimed": false,
+    "storage_incident_followup": "artifacts/live/inbox-storage-contention-20261124.json",
+    "remaining": ["General day start times and weekdays", "General night weekdays", "Customs shift", "Pastry weekend hours", "Technical/English class start dates", "Detailed PRE calendar", "Operational monitoring beyond bounded native checks; HTTP120 preserved"]
   },
   "acceptance": {
     "requested_by_owner": true,

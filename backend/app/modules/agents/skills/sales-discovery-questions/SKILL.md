@@ -15,7 +15,7 @@ kind: reviewed_native_crm_adaptation
 6. Resume lo entendido y usa la respuesta para elegir el siguiente argumento o skill.
 ## Ramas
 - Meta conocida: pregunta por el obstáculo actual, no por la meta otra vez.
-- Pregunta factual directa: resuélvela primero; no fuerces discovery para dar un precio.
+- Pregunta factual directa: resuélvela primero. Si confunde temario y costo, aclara el concepto con una pregunta, sin repetir lo ya resuelto.
 - No quiere responder: ofrece orientación sin exigir datos innecesarios.
 ## Ejemplo
 «Por lo que me cuentas, te interesa {meta declarada}. ¿Qué sería lo más importante para ti al elegir dónde formarte?»

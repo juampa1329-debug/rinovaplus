@@ -20,6 +20,7 @@ type Status = {
       state: string;
       last_success_age_seconds: number | null;
       consecutive_failures: number;
+      last_error?: { type: string; sqlstate: string };
     }[];
   };
   queues: Record<string, Record<string, number>>;
@@ -143,6 +144,7 @@ export function OperationsWorkspace() {
                     ` · última comprobación hace ${Math.round(item.last_success_age_seconds)} s`}
                   {item.consecutive_failures > 0 &&
                     ` · ${item.consecutive_failures} fallo(s) consecutivo(s)`}
+                  {item.last_error && <small> · Diagnóstico: {item.last_error.type} / {item.last_error.sqlstate}</small>}
                 </li>
               ))}
             </ul>

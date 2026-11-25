@@ -13,6 +13,91 @@ afterEach(() => {
 const response = (body: unknown, status = 200, headers?: HeadersInit) =>
   new Response(JSON.stringify(body), { status, headers });
 
+it.each(["institution", "agents"])(
+  "recovers one pre-work busy GET for %s without duplicating concurrent reads",
+  async (client) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(9_000);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetcher = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
+      .mockResolvedValue(response({ ok: true }));
+    const load = () =>
+      client === "agents" ? api("/busy-fixture") : send("busy-fixture");
+    const reads = Promise.all([load(), load()]);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await reads).toEqual([{ ok: true }, { ok: true }]);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  },
+);
+
+it("bounds busy recovery to two extra GETs and never repeats a mutation", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(10_000);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async () => response({ detail: "storage_busy" }, 503));
+  const read = send("still-busy").catch((error: unknown) => error);
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(await read).toMatchObject({ status: 503, detail: "storage_busy" });
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  await expect(
+    send("send-message", "POST", { body: "fixture" }),
+  ).rejects.toMatchObject({ detail: "storage_busy" });
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(fetcher).toHaveBeenCalledTimes(4);
+});
+
+it("coalesces readers through a burst of two known lock waits", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(16_000);
+  const fetcher = vi.spyOn(globalThis, "fetch")
+    .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
+    .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
+    .mockResolvedValue(response({ messages: ["current"] }));
+  const reads = Promise.all([send("burst-busy"), send("burst-busy")]);
+  await vi.advanceTimersByTimeAsync(3999);
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  await vi.advanceTimersByTimeAsync(1);
+  expect(await reads).toEqual([{ messages: ["current"] }, { messages: ["current"] }]);
+  expect(fetcher).toHaveBeenCalledTimes(3);
+});
+
+it.each([
+  [503, "general_storage_unavailable"],
+  [401, "session_required"],
+  [403, "permission_denied"],
+])("does not replay HTTP %s %s as a lock timeout", async (status, detail) => {
+  vi.useFakeTimers();
+  vi.setSystemTime(20_000);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(response({ detail }, status));
+  await expect(send("not-a-busy-lock")).rejects.toMatchObject({
+    status,
+    detail,
+  });
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});
+
+it("does not bypass an observed rate limit during busy recovery", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(30_000);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(response({ detail: "storage_busy" }, 503));
+  const read = send("busy-before-rate-limit").catch((error: unknown) => error);
+  await vi.advanceTimersByTimeAsync(500);
+  observeReadLimit("60");
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(await read).toMatchObject({ detail: "storage_busy" });
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(60_001);
+});
 
 it("coalesces simultaneous reads, partitions credentials, and never coalesces writes", async () => {
   let release!: () => void;
@@ -60,7 +145,10 @@ it("pauses all read clients for Retry-After without replaying mutations", async 
   await vi.advanceTimersByTimeAsync(30_001);
   observeReadLimit("600");
   await vi.advanceTimersByTimeAsync(300_000);
-  await expect(send("inbox")).rejects.toMatchObject({ status: 429, retryAfterSeconds: 300 });
+  await expect(send("inbox")).rejects.toMatchObject({
+    status: 429,
+    retryAfterSeconds: 300,
+  });
   await vi.advanceTimersByTimeAsync(300_001);
 });
 
@@ -143,21 +231,49 @@ it("retries a one-shot history GET after Retry-After without repeating a mutatio
   vi.useFakeTimers();
   vi.setSystemTime(9_000_000);
   vi.spyOn(document, "hasFocus").mockReturnValue(true);
-  const fetcher = vi.spyOn(globalThis, "fetch")
-    .mockResolvedValueOnce(response({ detail: "rate_limited" }, 429, { "Retry-After": "2" }))
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValueOnce(
+      response({ detail: "rate_limited" }, 429, { "Retry-After": "2" }),
+    )
     .mockResolvedValue(response({ total: 9 }));
   function View() {
-    const read = useRead<{ total: number }>("conversations/fixture/messages", 0, true, 0);
+    const read = useRead<{ total: number }>(
+      "conversations/fixture/messages",
+      0,
+      true,
+      0,
+    );
     return <span>{read.value?.total ?? read.error}</span>;
   }
-  const initial = { session_id: "s", csrf_token: "token", actions: [], user: { id: "u", email: "u@example.invalid", full_name: "Test", active: true, role: "test", revision: 1, profile: {}, mfa_state: "disabled" } };
-  const view = render(<SessionBoundary initial={initial} expire={vi.fn()}><View /></SessionBoundary>);
+  const initial = {
+    session_id: "s",
+    csrf_token: "token",
+    actions: [],
+    user: {
+      id: "u",
+      email: "u@example.invalid",
+      full_name: "Test",
+      active: true,
+      role: "test",
+      revision: 1,
+      profile: {},
+      mfa_state: "disabled",
+    },
+  };
+  const view = render(
+    <SessionBoundary initial={initial} expire={vi.fn()}>
+      <View />
+    </SessionBoundary>,
+  );
   await act(() => vi.advanceTimersByTimeAsync(200));
   expect(fetcher).toHaveBeenCalledTimes(1);
   await act(() => vi.advanceTimersByTimeAsync(2100));
   expect(screen.getByText("9")).toBeInTheDocument();
   expect(fetcher).toHaveBeenCalledTimes(2);
-  expect(fetcher.mock.calls.every((v) => !v[1]?.method || v[1].method === "GET")).toBe(true);
+  expect(
+    fetcher.mock.calls.every((v) => !v[1]?.method || v[1].method === "GET"),
+  ).toBe(true);
   await act(() => vi.advanceTimersByTimeAsync(60_000));
   await act(async () => window.dispatchEvent(new Event("focus")));
   expect(fetcher).toHaveBeenCalledTimes(2);

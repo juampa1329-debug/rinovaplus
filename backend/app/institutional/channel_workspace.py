@@ -531,6 +531,15 @@ class Workspace(Parent):
                         for v in media
                         if str(v["MessageId"]).lower() == message["id"]
                     ]
+                from app.institutional.conversation_scope import audio_history
+                audio_messages = [{"MessageId": m["id"], "Direction": m["direction"], "Body": m["body"]}
+                                  for m in result["items"] if m.get("direction") == "incoming"
+                                  and any(a["kind"] == "audio" for a in m["attachments"])]
+                interpreted = {m["MessageId"]: m["Body"] for m in audio_history(c, self.profile, conversation, audio_messages)
+                               if m.get("body_origin") == "automatic_audio_transcription"}
+                for message in result["items"]:
+                    if message["id"] in interpreted:
+                        message["voiceTranscript"] = interpreted[message["id"]]
         if result["items"]:
             from app.institutional.social_messages import presentation
             # Presentation is optional and uses its own read transaction. A
@@ -553,4 +562,17 @@ class Workspace(Parent):
                     message["socialSource"] = social[message["id"]]
                     if message["body"] == "[multimedia]":
                         message["body"] = social[message["id"]]["label"]
+            from app.institutional.channel_reactions import project
+            reactions = {}
+            if any(m["body"] == "[reaction]" for m in result["items"]):
+                try:
+                    with self.transaction() as c:
+                        reactions = project(c, self.profile, conversation, result["items"])
+                except HTTPException as failure:
+                    if failure.status_code != 503:
+                        raise
+                    logging.getLogger(__name__).warning("reaction_presentation_unavailable")
+            for message in result["items"]:
+                if message["id"] in reactions:
+                    message.update(reactions[message["id"]])
         return result

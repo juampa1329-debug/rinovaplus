@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-24",
+  "timezone": "America/Bogota",
+  "method": "native_authenticated_UI_and_public_repository_checks",
+  "code": "55cbb66",
+  "deployment": {
+    "backend": {"id": "gxsosyylfe63xt0qmlznfgyw", "status": "Success/Running", "duration_seconds": 257},
+    "frontend": {"id": "x4no1yivlv0tmxy8kmni9ner", "status": "Success/Running", "duration_seconds": 24}
+  },
+  "verification": {"selected_backend_tests": 96, "ruff_selected": "passed", "new_LLM_simulation": false},
+  "catalog": {
+    "profiles_reviewed": 27,
+    "financial_plans_reviewed": 51,
+    "plan_arithmetic_mismatches": 0,
+    "empty_price_duration_requirements_or_syllabus": 0,
+    "general_shift_updates_reloaded": 24,
+    "english_profiles_revision": 9,
+    "english_structured_dates_reloaded": true,
+    "english_A1_A2_one_semester": true,
+    "english_cash_cop": 1250000,
+    "english_initial_cop": 440000,
+    "english_installments_cop": [430000,430000],
+    "english_total_financed_cop": 1300000,
+    "english_book_extra_cop_subject_to_2027_adjustment": 260000,
+    "pre_groups": {"G1":"Saturday 07:00-12:00","G2":"Saturday 13:00-18:00","G3":"Sunday 07:00-12:00"},
+    "pre_start_owner_confirmed": "2027-02-13",
+    "pre_minimum_age_16_exception": true,
+    "missing": {
+      "general_day_start_and_weekdays_profiles": 17,
+      "general_night_weekdays_profiles": 5,
+      "customs_shift": true,
+      "pastry_weekend_exact_days_hours": true,
+      "technical_and_english_class_start_dates": true,
+      "pre_detailed_class_calendar": true
+    },
+    "historical_bartender_record_preserved": true
+  },
+  "manual_replies": {
+    "authorized_context_reviewed_each": true,
+    "sent_once": 11,
+    "minimum_receipts_at_observation": {"read":1,"delivered":6,"sent":3,"uncertain":1},
+    "original_ai_control_restored": 11,
+    "priority_english_prices": "read",
+    "priority_cooking_requirements_initial_payment": "delivered",
+    "uncertain": {"attempts":1,"reason":"provider_unavailable","replayed":false},
+    "all_search_matches_blasted": false,
+    "complete_universal_backlog_clearance_claimed": false
+  },
+  "operational_limits": {"http_rate_limit":120,"http_429_observed":true,"postgres_lock_sqlstate_observed":"55P03","universal_sql_fix_claimed":false},
+  "phase_acceptances_changed": false,
+  "P22": {"technical": "3/5", "commercial_acceptance":"0/5"},
+  "SIIE_writes": false,
+  "DDL_seeds_new_services": false,
+  "customer_names_bodies_phone_numbers_in_artifact": false
+}

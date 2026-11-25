@@ -184,6 +184,8 @@ class Step(Strict):
 
 
 class Flow(Strict):
+    followup_only: bool = False
+    contact_basis: Literal["marketing", "customer_request"] = "marketing"
     channel: Literal["whatsapp", "instagram", "messenger", "tiktok"] = "whatsapp"
     integration_id: JsonUUID
     objective: str = Field(default="", max_length=1000)
@@ -208,6 +210,10 @@ class Flow(Strict):
         except (ZoneInfoNotFoundError, ValueError) as e:
             raise ValueError("timezone_invalid") from e
         scheduled(self.scheduled_local, self.timezone)
+        if self.followup_only and (not self.exit_on_response or not self.quiet_hours.enabled):
+            raise ValueError("followup_requires_quiet_hours_and_exit_on_response")
+        if self.contact_basis == "customer_request" and not self.followup_only:
+            raise ValueError("customer_request_requires_conversation_followup")
         if self.ab_test.enabled and any(
             v.kind == "send"
             and not (v.variant_b_template_id or v.variant_b_crm_template_id)

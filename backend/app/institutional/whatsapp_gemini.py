@@ -78,7 +78,7 @@ def available(settings, integration, channel="whatsapp"):
     )
 
 
-def schedule(c, settings, item, linked, message):
+def schedule(c, settings, item, linked, message, *, operation_id=None):
     if not available(settings, item["IntegrationId"], item["Channel"]):
         return
     state = configuration(c, settings)
@@ -90,6 +90,7 @@ def schedule(c, settings, item, linked, message):
     ):
         return
     inst = institution(settings)
+    operation_id = operation_id or message
     control = one(
         c,
         "SELECT ctrl.Epoch FROM crm.Conversation v "
@@ -104,7 +105,7 @@ def schedule(c, settings, item, linked, message):
         "SELECT 1 FROM crm_channels2.ProviderOperation WITH(UPDLOCK,HOLDLOCK) "
         "WHERE InstitutionId=? AND OperationId=?",
         inst,
-        message,
+        operation_id,
     ).fetchone():
         return
     data = {
@@ -121,7 +122,7 @@ def schedule(c, settings, item, linked, message):
         "ActorRef,Action,RequestDigest,EffectKey,Status,ResultMetadata,CreatedAt) "
         "VALUES(?,?,?,?,?,?,?,?,'pending',?,SYSUTCDATETIME())",
         inst,
-        message,
+        operation_id,
         item["ApplicationId"],
         item["IntegrationId"],
         ACTOR,
@@ -315,6 +316,7 @@ def reply_context(c, settings, data, source_value):
     selected = resolve_conversation(
         c, data["conversation"], "facebook" if channel == "messenger" else channel
     )
+    selected = getattr(c, "campaign_reply_context", lambda _, value, __: value)(data["conversation"], selected, source_value["Sequence"])
     result = grounded_replies.context(
         c,
         settings,
@@ -641,6 +643,8 @@ class Worker:
                 )) if backup["routes"] or backup.get("primary") else asyncio.run(primary())
             if result is not None:
                 generated = grounded_replies.parse(result, allow_wait=bool(grounded.get("reply_turn", {}).get("can_wait")))
+                if grounded.get("campaign_entry_turn") and not generated:
+                    raise ValueError("invalid_generated_reply")
             # Optional observations never become instructions or arbitrary field writes.
             raw = json.loads(
                 "".join(
@@ -652,7 +656,9 @@ class Worker:
             observations = raw.get("crm_observations", [])
             no_reply = str(raw.get("decision", "")).strip().casefold() == "esperar"
         except AiError as error:
-            state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
+            known_response = error.code in {"language_reply_truncated", "language_reply_incomplete",
+                "language_reply_invalid_contract", "language_backup_invalid_response"}
+            state, code = ("uncertain" if error.status >= 500 and not known_response else "failed"), error.code
         except HTTPException as error:
             state, code = "abandoned", error.detail
         except ValueError as error:

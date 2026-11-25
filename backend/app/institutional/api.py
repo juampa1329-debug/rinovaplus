@@ -35,9 +35,17 @@ PUBLIC = {
 
 
 def core_permission(path, method):
+    if path.startswith("/api/institution/siie-registration"):
+        if path.endswith("/configuration"):
+            return "settings.webhooks.write", "admissions"
+        if any(part in path for part in ("/records/sd/", "/records/sw/", "/records/se/", "/drafts/")):
+            # Complete forms include health and third-party family data. A
+            # read-only CRM viewer may see list metadata, not private dossiers.
+            return "crm.write", "admissions"
+        return "crm." + ("read" if method == "GET" else "write"), "admissions"
     if path == "/api/institution/provider-balance/openrouter/alert":
         return "settings.budgets.read", "settings"
-    if path == "/api/institution/reply-recovery":
+    if path in {"/api/institution/reply-recovery", "/api/institution/advisor-recovery"}:
         return "inbox." + ("read" if method == "GET" else "write"), "inbox"
     if path.startswith("/api/institution/language-rehearsals"):
         return "settings.ai." + ("read" if method == "GET" else "write"), "settings"
@@ -221,6 +229,8 @@ def create_app(
                 )
                 if request.url.path == "/api/institution/notifications/assets" and request.method == "POST":
                     size_limit = 1_500_000
+                if request.method == "POST" and request.url.path.startswith("/api/institution/siie-registration/drafts/") and request.url.path.endswith(("/submit", "/documents")):
+                    size_limit = 51 * 1024 * 1024
                 if (
                     getattr(settings, "ticket", {}).get("version")
                     in {
@@ -518,6 +528,11 @@ def create_app(
         from app.institutional.channel_ingress import install as install_ingress
 
         install_ingress(app, settings)
+        from app.institutional.siie_webhook import install as install_siie_webhook
+        from app.institutional.siie_registration import install as install_siie_registration
+
+        install_siie_webhook(app, settings)
+        install_siie_registration(app, settings)
         from app.institutional.channel_provider import install as install_provider
 
         install_provider(app, settings)
@@ -579,6 +594,8 @@ def create_app(
             from app.institutional.prospect_import import install as install_prospect_import
 
             install_prospect_import(app, settings, app.state.sql_workspace)
+            from app.institutional.masterclass_interests import install as install_masterclass_interests
+            install_masterclass_interests(app, settings)
 
     if getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-agents-p5-v1",
@@ -635,6 +652,8 @@ def create_app(
         install_operations(app, settings)
 
     if getattr(settings, "postgres_deployment", False):
+        from app.institutional.contact_preference import install as install_contact_preference
+        install_contact_preference(app, settings)
         from app.institutional.language_rehearsal import install as install_language_rehearsal
         install_language_rehearsal(app, settings)
         from app.institutional.language_policy import install as install_language_policy

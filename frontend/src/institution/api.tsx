@@ -66,6 +66,24 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  siie_registration_writes_disabled: "Los envíos finales a SIIE están desactivados. Puedes preparar y guardar el borrador.",
+  siie_registration_catalogs_required: "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
+  siie_registration_read_failed: "SIIE no confirmó la consulta de requisitos. Conserva el borrador y revisa la conexión.",
+  siie_registration_access_rejected: "La ruta nueva de SIIE rechazó la autenticación. El administrador de SIIE debe revisar su permiso con la clave única actual; no cambies las demás claves por este aviso.",
+  siie_registration_route_not_found: "SIIE no encontró la ruta nueva de requisitos en la instalación configurada. Su desarrollador debe confirmar la publicación y la carpeta base.",
+  siie_registration_read_redirect: "SIIE redirigió la consulta a una ruta que no coincide con la autorizada. Conserva el borrador y confirma la dirección con su desarrollador.",
+  siie_registration_invalid_response: "La respuesta de requisitos de SIIE no coincide con el contrato documentado. El borrador se conserva; el diagnóstico del backend identifica la validación fallida sin datos personales.",
+  siie_registration_source_unavailable: "La ruta nueva de SIIE no está disponible. Conserva el borrador y revisa su estado con el desarrollador de SIIE.",
+  siie_form_required_fields: "Completa los campos obligatorios antes de enviar a SIIE.",
+  siie_form_invalid_fields: "Revisa los campos y sus longitudes. SIIE sólo acepta los campos documentados del formulario.",
+  siie_registration_reconciliation_required: "Esta solicitud tiene un envío iniciado o un resultado por conciliar. Consulta su recibo antes de preparar otro envío.",
+  siie_offer_selection_changed: "La oferta o el período cambió en SIIE. Revisa la selección vigente antes de continuar.",
+  siie_contact_link_changed: "El vínculo o teléfono del contacto cambió. Vuelve a revisar la identidad antes de enlazarlo.",
+  siie_webhook_configuration_required: "Configura la clave de firma del webhook y una etapa inicial vigente antes de habilitar la recepción.",
+  masterclass_preview_changed:
+    "Un contacto o programa cambió desde la revisión. Consulta el resultado y vuelve a revisar los intereses antes de continuar.",
+  masterclass_scope_limit:
+    "Hay demasiados contactos para esta revisión. Divide la actualización antes de continuar.",
   language_rehearsal_free_backup_required:
     "Este ensayo necesita respaldos de OpenRouter guardados. Revisa la política antes de probar.",
   language_rehearsal_paid_confirmation_required:
@@ -504,10 +522,13 @@ const messages: Record<string, string> = {
   module_disabled: "Este módulo está deshabilitado por la institución.",
   server_temporarily_unavailable:
     "El servidor tardó demasiado o no pudo completar la consulta. Tu configuración se conserva. Espera unos segundos y vuelve a cargar RinovaPlus.",
+  storage_busy:
+    "El servidor está ocupado procesando otras operaciones. Tu borrador se conserva. Espera unos segundos y consulta el estado actual antes de volver a guardar o enviar. Este aviso no indica un problema con tus claves de IA.",
   invalid_server_response:
     "El servidor devolvió una respuesta incompleta. Tu configuración se conserva; vuelve a cargar RinovaPlus cuando termine la actualización.",
   rate_limit: "Alcanzaste el límite temporal. Espera antes de reintentar.",
-  rate_limited: "El Inbox alcanzó el límite temporal de consultas al CRM. Este aviso no indica falta de saldo ni tokens de IA.",
+  rate_limited:
+    "El Inbox alcanzó el límite temporal de consultas al CRM. Este aviso no indica falta de saldo ni tokens de IA.",
   last_active_owner: "Debe quedar al menos un propietario activo con acceso.",
   last_active_admin: "Debe quedar al menos un administrador activo.",
   email_already_registered: "Este correo ya tiene una cuenta.",
