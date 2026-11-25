@@ -2,7 +2,7 @@
 
 ### Correcciones de atención del 25 de noviembre de 2026
 
-Atención prioritaria de audio, continuidad de Cocina y tres comentarios PRE-ICFES realizada con recibos nativos. Límite HTTP por usuario ampliado de 120 a 600 (revisión 5 recargada), separado del presupuesto de IA. Recuperación limitada de salida truncada, plazos de OpenRouter, reacción con referencia real y transcripciones preparados y probados. Publicación en verificación; ver [informe de incidencia](adaptation/INBOX_RESPONSE_RECOVERY_20261125.md). Las aceptaciones y pendientes de fases se conservan.
+Atención prioritaria de audio, continuidad de Cocina y tres comentarios PRE-ICFES realizada con recibos nativos. Límite HTTP por usuario ampliado de 120 a 600 (revisión 5 recargada), separado del presupuesto de IA. Recuperación limitada de salida truncada, plazos de OpenRouter, reacción con referencia real y transcripciones publicados en bd830ba. Backend Success04m21s e interfaz Success00m46s. Reacción real y tres transcripciones comprobadas, seis hilos públicos atendidos y aclaración de horarios por texto Leído/audio Entregado; un privado adicional rechazado por Meta no se repitió. Horario exacto de Turismo pendiente de la institución; ver [informe de incidencia](adaptation/INBOX_RESPONSE_RECOVERY_20261125.md). Las aceptaciones y pendientes de fases se conservan.
 
 El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y 279/279 hitos**, dentro del alcance PostgreSQL aceptado y sus límites operativos documentados. P12 de puesta online también está aceptada. Los cortes inferiores son historia; sus porcentajes anteriores no describen la versión actual.
 

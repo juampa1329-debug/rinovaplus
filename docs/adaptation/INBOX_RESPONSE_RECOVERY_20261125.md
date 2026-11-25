@@ -30,3 +30,15 @@ Se guardó y recargó la revisión 5 de Límites técnicos: **600 solicitudes po
 Publicación y comprobaciones posteriores se registran en `artifacts/live/inbox-response-recovery-20261125.json`. Sin DDL, seeds, servicios nuevos, nuevas claves, cambios de modelos activos ni escrituras SIIE. P13/P19/P21 conservan sus aceptaciones iniciales y P22 no obtiene aceptación comercial por estas correcciones.
 
 Referencia técnica: [OpenRouter: razonamiento y límite de salida](https://openrouter.ai/docs/guides/best-practices/reasoning-tokens). Ocultar razonamiento no evita su consumo ni garantiza una salida completa; por eso la recuperación conserva el tope y solicita una respuesta breve.
+
+## Publicación y comprobación real de cierre
+
+Código **bd830ba** publicado: backend `urwphdbhl3cpjit6tts4a5iy`, **Success 04m21s**; frontend `s0mdzbhraxicjgumaonssu8a`, **Success 00m46s**. El historial real de la reacción muestra el corazón y cita exactamente su mensaje de origen. No se envió una respuesta a esa reacción ni se reescribió el histórico.
+
+Tres notas de voz existentes muestran su transcripción guardada en el Inbox, sin nuevas inferencias de ASR para mostrarlas. La última preguntaba por compatibilidad de trabajo y horarios, además de la pregunta escrita de plazo ya atendida. Se completó esa orientación por texto (Leído) y otra nota Juampa de 22 segundos (Entregado). La primera nota de 26 segundos y el enlace ya pasaron a Leído. Se aclaró que la beca opcional cubre Gestión Ambiental y no elimina el precio de Turismo. La ficha vigente de Turismo registra diurna, salida hasta las 18:00; entrada y días concretos siguen pendientes de confirmación institucional. No se inventó nocturna ni se prometió un horario.
+
+Se revisaron tres comentarios genuinos adicionales del mismo video, todos con respuesta pública nueva Publicada en Meta: el total de esta atención queda en seis hilos públicos. Un intento adicional de primer privado recibió `provider_permission_or_request_rejected` de Meta, un solo intento; no se conoce el detalle suficiente para atribuirlo a una causa más específica ni se repitió. Se dejó la información pública y una invitación a continuar por Messenger, sin afirmar que ese privado llegó. Los otros dos casos adicionales no recibieron nuevos privados. Se verificaron los seis controles de comentarios en IA; junto a los tres chats atendidos se conservan nueve ámbitos de control restaurados.
+
+El cierre no acredita el histórico completo atendido, disponibilidad perpetua del proveedor ni carga máxima multiusuario. La recuperación combinada timeout y truncamiento está comprobada con transporte simulado, no mediante una nueva inferencia pagada de lenguaje. Las alertas operativas existentes siguen sujetas a sus reglas; no se acredita un nuevo correo de alerta automática.
+
+Por petición del titular se preparó un aviso de finalización dirigido a su correo autorizado. El aviso se enviará una vez registrado el cierre del repositorio y verificada su publicación; el apagado local se programará después, nunca durante estos trabajos. Esto no modifica la operación del servidor de Coolify ni una aceptación de fase.
