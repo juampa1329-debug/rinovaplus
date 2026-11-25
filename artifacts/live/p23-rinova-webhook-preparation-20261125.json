@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-25",
+  "stage": "deployed_rinova_prepared_waiting_joint_pilot",
+  "verification": {
+    "backend_selected_passed": 186,
+    "frontend_selected_passed": 23,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "ruff": "passed",
+    "institutional_build": "passed_existing_bundle_warning",
+    "full_suite_claimed_green": false
+  },
+  "isolated_signed_http_rehearsal": {
+    "pre_registration_then_registration": true,
+    "duplicate_no_extra_contact": true,
+    "contacts": 1,
+    "receipts": 2,
+    "human_mode_preserved": true,
+    "registered_promotions_blocked": true,
+    "production_database_used": false
+  },
+  "operator_controls": {
+    "current_snapshot_revision_required": true,
+    "receipt_page_size": 25,
+    "unsaved_configuration_separate": true
+  },
+  "live_pilot_with_siie": false,
+  "production_test_events_injected": 0,
+  "new_secrets_generated": 0,
+  "siie_writes": 0,
+  "payment_orders": 0,
+  "pdfs_sent": 0,
+  "new_paid_model_calls": 0,
+  "ddl_seeds_new_services": false,
+  "phase_acceptances_changed": false,
+  "contains_personal_data_or_secrets": false,
+  "live_preparation": {
+    "initial_stage": "Calificación",
+    "saved_and_reloaded": true,
+    "webhook_secret_configured": false,
+    "webhook_enabled": false,
+    "writes_enabled": false,
+    "verified_events": 0,
+    "receipt_empty_and_pagination_controls_checked": true,
+    "operations_up_to_date": 9,
+    "operations_checked_bogota": "2026-11-25 15:07:26"
+  },
+  "code_commit": "f202a36",
+  "deployment": {
+    "backend": {
+      "id": "pqgi3q6nwvgmrs41wm8fsfrq",
+      "status": "Success",
+      "duration": "04m18s"
+    },
+    "frontend": {
+      "id": "bsbwmvnhzt8kjtspdroejbkz",
+      "status": "Success",
+      "duration": "00m44s"
+    }
+  }
+}

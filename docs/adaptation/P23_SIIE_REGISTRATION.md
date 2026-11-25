@@ -10,6 +10,8 @@ Fuente aportada por el titular: `Registration 2.md`, revisión local en `E:/docu
 
 25Nov · ampliación R7 publicada y comprobada con la clave existente: catálogos reales de secciones, tipos nativos, selectores geográficos dependientes y búsqueda/paginación100+25. Dos requisitos PRE-ICFES recargados. Todas las selecciones temporales se descartaron; no se crearon personas, inscripciones ni archivos. La nueva fuente `GuiaImplementacionCRM.md` no documenta emisor de webhook ni rutas de volante/PDF. Ver [implementación, comprobaciones y datos del productor pendientes](P23_SIIE_R7_CATALOGS_20261125.md).
 
+25Nov · preparación del receptor publicada en `f202a36`: etapa Calificación guardada y recargada, panel de preparación, historial paginado y revisión de vínculo con la instantánea vigente/versionada. Ensayo HTTP firmado aislado satisfactorio, sin eventos sintéticos productivos ni mensajes. Firma pendiente, recepción/envíos finales OFF. Ver [preparación de RinovaPlus y límites del piloto](P23_RINOVA_WEBHOOK_PREPARATION_20261125.md).
+
 ## Hitos de aceptación
 
 1. **Contrato y preparación de SIIE.** Verificar en un entorno de prueba los cinco endpoints `/Api/CRM/v1/CatalogosInscripcion.aspx`, `AspiranteRegistro.aspx`, `Inscripcion.aspx`, `DocumentosRequeridos.aspx` y `Documentos.aspx`, sus catálogos y permisos. Confirmar con el responsable SIIE que aplicó `002_inscripciones.sql`; RinovaPlus no ejecutará DDL remoto. `idOferta` identifica el programa ofrecido, no el programa base.
