@@ -31,6 +31,7 @@ def bounded(value):
 
 
 class Conditions(Filters):
+    followup_states: list[Literal["interest_confirmed", "form_sent", "form_reported_complete"]] = Field(default_factory=list, max_length=3)
     keywords: list[str] = Field(default_factory=list, max_length=20)
 
     @model_validator(mode="after")

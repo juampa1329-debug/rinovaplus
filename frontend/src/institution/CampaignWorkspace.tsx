@@ -17,6 +17,7 @@ import { CampaignAssetInput } from "./CampaignAssetInput";
 type Kind = "campaign" | "flow" | "trigger" | "template" | "segment";
 type Binding = { source: string; value?: string };
 type Filters = {
+  followup_states?: string[];
   contact_ids?: string[];
   program_ids?: number[];
   stages?: string[];
@@ -473,6 +474,10 @@ function FilterEditor({
   return (
     <fieldset>
       <legend>Condiciones de entrada</legend>
+      <div className="field"><label htmlFor={`${prefix}-followup-states`}>Avance del seguimiento</label>
+      <select id={`${prefix}-followup-states`} multiple value={value.followup_states || []} onChange={e=>onChange({...value,followup_states:Array.from(e.currentTarget.selectedOptions,o=>o.value)})}>
+        <option value="interest_confirmed">Interés confirmado</option><option value="form_sent">Formulario enviado</option><option value="form_reported_complete">Formulario completado por verificar</option>
+      </select><small>Para estos avances usa un flujo de sólo seguimiento y selecciona el caso concreto. Sin selección no se reactiva a quienes ya avanzaron.</small></div>
       <div className="campaign-row">
         <Field
           id={`${prefix}-stages`}

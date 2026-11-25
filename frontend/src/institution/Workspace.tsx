@@ -1,4 +1,5 @@
 import { ContactPreference } from "./ContactPreference";
+import { CommercialFollowupReview, CommercialFollowupCard } from "./CommercialFollowup";
 import {
   createContext,
   useContext,
@@ -794,6 +795,7 @@ function WorkspaceView({
         <>
           {page === "clients" && <ProspectImport changed={changed} />}
           {page === "clients" && <MasterclassInterests changed={changed} />}
+          {page === "clients" && <CommercialFollowupReview changed={changed} />}
           {!inbox && (
             <section
               className="panel p3-filters"
@@ -1138,6 +1140,7 @@ function ContactEditor({
     >
       <h2>{create ? "Nuevo contacto" : "Ficha del contacto"}</h2>
       {!create && <ContactPreference key={client.id} id={client.id} />}
+      {!create && <CommercialFollowupCard key={`progress-${client.id}`} id={client.id} />}
       <p className="scope-text">
         Datos declarados en CRM. El expediente académico conserva su autoridad
         en SIIE.

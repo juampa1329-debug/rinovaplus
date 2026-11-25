@@ -66,6 +66,8 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  commercial_followup_preview_changed: "El caso cambió desde la revisión. Conserva los registros confirmados y vuelve a consultar el avance antes de continuar.",
+  commercial_followup_scope_limit: "La revisión supera el límite de mensajes. Revisa por contacto para conservar todas las evidencias.",
   siie_registration_writes_disabled: "Los envíos finales a SIIE están desactivados. Puedes preparar y guardar el borrador.",
   siie_registration_catalogs_required: "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
   siie_registration_invalid_catalog: "El catálogo de inscripción de SIIE no cumple el formato esperado. Conserva el borrador y pide revisar el contrato; no cambies las claves por este aviso.",

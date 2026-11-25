@@ -596,6 +596,8 @@ def create_app(
             install_prospect_import(app, settings, app.state.sql_workspace)
             from app.institutional.masterclass_interests import install as install_masterclass_interests
             install_masterclass_interests(app, settings)
+            from app.institutional.commercial_followup import install as install_commercial_followup
+            install_commercial_followup(app, settings)
 
     if getattr(settings, "ticket", {}).get("version") in {
         "cbn-institutional-agents-p5-v1",
