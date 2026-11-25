@@ -11,6 +11,8 @@
 !frontend/workspace.html
 !frontend/src/
 !frontend/src/**
+!frontend/public/
+!frontend/public/**
 frontend/src/test/**
 frontend/src/**/*.test.ts
 frontend/src/**/*.test.tsx
