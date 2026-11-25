@@ -6,10 +6,10 @@ Fecha: 25 de noviembre de 2026. Documento único y autónomo para implementar la
 
 | Componente | Estado y responsable |
 |---|---|
-| Receptor del webhook v1 | Implementado y publicado en RinovaPlus; recepción desactivada hasta configurar la firma y habilitar el piloto. |
+| Receptor del webhook v1 | Implementado y publicado en RinovaPlus; firma configurada en Runtime y recepción habilitada el 25Nov2026 con etapa Calificación. Primer evento real verificado aún pendiente en este corte. |
 | Emisor SIIE → RinovaPlus | El desarrollador de SIIE debe implementarlo después del guardado confirmado, con outbox y reintentos persistentes. No se presupone que los formularios ya emitan eventos. |
 | Clave de llamadas RinovaPlus → SIIE | Se conserva la clave única existente, enviada como `X-API-Key` desde el backend. |
-| Firma del webhook SIIE → RinovaPlus | Secreto compartido dedicado `SIIE_WEBHOOK_SECRET`; pendiente de configurar en ambos extremos por canal privado. |
+| Firma del webhook SIIE → RinovaPlus | Secreto dedicado `SIIE_WEBHOOK_SECRET` guardado por el titular en Runtime de RinovaPlus. SIIE debe usar exactamente el mismo valor entregado por canal privado; falta corroborarlo con el primer evento firmado. |
 | Generación, consulta y descarga del volante | Contrato pendiente de SIIE. Las rutas de la sección de volantes son propuestas para acordar, no endpoints existentes o verificados. |
 | Envío del PDF al interesado | Pendiente de integrar en RinovaPlus cuando SIIE entregue el contrato de pagos y pase el piloto de identidad/orden/PDF. El webhook actual guarda y clasifica; su acuse no significa que envió un mensaje. |
 
@@ -261,4 +261,6 @@ Para conectar y verificar ambos recorridos, devolver en un solo contrato:
 | Cambio de parámetros con la misma clave | Conflicto; no altera la orden original. |
 | PDF pendiente, inválido o de otra orden | No se envía al interesado; se conserva para conciliación. |
 
-Pendientes de RinovaPlus: configurar el secreto por canal privado, habilitar recepción con etapa inicial, acordar retención y ejecutar el piloto; después implementar las operaciones de volante según el contrato definitivo de SIIE y verificar el envío privado del PDF. Los envíos finales de inscripción y la recepción no se activan por el mero envío de este documento. P23 continúa en validación, sin cierre ni aceptación funcional completa.
+Estado comprobado 25Nov2026: secreto configurado en Runtime y recepción habilitada con Calificación, confirmado después de recargar. El formulario público PRE-ICFES registró un ensayo sintético autorizado con número 16922; todavía no se observó su evento verificado en RinovaPlus. SIIE debe comprobar la outbox de ese guardado y entregar el mismo evento firmado a la URL indicada, aportando sólo `event_id`, intento y respuesta HTTP para soporte. No crear otra inscripción para reintentar la notificación.
+
+Pendientes: primera entrega real firmada y conciliación del piloto, continuidad preinscrito→inscrito, retención y contrato definitivo del volante/PDF; después implementar y comprobar la orden y el envío privado del PDF. Los envíos finales de RinovaPlus a SIIE siguen desactivados. P23 continúa 0/9 aceptados, sin cierre funcional completo. Ver [ensayo del formulario](SIIE_WEBHOOK_PILOT_20261125.md).

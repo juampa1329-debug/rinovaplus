@@ -1,6 +1,6 @@
 # Informe de campañas: consulta agotada y revisión de diseño
 
-Fecha: 25 de noviembre de 2026. Estado: corrección preparada; pull request, publicación y comprobación productiva pendientes.
+Fecha: 25 de noviembre de 2026. Estado: corrección urgente `3a238a8` publicada y comprobada nativamente. Los cambios de diseño se revisaron por separado y se integraron mediante el [pull request #1](https://github.com/juampa1329-debug/rinovaplus/pull/1).
 
 ## Causa comprobada
 
@@ -17,12 +17,16 @@ Se conservan filtros, páginas de cien, CSV completo, gráficos y fechas observa
 - 38 pruebas frontend de campañas, transporte y coordinación de lecturas pasan; tipos, ESLint acotado, Ruff y compilación institucional pasan. Permanece la advertencia histórica de tamaño de bundle.
 - La selección amplia frontend obtuvo 83 aprobadas y dos fallos de `institutionWorkspace.test.tsx`. Ambos se reprodujeron con el archivo API de `HEAD` anterior: expectativa de «saldo insuficiente» en el modal y expectativa antigua de error de acceso al conservar borradores. No se modificaron esas pruebas para ocultarlos ni se declara la suite completa verde.
 
-## Pendientes de publicación
+## Publicación y comprobación real
 
-Abrir/revisar el pull request contra `deploy/coolify-rinovaplus`, integrar sin perder cambios concurrentes, comprobar backend/frontend en Coolify y abrir el informe, sus filtros y gráficos de forma nativa. Revisar los procesos y la muestra posterior de logs. No atribuir al arreglo una garantía de SLA o ausencia perpetua de errores.
+Backend `fqjn8amupeyndfepgnumulut` Success/Running, 4m19s. Después del guardado del secreto por el titular, su redeploy `qfxumzfcnwhmjsgziiwq7fg4` quedó en cola y completó Success en 6m02s, incluyendo espera. Frontend inicial `3a238a8` Success44s; frontend del diseño `60dceb6`, despliegue `yf0ecqdevkoecjnfsthmzfeu`, Success44s.
 
-El diseño del colaborador está en `Feature/nuevos-logos`, commit `1b6653a`. Se revisa por separado antes de integrarlo; este arreglo no sustituye producción por `main` ni por una copia antigua de esa rama.
+El informe PRE-ICFES cargó cien filas sin alertas. El filtro Entregado mostró 67; al quitarlo volvió a cien. Los gráficos mostraron 100 destinatarios, 90 entregas observadas, 23 lecturas, 38 respuestas atribuidas y ocho fallidos. Son resultados existentes de la campaña; no se reintentaron ni se enviaron mensajes para esta comprobación. La consulta agregada nueva tiene huella `a83fe065b4da` y se observó con 419–435ms de ejecución SQL y 1,276–1,321ms de transacción en la muestra. La consulta paginada nueva tiene otra huella; no se presenta ese tiempo como medición de toda la pantalla ni como SLA.
+
+Los nueve procesos estaban Al día a las 17:14:11 de Bogotá. La muestra conserva esperas `55P03` y otra consulta del listado de Inbox (`e7639d094565`, `listing:901`) de 4,3–4,6 segundos. No se atribuye esa consulta al informe ni se declara resuelta la contención completa. Evidencia agregada: `artifacts/live/broadcast-report-branding-webhook-20261125.json`.
+
+El diseño del colaborador procede de `Feature/nuevos-logos`, commit `1b6653a`; se aplicó sobre producción actual, se corrigió y probó antes del PR. No se sustituyó producción por `main` ni por una copia antigua de esa rama.
 
 ## Firma SIIE
 
-Se generó un secreto dedicado y se entregó al titular en un archivo privado fuera del repositorio. Su valor no se incluye en código, evidencia ni Markdown. El mismo texto debe guardarse en la configuración privada del emisor SIIE y en `SIIE_WEBHOOK_SECRET` Runtime del backend; el guardado en Coolify y la activación del receptor siguen pendientes. El [contrato único](SIIE_WEBHOOK_CONTRACT_V1.md) explica ambas opciones de almacenamiento y el cálculo HMAC. Se conserva la API key existente y P23 sigue sin nuevas aceptaciones.
+Se generó un secreto dedicado y se entregó al titular en un archivo privado fuera del repositorio. Su valor no se incluye en código, evidencia ni Markdown. El titular lo guardó en Coolify y desplegó. El panel confirmó el secreto configurado. Tras autorización puntual, se habilitó la recepción firmada, con Calificación y envíos finales desactivados; se confirmó al recargar. Continúa sin eventos verificados en este corte. El emisor debe usar el mismo texto y enviar o reintentar su primer evento firmado. El [contrato único](SIIE_WEBHOOK_CONTRACT_V1.md) explica dónde guardarlo y el HMAC. Se conserva la API key existente; P23 sigue 0/9, con piloto real y volante/PDF pendientes.
