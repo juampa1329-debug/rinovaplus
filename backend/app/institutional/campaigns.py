@@ -229,6 +229,9 @@ def customer_window(doc, p):
 
 def reasons(c, s, doc, p):
     found = []
+    from app.institutional.siie_classification import blocked as siie_registered
+    if siie_registered(c, s, p.get("CanonicalContactId") or p.get("ContactId"), p.get("Phone", "")):
+        found.append("siie_registered_no_promotions")
     if not same(p["IntegrationId"], doc["integration_id"]):
         found.append("campaign_account_mismatch")
     if p["ControlMode"] == "human":

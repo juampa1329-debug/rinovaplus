@@ -83,6 +83,8 @@ type Row = {
   temperature?: string | null;
   leadScore?: number | null;
   program?: string | null;
+  contactOrigin?: string;
+  academicState?: string | null;
   slaStatus?: string;
   risk: Risk;
 };
@@ -646,6 +648,8 @@ function WorkspaceView({
     [tag, setTag] = useState(""),
     [city, setCity] = useState(""),
     [type, setType] = useState(""),
+    [contactOrigin, setContactOrigin] = useState(""),
+    [academicState, setAcademicState] = useState(""),
     [program, setProgram] = useState(""),
     [inboxFilters, setInboxFilters] = useState(initialInboxFilters),
     [offset, setOffset] = useState(0),
@@ -666,7 +670,7 @@ function WorkspaceView({
     anchor: offset ? anchor : "",
     ...(inbox
       ? inboxFilters
-      : { q, stage, tag, city, contactType: type, program }),
+      : { q, stage, tag, city, contactType: type, program, contactOrigin, academicState }),
   });
   const list = useRead<Page>(
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
@@ -839,6 +843,8 @@ function WorkspaceView({
                 value={type}
                 onChange={(e) => setType(e.target.value)}
               />
+              <SelectField id="p3-origin" label="Origen del contacto" value={contactOrigin} options={[{ value: "", label: "Todos los orígenes" }, { value: "siie", label: "SIIE · Webhook" }, { value: "imported", label: "Importados · Excel" }, { value: "social", label: "Redes sociales" }]} onChange={(e) => { setContactOrigin(e.target.value); setOffset(0); setAnchor(""); }} />
+              <SelectField id="p3-academic-state" label="Clasificación de SIIE" value={academicState} options={[{ value: "", label: "Todas" }, { value: "pre_registered", label: "Preinscritos" }, { value: "registered", label: "Inscritos · Sin promociones" }]} onChange={(e) => { setAcademicState(e.target.value); setOffset(0); setAnchor(""); }} />
               <Button
                 onClick={() => {
                   setOffset(0);
@@ -968,6 +974,7 @@ function WorkspaceView({
                         }}
                       >
                         <strong>{row.name || row.phone}</strong>
+                        {row.contactOrigin && <span className="channel-chip">{{ siie: "SIIE", imported: "Importado · Excel", social: "Redes sociales", crm: "CRM" }[row.contactOrigin] ?? row.contactOrigin}{row.academicState === "registered" ? " · Inscrito · Sin promociones" : row.academicState === "pre_registered" ? " · Preinscrito" : ""}</span>}
                         <span>
                           {row.stage} · {row.assignee || "Sin asignar"}
                           {row.unread ? " · No leída" : ""}

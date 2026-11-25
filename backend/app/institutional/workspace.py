@@ -623,6 +623,8 @@ class Workspace:
         tag="",
         city="",
         contactType="",
+        contactOrigin="",
+        academicState="",
         queue="all",
         user="",
         channel="",
@@ -654,11 +656,14 @@ class Workspace:
             if area == "inbox":
                 # Imported prospects stay in CRM/campaigns until a real reply.
                 where.append(
-                    "(COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')='' "
+                    "((COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')='' "
+                    "AND NOT EXISTS(SELECT 1 FROM crm_access.Setting sr WHERE sr.InstitutionId=? "
+                    "AND sr.Section=CONCAT('sg:',REPLACE(LOWER(CONVERT(varchar(36),p.ContactId)),'-','')))) "
                     "OR EXISTS(SELECT 1 FROM crm.Message incoming "
                     "WHERE incoming.ConversationId=v.ConversationId "
                     "AND incoming.Direction='incoming'))"
                 )
+                params.append(db.institution(self.profile))
             if area == "inbox" and self.operational_channels:
                 from app.institutional.broadcast_inbox import BROADCAST_PENDING
                 from app.institutional.conversation_origins import view_predicate
@@ -667,6 +672,16 @@ class Workspace:
                 where.append("NOT " + BROADCAST_PENDING)
             if area == "clients":
                 where.append(ALIASES)
+                if contactOrigin == "siie":
+                    where.append("siie.Section IS NOT NULL")
+                elif contactOrigin == "imported":
+                    where.append("siie.Section IS NULL AND COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')<>''")
+                elif contactOrigin == "social":
+                    where.append("siie.Section IS NULL AND COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')='' AND EXISTS(SELECT 1 FROM crm_channels2.ExternalIdentity social WHERE social.InstitutionId=? AND social.ContactId=p.ContactId)")
+                    params.append(db.institution(self.profile))
+                if academicState:
+                    where.append("JSON_VALUE(siie.Document,'$.metadata.classification')=?")
+                    params.append(academicState)
                 # A grouped source can match; the canonical person is selected before
                 # pagination.
                 where.append(
@@ -874,8 +889,12 @@ class Workspace:
                     params.append(channel)
             predicate = " WHERE " + " AND ".join(where)
             sla = sla_join(self.operational_channels)
+            base = BASE
+            if area == "clients":
+                base += " LEFT JOIN crm_access.Setting siie ON siie.InstitutionId=? AND siie.Section=CONCAT('sg:',REPLACE(LOWER(CONVERT(varchar(36),p.ContactId)),'-',''))"
+                params.insert(0, db.institution(self.profile))
             total = c.execute(
-                "SELECT COUNT(*)" + BASE + (sla if queue == "sla" else "") + predicate, *params
+                "SELECT COUNT(*)" + base + (sla if queue == "sla" else "") + predicate, *params
             ).fetchval()
             channel_expression = self.inbox_channel_expression()
             items = rows(
@@ -892,6 +911,7 @@ class Workspace:
                     )
                     + SLA_STATUS
                     + f" AS slaStatus,{channel_expression} AS channel"
+                    + (",CASE WHEN siie.Section IS NOT NULL THEN 'siie' WHEN COALESCE(JSON_VALUE(p.CustomValues,'$.pre_import_ref'),'')<>'' THEN 'imported' WHEN EXISTS(SELECT 1 FROM crm_channels2.ExternalIdentity social WHERE social.ContactId=p.ContactId) THEN 'social' ELSE 'crm' END AS contactOrigin,JSON_VALUE(siie.Document,'$.metadata.classification') AS academicState" if area == "clients" else "")
                     + (self.inbox_account_columns() if area == "inbox" else "")
                     + self.inbox_comment_columns(area)
                     + (
@@ -919,7 +939,7 @@ class Workspace:
                         "ORDER BY asset.MediaId) AS previewDuration"
                         if area == "inbox" and self.operational_channels else ""
                     )
-                    + BASE
+                    + base
                     + sla
                     + predicate
                     + (
@@ -1655,6 +1675,8 @@ def install(app, settings, workspace=None):
         tag: str = Query("", max_length=1000),
         city: str = Query("", max_length=100),
         contactType: str = Query("", max_length=100),
+        contactOrigin: Literal["", "siie", "imported", "social"] = "",
+        academicState: Literal["", "pre_registered", "registered"] = "",
         program: str = Query("", max_length=200),
         programId: int | None = Query(None, ge=-2147483648, le=2147483647),
         offset: int = Query(0, ge=0, le=1000000),
@@ -1667,6 +1689,8 @@ def install(app, settings, workspace=None):
             tag=tag,
             city=city,
             contactType=contactType,
+            contactOrigin=contactOrigin,
+            academicState=academicState,
             program=program,
             program_id=programId,
             offset=offset,

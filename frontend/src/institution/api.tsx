@@ -66,6 +66,15 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  siie_registration_writes_disabled: "Los envíos finales a SIIE están desactivados. Puedes preparar y guardar el borrador.",
+  siie_registration_catalogs_required: "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
+  siie_registration_read_failed: "SIIE no confirmó la consulta de requisitos. Conserva el borrador y revisa la conexión.",
+  siie_form_required_fields: "Completa los campos obligatorios antes de enviar a SIIE.",
+  siie_form_invalid_fields: "Revisa los campos y sus longitudes. SIIE sólo acepta los campos documentados del formulario.",
+  siie_registration_reconciliation_required: "Esta solicitud tiene un envío iniciado o un resultado por conciliar. Consulta su recibo antes de preparar otro envío.",
+  siie_offer_selection_changed: "La oferta o el período cambió en SIIE. Revisa la selección vigente antes de continuar.",
+  siie_contact_link_changed: "El vínculo o teléfono del contacto cambió. Vuelve a revisar la identidad antes de enlazarlo.",
+  siie_webhook_configuration_required: "Configura la clave de firma del webhook y una etapa inicial vigente antes de habilitar la recepción.",
   masterclass_preview_changed:
     "Un contacto o programa cambió desde la revisión. Consulta el resultado y vuelve a revisar los intereses antes de continuar.",
   masterclass_scope_limit:

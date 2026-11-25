@@ -35,6 +35,10 @@ PUBLIC = {
 
 
 def core_permission(path, method):
+    if path.startswith("/api/institution/siie-registration"):
+        if path.endswith("/configuration"):
+            return "settings.webhooks.write", "admissions"
+        return "crm." + ("read" if method == "GET" else "write"), "admissions"
     if path == "/api/institution/provider-balance/openrouter/alert":
         return "settings.budgets.read", "settings"
     if path in {"/api/institution/reply-recovery", "/api/institution/advisor-recovery"}:
@@ -221,6 +225,8 @@ def create_app(
                 )
                 if request.url.path == "/api/institution/notifications/assets" and request.method == "POST":
                     size_limit = 1_500_000
+                if request.method == "POST" and request.url.path.startswith("/api/institution/siie-registration/drafts/") and request.url.path.endswith(("/submit", "/documents")):
+                    size_limit = 51 * 1024 * 1024
                 if (
                     getattr(settings, "ticket", {}).get("version")
                     in {
@@ -518,6 +524,11 @@ def create_app(
         from app.institutional.channel_ingress import install as install_ingress
 
         install_ingress(app, settings)
+        from app.institutional.siie_webhook import install as install_siie_webhook
+        from app.institutional.siie_registration import install as install_siie_registration
+
+        install_siie_webhook(app, settings)
+        install_siie_registration(app, settings)
         from app.institutional.channel_provider import install as install_provider
 
         install_provider(app, settings)

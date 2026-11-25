@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-25",
+  "stage": "prepared_for_deployment",
+  "scope": "P23 registration contracts, incoming SIIE events, CRM source classification and promotional exclusions",
+  "real_siie_writes": 0,
+  "actual_webhook_events_received": 0,
+  "new_messages_sent": 0,
+  "payment_orders_created": 0,
+  "payment_pdfs_sent": 0,
+  "ddl_or_new_services": false,
+  "default_webhook_enabled": false,
+  "default_writes_enabled": false,
+  "outbound_credential": "existing_SIIE_API_TOKEN",
+  "incoming_signature_credential": "SIIE_WEBHOOK_SECRET_required",
+  "public_document_catalog_observed": {
+    "base_folder": "SIIEWebPlus",
+    "native_fields": ["Identificacion", "Abreviatura"],
+    "sentinel_excluded": true,
+    "protected_endpoint_access_not_yet_verified": true
+  },
+  "verification": {
+    "backend_selected_passed": 298,
+    "p23_tests_within_selection": 45,
+    "frontend_selected_passed": 19,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "ruff_new_modules": "passed",
+    "institutional_build": "passed_with_existing_bundle_warning",
+    "full_suite_claimed_green": false,
+    "sql": "generated classification queries and projection/receipt queries parsed as PostgreSQL; projection exercised with synthetic SQLite records"
+  },
+  "phase_acceptance": {"p23": "0/9; seven original criteria retained plus webhook and PRE-ICFES payment pilot", "other_phases": "unchanged"},
+  "remaining": [
+    "runtime webhook signing secret and explicit receiver activation",
+    "producer implementation and end-to-end signed event test",
+    "official enrollment selector catalogs",
+    "authorized remote registration and file pilot with reconciliation",
+    "retention policy acceptance",
+    "PRE-ICFES order generation/query and authenticated PDF download contract"
+  ],
+  "contains_personal_data_or_secrets": false
+}

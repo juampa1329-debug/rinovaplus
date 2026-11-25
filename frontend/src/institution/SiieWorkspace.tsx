@@ -5,6 +5,7 @@ import { useIntent, useTask } from "./api";
 import { ErrorFeedback } from "./ErrorFeedback";
 import type { OperationFailure } from "./ErrorFeedback";
 import { SiieContacts, SiieStudents } from "./SiieStudents";
+import { SiieRegistration } from "./SiieRegistration";
 import "./siie.css";
 import { Icon } from "../shared/Icon";
 
@@ -312,6 +313,7 @@ function SiieWorkspaceContent({
               ["catalog", "Programas y finanzas"],
               ["admissions", "Aspirantes y seguimiento"],
               ["students", "Estudiantes y matrículas"],
+              ["registration", "Inscripción y webhook"],
             ]
               .filter(([id]) => !admissions || id !== "catalog")
               .map(([id, label]) => (
@@ -329,6 +331,7 @@ function SiieWorkspaceContent({
                 </Button>
               ))}
           </nav>
+          {tab === "registration" && <SiieRegistration />}
           <fieldset disabled={task.busy} aria-busy={task.busy}>
             {tab === "catalog" && (
               <>
