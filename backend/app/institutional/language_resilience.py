@@ -6,6 +6,7 @@ any channel dispatch, with the original reservation retained.
 """
 
 import asyncio
+import copy
 import json
 import math
 from time import monotonic
@@ -92,7 +93,7 @@ async def compatible(gateway, route, body):
         if details.get("request_usd") not in (None, 0):
             raise AiError("language_backup_price_exceeds_limit", 409)
         route["include_temperature"] = model.temperature
-        if not model.temperature and "reasoning" in details.get("supported_parameters", []) and "low" in details.get("reasoning_efforts", []):
+        if "reasoning" in details.get("supported_parameters", []) and "low" in details.get("reasoning_efforts", []):
             route["reasoning_effort"] = "low"
     return incoming, outgoing
 
@@ -166,10 +167,21 @@ async def generate(gateway, route, body, guard):
     try:
         choice, usage = data["choices"][0], data.get("usage", {})
         text = choice["message"]["content"]
+        if choice.get("finish_reason") == "length":
+            raise AiError("language_reply_truncated", 502)
+        if choice.get("finish_reason") in {"content_filter", "error", "tool_calls"}:
+            raise AiError("language_reply_incomplete", 502)
         if choice["finish_reason"] != "stop" or not isinstance(text, str) or not text.strip() or len(text) > 32000:
             raise ValueError()
-        return {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": text}]}}],
-                "usageMetadata": {"promptTokenCount": usage.get("prompt_tokens"), "candidatesTokenCount": usage.get("completion_tokens")}}
+        result = {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": text}]}}],
+                  "usageMetadata": {"promptTokenCount": usage.get("prompt_tokens"), "candidatesTokenCount": usage.get("completion_tokens")}}
+        if "crm_observations" in schema.get("properties", {}):
+            from app.institutional.grounded_replies import parse
+            try:
+                parse(result, allow_wait="esperar" in schema["properties"]["decision"].get("enum", []))
+            except (ValueError, KeyError, IndexError, TypeError):
+                raise AiError("language_reply_invalid_contract", 502) from None
+        return result
     except (KeyError, IndexError, TypeError, ValueError):
         raise AiError("language_backup_invalid_response", 502) from None
 
@@ -188,16 +200,60 @@ def timeout_recovery_allowed(error, provider, body, saved):
 async def execute(primary, provider, model, body, saved, guard, reserve, trace, *, gateway=None):
     """One complete answer; tracing excludes prompt, secrets and customer data."""
     gateway = gateway or ProviderGateway(saved["keys"])
+    repair_used = False
+
+    def text_only():
+        return (not body.get("tools") and not body.get("stream") and bool(body.get("contents"))
+                and all(content.get("parts") and all(set(part) == {"text"} and isinstance(part["text"], str)
+                    for part in content["parts"]) for content in body["contents"]))
+
+    def completed_invalid(error):
+        return text_only() and error.code in {
+            "language_reply_truncated", "language_reply_invalid_contract", "language_backup_invalid_response",
+        }
+
+    async def routed(route, request):
+        nonlocal repair_used
+        guard()
+        incoming, outgoing = await compatible(gateway, route, request)
+        guard()
+        reserve(route, incoming, outgoing)
+        try:
+            return await generate(gateway, route, request, guard)
+        except AiError as error:
+            if error.code != "language_reply_truncated" or repair_used or not text_only():
+                raise
+            # A returned truncation is known completed generation, not an
+            # uncertain channel POST. One fresh, reserved inference, same route
+            # and output cap; never dispatch the partial text or replay a send.
+            repair_used = True
+            recovery = {"provider": route["provider"], "model": route["model"],
+                        "reason": error.code, "state": "started", "reservation_retained": True}
+            trace.setdefault("completion_recoveries", []).append(recovery)
+            concise = copy.deepcopy(request)
+            concise.setdefault("systemInstruction", {}).setdefault("parts", []).append({"text":
+                "RECUPERACIÓN DE SALIDA: devuelve el contrato JSON completo. Respuesta breve de hasta 900 caracteres, "
+                "sin perder la pregunta actual ni inventar hechos. Máximo 2 observaciones CRM breves o []. "
+                "Termina el JSON dentro del límite; no expliques este ajuste al cliente."})
+            try:
+                guard()
+                incoming, outgoing = await compatible(gateway, route, concise)
+                guard()
+                reserve(route, incoming, outgoing)
+                result = await generate(gateway, route, concise, guard)
+                guard()
+                recovery["state"] = "completed"
+                return result
+            except AiError as failure:
+                recovery.update(state="failed", code=failure.code)
+                raise
+
     if saved.get("primary"):
         preferred = dict(saved["primary"])
         provider, model = preferred["provider"], preferred["model"]
 
         async def configured_primary():
-            guard()
-            incoming, outgoing = await compatible(gateway, preferred, body)
-            guard()
-            reserve(preferred, incoming, outgoing)
-            return await generate(gateway, preferred, body, guard)
+            return await routed(preferred, body)
 
         primary = configured_primary
     attempts = trace.setdefault("attempts", [])
@@ -215,13 +271,14 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
         attempts.append({"provider": provider, "model": model, "state": "uncertain" if timeout_recovery else "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary",
                          **({"consumption_may_be_billed": True, "reservation_retained": True} if timeout_recovery else {})})
         preflight_rejected = error.code.startswith("language_backup_") and error.status == 409
-        if not can_failover(error) and not timeout_recovery and not preflight_rejected:
+        if not can_failover(error) and not timeout_recovery and not preflight_rejected and not completed_invalid(error):
             raise
         if timeout_recovery:
             trace["timeout_recovery"] = True
         original = error
     try:
-        async with asyncio.timeout(35):
+        # Leave time for voice/outbox work inside the worker's 180 s lease.
+        async with asyncio.timeout(max(0.001, min(90, 120 - (monotonic() - started)))):
             for configured in saved["routes"]:
                 route = dict(configured)
                 pair = (route["provider"], route["model"])
@@ -231,11 +288,7 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
                 attempt = {"provider": pair[0], "model": pair[1], "role": "fallback"}
                 attempts.append(attempt)
                 try:
-                    guard()
-                    incoming, outgoing = await compatible(gateway, route, body)
-                    guard()
-                    reserve(route, incoming, outgoing)
-                    result = await generate(gateway, route, body, guard)
+                    result = await routed(route, body)
                     guard()
                     attempt["state"] = "completed"
                     trace.update(provider=pair[0], model=pair[1], fallback_used=True)
@@ -243,9 +296,9 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
                 except AiError as error:
                     attempt.update(state="failed", code=error.code, upstream_status=error.upstream_status)
                     # Catalog/capability checks have not performed inference.
-                    if not (error.code.startswith("language_backup_") and error.status == 409) and not can_failover(error):
+                    if not (error.code.startswith("language_backup_") and error.status == 409) and not can_failover(error) and not completed_invalid(error):
                         raise
-                    if can_failover(error):
+                    if can_failover(error) or completed_invalid(error):
                         original = error  # Report the final real rejection, not only the simulated primary fault.
             raise original
     except TimeoutError:

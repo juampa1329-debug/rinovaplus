@@ -1,0 +1,32 @@
+# Recuperación de atención y contexto del Inbox — 25 de noviembre de 2026
+
+## Hallazgos y atención real
+
+El 24 de noviembre se atendieron los casos solicitados mediante los controles nativos, sin reproducir operaciones inciertas. Una consulta escrita y una nota de voz del mismo hilo quedaron sin respuesta después de un timeout de OpenRouter Sonnet 4.6 y `language_backup_invalid_response` de Sonnet 5.5. El código anterior agrupaba bajo ese último error varios resultados distintos: no permite afirmar retrospectivamente si fue truncamiento, contenido vacío u otro formato. El plazo de OpenRouter para generación era 10 s de lectura/12 s globales, frente a 30/35 s de Gemini.
+
+Se generó una muestra Juampa de 26 s sobre la pregunta escrita de plazo/tarifa y se adjuntó manualmente: audio y enlace de inscripción quedaron Entregados. No se afirma haber escuchado ni interpretado íntegramente la nota original antes de responder. La revisión de su transcripción se comprobará después del despliegue. Otra consulta sobre ICFES recibió una aclaración de continuidad con Cocina, Entregada, sin decidir elegibilidad ni calificar el puntaje. Ambos hilos volvieron a IA.
+
+Tres hilos de comentarios PRE-ICFES recibieron respuestas públicas nuevas, Publicadas en Meta. Un primer privado nuevo quedó Aceptado por el proveedor; eso no acredita entrega/lectura. En otro caso ya existían dos privados aceptados, entrada posterior del contacto y respuestas con recibos Entregados: no se repitió un primer privado. Se envió la actualización confirmada de grupos/inicio por Messenger, Entregada. Se restauraron los seis controles temporales a IA. No se declara atendido todo el histórico de comentarios o mensajes.
+
+## Cambios
+
+- Preguntar por resultados, puntaje o requisito ICFES/Saber 11 no constituye interés en comprar PRE-ICFES. El selector comercial y la recuperación informativa del catálogo excluyen esa coincidencia aislada; el último interés entrante y el origen verificado de campaña conservan su autoridad. Una solicitud explícita de PRE-ICFES o cambio a otro programa sigue funcionando. Instrucción compartida: no juzgar puntajes ni inventar promedios/requisitos individuales.
+- OpenRouter `POST chat/completions` dispone de 30 s de lectura/35 s globales; el resto de llamadas conserva sus plazos. El tramo de respaldos dispone de hasta 90 s y el total de generación deja un margen dentro de la concesión de 180 s del trabajador. El catálogo decide si admite esfuerzo de razonamiento bajo; no se envía un parámetro no soportado.
+- Un resultado terminado por `length` se distingue como `language_reply_truncated`. Puede generar **una** respuesta breve nueva, con el mismo modelo aprobado y el mismo límite de salida, reserva adicional y consulta íntegra. No se reutiliza el texto parcial. Un contrato inválido devuelto puede pasar al siguiente respaldo aprobado. No se repiten envíos de canal, ni se introduce un bucle ilimitado o un modelo no configurado. Un timeout del respaldo conserva su incertidumbre y se detiene.
+- Diagnósticos registra el intento de recuperación sin prompts, respuesta ni secretos. Los códigos distinguen truncamiento, contrato inválido y resultado incompleto. Un contenido inválido ya recibido es fallo conocido, no una falsa entrega ni una incertidumbre de envío. Se conserva el aviso operativo existente de transición de fallo/recuperación sujeto a reglas y destinatarios configurados; no se acredita un correo nuevo de alerta en esta revisión.
+- Las reacciones de WhatsApp conservan emoji y `message_id`. El Inbox cita únicamente el mensaje que coincide en institución, cuenta, identidad e hilo, con referencia externa real. Para eventos históricos cuyo normalizador omitió esos campos, la lectura puede recuperar únicamente el evento correspondiente del recibo original autenticado y cifrado. No cambia mensajes/recibos ni reproduce el webhook. Si falta prueba, muestra detalle no disponible y nunca elige el mensaje más cercano. Las retiradas de reacción se diferencian y una reacción no programa IA. Messenger/Instagram no se declaran integrados con este contrato de reacción de WhatsApp.
+- Las notas con transcripción ya guardada muestran un desplegable, marcado como interpretación automática. Se valida la vinculación al hilo y la huella del archivo con la misma función usada por los agentes; el audio original permanece disponible. Mostrarla no llama de nuevo al modelo.
+
+## Consultas HTTP
+
+Se guardó y recargó la revisión 5 de Límites técnicos: **600 solicitudes por minuto y usuario**, antes 120. No es un límite de saldo/tokens de IA. Se preservaron autenticación, IP/login, guardas de envío, presupuestos de voz y la contabilidad. Los GET continúan coordinados y respetan `429`; no se repiten mutaciones. Esta ampliación evita el umbral anterior bajo navegación normal observada, pero no acredita carga máxima institucional ni ausencia perpetua de 429.
+
+## Validación
+
+213 pruebas backend focalizadas aprobadas, incluidas consultas SQL traducidas y analizadas, selección de programa, turnos, voz, controles de Humano, proveedores y recuperación combinada timeout → truncamiento → JSON completo. Tres pruebas de riesgo comercial usan un mapa antiguo sin tablas de campañas y fallan también en una copia aislada de HEAD `2ef8f73`; se excluyeron de esa selección, sin declarar suite completa verde.
+
+19 pruebas frontend focalizadas aprobadas: 2 para referencia de reacción/transcripción y cita, más 17 de lecturas coordinadas, resiliencia y diagnóstico. La selección amplia tiene dos fallos reproducidos en HEAD `2ef8f73`: texto antiguo esperado para error 503 y modal previo que oculta la explicación de facturación en la prueba. El entorno jsdom de la suite amplia también carece de un ciclo nativo de dialog completo; no se modificó ese entorno ni se acreditó toda la suite. Tipos, ESLint seleccionado, Ruff y build institucional aprobados; aviso histórico de tamaño de bundle conservado.
+
+Publicación y comprobaciones posteriores se registran en `artifacts/live/inbox-response-recovery-20261125.json`. Sin DDL, seeds, servicios nuevos, nuevas claves, cambios de modelos activos ni escrituras SIIE. P13/P19/P21 conservan sus aceptaciones iniciales y P22 no obtiene aceptación comercial por estas correcciones.
+
+Referencia técnica: [OpenRouter: razonamiento y límite de salida](https://openrouter.ai/docs/guides/best-practices/reasoning-tokens). Ocultar razonamiento no evita su consumo ni garantiza una salida completa; por eso la recuperación conserva el tope y solicita una respuesta breve.

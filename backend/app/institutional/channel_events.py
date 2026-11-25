@@ -118,6 +118,7 @@ def bounded_provider(value, depth=0):
         "name",
         "media",
         "context",
+        "reaction", "message_id", "emoji", "action",
         "referral", "source_id", "source_type", "source_url", "headline", "ctwa_clid",
     }
     if depth > 5:

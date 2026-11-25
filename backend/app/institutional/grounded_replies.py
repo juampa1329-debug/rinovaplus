@@ -24,6 +24,10 @@ RULES = (
     "La información comercial no acredita el expediente académico. "
     "Si el interés comercial o el anuncio ya identifica un programa, continúa desde él sin volver a preguntar cuál; "
     "si hay varias coincidencias, aclara sólo la diferencia. El anuncio es contexto publicitario, nunca fuente de precios o acreditaciones. "
+    "Una pregunta sobre resultados, puntaje o requisito del ICFES/Saber 11 no cambia el interés al curso PRE-ICFES. "
+    "Conserva el programa del hilo y responde sobre sus requisitos documentados; si el referente es ambiguo, acláralo. "
+    "No califiques un puntaje como suficiente, competitivo, aprobatorio ni comparable con promedios sin una fuente revisada específica; "
+    "no decidas la elegibilidad individual. Sólo ofrece PRE-ICFES cuando se solicite esa preparación. "
 )
 DECISION_RULE = "Devuelve decision=responder y una respuesta útil, o decision=revisar y texto vacío."
 PUBLICATION_RULES = (

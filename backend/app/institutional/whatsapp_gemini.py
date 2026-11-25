@@ -656,7 +656,9 @@ class Worker:
             observations = raw.get("crm_observations", [])
             no_reply = str(raw.get("decision", "")).strip().casefold() == "esperar"
         except AiError as error:
-            state, code = ("uncertain" if error.status >= 500 else "failed"), error.code
+            known_response = error.code in {"language_reply_truncated", "language_reply_incomplete",
+                "language_reply_invalid_contract", "language_backup_invalid_response"}
+            state, code = ("uncertain" if error.status >= 500 and not known_response else "failed"), error.code
         except HTTPException as error:
             state, code = "abandoned", error.detail
         except ValueError as error:

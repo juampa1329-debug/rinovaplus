@@ -15,6 +15,18 @@ def normalized(value):
     return "".join(c for c in unicodedata.normalize("NFKD", value.lower()) if not unicodedata.combining(c))
 
 
+def admission_question(text):
+    """A Saber score/document question is not a request to buy PRE-ICFES."""
+    value = normalized(text)
+    return (bool(re.search(r"\b(?:icfes|saber\s*11)\b", value))
+            and not re.search(r"\bpre[\s-]*(?:icfes|saber)\b", value)
+            and bool(re.search(r"\b(?:resultados?|puntajes?|requisitos?|exigen?|exigido|necesito|necesita|obligatorio|presente|presentado)\b", value)))
+
+
+def preparatory_program(item):
+    return bool(re.search(r"\bpre[\s-]*(?:icfes|saber)\b", normalized(item["name"])))
+
+
 def relevant_programs(items, profiles, question):
     words = set(re.findall(r"[a-z0-9]+", normalized(question))) - {
         "programa", "programas", "tecnico", "tecnica", "laboral", "auxiliar", "de", "en", "y", "el", "la", "del", "los",
@@ -23,6 +35,8 @@ def relevant_programs(items, profiles, question):
     }
     ranked = []
     for item in items:
+        if admission_question(question) and preparatory_program(item):
+            continue
         profile = profiles.get(item["program_id"], {})
         names = normalized(item["name"] + " " + profile.get("aliases", ""))
         score = len(words & set(re.findall(r"[a-z0-9]+", names)))

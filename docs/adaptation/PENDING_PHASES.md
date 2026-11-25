@@ -1,4 +1,6 @@
-# Fases adicionales pendientes
+#Corrección operativa del 25Nov: contexto ICFES, recuperación de generación, reacciones y transcripción del Inbox; HTTP 600 por usuario guardado y recargado. Atención prioritaria documentada, sin aceptación nueva de P22 ni cambio de porcentajes. [Detalle](INBOX_RESPONSE_RECOVERY_20261125.md); publicación en verificación.
+
+ Fases adicionales pendientes
 
 Corte: 24 de noviembre de 2026. El roadmap original P0–P11 está aceptado al 100% en sus alcances documentados; P12 auxiliar de puesta online está aceptada para PostgreSQL/Meta. Las fases siguientes tienen seguimiento propio y no aportan peso a los 56 criterios originales. P16 ya tiene despliegue y pruebas reales de clave única, aspirantes y estudiantes; la primera página de 25 programas ya se copió localmente; el detalle financiero sigue bloqueado por el productor. La evidencia del18-11 se conserva como historia. Los datos comerciales locales confirmados después no acreditan el detalle remoto de SIIE.
 

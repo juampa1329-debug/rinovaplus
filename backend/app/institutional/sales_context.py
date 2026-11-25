@@ -4,7 +4,7 @@ import json
 import re
 from difflib import SequenceMatcher
 
-from app.institutional.agent_catalog import Catalog, normalized
+from app.institutional.agent_catalog import Catalog, normalized, admission_question, preparatory_program
 from app.institutional.db import institution, rows
 from app.modules.agents.domain import digest, resolve
 from app.modules.ai.infrastructure.providers import AiError
@@ -21,6 +21,8 @@ def matches(programs, profiles, text):
     words = {word for word in re.findall(r"[a-z0-9]+", text) if len(word) >= 3} - STOP
     scores = []
     for p in programs:
+        if admission_question(text) and preparatory_program(p):
+            continue
         names = set(re.findall(r"[a-z0-9]+", normalized(p["name"]))) - STOP
         aliases = [normalized(v.strip()) for v in re.split(r"[,;\n]", profiles.get(p["program_id"], {}).get("aliases", "")) if v.strip()]
         exact_alias = any(len(alias) >= 3 and alias not in STOP and re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text) for alias in aliases)

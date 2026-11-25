@@ -142,6 +142,7 @@ type Message = {
   socialSource?: { kind: string; label: string; temporary: boolean };
   attachments?: Attachment[];
   replyTo?: { id: string; body: string; direction: string };
+  voiceTranscript?: string;
   id: string;
   body: string;
   direction: string;
@@ -1708,6 +1709,11 @@ function Conversation({
             {message.attachments?.map((item) => (
               <MediaDownload key={item.id} attachment={item} />
             ))}
+            {message.voiceTranscript && <details className="inbox-voice-transcript">
+              <summary>Ver transcripción automática</summary>
+              <p>{message.voiceTranscript}</p>
+              <small>Interpretación automática; comprueba el audio si hay dudas.</small>
+            </details>}
             <footer className="inbox-bubble-footer">
               <small>
                 <DateText value={message.createdAt} />

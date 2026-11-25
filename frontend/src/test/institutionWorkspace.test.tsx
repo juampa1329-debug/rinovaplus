@@ -182,6 +182,7 @@ let serverRevision = "1";
 let failedDelivery = false;
 let discardedReply = false;
 let quotedReply = false;
+let reactionAndTranscript = false;
 let threadMode = "human";
 let controlEpoch: string | undefined;
 let emptyInbox = false;
@@ -233,6 +234,7 @@ beforeEach(() => {
   failedDelivery = false;
   discardedReply = false;
   quotedReply = false;
+  reactionAndTranscript = false;
   threadMode = "human";
   controlEpoch = undefined;
   emptyInbox = false;
@@ -313,7 +315,12 @@ beforeEach(() => {
               direction: "incoming",
               createdAt: "2026-10-26T12:00:00Z",
               sequence: "1",
+              ...(reactionAndTranscript ? { voiceTranscript: "¿Hasta cuándo puedo inscribirme?" } : {}),
             },
+            ...(reactionAndTranscript ? [{ id: "reaction", body: "Reaccionó ❤️", direction: "incoming",
+              createdAt: "2026-10-26T12:02:00Z", sequence: "4", replyTo: {
+                id: "original-reaction-target", body: "La respuesta exacta señalada", direction: "outgoing",
+              } }] : []),
             ...(quotedReply
               ? [
                   {
@@ -481,6 +488,18 @@ function open(page = "clients", actions = session.actions) {
     showWorkspace: (shownPage: string | null) => view.rerender(tree(shownPage)),
   };
 }
+it("shows a reaction with its exact source and makes the automatic transcript available on demand", async () => {
+  reactionAndTranscript = true;
+  open("inbox");
+  await select();
+  expect(await screen.findByText("Reaccionó ❤️")).toBeVisible();
+  expect(screen.getByLabelText("Mensaje citado")).toHaveTextContent("La respuesta exacta señalada");
+  fireEvent.click(screen.getByText("Ver transcripción automática"));
+  expect(screen.getByText("¿Hasta cuándo puedo inscribirme?")).toBeVisible();
+  expect(screen.getByText(/Interpretación automática; comprueba el audio/)).toBeVisible();
+  expect(calls.filter(c => c.method !== "GET" && !c.path.endsWith("/read"))).toHaveLength(0);
+});
+
 it("shows a quote only on the reply part that includes the source reference", async () => {
   quotedReply = true;
   open("inbox");

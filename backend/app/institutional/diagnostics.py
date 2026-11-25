@@ -20,6 +20,8 @@ def projection(value):
             "masterclass_context": "opciones_relacionadas_masterclass" in data.get("contextComponents", {}),
             "attempts": [{k: a.get(k) for k in ("provider", "model", "role", "state", "code")}
                          for a in trace.get("attempts", [])[:4] if isinstance(a, dict)],
+            "completion_recoveries": [{k: a.get(k) for k in ("provider", "model", "reason", "state", "code")}
+                                      for a in trace.get("completion_recoveries", [])[:1] if isinstance(a, dict)],
             "conversation_id": str(data.get("conversation") or "")[:36]}
 
 

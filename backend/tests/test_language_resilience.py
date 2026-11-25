@@ -159,7 +159,7 @@ def test_human_or_epoch_change_after_catalog_stops_before_reservation_and_post()
     assert state.calls == [("GET", "/api/v1/models/user")] and not state.reservations
 
 
-def test_budget_failure_blocks_backup_and_truncated_response_is_not_retried():
+def test_budget_failure_blocks_backup_and_truncation_has_only_one_reserved_recovery():
     state = setup()
     def reserve(*_):
         raise HTTPException(429, "budget_exhausted")
@@ -169,9 +169,12 @@ def test_budget_failure_blocks_backup_and_truncated_response_is_not_retried():
     assert all(method == "GET" for method, _ in state.calls)
     state = setup(finish="length")
     state.saved["routes"].append({**ROUTE, "model": "second"})
-    with pytest.raises(AiError, match="language_backup_invalid_response"):
+    with pytest.raises(AiError, match="language_reply_truncated"):
         run(state)
-    assert sum(method == "POST" for method, _ in state.calls) == 1
+    assert sum(method == "POST" for method, _ in state.calls) == 2
+    assert len(state.reservations) == 2
+    assert len(state.trace["completion_recoveries"]) == 1
+    assert state.trace["completion_recoveries"][0]["state"] == "failed"
 
 
 def test_disabled_policy_and_duplicate_or_batch_models():

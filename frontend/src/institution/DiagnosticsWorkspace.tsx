@@ -16,6 +16,7 @@ type Entry = {
   provider?: string;
   model?: string;
   fallback_used?: boolean;
+  completion_recoveries?: { provider: string; model: string; reason: string; state: string; code?: string }[];
   context_changes?: string[];
   own_projection_context_refreshed?: boolean;
   campaign_entry_context?: boolean;
@@ -198,6 +199,9 @@ export function DiagnosticsWorkspace() {
                       {a.provider} · {a.model} · {a.state} {a.code}
                     </p>
                   ))}
+                  {item.completion_recoveries?.map((a, i) => <p key={`recovery-${i}`}>
+                    Recuperación de salida truncada · {a.provider} · {a.model} · {a.state} {a.code}
+                  </p>)}
                 </details>
               </article>
             </li>
