@@ -13,10 +13,21 @@ Los registros de producción previos al cambio muestran `55P03` al adquirir el b
 
 ## PRE-ICFES
 
-Ficha local revisión **6** guardada en la UI: tarifa regular **1.600.000 pesos**, **50%** de descuento de contado (**800.000 pesos**) hasta el **16/12/2026**; comienzo **13/02/2027** confirmado. Conserva G1 sábado mañana, G2 sábado tarde y G3 domingo mañana, 120 horas, plataforma/tutor/materiales y formulario oficial. La financiación mantiene abono y vigencia propios del 15/12/2026 y tres cuotas de 220.000; la instrucción recibida cambia la vigencia del descuento de contado, no autoriza inferir cambios en ese plan.
+Ficha local revisión **7** guardada en la UI: tarifa regular **1.600.000 pesos**, **50%** de descuento de contado (**800.000 pesos**) hasta el **16/12/2026**; comienzo **13/02/2027** confirmado. Conserva G1 sábado mañana, G2 sábado tarde y G3 domingo mañana, 120 horas, plataforma/tutor/materiales y formulario oficial. La financiación mantiene abono y vigencia propios del 15/12/2026 y tres cuotas de 220.000; la instrucción recibida cambia la vigencia del descuento de contado, no autoriza inferir cambios en ese plan.
 
 ## Validación y límites del corte preparado
 
 183 pruebas backend focalizadas pasan, seis excluidas reproducen el mismo fallo en HEAD previo `4cd2b8d`: un caso de contexto grande, una expectativa antigua de 34 guías frente a 37 y cuatro dobles de Cursor antiguos. Ruff pasa. No se declara suite completa verde. Pruebas nuevas cubren contención antes del guardián y en el guardián, un único envío posterior, liberación de reserva, fallo/timeout posterior al transporte, media, cambios de autoridad/contexto y las fechas dentro de una pregunta financiera.
 
 Publicación y observación del nuevo diagnóstico aún pendientes en este corte. No acredita todo el histórico atendido, SLA, carga máxima, entrega perpetua ni nuevas aceptaciones de fases. Sin DDL, seeds, nuevos servicios, cambios de modelos o escrituras SIIE.
+
+
+## Publicación y comprobación posterior
+
+`f19cd38` publicado en backend `0u2vyjo9j5ymlluvsgfaosgh` (**Success**, 4m25s) y frontend `olik5czk0vq5l4aebwt2kdml` (**Success**, 25s). La muestra de logs nueva conserva esperas 55P03 durante el rollout 14:54:24–14:54:58 UTC; no se atribuyen al proveedor de IA. Los nueve procesos figuran **Al día** a las 09:57:49 Bogotá, sin trabajos de salida en queued/sending en ese corte. No implica que el histórico incierto o fallido esté resuelto.
+
+Se localizaron otros dos turnos con el mismo `storage_busy`, de las 09:28 y 09:29: se enviaron dos orientaciones nuevas, ambas **Entregado**, y se restauró IA en ambos hilos. Total de este trabajo: cuatro mensajes entregados en tres hilos, sin repetir las colas antiguas. La revisión administrativa de últimas entradas sin operación de IA devolvió cero elegibles; ese filtro no incluye operaciones fallidas ni inciertas.
+
+Prueba nativa aislada del especialista PRE-ICFES con Sonnet4.6 y un historial ficticio con fecha antigua/año desconocido: responde tarifa regular1.600.000, descuento50%800.000 hasta16Dic2026 e inicio13Feb2027. Mantiene el alcance separado de la financiación. 16.784 tokens de entrada,507 de salida,20.721ms; estimación USD0,057957. No escribió CRM, no envió mensajes y no cambió el agente activo. La revisión7 retira expresiones internas sobre el propietario de la presentación, conservando los hechos y su año.
+
+61 pruebas adicionales de PostgreSQL/operación/seguimientos/fechas pasan, con solapamientos respecto de la selección anterior. El frontend añade recuperación coalescida de hasta dos GET adicionales (pausas1s/3s) sólo para storage_busy; mantiene429, permisos y mutaciones sin repetición. Una espera acreditada de salida se muestra **Esperando al servidor**, no como fallo ni invitación a reenviar. 15 pruebas frontend, tipos, ESLint y build institucional pasan; aviso histórico de bundle grande. La publicación de esta última ampliación visual se comprueba después del siguiente push.

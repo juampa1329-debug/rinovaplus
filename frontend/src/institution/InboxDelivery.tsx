@@ -7,6 +7,16 @@ import {
 } from "./ErrorFeedback";
 
 const details: Record<string, [string, string, string]> = {
+  outbound_storage_wait: [
+    "El envío espera al servidor",
+    "El mensaje sigue en cola. RinovaPlus volverá a comprobar la conversación antes de enviarlo.",
+    "No hace falta volver a enviarlo; consulta su estado en unos segundos.",
+  ],
+  storage_busy: [
+    "La operación se detuvo al esperar la base de datos",
+    "El servidor estaba procesando otras operaciones. Este registro conserva el resultado de aquel intento.",
+    "Consulta el último mensaje y el diagnóstico antes de preparar una respuesta nueva; no repitas un envío sin confirmar.",
+  ],
   broadcast_template_refresh_required: [
     "Actualiza la verificación de la plantilla",
     "El mensaje sigue en cola porque hace falta comprobar de nuevo su estado actual en Meta.",
@@ -202,6 +212,14 @@ export function MessageDelivery({
   unsentDraft?: boolean;
 }) {
   const report = useContext(ErrorFeedbackContext);
+  if (state === "queued" && reason === "outbound_storage_wait") {
+    return (
+      <small className="inbox-delivery" data-state="queued"
+        title="El mensaje se conserva en cola y se comprobará de nuevo antes de enviarlo.">
+        Esperando al servidor
+      </small>
+    );
+  }
   if (state === "cancelled" && unsentDraft) {
     return (
       <small className="inbox-delivery" data-state="discarded"

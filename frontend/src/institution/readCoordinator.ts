@@ -46,23 +46,24 @@ export function coordinatedRead<T>(
   return promise;
 }
 async function recoverBusyRead<T>(load: () => Promise<T>): Promise<T> {
-  try {
-    return await load();
-  } catch (error) {
-    if (
-      !(error instanceof Error) ||
-      !("status" in error) ||
-      error.status !== 503 ||
-      !("detail" in error) ||
-      error.detail !== "storage_busy"
-    )
-      throw error;
-    // Only the explicitly identified pre-work lock contention is safe to
-    // recover here. Coalescing includes the pause and one final GET. Mutations,
-    // generic 503s, denied access and uncertain provider effects never enter.
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (readRetrySeconds()) throw error;
-    return load();
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await load();
+    } catch (error) {
+      if (
+        attempt >= 2 ||
+        !(error instanceof Error) ||
+        !("status" in error) ||
+        error.status !== 503 ||
+        !("detail" in error) ||
+        error.detail !== "storage_busy"
+      )
+        throw error;
+      // One coalesced GET, at most two additional reads across a short burst.
+      // No mutation, generic storage failure or uncertain provider effect enters.
+      await new Promise((resolve) => setTimeout(resolve, attempt === 0 ? 1000 : 3000));
+      if (readRetrySeconds()) throw error;
+    }
   }
 }
 export function foregroundPolling() {

@@ -1,3 +1,5 @@
+Corte25Nov: `f19cd38` publicado; PRE-ICFES y tres hilos comprobados. Mejora de espera visual/GET en preparación. [Evidencia y límites](INBOX_QUEUE_STORAGE_WAIT_20261125.md); porcentajes conservados.
+
 Corrección operativa preparada 25Nov: cola ante espera local previa al proveedor, fechas de PRE-ICFES y atención prioritaria. [Detalle](INBOX_QUEUE_STORAGE_WAIT_20261125.md). Publicación/observación pendientes; porcentajes y aceptaciones conservados.
 
 #Corrección operativa del 25Nov: contexto ICFES, recuperación de generación, reacciones y transcripción del Inbox; HTTP 600 por usuario guardado y recargado. Atención prioritaria documentada, sin aceptación nueva de P22 ni cambio de porcentajes. [Detalle](INBOX_RESPONSE_RECOVERY_20261125.md); bd830ba publicado y comprobado; seis respuestas públicas, reacción real y transcripciones verificadas. Hora de entrada/días de Turismo y un privado rechazado por Meta permanecen explícitos en el informe, sin nuevo intento.

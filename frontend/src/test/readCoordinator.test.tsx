@@ -34,7 +34,7 @@ it.each(["institution", "agents"])(
   },
 );
 
-it("stops busy recovery after a single extra GET and never repeats a mutation", async () => {
+it("bounds busy recovery to two extra GETs and never repeats a mutation", async () => {
   vi.useFakeTimers();
   vi.setSystemTime(10_000);
   const fetcher = vi
@@ -43,11 +43,26 @@ it("stops busy recovery after a single extra GET and never repeats a mutation", 
   const read = send("still-busy").catch((error: unknown) => error);
   await vi.advanceTimersByTimeAsync(5000);
   expect(await read).toMatchObject({ status: 503, detail: "storage_busy" });
-  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(fetcher).toHaveBeenCalledTimes(3);
   await expect(
     send("send-message", "POST", { body: "fixture" }),
   ).rejects.toMatchObject({ detail: "storage_busy" });
   await vi.advanceTimersByTimeAsync(5000);
+  expect(fetcher).toHaveBeenCalledTimes(4);
+});
+
+it("coalesces readers through a burst of two known lock waits", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(16_000);
+  const fetcher = vi.spyOn(globalThis, "fetch")
+    .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
+    .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
+    .mockResolvedValue(response({ messages: ["current"] }));
+  const reads = Promise.all([send("burst-busy"), send("burst-busy")]);
+  await vi.advanceTimersByTimeAsync(3999);
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  await vi.advanceTimersByTimeAsync(1);
+  expect(await reads).toEqual([{ messages: ["current"] }, { messages: ["current"] }]);
   expect(fetcher).toHaveBeenCalledTimes(3);
 });
 
