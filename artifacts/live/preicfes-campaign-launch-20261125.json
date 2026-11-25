@@ -1,0 +1,23 @@
+{
+  "cut_utc": "2026-11-25T20:25:20.171306Z",
+  "code_commit": "77c6524",
+  "backend": {"deployment": "k73kwhp7watoeq16jmfrh0il", "health": "healthy", "rollout": "completed", "duration_seconds": 263},
+  "frontend": {"commit": "77c6524", "status": "Success", "duration_seconds": 43},
+  "template": {"name": "cbn_preicfes_promocion_juan_pablo_v1", "language": "es", "meta_status": "APPROVED"},
+  "main": {"status": "running", "revision": 3, "eligible": 100, "excluded": 0, "recipients": 100, "states": {"sent": 1, "delivered": 1, "accepted": 1, "prepared": 97}, "max_attempts": 1},
+  "alternate": {"status": "running", "revision": 1, "eligible": 2, "excluded": 0, "recipients": 2, "states": {"prepared": 2}, "max_attempts": 0},
+  "unique_crm_contacts": 100,
+  "unique_phone_destinations": 102,
+  "held_incomplete_phone": 1,
+  "owner_test_excluded_from_commercial_campaigns": true,
+  "account_cadence": {"enabled": true, "maximum_24h": 1000, "minimum_interval_seconds": 30},
+  "consent_valid_until_local": "2026-11-25T23:59:00-05:00",
+  "sent_stage_verified_in_live_modal": "Seguimiento",
+  "commercial_full_delivery_confirmed": false,
+  "alternate_delivery_confirmed": false,
+  "commercial_ai_response_confirmed": false,
+  "owner_reported_test_ai_response": true,
+  "validation": {"backend_selected_passed": 161, "frontend_selected_passed": 33, "new_sql_parsed": 9, "types": "passed", "changed_frontend_eslint": "passed", "new_and_modified_scoped_ruff": "passed", "institutional_build": "passed_with_historical_bundle_warning"},
+  "scope": {"ddl": false, "seeds": false, "new_services": false, "siie_business_writes": false, "model_changes": false, "new_phase_acceptance": false},
+  "private_evidence": ".local/preicfes-import-20261125/"
+}
