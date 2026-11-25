@@ -1,0 +1,370 @@
+.institution-login {
+  --access-canvas: #f5f7f2;
+  --access-surface: #ffffff;
+  --access-field: #f5f8f4;
+  --access-ink: #12343b;
+  --access-muted: #52666b;
+  --access-line: #c5d1c9;
+  --access-control: #8b9f96;
+  --access-accent: #46610c;
+  --access-active: #edf7ce;
+  --access-glow: #dcebd242;
+  --access-shadow: 0 8px 28px #12343b08;
+  --focus: #46610c;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem clamp(1.25rem, 4.5vw, 5rem) 1.5rem;
+  color: var(--access-ink);
+  background: radial-gradient(ellipse at 30% 66%, var(--access-glow), transparent 46%), var(--access-canvas);
+  font-family: Manrope, "Segoe UI", system-ui, sans-serif;
+}
+.institution-login[data-access-theme="dark"] {
+  --access-canvas: #12343b;
+  --access-surface: #0f282c;
+  --access-field: #183c40;
+  --access-ink: #f5f7f2;
+  --access-muted: #bed0cc;
+  --access-line: #426368;
+  --access-control: #68888a;
+  --access-accent: #c4f04d;
+  --access-active: #2b4540;
+  --access-glow: #28676b55;
+  --access-shadow: 0 10px 32px #06191c1a;
+  --focus: #c4f04d;
+}
+.institution-login .access-header,
+.institution-login .access-main,
+.institution-login .access-copyright {
+  width: min(100%, 90rem);
+  margin-inline: auto;
+}
+.institution-login .access-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--access-line);
+}
+.institution-login .access-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: clamp(1.5rem, 2.3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+}
+.institution-login .access-brand-mark {
+  width: 3rem;
+  aspect-ratio: 395 / 339;
+  background: var(--access-ink);
+  mask: url("../assets/rinovaplus.svg") center / contain no-repeat;
+}
+.institution-login[data-access-theme="dark"] .access-brand-mark {
+  background: #c4f04d;
+}
+.institution-login .access-wordmark-plus { color: var(--access-accent); }
+.institution-login .access-appearance {
+  display: inline-flex;
+  border: 1px solid var(--access-line);
+  border-radius: 999px;
+  padding: 2px;
+}
+.institution-login .access-appearance button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--access-ink);
+  font-size: 0.85rem;
+}
+.institution-login .access-appearance button[aria-pressed="true"] {
+  border-color: var(--access-accent);
+  background: var(--access-active);
+}
+.institution-login .access-appearance button:hover { background: var(--access-active); }
+.institution-login .access-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  padding-block: clamp(2.5rem, 5vh, 4.5rem);
+}
+.institution-login .access-intro { min-width: 0; }
+.institution-login .access-eyebrow {
+  margin: 0 0 1rem;
+  color: var(--access-muted);
+  font-size: clamp(0.85rem, 1.15vw, 1rem);
+}
+.institution-login .access-tagline {
+  margin: 0;
+  font-size: clamp(2.8rem, 4.7vw, 5rem);
+  font-weight: 550;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+}
+.institution-login .access-description {
+  margin: 1.25rem 0 0;
+  color: var(--access-muted);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.6;
+}
+.institution-login .access-connections {
+  position: relative;
+  width: min(100%, 38rem);
+  aspect-ratio: 600 / 350;
+  margin-top: 1.1rem;
+}
+.institution-login .access-connections-lines {
+  width: 100%;
+  height: 100%;
+  stroke: var(--access-control);
+  stroke-width: 1.2;
+}
+.institution-login .access-orbit { stroke: var(--access-line); opacity: 0.5; }
+.institution-login .access-orbit-dotted { stroke-dasharray: 1 12; }
+.institution-login .access-signal { fill: #c4f04d; stroke: none; }
+.institution-login .access-agent {
+  position: absolute;
+  left: 45%;
+  top: 54.3%;
+  transform: translate(-50%, -50%);
+  width: 25%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px solid #426368;
+  border-radius: 50%;
+  background: #12343b;
+  box-shadow: 0 0 0 9px var(--access-glow);
+  color: #f5f7f2;
+  font-size: clamp(0.6rem, 0.95vw, 0.85rem);
+}
+.institution-login .access-agent-mark { position: relative; width: 52%; }
+.institution-login .access-agent-mark img { display: block; width: 100%; }
+.institution-login .access-agent-mark > span {
+  position: absolute;
+  top: -0.3em;
+  right: -0.5em;
+  font-size: 1.8em;
+  color: #c4f04d;
+}
+.institution-login .access-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--access-control);
+  border-radius: 999px;
+  background: var(--access-surface);
+  white-space: nowrap;
+  font-size: clamp(0.65rem, 1.05vw, 0.9rem);
+}
+.institution-login .access-node svg { width: 1.3em; height: 1.3em; color: var(--access-accent); flex: none; }
+.institution-login .access-node-channels { left: 12.5%; top: 46.6%; }
+.institution-login .access-node-memory { left: 45%; top: 8.5%; }
+.institution-login .access-node-knowledge { left: 81%; top: 40.6%; }
+.institution-login .access-node-team { left: 79%; top: 83.4%; }
+.institution-login .access-flow-signal {
+  fill: var(--access-accent);
+  stroke: var(--access-canvas);
+  stroke-width: 1;
+}
+.institution-login .access-node::after,
+.institution-login .access-agent::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 1px solid var(--access-accent);
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  animation: access-flow-node 8s linear infinite;
+}
+.institution-login .access-node-memory::after { animation-delay: 1.6s; }
+.institution-login .access-node-knowledge::after { animation-delay: 3.2s; }
+.institution-login .access-node-team::after { animation-delay: 6s; }
+.institution-login .access-agent::after { animation-name: access-flow-agent; }
+.institution-login .access-flow[data-flow-paused="true"] .access-node::after,
+.institution-login .access-flow[data-flow-paused="true"] .access-agent::after { animation-play-state: paused; }
+.institution-login .access-flow-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--access-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--access-muted);
+  font-size: 0.75rem;
+}
+.institution-login .access-flow-control svg { width: 1rem; height: 1rem; }
+@keyframes access-flow-node {
+  0%, 4%, 24%, 100% { opacity: 0; }
+  8%, 18% { opacity: 0.8; }
+}
+@keyframes access-flow-agent {
+  0%, 18%, 28%, 38%, 48%, 58%, 76%, 100% { opacity: 0; }
+  22%, 42%, 64%, 68% { opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .institution-login .access-flow-signal,
+  .institution-login .access-flow-control { display: none; }
+  .institution-login .access-node::after,
+  .institution-login .access-agent::after { animation: none; }
+}
+.institution-login .access-form {
+  width: 100%;
+  max-width: 36rem;
+  justify-self: end;
+  min-width: 0;
+  padding: clamp(1.5rem, 3.3vw, 3rem);
+  border: 1px solid var(--access-line);
+  border-radius: 1.5rem;
+  background: var(--access-surface);
+  box-shadow: var(--access-shadow);
+}
+.institution-login .access-card-label {
+  margin: 0 0 1rem;
+  color: var(--access-muted);
+  font-size: 0.85rem;
+}
+.institution-login .access-form h1 {
+  margin: 0 0 0.5rem;
+  color: var(--access-ink);
+  font-size: clamp(1.65rem, 2.3vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.2;
+}
+.institution-login .access-form > p:not(.access-card-label) {
+  margin: 0 0 1.8rem;
+  color: var(--access-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.institution-login .access-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.institution-login .access-form .field { margin-bottom: 1.15rem; }
+.institution-login .access-form .field > label { font-size: 0.9rem; font-weight: 550; }
+.institution-login .access-form .field input {
+  min-height: 3.4rem;
+  border-color: var(--access-control);
+  border-radius: 0.75rem;
+  padding: 0.8rem 1rem;
+  background: var(--access-field);
+  color: var(--access-ink);
+  font-size: 1rem;
+}
+.institution-login .access-form .field input::placeholder { color: var(--access-muted); }
+.institution-login .access-password { position: relative; }
+.institution-login .access-form .access-password .field input { padding-right: 3.5rem; }
+.institution-login .access-password-toggle {
+  position: absolute;
+  right: 0.35rem;
+  top: 2.1rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--access-ink);
+}
+.institution-login .access-password-toggle svg { width: 1.35rem; height: 1.35rem; }
+.institution-login .access-form .access-forgot {
+  display: block;
+  width: fit-content;
+  margin: -0.65rem 0 0.8rem auto;
+  padding-inline: 0;
+}
+.institution-login .access-form .button.quiet {
+  color: var(--access-ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.institution-login .access-form .button.quiet:hover { background: var(--access-active); }
+.institution-login .access-form .access-submit {
+  position: relative;
+  width: 100%;
+  min-height: 3.5rem;
+  margin-top: 0.5rem;
+  padding-inline: 2.8rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  background: #c4f04d;
+  color: #12343b;
+  box-shadow: none;
+}
+.institution-login .access-form .access-submit:hover:not(:disabled) { background: #b4e23a; }
+.institution-login .access-submit-plus { position: absolute; right: 1.5rem; font-size: 1.6rem; font-weight: 400; }
+.institution-login .access-form .access-redeem {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-top: 1.6rem;
+  padding: 1.3rem 0 0;
+  border-top: 1px solid var(--access-line);
+  border-radius: 0;
+  text-align: left;
+}
+.institution-login .access-redeem svg { width: 1.5rem; height: 1.5rem; flex: none; color: var(--access-accent); }
+.institution-login .access-form .button:disabled,
+.institution-login .access-password-toggle:disabled { opacity: 0.6; cursor: not-allowed; }
+.institution-login .access-copyright {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--access-line);
+  color: var(--access-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .institution-login .access-main { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; padding-block: 2rem; }
+  .institution-login .access-intro { text-align: center; }
+  .institution-login .access-tagline { font-size: clamp(2.1rem, 6vw, 3rem); }
+  .institution-login .access-tagline br { display: none; }
+  .institution-login .access-description,
+  .institution-login .access-flow { display: none; }
+  .institution-login .access-node::after,
+  .institution-login .access-agent::after { animation: none; }
+  .institution-login .access-eyebrow { margin-bottom: 0.5rem; }
+  .institution-login .access-form { justify-self: center; max-width: 32rem; }
+}
+@media (max-width: 540px) {
+  .institution-login { padding-inline: 1rem; }
+  .institution-login .access-header { justify-content: center; }
+  .institution-login .access-appearance { width: 100%; max-width: 21rem; }
+  .institution-login .access-appearance button { flex: 1; }
+  .institution-login .access-main { padding-block: 1.5rem; gap: 1.25rem; }
+  .institution-login .access-eyebrow { font-size: 0.75rem; }
+  .institution-login .access-tagline { font-size: 1.8rem; }
+  .institution-login .access-form { padding: 1.5rem 1.25rem; }
+  .institution-login .access-copyright { text-align: center; justify-content: center; }
+}

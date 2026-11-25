@@ -27,6 +27,22 @@ La URL es exacta: sin parámetros de consulta ni claves en la dirección. No req
 
 Emitir **un evento por persona y cambio confirmado**, después del commit de SIIE. Una lista se descompone en eventos individuales. No enviar arrays de personas, documentos adjuntos, información médica, contraseñas, datos de pago ni el formulario completo. Para recuperar históricos debe acordarse una lectura paginada o una emisión inicial controlada con identificadores estables.
 
+## Dónde guardar el secreto en SIIE
+
+El secreto pertenece a la configuración privada del **servidor que ejecuta el emisor del webhook**. No es un campo del formulario, una contraseña de estudiante ni un parámetro de la API de inscripción. RinovaPlus no conoce ni modifica la configuración interna del servidor SIIE.
+
+Preferentemente, configurar una variable de entorno de servidor llamada `SIIE_WEBHOOK_SECRET` y leerla desde el proceso emisor:
+
+```csharp
+string webhookSecret = Environment.GetEnvironmentVariable("SIIE_WEBHOOK_SECRET");
+if (string.IsNullOrWhiteSpace(webhookSecret))
+    throw new InvalidOperationException("Falta configurar la firma del webhook.");
+```
+
+Si SIIE usa ASP.NET Framework y su mecanismo privado habitual es `web.config`, el desarrollador puede usar `appSettings` en el servidor, con el valor entregado por canal privado, y leerlo con `System.Configuration.ConfigurationManager.AppSettings["SIIE_WEBHOOK_SECRET"]`. No añadir el valor real al repositorio ni a un archivo descargable desde el sitio. El mecanismo elegido debe estar disponible para el proceso que despacha la outbox; si cambia su entorno, reiniciar o reciclar ese proceso según el alojamiento.
+
+En **Coolify → backend RinovaPlus → Environment Variables**, el titular debe guardar exactamente el mismo valor como `SIIE_WEBHOOK_SECRET`, sólo Runtime y sin Build time. Después desplegar el backend y comprobar el panel de preparación antes de habilitar la recepción. La clave actual `SIIE_API_TOKEN` no se reemplaza. El emisor envía únicamente la firma calculada en `X-SIIE-Signature`, nunca el secreto.
+
 ## Firma
 
 Encabezados únicos:

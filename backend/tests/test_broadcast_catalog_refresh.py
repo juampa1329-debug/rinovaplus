@@ -1,8 +1,6 @@
-import ast
 import json
 import re
 from contextlib import contextmanager
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -287,24 +285,14 @@ def test_template_preview_uses_frozen_header_parameters_and_plain_button_labels(
 def test_new_queries_translate_and_parse_as_postgres(harness):
     parse = pytest.importorskip("pglast").parse_sql
     from app.institutional.postgres_dialect import postgres_sql
+    from app.institutional.broadcast_report import projection
 
     harness.worker.once()
-    tree = ast.parse(
-        Path(refresh.__file__).with_name("broadcasts.py").read_text(encoding="utf-8")
-    )
-    service = next(
-        n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Broadcasts"
-    )
-    method = next(
-        n for n in service.body if isinstance(n, ast.FunctionDef) and n.name == "report"
-    )
-    base = next(
-        ast.literal_eval(n.value)
-        for n in ast.walk(method)
-        if isinstance(n, ast.Assign)
-        and any(isinstance(t, ast.Name) and t.id == "base" for t in n.targets)
-    )
-    for query in [harness.queries[0], base + "SELECT * FROM filtered"]:
+    for query in [
+        harness.queries[0],
+        projection() + "SELECT * FROM filtered",
+        projection(materialized=True) + "SELECT * FROM filtered",
+    ]:
         tables = {
             t: "dbo." + t.replace(".", "_")
             for t in re.findall(

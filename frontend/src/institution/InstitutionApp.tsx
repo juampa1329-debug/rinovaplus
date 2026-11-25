@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 import { Button, Field, Notice, PageHeading, SelectField } from "../shared/ui";
 import { useTheme } from "../shared/theme";
 import { RuntimeContext, featureNames } from "../shared/runtimeCapabilities";
@@ -45,6 +45,7 @@ import { BrandMark } from "../shared/BrandMark";
 import { Icon } from "../shared/Icon";
 import { Dashboard } from "./Dashboard";
 import { SiieWorkspace } from "./SiieWorkspace";
+import { AccessLayout } from "./AccessLayout";
 
 const sections = [
   ["overview", "Dashboard"],
@@ -191,49 +192,6 @@ function ProductBrand() {
   );
 }
 
-function AccessLayout({ children }: { children: ReactNode }) {
-  const theme = useTheme();
-  return (
-    <main className="institution-login">
-      <div className="access-brand-panel">
-        <div className="institution-brand">
-          <ProductBrand />
-        </div>
-        <div className="access-art" aria-hidden="true">
-          <BrandMark width={224} />
-        </div>
-        <p className="access-tagline">La fuerza de conectar.</p>
-      </div>
-      <div className="access-content">
-        <div className="access-appearance">
-          <SelectField
-            id="access-theme"
-            label="Apariencia"
-            value={theme.preference}
-            options={[
-              { value: "system", label: "Sistema" },
-              { value: "dark", label: "Oscura" },
-              { value: "light", label: "Clara" },
-            ]}
-            onChange={(event) =>
-              theme.chooseTheme(
-                event.target.value as "dark" | "light" | "system",
-              )
-            }
-          />
-        </div>
-        <section className="access-form" aria-labelledby="access-title">
-          {children}
-        </section>
-        <footer className="access-copyright">
-          © 2026. Software desarrollado por la Corporación Bolivariana del Norte
-          - CBN.
-        </footer>
-      </div>
-    </main>
-  );
-}
-
 function AccessScreen({
   accessLink,
   initialized,
@@ -251,7 +209,8 @@ function AccessScreen({
     [name, setName] = useState(""),
     [token, setToken] = useState(resetToken),
     [challenge, setChallenge] = useState(""),
-    [code, setCode] = useState("");
+    [code, setCode] = useState(""),
+    [showPassword, setShowPassword] = useState(false);
   useEffect(() => {
     if (resetToken) window.history.replaceState(null, "", window.location.pathname + window.location.search + "#/access/redeem");
   }, [resetToken]);
@@ -266,12 +225,12 @@ function AccessScreen({
               ? "Recupera tu acceso"
               : mode === "redeem"
               ? "Activa o recupera tu cuenta"
-              : "Inicia sesión"}
+              : "Bienvenido de nuevo"}
       </h1>
       <p>
         {mode === "bootstrap"
           ? "Crea la primera cuenta de administración con el código privado de configuración."
-          : mode === "redeem" ? "Crea tu contraseña personal para activar o recuperar el acceso. El enlace sólo puede usarse una vez y vence en una hora." : "Accede con tu cuenta institucional para continuar."}
+          : mode === "redeem" ? "Crea tu contraseña personal para activar o recuperar el acceso. El enlace sólo puede usarse una vez y vence en una hora." : "Inicia sesión en tu espacio de trabajo."}
       </p>
       {task.notices}
       <form
@@ -291,6 +250,7 @@ function AccessScreen({
                 });
                 setToken("");
                 setPassword("");
+                setShowPassword(false);
                 setCode("");
                 window.history.replaceState(null, "", "/#/access");
                 setMode("login");
@@ -324,9 +284,11 @@ function AccessScreen({
               ) {
                 setChallenge(String(result.challenge_token));
                 setPassword("");
+                setShowPassword(false);
                 setCode("");
               } else {
                 setPassword("");
+                setShowPassword(false);
                 setToken("");
                 setCode("");
                 accepted(result);
@@ -359,6 +321,7 @@ function AccessScreen({
                   label="Correo"
                   type="email"
                   autoComplete="username"
+                  placeholder="nombre@institucion.edu.co"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
@@ -390,10 +353,10 @@ function AccessScreen({
                   onChange={(event) => setToken(event.target.value)}
                 />
               )}
-              {mode !== "recover" && <Field
+              {mode !== "recover" && <div className="access-password"><Field
                 id="login-password"
                 label={mode === "redeem" ? "Nueva contraseña" : "Contraseña"}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 autoComplete={
                   mode === "login" ? "current-password" : "new-password"
                 }
@@ -403,7 +366,21 @@ function AccessScreen({
                 value={password}
                 hint={mode !== "login" ? "De 15 a 128 caracteres." : undefined}
                 onChange={(event) => setPassword(event.target.value)}
-              />}
+              /><button
+                className="access-password-toggle"
+                type="button"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                aria-pressed={showPassword}
+                aria-controls="login-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                  {showPassword && <path d="m3 3 18 18" />}
+                </svg>
+              </button></div>}
+              {initialized && mode === "login" && <Button className="access-forgot" variant="quiet" onClick={() => { setPassword(""); setShowPassword(false); setMode("recover"); }}>Olvidé mi contraseña</Button>}
               {mode === "redeem" && (
                 <Field
                   id="redeem-code"
@@ -415,7 +392,7 @@ function AccessScreen({
               )}
             </>
           )}
-          <Button type="submit">
+          <Button type="submit" className="access-submit">
             {task.busy
               ? "Comprobando…"
               : challenge
@@ -427,24 +404,29 @@ function AccessScreen({
                     : mode === "redeem"
                     ? "Guardar contraseña"
                     : "Iniciar sesión"}
+            {!task.busy && !challenge && mode === "login" && <span className="access-submit-plus" aria-hidden="true">+</span>}
           </Button>
         </fieldset>
       </form>
-      {initialized && mode === "login" && <Button variant="quiet" onClick={() => { setPassword(""); setMode("recover"); }}>Olvidé mi contraseña</Button>}
-      {initialized && mode === "recover" && <Button variant="quiet" onClick={() => setMode("login")}>Volver al acceso</Button>}
+      {initialized && mode === "recover" && <Button variant="quiet" onClick={() => { setShowPassword(false); setMode("login"); }}>Volver al acceso</Button>}
       {initialized && mode !== "recover" && (
         <Button
           variant="quiet"
+          className="access-redeem"
           onClick={() => {
             setChallenge("");
             setToken("");
             setPassword("");
+            setShowPassword(false);
             setMode(mode === "redeem" ? "login" : "redeem");
           }}
         >
+          {mode !== "redeem" && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 3a6 6 0 0 0-5.5 8.4L2 19v3h4v-3h3v-3l2.6-2.5A6 6 0 1 0 15 3Z" /><circle cx="16" cy="7" r="1" /></svg>}
+          <span>
           {mode === "redeem"
             ? "Volver al acceso"
             : "Tengo un código de activación o recuperación"}
+          </span>
         </Button>
       )}
     </AccessLayout>

@@ -1,5 +1,4 @@
 # Preserve the verified C5 backend; only ship the approved frontend build.
 # The local base tag must resolve to the image ID documented in the release guide.
 FROM crm-cbn-runtime-base:c5-fa3bb5bc73b9
-COPY frontend/dist/index.html /app/frontend/index.html
-COPY frontend/dist/assets/ /app/frontend/assets/
+COPY frontend/dist/ /app/frontend/

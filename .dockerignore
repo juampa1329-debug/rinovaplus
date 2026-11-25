@@ -18,6 +18,8 @@
 !frontend/index.html
 !frontend/src/
 !frontend/src/**
+!frontend/public/
+!frontend/public/**
 backend/app/**/__pycache__/**
 backend/app/**/*.pyc
 frontend/src/test/**
