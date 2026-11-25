@@ -269,7 +269,7 @@ for (const path of [
       "/api/institution/auth/me",
       expect.anything(),
     );
-    expect(window.location.href).not.toContain("fixture-only");
+    await waitFor(() => expect(window.location.href).not.toContain("fixture-only"));
   });
 }
 

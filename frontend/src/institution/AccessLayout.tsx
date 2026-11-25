@@ -9,13 +9,14 @@ function ConnectionMap() {
   const svg = useRef<SVGSVGElement>(null);
   const [paused, setPaused] = useState(false);
   useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const compactLayout = window.matchMedia("(max-width: 900px)");
     const syncPlayback = () => {
       if (paused || reducedMotion.matches || compactLayout.matches || document.hidden) {
-        svg.current?.pauseAnimations();
+        svg.current?.pauseAnimations?.();
       } else {
-        svg.current?.unpauseAnimations();
+        svg.current?.unpauseAnimations?.();
       }
     };
     syncPlayback();

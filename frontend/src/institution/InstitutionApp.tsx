@@ -211,7 +211,6 @@ function AccessScreen({
     [challenge, setChallenge] = useState(""),
     [code, setCode] = useState(""),
     [showPassword, setShowPassword] = useState(false);
-  useEffect(() => setShowPassword(false), [mode, challenge]);
   useEffect(() => {
     if (resetToken) window.history.replaceState(null, "", window.location.pathname + window.location.search + "#/access/redeem");
   }, [resetToken]);
@@ -251,6 +250,7 @@ function AccessScreen({
                 });
                 setToken("");
                 setPassword("");
+                setShowPassword(false);
                 setCode("");
                 window.history.replaceState(null, "", "/#/access");
                 setMode("login");
@@ -284,9 +284,11 @@ function AccessScreen({
               ) {
                 setChallenge(String(result.challenge_token));
                 setPassword("");
+                setShowPassword(false);
                 setCode("");
               } else {
                 setPassword("");
+                setShowPassword(false);
                 setToken("");
                 setCode("");
                 accepted(result);
@@ -378,7 +380,7 @@ function AccessScreen({
                   {showPassword && <path d="m3 3 18 18" />}
                 </svg>
               </button></div>}
-              {initialized && mode === "login" && <Button className="access-forgot" variant="quiet" onClick={() => { setPassword(""); setMode("recover"); }}>Olvidé mi contraseña</Button>}
+              {initialized && mode === "login" && <Button className="access-forgot" variant="quiet" onClick={() => { setPassword(""); setShowPassword(false); setMode("recover"); }}>Olvidé mi contraseña</Button>}
               {mode === "redeem" && (
                 <Field
                   id="redeem-code"
@@ -406,7 +408,7 @@ function AccessScreen({
           </Button>
         </fieldset>
       </form>
-      {initialized && mode === "recover" && <Button variant="quiet" onClick={() => setMode("login")}>Volver al acceso</Button>}
+      {initialized && mode === "recover" && <Button variant="quiet" onClick={() => { setShowPassword(false); setMode("login"); }}>Volver al acceso</Button>}
       {initialized && mode !== "recover" && (
         <Button
           variant="quiet"
@@ -415,6 +417,7 @@ function AccessScreen({
             setChallenge("");
             setToken("");
             setPassword("");
+            setShowPassword(false);
             setMode(mode === "redeem" ? "login" : "redeem");
           }}
         >
