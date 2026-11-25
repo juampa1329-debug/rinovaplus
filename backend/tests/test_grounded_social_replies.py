@@ -313,12 +313,13 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
                 "output_usd_per_million": 1.5,
             },
             {"VersionNo": 1, "Nonce": b"", "Ciphertext": b""},
-            {"model": "gemini-test", "credential": str(uuid4())},
+            {"agent": "fixture", "binding": "masterclass-options", "model": "gemini-test", "credential": str(uuid4())},
         ),
     )
     # Binding is stable throughout a paid attempt.
     config, secret, binding = messaging.model_config()
-    monkeypatch.setattr(messaging, "model_config", lambda *_: (config, secret, binding))
+    monkeypatch.setattr(messaging, "model_config", lambda *_: (config, secret,
+        {**binding, "binding": "customer-declared-interest"} if projected[0] else binding))
     monkeypatch.setattr(
         messaging,
         "reply_context",
@@ -381,6 +382,15 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
         assert rebound[-1]["contextBinding"] == "after-own-projection"
         assert rebound[-1]["own_projection_context_refreshed"] is True
         assert rebound[-1]["response_parts"] == recorded[-1]["response_parts"]
+        # Choosing a program retires the prior masterclass suggestion. The
+        # effective agent/model did not change; its own CRM write must not
+        # cancel the first queued fragment at the dispatch frontier.
+        monkeypatch.setattr(messaging, "one", lambda *_: {"ResultMetadata": json.dumps(rebound[-1])})
+        messaging.dispatch_authorized(cursor, profile,
+            {"MessageId": rebound[-1]["reply"], "IdentityId": data["identity"], "IntegrationId": integration},
+            {**intents[0], "automationId": operation})
+        assert rebound[-1]["modelBinding"] == {**binding, "binding": "customer-declared-interest"}
+        assert rebound[-1]["own_projection_binding_refreshed"] is True
     assert recorded[-1]["generation"] == "grounded-v1"
     assert recorded[-1]["generated_text"] == (answer.strip() if answer and answer != "__wait__" else None)
     assert len(backup_reservations) == int(bool(with_backup))
@@ -451,6 +461,21 @@ def test_meta_native_reply_does_not_silence_gemini_but_crm_send_does(monkeypatch
         comments.current(cursor, profile, str(uuid4()), data)
 
 
+@pytest.mark.parametrize("change", ["agent", "model", "credential", "configuration"])
+def test_own_crm_projection_cannot_rebind_a_different_agent_model_key_or_configuration(monkeypatch, change):
+    config = {"provider": "gemini", "instructions": "Reviewed", "allow_reply": True}
+    binding = {"agent": "same-agent", "binding": "masterclass-options", "model": "gemini-test", "credential": "same-key"}
+    current = {**binding, "binding": "customer-declared-interest"}
+    current_config = dict(config)
+    if change == "configuration":
+        current_config["allow_reply"] = False
+    else:
+        current[change] = "changed"
+    monkeypatch.setattr(messaging, "model_config", lambda *_: (current_config, {}, current))
+    with pytest.raises(HTTPException, match="gemini_whatsapp_model_changed"):
+        messaging.projection_model_binding(None, None, {}, config, binding)
+
+
 def test_generated_dm_cannot_dispatch_with_changed_text_or_changed_context(monkeypatch):
     operation, reply, identity = [str(uuid4()) for _ in range(3)]
     data = {
@@ -483,6 +508,10 @@ def test_generated_dm_cannot_dispatch_with_changed_text_or_changed_context(monke
         messaging, "reply_context", lambda *_: {"fingerprint": "new-program-price"}
     )
     with pytest.raises(HTTPException, match="gemini_reply_context_changed"):
+        messaging.dispatch_authorized(None, settings, job, payload)
+    monkeypatch.setattr(messaging, "reply_context", lambda *_: {"fingerprint": "current"})
+    monkeypatch.setattr(messaging, "model_config", lambda *_: ({}, {}, {"model": "different-model"}))
+    with pytest.raises(HTTPException, match="gemini_whatsapp_model_changed"):
         messaging.dispatch_authorized(None, settings, job, payload)
 
 

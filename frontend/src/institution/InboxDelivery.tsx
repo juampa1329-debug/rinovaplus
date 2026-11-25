@@ -160,6 +160,11 @@ details.gemini_whatsapp_control_or_history_changed = [
   "Entró otro mensaje, cambió el control IA/Humano o venció la ventana de respuesta. Esta salida no se envió.",
   "Revisa el último mensaje y el modo actual de atención. El diagnóstico permite distinguir el motivo exacto.",
 ];
+details.gemini_whatsapp_model_changed = [
+  "Cambió la selección del agente antes del envío",
+  "La selección o configuración actual ya no coincide con la que preparó esta respuesta. Esta salida se detuvo antes de enviarse.",
+  "Consulta el diagnóstico del hilo y el último mensaje antes de recuperar la atención. Este aviso no significa falta de saldo ni desconexión de WhatsApp.",
+];
 details.human_control_changed = [
   "La atención pasó a Humano",
   "Se canceló una respuesta automática para respetar la atención humana.",

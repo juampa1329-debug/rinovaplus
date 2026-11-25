@@ -133,3 +133,30 @@ def test_related_program_suggestions_are_available_privately_but_are_not_custome
 def test_routes_retain_crm_read_write_permissions():
     assert core_permission("/api/institution/workspace/masterclass-interests/preview", "GET") == ("crm.read", "clients")
     assert core_permission("/api/institution/workspace/masterclass-interests/apply", "POST") == ("crm.write", "clients")
+
+
+def test_customer_choice_retires_masterclass_hint_and_changes_only_commercial_binding(monkeypatch):
+    from app.institutional import sales_context, sales_contact, conversation_scope, broadcast_conversation, sales_referrals
+
+    plan = master.proposal(person("MASTERCLASS GASTRONOMIA"), PROGRAMS)
+    contact = {"ContactId": plan["contact_id"], "Interests": plan["interests"]}
+    monkeypatch.setattr(sales_contact, "contact", lambda *_: contact)
+    monkeypatch.setattr(sales_contact, "read", lambda *_: ({"masterclass_orientation": {**plan, "authority": master.AUTHORITY}}, 1))
+    monkeypatch.setattr(sales_context, "catalog_data", lambda *_: (PROGRAMS, {}))
+    monkeypatch.setattr(conversation_scope, "configure", lambda *_: None)
+    incoming = {"MessageId": str(uuid4()), "Sequence": 3, "Direction": "incoming", "Body": "Repostería y pastelería"}
+    monkeypatch.setattr(sales_context, "history", lambda *_: [incoming])
+    monkeypatch.setattr(broadcast_conversation, "origin", lambda *_: None)
+    monkeypatch.setattr(sales_referrals, "origin", lambda *_: None)
+    monkeypatch.setattr(sales_context, "resolve", lambda *_: {"agent_id": "same-specialist", "binding": "same-authority", "configuration": {"primary_model": "gemini-test"}})
+    cursor = SimpleNamespace(context_cutoff=lambda _: 0, execute=lambda *_: SimpleNamespace(fetchval=lambda: 3))
+    sales_context.configure(cursor, None)
+    guide = {"level": "guide", "state": "active", "enabled": True, "configuration": {"sales_routing_enabled": True}}
+    before = cursor.agent_commercial_resolution({"guide": guide}, {}, {"mode": "automatic"}, "whatsapp", "conversation")
+    contact["Interests"] = incoming["Body"]
+    after = cursor.agent_commercial_resolution({"guide": guide}, {}, {"mode": "automatic"}, "whatsapp", "conversation")
+    assert before["masterclass_orientation"] and after["masterclass_orientation"] is None
+    assert before["binding"] != after["binding"]
+    assert before["agent_id"] == after["agent_id"]
+    assert before["configuration"] == after["configuration"]
+    assert before["commercial_interest"] == after["commercial_interest"]

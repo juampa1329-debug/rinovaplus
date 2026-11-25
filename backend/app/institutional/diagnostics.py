@@ -16,6 +16,7 @@ def projection(value):
             "fallback_used": trace.get("fallback_used") is True,
             "context_changes": data.get("dispatch_context_changes", [])[:30],
             "own_projection_context_refreshed": data.get("own_projection_context_refreshed") is True,
+            "own_projection_binding_refreshed": data.get("own_projection_binding_refreshed") is True,
             "campaign_entry_context": "inicio_comercial_campana" in data.get("contextComponents", {}),
             "masterclass_context": "opciones_relacionadas_masterclass" in data.get("contextComponents", {}),
             "attempts": [{k: a.get(k) for k in ("provider", "model", "role", "state", "code")}

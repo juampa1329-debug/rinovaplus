@@ -243,6 +243,22 @@ def model_config(c, settings, data):
     return config, secret, binding
 
 
+def projection_model_binding(c, settings, data, config, binding):
+    """Refresh only our CRM routing evidence under the same write transaction.
+
+    Saving the customer's choice can retire a masterclass suggestion included
+    in the selection digest. The effective agent, model, credential and every
+    configuration field must remain identical. The existing dispatch check
+    still rejects any subsequent selection or authority change.
+    """
+    current_config, _, current_binding = model_config(c, settings, data)
+    if current_config != config or {
+        k: v for k, v in current_binding.items() if k != "binding"
+    } != {k: v for k, v in binding.items() if k != "binding"}:
+        raise HTTPException(409, "gemini_whatsapp_model_changed")
+    return current_binding
+
+
 def dispatch_authorized(c, settings, job, payload):
     operation = one(
         c,
@@ -838,14 +854,16 @@ class Worker:
                 # Validated projections made by this transaction may complete the
                 # CRM profile. Bind dispatch to that committed state, after the
                 # pre-write source/context checks, never to a later external edit.
+                after_binding = projection_model_binding(c, settings, data, config, binding)
                 committed = {**data, "reply": reply, "response_parts": parts,
-                    "generation": "grounded-v1", "generated_text": generated, "modelBinding": binding,
+                    "generation": "grounded-v1", "generated_text": generated, "modelBinding": after_binding,
                     "skill_policy": grounded.get("skill_policy"), "voiceMedia": audio["media_id"] if audio else None,
                     "voiceOperation": audio["operation"] if audio else None, "voiceReason": voice_reason}
                 _, after_source, _ = source(c, settings, integration, committed)
                 after = reply_context(c, settings, committed, after_source)
                 committed.update(contextBinding=after["fingerprint"], contextComponents=after.get("components", {}),
-                    own_projection_context_refreshed=after["fingerprint"] != grounded["fingerprint"])
+                    own_projection_context_refreshed=after["fingerprint"] != grounded["fingerprint"],
+                    own_projection_binding_refreshed=after_binding != binding)
                 c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? AND Status='confirmed'",
                           json.dumps(committed), institution(settings), operation)
         return True
