@@ -1,16 +1,33 @@
 {
   "date": "2026-11-25",
   "scope": "native_crm_import_preicfes_and_local_template_proposals",
-  "source_rows": {"general": 34, "alta_competencia": 82, "total": 116},
+  "source_rows": {
+    "general": 34,
+    "alta_competencia": 82,
+    "total": 116
+  },
   "classified_groups": 101,
-  "native_preview": {"ready": 96, "review": 5, "imported": 0},
-  "native_commit": {"imported": 96, "review": 5, "ready": 0},
-  "native_second_preview": {"imported": 96, "review": 5, "ready": 0},
-  "unique_created_contacts": 96,
-  "created_without_source_dates": 19,
+  "native_preview": {
+    "ready": 96,
+    "review": 5,
+    "imported": 0
+  },
+  "native_commit": {
+    "imported": 96,
+    "review": 5,
+    "ready": 0
+  },
+  "native_second_preview": {
+    "imported": 96,
+    "review": 5,
+    "ready": 0
+  },
   "crm_stage": "Calificación",
   "interest_classification": "PRE-ICFES CBN · Alta Competencia",
-  "interest_fields": ["Interests", "pre_programas"],
+  "interest_fields": [
+    "Interests",
+    "pre_programas"
+  ],
   "existing_custom_fields_reused": 11,
   "new_custom_fields": 0,
   "crm_program_filter_matches_interest_field": false,
@@ -20,9 +37,23 @@
   "existing_payment_dates_preserved": true,
   "code_commit": "feca36a",
   "merged_code_commit": "fc14046",
-  "backend_deployment": {"id": "hygtdntuv2ooic22adbwsn3d", "status": "Success", "application": "Running", "duration_seconds": 263},
-  "frontend_deployment": {"id": "pq0jbgdrrvozmocqbvxnqwxa", "status": "Success", "application": "Running", "duration_seconds": 21},
-  "validation": {"backend_tests": 36, "frontend_tests": 3, "ruff": "passed"},
+  "backend_deployment": {
+    "id": "hygtdntuv2ooic22adbwsn3d",
+    "status": "Success",
+    "application": "Running",
+    "duration_seconds": 263
+  },
+  "frontend_deployment": {
+    "id": "pq0jbgdrrvozmocqbvxnqwxa",
+    "status": "Success",
+    "application": "Running",
+    "duration_seconds": 21
+  },
+  "validation": {
+    "backend_tests": 36,
+    "frontend_tests": 3,
+    "ruff": "passed"
+  },
   "local_template_proposals": 3,
   "meta_templates_submitted": 0,
   "campaigns_created_or_activated": 0,
@@ -30,5 +61,29 @@
   "campaign_consents_granted": 0,
   "siie_writes": 0,
   "ddl": false,
-  "phase_acceptance_changes": false
+  "phase_acceptance_changes": false,
+  "initial_unique_created_contacts": 96,
+  "initial_created_without_source_dates": 19,
+  "owner_resolution": {
+    "native_preview": {
+      "ready": 4,
+      "review": 1,
+      "imported": 0
+    },
+    "additional_contacts_created": 4,
+    "two_phone_observations": 2,
+    "shared_number_name_selected": true,
+    "academic_identity_validation_preserved": true
+  },
+  "final_native_preview": {
+    "imported": 100,
+    "review": 1,
+    "ready": 0
+  },
+  "unique_created_contacts": 100,
+  "created_without_source_dates": 20,
+  "final_contact_selection_only": 100,
+  "phone_intents_only": 102,
+  "additional_phones_stored_as_notes_only": 2,
+  "remaining_review_reason": "incomplete_mobile_number"
 }

@@ -1,6 +1,12 @@
 # Importación de solicitudes PRE-ICFES · 25 de noviembre de 2026
 
-## Resultado observado
+## Resultado final tras la resolución del titular
+
+El titular resolvió expresamente cuatro de los cinco grupos: conservar ambos teléfonos y una sola ficha para dos casos, escoger el nombre del formulario fechado para un número compartido y crear una ficha comercial en la coincidencia con documentos contradictorios, dejando su identidad académica por validar. Se añadieron las cuatro fichas mediante un lote nativo separado, sin modificar las 96 previas. El contraste final de los 101 grupos devuelve **100 importados, uno para revisión y cero nuevos pendientes**, con 100 identificadores únicos. Sólo permanece fuera el caso con celular incompleto. Veinte fichas creadas conservan sus fechas de solicitud vacías.
+
+Las dos instrucciones de contactar ambos teléfonos están guardadas como notas de seguimiento. Una de ellas se abrió en la ficha real y muestra la observación y ambos números, junto a la fuente original legible. Se conserva una sola ficha por cada caso. Los dos teléfonos adicionales constan como intención para una futura campaña autorizada: 100 fichas y 102 números declarados, todavía sin identidades adicionales de canal habilitadas, preparación de destinatarios ni envíos. La selección final de contactos sustituye la selección inicial de 96 para el trabajo futuro; los recibos iniciales permanecen conservados.
+
+## Corte inicial observado
 
 El titular autorizó crear fichas CRM desde dos Excel de solicitudes de información y clasificar el grupo PRE-ICFES. Los mensajes nuevos se muestran primero en el chat para su elección; no se someten a Meta ni se activa la campaña durante esta unidad.
 
@@ -24,4 +30,4 @@ Código `feca36a`, integrado con la versión productiva concurrente en `fc14046`
 
 Recibos, clasificación nominal, propuestas completas, datos comerciales y libro de revisión se conservan únicamente en `.local/preicfes-import-20261125/`, excluido de Git. La evidencia agregada está en `artifacts/live/preicfes-prospects-20261125.json`. No se crearon mensajes, consentimientos de campaña, plantillas Meta, envíos o activaciones por este trabajo. Sin DDL, seeds, nuevos servicios ni escrituras SIIE. Roadmap y aceptaciones previas intactos.
 
-Siguiente paso: elección del titular sobre los textos propuestos; posterior revisión Meta y autorización de lanzamiento. Resolver los cinco grupos por separado antes de incorporarlos a una campaña.
+Siguiente paso: elección del titular sobre los textos propuestos; posterior revisión Meta y autorización de lanzamiento. Corregir el celular incompleto antes de incorporar el único caso pendiente. Al preparar la campaña deberán contemplarse los dos números adicionales expresamente solicitados, con sus verificaciones propias de canal y consentimiento; guardar una nota no acredita esas verificaciones.
