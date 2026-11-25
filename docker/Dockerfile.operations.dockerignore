@@ -19,6 +19,8 @@
 !frontend/workspace.html
 !frontend/src/
 !frontend/src/**
+!frontend/public/
+!frontend/public/**
 **/__pycache__/**
 **/*.pyc
 frontend/src/test/**
