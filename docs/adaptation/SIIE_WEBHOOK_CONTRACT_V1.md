@@ -94,6 +94,14 @@ using (var request = new HttpRequestMessage(HttpMethod.Post,
 }
 ```
 
+## Diagnóstico de un 403
+
+La firma se verifica antes de validar el JSON. Comprobar la respuesta constante `siie_webhook_signature_rejected` y, en los logs privados de RinovaPlus, `siie_webhook_rejected`: distingue formato, `clock_skew`, `signature_mismatch` o ambos. El proxy registra sólo el resultado HTTP y duración como `siie_webhook_http`. No registrar claves, firmas ni cuerpo para depurar.
+
+El emisor debe comprobar su reloj UTC. Para cada intento, `DateTimeOffset.UtcNow.ToUnixTimeSeconds()` produce el encabezado Unix en segundos. No convertir a milisegundos, sumar horas, escribir una fecha ISO en ese encabezado ni reutilizar el timestamp de un intento antiguo. La firma se recalcula sobre el mismo cuerpo UTF-8 y el timestamp nuevo. La ventana permitida sigue siendo300segundos.
+
+`occurred_at` es otra cosa: la fecha UTC real del guardado original, conservada al reintentar. No añadir `Z` a una hora local sin convertirla correctamente. El ensayo16922 mostró una fecha casi tres horas futura, que debe corregirse en origen; de lo contrario recibirá422 después de resolver la firma. No cambiar arbitrariamente la fecha de un evento ya aceptado con el mismo GUID. Para el ensayo rechazado, corregirlo en la outbox antes de la primera aceptación y conservar su referencia; si ya hubiera un200 confirmado, conciliar antes de modificar contenido.
+
 ## Evento de preinscripción
 
 Los identificadores siguientes son sintéticos. Los reales proceden de las filas confirmadas de SIIE, nunca de un contador del navegador.

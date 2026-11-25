@@ -12,7 +12,10 @@ def test_siie_proxy_logs_only_status_timing_and_preserves_delivery_guards():
     # iso8601 has digits; explicitly exclude every other Nginx variable, including
     # URL/query, headers, client address, cookies and body.
     assert set(re.findall(r"\$[a-z_0-9]+", format_value)) == {
-        "$time_iso8601", "$status", "$upstream_status", "$request_time"
+        "$time_iso8601",
+        "$status",
+        "$upstream_status",
+        "$request_time",
     }
     block = config.split("location = /hooks/siie/v1 {", 1)[1].split("\n        }", 1)[0]
     assert "access_log /dev/stdout siie_webhook;" in block

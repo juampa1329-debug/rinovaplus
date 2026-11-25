@@ -43,7 +43,9 @@
     "ruff_selected": "passed",
     "workspace_build": "passed_with_historical_bundle_warning",
     "full_suite_claimed_green": false,
-    "inherited_frontend_failures_reproduced_on_previous_api": 2
+    "inherited_frontend_failures_reproduced_on_previous_api": 2,
+    "post_concurrent_merge_backend_selected_passed": 114,
+    "post_concurrent_merge_frontend_selected_passed": 66
   },
   "native_report_checks": {
     "initial_rows": 100,
@@ -112,7 +114,18 @@
       "real_person_documents_used": false,
       "verified_inbound_events_after_registration": 0,
       "remote_event_injected_by_agent": false,
-      "producer_http_status_pending": true
+      "producer_http_status_pending": true,
+      "producer_reported_http": 403,
+      "producer_event_id": "edd87d5d-dd6a-49dc-a6cc-147facb87659",
+      "producer_timestamp_header_pending": true,
+      "producer_event_json_validated_locally": true,
+      "invalid_fields": [
+        "occurred_at"
+      ],
+      "received_occurred_at": "2026-11-26T01:25:23.0000000Z",
+      "local_validation_utc": "2026-11-25T22:35:27Z",
+      "ahead_seconds_at_validation": 10196,
+      "other_fields_valid_with_valid_time": true
     }
   }
 }
