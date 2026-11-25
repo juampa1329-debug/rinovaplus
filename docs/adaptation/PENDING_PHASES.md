@@ -1,3 +1,5 @@
+25Nov · PRE-ICFES: opción2 recibida por Meta, En revisión; campaña guardada y recargada en Borrador con100fichas, sinfecha, cero preparados/envíos/activación. Dos teléfonos alternativos conservados como notas para preparación posterior. [Comprobación](PREICFES_PROSPECTS_20261125.md). Sin cambio de aceptaciones.
+
 25Nov · Actualización PRE-ICFES por resolución del titular: 100 fichas creadas, sólo un celular incompleto pendiente; dos observaciones de contacto a ambos teléfonos para campaña futura. Contraste final sin duplicación, cero envíos. [Resultado final](PREICFES_PROSPECTS_20261125.md). Aceptaciones conservadas.
 
 25Nov · PRE-ICFES: 96 fichas creadas y cinco grupos en revisión; segundo contraste sin duplicación. Promoción corregida en ficha revisión8, tres propuestas locales pendientes de elección, cero envíos y cero revisión Meta. [Importación y límites](PREICFES_PROSPECTS_20261125.md). Porcentajes/aceptaciones conservados.

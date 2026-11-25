@@ -1,5 +1,13 @@
 # Importación de solicitudes PRE-ICFES · 25 de noviembre de 2026
 
+## Plantilla elegida y campaña guardada, sin envío
+
+Tras elegir expresamente la opción 2, el titular autorizó su revisión por Meta y guardar la campaña sin enviar mensajes. Se creó `cbn_preicfes_promocion_juan_pablo_v1`, Marketing/es, con el cuerpo elegido, cabecera y tres respuestas rápidas, vinculando la variable al primer nombre del CRM y usando un ejemplo ficticio. Meta la recibió y figura **En revisión de Meta**; no se acredita aprobación. Se completó la confirmación reciente con el acceso guardado, vaciando el segundo campo, sin extraer credenciales.
+
+Se guardó la campaña **CBN · PRE-ICFES Alta Competencia · Promoción 50 % · Solicitudes noviembre 2026 · No activar**, en la cuenta WhatsApp CBN, con la nueva plantilla y la selección exacta de 100 fichas. La recarga y nueva apertura confirman **Borrador, versión 1**, primer nombre, zona America/Bogota, sin fecha programada y Seguimiento sólo después de un envío confirmado. No se pulsó Preparar sin enviar ni Activar: hay cero destinatarios preparados, cero intentos y cero mensajes de esta campaña. El caso de celular incompleto no forma parte de la selección.
+
+Los dos teléfonos alternativos siguen conservados en las notas CRM y el plan local para la futura preparación. No se los cuenta como destinatarios de canal ya habilitados: la selección guardada es de 100 fichas, y los dos números adicionales aún requieren su tratamiento al preparar el envío. No se habilitaron consentimientos ni cambió el control Humano por guardar el borrador. Recibos completos en `.local/preicfes-import-20261125/meta-submission-campaign-receipt.json` y las comprobaciones nativas privadas. Esta acción no requiere cambios de código ni un nuevo despliegue. Pendientes: decisión de Meta, revisión operativa de destinatarios y autorización posterior de activación.
+
 ## Resultado final tras la resolución del titular
 
 El titular resolvió expresamente cuatro de los cinco grupos: conservar ambos teléfonos y una sola ficha para dos casos, escoger el nombre del formulario fechado para un número compartido y crear una ficha comercial en la coincidencia con documentos contradictorios, dejando su identidad académica por validar. Se añadieron las cuatro fichas mediante un lote nativo separado, sin modificar las 96 previas. El contraste final de los 101 grupos devuelve **100 importados, uno para revisión y cero nuevos pendientes**, con 100 identificadores únicos. Sólo permanece fuera el caso con celular incompleto. Veinte fichas creadas conservan sus fechas de solicitud vacías.

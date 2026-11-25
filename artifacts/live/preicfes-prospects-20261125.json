@@ -85,5 +85,26 @@
   "final_contact_selection_only": 100,
   "phone_intents_only": 102,
   "additional_phones_stored_as_notes_only": 2,
-  "remaining_review_reason": "incomplete_mobile_number"
+  "remaining_review_reason": "incomplete_mobile_number",
+  "subsequent_owner_choice": {
+    "option": 2,
+    "template_name": "cbn_preicfes_promocion_juan_pablo_v1",
+    "category": "MARKETING",
+    "language": "es",
+    "meta_submission": "received_pending_review",
+    "meta_approval_verified": false,
+    "campaign_saved": true,
+    "campaign_state": "draft",
+    "campaign_version": 1,
+    "selected_contacts": 100,
+    "reloaded_and_verified": true,
+    "scheduled_at": null,
+    "post_confirmed_send_stage": "Seguimiento",
+    "prepared_recipients": 0,
+    "activations": 0,
+    "messages_sent": 0,
+    "campaign_consents_granted": 0,
+    "alternate_phones_remain_notes_only": 2,
+    "new_code_or_deployment": false
+  }
 }
