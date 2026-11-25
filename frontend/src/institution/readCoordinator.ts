@@ -39,11 +39,31 @@ export function coordinatedRead<T>(
 ): Promise<T> {
   const existing = pending.get(key);
   if (existing) return existing as Promise<T>;
-  const promise = load().finally(() => {
+  const promise = recoverBusyRead(load).finally(() => {
     if (pending.get(key) === promise) pending.delete(key);
   });
   pending.set(key, promise);
   return promise;
+}
+async function recoverBusyRead<T>(load: () => Promise<T>): Promise<T> {
+  try {
+    return await load();
+  } catch (error) {
+    if (
+      !(error instanceof Error) ||
+      !("status" in error) ||
+      error.status !== 503 ||
+      !("detail" in error) ||
+      error.detail !== "storage_busy"
+    )
+      throw error;
+    // Only the explicitly identified pre-work lock contention is safe to
+    // recover here. Coalescing includes the pause and one final GET. Mutations,
+    // generic 503s, denied access and uncertain provider effects never enter.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (readRetrySeconds()) throw error;
+    return load();
+  }
 }
 export function foregroundPolling() {
   return !document.hidden && document.hasFocus();

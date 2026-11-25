@@ -844,6 +844,10 @@ class Worker:
                 "AND receipt.IntegrationId=q.IntegrationId AND receipt.ProviderEventId COLLATE Latin1_General_100_BIN2=q.ExternalId "
                 "AND receipt.Kind='status' AND receipt.Status='processed' AND JSON_VALUE(receipt.Payload,'$.text') IN('sent','delivered','read') "
                 "WHERE q.InstitutionId=? AND q.IntegrationId=? AND q.State IN('sent','delivered','read') "
+                # Necessary condition of the HAVING clause, applied before
+                # joining/grouping receipt history. New incoming messages
+                # cannot be inactivity candidates yet.
+                "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=DATEADD(minute,?,SYSUTCDATETIME())) "
                 + ("AND i.LastIncomingAt IS NOT NULL AND EXISTS(SELECT 1 FROM crm_channels2.MessageRoute inbound JOIN crm.Message received ON received.MessageId=inbound.MessageId WHERE inbound.InstitutionId=q.InstitutionId AND inbound.IntegrationId=q.IntegrationId AND inbound.IdentityId=q.IdentityId AND inbound.ActorKind='external' AND received.Direction='incoming' AND received.CreatedAt<=q.CreatedAt) " if flowdoc.get("followup_only") else "")
                 + "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob newer JOIN crm.Message later ON later.MessageId=newer.MessageId JOIN crm.Message anchor ON anchor.MessageId=q.MessageId WHERE newer.InstitutionId=q.InstitutionId AND newer.IntegrationId=q.IntegrationId AND newer.IdentityId=q.IdentityId AND later.ConversationId=anchor.ConversationId AND later.Sequence>anchor.Sequence AND newer.State IN('queued','sending','uncertain','accepted','sent','delivered','read')) "
                 "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event link WHERE link.InstitutionId=q.InstitutionId AND link.Kind='native_chat' AND JSON_VALUE(link.Document,'$.queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) "
@@ -853,6 +857,7 @@ class Worker:
                 "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=MIN(receipt.CreatedAt)) ORDER BY MIN(receipt.CreatedAt),q.QueueId",
                 institution(self.settings),
                 flowdoc["integration_id"],
+                -doc["idle_minutes"],
                 trigger["RecordId"],
                 str(trigger["CurrentVersion"]),
                 -doc["idle_minutes"],
@@ -881,11 +886,13 @@ class Worker:
                     ),
                 )
 
-    def once(self):
-        with transaction(self.settings, True, anonymous=True) as c:
+    def review_pending(self):
+        # Do not monopolize the institutional write lock while checking every
+        # future execution. Release it between contacts so Inbox/authentication
+        # can proceed; each current row is re-read under its own write guard.
+        with transaction(self.settings, anonymous=True) as c:
             if not enabled(c, self.settings):
                 return False
-            # Inspect contexts even while due dates are in the future.
             pending = rows(
                 c,
                 "SELECT TOP(501) * FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND State IN('waiting','queued') ORDER BY DueAt,EnrollmentId",
@@ -893,12 +900,29 @@ class Worker:
             )
             if len(pending) > 500:
                 raise HTTPException(413, "campaign_active_scope_limit")
-            for run in pending:
+        for selected in pending:
+            with transaction(self.settings, True, anonymous=True) as c:
+                if not enabled(c, self.settings):
+                    return False
+                run = one(
+                    c,
+                    "SELECT * FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND EnrollmentId=? AND State IN('waiting','queued')",
+                    institution(self.settings),
+                    selected["EnrollmentId"],
+                )
+                if not run:
+                    continue
                 try:
                     guard(c, self.settings, run)
                 except HTTPException as error:
                     stop(c, self.settings, run, str(error.detail))
                     return True
+        return False
+
+    def maintenance(self):
+        with transaction(self.settings, anonymous=True) as c:
+            if not enabled(c, self.settings):
+                return
             trigger_types = rows(
                 c,
                 "SELECT TOP(101) JSON_VALUE(Document,'$.event_type') AS EventType FROM crm_campaign8.Record WHERE InstitutionId=? AND Kind='trigger' AND State='active'",
@@ -906,16 +930,27 @@ class Worker:
             )
             if len(trigger_types) > 100:
                 raise HTTPException(413, "campaign_trigger_scope_limit")
-            # Observation scans are needed only for change-based triggers.
-            # Do not hold the institutional write lock scanning every contact
-            # when no trigger consumes those signals (including inactivity-only).
             kinds = {v["EventType"] for v in trigger_types}
-            if kinds & {"message_in", "stage_changed", "program_changed"}:
-                self.observe(c)
-            if "inactivity" in kinds:
-                self.inactivity(c)
-            if kinds:
-                self.triggers(c)
+        # Independent maintenance stages must not accumulate their lock holding
+        # times. Every stage still reads live authority/context before writing.
+        for required, work in (
+            (bool(kinds & {"message_in", "stage_changed", "program_changed"}), self.observe),
+            ("inactivity" in kinds, self.inactivity),
+            (bool(kinds), self.triggers),
+        ):
+            if required:
+                with transaction(self.settings, True, anonymous=True) as c:
+                    if not enabled(c, self.settings):
+                        return
+                    work(c)
+
+    def once(self):
+        if self.review_pending():
+            return True
+        self.maintenance()
+        with transaction(self.settings, True, anonymous=True) as c:
+            if not enabled(c, self.settings):
+                return False
             run = one(
                 c,
                 "SELECT TOP(1) * FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND State IN('waiting','queued') AND DueAt<=SYSUTCDATETIME() ORDER BY DueAt,EnrollmentId",

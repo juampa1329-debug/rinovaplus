@@ -199,6 +199,8 @@ const errors: Record<string, string> = {
     "Los ajustes generales de IA guardados no son compatibles. Abre Ajustes → Inteligencia artificial, revisa los campos indicados y guarda la configuración antes de recargar Agentes.",
   general_storage_unavailable:
     "RinovaPlus no pudo completar la consulta del servidor. Conserva tu borrador y vuelve a cargar. Si se repite, soporte debe revisar el registro del backend; no cambies las claves de API por este aviso.",
+  storage_busy:
+    "El servidor está ocupado procesando otras operaciones. Tu borrador se conserva. Espera unos segundos y consulta el estado antes de guardar de nuevo; no cambies las claves de IA por este aviso.",
   siie_source_changed_review_again:
     "SIIE cambió desde la revisión. Vuelve a obtener la página o preparar la ficha antes de guardarla; la copia local se conserva.",
   siie_local_mapping_ambiguous:
@@ -575,6 +577,7 @@ async function request<T>(
         ? validationMessage(result.fields)
         : message(result?.code ?? result?.detail),
     );
+    Object.assign(failure, { status: response.status, detail: safeReason });
     const reference = response.headers?.get("X-SIIE-Correlation-ID");
     if (reference && /^[A-Za-z0-9_-]{1,100}$/.test(reference)) {
       Object.assign(failure, { correlationId: reference });

@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+from time import monotonic
 from base64 import b64decode, b64encode
 from contextlib import closing, contextmanager
 from pathlib import Path
@@ -198,6 +199,9 @@ def load(env):
 def transaction(settings, write=False, *, permission=None, anonymous=False, recent=False):
     from psycopg2 import Error
 
+    stage = "connect"
+    started = monotonic()
+    acquired = None
     try:
         with closing(settings.postgres_connect()) as conn, conn, conn.cursor() as raw:
             if not write:
@@ -205,6 +209,7 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
             raw.execute("SET LOCAL search_path=pg_catalog,rinovaplus_crm")
             raw.execute("SET LOCAL statement_timeout='8s'")
             raw.execute("SET LOCAL lock_timeout='3s'")
+            stage = "identity"
             raw.execute(
                 "SELECT current_database(), current_user, institutionid"
                 " FROM rinovaplus_crm.crmcanalinstitucionalcontexto WHERE contextid=1"
@@ -214,7 +219,10 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
             # Existing security and idempotency paths expect serialized writes.
             # Keep the lock within this PostgreSQL database and institution.
             lock = "pg_advisory_xact_lock" if write else "pg_advisory_xact_lock_shared"
+            stage = "institution_lock"
             raw.execute(f"SELECT {lock}(hashtextextended(%s,0))", (settings.ticket["context"][0][1],))
+            acquired = monotonic()
+            stage = "authorization"
             cursor = Cursor(raw, settings.ticket["table_map"], settings.postgres_columns)
             if not anonymous:
                 from app.institutional.auth import authorize
@@ -223,12 +231,22 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
                 if authority is None:
                     raise HTTPException(401, "session_required")
                 authorize(cursor, settings, authority, permission or authority["permission"], recent=recent)
+            stage = "body"
             yield cursor
+            stage = "commit"
     except (Error, ProfileError, ValueError) as error:
         safe_tags = {"password_policy", "invalid_password", "unported_statement", "unmapped_crm_table", "unported_update_target", "unported_update_join", "unported_subquery_limit", "unported_outer_apply"}
         tag = str(error) if type(error) is ValueError and str(error) in safe_tags else "unclassified"
-        LOG.warning("postgres_storage_error state=%s tag=%s", getattr(error, "pgcode", None) or type(error).__name__, tag)
+        state = getattr(error, "pgcode", None) or type(error).__name__
+        LOG.warning("postgres_storage_error state=%s tag=%s stage=%s write=%s elapsed_ms=%s", state, tag, stage, write, round((monotonic() - started) * 1000))
+        if state == "55P03" and stage == "institution_lock":
+            # No application work has begun. Distinguish contention from an
+            # identity/permission failure; never replay a caller's mutation.
+            raise HTTPException(503, "storage_busy", headers={"Retry-After": "1"}) from None
         raise HTTPException(503, "general_storage_unavailable") from None
+    finally:
+        if acquired is not None and (held := monotonic() - acquired) >= 1:
+            LOG.warning("postgres_transaction_slow write=%s held_ms=%s stage=%s", write, round(held * 1000), stage)
 
 
 def network_disabled(*_args, **_options):

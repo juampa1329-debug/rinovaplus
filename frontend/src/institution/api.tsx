@@ -508,10 +508,13 @@ const messages: Record<string, string> = {
   module_disabled: "Este módulo está deshabilitado por la institución.",
   server_temporarily_unavailable:
     "El servidor tardó demasiado o no pudo completar la consulta. Tu configuración se conserva. Espera unos segundos y vuelve a cargar RinovaPlus.",
+  storage_busy:
+    "El servidor está ocupado procesando otras operaciones. Tu borrador se conserva. Espera unos segundos y consulta el estado actual antes de volver a guardar o enviar. Este aviso no indica un problema con tus claves de IA.",
   invalid_server_response:
     "El servidor devolvió una respuesta incompleta. Tu configuración se conserva; vuelve a cargar RinovaPlus cuando termine la actualización.",
   rate_limit: "Alcanzaste el límite temporal. Espera antes de reintentar.",
-  rate_limited: "El Inbox alcanzó el límite temporal de consultas al CRM. Este aviso no indica falta de saldo ni tokens de IA.",
+  rate_limited:
+    "El Inbox alcanzó el límite temporal de consultas al CRM. Este aviso no indica falta de saldo ni tokens de IA.",
   last_active_owner: "Debe quedar al menos un propietario activo con acceso.",
   last_active_admin: "Debe quedar al menos un administrador activo.",
   email_already_registered: "Este correo ya tiene una cuenta.",

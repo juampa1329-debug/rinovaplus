@@ -71,6 +71,8 @@ def test_inactivity_only_uses_authenticated_existing_conversations_when_selected
         assert "CROSS APPLY" not in sql and "GROUP BY q.QueueId,q.IdentityId" in sql
         assert "later.Sequence>anchor.Sequence" in sql
         assert "receipt.ProviderEventId COLLATE" in sql
+        assert "i.LastIncomingAt<=DATEADD(minute,?,SYSUTCDATETIME())" in sql
+        assert args[2] == -480
         return None
     monkeypatch.setattr(runtime, "one", inspect)
     runtime.Worker(settings).inactivity(None)

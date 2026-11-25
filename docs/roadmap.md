@@ -1,4 +1,4 @@
-## Estado vigente del roadmap — 2026-11-22
+## Estado vigente del roadmap — 2026-11-24
 
 El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y 279/279 hitos**, dentro del alcance PostgreSQL aceptado y sus límites operativos documentados. P12 de puesta online también está aceptada. Los cortes inferiores son historia; sus porcentajes anteriores no describen la versión actual.
 
@@ -6,7 +6,7 @@ El roadmap original **P0–P11 está aceptado al 100%**, con **56/56 criterios y
 |---|---|---|
 | P0–P11 | Base del CRM, canales Meta, IA, conocimiento, broadcasting, seguimientos, publicidad, inteligencia y operación | 100% del alcance original aceptado. No incluye automáticamente las ampliaciones posteriores. |
 | P12 | Puesta online en PostgreSQL/Coolify y Meta | 100% del alcance aceptado. |
-| P13 | Académico y agentes comerciales por programa, skills, memoria y ficha CRM | 4/4, 100% inicial. Calidad comercial continua y modelos por etapa se evalúan en P22. Inglés aún sin alcance tarifario confirmado; SLA institucional sin plazo configurado. |
+| P13 | Académico y agentes comerciales por programa, skills, memoria y ficha CRM | 4/4, 100% inicial. Inglés A1+A2 en un semestre: precios, financiación, requisitos y fechas confirmados el24Nov en ambas jornadas. PRE-ICFES: grupos e inicio13Feb2027 confirmados. Auditoría27fichas/51planes y faltantes de horarios/calendarios en [informe](adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md). SLA sin plazo configurado; calidad comparativa y modelos por etapa siguen P22. |
 | P14 | Entrenamiento y mejora comercial basada en datos | Plan pendiente; implementación no iniciada, 0%. |
 | P15 | Correos, recuperación, invitaciones, alertas y plantillas | 7/7, 100% inicial. Mejoras de monitorización operativa siguen separadas. |
 | P16 | API SIIE para programas, aspirantes, estudiantes y finanzas | Parcial; 0/5 aceptadas (0% de aceptación). Hay lecturas reales y catálogo local de 25 programas. Falta completar/verificar finanzas y sincronización de origen. |
