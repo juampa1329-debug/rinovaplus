@@ -67,8 +67,8 @@ class Entry(Strict):
     email: str = Field(default="", max_length=254)
     programs: list[str] = Field(min_length=1, max_length=30)
     stages: list[str] = Field(min_length=1, max_length=30)
-    first_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    last_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    first_date: str = Field(default="", pattern=r"^(?:\d{4}-\d{2}-\d{2})?$")
+    last_date: str = Field(default="", pattern=r"^(?:\d{4}-\d{2}-\d{2})?$")
     management_date: str = Field(default="", max_length=10)
     advisor: str = Field(default="", max_length=200)
     channels: str = Field(max_length=500)
@@ -259,7 +259,8 @@ def process(profile, workspace, body, commit=False):
                     tags="",
                     notes="Preinscripción importada. Ver notas de origen. "
                     "Gestión registrada no equivale a contacto verificado. "
-                    "Sin autorización comercial documentada en los archivos.",
+                    "Autorización de campañas no activada por esta importación; "
+                    "consultar la evidencia de origen antes de cualquier envío.",
                     type="Preinscrito",
                     interests=" | ".join(entry.programs)
                     if len(" | ".join(entry.programs)) <= 300

@@ -40,6 +40,30 @@ def test_source_ambiguity_is_never_imported():
     assert imports.decision(entry(name="3001234567"), [])[0] == "review"
 
 
+def test_undated_requests_keep_empty_dates_without_inventing_recency():
+    source = entry(first_date="", last_date="")
+    assert imports.decision(source, [])[0] == "ready"
+    values = imports.custom_values(source)
+    assert values["pre_fecha"] == values["pre_ultima_fecha"] == ""
+    assert values["pre_ultima_gestion"] == ""
+    existing = [{"Name": source.name, "Phone": source.phone, "custom": values}]
+    assert imports.decision(source, existing)[0] == "imported"
+    assert (
+        imports.decision(
+            entry(first_date="", last_date="", review=["Identidad dudosa"]), []
+        )[0]
+        == "review"
+    )
+
+
+@pytest.mark.parametrize(
+    "value", ["2026-02-30", "2026-11", "desconocida", "2026-11-25T12:00:00"]
+)
+def test_unknown_source_dates_are_empty_rather_than_invalid_strings(value):
+    with pytest.raises(ValidationError):
+        entry(first_date=value)
+
+
 @pytest.mark.parametrize(
     "name,phone,email",
     [
