@@ -689,6 +689,7 @@ def projection_db(settings, monkeypatch):
       CREATE TABLE crm_workspace.Merge(SourceContactId TEXT,TargetContactId TEXT,Active INT);
     """)
     db.create_function("CONCAT", -1, lambda *parts: "".join(str(v) for v in parts))
+    db.create_collation("Latin1_General_100_BIN2", lambda a, b: (a > b) - (a < b))
     config = SimpleNamespace(
         stages=[SimpleNamespace(key="nuevo", label="Nuevo", active=True)], fields=[]
     )
@@ -697,7 +698,9 @@ def projection_db(settings, monkeypatch):
 
     class Cursor:
         def execute(self, statement, *params):
-            parse_sql(postgres_sql(statement, layout()["tables"]).replace("%s", "NULL"))
+            converted = postgres_sql(statement, layout()["tables"])
+            self.postgres_statements = [*getattr(self, "postgres_statements", []), converted]
+            parse_sql(converted.replace("%s", "NULL"))
             statement = re.sub(r"\bINSERT\s+(?!INTO\b)", "INSERT INTO ", statement)
             statement = statement.replace(
                 "SYSUTCDATETIME()", "CURRENT_TIMESTAMP"
@@ -727,6 +730,23 @@ def projection_db(settings, monkeypatch):
             return self.cursor.fetchall()
 
     return db, Cursor()
+
+
+@pytest.mark.parametrize("formatted", ["+57 (300) 000-0000", "300 000 0000", "+573000000000"])
+def test_phone_candidate_normalization_has_deterministic_pg_operand_without_identity_merge(settings, projection_db, formatted):
+    from app.institutional import siie_classification as classification
+    db, cursor = projection_db
+    contact = str(uuid4())
+    db.execute("INSERT INTO crm.Contact(ContactId,Name,Phone) VALUES(?,?,?)", (contact, "TEST", formatted))
+    snapshot = hook.Event.model_validate(event(event_type="registration.created", idEstudiante=41, idInscripcion=42))
+    result = hook.project(cursor, settings, snapshot, {"stage_key": "nuevo"})
+    assert result == {"projection": "review_required", "contact_id": None}
+    assert db.execute("SELECT COUNT(*) FROM crm.Contact").fetchone()[0] == 1
+    assert classification.blocked(cursor, settings, contact)
+    candidates = [sql for sql in cursor.postgres_statements if "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone" in sql]
+    assert len(candidates) == 1
+    assert 'REPLACE(Phone COLLATE "C",' in candidates[0]
+    assert candidates[0].count("%s") == 2
 
 
 def test_signed_pre_registration_becomes_registered_same_crm_record_no_promotions(

@@ -253,7 +253,13 @@ def project(c, settings, event, cfg):
 
         candidates = rows(
             c,
-            "SELECT TOP(21) ContactId,Phone FROM crm.Contact WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone,'+',''),' ',''),'-',''),'(',''),')','') IN(?,?)",
+            # PostgreSQL 16/17 cannot do substring replacement using the
+            # imported nondeterministic ICU collation. Phone punctuation is
+            # byte-exact; select the existing deterministic collation for this
+            # expression only, without changing the column or identity rules.
+            "SELECT TOP(21) ContactId,Phone FROM crm.Contact WHERE "
+            "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone COLLATE Latin1_General_100_BIN2,"
+            "'+',''),' ',''),'-',''),'(',''),')','') IN(?,?)",
             number[1:],
             number[3:] if number.startswith("+57") else number[1:],
         )

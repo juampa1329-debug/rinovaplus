@@ -244,6 +244,9 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
         tag = str(error) if type(error) is ValueError and str(error) in safe_tags else "unclassified"
         state = getattr(error, "pgcode", None) or type(error).__name__
         LOG.warning("postgres_storage_error state=%s tag=%s stage=%s write=%s elapsed_ms=%s", state, tag, stage, write, round((monotonic() - started) * 1000))
+        failed = getattr(cursor, "failed_statement", None)
+        if isinstance(failed, tuple) and len(failed) == 2:
+            LOG.warning("postgres_failed_statement state=%s statement_id=%s source=%s", state, *failed)
         if state == "55P03" and stage == "institution_lock":
             # No application work has begun. Distinguish contention from an
             # identity/permission failure; never replay a caller's mutation.

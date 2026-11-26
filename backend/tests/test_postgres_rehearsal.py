@@ -13,6 +13,20 @@ MAP = {
 }
 
 
+def test_failing_statement_telemetry_keeps_only_digest_and_static_source():
+    from unittest.mock import Mock
+    from app.institutional.postgres_dialect import Cursor
+    raw = Mock()
+    raw.execute.side_effect = RuntimeError("private exception and identity must not appear")
+    cursor = Cursor(raw, MAP, {})
+    with pytest.raises(RuntimeError):
+        cursor.execute("SELECT Phone FROM crm.Contact WHERE ContactId=?", "PRIVATE-PARAMETER")
+    digest, source = cursor.failed_statement
+    assert re.fullmatch("[a-f0-9]{12}", digest)
+    assert source.startswith("test_failing_statement_telemetry_keeps_only_digest_and_static_source:")
+    assert all(value not in str(cursor.failed_statement) for value in ("PRIVATE-PARAMETER", "private exception", "SELECT Phone"))
+
+
 def test_rehearsal_rejects_other_database_or_combined_profiles():
     with pytest.raises(ProfileError, match="postgres_rehearsal_target_required"):
         load({"CRM_POSTGRES_URL": "postgresql://localhost/rinovaplus"})

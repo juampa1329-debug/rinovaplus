@@ -2,6 +2,16 @@
 
 25 de noviembre de 2026. El titular autorizó llenar el formulario con datos de prueba y confirmó puntualmente la aceptación de su política de tratamiento de datos para este ensayo.
 
+## Reintento posterior: firma válida, fallo de proyección SQL
+
+Después del aviso del titular de que SIIE reintentó el envío, los registros nativos muestran a las **00:09:45 UTC del 26Nov / 19:09:45 del 25Nov en Bogotá** `siie_webhook_rejected status=503 reason=general_storage_unavailable signature_verified=true`, junto a `postgres_storage_error state=0A000 stage=body write=True elapsed_ms=32`. Este intento superó la firma y falló dentro de la transacción. No corresponde a secreto ausente ni a recepción desactivada. Los registros seguros no identifican el evento; su correlación exacta se comprobará con el recibo persistido. Admisiones sigue mostrando cero recibos verificados en este corte.
+
+La búsqueda de coincidencias de teléfono usaba `REPLACE(Phone, ...)` sobre la colación ICU no determinista del esquema importado. PostgreSQL 16/17 no admite esa búsqueda de subcadenas con esa colación; el esquema existente ya usa la colación determinista `C` para otros cálculos de teléfono. Se añade la misma selección sólo a esta expresión, mediante el nombre compatible del adaptador SQL, sin DDL ni cambios de columnas, formatos, reglas de vínculo o firma. La limitación está documentada en la [documentación de colaciones de PostgreSQL 16](https://www.postgresql.org/docs/16/collation.html) y en la [incorporación posterior de estas funciones](https://www.postgresql.org/message-id/582b2613-0900-48ca-8b0d-340c06f4d400%40eisentraut.org). La confirmación productiva del arreglo sigue pendiente de publicación y reintento.
+
+La regresión ejecuta la proyección con teléfonos formateados, conserva la revisión de coincidencias y la exclusión promocional sin fusionar identidades; además comprueba y parsea el operando PostgreSQL con `COLLATE "C"`. La selección ampliada pasa **333 pruebas**, solapadas con selecciones anteriores; Ruff `E9,F` pasa. No se ejecutó un motor PostgreSQL aislado en estas pruebas ni se declara toda la suite verde. La telemetría de fallos SQL añade huella y ubicación estática del statement fallido, sin texto SQL, parámetros ni mensajes de excepción.
+
+Se conserva la inscripción sintética 16922 y el mismo evento. No se rellena otro formulario para solventar un fallo del receptor: después de publicar se debe reenviar el contenido corregido estable con timestamp/firma nuevos. El acuse se emite sólo después del commit, por lo que el reintento no supone duplicar una recepción confirmada. Volante/PDF, verificación del vínculo y criterios completos de P23 permanecen pendientes.
+
 ## Recorrido comprobado
 
 1. Se llenó el formulario oficial `https://siieplus.online/SIIEWEBPLUS/PreIcfes/Inscripcion.html` desde su interfaz nativa. Registro rotulado PRUEBA TECNICA RINOVAPLUS / WEBHOOK / NO MATRICULAR, identificador alfanumérico `RINOVATEST251125`, contacto ficticio no utilizable y correo bajo `example.invalid`. No se usó el documento ni el teléfono de un estudiante real.
