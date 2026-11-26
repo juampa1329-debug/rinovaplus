@@ -1,0 +1,32 @@
+{
+  "date_bogota": "2026-11-25",
+  "backend_commit": "9178c8b",
+  "backend_deployment": "jtef0rendpxohoyacc404cgw",
+  "backend_status": "Success",
+  "backend_duration": "04m23s",
+  "initial_frontend_deployment": "aflhhneruftyxzlhwth3mvky",
+  "initial_frontend_status": "Success",
+  "policy_saved_and_reloaded": true,
+  "ai_revision_after_language_save": 34,
+  "ai_revision_after_audio_projection": 35,
+  "models_revision": 5,
+  "opening": {"provider": "openrouter", "model": "google/gemini-3.8-flash", "stage_labels": ["Nuevo", "Calificación"], "input_usd_per_million": 0.75, "output_usd_per_million": 3.75},
+  "commercial": {"provider": "openrouter", "model": "anthropic/claude-sonnet-4.6"},
+  "backup": {"provider": "openrouter", "model": "anthropic/claude-sonnet-5.5"},
+  "output_tokens": 4000,
+  "cumulative_ai_budgets_unlimited": true,
+  "transcription_model": "gemini-3.8-flash",
+  "new_transcription_inference_verified": false,
+  "profiles_observed": 28,
+  "profile_versions_rewritten": false,
+  "simulations": [
+    {"case": "objection_financing_memory", "model": "anthropic/claude-sonnet-4.6", "provider": "openrouter", "inherited_policy": true, "max_tokens": 4000, "prompt_tokens": 16873, "completion_tokens": 263, "generation_ms": 8892, "estimated_usd": 0.054564, "crm_written": false, "delivered": false, "complete_response": true},
+    {"case": "opening_business_goal", "model": "google/gemini-3.8-flash", "provider": "openrouter", "explicit_simulation_override": true, "max_tokens": 700, "prompt_tokens": 11529, "completion_tokens": 211, "generation_ms": 4869, "estimated_usd": 0.009438, "crm_written": false, "delivered": false, "complete_response": true}
+  ],
+  "estimated_total_usd": 0.064002,
+  "homogeneous_benchmark": false,
+  "real_customer_stage_route_verified": false,
+  "phase_acceptances_changed": false,
+  "siie_writes": false,
+  "ddl": false
+}

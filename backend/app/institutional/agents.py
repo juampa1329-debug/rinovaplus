@@ -129,8 +129,13 @@ class Agents(AgentsService):
 
     def catalog(self):
         value = super().catalog()
+        with self.transaction() as c:
+            language = setting(c, self.profile, "ai")["document"].get("language_resilience", {})
+            unlimited = setting(c, self.profile, "budgets")["document"].get("ai_budget_unlimited", False)
         return {
             **value,
+            "language_policy": language,
+            "ai_budget_unlimited": unlimited,
             "authorization": "institutional_agents_manage",
             "academic_accuracy": "declared_CRM_not_verified_SIIE",
             "knowledge_reindex_available": False,
@@ -258,6 +263,8 @@ class Agents(AgentsService):
                 def compose(selection, program, stage):
                     enrich(c, self.profile, selection, program, stage)
                     configured = setting(c, self.profile, "ai")
+                    from app.institutional.language_stages import compose as compose_language
+                    compose_language(c, selection, configured, c.agent_conversation)
                     selection["configuration"] = {**selection["configuration"], "instructions":
                         configured["document"].get("system_prompt", "") + "\n" + selection["configuration"]["instructions"]}
                     selection["binding"] = digest([selection["binding"], configured["revision"]])

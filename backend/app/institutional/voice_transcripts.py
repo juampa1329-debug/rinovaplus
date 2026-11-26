@@ -81,7 +81,7 @@ def parse(result):
     return text
 
 
-def save(c, settings, data, audio, text, model, usage):
+def save(c, settings, data, audio, text, model, usage, *, provider="gemini"):
     ref = transcript_section(data["incoming"])
     existing = db.one(c, "SELECT Document FROM crm_access.Setting WHERE InstitutionId=? AND Section=?", db.institution(settings), ref)
     proof = {"conversation_id": str(data["conversation"]).lower(), "message_id": str(data["incoming"]).lower(),
@@ -92,7 +92,7 @@ def save(c, settings, data, audio, text, model, usage):
             raise HTTPException(409, "voice_transcription_source_changed")
         return document
     document = {**proof, "text": text, "authority": "automatic_audio_transcription_not_human_verified",
-                "provider": "gemini", "model": model,
+                "provider": provider, "model": model,
                 "reported_usage": {k: v for k, v in (usage or {}).items() if k in {"promptTokenCount", "candidatesTokenCount", "totalTokenCount"} and type(v) is int}}
     payload = json.dumps(document, ensure_ascii=False)
     c.execute("INSERT crm_access.Setting(InstitutionId,Section,Document,Revision,UpdatedAt) VALUES(?,?,?,1,SYSUTCDATETIME())", db.institution(settings), ref, payload)

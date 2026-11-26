@@ -18,6 +18,8 @@ type Entry = {
   fallback_used?: boolean;
   completion_recoveries?: { provider: string; model: string; reason: string; state: string; code?: string }[];
   context_changes?: string[];
+  context_replans?: number;
+  context_recovery_scheduled?: boolean;
   own_projection_context_refreshed?: boolean;
   own_projection_binding_refreshed?: boolean;
   campaign_entry_context?: boolean;
@@ -194,6 +196,8 @@ export function DiagnosticsWorkspace() {
                   </p>
                   {item.section === "ai" && <p>Contexto del botón comercial: {item.campaign_entry_context ? "incluido" : "no acreditado"}. Opciones de masterclass: {item.masterclass_context ? "incluidas" : "no incluidas"}.</p>}
                   {!!item.context_changes?.length && <p>Partes del contexto que cambiaron: {item.context_changes.join(", ")}</p>}
+                  {item.context_recovery_scheduled && <p>Se puso un nuevo turno en cola para reconstruir el contexto. Su envío se verifica por separado.</p>}
+                  {!!item.context_replans && <p>Revisión automática del contexto: {item.context_replans}. Se releen los mensajes y las instrucciones vigentes antes de responder.</p>}
                   {item.own_projection_context_refreshed && <p>La ficha se actualizó y la autorización quedó ligada a esa misma versión, dentro de la transacción.</p>}
                   {item.own_projection_binding_refreshed && <p>Se actualizó el interés declarado conservando el mismo agente, modelo y permisos de respuesta.</p>}
                   {item.attempts?.map((a, i) => (

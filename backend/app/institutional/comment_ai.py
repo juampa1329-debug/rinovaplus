@@ -22,6 +22,7 @@ from app.institutional.models import Strict, public_url
 from app.institutional.settings import setting
 from app.institutional.store import transaction
 from app.institutional import grounded_replies
+from app.institutional import language_resilience
 from app.modules.ai.domain.models import AiSettings
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
@@ -59,20 +60,34 @@ class DraftGateway(ProviderGateway):
         )
 
 
-def policy(c, settings, integration, ai):
+def policy(c, settings, integration, ai, *, engine=False):
+    from app.institutional.language_stages import policy as language_policy
+    language = language_policy(ai)
+    central = engine and language.enabled and language.primary
     row = one(
         c,
         (
             "SELECT TOP(1) Summary FROM crm_channels2.Verif"
             "icationEvidence WHERE InstitutionId=? AND Inte"
             "grationId=? AND Kind='comment_ai_policy' AND O"
-            "rigin='operator' AND ExpiresAt>SYSUTCDATETIME("
-            ") ORDER BY ObservedAt DESC,EvidenceId"
+            "rigin='operator' "
+            + ("" if central else "AND ExpiresAt>SYSUTCDATETIME() ")
+            + "ORDER BY ObservedAt DESC,EvidenceId"
         ),
         institution(settings),
         integration,
     )
     value = json.loads(row["Summary"]) if row else None
+    if central:
+        # The current, revisioned engine policy supplies the reviewed prices.
+        # Keep the account's last approved traffic ceiling, never increase it.
+        # Expiration of those OLD model prices cannot veto an unrelated engine.
+        if not value or type(value.get("daily_requests")) is not int or not 1 <= value["daily_requests"] <= 10000:
+            raise HTTPException(409, "comment_ai_account_limit_required")
+        return {**value, "provider": central.provider, "model": central.model,
+                "input_micros_per_million": math.ceil(central.input_usd_per_million * 1_000_000),
+                "output_micros_per_million": math.ceil(central.output_usd_per_million * 1_000_000),
+                "pricing_authority": "current_language_policy"}
     if not value or (value.get("provider"), value.get("model")) != (
         ai["provider"],
         ai["model"],
@@ -252,7 +267,11 @@ class Drafts:
                 raise HTTPException(409, "comment_changed_or_deleted")
             configured = setting(c, self.settings, "ai")
             ai = configured["document"]
-            if not ai["enabled"] or not ai["model"] or ai["provider"] == "hermes":
+            backup = language_resilience.snapshot(c, self.settings)
+            central = backup.get("primary")
+            if central:
+                ai = {**ai, "provider": central["provider"], "model": central["model"]}
+            if not ai["enabled"] or not ai["model"]:
                 raise HTTPException(409, "comment_ai_not_configured")
             credential = one(
                 c,
@@ -264,7 +283,7 @@ class Drafts:
                 institution(self.settings),
                 ai["provider"],
             )
-            if not credential:
+            if not credential and not central:
                 raise HTTPException(409, "comment_ai_credential_required")
             secret = unseal(
                 key(self.settings),
@@ -278,8 +297,8 @@ class Drafts:
                 },
                 credential["Nonce"],
                 credential["Ciphertext"],
-            )
-            pricing = policy(c, self.settings, item["IntegrationId"], ai)
+            ) if credential else None
+            pricing = policy(c, self.settings, item["IntegrationId"], ai, engine=bool(central))
             active = c.execute(
                 (
                     "SELECT COUNT(*) FROM crm_channels2.ProviderOpe"
@@ -296,13 +315,13 @@ class Drafts:
                 provider=ai["provider"],
                 model=ai["model"],
                 provider_models={ai["provider"]: ai["model"]},
-                max_tokens=min(max(ai["max_tokens"], 200), 1000),
-                output_tokens=min(max(ai["output_tokens"], 200), 1000),
+                max_tokens=ai.get("language_resilience", {}).get("reply_max_tokens", 2000) if central else min(max(ai["max_tokens"], 200), 1000),
+                output_tokens=ai.get("language_resilience", {}).get("reply_max_tokens", 2000) if central else min(max(ai["output_tokens"], 200), 1000),
                 temperature=ai["temperature"],
             )
             preview = json.loads(comment["Payload"]).get("_crm", {}).get("preview") or {}
             grounded = grounded_replies.context(c, self.settings, comment["Body"], public=True,
-                                               post=str(preview.get("caption", "")), structured=False)
+                                               post=str(preview.get("caption", "")), structured=bool(central))
             text, prompt = grounded["query"], grounded["system"]
             input_tokens = len((prompt + text).encode()) + 2048
             output_tokens = min(ai_settings.max_tokens, ai_settings.output_tokens)
@@ -317,16 +336,9 @@ class Drafts:
                 ),
             )
             budget = setting(c, self.settings, "budgets")["document"]
-            reserve_budget(
-                c, self.settings, "tokens", ceiling_tokens, budget["daily_tokens"]
-            )
-            reserve_budget(
-                c,
-                self.settings,
-                "usd",
-                ceiling_usd / 1_000_000,
-                budget["daily_usd_micros"] / 1_000_000,
-            )
+            if not central:
+                reserve_budget(c, self.settings, "tokens", ceiling_tokens, budget["daily_tokens"])
+                reserve_budget(c, self.settings, "usd", ceiling_usd / 1_000_000, budget["daily_usd_micros"] / 1_000_000)
             c.execute(
                 (
                     "INSERT crm_channels2.ProviderOperation(Institu"
@@ -334,7 +346,7 @@ class Drafts:
                     ",ActorRef,Action,RequestDigest,Status,ResultMe"
                     "tadata,EffectKey,CreatedAt,Attempts,LeaseUntil"
                     ") VALUES(?,?,?,?,?,'comment_ai',?,'running','{"
-                    "}',?,SYSUTCDATETIME(),1,DATEADD(second,90,SYSU"
+                    "}',?,SYSUTCDATETIME(),1,DATEADD(second,180,SYSU"
                     "TCDATETIME()))"
                 ),
                 institution(self.settings),
@@ -345,7 +357,8 @@ class Drafts:
                 digest,
                 digest,
             )
-        gateway = self.gateway or DraftGateway({ai["provider"]: secret})
+        gateway = self.gateway or DraftGateway(backup["keys"] if central else {ai["provider"]: secret})
+        execution = {}
         try:
             with transaction(self.settings, anonymous=True) as c:
                 authorize(c, self.settings, authority, "inbox.write")
@@ -359,25 +372,40 @@ class Drafts:
                 if setting(c, self.settings, "ai")["revision"] != configured["revision"]:
                     raise HTTPException(409, "comment_or_ai_authority_changed")
                 grounded = grounded_replies.context(c, self.settings, comment["Body"], public=True,
-                    post=str(preview.get("caption", "")), structured=False)
+                    post=str(preview.get("caption", "")), structured=bool(central))
                 text, prompt = grounded["query"], grounded["system"]
                 actual_tokens = len((prompt + text).encode()) + 2048
-                if actual_tokens > input_tokens:
+                if actual_tokens > input_tokens and not central:
                     extra = actual_tokens - input_tokens
                     reserve_budget(c, self.settings, "tokens", extra, budget["daily_tokens"])
                     extra_micros = math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000)
                     reserve_budget(c, self.settings, "usd", extra_micros / 1_000_000, budget["daily_usd_micros"] / 1_000_000)
                     ceiling_tokens += extra
                     ceiling_usd += extra_micros
-            draft = asyncio.run(
-                gateway.generate(
-                    ai["provider"],
-                    ai["model"],
-                    ai_settings,
-                    prompt,
-                    [{"role": "user", "content": text}],
-                )
-            )
+            def guard():
+                with transaction(self.settings, anonymous=True) as c:
+                    authorize(c, self.settings, authority, "inbox.write")
+                    language_resilience.assert_snapshot(c, self.settings, backup)
+                    row = one(c, "SELECT RowVersion FROM crm_channels2.SocialComment WHERE InstitutionId=? AND CommentId=?",
+                              institution(self.settings), uid(identity))
+                    if (not row or bytes(row["RowVersion"]) != bytes(comment["RowVersion"])
+                        or not c.execute("SELECT 1 FROM crm_channels2.ProviderOperation WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseUntil>SYSUTCDATETIME()",
+                            institution(self.settings), operation).fetchone()
+                        or grounded_replies.context(c, self.settings, comment["Body"], public=True,
+                            post=str(preview.get("caption", "")), structured=True)["fingerprint"] != grounded["fingerprint"]):
+                        raise HTTPException(409, "comment_or_ai_authority_changed")
+
+            async def primary():
+                return await gateway.generate(ai["provider"], ai["model"], ai_settings, prompt, [{"role": "user", "content": text}])
+
+            if central:
+                response = asyncio.run(language_resilience.execute(primary, ai["provider"], ai["model"],
+                    grounded_replies.request_body(grounded, ai_settings.max_tokens, ai_settings.temperature), backup, guard,
+                    lambda route, incoming, outgoing: language_resilience.reservation(self.settings, backup, route, incoming, outgoing),
+                    execution, gateway=gateway))
+                draft = grounded_replies.parse(response, public=True) or ""
+            else:
+                draft = asyncio.run(primary())
             if not isinstance(draft, str) or not draft.strip() or len(draft) > 4000:
                 raise AiError("comment_ai_invalid_draft", 502)
             status, code = "confirmed", None
@@ -422,7 +450,7 @@ class Drafts:
                 or not allowed
                 or not active_intent
                 or grounded_replies.context(c, self.settings, comment["Body"], public=True,
-                    post=str(preview.get("caption", "")), structured=False)["fingerprint"] != grounded["fingerprint"]
+                    post=str(preview.get("caption", "")), structured=bool(central))["fingerprint"] != grounded["fingerprint"]
             ):
                 status, code, draft = "uncertain", "comment_or_ai_authority_changed", ""
             result = {
@@ -432,6 +460,8 @@ class Drafts:
                 "automatic_send": False,
                 "budget_reserved_tokens": ceiling_tokens,
                 "budget_reserved_usd_micros": ceiling_usd,
+                **({"language_execution": execution, "budget_reserved_by_route": True,
+                    "budget_reserved_tokens": None, "budget_reserved_usd_micros": None} if central else {}),
             }
             c.execute(
                 (

@@ -155,6 +155,11 @@ details.gemini_reply_context_changed = [
   "El contexto o la configuración cambió después de preparar esta respuesta. RinovaPlus la detuvo antes de enviarla.",
   "Consulta el diagnóstico del hilo. Si no hubo otra respuesta, revisa la recuperación; no reenvíes fragmentos antiguos por separado.",
 ];
+details.reply_context_replanned = [
+  "El turno se preparó de nuevo",
+  "Este borrador no se envió. Se puso una nueva generación en cola para releer el contexto vigente.",
+  "Consulta el nuevo turno y sus recibos en Diagnósticos; no reenvíes estas partes descartadas.",
+];
 details.gemini_whatsapp_control_or_history_changed = [
   "La conversación cambió antes del envío",
   "Entró otro mensaje, cambió el control IA/Humano o venció la ventana de respuesta. Esta salida no se envió.",

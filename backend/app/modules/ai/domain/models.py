@@ -79,8 +79,8 @@ class MediaSettings(StrictModel):
     voice_prompt: str = Field(default="", max_length=1000)
     voice_limit_enabled: bool = False
     voice_limit: int = Field(default=3, ge=0, le=100)
-    audio_model: str = Field(default="", max_length=200, pattern=r"^[A-Za-z0-9._-]*$")
-    audio_provider: Literal["gemini", "groq"] = "gemini"
+    audio_model: str = Field(default="", max_length=200, pattern=r"^[A-Za-z0-9._:/-]*$")
+    audio_provider: Literal["gemini", "groq", "openrouter"] = "gemini"
     vision_model: str = Field(default="", max_length=200, pattern=r"^[A-Za-z0-9._-]*$")
     search_provider: Literal["tavily", "brave", "serpapi"] = "tavily"
 

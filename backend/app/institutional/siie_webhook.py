@@ -1,6 +1,7 @@
 """SIIE -> CRM ingress: signed minimal snapshots, no messages or enrollment claims."""
 
 import hmac
+import logging
 import os
 import re
 import time
@@ -19,6 +20,7 @@ from app.institutional.store import transaction
 
 HOOK_PATH = "/hooks/siie/v1"
 MAX_BODY = 65536
+LOG = logging.getLogger(__name__)
 Positive = Annotated[int, Field(strict=True, ge=1, le=2147483647)]
 
 
@@ -97,6 +99,7 @@ def secret():
 def verify(headers, raw, *, now=None):
     key = secret()
     if not key:
+        LOG.warning("siie_webhook_rejected status=503 reason=secret_not_configured")
         raise HTTPException(
             503, "siie_webhook_not_configured", headers={"Retry-After": "300"}
         )
@@ -104,9 +107,11 @@ def verify(headers, raw, *, now=None):
         headers.get("x-siie-timestamp", ""),
         headers.get("x-siie-signature", ""),
     )
-    if not re.fullmatch(r"[0-9]{10,11}", timestamp) or not re.fullmatch(
-        r"sha256=[0-9a-f]{64}", signature
-    ):
+    if not re.fullmatch(r"[0-9]{10,11}", timestamp):
+        LOG.warning("siie_webhook_rejected status=403 reason=timestamp_format")
+        raise HTTPException(403, "siie_webhook_signature_rejected")
+    if not re.fullmatch(r"sha256=[0-9a-f]{64}", signature):
+        LOG.warning("siie_webhook_rejected status=403 reason=signature_format")
         raise HTTPException(403, "siie_webhook_signature_rejected")
     expected = (
         "sha256="
@@ -116,9 +121,21 @@ def verify(headers, raw, *, now=None):
             "sha256",
         ).hex()
     )
-    if abs(
-        (time.time() if now is None else now) - int(timestamp)
-    ) > 300 or not hmac.compare_digest(signature, expected):
+    skew = (time.time() if now is None else now) - int(timestamp)
+    signature_matches = hmac.compare_digest(signature, expected)
+    if abs(skew) > 300 or not signature_matches:
+        # Private operator diagnostics only. Never log request values, the key,
+        # signature, payload or even its event/person identifiers.
+        reason = (
+            ("clock_skew" if signature_matches else "clock_skew_and_signature_mismatch")
+            if abs(skew) > 300
+            else "signature_mismatch"
+        )
+        LOG.warning(
+            "siie_webhook_rejected status=403 reason=%s skew_seconds=%s",
+            reason,
+            round(skew),
+        )
         raise HTTPException(403, "siie_webhook_signature_rejected")
 
 
@@ -236,7 +253,13 @@ def project(c, settings, event, cfg):
 
         candidates = rows(
             c,
-            "SELECT TOP(21) ContactId,Phone FROM crm.Contact WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone,'+',''),' ',''),'-',''),'(',''),')','') IN(?,?)",
+            # PostgreSQL 16/17 cannot do substring replacement using the
+            # imported nondeterministic ICU collation. Phone punctuation is
+            # byte-exact; select the existing deterministic collation for this
+            # expression only, without changing the column or identity rules.
+            "SELECT TOP(21) ContactId,Phone FROM crm.Contact WHERE "
+            "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone COLLATE Latin1_General_100_BIN2,"
+            "'+',''),' ',''),'-',''),'(',''),')','') IN(?,?)",
             number[1:],
             number[3:] if number.startswith("+57") else number[1:],
         )
@@ -336,6 +359,19 @@ class Ingress:
 
     def receive(self, headers, raw):
         verify(headers, raw)
+        try:
+            return self.receive_verified(raw)
+        except HTTPException as error:
+            # Verification succeeded before storage/configuration was consulted.
+            # Fixed codes only: never log body, document, key, signature or IDs.
+            if error.status_code == 503:
+                reason = str(error.detail) if error.detail in {
+                    "storage_busy", "general_storage_unavailable", "siie_webhook_disabled"
+                } else "unavailable"
+                LOG.warning("siie_webhook_rejected status=503 reason=%s signature_verified=true", reason)
+            raise
+
+    def receive_verified(self, raw):
         try:
             event = Event.model_validate(strict_json(raw))
             if event.event_type.startswith("pre_registration.") and (

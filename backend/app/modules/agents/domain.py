@@ -117,7 +117,7 @@ class Configuration(StrictModel):
     fallback_model: str = Field(
         default="", max_length=200, pattern=r"^[A-Za-z0-9._:/-]*$"
     )
-    max_tokens: int = Field(default=700, ge=128, le=2000)
+    max_tokens: int = Field(default=700, ge=128, le=8000)
     monthly_token_limit: int = Field(default=0, ge=0, le=100000000)
     allow_reply: bool = False
 

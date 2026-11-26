@@ -185,6 +185,54 @@ def test_duplicate_webhook_no_second_projection_and_conflicting_event_is_rejecte
     assert len(calls) == 1
 
 
+@pytest.mark.parametrize("code", ["storage_busy", "general_storage_unavailable", "siie_webhook_disabled"])
+def test_verified_webhook_503_has_exact_safe_body_and_never_acknowledges_or_retries(settings, memory, monkeypatch, caplog, code):
+    @contextmanager
+    def unavailable(*args, **kwargs):
+        raise HTTPException(503, code, headers={"Retry-After": "1"})
+        yield
+
+    calls = []
+    def project(*args):
+        calls.append(True)
+        return {"projection": "created", "contact_id": str(uuid4())}
+    original_tx = hook.transaction
+    monkeypatch.setattr(hook, "transaction", unavailable)
+    monkeypatch.setattr(hook, "project", project)
+    payload = event(event_type="registration.created", idEstudiante=41, idInscripcion=42)
+    raw = json.dumps(payload).encode()
+    app = FastAPI()
+    hook.install(app, settings)
+    browser = TestClient(app)
+    response = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    assert response.status_code == 503
+    assert response.json() == {"detail": code}
+    assert response.headers["retry-after"] == "1"
+    assert calls == [] and memory[0] == {}
+    assert f"reason={code} signature_verified=true" in caplog.text
+    for private in (payload["event_id"], payload["documento"], payload["persona"]["nombres"], hook.secret(), signed(raw)["x-siie-signature"]):
+        assert private not in caplog.text
+    # Same event after the transient fault, with a newly signed request: one
+    # projection and then an idempotent acknowledgement, no second student.
+    monkeypatch.setattr(hook, "transaction", original_tx)
+    accepted = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    duplicate = browser.post(hook.HOOK_PATH, content=raw, headers=signed(raw))
+    assert accepted.json()["received"] is True and accepted.json()["duplicate"] is False
+    assert duplicate.json()["duplicate"] is True
+    assert len(calls) == 1
+
+
+def test_disabled_webhook_503_is_distinct_after_verified_signature(settings, memory, caplog):
+    memory[2]["webhook_enabled"] = False
+    raw = json.dumps(event()).encode()
+    with pytest.raises(HTTPException) as caught:
+        hook.Ingress(settings).receive(signed(raw), raw)
+    assert caught.value.detail == "siie_webhook_disabled"
+    assert caught.value.headers["Retry-After"] == "300"
+    assert "reason=siie_webhook_disabled signature_verified=true" in caplog.text
+    assert memory[0] == {}
+
+
 @pytest.mark.parametrize(
     "change",
     [
@@ -641,6 +689,7 @@ def projection_db(settings, monkeypatch):
       CREATE TABLE crm_workspace.Merge(SourceContactId TEXT,TargetContactId TEXT,Active INT);
     """)
     db.create_function("CONCAT", -1, lambda *parts: "".join(str(v) for v in parts))
+    db.create_collation("Latin1_General_100_BIN2", lambda a, b: (a > b) - (a < b))
     config = SimpleNamespace(
         stages=[SimpleNamespace(key="nuevo", label="Nuevo", active=True)], fields=[]
     )
@@ -649,7 +698,9 @@ def projection_db(settings, monkeypatch):
 
     class Cursor:
         def execute(self, statement, *params):
-            parse_sql(postgres_sql(statement, layout()["tables"]).replace("%s", "NULL"))
+            converted = postgres_sql(statement, layout()["tables"])
+            self.postgres_statements = [*getattr(self, "postgres_statements", []), converted]
+            parse_sql(converted.replace("%s", "NULL"))
             statement = re.sub(r"\bINSERT\s+(?!INTO\b)", "INSERT INTO ", statement)
             statement = statement.replace(
                 "SYSUTCDATETIME()", "CURRENT_TIMESTAMP"
@@ -679,6 +730,23 @@ def projection_db(settings, monkeypatch):
             return self.cursor.fetchall()
 
     return db, Cursor()
+
+
+@pytest.mark.parametrize("formatted", ["+57 (300) 000-0000", "300 000 0000", "+573000000000"])
+def test_phone_candidate_normalization_has_deterministic_pg_operand_without_identity_merge(settings, projection_db, formatted):
+    from app.institutional import siie_classification as classification
+    db, cursor = projection_db
+    contact = str(uuid4())
+    db.execute("INSERT INTO crm.Contact(ContactId,Name,Phone) VALUES(?,?,?)", (contact, "TEST", formatted))
+    snapshot = hook.Event.model_validate(event(event_type="registration.created", idEstudiante=41, idInscripcion=42))
+    result = hook.project(cursor, settings, snapshot, {"stage_key": "nuevo"})
+    assert result == {"projection": "review_required", "contact_id": None}
+    assert db.execute("SELECT COUNT(*) FROM crm.Contact").fetchone()[0] == 1
+    assert classification.blocked(cursor, settings, contact)
+    candidates = [sql for sql in cursor.postgres_statements if "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Phone" in sql]
+    assert len(candidates) == 1
+    assert 'REPLACE(Phone COLLATE "C",' in candidates[0]
+    assert candidates[0].count("%s") == 2
 
 
 def test_signed_pre_registration_becomes_registered_same_crm_record_no_promotions(

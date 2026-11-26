@@ -2,6 +2,20 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import { LanguageResilience } from "../institution/LanguageResilience";
 
+vi.mock("../modules/crm-configuration/hooks/useCrmConfiguration", () => ({
+  useCrmConfiguration: () => ({
+    ready: true,
+    error: "",
+    config: {
+      stages: [
+        { key: "nuevo", label: "Nuevo", active: true },
+        { key: "objeciones", label: "Dudas y objeciones", active: true },
+        { key: "old", label: "Inactiva", active: false },
+      ],
+    },
+  }),
+}));
+
 vi.mock("../institution/LiveModelSelect", () => ({
   LiveModelSelect: ({
     label,
@@ -19,6 +33,53 @@ vi.mock("../institution/LiveModelSelect", () => ({
     </select>
   ),
 }));
+
+it("accepts the saved 4000 token cap without blocking native form submission", () => {
+  const { rerender } = render(
+    <LanguageResilience
+      value={{
+        enabled: true,
+        primary: {
+          provider: "openrouter",
+          model: "fixture",
+          input_usd_per_million: 3,
+          output_usd_per_million: 15,
+        },
+        reply_max_tokens: 4000,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
+  const limit = screen.getByRole("spinbutton", {
+    name: "Máximo de tokens por respuesta de los agentes",
+  }) as HTMLInputElement;
+  expect(limit.value).toBe("4000");
+  expect(limit.checkValidity()).toBe(true);
+  rerender(
+    <LanguageResilience
+      value={{
+        primary: { provider: "openrouter", model: "fixture" },
+        reply_max_tokens: 4001,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
+  expect(limit.value).toBe("4001");
+  expect(limit.checkValidity()).toBe(true);
+  rerender(
+    <LanguageResilience
+      value={{
+        primary: { provider: "openrouter", model: "fixture" },
+        reply_max_tokens: 8001,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
+  expect(limit.checkValidity()).toBe(false);
+});
 
 it("prepares an explicit free backup without enabling or saving the policy", () => {
   const change = vi.fn();
@@ -127,4 +188,38 @@ it("selects a separate primary from the live catalog and saves only on request",
     screen.getByRole("button", { name: "Guardar motor y respaldos" }),
   );
   expect(save).toHaveBeenCalledTimes(1);
+});
+
+it("selects opening stages from CRM and edits the output envelope without saving or altering backups", () => {
+  const change = vi.fn(),
+    save = vi.fn(async () => {});
+  const route = {
+    provider: "openrouter" as const,
+    model: "fixture",
+    input_usd_per_million: 1,
+    output_usd_per_million: 2,
+  };
+  const policy = {
+    enabled: true,
+    primary: route,
+    routes: [{ ...route, model: "backup" }],
+    opening: route,
+    opening_stage_keys: [],
+  };
+  render(<LanguageResilience value={policy} onChange={change} onSave={save} />);
+  fireEvent.click(screen.getByRole("checkbox", { name: "Nuevo" }));
+  expect(change.mock.lastCall![0].opening_stage_keys).toEqual(["nuevo"]);
+  expect(change.mock.lastCall![0].routes).toEqual(policy.routes);
+  expect(
+    screen.queryByRole("checkbox", { name: "Inactiva" }),
+  ).not.toBeInTheDocument();
+  fireEvent.change(
+    screen.getByLabelText("Máximo de tokens por respuesta de los agentes"),
+    { target: { value: "4000" } },
+  );
+  expect(change.mock.lastCall![0].reply_max_tokens).toBe(4000);
+  expect(save).not.toHaveBeenCalled();
+  expect(
+    screen.getByText(/Financiación, objeciones, cierre y seguimiento/),
+  ).toBeInTheDocument();
 });

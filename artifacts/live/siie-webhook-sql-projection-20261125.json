@@ -1,0 +1,52 @@
+{
+  "local_date": "2026-11-25",
+  "timezone": "America/Bogota",
+  "source": "Native authenticated RinovaPlus and Coolify UI; isolated synthetic tests",
+  "observed_rejection": {
+    "at_utc": "2026-11-26T00:09:45Z",
+    "http_status": 503,
+    "reason": "general_storage_unavailable",
+    "signature_verified": true,
+    "postgres_sqlstate": "0A000",
+    "stage": "body",
+    "write": true,
+    "elapsed_ms": 32,
+    "specific_event_identity_not_logged": true
+  },
+  "fix": {
+    "commit": "ff0ab17",
+    "scope": "Deterministic collation on the phone-normalization expression only",
+    "schema_changed": false,
+    "signature_policy_changed": false,
+    "identity_link_policy_changed": false,
+    "safe_failed_statement_telemetry": "SQL hash and static callsite only"
+  },
+  "checks": {
+    "backend_selected_passed": 333,
+    "overlaps_prior_selections": true,
+    "ruff_E9_F": "passed",
+    "postgres_SQL_parser": "passed",
+    "isolated_PostgreSQL_runtime_test": false,
+    "full_suite_green_claimed": false
+  },
+  "production": {
+    "backend_deployment": "hnkeubaidirkzhon0pxerilq",
+    "status": "Success",
+    "backend_duration": "4m19s",
+    "frontend_deployment": "mlhtlridk6w4znhka1p5azbk",
+    "frontend_status": "Success",
+    "frontend_duration": "25s",
+    "verified_receipts": 1,
+    "http_acknowledgement": {"status": 200, "upstream": 200, "duration_seconds": 0.441, "at_utc": "2026-11-26T00:17:01Z"},
+    "receipt_persisted_after_reload": true,
+    "receipt_is_different_from_original_synthetic_event": true,
+    "classification": "registered_no_promotions",
+    "projection": "review_required",
+    "identity_link_confirmed": false,
+    "new_message_sent": false,
+    "same_event_after_fix_verified": false,
+    "new_registration_submitted": false,
+    "invoice_or_pdf_generated": false,
+    "phase_criteria_accepted": "0/9"
+  }
+}

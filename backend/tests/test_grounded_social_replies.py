@@ -241,7 +241,7 @@ def test_message_worker_sends_generated_text_or_hands_off(monkeypatch, answer, w
     from app.modules.ai.domain.models import ModelInfo
     from app.modules.ai.infrastructure.providers import AiError
     route = {"provider": "openrouter", "model": "fixture:free", "input_usd_per_million": 0, "output_usd_per_million": 0}
-    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_: {"routes": [route] if with_backup else [], "keys": {"openrouter": "fixture"}, "fallback_on_timeout": with_backup == "timeout"})
+    monkeypatch.setattr(messaging.language_resilience, "snapshot", lambda *_, **__: {"routes": [route] if with_backup else [], "keys": {"openrouter": "fixture"}, "fallback_on_timeout": with_backup == "timeout"})
     monkeypatch.setattr(messaging.language_resilience, "assert_snapshot", lambda *_: None)
     backup_reservations = []
     monkeypatch.setattr(messaging.language_resilience, "reservation", lambda *_: backup_reservations.append(1))

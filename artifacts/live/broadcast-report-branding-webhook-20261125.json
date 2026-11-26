@@ -1,0 +1,175 @@
+{
+  "verification_date": "2026-11-25",
+  "timezone": "America/Bogota",
+  "scope": "campaign_report_fix_branding_pr_and_signed_siie_intake_activation",
+  "git": {
+    "report_fix": "3a238a8",
+    "contributor_design": "1b6653a",
+    "reviewed_design_commits": [
+      "53912f1",
+      "fb57785"
+    ],
+    "pull_request": "https://github.com/juampa1329-debug/rinovaplus/pull/1",
+    "merge": "60dceb6",
+    "pull_request_state": "merged",
+    "ci_checks_on_pr": 0,
+    "diagnostic_pull_request": "https://github.com/juampa1329-debug/rinovaplus/pull/2",
+    "diagnostic_merge": "813fbaf",
+    "diagnostic_pull_request_state": "merged"
+  },
+  "deployments": {
+    "backend_report_fix": {
+      "id": "fqjn8amupeyndfepgnumulut",
+      "state": "Success",
+      "duration": "04m19s"
+    },
+    "backend_owner_secret_redeploy": {
+      "id": "qfxumzfcnwhmjsgziiwq7fg4",
+      "state": "Success",
+      "duration_including_queue": "06m02s",
+      "revision": "3a238a8"
+    },
+    "frontend_design": {
+      "id": "yf0ecqdevkoecjnfsthmzfeu",
+      "state": "Success",
+      "duration": "00m44s",
+      "revision": "60dceb6"
+    },
+    "backend_signature_diagnostics": {
+      "id": "g8umqbsbdmfhbuhdfyl4tivf",
+      "state": "Success",
+      "application_state": "Running",
+      "duration": "04m18s",
+      "revision": "813fbaf"
+    },
+    "frontend_webhook_http_log": {
+      "state": "Success",
+      "duration": "00m25s",
+      "revision": "813fbaf"
+    }
+  },
+  "local_checks": {
+    "backend_selected_passed": 220,
+    "frontend_report_selected_passed": 38,
+    "frontend_design_and_report_selected_passed": 62,
+    "frontend_selections_overlap": true,
+    "typescript": "passed",
+    "eslint_selected": "passed",
+    "ruff_selected": "passed",
+    "workspace_build": "passed_with_historical_bundle_warning",
+    "full_suite_claimed_green": false,
+    "inherited_frontend_failures_reproduced_on_previous_api": 2,
+    "post_concurrent_merge_backend_selected_passed": 114,
+    "post_concurrent_merge_frontend_selected_passed": 66
+  },
+  "native_report_checks": {
+    "initial_rows": 100,
+    "delivered_state_filter_rows": 67,
+    "cleared_filter_rows": 100,
+    "alerts_during_these_checks": 0,
+    "chart": {
+      "recipients": 100,
+      "observed_delivered": 90,
+      "observed_read": 23,
+      "attributed_replies": 38,
+      "failed": 8
+    },
+    "new_messages_or_retries_performed": 0,
+    "real_csv_export_repeated": false
+  },
+  "sql_evidence": {
+    "prior_paginated_fingerprint": "2a63e69f31ec",
+    "prior_statement_timeout_ms": 8001,
+    "new_paginated_fingerprint": "5565f3712fa1",
+    "new_aggregate_fingerprint": "a83fe065b4da",
+    "observed_new_aggregate_statement_ms": [
+      419,
+      432,
+      435
+    ],
+    "observed_new_aggregate_transaction_ms": [
+      1276,
+      1300,
+      1321
+    ],
+    "remaining_other_inbox_listing_fingerprint": "e7639d094565",
+    "remaining_lock_waits_observed": "55P03",
+    "all_storage_contention_claimed_resolved": false
+  },
+  "operations": {
+    "observed_at": "2026-11-25T17:14:11-05:00",
+    "processes_current": 9
+  },
+  "published_access": {
+    "existing_session_preserved": true,
+    "activation_form_rendered": true,
+    "logo_loaded": true,
+    "horizontal_overflow": false,
+    "credentials_entered_in_verification": false
+  },
+  "siie": {
+    "url": "https://app.rinovaplus.com/hooks/siie/v1",
+    "secret_present_confirmed_by_application": true,
+    "secret_saved_by_owner": true,
+    "explicit_intake_activation_authorized": true,
+    "inbound_enabled_verified_after_reload": true,
+    "initial_stage": "Calificación",
+    "outbound_writes_enabled": false,
+    "verified_inbound_events_observed": 0,
+    "first_real_signed_event_pending": true,
+    "payment_contract_and_pdf_pending": true,
+    "p23_accepted": "0/9",
+    "authorized_synthetic_form_registration": {
+      "registration_number": 16922,
+      "synthetic_document": "RINOVATEST251125",
+      "group": "G1",
+      "registration_confirmed_by_siie_form": true,
+      "synthetic_attachment_only": true,
+      "explicit_privacy_acceptance_authorized": true,
+      "real_person_documents_used": false,
+      "verified_inbound_events_after_registration": 0,
+      "remote_event_injected_by_agent": false,
+      "producer_http_status_pending": false,
+      "producer_reported_http": 403,
+      "producer_event_id": "edd87d5d-dd6a-49dc-a6cc-147facb87659",
+      "producer_timestamp_header_pending": false,
+      "producer_event_json_validated_locally": true,
+      "invalid_fields": [
+        "occurred_at"
+      ],
+      "received_occurred_at": "2026-11-26T01:25:23.0000000Z",
+      "local_validation_utc": "2026-11-25T22:35:27Z",
+      "ahead_seconds_at_validation": 10196,
+      "other_fields_valid_with_valid_time": true,
+      "raw_timestamp_header_obtained": false
+    },
+    "native_ingress_diagnostic": {
+      "observed_at_utc": "2026-11-25T22:44:00Z",
+      "backend_reason": "clock_skew",
+      "skew_seconds": -10809,
+      "signature_matches": true,
+      "producer_ahead_seconds": 10809,
+      "proxy_attempts": [
+        {
+          "at_utc": "2026-11-25T22:42:31Z",
+          "status": 403,
+          "upstream": 403,
+          "duration_seconds": 0.066
+        },
+        {
+          "at_utc": "2026-11-25T22:43:51Z",
+          "status": 403,
+          "upstream": 403,
+          "duration_seconds": 0.067
+        }
+      ],
+      "event_id_in_logs": false,
+      "payload_or_headers_logged": false,
+      "event_attribution_from_status_only_claimed": false,
+      "acceptance_claimed": false,
+      "fresh_authenticated_receipt_read_after_rollout": false,
+      "receipt_read_blocker": "institutional_session_expired",
+      "producer_clock_correction_and_retry_pending": true
+    }
+  }
+}

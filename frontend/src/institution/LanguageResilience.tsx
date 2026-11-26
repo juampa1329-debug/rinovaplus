@@ -1,18 +1,66 @@
 import { Button, Field, SelectField } from "../shared/ui";
 import { LiveModelSelect } from "./LiveModelSelect";
+import { useCrmConfiguration } from "../modules/crm-configuration/hooks/useCrmConfiguration";
+import { providerNames, type AiProvider } from "../shared/aiSettings";
+
+const engineOptions = Object.entries(providerNames).map(([value, label]) => ({
+  value,
+  label,
+}));
 
 type Route = {
-  provider: "gemini" | "openrouter";
+  provider: AiProvider;
   model: string;
   input_usd_per_million: number;
   output_usd_per_million: number;
 };
-type Policy = {
+export type LanguagePolicy = {
   enabled: boolean;
   fallback_on_timeout?: boolean;
   primary?: Route | null;
+  opening?: Route | null;
+  opening_stage_keys?: string[];
+  reply_max_tokens?: number;
   routes: Route[];
 };
+
+function OpeningStages({
+  policy,
+  onChange,
+}: {
+  policy: LanguagePolicy;
+  onChange: (value: LanguagePolicy) => void;
+}) {
+  const { config, ready, error } = useCrmConfiguration();
+  return (
+    <fieldset>
+      <legend>Etapas CRM de apertura y orientación</legend>
+      {error && <p role="alert">{error}</p>}
+      {!ready && !error && <p>Cargando etapas del CRM…</p>}
+      {config.stages
+        .filter((stage) => stage.active !== false)
+        .map((stage) => (
+          <label className="checkbox-label" key={stage.key}>
+            <input
+              type="checkbox"
+              checked={(policy.opening_stage_keys ?? []).includes(stage.key)}
+              onChange={(e) =>
+                onChange({
+                  ...policy,
+                  opening_stage_keys: e.target.checked
+                    ? [...(policy.opening_stage_keys ?? []), stage.key]
+                    : (policy.opening_stage_keys ?? []).filter(
+                        (key) => key !== stage.key,
+                      ),
+                })
+              }
+            />
+            {stage.label}
+          </label>
+        ))}
+    </fieldset>
+  );
+}
 
 export function LanguageResilience({
   value,
@@ -20,10 +68,10 @@ export function LanguageResilience({
   onSave,
 }: {
   value: unknown;
-  onChange: (value: Policy) => void;
+  onChange: (value: LanguagePolicy) => void;
   onSave?: () => Promise<void>;
 }) {
-  const policy = (value ?? { enabled: false, routes: [] }) as Policy;
+  const policy = (value ?? { enabled: false, routes: [] }) as LanguagePolicy;
   const update = (index: number, patch: Partial<Route>) =>
     onChange({
       ...policy,
@@ -78,10 +126,7 @@ export function LanguageResilience({
             id="language-primary-provider"
             label="Proveedor principal de conversaciones"
             value={policy.primary.provider}
-            options={[
-              { value: "openrouter", label: "OpenRouter" },
-              { value: "gemini", label: "Gemini" },
-            ]}
+            options={engineOptions}
             onChange={(event) =>
               onChange({
                 ...policy,
@@ -158,6 +203,106 @@ export function LanguageResilience({
           </p>
         </fieldset>
       )}
+      {policy.primary && (
+        <>
+          <Field
+            id="language-reply-tokens"
+            label="Máximo de tokens por respuesta de los agentes"
+            type="number"
+            min={512}
+            max={8000}
+            step={1}
+            value={String(policy.reply_max_tokens ?? 2000)}
+            onChange={(e) =>
+              onChange({ ...policy, reply_max_tokens: Number(e.target.value) })
+            }
+          />
+          <p>
+            Este máximo da espacio a la respuesta completa y al registro CRM. No
+            obliga a escribir más ni es un cupo de mensajes. Las instrucciones
+            siguen pidiendo respuestas breves en partes completas.
+          </p>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={!!policy.opening}
+              disabled={!policy.enabled}
+              onChange={(e) =>
+                onChange({
+                  ...policy,
+                  opening: e.target.checked
+                    ? {
+                        provider: "openrouter",
+                        model: "",
+                        input_usd_per_million: 0,
+                        output_usd_per_million: 0,
+                      }
+                    : null,
+                })
+              }
+            />
+            Usar otro modelo para apertura y orientación
+          </label>
+          {policy.opening && (
+            <fieldset>
+              <legend>Modelo de apertura</legend>
+              <SelectField
+                id="language-opening-provider"
+                label="Proveedor de apertura"
+                value={policy.opening.provider}
+                options={engineOptions}
+                onChange={(e) =>
+                  onChange({
+                    ...policy,
+                    opening: {
+                      ...policy.opening!,
+                      provider: e.target.value as Route["provider"],
+                      model: "",
+                    },
+                  })
+                }
+              />
+              <LiveModelSelect
+                id="language-opening-model"
+                label="Modelo de apertura y orientación"
+                category="text"
+                provider={policy.opening.provider}
+                value={policy.opening.model}
+                onChange={(model) =>
+                  onChange({
+                    ...policy,
+                    opening: { ...policy.opening!, model },
+                  })
+                }
+                onSelect={(model) =>
+                  onChange({
+                    ...policy,
+                    opening: {
+                      ...policy.opening!,
+                      model: model.id,
+                      input_usd_per_million: model.input_usd_per_million ?? 0,
+                      output_usd_per_million: model.output_usd_per_million ?? 0,
+                    },
+                  })
+                }
+              />
+              <p>
+                Tarifa máxima de entrada: {policy.opening.input_usd_per_million}{" "}
+                USD/millón. Salida: {policy.opening.output_usd_per_million}{" "}
+                USD/millón. Se cargan al elegir el modelo.
+              </p>
+              <OpeningStages policy={policy} onChange={onChange} />
+              <p>
+                Financiación, objeciones, cierre y seguimiento usan el principal
+                comercial, incluso si la ficha aún está en una etapa inicial. Si
+                falla la apertura, se intenta el principal comercial y después
+                sus respaldos. Todas las rutas conservan las mismas skills y
+                memoria.
+              </p>
+            </fieldset>
+          )}
+        </>
+      )}
       <label className="checkbox-label">
         <input
           type="checkbox"
@@ -182,8 +327,9 @@ export function LanguageResilience({
           ? "primero el principal elegido aquí"
           : "primero el modelo del agente"}
         , después esta lista. Aplica a texto y audio ya transcrito. La
-        interpretación de audio conserva Gemini. Los agentes del simulador
-        mantienen su respaldo propio.
+        interpretación de audio usa el modelo de audio elegido en APIs y
+        modelos. Los agentes heredan este motor. Una prueba con modelo explícito
+        en el simulador conserva su selección de prueba.
       </p>
       {policy.routes.map((route, index) => (
         <fieldset key={index}>
@@ -192,10 +338,7 @@ export function LanguageResilience({
             id={`language-backup-provider-${index}`}
             label={`Proveedor del respaldo ${index + 1}`}
             value={route.provider}
-            options={[
-              { value: "openrouter", label: "OpenRouter" },
-              { value: "gemini", label: "Gemini" },
-            ]}
+            options={engineOptions}
             onChange={(event) =>
               update(index, {
                 provider: event.target.value as Route["provider"],

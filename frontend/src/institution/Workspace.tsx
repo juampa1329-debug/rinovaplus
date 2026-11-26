@@ -1,5 +1,8 @@
 import { ContactPreference } from "./ContactPreference";
-import { CommercialFollowupReview, CommercialFollowupCard } from "./CommercialFollowup";
+import {
+  CommercialFollowupReview,
+  CommercialFollowupCard,
+} from "./CommercialFollowup";
 import {
   createContext,
   useContext,
@@ -81,6 +84,8 @@ type Row = {
   preview?: string | null;
   previewKind?: string | null;
   previewDuration?: string | null;
+  previewSender?: "ai" | "human" | "channel" | "automation";
+  previewSenderName?: string | null;
   temperature?: string | null;
   leadScore?: number | null;
   program?: string | null;
@@ -146,6 +151,7 @@ type Message = {
   attachments?: Attachment[];
   replyTo?: { id: string; body: string; direction: string };
   voiceTranscript?: string;
+  messageEdit?: { verified: boolean };
   id: string;
   body: string;
   direction: string;
@@ -671,7 +677,16 @@ function WorkspaceView({
     anchor: offset ? anchor : "",
     ...(inbox
       ? inboxFilters
-      : { q, stage, tag, city, contactType: type, program, contactOrigin, academicState }),
+      : {
+          q,
+          stage,
+          tag,
+          city,
+          contactType: type,
+          program,
+          contactOrigin,
+          academicState,
+        }),
   });
   const list = useRead<Page>(
     (page === "inbox" ? "inbox" : "clients") + "?" + params.toString(),
@@ -694,10 +709,11 @@ function WorkspaceView({
   // One delayed request at a time; never repeat failures on every Inbox poll.
   const profileTarget = needsProfile(selected, selectedChannel)
     ? selected
-    : list.value?.items.find((row) =>
-        needsProfile(row.conversationId, row.channel) &&
-        genericSocialName(row.name)
-      )?.conversationId ?? "";
+    : (list.value?.items.find(
+        (row) =>
+          needsProfile(row.conversationId, row.channel) &&
+          genericSocialName(row.name),
+      )?.conversationId ?? "");
   const profile = useRead<{ profile: SocialProfile | null }>(
     `conversations/${profileTarget}/social-profile`,
     0,
@@ -706,7 +722,11 @@ function WorkspaceView({
     false,
     profileTarget === selected ? 180 : 2000,
   );
-  if ((profile.value || profile.error) && profileTarget && !(profileTarget in socialProfiles))
+  if (
+    (profile.value || profile.error) &&
+    profileTarget &&
+    !(profileTarget in socialProfiles)
+  )
     setSocialProfiles({
       ...socialProfiles,
       [profileTarget]: profile.value?.profile ?? null,
@@ -845,8 +865,37 @@ function WorkspaceView({
                 value={type}
                 onChange={(e) => setType(e.target.value)}
               />
-              <SelectField id="p3-origin" label="Origen del contacto" value={contactOrigin} options={[{ value: "", label: "Todos los orígenes" }, { value: "siie", label: "SIIE · Webhook" }, { value: "imported", label: "Importados · Excel" }, { value: "social", label: "Redes sociales" }]} onChange={(e) => { setContactOrigin(e.target.value); setOffset(0); setAnchor(""); }} />
-              <SelectField id="p3-academic-state" label="Clasificación de SIIE" value={academicState} options={[{ value: "", label: "Todas" }, { value: "pre_registered", label: "Preinscritos" }, { value: "registered", label: "Inscritos · Sin promociones" }]} onChange={(e) => { setAcademicState(e.target.value); setOffset(0); setAnchor(""); }} />
+              <SelectField
+                id="p3-origin"
+                label="Origen del contacto"
+                value={contactOrigin}
+                options={[
+                  { value: "", label: "Todos los orígenes" },
+                  { value: "siie", label: "SIIE · Webhook" },
+                  { value: "imported", label: "Importados · Excel" },
+                  { value: "social", label: "Redes sociales" },
+                ]}
+                onChange={(e) => {
+                  setContactOrigin(e.target.value);
+                  setOffset(0);
+                  setAnchor("");
+                }}
+              />
+              <SelectField
+                id="p3-academic-state"
+                label="Clasificación de SIIE"
+                value={academicState}
+                options={[
+                  { value: "", label: "Todas" },
+                  { value: "pre_registered", label: "Preinscritos" },
+                  { value: "registered", label: "Inscritos · Sin promociones" },
+                ]}
+                onChange={(e) => {
+                  setAcademicState(e.target.value);
+                  setOffset(0);
+                  setAnchor("");
+                }}
+              />
               <Button
                 onClick={() => {
                   setOffset(0);
@@ -976,7 +1025,21 @@ function WorkspaceView({
                         }}
                       >
                         <strong>{row.name || row.phone}</strong>
-                        {row.contactOrigin && <span className="channel-chip">{{ siie: "SIIE", imported: "Importado · Excel", social: "Redes sociales", crm: "CRM" }[row.contactOrigin] ?? row.contactOrigin}{row.academicState === "registered" ? " · Inscrito · Sin promociones" : row.academicState === "pre_registered" ? " · Preinscrito" : ""}</span>}
+                        {row.contactOrigin && (
+                          <span className="channel-chip">
+                            {{
+                              siie: "SIIE",
+                              imported: "Importado · Excel",
+                              social: "Redes sociales",
+                              crm: "CRM",
+                            }[row.contactOrigin] ?? row.contactOrigin}
+                            {row.academicState === "registered"
+                              ? " · Inscrito · Sin promociones"
+                              : row.academicState === "pre_registered"
+                                ? " · Preinscrito"
+                                : ""}
+                          </span>
+                        )}
                         <span>
                           {row.stage} · {row.assignee || "Sin asignar"}
                           {row.unread ? " · No leída" : ""}
@@ -1043,7 +1106,13 @@ function WorkspaceView({
                 page={page}
                 refresh={refresh}
                 liveRevision={
-                  inbox && offset === 0 ? JSON.stringify(list.value?.items.find((row) => row.conversationId === selected)) : undefined
+                  inbox && offset === 0
+                    ? JSON.stringify(
+                        list.value?.items.find(
+                          (row) => row.conversationId === selected,
+                        ),
+                      )
+                    : undefined
                 }
                 changed={changed}
                 config={cfg.config}
@@ -1140,7 +1209,9 @@ function ContactEditor({
     >
       <h2>{create ? "Nuevo contacto" : "Ficha del contacto"}</h2>
       {!create && <ContactPreference key={client.id} id={client.id} />}
-      {!create && <CommercialFollowupCard key={`progress-${client.id}`} id={client.id} />}
+      {!create && (
+        <CommercialFollowupCard key={`progress-${client.id}`} id={client.id} />
+      )}
       <p className="scope-text">
         Datos declarados en CRM. El expediente académico conserva su autoridad
         en SIIE.
@@ -1690,62 +1761,106 @@ function Conversation({
             list.scrollHeight - list.scrollTop - list.clientHeight < 100;
         }}
       >
-        {data.value?.items.slice().sort((a, b) => a.createdAt.localeCompare(b.createdAt) || Number(a.sequence) - Number(b.sequence)).map((message) => (
-          <li key={message.id} data-direction={message.direction} data-unsent-draft={message.deliveryUnsentDraft || undefined}>
-            {message.deliveryUnsentDraft && <small className="inbox-unsent-label">Borrador de IA · no enviado</small>}
-            {message.replyTo && (
-              <blockquote
-                className="inbox-quoted-message"
-                aria-label="Mensaje citado"
-              >
-                <strong>
-                  {message.replyTo.direction === "incoming"
-                    ? "Mensaje del contacto"
-                    : "Tú"}
-                </strong>
-                <span>
-                  {message.replyTo.body === "[Adjunto]"
-                    ? "Archivo adjunto"
-                    : message.replyTo.body}
-                </span>
-              </blockquote>
-            )}
-            {message.socialSource && <small className="inbox-source-context">{message.socialSource.label}</small>}
-            {message.socialSource?.kind === "story_mention" && !message.attachments?.length && <SocialStoryPreview message={message.id} reload={changed} />}
-            {message.body !== message.socialSource?.label && (!message.attachments?.length ||
-              !/^\[(Adjunto|image|audio|video|document|sticker)\]$/i.test(
-                message.body,
-              )) && <p>{message.body}</p>}
-            {message.attachments?.map((item) => (
-              <MediaDownload key={item.id} attachment={item} />
-            ))}
-            {message.voiceTranscript && <details className="inbox-voice-transcript">
-              <summary>Ver transcripción automática</summary>
-              <p>{message.voiceTranscript}</p>
-              <small>Interpretación automática; comprueba el audio si hay dudas.</small>
-            </details>}
-            <footer className="inbox-bubble-footer">
-              <small>
-                <DateText value={message.createdAt} />
-                {message.metaImported && <span> · Importado de Meta</span>}
-              </small>
-              {message.deliveryState && (
-                <MessageDelivery
-                  state={message.deliveryState}
-                  reason={message.deliveryError}
-                  unsentDraft={message.deliveryUnsentDraft}
-                  readReceiptAt={message.readReceiptAt}
-                />
+        {data.value?.items
+          .slice()
+          .sort(
+            (a, b) =>
+              a.createdAt.localeCompare(b.createdAt) ||
+              Number(a.sequence) - Number(b.sequence),
+          )
+          .map((message) => (
+            <li
+              key={message.id}
+              data-direction={message.direction}
+              data-unsent-draft={message.deliveryUnsentDraft || undefined}
+            >
+              {message.deliveryUnsentDraft && (
+                <small className="inbox-unsent-label">
+                  Borrador de IA · no enviado
+                </small>
               )}
-            </footer>
-          </li>
-        ))}
+              {(message.messageEdit || message.body === "[edit]") && (
+                <small className="inbox-source-context">
+                  {message.messageEdit?.verified
+                    ? "Mensaje editado"
+                    : "Edición recibida · original no disponible"}
+                </small>
+              )}
+              {message.replyTo && (
+                <blockquote
+                  className="inbox-quoted-message"
+                  aria-label="Mensaje citado"
+                >
+                  <strong>
+                    {message.messageEdit?.verified
+                      ? "Mensaje original editado"
+                      : message.replyTo.direction === "incoming"
+                        ? "Mensaje del contacto"
+                        : "Tú"}
+                  </strong>
+                  <span>
+                    {message.replyTo.body === "[Adjunto]"
+                      ? "Archivo adjunto"
+                      : message.replyTo.body}
+                  </span>
+                </blockquote>
+              )}
+              {message.socialSource && (
+                <small className="inbox-source-context">
+                  {message.socialSource.label}
+                </small>
+              )}
+              {message.socialSource?.kind === "story_mention" &&
+                !message.attachments?.length && (
+                  <SocialStoryPreview message={message.id} reload={changed} />
+                )}
+              {message.body !== "[edit]" &&
+                message.body !== message.socialSource?.label &&
+                (!message.attachments?.length ||
+                  !/^\[(Adjunto|image|audio|video|document|sticker)\]$/i.test(
+                    message.body,
+                  )) && <p>{message.body}</p>}
+              {message.attachments?.map((item) => (
+                <MediaDownload key={item.id} attachment={item} />
+              ))}
+              {message.voiceTranscript && (
+                <details className="inbox-voice-transcript">
+                  <summary>Ver transcripción automática</summary>
+                  <p>{message.voiceTranscript}</p>
+                  <small>
+                    Interpretación automática; comprueba el audio si hay dudas.
+                  </small>
+                </details>
+              )}
+              <footer className="inbox-bubble-footer">
+                <small>
+                  <DateText value={message.createdAt} />
+                  {message.metaImported && <span> · Importado de Meta</span>}
+                </small>
+                {message.deliveryState && (
+                  <MessageDelivery
+                    state={message.deliveryState}
+                    reason={message.deliveryError}
+                    unsentDraft={message.deliveryUnsentDraft}
+                    readReceiptAt={message.readReceiptAt}
+                  />
+                )}
+              </footer>
+            </li>
+          ))}
       </ol>
       {!data.value && !data.error && <p>Cargando mensajes…</p>}
       {data.value && data.value.items.length === 0 && (
         <p>Sin mensajes registrados.</p>
       )}
-      {session.actions.includes("users.manage") && <a className="button quiet" href={`#/settings/diagnostics?conversation=${detail.thread.ConversationId}`}>Ver diagnóstico de esta conversación</a>}
+      {session.actions.includes("users.manage") && (
+        <a
+          className="button quiet"
+          href={`#/settings/diagnostics?conversation=${detail.thread.ConversationId}`}
+        >
+          Ver diagnóstico de esta conversación
+        </a>
+      )}
       {detail.agentOperations &&
         canWrite &&
         detail.thread.State !== "closed" && (

@@ -63,6 +63,12 @@ def setting(cursor, settings, section):
 
 def validate_links(cursor, settings, section, document):
     if section == "ai":
+        language = document.get("language_resilience", {})
+        if language.get("opening"):
+            config = one(cursor, "SELECT Document FROM crm_config.Configuration WHERE ConfigurationId=1")
+            active = {s["key"] for s in json.loads(config["Document"]).get("stages", []) if s.get("active", True)} if config else set()
+            if not set(language.get("opening_stage_keys", [])) <= active:
+                raise HTTPException(422, "language_opening_stage_invalid")
         for identity in document.get("comment_private_accounts", []):
             value = one(cursor, "SELECT Channel FROM crm_channels2.Integration WHERE InstitutionId=? AND IntegrationId=?", institution(settings), uid(identity))
             if not value or value["Channel"] not in {"facebook", "instagram"}:

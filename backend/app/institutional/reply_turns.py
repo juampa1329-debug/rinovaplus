@@ -148,6 +148,6 @@ def snapshot(c, settings, data, source):
         "after_sequence": boundary,
         "incoming_ids": [str(v["MessageId"]).lower() for v in messages],
         "pending": [v["Body"] for v in messages],
-        "quote_incoming": str(anchor["MessageId"]).lower(),
+        "quote_incoming": str(anchor.get("edit_target_id", anchor["MessageId"])).lower(),
         "quote_external": anchor.get("ExternalId"),
     }

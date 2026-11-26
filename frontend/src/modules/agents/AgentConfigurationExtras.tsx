@@ -1,4 +1,5 @@
 import { Field, SelectField } from "../../shared/ui";
+import type { LanguagePolicy } from "../../institution/LanguageResilience";
 import {
   memoryChoices,
   toolGroups,
@@ -10,12 +11,17 @@ export function AgentConfigurationExtras({
   draft,
   configure,
   versions,
+  languagePolicy,
+  unlimited,
 }: {
   draft: Agent;
   configure: (value: Partial<Configuration>) => void;
   versions: number[];
+  languagePolicy?: LanguagePolicy;
+  unlimited?: boolean;
 }) {
   const config = draft.configuration;
+  const central = languagePolicy?.enabled ? languagePolicy.primary : null;
   const toggle = (
     field: "memories" | "capabilities" | "industry_policies",
     value: string,
@@ -42,13 +48,30 @@ export function AgentConfigurationExtras({
       type="number"
       min={0}
       step="any"
-      value={config[field] ?? ""}
+      disabled={!!central}
+      value={
+        central
+          ? ((field.startsWith("fallback_")
+              ? languagePolicy?.routes[0]?.[
+                  field === "fallback_input_usd_per_million"
+                    ? "input_usd_per_million"
+                    : "output_usd_per_million"
+                ]
+              : central[
+                  field as "input_usd_per_million" | "output_usd_per_million"
+                ]) ?? "")
+          : (config[field] ?? "")
+      }
       onChange={(e) =>
         configure({
           [field]: e.target.value === "" ? null : Number(e.target.value),
         })
       }
-      hint="Tarifa informada por el operador; USD por un millón de tokens."
+      hint={
+        central
+          ? "Tope del motor institucional; USD por un millón de tokens."
+          : "Tarifa informada por el operador; USD por un millón de tokens."
+      }
     />
   );
   return (
@@ -83,7 +106,12 @@ export function AgentConfigurationExtras({
             onChange={(e) =>
               configure({ monthly_usd_limit: Number(e.target.value) })
             }
-            hint="Cero no aplica un límite monetario; el límite de tokens sigue visible arriba."
+            disabled={unlimited === true}
+            hint={
+              unlimited
+                ? "El presupuesto institucional está sin topes acumulados; este valor del perfil no lo detiene."
+                : "Cero no aplica un límite monetario; el límite de tokens sigue visible arriba."
+            }
           />
           <Field
             id="agent-usage-alert"
@@ -100,7 +128,8 @@ export function AgentConfigurationExtras({
         <label>
           <input
             type="checkbox"
-            checked={config.hard_stop ?? true}
+            checked={unlimited ? false : (config.hard_stop ?? true)}
+            disabled={unlimited === true}
             onChange={(e) => configure({ hard_stop: e.target.checked })}
           />
           Detener al superar el presupuesto
@@ -122,13 +151,17 @@ export function AgentConfigurationExtras({
             "Salida · USD / 1 M tokens",
             "output_usd_per_million",
           )}
-          {config.fallback_model &&
+          {(central
+            ? languagePolicy?.routes[0]?.model
+            : config.fallback_model) &&
             price(
               "agent-fallback-input-price",
               "Respaldo entrada · USD / 1 M tokens",
               "fallback_input_usd_per_million",
             )}
-          {config.fallback_model &&
+          {(central
+            ? languagePolicy?.routes[0]?.model
+            : config.fallback_model) &&
             price(
               "agent-fallback-output-price",
               "Respaldo salida · USD / 1 M tokens",

@@ -20,6 +20,12 @@ from app.modules.ai.infrastructure.providers import AiError
 from app.institutional import language_resilience
 from app.institutional import comment_private
 
+
+def active_engine(document):
+    from app.institutional.language_stages import policy as language_policy
+    selected = language_policy(document)
+    return selected.primary if selected.enabled else None
+
 ACTION = "comment_auto_gemini"
 ACTOR = "system:gemini-comments"
 ORIGIN = "gemini_comment"
@@ -68,7 +74,7 @@ def schedule(c, settings, item, effect, comment):
             state["ModuleEnabled"],
             ai["enabled"],
             ai.get("comment_mode", "auto") == "auto",
-            ai["provider"] == "gemini",
+            bool(active_engine(ai) or ai.get("model")),
         )
     ):
         return
@@ -114,8 +120,7 @@ def current(c, settings, integration, data, queue=None):
             config["ModuleEnabled"],
             document["enabled"],
             document.get("comment_mode", "auto") == "auto",
-            document["provider"] == "gemini",
-            document["model"].startswith("gemini-"),
+            bool(active_engine(document) or document.get("model")),
         )
     ):
         raise HTTPException(409, "comment_auto_disabled")
@@ -144,7 +149,7 @@ def current(c, settings, integration, data, queue=None):
     ):
         raise HTTPException(409, "comment_auto_source_changed")
     # Only an actual CRM send is our idempotency evidence. Meta native auto-replies
-    # have no CRM SendJob and must not silence the configured Gemini assistant.
+    # have no CRM SendJob and must not silence the configured attention engine.
     if c.execute(
         "SELECT 1 FROM crm_channels2.SendJob WHERE InstitutionId=? AND CommentId=? "
         "AND State NOT IN('failed','cancelled','retried')"
@@ -200,6 +205,42 @@ def comment_context(c, settings, data, text):
     return comment_private.context(grounded) if comment_private.enabled(ai, integration) else grounded
 
 
+def recover_price_preflight(c, settings):
+    """Reconsider one known zero-attempt price veto; never replay channel work."""
+    revision = setting(c, settings, "ai")
+    if not active_engine(revision["document"]):
+        return None
+    row = one(c, "SELECT TOP(1) p.OperationId,p.IntegrationId,p.ResultMetadata "
+        "FROM crm_channels2.ProviderOperation p WITH(UPDLOCK,HOLDLOCK) "
+        "WHERE p.InstitutionId=? AND p.Action=? AND p.Status='abandoned' "
+        "AND p.ResultCode='comment_ai_pricing_review_required' AND COALESCE(p.Attempts,0)=0 "
+        "AND JSON_VALUE(p.ResultMetadata,'$.preflight_recovery.reason') IS NULL "
+        "AND p.CreatedAt>=DATEADD(hour,-24,SYSUTCDATETIME()) "
+        "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob j WHERE j.InstitutionId=p.InstitutionId AND j.CommentId=p.OperationId) "
+        "ORDER BY p.CreatedAt,p.OperationId", institution(settings), ACTION)
+    if not row:
+        return None
+    data = json.loads(row["ResultMetadata"])
+    # Re-evaluate all current account/source/AI controls. A stale or answered
+    # source is terminal; do not keep scanning it on every worker iteration.
+    recovery = {"reason": "comment_ai_pricing_review_required", "attempts": 0,
+                "ai_revision": revision["revision"]}
+    try:
+        current(c, settings, row["IntegrationId"], data)
+        policy(c, settings, row["IntegrationId"], revision["document"], engine=True)
+    except HTTPException as error:
+        data["preflight_recovery"] = {**recovery, "decision": "not_eligible", "code": error.detail}
+        c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? "
+            "AND Status='abandoned' AND COALESCE(Attempts,0)=0", json.dumps(data), institution(settings), row["OperationId"])
+        return None
+    data["preflight_recovery"] = {**recovery, "decision": "reconsidered"}
+    c.execute("UPDATE crm_channels2.ProviderOperation SET Status='pending',ResultCode=NULL,CompletedAt=NULL,"
+        "LeaseId=NULL,LeaseUntil=NULL,ResultMetadata=? WHERE InstitutionId=? AND OperationId=? "
+        "AND Status='abandoned' AND ResultCode='comment_ai_pricing_review_required' AND COALESCE(Attempts,0)=0",
+        json.dumps(data), institution(settings), row["OperationId"])
+    return {**row, "ResultMetadata": json.dumps(data)} if c.rowcount == 1 else None
+
+
 class Worker:
     def __init__(self, settings, gateway_factory=DraftGateway):
         self.settings, self.gateway_factory = settings, gateway_factory
@@ -219,7 +260,9 @@ class Worker:
                 ACTION,
             )
             if not job:
-                return False
+                job = recover_price_preflight(c, settings)
+                if not job:
+                    return False
             operation, integration = job["OperationId"], job["IntegrationId"]
             data = json.loads(job["ResultMetadata"])
             data["integration"] = str(integration).lower()
@@ -229,7 +272,10 @@ class Worker:
                 adapter, _ = provider_account(c, settings, item)
                 document = ai["document"]
                 backup = language_resilience.snapshot(c, settings)
-                pricing = policy(c, settings, integration, document)
+                from app.institutional.language_stages import capability_route
+                configured_vision = capability_route(document, "vision")
+                vision_backup = language_resilience.snapshot(c, settings, vision_route=configured_vision.model_dump()) if configured_vision else backup
+                pricing = policy(c, settings, integration, document, engine=True)
                 spent = c.execute(
                     "SELECT COALESCE(SUM(1+CASE WHEN JSON_VALUE(ResultMetadata,'$.vision_attempted')='true' THEN 1 ELSE 0 END),0) FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? AND IntegrationId=? "
@@ -241,31 +287,33 @@ class Worker:
                 ).fetchval()
                 if spent >= pricing["daily_requests"]:
                     raise HTTPException(429, "comment_ai_daily_limit")
+                selected_provider = backup.get("primary", {}).get("provider") if backup.get("primary") else document["provider"]
                 credential = one(
                     c,
                     "SELECT * FROM crm_access.Secret WHERE InstitutionId=? "
-                    "AND Scope='provider' AND OwnerRef='gemini' "
+                    "AND Scope='provider' AND OwnerRef=? "
                     "AND Kind='api_key' AND State='staged'",
                     inst,
+                    selected_provider,
                 )
-                if not credential:
+                if not credential and not backup.get("primary"):
                     raise HTTPException(409, "comment_ai_credential_required")
                 secret = unseal(
                     key(settings),
                     {
                         "institution": inst,
                         "scope": "provider",
-                        "owner": "gemini",
+                        "owner": selected_provider,
                         "kind": "api_key",
                         "version": credential["VersionNo"],
                         "secret_id": uid(str(credential["SecretId"])),
                     },
                     credential["Nonce"],
                     credential["Ciphertext"],
-                )
+                ) if credential else None
                 grounded = comment_context(c, settings, data, text)
                 tokens = len((grounded["system"] + grounded["query"]).encode()) + 8192
-                out = min(2000, max(512, document["max_tokens"]))
+                out = min(8000, max(512, document.get("language_resilience", {}).get("reply_max_tokens", 2000))) if backup.get("primary") else min(2000, max(512, document["max_tokens"]))
                 micro = max(
                     1,
                     math.ceil(
@@ -279,16 +327,9 @@ class Worker:
                 budget = setting(c, settings, "budgets")["document"]
                 if not budget["daily_messages"]:
                     raise HTTPException(429, "outbound_budget_disabled")
-                reserve_budget(
-                    c, settings, "tokens", tokens + out, budget["daily_tokens"]
-                )
-                reserve_budget(
-                    c,
-                    settings,
-                    "usd",
-                    micro / 1_000_000,
-                    budget["daily_usd_micros"] / 1_000_000,
-                )
+                if not backup.get("primary"):
+                    reserve_budget(c, settings, "tokens", tokens + out, budget["daily_tokens"])
+                    reserve_budget(c, settings, "usd", micro / 1_000_000, budget["daily_usd_micros"] / 1_000_000)
             except HTTPException as error:
                 c.execute("ROLLBACK TRANSACTION comment_auto")
                 finish(c, settings, operation, "abandoned", error.detail, data)
@@ -296,7 +337,7 @@ class Worker:
             c.execute(
                 "UPDATE crm_channels2.ProviderOperation SET Status='running',"
                 "Attempts=1,LeaseId=?,"
-                "LeaseUntil=DATEADD(second,90,SYSUTCDATETIME()) WHERE InstitutionId=? "
+                "LeaseUntil=DATEADD(second,180,SYSUTCDATETIME()) WHERE InstitutionId=? "
                 "AND OperationId=? AND Status='pending'",
                 lease,
                 inst,
@@ -309,6 +350,8 @@ class Worker:
             with transaction(settings, anonymous=True) as c:
                 if backup["routes"] or backup.get("primary"):
                     language_resilience.assert_snapshot(c, settings, backup)
+                if vision_backup is not backup and (vision_backup["routes"] or vision_backup.get("primary")):
+                    language_resilience.assert_snapshot(c, settings, vision_backup)
                 if not c.execute(
                     "SELECT 1 FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? "
@@ -346,35 +389,44 @@ class Worker:
                 current(c, settings, integration, data)
                 grounded = comment_context(c, settings, data, text)
                 actual_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
-                if actual_tokens > tokens:
+                if actual_tokens > tokens and not backup.get("primary"):
                     extra = actual_tokens - tokens
                     reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
                     reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
                                    budget["daily_usd_micros"] / 1_000_000)
                     tokens = actual_tokens
             private_enabled = comment_private.enabled(document, integration)
-            if private_enabled and not json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs") and spent + 2 <= pricing["daily_requests"]:
+            if private_enabled and not comment_private.support(text) and not json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs") and spent + 2 <= pricing["daily_requests"]:
                 image = comment_private.image_part(preview)
                 if image:
                     with transaction(settings, True, anonymous=True) as c:
                         # The initial conservative reservation includes 8192 input
                         # tokens. Reserve the additional vision output explicitly.
-                        reserve_budget(c, settings, "tokens", 256, budget["daily_tokens"])
-                        reserve_budget(c, settings, "usd", math.ceil(256 * pricing["output_micros_per_million"] / 1_000_000) / 1_000_000,
-                                       budget["daily_usd_micros"] / 1_000_000)
+                        if not backup.get("primary"):
+                            reserve_budget(c, settings, "tokens", 256, budget["daily_tokens"])
+                            reserve_budget(c, settings, "usd", math.ceil(256 * pricing["output_micros_per_million"] / 1_000_000) / 1_000_000,
+                                           budget["daily_usd_micros"] / 1_000_000)
                         data.update(vision_attempted=True, visual_image_hash=image["hash"])
                         c.execute("UPDATE crm_channels2.ProviderOperation SET ResultMetadata=? WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=?", json.dumps(data), inst, operation, lease)
                         if c.rowcount != 1:
                             raise HTTPException(409, "comment_auto_claim_changed")
-                    visual = asyncio.run(self.gateway_factory({"gemini": secret}).gemini_generation(
-                        document["model"], comment_private.image_request(image), before_attempt=assert_current))
+                    visual_request = comment_private.image_request(image)
+                    async def visual_primary():
+                        from app.institutional.engine_requests import generate
+                        return await generate(self.gateway_factory({selected_provider: secret}),
+                            {"provider": selected_provider, "model": pricing["model"],
+                             "input_usd_per_million": pricing["input_micros_per_million"] / 1_000_000,
+                             "output_usd_per_million": pricing["output_micros_per_million"] / 1_000_000}, visual_request, assert_current)
+                    visual = asyncio.run(language_resilience.execute(visual_primary, selected_provider, pricing["model"], visual_request,
+                        vision_backup, assert_current, lambda route, incoming, outgoing: language_resilience.reservation(settings, vision_backup, route, incoming, outgoing),
+                        data.setdefault("vision_execution", {}), gateway=self.gateway_factory(vision_backup["keys"]))) if vision_backup.get("primary") else asyncio.run(visual_primary())
                     data["visual_topic"] = comment_private.image_result(visual)
                     data["visual_usage"] = visual.get("usageMetadata", {})
                     with transaction(settings, True, anonymous=True) as c:
                         current(c, settings, integration, data)
                         grounded = comment_context(c, settings, data, text)
                         actual_tokens = len((grounded["system"] + grounded["query"]).encode()) + 512
-                        if actual_tokens > tokens:
+                        if actual_tokens > tokens and not backup.get("primary"):
                             extra = actual_tokens - tokens
                             reserve_budget(c, settings, "tokens", extra, budget["daily_tokens"])
                             reserve_budget(c, settings, "usd", math.ceil(extra * pricing["input_micros_per_million"] / 1_000_000) / 1_000_000,
@@ -383,10 +435,13 @@ class Worker:
             if private_enabled:
                 request_body = comment_private.request_body(grounded, out, document.get("temperature", 0.3))
             async def primary():
-                return await self.gateway_factory({"gemini": secret}).gemini_generation(
-                    document["model"], request_body, before_attempt=assert_current)
+                from app.institutional.engine_requests import generate
+                return await generate(self.gateway_factory({selected_provider: secret}),
+                    {"provider": selected_provider, "model": pricing["model"],
+                     "input_usd_per_million": pricing["input_micros_per_million"] / 1_000_000,
+                     "output_usd_per_million": pricing["output_micros_per_million"] / 1_000_000}, request_body, assert_current)
             result = asyncio.run(language_resilience.execute(
-                primary, "gemini", document["model"], request_body, backup, assert_current,
+                primary, selected_provider, pricing["model"], request_body, backup, assert_current,
                 lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
                 data.setdefault("language_execution", {}),
                 gateway=self.gateway_factory(backup["keys"]),

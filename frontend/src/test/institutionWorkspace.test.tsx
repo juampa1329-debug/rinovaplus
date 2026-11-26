@@ -102,6 +102,63 @@ it("keeps voice-note duration beside the microphone", () => {
   );
   expect(screen.getByText("1:05")).toBeVisible();
 });
+it.each([
+  ["ai", null, "IA:"],
+  ["human", "Juan Pablo Mora López", "Juan P:"],
+  ["human", "Ana", "Ana:"],
+  ["human", null, "Humano:"],
+  ["automation", null, "Automático:"],
+] as const)(
+  "shows the actual last sender %s without taking the assignee",
+  (previewSender, previewSenderName, label) => {
+    const { container } = render(
+      <ConversationRow
+        selected={false}
+        onSelect={() => {}}
+        row={{
+          name: "Contacto",
+          phone: "",
+          stage: "Nuevo",
+          state: "open",
+          unread: false,
+          assignee: "Otro asesor",
+          risk,
+          preview: "Respuesta",
+          previewSender,
+          previewSenderName,
+        }}
+      />,
+    );
+    expect(container.querySelector(".inbox-row-preview")).toHaveTextContent(
+      `${label} Respuesta`,
+    );
+    expect(container.querySelector(".inbox-row-preview")).not.toHaveTextContent(
+      "Otro asesor",
+    );
+  },
+);
+it("renders the edit preview without a technical marker or sender prefix for the customer", () => {
+  const { container } = render(
+    <ConversationRow
+      selected={false}
+      onSelect={() => {}}
+      row={{
+        name: "Contacto",
+        phone: "",
+        stage: "Nuevo",
+        state: "open",
+        unread: false,
+        assignee: "Juan Pablo",
+        risk,
+        preview: "[edit]",
+      }}
+    />,
+  );
+  expect(container.querySelector(".inbox-row-preview")).toHaveTextContent(
+    "Editó un mensaje",
+  );
+  expect(container.querySelector(".inbox-preview-sender")).toBeNull();
+});
 it("distinguishes the receiving account from the sender's phone", () => {
   render(
     <ConversationRow
@@ -127,16 +184,32 @@ it("distinguishes the receiving account from the sender's phone", () => {
 
 it("adds a compact comment-origin label without replacing the message preview", () => {
   const { container } = render(
-    <ConversationRow selected={false} onSelect={() => {}} row={{
-      name: "Ana Ejemplo", phone: "", stage: "Nuevo", state: "open",
-      unread: false, assignee: null, risk, channel: "messenger",
-      accountName: "Messenger · CBN", commentOrigin: true, commentPending: true,
-      preview: "Puedes empezar con el abono inicial.",
-    }} />,
+    <ConversationRow
+      selected={false}
+      onSelect={() => {}}
+      row={{
+        name: "Ana Ejemplo",
+        phone: "",
+        stage: "Nuevo",
+        state: "open",
+        unread: false,
+        assignee: null,
+        risk,
+        channel: "messenger",
+        accountName: "Messenger · CBN",
+        commentOrigin: true,
+        commentPending: true,
+        preview: "Puedes empezar con el abono inicial.",
+      }}
+    />,
   );
   expect(screen.getByText("Desde comentario")).toBeVisible();
-  expect(screen.getByText("Puedes empezar con el abono inicial.")).toBeVisible();
-  expect(container.querySelector(".inbox-row-preview")?.textContent).not.toContain("comentario");
+  expect(
+    screen.getByText("Puedes empezar con el abono inicial."),
+  ).toBeVisible();
+  expect(
+    container.querySelector(".inbox-row-preview")?.textContent,
+  ).not.toContain("comentario");
   expect(screen.getByTitle(/esperando respuesta/)).toBeVisible();
 });
 const config = {
@@ -207,7 +280,8 @@ const calls: {
 function client(index: number) {
   return {
     id: ids[index],
-    name: socialProfileEnabled && !index ? socialPlaceholder : "Persona " + index,
+    name:
+      socialProfileEnabled && !index ? socialPlaceholder : "Persona " + index,
     phone: "",
     city: "",
     programId: null,
@@ -315,12 +389,26 @@ beforeEach(() => {
               direction: "incoming",
               createdAt: "2026-10-26T12:00:00Z",
               sequence: "1",
-              ...(reactionAndTranscript ? { voiceTranscript: "¿Hasta cuándo puedo inscribirme?" } : {}),
+              ...(reactionAndTranscript
+                ? { voiceTranscript: "¿Hasta cuándo puedo inscribirme?" }
+                : {}),
             },
-            ...(reactionAndTranscript ? [{ id: "reaction", body: "Reaccionó ❤️", direction: "incoming",
-              createdAt: "2026-10-26T12:02:00Z", sequence: "4", replyTo: {
-                id: "original-reaction-target", body: "La respuesta exacta señalada", direction: "outgoing",
-              } }] : []),
+            ...(reactionAndTranscript
+              ? [
+                  {
+                    id: "reaction",
+                    body: "Reaccionó ❤️",
+                    direction: "incoming",
+                    createdAt: "2026-10-26T12:02:00Z",
+                    sequence: "4",
+                    replyTo: {
+                      id: "original-reaction-target",
+                      body: "La respuesta exacta señalada",
+                      direction: "outgoing",
+                    },
+                  },
+                ]
+              : []),
             ...(quotedReply
               ? [
                   {
@@ -344,13 +432,30 @@ beforeEach(() => {
                   },
                 ]
               : []),
-            ...(discardedReply ? [
-              {id: "unsent-draft", body: "Borrador que no recibió el contacto", direction: "outgoing",
-                createdAt: "2026-10-26T12:01:00Z", sequence: "2", deliveryState: "cancelled",
-                deliveryError: "gemini_whatsapp_control_or_history_changed", deliveryUnsentDraft: true, deliveryAttempts: 0},
-              {id: "sent-reply", body: "Respuesta que sí recibió el contacto", direction: "outgoing",
-                createdAt: "2026-10-26T12:02:00Z", sequence: "3", deliveryState: "read", deliveryAttempts: 1},
-            ] : []),
+            ...(discardedReply
+              ? [
+                  {
+                    id: "unsent-draft",
+                    body: "Borrador que no recibió el contacto",
+                    direction: "outgoing",
+                    createdAt: "2026-10-26T12:01:00Z",
+                    sequence: "2",
+                    deliveryState: "cancelled",
+                    deliveryError: "gemini_whatsapp_control_or_history_changed",
+                    deliveryUnsentDraft: true,
+                    deliveryAttempts: 0,
+                  },
+                  {
+                    id: "sent-reply",
+                    body: "Respuesta que sí recibió el contacto",
+                    direction: "outgoing",
+                    createdAt: "2026-10-26T12:02:00Z",
+                    sequence: "3",
+                    deliveryState: "read",
+                    deliveryAttempts: 1,
+                  },
+                ]
+              : []),
             ...(failedDelivery
               ? [
                   {
@@ -493,11 +598,17 @@ it("shows a reaction with its exact source and makes the automatic transcript av
   open("inbox");
   await select();
   expect(await screen.findByText("Reaccionó ❤️")).toBeVisible();
-  expect(screen.getByLabelText("Mensaje citado")).toHaveTextContent("La respuesta exacta señalada");
+  expect(screen.getByLabelText("Mensaje citado")).toHaveTextContent(
+    "La respuesta exacta señalada",
+  );
   fireEvent.click(screen.getByText("Ver transcripción automática"));
   expect(screen.getByText("¿Hasta cuándo puedo inscribirme?")).toBeVisible();
-  expect(screen.getByText(/Interpretación automática; comprueba el audio/)).toBeVisible();
-  expect(calls.filter(c => c.method !== "GET" && !c.path.endsWith("/read"))).toHaveLength(0);
+  expect(
+    screen.getByText(/Interpretación automática; comprueba el audio/),
+  ).toBeVisible();
+  expect(
+    calls.filter((c) => c.method !== "GET" && !c.path.endsWith("/read")),
+  ).toHaveLength(0);
 });
 
 it("shows a quote only on the reply part that includes the source reference", async () => {
@@ -516,12 +627,16 @@ it("distinguishes an unsent AI draft from the actual read message without a fals
   discardedReply = true;
   open("inbox");
   await select();
-  const draft = (await screen.findByText("Borrador que no recibió el contacto")).closest("li");
+  const draft = (
+    await screen.findByText("Borrador que no recibió el contacto")
+  ).closest("li");
   expect(draft).toHaveAttribute("data-unsent-draft", "true");
   expect(within(draft!).getByText("Borrador de IA · no enviado")).toBeVisible();
   expect(within(draft!).getByText("Descartado · no enviado")).toBeVisible();
   expect(within(draft!).queryByRole("button")).not.toBeInTheDocument();
-  const sent = screen.getByText("Respuesta que sí recibió el contacto").closest("li");
+  const sent = screen
+    .getByText("Respuesta que sí recibió el contacto")
+    .closest("li");
   expect(sent).not.toHaveAttribute("data-unsent-draft");
   expect(within(sent!).getByText("Leído")).toBeVisible();
   expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
@@ -614,12 +729,22 @@ it("returns from the chat to the list and preserves its unsent draft", async () 
   fireEvent.change(screen.getByLabelText("Mensaje local"), {
     target: { value: "Borrador antes de volver" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Volver a conversaciones" }));
-  expect(screen.queryByRole("region", { name: "Conversación seleccionada" })).toBeNull();
-  expect(screen.getByRole("complementary", { name: "Conversaciones" })).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Volver a conversaciones" }),
+  );
+  expect(
+    screen.queryByRole("region", { name: "Conversación seleccionada" }),
+  ).toBeNull();
+  expect(
+    screen.getByRole("complementary", { name: "Conversaciones" }),
+  ).toBeInTheDocument();
   await select();
-  expect(screen.getByLabelText("Mensaje local")).toHaveValue("Borrador antes de volver");
-  expect(calls.filter(c => c.method === "POST" && c.path.endsWith("/messages"))).toHaveLength(0);
+  expect(screen.getByLabelText("Mensaje local")).toHaveValue(
+    "Borrador antes de volver",
+  );
+  expect(
+    calls.filter((c) => c.method === "POST" && c.path.endsWith("/messages")),
+  ).toHaveLength(0);
 });
 
 it("sends with Enter and the button, inserts a line at the caret with Alt+Enter", async () => {
@@ -1000,21 +1125,41 @@ it("resolves an unnamed Meta row without opening it and does not rewrite CRM", a
   socialProfileEnabled = true;
   open("inbox");
   await screen.findByRole("button", { name: /^Contacto de Messenger/ });
-  await screen.findByRole("button", { name: /^Ana de Messenger/ }, { timeout: 4000 });
-  expect(screen.queryByRole("heading", { name: "Ana de Messenger" })).not.toBeInTheDocument();
-  expect(calls.filter((call) => call.path.endsWith("/social-profile"))).toHaveLength(1);
+  await screen.findByRole(
+    "button",
+    { name: /^Ana de Messenger/ },
+    { timeout: 4000 },
+  );
+  expect(
+    screen.queryByRole("heading", { name: "Ana de Messenger" }),
+  ).not.toBeInTheDocument();
+  expect(
+    calls.filter((call) => call.path.endsWith("/social-profile")),
+  ).toHaveLength(1);
   expect(calls.some((call) => call.method !== "GET")).toBe(false);
 });
-it.each(["Contacto de Instagram", "Contacto de Messenger"])("resolves the literal %s placeholder without clicking the conversation", async (placeholder) => {
-  socialProfileEnabled = true;
-  socialPlaceholder = placeholder;
-  open("inbox");
-  await screen.findByRole("button", {name: /^Contacto de Messenger/});
-  await screen.findByRole("button", {name: /^Ana de Messenger/}, {timeout: 4000});
-  expect(screen.queryByRole("heading", {name: "Ana de Messenger"})).not.toBeInTheDocument();
-});
+it.each(["Contacto de Instagram", "Contacto de Messenger"])(
+  "resolves the literal %s placeholder without clicking the conversation",
+  async (placeholder) => {
+    socialProfileEnabled = true;
+    socialPlaceholder = placeholder;
+    open("inbox");
+    await screen.findByRole("button", { name: /^Contacto de Messenger/ });
+    await screen.findByRole(
+      "button",
+      { name: /^Ana de Messenger/ },
+      { timeout: 4000 },
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Ana de Messenger" }),
+    ).not.toBeInTheDocument();
+  },
+);
 it("distinguishes Meta's messaging window from WhatsApp templates", () => {
-  const guidance = explainInboxError({code: "messaging_response_window_closed", message: ""});
+  const guidance = explainInboxError({
+    code: "messaging_response_window_closed",
+    message: "",
+  });
   expect(guidance.title).not.toContain("WhatsApp");
   expect(guidance.nextStep).toContain("Meta Business Suite");
   expect(guidance.nextStep).toContain("cancela primero");

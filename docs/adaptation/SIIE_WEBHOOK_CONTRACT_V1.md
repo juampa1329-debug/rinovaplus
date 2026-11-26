@@ -6,10 +6,10 @@ Fecha: 25 de noviembre de 2026. Documento único y autónomo para implementar la
 
 | Componente | Estado y responsable |
 |---|---|
-| Receptor del webhook v1 | Implementado y publicado en RinovaPlus; recepción desactivada hasta configurar la firma y habilitar el piloto. |
-| Emisor SIIE → RinovaPlus | El desarrollador de SIIE debe implementarlo después del guardado confirmado, con outbox y reintentos persistentes. No se presupone que los formularios ya emitan eventos. |
+| Receptor del webhook v1 | Publicado en RinovaPlus; recepción habilitada y etapa Calificación. Primera inscripción real PRE-ICFES G3 guardada el 25Nov2026, HTTP200 y vínculo CRM por revisar. Duplicados reales y otros tipos de evento siguen por validar. |
+| Emisor SIIE → RinovaPlus | Outbox con reintentos observada y una inscripción PRE-ICFES recibida con acuse200. El evento sintético original de16922 todavía no aparece; es distinto del primer evento real recibido. La cobertura de los demás formularios se valida por separado. |
 | Clave de llamadas RinovaPlus → SIIE | Se conserva la clave única existente, enviada como `X-API-Key` desde el backend. |
-| Firma del webhook SIIE → RinovaPlus | Secreto compartido dedicado `SIIE_WEBHOOK_SECRET`; pendiente de configurar en ambos extremos por canal privado. |
+| Firma del webhook SIIE → RinovaPlus | Secreto dedicado `SIIE_WEBHOOK_SECRET` guardado por el titular en Runtime. Firma válida comprobada en el reintento y en la primera recepción persistida. Conservar el secreto compartido; no copiarlo al repositorio ni al chat. |
 | Generación, consulta y descarga del volante | Contrato pendiente de SIIE. Las rutas de la sección de volantes son propuestas para acordar, no endpoints existentes o verificados. |
 | Envío del PDF al interesado | Pendiente de integrar en RinovaPlus cuando SIIE entregue el contrato de pagos y pase el piloto de identidad/orden/PDF. El webhook actual guarda y clasifica; su acuse no significa que envió un mensaje. |
 
@@ -93,6 +93,16 @@ using (var request = new HttpRequestMessage(HttpMethod.Post,
     }
 }
 ```
+
+## Diagnóstico de un 403
+
+La firma se verifica antes de validar el JSON. Comprobar la respuesta constante `siie_webhook_signature_rejected` y, en los logs privados de RinovaPlus, `siie_webhook_rejected`: distingue formato, `clock_skew`, `signature_mismatch` o ambos. El proxy registra sólo el resultado HTTP y duración como `siie_webhook_http`. No registrar claves, firmas ni cuerpo para depurar.
+
+**Comprobación productiva del 25Nov2026:** el backend registró `reason=clock_skew skew_seconds=-10809`. En ese intento la firma coincide con la clave configurada, pero el timestamp está 3 horas y 9 segundos adelantado. El proxy confirmó 403 del backend. No rotar la clave por este rechazo ni ampliar la ventana. Sincronizar el reloj del servidor SIIE y revisar la conversión UTC; todavía no acredita aceptación/guardado del evento.
+
+El emisor debe comprobar su reloj UTC. Para cada intento, `DateTimeOffset.UtcNow.ToUnixTimeSeconds()` produce el encabezado Unix en segundos. No convertir a milisegundos, sumar horas, escribir una fecha ISO en ese encabezado ni reutilizar el timestamp de un intento antiguo. La firma se recalcula sobre el mismo cuerpo UTF-8 y el timestamp nuevo. La ventana permitida sigue siendo300segundos.
+
+`occurred_at` es otra cosa: la fecha UTC real del guardado original, conservada al reintentar. No añadir `Z` a una hora local sin convertirla correctamente. El ensayo16922 mostró una fecha casi tres horas futura, que debe corregirse en origen; de lo contrario recibirá422 después de resolver la firma. No cambiar arbitrariamente la fecha de un evento ya aceptado con el mismo GUID. Para el ensayo rechazado, corregirlo en la outbox antes de la primera aceptación y conservar su referencia; si ya hubiera un200 confirmado, conciliar antes de modificar contenido.
 
 ## Evento de preinscripción
 
@@ -182,6 +192,23 @@ Una respuesta HTTP 200 confirma que el recibo y su clasificación quedaron guard
 - 403: revisar firma, clave y reloj. 413: máximo 64 KiB. 415: JSON requerido. 422: corregir contrato. No reenviar indefinidamente los errores de contrato.
 - La autenticación usa el cuerpo original. La deduplicación compara el objeto validado, por lo que cambiar sólo el espaciado del JSON no duplica personas.
 
+### Distinguir un HTTP 503
+
+La respuesta de la aplicación es JSON con una propiedad `detail`. SIIE puede conservar **sólo ese código seguro**, el estado HTTP y `Retry-After`; no registrar cuerpo del evento, clave ni firma. Si el proxy devuelve HTML, conservar únicamente `HTTP_503_proxy` y la hora UTC, no la página completa.
+
+| `detail` seguro | Significado | Acción |
+|---|---|---|
+| `siie_webhook_not_configured` | Falta el secreto válido en el proceso de RinovaPlus | Revisar Runtime y despliegue de Rinova; no reemplazar la clave de la API SIIE. |
+| `siie_webhook_disabled` | Recepción deshabilitada en la configuración institucional | Revisar el ajuste guardado en Rinova; no eliminar el evento. |
+| `storage_busy` | No se pudo adquirir el bloqueo de escritura antes de empezar el trabajo | Conservar y reintentar el mismo evento, con firma/timestamp nuevos y espera indicada. |
+| `general_storage_unavailable` | Falló la transacción de almacenamiento | Conservar el evento y revisar los registros de Rinova; no interpretar el 503 como inscripción recibida. |
+
+En los fallos 503 posteriores a una firma válida, los registros privados de Rinova incluyen `signature_verified=true` y el código fijo de causa. El diagnóstico no expone los encabezados ni datos personales. Una respuesta 503 no acredita por sí sola que la firma haya pasado: la falta de secreto se comprueba antes.
+
+En el reintento observado del piloto del 25Nov2026 sí se confirmó firma válida y luego `general_storage_unavailable` con SQLSTATE `0A000`, dentro de la transacción. La corrección de la búsqueda de teléfono corresponde a RinovaPlus; SIIE debe conservar el evento pendiente y no crear otra inscripción ni cambiar el secreto. Los detalles y el estado del despliegue se conservan en el [informe del piloto](SIIE_WEBHOOK_PILOT_20261125.md). Un HTTP 200 con `received:true` y su recibo persistido siguen siendo el criterio para dar por entregado el evento.
+
+El programador de reintentos también debe usar UTC real para `CreadoUtc`, `UltimoIntentoUtc`, `ProximoIntentoUtc` y leases, además del encabezado de firma. Que `occurred_at` esté corregido no demuestra que esos otros relojes estén alineados. Comprobarlos sin cambiar el instante original del evento ni crear otra inscripción. Después de corregir la fecha original errónea del piloto, mantener estable su payload en los siguientes intentos.
+
 SIIE debe guardar el evento pendiente en una **outbox dentro de la misma transacción que guarda la preinscripción/inscripción**, y transmitirlo únicamente cuando esa transacción esté confirmada. Así no se pierde un cambio si el proceso se detiene entre guardar la persona y llamar al webhook. Un rollback no debe producir evento. Para la entrega usar espera creciente con variación aleatoria y conservar los eventos pendientes tras reiniciar el proceso. No seguir redirecciones con el cuerpo firmado.
 
 Antes de retirar un evento, comprobar HTTP 200, `received:true` y que `event_id` corresponda al enviado. `duplicate:true` con el mismo ID también es un acuse válido. Ante HTTP 5xx transitorio o pérdida de respuesta, conservar el evento; no crear otro GUID para el mismo cambio. Registrar sólo ID de evento, intento, código HTTP y referencia técnica de soporte. Un 409 por conflicto de contenido o documento va a revisión, no a una cola infinita.
@@ -261,4 +288,6 @@ Para conectar y verificar ambos recorridos, devolver en un solo contrato:
 | Cambio de parámetros con la misma clave | Conflicto; no altera la orden original. |
 | PDF pendiente, inválido o de otra orden | No se envía al interesado; se conserva para conciliación. |
 
-Pendientes de RinovaPlus: configurar el secreto por canal privado, habilitar recepción con etapa inicial, acordar retención y ejecutar el piloto; después implementar las operaciones de volante según el contrato definitivo de SIIE y verificar el envío privado del PDF. Los envíos finales de inscripción y la recepción no se activan por el mero envío de este documento. P23 continúa en validación, sin cierre ni aceptación funcional completa.
+Estado comprobado 25Nov2026: secreto configurado en Runtime y recepción habilitada con Calificación, confirmado después de recargar. El formulario público PRE-ICFES registró un ensayo sintético autorizado con número 16922; todavía no se observó su evento verificado en RinovaPlus. SIIE debe comprobar la outbox de ese guardado y entregar el mismo evento firmado a la URL indicada, aportando sólo `event_id`, intento y respuesta HTTP para soporte. No crear otra inscripción para reintentar la notificación.
+
+Pendientes: primera entrega real firmada y conciliación del piloto, continuidad preinscrito→inscrito, retención y contrato definitivo del volante/PDF; después implementar y comprobar la orden y el envío privado del PDF. Los envíos finales de RinovaPlus a SIIE siguen desactivados. P23 continúa 0/9 aceptados, sin cierre funcional completo. Ver [ensayo del formulario](SIIE_WEBHOOK_PILOT_20261125.md).

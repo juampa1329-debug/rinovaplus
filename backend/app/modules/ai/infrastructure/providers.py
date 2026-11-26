@@ -90,7 +90,7 @@ class ProviderGateway:
             and path.endswith(":generateContent")
         )
         language_generation = gemini_generation or (
-            provider == "openrouter" and method == "POST" and path == "chat/completions"
+            method == "POST" and path in {"chat/completions", "messages", "responses"}
         )
         diagnostic = {"upstream_status": None, "response_bytes": 0, "content_type": "unknown"}
         retry_after = None
@@ -295,7 +295,7 @@ class ProviderGateway:
                 params = item.get("supported_parameters", [])
                 if not isinstance(params, list) or "max_tokens" not in params:
                     continue
-                if account_catalog and kind == "vision" and "image" not in (
+                if account_catalog and kind in {"vision", "audio"} and ("image" if kind == "vision" else "audio") not in (
                     architecture.get("input_modalities") or []
                 ):
                     continue
@@ -325,6 +325,11 @@ class ProviderGateway:
                 if provider == "gemini":
                     self.catalog_details[provider][model_id] = {
                         "context_length": item.get("inputTokenLimit") if type(item.get("inputTokenLimit")) is int else None,
+                    }
+                else:
+                    context_limit = item.get("context_window") or item.get("max_context_length") or item.get("context_length")
+                    self.catalog_details[provider][model_id] = {
+                        "context_length": context_limit if type(context_limit) is int and context_limit > 0 else None,
                     }
                 if provider == "openai" and any(
                     k in model_id.lower()
@@ -373,7 +378,7 @@ class ProviderGateway:
                         or item.get("deprecation")
                     ):
                         continue
-                limit = item.get("outputTokenLimit") if provider == "gemini" else None
+                limit = item.get("outputTokenLimit") if provider == "gemini" else item.get("max_output_tokens") or item.get("max_completion_tokens")
                 temperature = provider not in ("openai", "anthropic", "kimi")
             result.append(
                 ModelInfo(
@@ -550,6 +555,12 @@ class ProviderGateway:
                     )
             except (KeyError, IndexError, TypeError):
                 raise AiError("provider_invalid_response", 502) from None
+        if provider != "gemini":
+            reason = (data.get("stop_reason") if provider == "anthropic" else
+                      ("max_tokens" if data.get("status") == "incomplete" else "stop" if data.get("status") == "completed" else None) if provider == "xai" else
+                      (data.get("choices") or [{}])[0].get("finish_reason"))
+            if reason in {"stop", "end_turn", "stop_sequence", "length", "max_tokens", "content_filter", "tool_calls"}:
+                self.last_response_metadata["finish_reason"] = reason
         if not isinstance(text, str) or not text.strip():
             raise AiError("provider_empty_or_blocked_response", 502)
         if len(text) > 32000:

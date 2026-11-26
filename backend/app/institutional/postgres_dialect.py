@@ -234,6 +234,7 @@ class Cursor:
         self._columns = columns
         self._aliases = {}
         self.slowest = (0, "none", "none")
+        self.failed_statement = None
 
     def execute(self, statement, *parameters):
         if BOUND_TOP.match(statement.strip()):
@@ -259,6 +260,16 @@ class Cursor:
         started = monotonic()
         try:
             self._cursor.execute(sql, parameters if parameters else None)
+        except Exception:
+            frame = sys._getframe(1)
+            if frame.f_code.co_name == "execute" and frame.f_code.co_filename == __file__:
+                frame = frame.f_back
+            self.failed_statement = (
+                hashlib.sha256(sql.encode()).hexdigest()[:12],
+                frame.f_code.co_name + ":" + str(frame.f_lineno),
+            )
+            del frame
+            raise
         finally:
             elapsed = round((monotonic() - started) * 1000)
             if elapsed > self.slowest[0]:

@@ -92,6 +92,8 @@ export type Source = {
   scope_revision: number | null;
 };
 export type Catalog = {
+  language_policy?: import("../../institution/LanguageResilience").LanguagePolicy;
+  ai_budget_unlimited?: boolean;
   institutional?: boolean;
   knowledge_reindex_available?: boolean;
   knowledge_scope_editor?: boolean;

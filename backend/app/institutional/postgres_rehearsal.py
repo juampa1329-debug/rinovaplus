@@ -206,7 +206,11 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
     try:
         with closing(settings.postgres_connect()) as conn, conn, conn.cursor() as raw:
             if not write:
-                raw.execute("SET TRANSACTION READ ONLY")
+                # A coherent committed snapshot keeps authorization, revision and
+                # records from one database view without making every Inbox GET
+                # hold the institution's writer lock. Mutations still serialize
+                # below and recheck live authority/CAS before any effect.
+                raw.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
             raw.execute("SET LOCAL search_path=pg_catalog,rinovaplus_crm")
             raw.execute("SET LOCAL statement_timeout='8s'")
             raw.execute("SET LOCAL lock_timeout='3s'")
@@ -217,11 +221,11 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
             )
             if raw.fetchone() != (settings.connection["database"], settings.postgres_user, settings.ticket["context"][0][1]):
                 raise ProfileError("postgres_identity_changed")
-            # Existing security and idempotency paths expect serialized writes.
-            # Keep the lock within this PostgreSQL database and institution.
-            lock = "pg_advisory_xact_lock" if write else "pg_advisory_xact_lock_shared"
-            stage = "institution_lock"
-            raw.execute(f"SELECT {lock}(hashtextextended(%s,0))", (settings.ticket["context"][0][1],))
+            # Security/idempotency paths require serialized writes, not a shared
+            # lock around slow read-only lists. No change to the write frontier.
+            if write:
+                stage = "institution_lock"
+                raw.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (settings.ticket["context"][0][1],))
             acquired = monotonic()
             stage = "authorization"
             cursor = Cursor(raw, settings.ticket["table_map"], settings.postgres_columns)
@@ -240,6 +244,9 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
         tag = str(error) if type(error) is ValueError and str(error) in safe_tags else "unclassified"
         state = getattr(error, "pgcode", None) or type(error).__name__
         LOG.warning("postgres_storage_error state=%s tag=%s stage=%s write=%s elapsed_ms=%s", state, tag, stage, write, round((monotonic() - started) * 1000))
+        failed = getattr(cursor, "failed_statement", None)
+        if isinstance(failed, tuple) and len(failed) == 2:
+            LOG.warning("postgres_failed_statement state=%s statement_id=%s source=%s", state, *failed)
         if state == "55P03" and stage == "institution_lock":
             # No application work has begun. Distinguish contention from an
             # identity/permission failure; never replay a caller's mutation.
