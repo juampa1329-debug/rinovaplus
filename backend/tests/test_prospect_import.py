@@ -102,7 +102,15 @@ def test_unknown_authority_fields_and_oversized_batches_are_rejected():
     ) == ("crm.write", "clients")
 
 
-def test_commit_only_creates_clear_contacts_and_never_calls_message_action(monkeypatch):
+@pytest.mark.parametrize("source_stage,expected_stage", [
+    ("Pendiente de calificación", "Calificación"),
+    ("Matriculado según origen", "Matriculado"),
+    ("Interés confirmado según origen", "Programa definido"),
+    ("Próximo semestre según origen", "Seguimiento"),
+])
+def test_commit_only_creates_clear_contacts_and_never_calls_message_action(
+    monkeypatch, source_stage, expected_stage
+):
     executed, calls, records = [], [], []
     cursor = SimpleNamespace(execute=lambda sql, *p: executed.append((sql, p)))
 
@@ -130,13 +138,15 @@ def test_commit_only_creates_clear_contacts_and_never_calls_message_action(monke
         operation_id=str(uuid4()),
         batch_id=str(uuid4()),
         entries=[
-            entry(),
+            entry(stages=[source_stage]),
             entry(ref="PRE-fedcba9876543210", review=["Revisar"]),
         ],
     )
     result = imports.process(profile, SimpleNamespace(apply=apply), body, True)
     assert [r["state"] for r in result["items"]] == ["imported", "review"]
     assert len(calls) == len(records) == 1
+    assert calls[0].stage == expected_stage
+    assert calls[0].customValues["pre_estado"] == source_stage
     assert result["messages_created"] == result["consents_granted"] == 0
     assert any("ControlMode='human'" in sql for sql, _ in executed)
     assert not any(

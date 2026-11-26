@@ -298,6 +298,10 @@ def audience(c, s, campaign, *, controlled=False):
         if not segments.matches(person, document, as_of):
             continue
         reasons = list(global_reasons)
+        from app.institutional.prospect_source_status import promotion_exclusion
+        source_reason = promotion_exclusion(person.get("CustomValues"), document)
+        if source_reason:
+            reasons.append(source_reason)
         if getattr(s, "postgres_deployment", False):
             progress_reason = exclusion(progress.get(uid(str(person["ContactId"])), {}), person["Stage"], document)
             if progress_reason:

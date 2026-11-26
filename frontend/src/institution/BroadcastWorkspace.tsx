@@ -181,6 +181,9 @@ const stateLabel: Record<string, string> = {
 const reasonLabel: Record<string, string> = {
   commercial_progress_requires_case_followup: "Ya avanzó: requiere seguimiento de su caso, sin reactivación general",
   advanced_stage_no_reactivation: "Etapa avanzada: no corresponde reactivación general",
+  source_enrolled_no_promotions: "Inscrito o matriculado según el archivo de origen: sin promociones",
+  source_declined_no_reactivation: "Negociación no aceptada en origen: revisar antes de reactivar",
+  source_interest_no_reactivation: "Interés confirmado en origen: corresponde seguimiento de su caso",
   broadcast_template_still_in_campaign:
     "Cambia la plantilla de las campañas que todavía la usan antes de eliminarla de la biblioteca.",
   broadcast_template_removed_from_library:
