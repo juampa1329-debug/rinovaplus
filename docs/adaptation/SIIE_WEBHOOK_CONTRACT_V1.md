@@ -6,10 +6,10 @@ Fecha: 25 de noviembre de 2026. Documento único y autónomo para implementar la
 
 | Componente | Estado y responsable |
 |---|---|
-| Receptor del webhook v1 | Implementado y publicado en RinovaPlus; firma configurada en Runtime y recepción habilitada el 25Nov2026 con etapa Calificación. Primer evento real verificado aún pendiente en este corte. |
-| Emisor SIIE → RinovaPlus | Outbox con reintentos observada en el ensayo del formulario PRE-ICFES. Conserva el mismo evento; aún falta un acuse guardado en RinovaPlus. La cobertura de los demás formularios se valida por separado. |
+| Receptor del webhook v1 | Publicado en RinovaPlus; recepción habilitada y etapa Calificación. Primera inscripción real PRE-ICFES G3 guardada el 25Nov2026, HTTP200 y vínculo CRM por revisar. Duplicados reales y otros tipos de evento siguen por validar. |
+| Emisor SIIE → RinovaPlus | Outbox con reintentos observada y una inscripción PRE-ICFES recibida con acuse200. El evento sintético original de16922 todavía no aparece; es distinto del primer evento real recibido. La cobertura de los demás formularios se valida por separado. |
 | Clave de llamadas RinovaPlus → SIIE | Se conserva la clave única existente, enviada como `X-API-Key` desde el backend. |
-| Firma del webhook SIIE → RinovaPlus | Secreto dedicado `SIIE_WEBHOOK_SECRET` guardado por el titular en Runtime de RinovaPlus. SIIE debe usar exactamente el mismo valor entregado por canal privado; falta corroborarlo con el primer evento firmado. |
+| Firma del webhook SIIE → RinovaPlus | Secreto dedicado `SIIE_WEBHOOK_SECRET` guardado por el titular en Runtime. Firma válida comprobada en el reintento y en la primera recepción persistida. Conservar el secreto compartido; no copiarlo al repositorio ni al chat. |
 | Generación, consulta y descarga del volante | Contrato pendiente de SIIE. Las rutas de la sección de volantes son propuestas para acordar, no endpoints existentes o verificados. |
 | Envío del PDF al interesado | Pendiente de integrar en RinovaPlus cuando SIIE entregue el contrato de pagos y pase el piloto de identidad/orden/PDF. El webhook actual guarda y clasifica; su acuse no significa que envió un mensaje. |
 
@@ -204,6 +204,8 @@ La respuesta de la aplicación es JSON con una propiedad `detail`. SIIE puede co
 | `general_storage_unavailable` | Falló la transacción de almacenamiento | Conservar el evento y revisar los registros de Rinova; no interpretar el 503 como inscripción recibida. |
 
 En los fallos 503 posteriores a una firma válida, los registros privados de Rinova incluyen `signature_verified=true` y el código fijo de causa. El diagnóstico no expone los encabezados ni datos personales. Una respuesta 503 no acredita por sí sola que la firma haya pasado: la falta de secreto se comprueba antes.
+
+En el reintento observado del piloto del 25Nov2026 sí se confirmó firma válida y luego `general_storage_unavailable` con SQLSTATE `0A000`, dentro de la transacción. La corrección de la búsqueda de teléfono corresponde a RinovaPlus; SIIE debe conservar el evento pendiente y no crear otra inscripción ni cambiar el secreto. Los detalles y el estado del despliegue se conservan en el [informe del piloto](SIIE_WEBHOOK_PILOT_20261125.md). Un HTTP 200 con `received:true` y su recibo persistido siguen siendo el criterio para dar por entregado el evento.
 
 El programador de reintentos también debe usar UTC real para `CreadoUtc`, `UltimoIntentoUtc`, `ProximoIntentoUtc` y leases, además del encabezado de firma. Que `occurred_at` esté corregido no demuestra que esos otros relojes estén alineados. Comprobarlos sin cambiar el instante original del evento ni crear otra inscripción. Después de corregir la fecha original errónea del piloto, mantener estable su payload en los siguientes intentos.
 
