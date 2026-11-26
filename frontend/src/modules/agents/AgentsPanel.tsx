@@ -1476,6 +1476,8 @@ export function AgentsPanel() {
                         </p>
                       </section>
                       <AgentConfigurationExtras
+                        languagePolicy={catalog.language_policy}
+                        unlimited={catalog.ai_budget_unlimited}
                         draft={draft}
                         configure={configure}
                         versions={consoleData?.versions ?? []}

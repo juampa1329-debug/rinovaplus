@@ -1,6 +1,6 @@
 # Motor de agentes por etapa y margen de salida
 
-Estado inicial: código preparado, publicación/configuración nativa pendientes.
+Publicado: backend 9178c8b saludable en Coolify, despliegue jtef0rendpxohoyacc404cgw (4m23s). Frontend inicial aflhhneruftyxzlhwth3mvky Success45s. Ajuste visual adicional de tarifas heredadas en publicación.
 
 ## Diagnóstico
 
@@ -21,10 +21,21 @@ La ficha general mostraba Gemini 3.1 Flash Lite, mientras el motor P21 global ya
 
 334 pruebas backend focalizadas aprobadas, incluida selección por necesidad/etapa, ausencia de dependencia Gemini en texto, cambio de contexto, control Humano, ASR e imágenes. Selección solapada con rondas anteriores; no suite completa verde. Se actualizó un contador de biblioteca de 34 a las 37 guías existentes y se aisló el doble de ASR de consultas de cola ya cubiertas por otros tests.
 
-21 pruebas frontend focalizadas, tipos, ESLint de archivos modificados y build institucional aprobados. ESLint global informa 8 errores y 4 advertencias en archivos ajenos a este cambio (ChannelSettings, AdmissionsPanel, SessionState y vistas multimedia); no se declara lint global verde. Advertencia histórica de bundle grande conservada.
+21 pruebas frontend focalizadas, tipos, ESLint de archivos modificados y build institucional aprobados. ESLint global informa 8 errores y 4 advertencias en archivos ajenos a este cambio, incluidos ChannelSettings, AdmissionsPanel y vistas multimedia; no se declara lint global verde. Advertencia histórica de bundle grande conservada.
 
 ## Publicación y aceptación
 
-Completar después del despliegue: modelos y tarifas recargados, claves de etapas CRM seleccionadas, máximo 4000 guardado, lectura nativa de general/especialista y salud Coolify. No acreditar inferencia pagada, respuesta real por etapa, ausencia universal de fallos o P22 aceptada sólo por estos tests.
+Política guardada nativamente en revisión IA34; selección de audio en Modelos5 actualizó IA35, conservando el motor. Reconsulta nativa confirma apertura OpenRouter google/gemini-3.8-flash en Nuevo y Calificación; principal OpenRouter anthropic/claude-sonnet-4.6; respaldo anthropic/claude-sonnet-5.5; salida4000 y respaldo por timeout activos. Las tarifas de apertura se cargaron del catálogo: 0,75/3,75 USD por millón de entrada/salida. Sonnet4.6 conserva3/15 y Sonnet5.5 conserva2/10. Audio Gemini gemini-3.8-flash recargado desde la configuración guardada. Las cuotas del servicio de interpretación Gemini son independientes de los modelos de conversación en OpenRouter; no se acredita una nueva transcripción real.
+
+Catálogo nativo: 28 agentes. Especialista Barismo versión3 muestra el motor heredado, salida4000 y presupuesto institucional ilimitado; sus versiones propias antiguas no se reescribieron. Un ensayo sin proveedor verificó la ruta comercial y max_tokens4000 antes de la llamada. Dos consultas generativas aisladas, sin CRM ni envíos a clientes:
+
+| Caso | Modelo real | Entrada | Salida | Generación | Estimación USD |
+|---|---|---:|---:|---:|---:|
+| Objeción, abono menor y memoria ficticia | Sonnet4.6 heredado | 16873 | 263 | 8,892s | 0,054564 |
+| Apertura para emprender una cafetería | Flash3.8, selección explícita del simulador | 11529 | 211 | 4,869s | 0,009438 |
+
+Costo estimado conjunto: USD0,064002 con las tarifas de catálogo/topes observadas; no recibo de facturación. Los casos y tamaños de contexto son distintos: no es una comparación homogénea de calidad ni una nueva aceptación P22. Flash conservó el límite aislado700 de la prueba explícita; no modificó el máximo4000 de producción. Sonnet mantuvo nombre/objetivo, respondió al abono menor de770.000 y al calendario completo, sin cambiar de programa. Flash produjo una respuesta completa sobre la formación. La clasificación automática real de etapas en un chat aún no se acredita por estas simulaciones; los tests cubren su prioridad, memoria y guardias. La espera configurada60s es anterior a la inferencia y no se suma a estas latencias de generación.
+
+La prueba específica de selección de audio añade un caso:19 pruebas del archivo de etapas pasan (18 ya incluidas en las334). Sin afirmar suite completa verde, transcripción nueva, entrega real de prueba, cero fallos universales ni aceptación comercial de P22.
 
 Sin DDL, seeds, servicios nuevos ni escrituras SIIE. P23 sigue con 0/9 criterios aceptados; P22 conserva 3/5 técnico y 0/5 comercial. Otros pendientes del Inbox y el envío incierto de horarios no se reenvían con esta configuración.

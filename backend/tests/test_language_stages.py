@@ -124,3 +124,22 @@ def test_opening_snapshot_tries_commercial_then_approved_backup(monkeypatch):
     snapshot = runtime.snapshot(None, None, turn={"turn_plan": {"phase": "orientation"}}, crm_stage={"key": "nuevo"})
     assert snapshot["primary"]["model"] == "google/opening"
     assert [r["model"] for r in snapshot["routes"]] == ["anthropic/commercial", "anthropic/backup"]
+
+
+def test_audio_model_is_independent_of_legacy_language_profile(monkeypatch):
+    from app.institutional import sales_context
+    monkeypatch.setattr(sales_context, "configure", lambda *_: None)
+    ai = {"enabled": True, "language_resilience": document(), "media": {"audio_provider": "gemini", "audio_model": "gemini-3.8-flash"}}
+    monkeypatch.setattr(worker, "setting", lambda *_: {"revision": 10, "document": ai})
+    monkeypatch.setattr(stages, "stage", lambda *_: {"key": "nuevo", "revision": 2})
+    config = {"provider": "gemini", "primary_model": "gemini-old-lite", "allow_reply": True,
+              "capabilities": ["conversation.reply"], "input_usd_per_million": 1.0, "output_usd_per_million": 2.0}
+    monkeypatch.setattr(worker, "resolve_conversation", lambda *_: {"agent_id": "agent", "binding": "binding", "configuration": config})
+    monkeypatch.setattr(worker, "institution", lambda *_: "institution")
+    def secret(_c, _sql, *args):
+        assert args[-1] == "gemini"
+        return {"SecretId": str(uuid4())}
+    monkeypatch.setattr(worker, "one", secret)
+    effective, _, binding = worker.model_config(None, None, {"conversation": "thread", "interpreting_audio": True})
+    assert effective["primary_model"] == "gemini-3.8-flash" and binding["provider"] == "gemini"
+    assert config["primary_model"] == "gemini-old-lite"
