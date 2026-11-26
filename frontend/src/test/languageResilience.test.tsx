@@ -35,7 +35,7 @@ vi.mock("../institution/LiveModelSelect", () => ({
 }));
 
 it("accepts the saved 4000 token cap without blocking native form submission", () => {
-  render(
+  const { rerender } = render(
     <LanguageResilience
       value={{
         enabled: true,
@@ -56,9 +56,28 @@ it("accepts the saved 4000 token cap without blocking native form submission", (
   }) as HTMLInputElement;
   expect(limit.value).toBe("4000");
   expect(limit.checkValidity()).toBe(true);
-  fireEvent.change(limit, { target: { value: "4001" } });
+  rerender(
+    <LanguageResilience
+      value={{
+        primary: { provider: "openrouter", model: "fixture" },
+        reply_max_tokens: 4001,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
+  expect(limit.value).toBe("4001");
   expect(limit.checkValidity()).toBe(true);
-  fireEvent.change(limit, { target: { value: "8001" } });
+  rerender(
+    <LanguageResilience
+      value={{
+        primary: { provider: "openrouter", model: "fixture" },
+        reply_max_tokens: 8001,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
   expect(limit.checkValidity()).toBe(false);
 });
 
