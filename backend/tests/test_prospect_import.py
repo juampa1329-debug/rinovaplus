@@ -102,12 +102,15 @@ def test_unknown_authority_fields_and_oversized_batches_are_rejected():
     ) == ("crm.write", "clients")
 
 
-@pytest.mark.parametrize("source_stage,expected_stage", [
-    ("Pendiente de calificación", "Calificación"),
-    ("Matriculado según origen", "Matriculado"),
-    ("Interés confirmado según origen", "Programa definido"),
-    ("Próximo semestre según origen", "Seguimiento"),
-])
+@pytest.mark.parametrize(
+    "source_stage,expected_stage",
+    [
+        ("Pendiente de calificación", "Calificación"),
+        ("Matriculado según origen", "Matriculado"),
+        ("Interés confirmado según origen", "Programa definido"),
+        ("Próximo semestre según origen", "Seguimiento"),
+    ],
+)
 def test_commit_only_creates_clear_contacts_and_never_calls_message_action(
     monkeypatch, source_stage, expected_stage
 ):

@@ -8,9 +8,7 @@ from app.institutional.prospect_import import normalize
 def promotion_exclusion(values, document=None):
     if isinstance(values, str):
         values = json.loads(values or "{}")
-    states = {
-        normalize(v) for v in (values or {}).get("pre_estado", "").split("|")
-    }
+    states = {normalize(v) for v in (values or {}).get("pre_estado", "").split("|")}
     if states & {"inscrito segun origen", "matriculado segun origen"}:
         return "source_enrolled_no_promotions"
     if "negociacion no aceptada" in states:
