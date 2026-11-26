@@ -2,6 +2,8 @@
 
 Estado: diagnóstico preliminar y plan registrados. **Implementación: 0 %. Aceptación: 0/6.** El titular pidió analizar la demora después de corregir los comentarios y no implementar optimizaciones todavía. Este informe no cambia servicios, colas, consultas, índices, límites HTTP ni cachés de producción.
 
+Ampliación del25Nov: [diagnóstico detallado de listas e historial](P24_INBOX_LIST_DIAGNOSIS_20261125.md). Seis registros nativos identifican la consulta de filas listing:912 en4487–5067ms y su transacción en4907–5573ms. Se documentan consultas por fila, ficha→historial en serie y actualización del contador bajo bloqueo institucional, con propuestas ordenadas y criterios de equivalencia. No se han ejecutado planes SQL, estrés ni optimizaciones. La revisión adicional de voz confirma5 reservas usadas de5 en el chat de prueba; diagnóstico sin generación ni cambio de cuota.
+
 ## Evidencia disponible
 
 | Señal | Condiciones y alcance | Resultado | Límite de interpretación |

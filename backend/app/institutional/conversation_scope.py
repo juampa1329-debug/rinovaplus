@@ -52,5 +52,7 @@ def audio_history(c, settings, conversation, messages):
 
 
 def configure(c, settings):
+    from app.institutional.channel_edits import history as edit_history
     c.context_cutoff = lambda conversation: cutoff(c, settings, conversation)
-    c.audio_history = lambda conversation, messages: audio_history(c, settings, conversation, messages)
+    c.audio_history = lambda conversation, messages: audio_history(c, settings, conversation,
+        edit_history(c, settings, conversation, messages))

@@ -101,6 +101,28 @@ def followup_risk(evidence, risk):
 class Workspace(Parent):
     operational_channels = True
 
+    def populate_preview_senders(self, c, items):
+        if not items:
+            return
+        values = db.rows(c,
+            "SELECT v.ConversationId,m.Direction,r.ActorKind,u.DisplayName,JSON_VALUE(j.Payload,'$.origin') AS Origin FROM crm.Conversation v "
+            "OUTER APPLY(SELECT TOP(1) MessageId,Direction FROM crm.Message "
+            "WHERE ConversationId=v.ConversationId ORDER BY CreatedAt DESC,Sequence DESC) m "
+            "LEFT JOIN crm_channels2.MessageRoute r ON r.MessageId=m.MessageId AND r.InstitutionId=? "
+            "LEFT JOIN crm_channels2.SendJob j ON j.InstitutionId=r.InstitutionId AND j.QueueId=r.QueueId "
+            "AND j.MessageId=m.MessageId AND j.IntegrationId=r.IntegrationId AND j.IdentityId=r.IdentityId "
+            "LEFT JOIN crm_channels2.ProviderOperation op ON op.InstitutionId=j.InstitutionId AND op.OperationId=j.OperationId "
+            "LEFT JOIN crm_access.AccessUser u ON u.InstitutionId=op.InstitutionId AND u.UserId=TRY_CONVERT(uniqueidentifier,op.ActorRef) "
+            "WHERE v.ConversationId IN(" + ",".join("?" for _ in items) + ")",
+            db.institution(self.profile), *[v["conversationId"] for v in items])
+        by_id = {str(v["ConversationId"]).lower(): v for v in values}
+        for item in items:
+            value = by_id.get(str(item["conversationId"]).lower())
+            if value and value["Direction"] == "outgoing":
+                kind = value["ActorKind"]
+                item["previewSender"] = ("ai" if value.get("Origin") in {"gemini_whatsapp", "gemini_comment"} else "automation") if kind == "bot" else "human" if kind == "human" else "channel"
+                item["previewSenderName"] = value["DisplayName"] if kind == "human" else None
+
     def conversation_risk(self, c, contact, conversation):
         current = super().conversation_risk(c, contact, conversation)
         if current["status"] == "not_applicable":
@@ -576,4 +598,16 @@ class Workspace(Parent):
             for message in result["items"]:
                 if message["id"] in reactions:
                     message.update(reactions[message["id"]])
+            if any(m.get("direction") == "incoming" for m in result["items"]):
+                from app.institutional.channel_edits import project as edit_projection
+                try:
+                    with self.transaction() as c:
+                        edits = edit_projection(c, self.profile, conversation, result["items"])
+                    for message in result["items"]:
+                        if message["id"] in edits:
+                            message.update({k: v for k, v in edits[message["id"]].items() if k != "editTargetExternal"})
+                except HTTPException as failure:
+                    if failure.status_code != 503:
+                        raise
+                    logging.getLogger(__name__).warning("edit_presentation_unavailable")
         return result

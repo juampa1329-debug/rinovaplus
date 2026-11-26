@@ -33,9 +33,20 @@ const programJoiners = new Set([
   "y",
 ]);
 
-export function RiskBadge({ risk, inList = false }: { risk: Risk; inList?: boolean }) {
-  const level = risk.status === "known" && risk.fresh ? labelFor(riskLevels, risk.level) : "";
-  const label = level || (risk.status === "not_applicable" ? "No aplica" : "Sin evaluación");
+export function RiskBadge({
+  risk,
+  inList = false,
+}: {
+  risk: Risk;
+  inList?: boolean;
+}) {
+  const level =
+    risk.status === "known" && risk.fresh
+      ? labelFor(riskLevels, risk.level)
+      : "";
+  const label =
+    level ||
+    (risk.status === "not_applicable" ? "No aplica" : "Sin evaluación");
   return (
     <span className="inbox-signal" data-risk={level ? risk.level : undefined}>
       {inList ? `Abandono ${label.toLowerCase()}` : label}
@@ -145,7 +156,12 @@ export type SocialProfile = {
 };
 
 export function genericSocialName(name: string) {
-  return !name || /^\d+$|^contacto(?: de)? (instagram|messenger|facebook)$|^dm sender$|^usuario de (instagram|facebook)$/i.test(name.trim());
+  return (
+    !name ||
+    /^\d+$|^contacto(?: de)? (instagram|messenger|facebook)$|^dm sender$|^usuario de (instagram|facebook)$/i.test(
+      name.trim(),
+    )
+  );
 }
 
 export function inboxDisplayName(
@@ -155,7 +171,9 @@ export function inboxDisplayName(
   profile?: SocialProfile,
 ) {
   if (
-    (channel === "facebook" || channel === "messenger" || channel === "instagram") &&
+    (channel === "facebook" ||
+      channel === "messenger" ||
+      channel === "instagram") &&
     genericSocialName(name)
   ) {
     return (
@@ -363,7 +381,11 @@ export function InboxListControls({
     <div className="inbox-list-controls">
       <div className="inbox-list-heading">
         <h2>Conversaciones</h2>
-        <Button variant="quiet" onClick={refresh} aria-label="Actualizar bandeja manualmente">
+        <Button
+          variant="quiet"
+          onClick={refresh}
+          aria-label="Actualizar bandeja manualmente"
+        >
           Actualizar
         </Button>
       </div>
@@ -413,7 +435,10 @@ export function InboxListControls({
         ))}
       </div>
       {filters.queue === "comment_pending" && (
-        <p className="scope-text">Privados iniciados desde un comentario. Cuando la persona responda, su chat aparecerá en el Inbox principal.</p>
+        <p className="scope-text">
+          Privados iniciados desde un comentario. Cuando la persona responda, su
+          chat aparecerá en el Inbox principal.
+        </p>
       )}
       <details className="inbox-filters">
         <summary>Filtros {count > 0 && <span>{count} activos</span>}</summary>
@@ -495,22 +520,42 @@ const previewMedia = {
   audio: { icon: "microphone", label: "Audio" },
 };
 
-function ConversationPreview({ preview, kind, duration }: {
+function ConversationPreview({
+  preview,
+  kind,
+  duration,
+}: {
   preview?: string | null;
   kind?: string | null;
   duration?: string | null;
 }) {
   const text = preview?.trim() || "";
   if (text === "[reaction]") return "Reacción a un mensaje";
-  const marker = /^\[(audio|image|video|sticker|document)\]$/i.exec(text)?.[1]?.toLowerCase();
-  const media = previewMedia[(kind || marker || "") as keyof typeof previewMedia];
+  if (text === "[edit]") return "Editó un mensaje";
+  const marker = /^\[(audio|image|video|sticker|document)\]$/i
+    .exec(text)?.[1]
+    ?.toLowerCase();
+  const media =
+    previewMedia[(kind || marker || "") as keyof typeof previewMedia];
   if (!media) return text || "Sin mensajes";
-  const caption = text && !/^\[(adjunto|audio|image|imagen|photo|foto|video|sticker|document|documento)\]$/i.test(text)
-    ? text : "";
+  const caption =
+    text &&
+    !/^\[(adjunto|audio|image|imagen|photo|foto|video|sticker|document|documento)\]$/i.test(
+      text,
+    )
+      ? text
+      : "";
   const seconds = Number(duration);
-  const label = media === previewMedia.audio && Number.isFinite(seconds) && seconds > 0
-    ? clockTime(seconds) : caption || media.label;
-  return <><Icon name={media.icon} className="inbox-preview-media" />{label}</>;
+  const label =
+    media === previewMedia.audio && Number.isFinite(seconds) && seconds > 0
+      ? clockTime(seconds)
+      : caption || media.label;
+  return (
+    <>
+      <Icon name={media.icon} className="inbox-preview-media" />
+      {label}
+    </>
+  );
 }
 
 export function ConversationRow({
@@ -535,6 +580,8 @@ export function ConversationRow({
     preview?: string | null;
     previewKind?: string | null;
     previewDuration?: string | null;
+    previewSender?: "ai" | "human" | "channel" | "automation";
+    previewSenderName?: string | null;
     temperature?: string | null;
     leadScore?: number | null;
     program?: string | null;
@@ -557,6 +604,20 @@ export function ConversationRow({
   const temperature = labelFor(temperatures, row.temperature);
   const program = row.program?.trim();
   const programCode = program ? inboxProgramCode(program) : "";
+  const senderName =
+    row.previewSenderName?.trim().split(/\s+/).filter(Boolean) ?? [];
+  const sender =
+    row.previewSender === "ai"
+      ? "IA"
+      : row.previewSender === "human"
+        ? senderName.length
+          ? senderName[0] + (senderName[1] ? ` ${senderName[1][0]}` : "")
+          : "Humano"
+        : row.previewSender === "automation"
+          ? "Automático"
+          : row.previewSender === "channel"
+            ? "Canal"
+            : "";
   return (
     <button
       type="button"
@@ -580,17 +641,44 @@ export function ConversationRow({
           <span>{labelFor(states, row.state)}</span>
         </span>
         <span className="inbox-row-preview">
-          <ConversationPreview preview={row.preview} kind={row.previewKind} duration={row.previewDuration} />
+          {sender && (
+            <span
+              className="inbox-preview-sender"
+              title={row.previewSenderName || sender}
+            >
+              {sender}:{" "}
+            </span>
+          )}
+          <ConversationPreview
+            preview={row.preview}
+            kind={row.previewKind}
+            duration={row.previewDuration}
+          />
         </span>
         {(row.accountName || row.commentOrigin) && (
           <span className="inbox-row-source">
-          {row.accountName && <span className="inbox-row-account" title={`Cuenta receptora: ${row.accountName}`}>
-            <Icon name="channels" className="inbox-preview-media" />
-            {row.accountName}
-          </span>}
-          {!!row.commentOrigin && <span className="inbox-comment-origin" title={row.commentPending ? "Privado iniciado desde un comentario; esperando respuesta" : "Esta conversación comenzó desde un comentario"}>
-            <Icon name="comments" />Desde comentario
-          </span>}
+            {row.accountName && (
+              <span
+                className="inbox-row-account"
+                title={`Cuenta receptora: ${row.accountName}`}
+              >
+                <Icon name="channels" className="inbox-preview-media" />
+                {row.accountName}
+              </span>
+            )}
+            {!!row.commentOrigin && (
+              <span
+                className="inbox-comment-origin"
+                title={
+                  row.commentPending
+                    ? "Privado iniciado desde un comentario; esperando respuesta"
+                    : "Esta conversación comenzó desde un comentario"
+                }
+              >
+                <Icon name="comments" />
+                Desde comentario
+              </span>
+            )}
           </span>
         )}
         <span className="inbox-row-meta inbox-row-signals">
@@ -602,10 +690,14 @@ export function ConversationRow({
           )}
           <RiskBadge risk={row.risk} inList />
           {row.slaStatus === "overdue" && (
-            <span className="inbox-signal" data-sla="overdue">SLA vencido</span>
+            <span className="inbox-signal" data-sla="overdue">
+              SLA vencido
+            </span>
           )}
           {row.slaStatus === "on_time" && (
-            <span className="inbox-signal" data-sla="on_time">SLA en plazo</span>
+            <span className="inbox-signal" data-sla="on_time">
+              SLA en plazo
+            </span>
           )}
         </span>
         <span className="inbox-row-owner">

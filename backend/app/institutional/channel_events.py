@@ -42,6 +42,10 @@ def replyable_message(channel, provider):
     """
     from app.institutional.contact_intent import opted_out
     if channel == "whatsapp":
+        if provider.get("type") == "edit":
+            from app.institutional.channel_edits import reference
+            edited = reference(provider)
+            return bool(edited and not opted_out(edited["text"]))
         if provider.get("type") == "unsupported":
             return valid_external(provider.get("id"))
         if provider.get("type") == "text":
@@ -130,7 +134,7 @@ def bounded_provider(value, depth=0):
         "name",
         "media",
         "context",
-        "reaction", "message_id", "emoji", "action",
+        "reaction", "message_id", "emoji", "action", "edit", "original_message_id",
         "referral", "source_id", "source_type", "source_url", "headline", "ctwa_clid",
     }
     if depth > 5:
@@ -510,6 +514,14 @@ def incoming(c, settings, item, effect):
             "AND (Name='' OR Name=?)",
             contact_name, linked["ContactId"], linked["ExternalId"],
         )
+    message_body = effect["text"] or "[evento]"
+    edit_verified = False
+    if item["Channel"] == "whatsapp" and effect["provider"].get("type") == "edit":
+        from app.institutional.channel_edits import reference, targets
+        edited = reference(effect["provider"])
+        edit_verified = bool(edited and len(targets(c, settings, linked["ConversationId"], integration,
+                                                   linked["IdentityId"], edited["external"])) == 1)
+        message_body = edited["text"] if edit_verified else "[edit]"
     raw_time = effect["provider"].get("timestamp")
     try:
         seconds = float(raw_time)
@@ -531,7 +543,7 @@ def incoming(c, settings, item, effect):
         ),
         message,
         linked["ConversationId"],
-        effect["text"] or "[evento]",
+        message_body,
         observed,
     )
     c.execute(
@@ -587,7 +599,10 @@ def incoming(c, settings, item, effect):
     from app.institutional.channel_media import register_incoming
 
     register_incoming(c, settings, item, effect, linked, message)
-    if replyable_message(item["Channel"], effect["provider"]):
+    replyable = replyable_message(item["Channel"], effect["provider"])
+    if item["Channel"] == "whatsapp" and effect["provider"].get("type") == "edit":
+        replyable = replyable and edit_verified
+    if replyable:
         from app.institutional.whatsapp_gemini import schedule
 
         schedule(c, settings, item, linked, message,
@@ -601,7 +616,7 @@ def incoming(c, settings, item, effect):
             settings,
             str(linked["IdentityId"]).lower(),
             incoming=True,
-            incoming_text=effect.get("text", ""),
+            incoming_text=message_body,
             incoming_id=message,
         )
 

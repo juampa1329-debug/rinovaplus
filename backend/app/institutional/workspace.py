@@ -512,6 +512,9 @@ class Workspace:
         for row in items:
             row["risk"] = risk(c, row["id"], row["conversationId"])
 
+    def populate_preview_senders(self, c, items):
+        pass
+
     def inbox_channel_expression(self):
         legacy = (
             "(SELECT TOP(1) Channel FROM crm_channels.ExternalIdentity "
@@ -969,6 +972,7 @@ class Workspace:
                     item["risk"] = risk(c, item["id"])
             if area == "inbox":
                 self.populate_inbox_risk(c, items)
+                self.populate_preview_senders(c, items)
             response = {
                 "items": items,
                 "total": total,
