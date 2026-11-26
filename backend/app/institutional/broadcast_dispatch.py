@@ -392,8 +392,7 @@ def reconcile_receipts(c, s):
             "T 1 FROM crm_channels2.SendJob q WHERE"
             " q.InstitutionId=e.InstitutionId AND q"
             ".IntegrationId=e.IntegrationId AND q.E"
-            "xternalId=JSON_VALUE(e.Payload,'$.exte"
-            "rnal') COLLATE Latin1_General_100_BIN2"
+            "xternalId=e.ProviderEventId COLLATE Latin1_General_100_BIN2"
             ")"
         ),
         institution(s),

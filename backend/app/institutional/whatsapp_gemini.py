@@ -8,6 +8,7 @@ import asyncio
 import json
 import math
 import os
+from time import monotonic
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -633,11 +634,15 @@ class Worker:
         state, code, generated = "confirmed", None, None
         observations = []
         no_reply = False
+        processing_deadline = monotonic() + 240
 
         def before_attempt():
+            if monotonic() >= processing_deadline - 30:
+                raise HTTPException(409, "ai_processing_deadline")
             with transaction(settings, anonymous=True) as c:
                 active = c.execute(
-                    "SELECT 1 FROM crm_channels2.ProviderOperation "
+                    "SELECT 1,CASE WHEN LeaseUntil>DATEADD(second,90,SYSUTCDATETIME()) THEN 1 ELSE 0 END "
+                    "FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? AND OperationId=? AND Status='running' "
                     "AND LeaseId=? AND LeaseUntil>SYSUTCDATETIME()",
                     institution(settings),
@@ -656,6 +661,11 @@ class Worker:
                     != grounded["fingerprint"]
                 ):
                     raise HTTPException(409, "gemini_reply_context_changed")
+            if len(active) > 1 and not active[1]:
+                from app.institutional.processing_lease import renew
+
+                renew(settings, operation, lease, processing_deadline)
+                data["lease_renewals"] = data.get("lease_renewals", 0) + 1
 
         try:
             if recipient and data.get("external_incoming"):
