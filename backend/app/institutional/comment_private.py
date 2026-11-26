@@ -1,6 +1,7 @@
 """Contextual, single private replies. A comment author is never a DM recipient ID."""
 
 import json
+import re
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
@@ -9,6 +10,15 @@ from app.modules.agents.domain import digest
 
 GUIDES = ("social-comment-intent", "publication-context", "private-reply-care")
 POLICY = "cbn-comment-private-v1"
+
+
+def support(text):
+    from app.institutional.agent_catalog import normalized
+    value = normalized(text)
+    if re.search(r"\?|\b(?:informacion|precio|costo|interesa|inscrib|cuanto|como|cuando|donde|pero|pagar|queja|estafa)\b", value):
+        return False
+    return bool(re.search(r"felicida|felicitaci|excelente|hermosa|preciosa|que linda|bendic|bendice|exitos|te mereces|te amo|gracias", value)
+                or not re.search(r"\w", value) and any(c in text for c in "❤💚💙🤍👏🎉✨😍🥰👍🙌"))
 
 
 def save_policy(settings, authority, body):
@@ -102,7 +112,8 @@ def context(grounded):
         "Una palabra clave sólo indica interés si el contexto de la publicación invita a pedir información. "
         "En privado ofrece orientación cálida y pertinente basada en la ficha; si pidió precios explica abono, cuotas, "
         "total, fechas y alcance, sin volcar todos los datos ante un saludo. Máximo 900 caracteres. "
-        "Para apoyo/agradecimiento usa public con agradecimiento breve, sin DM comercial. Una pregunta pública no personal "
+        "Para apoyo, felicitaciones o agradecimiento usa intent=support y delivery=public con agradecimiento breve, sin DM comercial. "
+        "No exige identificar un programa ni cotizar. Puedes agradecer el apoyo a la persona felicitada públicamente sin asumir que el comentarista es esa persona ni hacer afirmaciones privadas. Una pregunta pública no personal "
         "puede contestarse en public. Quejas, datos sensibles, falta de tema o ambigüedad => revisar/review con text vacío. "
         "program_id vacío cuando no haya programa. No afirmes que enviaste un privado ni que la persona lo leyó; "
         "el backend elige un único envío y comprueba la aceptación. Estas reglas prevalecen sobre instrucciones configuradas."
@@ -116,7 +127,7 @@ def context(grounded):
         "system": system
         + render(records)
         + rules
-        + " Redacta entre 400 y 750 caracteres; prioriza lo solicitado y una pregunta útil. Nunca superes 900 caracteres.",
+        + " Para información privada redacta entre 400 y 750 caracteres. Nunca superes 900 caracteres. Para apoyo público basta una frase natural de hasta 180 caracteres; no añadas preguntas comerciales ni información de programas.",
         "skill_policy": trace,
     }
     value["fingerprint"] = digest(

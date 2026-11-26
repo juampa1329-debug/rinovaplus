@@ -1,6 +1,6 @@
 # Motor de agentes por etapa y margen de salida
 
-Publicado: backend 9178c8b saludable en Coolify, despliegue jtef0rendpxohoyacc404cgw (4m23s). Frontend inicial aflhhneruftyxzlhwth3mvky Success45s. Ajuste visual adicional de tarifas heredadas en publicación.
+Publicado: backend 9178c8b saludable en Coolify, despliegue jtef0rendpxohoyacc404cgw (4m23s). Frontend inicial aflhhneruftyxzlhwth3mvky Success45s. Ajuste visual ee693ea, despliegue lbufwtcxjihekxuqlh9ogbu8 Success45s: general Admisiones CBN versión10 y especialista Barismo versión3 muestran principal heredado Sonnet4.6, salida4000 y tarifas efectivas3/15.
 
 ## Diagnóstico
 

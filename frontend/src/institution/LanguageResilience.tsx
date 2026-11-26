@@ -1,9 +1,15 @@
 import { Button, Field, SelectField } from "../shared/ui";
 import { LiveModelSelect } from "./LiveModelSelect";
 import { useCrmConfiguration } from "../modules/crm-configuration/hooks/useCrmConfiguration";
+import { providerNames, type AiProvider } from "../shared/aiSettings";
+
+const engineOptions = Object.entries(providerNames).map(([value, label]) => ({
+  value,
+  label,
+}));
 
 type Route = {
-  provider: "gemini" | "openrouter";
+  provider: AiProvider;
   model: string;
   input_usd_per_million: number;
   output_usd_per_million: number;
@@ -120,10 +126,7 @@ export function LanguageResilience({
             id="language-primary-provider"
             label="Proveedor principal de conversaciones"
             value={policy.primary.provider}
-            options={[
-              { value: "openrouter", label: "OpenRouter" },
-              { value: "gemini", label: "Gemini" },
-            ]}
+            options={engineOptions}
             onChange={(event) =>
               onChange({
                 ...policy,
@@ -247,10 +250,7 @@ export function LanguageResilience({
                 id="language-opening-provider"
                 label="Proveedor de apertura"
                 value={policy.opening.provider}
-                options={[
-                  { value: "openrouter", label: "OpenRouter" },
-                  { value: "gemini", label: "Gemini" },
-                ]}
+                options={engineOptions}
                 onChange={(e) =>
                   onChange({
                     ...policy,
@@ -338,10 +338,7 @@ export function LanguageResilience({
             id={`language-backup-provider-${index}`}
             label={`Proveedor del respaldo ${index + 1}`}
             value={route.provider}
-            options={[
-              { value: "openrouter", label: "OpenRouter" },
-              { value: "gemini", label: "Gemini" },
-            ]}
+            options={engineOptions}
             onChange={(event) =>
               update(index, {
                 provider: event.target.value as Route["provider"],

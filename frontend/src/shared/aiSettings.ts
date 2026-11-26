@@ -41,7 +41,7 @@ export type MediaConfig = {
   voice_limit_enabled: boolean;
   voice_limit: number;
   audio_model: string;
-  audio_provider: "gemini" | "groq";
+  audio_provider: "gemini" | "groq" | "openrouter";
   vision_model: string;
   search_provider: "tavily" | "brave" | "serpapi";
 };

@@ -247,7 +247,7 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
     monkeypatch.setattr(worker, "provider_account", lambda *_: ({}, None))
     monkeypatch.setattr(worker, "model_config", lambda *_: (
         {"max_tokens": 700, "input_usd_per_million": .1, "output_usd_per_million": .2},
-        {"VersionNo": 1, "Nonce": b"", "Ciphertext": b""}, {"model": "gemini-test", "credential": operation}))
+        {"VersionNo": 1, "Nonce": b"", "Ciphertext": b""}, {"provider": "gemini", "model": "gemini-test", "credential": operation}))
     monkeypatch.setattr(worker, "reply_context", lambda *_: {"system": "original context", "query": "old interest", "fingerprint": "test",
                          "audio_source_message": audio_message,
                          "input_audio": {"id": str(uuid4()), "hash": "ab" * 32, "voice": True, "mime": "audio/ogg", "raw": b"fixture"}})
@@ -255,7 +255,7 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
     monkeypatch.setattr(worker, "key", lambda *_: b"fixture")
     monkeypatch.setattr(worker, "reserve_budget", lambda *_: None)
     monkeypatch.setattr(worker, "finish", lambda *args: finishes.append(args[3:5]) or True)
-    monkeypatch.setattr(voice_transcripts, "save", lambda *args: saved.append(args))
+    monkeypatch.setattr(voice_transcripts, "save", lambda *args, **kwargs: saved.append(args))
     class Gateway:
         def __init__(self, *_):
             pass

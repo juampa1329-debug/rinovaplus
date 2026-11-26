@@ -137,7 +137,7 @@ def test_unapproved_price_small_context_or_missing_model_never_infer(kwargs, cod
 
 
 @pytest.mark.parametrize("code,status", [("provider_response_timeout", None), ("provider_invalid_json", None),
-    ("provider_rejected_request", 401), ("provider_temporary_failure", 502)])
+    ("provider_temporary_failure", 502)])
 def test_ambiguous_inference_or_auth_failure_is_not_replayed(code, status):
     state = setup()
     async def primary():

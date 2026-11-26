@@ -1,4 +1,8 @@
-"""Gemini messaging replies using the institutional provider and send queues."""
+"""Messaging replies using the selected engines and institutional send queues.
+
+Persistent action/origin identifiers retain their historic names for receipt
+and idempotency compatibility; they do not select a provider.
+"""
 
 import asyncio
 import json
@@ -225,14 +229,20 @@ def model_config(c, settings, data):
         # ASR is a separate, explicitly selected media model, never the sales
         # agent's language model. Old installations keep their saved selection.
         media = preferred.get("media", {})
-        config = {**config, "provider": "gemini", "primary_model": media.get("audio_model") or config["primary_model"]}
-        provider = "gemini"
+        provider = media.get("audio_provider", "gemini")
+        model = media.get("audio_model")
+        if not model:
+            raise HTTPException(409, "audio_engine_not_configured")
+        config = {**config, "provider": provider, "primary_model": model}
+        if language.enabled and language.primary:
+            approved = next((r for r in [language.opening, language.primary, *language.routes] if r and r.provider == provider and r.model == model), language.primary)
+            config.update(input_usd_per_million=approved.input_usd_per_million, output_usd_per_million=approved.output_usd_per_million)
     elif language.enabled and language.primary:
         config = configuration(config, language.primary, next(iter(language.routes), None), language.reply_max_tokens)
         provider = language.primary.provider
     if (
         not preferred["enabled"]
-        or provider not in {"gemini", "openrouter"}
+        or provider not in {"gemini", "openrouter", "openai", "anthropic", "hermes", "groq", "kimi", "nvidia", "mistral", "xai"}
         or not config["allow_reply"]
         or "conversation.reply" not in config["capabilities"]
         or not config["primary_model"]
@@ -248,13 +258,13 @@ def model_config(c, settings, data):
         institution(settings),
         provider,
     )
-    if not secret:
+    if not secret and not (language.enabled and language.primary):
         raise HTTPException(409, "gemini_whatsapp_credential_required")
     binding = {
         "agent": selected["agent_id"],
         "binding": selected["binding"],
         "model": config["primary_model"],
-        "credential": uid(str(secret["SecretId"])),
+        "credential": uid(str(secret["SecretId"])) if secret else None,
         "provider": provider,
         "ai_revision": saved_ai.get("revision"),
         "crm_stage": crm_stage,
@@ -538,7 +548,9 @@ class Worker:
                 grounded = reply_context(c, settings, data, context)
                 data["interpreting_audio"] = bool(grounded.get("input_audio") and not grounded.get("audio_transcribed"))
                 config, secret, binding = model_config(c, settings, data)
-                backup = language_resilience.snapshot(c, settings, turn=grounded.get("skill_policy"), crm_stage=binding.get("crm_stage"))
+                media_route = {"provider": binding["provider"], "model": binding["model"],
+                               "input_usd_per_million": config["input_usd_per_million"], "output_usd_per_million": config["output_usd_per_million"]} if data["interpreting_audio"] and binding.get("provider") != "groq" else None
+                backup = language_resilience.snapshot(c, settings, turn=grounded.get("skill_policy"), crm_stage=binding.get("crm_stage"), media_route=media_route)
                 if grounded.get("reply_turn"):
                     data["reply_turn"] = grounded["reply_turn"]
                     data["quote_incoming"] = grounded["reply_turn"]["quote_incoming"]
@@ -556,7 +568,7 @@ class Worker:
                     },
                     secret["Nonce"],
                     secret["Ciphertext"],
-                )
+                ) if secret else None
                 input_tokens = (
                     len((grounded["system"] + grounded["query"]).encode()) + 512
                 )
@@ -575,7 +587,7 @@ class Worker:
                         + output_tokens * config["output_usd_per_million"]
                     ),
                 )
-                if not backup.get("primary") or data["interpreting_audio"]:
+                if not backup.get("primary") or binding.get("provider") == "groq":
                     # Explicit language routes reserve after catalog/price checks.
                     # Do not charge their full envelope a second time here.
                     reserve_budget(c, settings, "tokens", input_tokens + output_tokens, budget["daily_tokens"])
@@ -650,9 +662,22 @@ class Worker:
                 )
             if grounded.get("input_audio") and not grounded.get("audio_transcribed"):
                 from app.institutional import voice_transcripts
-                transcription = asyncio.run(self.gateway_factory({"gemini": secret_value}).gemini_generation(
-                    binding["model"], voice_transcripts.request_body(grounded["input_audio"]), before_attempt=before_attempt,
-                ))
+                gateway = self.gateway_factory({binding.get("provider", "gemini"): secret_value})
+                request_body = voice_transcripts.request_body(grounded["input_audio"])
+                async def transcription_primary():
+                    from app.institutional.engine_requests import generate
+                    return await generate(gateway, media_route, request_body, before_attempt)
+                if binding.get("provider") == "groq":
+                    before_attempt()
+                    text = asyncio.run(gateway.transcribe(binding["model"], grounded["input_audio"]["mime"], grounded["input_audio"]["raw"]))
+                    before_attempt()
+                    transcription = {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": json.dumps({"intelligible": bool(text), "text": text})}]}}]}
+                elif backup.get("primary"):
+                    transcription = asyncio.run(language_resilience.execute(transcription_primary, binding.get("provider", "gemini"), binding["model"], request_body,
+                        backup, before_attempt, lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
+                        data.setdefault("transcription_execution", {}), gateway=self.gateway_factory(backup["keys"])))
+                else:
+                    transcription = asyncio.run(transcription_primary())
                 text = voice_transcripts.parse(transcription)
                 if text:
                     # Persist interpretation and release this stage atomically. The next
@@ -666,7 +691,10 @@ class Worker:
                         if not active:
                             raise HTTPException(409, "gemini_whatsapp_claim_changed")
                         transcript_source = {**data, "incoming": grounded.get("audio_source_message", data["incoming"])}
-                        voice_transcripts.save(c, settings, transcript_source, grounded["input_audio"], text, binding["model"], transcription.get("usageMetadata"))
+                        executed = data.get("transcription_execution", {})
+                        voice_transcripts.save(c, settings, transcript_source, grounded["input_audio"], text,
+                            executed.get("model") or binding["model"], transcription.get("usageMetadata"),
+                            provider=executed.get("provider") or binding.get("provider", "gemini"))
                         data["transcription_stage"] = {"completed": True, "message": transcript_source["incoming"], "media": voice_audio.audio_fingerprint(grounded["input_audio"])}
                         data.pop("interpreting_audio", None)
                         c.execute("UPDATE crm_channels2.ProviderOperation SET Status='pending',ResultMetadata=?,ResultCode=NULL,LeaseId=NULL,LeaseUntil=NULL WHERE InstitutionId=? AND OperationId=? AND Status='running' AND LeaseId=?",
@@ -696,7 +724,7 @@ class Worker:
                     return await self.gateway_factory({"gemini": secret_value}).gemini_generation(
                         binding["model"], request_body, before_attempt=before_attempt)
                 result = asyncio.run(language_resilience.execute(
-                    primary, "gemini", binding["model"], request_body, backup, before_attempt,
+                    primary, binding.get("provider", "gemini"), binding["model"], request_body, backup, before_attempt,
                     lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
                     data.setdefault("language_execution", {}),
                     gateway=self.gateway_factory(backup["keys"]),

@@ -1,4 +1,4 @@
-"""P21: guarded backups for grounded text, with a reservation per attempted route.
+"""Guarded, capability-aware engine routes, reserved per attempted inference.
 
 No audio is forwarded to a text model. Known rejections may select the next
 approved route. Opt-in timeout recovery applies only to text generation before
@@ -22,7 +22,7 @@ from app.modules.ai.domain.resilience import LanguageResilience, can_failover
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 
-def snapshot(c, settings, *, turn=None, crm_stage=None):
+def snapshot(c, settings, *, turn=None, crm_stage=None, media_route=None):
     value = setting(c, settings, "ai")
     policy = LanguageResilience.model_validate(value["document"].get("language_resilience", {}))
     result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {},
@@ -31,16 +31,26 @@ def snapshot(c, settings, *, turn=None, crm_stage=None):
         return result
     from app.institutional.language_stages import choose
     primary, routing = choose(policy, turn, crm_stage)
+    if media_route:
+        from app.modules.ai.domain.resilience import LanguageRoute
+        primary = LanguageRoute.model_validate(media_route)
+        routing = {"source": "configured_media_engine", "route": "transcription"}
     result["routing"] = routing
     routes = list(policy.routes)
     if primary and policy.primary and primary != policy.primary:
         routes.insert(0, policy.primary)
+    if media_route:
+        # A text-fallback approval does not silently authorize forwarding raw
+        # voice to another provider. Media stays with its selected destination.
+        routes = [r for r in routes if r.provider == primary.provider]
     for index, route in enumerate(([primary] if primary else []) + routes):
         secret = one(c, "SELECT * FROM crm_access.Secret WHERE InstitutionId=? AND Scope='provider' "
                      "AND OwnerRef=? AND Kind='api_key' AND State='staged'", institution(settings), route.provider)
+        if primary and index == 0:
+            result["primary"] = route.model_dump()
+        else:
+            result["routes"].append(route.model_dump())
         if not secret:
-            if primary and index == 0:
-                raise HTTPException(409, "language_primary_key_required")
             continue
         identity = uid(str(secret["SecretId"]))
         result["keys"][route.provider] = unseal(key(settings), {
@@ -48,10 +58,6 @@ def snapshot(c, settings, *, turn=None, crm_stage=None):
             "kind": "api_key", "version": secret["VersionNo"], "secret_id": identity,
         }, secret["Nonce"], secret["Ciphertext"])
         result["credentials"][route.provider] = (identity, secret["VersionNo"])
-        if primary and index == 0:
-            result["primary"] = route.model_dump()
-        else:
-            result["routes"].append(route.model_dump())
     return result
 
 
@@ -79,24 +85,28 @@ def reservation(settings, saved, route, incoming, outgoing):
 
 async def compatible(gateway, route, body):
     parts = [part for content in body["contents"] for part in content["parts"]]
-    images = [part for part in parts if "inlineData" in part]
+    images = [part for part in parts if part.get("inlineData", {}).get("mimeType", "").startswith("image/")]
+    audio = [part for part in parts if part.get("inlineData", {}).get("mimeType", "").startswith("audio/")]
+    if (images or audio) and route["provider"] not in {"gemini", "openrouter"}:
+        raise AiError("language_backup_modality_unsupported", 409)
     for content in body["contents"]:
-        message_content(content)  # Validate before catalog/reservation/paid IO.
-    models = await gateway.models(route["provider"], account_catalog=True, **({"kind": "vision"} if images else {}))
+        message_content(content, allow_audio=is_transcription(body))  # Validate before catalog/reservation/paid IO.
+    models = await gateway.models(route["provider"], account_catalog=True, **({"kind": "audio"} if audio else {"kind": "vision"} if images else {}))
     model = next((m for m in models if m.id == route["model"]), None)
     if not model:
         raise AiError("language_backup_model_unavailable", 409)
     details = gateway.catalog_details.get(route["provider"], {}).get(route["model"], {})
-    incoming = (len(json.dumps(body, ensure_ascii=False).encode()) + 512 if not images else
+    incoming = (len(json.dumps(body, ensure_ascii=False).encode()) + 512 if not images and not audio else
                 sum(len(part.get("text", "").encode()) for part in parts)
                 + len(json.dumps(body.get("systemInstruction", {}), ensure_ascii=False).encode())
-                + 512 + 32_768 * len(images))
+                + 512 + 32_768 * len(images) + 10_240 * len(audio))
     outgoing = body["generationConfig"]["maxOutputTokens"]
     context = details.get("context_length")
-    if not context or incoming + outgoing > context or not model.output_limit or outgoing > model.output_limit:
+    if ((route["provider"] in {"gemini", "openrouter"} and (not context or not model.output_limit))
+            or context and incoming + outgoing > context
+            or model.output_limit and outgoing > model.output_limit
+            or incoming > 200_000 or outgoing > 8000):
         raise AiError("language_backup_context_incompatible", 409)
-    if not model.temperature and route["provider"] != "openrouter":
-        raise AiError("language_backup_parameters_incompatible", 409)
     if route["provider"] == "openrouter":
         if "response_format" not in details.get("supported_parameters", []):
             raise AiError("language_backup_parameters_incompatible", 409)
@@ -112,12 +122,21 @@ async def compatible(gateway, route, body):
     return incoming, outgoing
 
 
-def message_content(content):
-    """Only private inline images, never caller URLs, arbitrary files or audio."""
+def is_transcription(body):
+    schema = body.get("generationConfig", {}).get("responseSchema", {})
+    return (set(schema.get("properties", {})) == {"intelligible", "text"}
+            and set(schema.get("required", [])) == {"intelligible", "text"}
+            and not body.get("tools"))
+
+
+def message_content(content, *, allow_audio=False):
+    """Validated inline media only; never arbitrary caller URLs or files."""
     parts = content["parts"]
     if all(set(part) == {"text"} and isinstance(part["text"], str) for part in parts):
         return "\n".join(part["text"] for part in parts)
-    texts, images = [], []
+    texts, images, audios = [], [], []
+    audio_formats = {"audio/ogg": "ogg", "audio/mpeg": "mp3", "audio/wav": "wav", "audio/x-wav": "wav",
+                     "audio/webm": "webm", "audio/flac": "flac", "audio/mp4": "m4a", "audio/aac": "aac"}
     for part in parts:
         if set(part) == {"text"} and isinstance(part["text"], str):
             texts.append(part["text"])
@@ -125,25 +144,33 @@ def message_content(content):
         inline = part.get("inlineData")
         if (set(part) != {"inlineData"} or not isinstance(inline, dict)
                 or set(inline) != {"mimeType", "data"}
-                or inline.get("mimeType") not in {"image/jpeg", "image/png", "image/webp"}
+                or inline.get("mimeType") not in {"image/jpeg", "image/png", "image/webp", *audio_formats}
                 or not isinstance(inline.get("data"), str)
-                or len(inline["data"]) > 5_333_336):
+                or len(inline["data"]) > (10_666_668 if inline.get("mimeType") in audio_formats else 5_333_336)):
             raise AiError("language_backup_text_only", 409)
         try:
             raw = base64.b64decode(inline["data"], validate=True)
         except ValueError:
             raise AiError("language_backup_image_invalid", 409) from None
-        if not 0 < len(raw) <= 4_000_000 or content.get("role") == "model":
+        if not 0 < len(raw) <= (8_000_000 if inline["mimeType"] in audio_formats else 4_000_000) or content.get("role") == "model":
             raise AiError("language_backup_image_invalid", 409)
+        if inline["mimeType"] in audio_formats:
+            if not allow_audio:
+                raise AiError("language_backup_audio_not_authorized", 409)
+            audios.append({"type": "input_audio", "input_audio": {"data": inline["data"], "format": audio_formats[inline["mimeType"]]}})
+            continue
         images.append({"type": "image_url", "image_url": {
             "url": "data:" + inline["mimeType"] + ";base64," + inline["data"], "detail": "auto"}})
-    if len(images) > 3:
+    if len(images) > 3 or len(audios) > 1 or images and audios:
         raise AiError("language_backup_image_invalid", 409)
-    return [{"type": "text", "text": "\n".join(texts)}, *images]
+    return [{"type": "text", "text": "\n".join(texts)}, *images, *audios]
 
 
 async def generate(gateway, route, body, guard):
     guard()
+    if route["provider"] not in {"gemini", "openrouter"}:
+        from app.institutional.engine_requests import generate as adapter_request
+        return await adapter_request(gateway, route, body, guard)
     if route["provider"] == "gemini":
         # Deliberately one POST per route; no hidden retry cycle.
         return await gateway.request("gemini", "POST", "models/" + route["model"] + ":generateContent", body)
@@ -153,7 +180,7 @@ async def generate(gateway, route, body, guard):
     messages = [{"role": "system", "content": system}]
     for content in body["contents"]:
         messages.append({"role": "assistant" if content.get("role") == "model" else "user",
-                         "content": message_content(content)})
+                         "content": message_content(content, allow_audio=is_transcription(body))})
     response_format = {"type": "json_object"}
     if (set(schema.get("properties", {})) in ({"decision", "text"}, {"decision", "text", "crm_observations"})
             and schema["properties"]["decision"].get("enum") in (["responder"], ["responder", "revisar"], ["responder", "revisar", "esperar"])):
@@ -190,7 +217,7 @@ async def generate(gateway, route, body, guard):
         if route["model"].startswith("anthropic/"):
             # Claude rejects string-length constraints in the provider schema.
             # Retain the limit in instructions and validate it before dispatch.
-            properties["text"]["description"] = "Respuesta completa, entre 400 y 750 caracteres y nunca más de 900."
+            properties["text"]["description"] = "Información privada entre400y750 caracteres, nunca más de900. Apoyo público: una frase natural de hasta180 caracteres."
         else:
             properties["text"]["maxLength"] = 900
         response_format = {"type": "json_schema", "json_schema": {
@@ -230,7 +257,7 @@ async def generate(gateway, route, body, guard):
 
 def timeout_recovery_allowed(error, provider, body, saved):
     """Only pure, completed-local text attempts; never replay a channel/tool POST."""
-    if (saved.get("fallback_on_timeout") is not True or provider not in {"gemini", "openrouter"}
+    if (saved.get("fallback_on_timeout") is not True
             or error.code not in {"provider_response_timeout", "provider_timeout_or_network", "provider_protocol_failure"}
             or body.get("tools") or body.get("stream") or not body.get("contents")):
         return False

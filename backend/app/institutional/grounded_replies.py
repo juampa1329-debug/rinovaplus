@@ -33,6 +33,10 @@ RULES = (
 )
 DECISION_RULE = "Devuelve decision=responder y una respuesta útil, o decision=revisar y texto vacío."
 PUBLICATION_RULES = (
+    "\nUna felicitación, agradecimiento o muestra de apoyo sin consulta comercial se contesta "
+    "con un agradecimiento público breve y natural, aunque no identifique ningún programa. "
+    "No lo conviertas en venta, pregunta de calificación ni mensaje privado. Esta excepción "
+    "no cubre quejas, preguntas o comentarios ambiguos que requieran revisión. "
     "\nPRIORIDAD DEL CONTEXTO PÚBLICO: identifica primero el tema de publicacion. "
     "Un comentario como 'información', 'precio', 'me interesa' o un saludo se refiere "
     "a ESA publicación, aunque su curso o actividad no exista aún en el catálogo académico. "

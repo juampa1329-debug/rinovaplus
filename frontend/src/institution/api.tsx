@@ -66,31 +66,56 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
-  commercial_followup_preview_changed: "El caso cambió desde la revisión. Conserva los registros confirmados y vuelve a consultar el avance antes de continuar.",
-  commercial_followup_scope_limit: "La revisión supera el límite de mensajes. Revisa por contacto para conservar todas las evidencias.",
-  siie_registration_writes_disabled: "Los envíos finales a SIIE están desactivados. Puedes preparar y guardar el borrador.",
-  siie_registration_catalogs_required: "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
-  siie_registration_invalid_catalog: "El catálogo de inscripción de SIIE no cumple el formato esperado. Conserva el borrador y pide revisar el contrato; no cambies las claves por este aviso.",
-  siie_registration_catalog_contract_changed: "SIIE cambió el valor o tipo que espera para un selector. Se detuvo la validación para no enviar etiquetas en lugar de identificadores.",
-  siie_catalog_filters_invalid: "Selecciona país y departamento antes de buscar o paginar municipios. Los filtros deben corresponder a esa ubicación.",
-  siie_geography_selection_required: "Vuelve a consultar y seleccionar la ubicación por país y departamento antes del envío final. El borrador se conserva.",
-  siie_catalog_period_not_creatable: "Ese período sólo admite consulta histórica; elige una oferta vigente para crear la inscripción.",
-  siie_study_title_mismatch: "El título y el tipo de estudio no corresponden a la misma opción de SIIE. Revisa esa selección.",
-  siie_work_location_mismatch: "El departamento y el municipio laboral deben pertenecer a la misma ubicación. Revisa el país y el departamento de ambos selectores.",
-  siie_form_catalog_changed: "La selección ya no está en el catálogo vigente de SIIE o su tipo no coincide. Vuelve a consultarla antes de enviar.",
-  siie_registration_rate_limited: "SIIE alcanzó el límite temporal de esta ruta. Respeta el tiempo de espera indicado; no repitas un envío de resultado incierto.",
-  siie_registration_read_failed: "SIIE no confirmó la consulta de inscripción. Conserva el borrador y revisa la conexión.",
-  siie_registration_access_rejected: "La ruta nueva de SIIE rechazó la autenticación. El administrador de SIIE debe revisar su permiso con la clave única actual; no cambies las demás claves por este aviso.",
-  siie_registration_route_not_found: "SIIE no encontró la ruta nueva de inscripción en la instalación configurada. Su desarrollador debe confirmar la publicación y la carpeta base.",
-  siie_registration_read_redirect: "SIIE redirigió la consulta a una ruta que no coincide con la autorizada. Conserva el borrador y confirma la dirección con su desarrollador.",
-  siie_registration_invalid_response: "La consulta de inscripción de SIIE no coincide con el contrato documentado. El borrador se conserva; el diagnóstico del backend identifica la validación fallida sin datos personales.",
-  siie_registration_source_unavailable: "La ruta nueva de SIIE no está disponible. Conserva el borrador y revisa su estado con el desarrollador de SIIE.",
-  siie_form_required_fields: "Completa los campos obligatorios antes de enviar a SIIE.",
-  siie_form_invalid_fields: "Revisa los campos y sus longitudes. SIIE sólo acepta los campos documentados del formulario.",
-  siie_registration_reconciliation_required: "Esta solicitud tiene un envío iniciado o un resultado por conciliar. Consulta su recibo antes de preparar otro envío.",
-  siie_offer_selection_changed: "La oferta o el período cambió en SIIE. Revisa la selección vigente antes de continuar.",
-  siie_contact_link_changed: "El vínculo o teléfono del contacto cambió. Vuelve a revisar la identidad antes de enlazarlo.",
-  siie_webhook_configuration_required: "Configura la clave de firma del webhook y una etapa inicial vigente antes de habilitar la recepción.",
+  commercial_followup_preview_changed:
+    "El caso cambió desde la revisión. Conserva los registros confirmados y vuelve a consultar el avance antes de continuar.",
+  commercial_followup_scope_limit:
+    "La revisión supera el límite de mensajes. Revisa por contacto para conservar todas las evidencias.",
+  siie_registration_writes_disabled:
+    "Los envíos finales a SIIE están desactivados. Puedes preparar y guardar el borrador.",
+  siie_registration_catalogs_required:
+    "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
+  siie_registration_invalid_catalog:
+    "El catálogo de inscripción de SIIE no cumple el formato esperado. Conserva el borrador y pide revisar el contrato; no cambies las claves por este aviso.",
+  siie_registration_catalog_contract_changed:
+    "SIIE cambió el valor o tipo que espera para un selector. Se detuvo la validación para no enviar etiquetas en lugar de identificadores.",
+  siie_catalog_filters_invalid:
+    "Selecciona país y departamento antes de buscar o paginar municipios. Los filtros deben corresponder a esa ubicación.",
+  siie_geography_selection_required:
+    "Vuelve a consultar y seleccionar la ubicación por país y departamento antes del envío final. El borrador se conserva.",
+  siie_catalog_period_not_creatable:
+    "Ese período sólo admite consulta histórica; elige una oferta vigente para crear la inscripción.",
+  siie_study_title_mismatch:
+    "El título y el tipo de estudio no corresponden a la misma opción de SIIE. Revisa esa selección.",
+  siie_work_location_mismatch:
+    "El departamento y el municipio laboral deben pertenecer a la misma ubicación. Revisa el país y el departamento de ambos selectores.",
+  siie_form_catalog_changed:
+    "La selección ya no está en el catálogo vigente de SIIE o su tipo no coincide. Vuelve a consultarla antes de enviar.",
+  siie_registration_rate_limited:
+    "SIIE alcanzó el límite temporal de esta ruta. Respeta el tiempo de espera indicado; no repitas un envío de resultado incierto.",
+  siie_registration_read_failed:
+    "SIIE no confirmó la consulta de inscripción. Conserva el borrador y revisa la conexión.",
+  siie_registration_access_rejected:
+    "La ruta nueva de SIIE rechazó la autenticación. El administrador de SIIE debe revisar su permiso con la clave única actual; no cambies las demás claves por este aviso.",
+  siie_registration_route_not_found:
+    "SIIE no encontró la ruta nueva de inscripción en la instalación configurada. Su desarrollador debe confirmar la publicación y la carpeta base.",
+  siie_registration_read_redirect:
+    "SIIE redirigió la consulta a una ruta que no coincide con la autorizada. Conserva el borrador y confirma la dirección con su desarrollador.",
+  siie_registration_invalid_response:
+    "La consulta de inscripción de SIIE no coincide con el contrato documentado. El borrador se conserva; el diagnóstico del backend identifica la validación fallida sin datos personales.",
+  siie_registration_source_unavailable:
+    "La ruta nueva de SIIE no está disponible. Conserva el borrador y revisa su estado con el desarrollador de SIIE.",
+  siie_form_required_fields:
+    "Completa los campos obligatorios antes de enviar a SIIE.",
+  siie_form_invalid_fields:
+    "Revisa los campos y sus longitudes. SIIE sólo acepta los campos documentados del formulario.",
+  siie_registration_reconciliation_required:
+    "Esta solicitud tiene un envío iniciado o un resultado por conciliar. Consulta su recibo antes de preparar otro envío.",
+  siie_offer_selection_changed:
+    "La oferta o el período cambió en SIIE. Revisa la selección vigente antes de continuar.",
+  siie_contact_link_changed:
+    "El vínculo o teléfono del contacto cambió. Vuelve a revisar la identidad antes de enlazarlo.",
+  siie_webhook_configuration_required:
+    "Configura la clave de firma del webhook y una etapa inicial vigente antes de habilitar la recepción.",
   masterclass_preview_changed:
     "Un contacto o programa cambió desde la revisión. Consulta el resultado y vuelve a revisar los intereses antes de continuar.",
   masterclass_scope_limit:
@@ -448,6 +473,10 @@ const messages: Record<string, string> = {
     "Falta la clave del proveedor de IA en Ajustes → Proveedores.",
   comment_ai_pricing_review_required:
     "Un administrador debe revisar el límite de tarifa de IA para esta cuenta.",
+  comment_ai_account_limit_required:
+    "Configura el máximo de solicitudes de IA para esta cuenta. Las tarifas se toman del motor activo.",
+  audio_engine_not_configured:
+    "Selecciona un proveedor y modelo de transcripción en APIs y modelos. La voz se procesa con ese motor.",
   comment_ai_budget_disabled:
     "Define los límites de tokens y gasto de IA antes de solicitar borradores.",
   comment_ai_budget_exhausted: "Se alcanzó el presupuesto de IA del día.",

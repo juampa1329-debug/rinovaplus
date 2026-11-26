@@ -412,8 +412,9 @@ def test_worker_enqueues_one_routed_reply_without_public_dm_claim(
     monkeypatch.setattr(
         worker,
         "policy",
-        lambda *_: {
+        lambda *_, **__: {
             "daily_requests": 20,
+            "model": "gemini-test",
             "input_micros_per_million": 1,
             "output_micros_per_million": 1,
         },

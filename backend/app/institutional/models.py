@@ -253,7 +253,7 @@ PROVIDER_CATEGORIES = {
     "openai": ("text", "vision"),
     "anthropic": ("text", "vision"),
     "hermes": ("text", "vision"),
-    "openrouter": ("text", "vision"),
+    "openrouter": ("text", "vision", "audio"),
     "kimi": ("text", "vision"),
     "groq": ("text", "audio"),
     "nvidia": ("text",),
