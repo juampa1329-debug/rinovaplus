@@ -215,9 +215,10 @@ class Workspace(Parent):
             identity = db.one(
                 c,
                 (
-                    "SELECT * FROM crm_channels2.ExternalId"
+                    "SELECT TOP(1) * FROM crm_channels2.ExternalId"
                     "entity WHERE InstitutionId=? AND Conve"
-                    "rsationId=?"
+                    "rsationId=? ORDER BY CASE WHEN LastIncomingAt IS NULL THEN 1 ELSE 0 END,"
+                    "LastIncomingAt DESC,IdentityId"
                 ),
                 db.institution(self.profile),
                 resource,

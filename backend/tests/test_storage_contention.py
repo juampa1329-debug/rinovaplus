@@ -17,8 +17,11 @@ class Busy(psycopg2.Error):
         return "55P03"
 
 
-@pytest.mark.parametrize("write", [False, True])
-@pytest.mark.parametrize("where,expected", [("lock", "storage_busy"), ("body", "general_storage_unavailable")])
+@pytest.mark.parametrize("write,where,expected", [
+    (True, "lock", "storage_busy"),
+    (True, "body", "general_storage_unavailable"),
+    (False, "body", "general_storage_unavailable"),
+])
 def test_only_pre_work_lock_timeout_is_classified_as_retryable(monkeypatch, caplog, write, where, expected):
     raw = MagicMock()
     conn = MagicMock()
@@ -42,13 +45,45 @@ def test_only_pre_work_lock_timeout_is_classified_as_retryable(monkeypatch, capl
     assert entered is (where == "body")
     assert (failure.value.headers or {}).get("Retry-After") == ("1" if where == "lock" else None)
     calls = [c.args[0] for c in raw.execute.call_args_list]
-    assert ("SET TRANSACTION READ ONLY" in calls) is (not write)
-    lock = "pg_advisory_xact_lock" if write else "pg_advisory_xact_lock_shared"
-    assert any(f"SELECT {lock}(" in sql for sql in calls)
+    assert ("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY" in calls) is (not write)
+    assert any("pg_advisory_xact_lock(" in sql for sql in calls) is write
+    assert not any("pg_advisory_xact_lock_shared" in sql for sql in calls)
     assert "SET LOCAL lock_timeout='3s'" in calls
     assert "PRIVATE" not in caplog.text
     assert "state=55P03" in caplog.text
     conn.close.assert_called_once()
+
+
+@pytest.mark.parametrize("write", [False, True])
+@pytest.mark.parametrize("denied", [False, True])
+def test_snapshot_reads_and_serialized_writes_both_require_live_scope_and_authority(monkeypatch, write, denied):
+    from app.institutional import auth
+    raw, conn = MagicMock(), MagicMock()
+    conn.cursor.return_value.__enter__.return_value = raw
+    raw.fetchone.return_value = ("db", "app", "institution")
+    settings = SimpleNamespace(postgres_connect=lambda: conn,
+        connection={"database": "db"}, postgres_user="app",
+        ticket={"context": [[1, "institution"]], "table_map": {}}, postgres_columns={})
+    monkeypatch.setattr(postgres, "Cursor", lambda *args: raw)
+    authority = {"permission": "inbox.read", "token": "private-test-token"}
+    token = postgres.request_authority.set(authority)
+    checked = Mock(side_effect=HTTPException(403, "permission_denied") if denied else None)
+    monkeypatch.setattr(auth, "authorize", checked)
+    try:
+        if denied:
+            with pytest.raises(HTTPException, match="permission_denied"):
+                with postgres.transaction(settings, write):
+                    pytest.fail("unauthorized work must not begin")
+        else:
+            with postgres.transaction(settings, write) as cursor:
+                assert cursor is raw
+                checked.assert_called_once_with(raw, settings, authority, "inbox.read", recent=False)
+        assert checked.call_count == 1
+        calls = [call.args[0] for call in raw.execute.call_args_list]
+        assert any("current_database(), current_user, institutionid" in sql for sql in calls)
+        assert any("pg_advisory_xact_lock(" in sql for sql in calls) is write
+    finally:
+        postgres.request_authority.reset(token)
 
 
 def test_campaign_future_contexts_release_writer_between_contacts_and_recheck_live_rows(monkeypatch):

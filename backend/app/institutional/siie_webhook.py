@@ -354,6 +354,19 @@ class Ingress:
     def receive(self, headers, raw):
         verify(headers, raw)
         try:
+            return self.receive_verified(raw)
+        except HTTPException as error:
+            # Verification succeeded before storage/configuration was consulted.
+            # Fixed codes only: never log body, document, key, signature or IDs.
+            if error.status_code == 503:
+                reason = str(error.detail) if error.detail in {
+                    "storage_busy", "general_storage_unavailable", "siie_webhook_disabled"
+                } else "unavailable"
+                LOG.warning("siie_webhook_rejected status=503 reason=%s signature_verified=true", reason)
+            raise
+
+    def receive_verified(self, raw):
+        try:
             event = Event.model_validate(strict_json(raw))
             if event.event_type.startswith("pre_registration.") and (
                 not event.idPreinscripcion or event.persona is None

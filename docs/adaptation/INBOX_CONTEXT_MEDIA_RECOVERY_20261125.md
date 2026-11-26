@@ -1,6 +1,6 @@
 # Continuidad del contexto y mensajes con imágenes
 
-25 de noviembre de 2026. Estado inicial: corrección preparada, pendiente de publicación y comprobación real.
+25 de noviembre de 2026. Primera corrección publicada en `0654df5`; ampliación de almacenamiento y destinatario manual en validación.
 
 ## Evidencia que motivó la corrección
 
@@ -35,4 +35,16 @@ La búsqueda incorpora ExternalIdentity junto al teléfono CRM, con institución
 
 ## Límites de este corte
 
-No se acredita aún despliegue, inferencia nueva con imagen, entrega a los contactos ni recuperación automática real por esta corrección. No se modificaron recibos anteriores, no se repitió el intento incierto, no se generó volante ni se enviaron escrituras SIIE. El webhook conjunto sigue pendiente del reenvío corregido desde SIIE. P23 mantiene 0/9 aceptados y las demás aceptaciones se conservan.
+### Ampliación tras comprobación nativa
+
+`0654df5` pasó salud en Coolify: backend `wa1vobamffk3is5vysyjukji`, Success 4m19s; frontend `n55fth64okxyvzpyufd6trlx`, Success 45s. La búsqueda por el sufijo del número encontró ahora el contacto esperado, antes ausente. Su mensaje nuevo quedó en cola con cero intentos y `messaging_response_window_closed`; al restaurar IA se conservó cancelado con cero intentos. No se acredita entrega ni se conserva una salida pendiente que pueda duplicarse.
+
+La selección manual de ExternalIdentity no tenía orden. Se elige ahora la identidad con entrada más reciente del mismo ámbito; los valores nulos van al final explícitamente en ambos dialectos. La ventana de 24 horas y el control Humano siguen obligatorios, sin mover fechas ni inventar entradas. Esto corrige la selección; la causa exacta de la ventana de ese caso se comprobará con un envío nuevo después de publicar.
+
+Los registros siguen mostrando `55P03` al adquirir el bloqueo de institución. Las lecturas de listados tomaban ese mismo bloqueo compartido durante consultas largas, retrasando escrituras. Las transacciones PostgreSQL de sólo lectura usan ahora `REPEATABLE READ READ ONLY`: autorización, revisión y datos conservan una misma vista confirmada sin retener el bloqueo de escritura. Todas las mutaciones mantienen el bloqueo exclusivo, comprobación de institución/usuario, permisos, CSRF, revisión y guardas inmediatamente anteriores al proveedor. No hay DDL, privilegios nuevos, repetición de mutaciones ni relajación de la firma.
+
+SIIE conserva el mismo evento sintético en reintento con HTTP 503. La interfaz recién consultada confirma recepción habilitada y secreto presente; cero eventos verificados. No se deduce del 503 que la firma esté corregida. El receptor registra ahora un motivo fijo de almacenamiento/configuración con `signature_verified=true` sólo después de verificar la firma. El cuerpo HTTP conserva `{"detail":"storage_busy"}`, `general_storage_unavailable` o `siie_webhook_disabled`, según la causa; secreto ausente conserva `siie_webhook_not_configured`. Nunca se registran cuerpo, documento, claves, firmas ni identificadores. Un fallo no devuelve acuse; el mismo evento puede reintentarse y un duplicado confirmado no vuelve a proyectarse.
+
+Selección adicional de 329 pruebas backend aprobada (solapada con anteriores): PostgreSQL, permisos de lecturas/escrituras, HMAC, cuerpos 503, no acuse ante almacenamiento ocupado, reintento idempotente, elección de identidad, contexto y medios. Ruff de errores Python (`E9,F`) pasa. La selección completa de estilo de estos archivos encuentra advertencias históricas de longitud/importaciones; no se declara Ruff completo verde.
+
+La ampliación aún no se acredita publicada en este corte. Una recuperación administrativa de imagen fue puesta en preparación mediante la interfaz; inferencia y entrega siguen pendientes de observación. No se modificaron recibos anteriores, no se repitió el intento incierto, no se generó volante ni se enviaron escrituras SIIE. El webhook conjunto sigue pendiente del reenvío corregido desde SIIE. P23 mantiene 0/9 aceptados y las demás aceptaciones se conservan.
