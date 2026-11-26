@@ -21,6 +21,8 @@ La consulta nativa de Diagnósticos identifica `comment_ai_pricing_review_requir
 
 25 pruebas frontend focalizadas, tipos, ESLint de archivos modificados y build institucional aprobados. Bundle histórico de 1202,69 kB / 348,19 kB gzip; no se ha optimizado en este cambio. Lint global conserva los fallos ajenos documentados en el informe de modelos.
 
+Revisión ampliada del módulo anterior: cinco fallos de test_ai.py reproducidos en copia aislada del commit ee693ea (reintentos Gemini antiguos, clasificación404, timeout, JSON inválido y expectativa de temperatura). En la misma selección previa fueron126 aprobadas/5 fallidas; no se atribuyen a este cambio ni se declara suite completa verde. El respaldo ante401/403 se limita a la política institucional de rutas explícitamente aprobadas, conservando el comportamiento del módulo anterior.
+
 No nuevas inferencias pagadas de ensayo en esta corrección local. Las respuestas automáticas productivas y sus recibos se verificarán después del despliegue. La selección de audio productiva todavía está en Gemini 3.8 al preparar este corte; la capacidad de elegir otro proveedor no acredita una transcripción real.
 
 Sin DDL, seeds, nuevos servicios ni escrituras SIIE. P22 conserva 3/5 técnico y 0/5 comercial; P23 conserva 0/9 criterios aceptados. La demora de inicio/carga se analizará por separado, sin implementar optimizaciones por instrucción del titular.

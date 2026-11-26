@@ -128,6 +128,9 @@ def test_support_comments_skip_optional_vision_without_turning_questions_into_th
 
 @pytest.mark.parametrize("human", [False, True])
 def test_only_zero_attempt_price_veto_can_be_reconsidered_and_current_controls_win(monkeypatch, human):
+    from pglast import parse_sql
+    from app.institutional.operations_policy import layout
+    from app.institutional.postgres_dialect import postgres_sql
     statements = []
     class Cursor:
         rowcount = 1
@@ -137,6 +140,7 @@ def test_only_zero_attempt_price_veto_can_be_reconsidered_and_current_controls_w
     monkeypatch.setattr(comment_automation, "setting", lambda *_: {"revision": 8, "document": DOCUMENT})
     monkeypatch.setattr(comment_automation, "institution", lambda _: "inst")
     def one(_c, query, *_):
+        parse_sql(postgres_sql(query, layout()["tables"]).replace("%s", "NULL"))
         assert "COALESCE(p.Attempts,0)=0" in query and "NOT EXISTS" in query and "SendJob" in query
         assert "DATEADD(hour,-24" in query and "p.Status='abandoned'" in query
         assert "JSON_VALUE" in query

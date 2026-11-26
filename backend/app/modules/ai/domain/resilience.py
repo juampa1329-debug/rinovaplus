@@ -48,10 +48,10 @@ class LanguageResilience(BaseModel):
         return self
 
 
-def can_failover(error):
+def can_failover(error, *, credential_fallback=False):
     """Only a rejected/unconnected request; no replay of accepted or unknown work."""
     return error.code in {"provider_model_unavailable", "provider_rate_limited",
                           "provider_connection_failed", "agents_provider_not_configured", "provider_key_missing"} or (
-        error.upstream_status in {401, 403, 404, 429, 503}
+        error.upstream_status in ({401, 403, 404, 429, 503} if credential_fallback else {404, 429, 503})
         and error.code in {"provider_rejected_request", "provider_temporary_failure", "openrouter_rejected_request", "openrouter_retry_exhausted"}
     )

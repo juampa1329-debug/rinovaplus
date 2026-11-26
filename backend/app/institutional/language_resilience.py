@@ -342,7 +342,7 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
         attempts.append({"provider": provider, "model": model, "state": "uncertain" if timeout_recovery else "failed", "code": error.code, "upstream_status": error.upstream_status, "role": "primary",
                          **({"consumption_may_be_billed": True, "reservation_retained": True} if timeout_recovery else {})})
         preflight_rejected = error.code.startswith("language_backup_") and error.status == 409
-        if not can_failover(error) and not timeout_recovery and not preflight_rejected and not completed_invalid(error):
+        if not can_failover(error, credential_fallback=True) and not timeout_recovery and not preflight_rejected and not completed_invalid(error):
             raise
         if timeout_recovery:
             trace["timeout_recovery"] = True
@@ -367,9 +367,9 @@ async def execute(primary, provider, model, body, saved, guard, reserve, trace, 
                 except AiError as error:
                     attempt.update(state="failed", code=error.code, upstream_status=error.upstream_status)
                     # Catalog/capability checks have not performed inference.
-                    if not (error.code.startswith("language_backup_") and error.status == 409) and not can_failover(error) and not completed_invalid(error):
+                    if not (error.code.startswith("language_backup_") and error.status == 409) and not can_failover(error, credential_fallback=True) and not completed_invalid(error):
                         raise
-                    if can_failover(error) or completed_invalid(error):
+                    if can_failover(error, credential_fallback=True) or completed_invalid(error):
                         original = error  # Report the final real rejection, not only the simulated primary fault.
             raise original
     except TimeoutError:
