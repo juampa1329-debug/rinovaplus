@@ -94,7 +94,9 @@ function SettingEditor({
       !(
         section === "ai" &&
         liveModels &&
-        (spec.path.startsWith("media.") || spec.path === "voice_name")
+        ((spec.path.startsWith("media.") &&
+          !["media.audio_provider", "media.audio_model"].includes(spec.path)) ||
+          spec.path === "voice_name")
       ),
   );
   const groups = [...new Set(specs.map((spec) => spec.group))];
@@ -146,17 +148,26 @@ function SettingEditor({
             Abrir Voces y audios
           </a>
           <p>
-            Gemini interpreta la nota entrante. ElevenLabs genera la respuesta
-            hablada sólo si el hilo está en IA, pertenece al alcance
-            seleccionado y tiene cupo; en los demás casos continúa por texto.
+            El proveedor de análisis de audio seleccionado interpreta la nota
+            entrante. El motor de conversaciones responde con las skills y el
+            contexto; ElevenLabs genera la respuesta hablada sólo si el hilo
+            está en IA, pertenece al alcance seleccionado y tiene cupo; en los
+            demás casos continúa por texto.
           </p>
         </section>
       )}
       {section === "budgets" && (
         <>
           <Notice>
-            Activa «IA sin topes internos» para continuar generando respuestas sin cortes por presupuesto diario ni mensual de agentes. Se registra el consumo. Los topes por respuesta, límites de voz, mensajes y seguridad siguen vigentes. Sin esa opción, cero en los topes diarios deshabilita la ejecución correspondiente.
-            La alerta consulta el saldo total de OpenRouter con su clave de administración; avisa una vez por episodio de saldo bajo a los administradores activos y vuelve a habilitarse al recuperar saldo. No recarga ni bloquea respuestas.
+            Activa «IA sin topes internos» para continuar generando respuestas
+            sin cortes por presupuesto diario ni mensual de agentes. Se registra
+            el consumo. Los topes por respuesta, límites de voz, mensajes y
+            seguridad siguen vigentes. Sin esa opción, cero en los topes diarios
+            deshabilita la ejecución correspondiente. La alerta consulta el
+            saldo total de OpenRouter con su clave de administración; avisa una
+            vez por episodio de saldo bajo a los administradores activos y
+            vuelve a habilitarse al recuperar saldo. No recarga ni bloquea
+            respuestas.
           </Notice>
           <BalanceAlertStatus />
         </>
@@ -238,7 +249,7 @@ function SettingEditor({
             <section className="panel" key={group}>
               <h3>
                 {section === "ai" && liveModels && group === "Voz y multimedia"
-                  ? "Análisis de imágenes"
+                  ? "Análisis de audio e imágenes"
                   : group}
               </h3>
               <TypedFields
