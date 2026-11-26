@@ -104,7 +104,9 @@ def catalog(c, s, integration=None):
 
 
 def consent(c, s, identity):
-    return one(
+    from app.institutional.broadcast_consent_correction import project
+
+    return project(one(
         c,
         (
             "SELECT TOP(1) * FROM crm_broadcast7.Co"
@@ -113,7 +115,7 @@ def consent(c, s, identity):
         ),
         institution(s),
         identity,
-    )
+    ))
 
 
 def same(value, other):

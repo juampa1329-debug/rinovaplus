@@ -219,6 +219,8 @@ class ConsentWrite(Review):
     def safe(self):
         if not self.confirmed or not self.evidence.strip() or not self.origin.strip():
             raise ValueError("consent_evidence_required")
+        if self.origin == "administrative_unregistered_correction_v1":
+            raise ValueError("consent_origin_reserved")
         for name, limit in [("evidence", 1000), ("origin", 200)]:
             if (
                 "\x00" in getattr(self, name)

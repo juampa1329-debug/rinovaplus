@@ -15,6 +15,7 @@ from app.institutional.broadcast_models import (
     TemplateSample,
 )
 from app.institutional.broadcasts import Broadcasts
+from app.institutional.broadcast_consent_correction import ConsentRestore, restore
 from app.institutional.db import uid
 from app.institutional.template_library import LibraryWrite
 
@@ -62,6 +63,10 @@ def install(app, settings, gateway=None):
     @app.post(("/api/institution/broadcasts/accounts/{integration}/templates/sync"))
     def sync(request: Request, integration: str, body: Command):
         return service.sync(request.state.authority, uid(integration), body)
+
+    @app.post("/api/institution/broadcasts/accounts/{integration}/consent/{identity}/restore-unregistered")
+    def restore_consent(request: Request, integration: str, identity: str, body: ConsentRestore):
+        return restore(service, request.state.authority, uid(integration), uid(identity), body)
 
     @app.post("/api/institution/broadcasts/accounts/{integration}/templates/sample")
     def upload_sample(request: Request, integration: str, body: TemplateSample):
