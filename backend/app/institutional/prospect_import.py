@@ -43,6 +43,9 @@ STAGES = {
     "Intento sin respuesta": "Seguimiento",
     "Negociación no aceptada": "Cerrado sin matrícula",
     "Inscrito según origen": "Inscripción",
+    "Matriculado según origen": "Matriculado",
+    "Interés confirmado según origen": "Programa definido",
+    "Próximo semestre según origen": "Seguimiento",
 }
 
 

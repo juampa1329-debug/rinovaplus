@@ -1,0 +1,65 @@
+{
+  "source_file": "2026.xls",
+  "source_sha256": "c2781e775cb07828590f505826353ef82e751c1ce6b1fb330a32f8da100b8946",
+  "source_rows": 3992,
+  "source_groups": 3489,
+  "source_extra_rows_in_groups": 503,
+  "existing_coordinate_matches": 550,
+  "source_review_groups": 319,
+  "new_contacts": 2620,
+  "new_contacts_unique_ids": 2620,
+  "new_enrolled_declared": 49,
+  "new_interest_confirmed_declared": 32,
+  "new_declined_declared": 78,
+  "excluded_new_source_progress": 159,
+  "existing_enrolled_source_flag_updates": 1,
+  "campaigns_draft": 55,
+  "campaign_revision": 2,
+  "campaign_main_programs": 18,
+  "campaign_other_topics": 37,
+  "campaign_selected_unique_contacts": 2461,
+  "new_templates_submitted_meta": 19,
+  "meta_last_synchronized_status": {
+    "approved": 5,
+    "pending": 14
+  },
+  "new_recipients_prepare_actions": 0,
+  "new_campaigns_activated": 0,
+  "new_messages_sent": 0,
+  "new_whatsapp_setup_grants": 0,
+  "import_fields_reused": 11,
+  "new_import_fields": 0,
+  "new_recipients_prepared": 0,
+  "native_empty_report_verified": true,
+  "meta_status_cut_utc": "2026-11-26T17:55:55.608879+00:00",
+  "report_preview": "Browser local-file protocol denied; source data and JavaScript syntax checked locally; no alternate preview attempted.",
+  "date": "2026-11-26",
+  "code_commit": "6f57f3d",
+  "backend_deployment": {
+    "id": "sv7lxkrnbhbicq4e4fpmlkqn",
+    "state": "Success",
+    "duration": "4m19s",
+    "healthy": true
+  },
+  "frontend_deployment": {
+    "id": "u8h8j35xqtjzo6ggo5nwxfgi",
+    "state": "Success",
+    "duration": "31s"
+  },
+  "validation": {
+    "backend_focused_passed": 241,
+    "frontend_focused_passed": 33,
+    "typecheck": "passed",
+    "eslint_changed_frontend": "passed",
+    "ruff_changed_import_and_new_tests": "passed",
+    "frontend_build": "passed; existing bundle warning"
+  },
+  "constraints": {
+    "ddl": 0,
+    "seeds": 0,
+    "new_production_services": 0,
+    "siie_writes": 0,
+    "model_changes": 0,
+    "new_acceptance_claims": 0
+  }
+}

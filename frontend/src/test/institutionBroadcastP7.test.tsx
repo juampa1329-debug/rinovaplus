@@ -755,3 +755,28 @@ it("consent requires independent evidence and explicit human confirmation", asyn
   ).toBeDisabled();
   expect(screen.getByLabelText("Máximo en 24 horas")).toHaveValue(100);
 });
+
+it("never preselects a consent recipient and restores an initial clerical error without granting", async () => {
+  vi.spyOn(window, "confirm").mockReturnValue(true);
+  const fetcher = setup(path => path.endsWith("identities") ? ok({items: [{
+    id: "identity", name: "Ana", phone: "573100000000",
+    consent: {state: "revoked", version: 1, evidence: "Registro accidental", expires_at: null},
+  }]}) : undefined);
+  fireEvent.click(await screen.findByRole("button", {name: "Consentimiento y cadencia"}));
+  fireEvent.change(screen.getByLabelText("Cuenta WhatsApp"), {target: {value: "a"}});
+  await screen.findByRole("option", {name: "Ana · 573100000000"});
+  expect(screen.getByLabelText("Destinatario")).toHaveValue("");
+  fireEvent.change(screen.getByLabelText("Evidencia de autorización o revocación"), {target: {value: "Corrección autorizada del error; sin permiso de envío"}});
+  fireEvent.click(screen.getByLabelText("Confirmo que la evidencia corresponde a esta persona y cuenta."));
+  expect(screen.getByRole("button", {name: "Revocar consentimiento"})).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Destinatario"), {target: {value: "identity"}});
+  fireEvent.change(screen.getByLabelText("Evidencia de autorización o revocación"), {target: {value: "Corrección autorizada del error; sin permiso de envío"}});
+  fireEvent.click(screen.getByLabelText("Confirmo que la evidencia corresponde a esta persona y cuenta."));
+  fireEvent.click(screen.getByRole("button", {name: "Restaurar sin autorización por error de registro"}));
+  await waitFor(() => expect(fetcher.mock.calls.some(([url, init]) => String(url).endsWith("/restore-unregistered") && init?.method === "POST")).toBe(true));
+  const body = JSON.parse(String(fetcher.mock.calls.find(([url]) => String(url).endsWith("/restore-unregistered"))![1]?.body));
+  expect(body.revision).toBe(1);
+  expect(body.confirmed).toBe(true);
+  expect(body).not.toHaveProperty("state");
+  expect(fetcher.mock.calls.some(([, init]) => init?.body && String(init.body).includes('"state":"granted"'))).toBe(false);
+});

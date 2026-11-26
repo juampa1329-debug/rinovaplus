@@ -1,0 +1,54 @@
+{
+  "campaigns_active": 55,
+  "selected": 2461,
+  "exported_rows": 2461,
+  "unique_recipient_ids": 2461,
+  "unique_phones": 2461,
+  "states": {
+    "delivered": 35,
+    "failed": 10,
+    "sent": 3,
+    "read": 1,
+    "prepared": 2412
+  },
+  "read_receipts": 1,
+  "delivery_receipts": 36,
+  "reply_receipts": 0,
+  "max_attempts": 1,
+  "failure_reasons": {
+    "whatsapp_recipient_unreachable": 3,
+    "provider_delivery_failed": 7
+  },
+  "cadence": {
+    "daily": 3000,
+    "interval_seconds": 30
+  },
+  "consent_expires_bogota": "2026-11-28T14:00:00-05:00",
+  "restored_contact_sending_enabled": false,
+  "source_review_groups_excluded": 319,
+  "existing_match_groups_excluded": 550,
+  "new_progress_excluded": 159,
+  "cut_start_utc": "2026-11-26T20:29:46.592Z",
+  "cut_end_utc": "2026-11-26T20:32:07.417Z",
+  "code_commit": "932103b1cbde91c553a4de7456fb8dc1f9184f65",
+  "backend_deployment": {
+    "id": "sizfvdubctiyjyankbis5kz9",
+    "status": "Success",
+    "duration_seconds": 262,
+    "healthy": true
+  },
+  "frontend_deployment": {
+    "id": "hnrinpbz5xrtey8pjsvznwio",
+    "status": "Success",
+    "duration_seconds": 46
+  },
+  "template_approved_count": 19,
+  "campaign_revision": 3,
+  "backend_selected_tests_passed": 124,
+  "frontend_selected_tests_passed": 23,
+  "full_suite_claimed": false,
+  "no_ddl": true,
+  "no_siie_writes": true,
+  "automatic_retries": 0,
+  "delivery_total_claimed": false
+}

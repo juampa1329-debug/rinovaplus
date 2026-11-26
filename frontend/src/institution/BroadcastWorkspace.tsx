@@ -181,6 +181,9 @@ const stateLabel: Record<string, string> = {
 const reasonLabel: Record<string, string> = {
   commercial_progress_requires_case_followup: "Ya avanzó: requiere seguimiento de su caso, sin reactivación general",
   advanced_stage_no_reactivation: "Etapa avanzada: no corresponde reactivación general",
+  source_enrolled_no_promotions: "Inscrito o matriculado según el archivo de origen: sin promociones",
+  source_declined_no_reactivation: "Negociación no aceptada en origen: revisar antes de reactivar",
+  source_interest_no_reactivation: "Interés confirmado en origen: corresponde seguimiento de su caso",
   broadcast_template_still_in_campaign:
     "Cambia la plantilla de las campañas que todavía la usan antes de eliminarla de la biblioteca.",
   broadcast_template_removed_from_library:
@@ -2296,20 +2299,26 @@ function ConsentEditor({
   people: Identity[];
   reload: () => Promise<unknown>;
 }) {
-  const { call } = useInstitution(),
+  const { call, session } = useInstitution(),
     task = useTask(),
     intent = useIntent(),
-    [id, setId] = useState(people[0].id),
+    [id, setId] = useState(""),
     [evidence, setEvidence] = useState(""),
     [origin, setOrigin] = useState(""),
     [expires, setExpires] = useState(""),
     [confirmed, setConfirmed] = useState(false),
     [clean, setClean] = useState(false);
   useDraftGuard(!clean && !!(evidence || origin || expires));
-  const person = people.find((p) => p.id === id)!;
-  const save = (state: string) =>
+  const person = people.find((p) => p.id === id);
+  const save = (state: string) => {
+    if (!person) return;
     void task.run(async () => {
-      const body = {
+      const body = state === "unregistered" ? {
+        revision: person.consent?.version || 0,
+        reason: "Corrección explícita de revocación inicial registrada por error; sin habilitar envíos",
+        evidence,
+        confirmed,
+      } : {
         revision: person.consent?.version || 0,
         reason: "Registro de consentimiento de mensajería",
         state,
@@ -2319,13 +2328,14 @@ function ConsentEditor({
           state === "granted" ? new Date(expires).toISOString() : null,
         confirmed,
       };
-      await call(`broadcasts/accounts/${account}/consent/${id}`, "PUT", {
+      await call(`broadcasts/accounts/${account}/consent/${id}${state === "unregistered" ? "/restore-unregistered" : ""}`, state === "unregistered" ? "POST" : "PUT", {
         ...body,
         operation_id: intent.get(body),
       });
       setClean(true);
       await reload();
     });
+  };
   return (
     <div>
       {task.notices}
@@ -2334,10 +2344,10 @@ function ConsentEditor({
           id="consent-person"
           label="Destinatario"
           value={id}
-          options={people.map((p) => ({
+          options={[{ value: "", label: "Selecciona la persona que vas a modificar" }, ...people.map((p) => ({
             value: p.id,
             label: `${p.name} · ${p.phone}`,
-          }))}
+          }))]}
           onChange={(e) => {
             if (allowNavigation()) {
               setId(e.target.value);
@@ -2350,12 +2360,12 @@ function ConsentEditor({
         />
         <p>
           Estado:{" "}
-          {person.consent
+          {person?.consent && person.consent.state !== "unregistered"
             ? person.consent.state === "granted"
               ? "Autorizado"
               : "Revocado"
             : "Sin autorización registrada"}
-          {person.consent?.expires_at &&
+          {person?.consent?.expires_at &&
             ` · Vigencia: ${person.consent.expires_at}`}
         </p>
         <TextArea
@@ -2390,7 +2400,7 @@ function ConsentEditor({
         <div className="institution-actions">
           <Button
             disabled={
-              !confirmed || !evidence.trim() || !origin.trim() || !expires
+              !person || !confirmed || !evidence.trim() || !origin.trim() || !expires
             }
             onClick={() => save("granted")}
           >
@@ -2398,12 +2408,19 @@ function ConsentEditor({
           </Button>
           <Button
             variant="secondary"
-            disabled={!confirmed || !evidence.trim() || !origin.trim()}
+            disabled={!person || !confirmed || !evidence.trim() || !origin.trim()}
             onClick={() => save("revoked")}
           >
             Revocar consentimiento
           </Button>
+          {session.user.role === "owner" && person?.consent?.state === "revoked" && person.consent.version === 1 && (
+            <Button variant="secondary" disabled={!confirmed || !evidence.trim()}
+              onClick={() => save("unregistered")}>
+              Restaurar sin autorización por error de registro
+            </Button>
+          )}
         </div>
+        <p>Selecciona y verifica el nombre y número antes de modificar. La corrección de una revocación inicial conserva el historial y no habilita envíos.</p>
       </fieldset>
     </div>
   );

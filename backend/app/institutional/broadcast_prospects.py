@@ -52,6 +52,9 @@ def reviewed_contact(value, program):
     if not value:
         raise HTTPException(404, "prospect_contact_not_found")
     custom = json.loads(value["CustomValues"])
+    from app.institutional.prospect_source_status import promotion_exclusion
+    if promotion_exclusion(custom):
+        raise HTTPException(409, "prospect_source_status_excluded")
     interests = {normalize(v) for v in custom.get("pre_programas", "").split("|")}
     if (
         value["Type"] != "Preinscrito"
