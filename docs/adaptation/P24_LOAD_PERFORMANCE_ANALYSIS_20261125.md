@@ -6,7 +6,7 @@ Estado: diagnóstico preliminar y plan registrados. **Implementación: 0 %. Acep
 
 | Señal | Condiciones y alcance | Resultado | Límite de interpretación |
 |---|---|---|---|
-| Bundle institucional | Build local Vite de esta revisión | JS principal1202,69 kB;348,19 kB gzip. CSS164,12/31,00 kB gzip. Fuentes24,53+28,87 kB | Tamaño de artefactos, no tiempo de descarga o LCP |
+| Bundle institucional | Build local Vite final de esta revisión | JS principal1202,89 kB;348,25 kB gzip. CSS164,12/31,00 kB gzip. Fuentes24,53+28,87 kB | Tamaño de artefactos, no tiempo de descarga o LCP |
 | Datos del selector de emojis | Chunk compact571,10 kB /79,74 kB gzip; import dinámico en InboxComposer | Se carga al abrir el selector | No se suma como descarga inicial obligatoria |
 | Transacciones lentas | Ventana de registros nativos del backend8bff156, inicio01:56:35UTC26Nov.26 coincidencias en la vista consultada | Repetición de held_ms y statement_ms alrededor de1100ms; origen reconcile_receipts:385, ID0c3ce6f3ff1a | Muestra del visor, no muestra completa ni percentiles. stage=commit es el punto final observado, no prueba que COMMIT dure1,1s |
 | Respuestas sociales recuperadas | Consulta nativa individual posterior al arreglo funcional | Diez públicos Publicado en Meta; tres privados Aceptado por proveedor | Recuperación funcional, no benchmark ni entrega/lectura del privado |

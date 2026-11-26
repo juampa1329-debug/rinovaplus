@@ -19,6 +19,8 @@ La ficha general mostraba Gemini 3.1 Flash Lite, mientras el motor P21 global ya
 
 ## Comprobación local
 
+Actualización posterior del25Nov: la ampliación de motores activos ya está publicada. Modelos7/IA37 recargados seleccionan audio OpenRouter Flash3.8 e imágenes OpenRouter Sonnet4.6; el ensayo real de nota+imagen obtuvo una transcripción visible y tres respuestas Leídas, con diagnóstico de generación OpenRouter/Sonnet4.6. Los párrafos de IA34/35 que siguen describen el corte previo, no la selección actual de audio. La UI no expone por separado la traza efectiva del ASR. Detalles y límites en ACTIVE_ENGINE_ROUTING_20261125.md; P22 sigue3/5 técnico y0/5 comercial.
+
 334 pruebas backend focalizadas aprobadas, incluida selección por necesidad/etapa, ausencia de dependencia Gemini en texto, cambio de contexto, control Humano, ASR e imágenes. Selección solapada con rondas anteriores; no suite completa verde. Se actualizó un contador de biblioteca de 34 a las 37 guías existentes y se aisló el doble de ASR de consultas de cola ya cubiertas por otros tests.
 
 21 pruebas frontend focalizadas, tipos, ESLint de archivos modificados y build institucional aprobados. ESLint global informa 8 errores y 4 advertencias en archivos ajenos a este cambio, incluidos ChannelSettings, AdmissionsPanel y vistas multimedia; no se declara lint global verde. Advertencia histórica de bundle grande conservada.
