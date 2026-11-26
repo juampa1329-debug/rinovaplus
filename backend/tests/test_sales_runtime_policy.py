@@ -21,7 +21,7 @@ def test_policy_is_required_for_general_and_agent_turns_without_saved_selection(
     for prompt in ("Eres de admisiones.", "No consultes skills."):
         messages = assemble_prompt(AdmissionsPolicy(system_prompt=prompt), "¿Cuánto cuesta el programa de software?", {}, [], [])
         trace = from_messages(messages)
-        assert trace["authority"] == "backend_required" and trace["available_count"] == 34
+        assert trace["authority"] == "backend_required" and trace["available_count"] == 37
         assert CORE | {"pricing", "route-lead", "sales-discovery-questions"} <= set(trace["active_ids"])
         assert "POLÍTICA CENTRAL" in messages[0]["content"]
         assert trace["grants_permissions"] is False
@@ -234,7 +234,9 @@ def test_audio_stage_reroutes_before_answer_and_rechecks_human_control(monkeypat
     monkeypatch.setattr(worker, "transaction", lambda *a, **kw: nullcontext(c))
     monkeypatch.setattr(worker, "setting", lambda *_: {"document": {}})
     # This fixture exercises ASR/rerouting, with no configured P21 text route.
-    monkeypatch.setattr(worker.language_resilience, "snapshot", lambda *_: {"routes": [], "keys": {}})
+    monkeypatch.setattr(worker.reply_turns, "supersede_queued", lambda *_: False)
+    monkeypatch.setattr(worker.reply_turns, "require_settled", lambda *_: None)
+    monkeypatch.setattr(worker.language_resilience, "snapshot", lambda *_, **__: {"routes": [], "keys": {}})
     monkeypatch.setattr(worker, "one", lambda cursor, sql, *args: None if "SELECT ExternalId" in sql else
                         {"OperationId": operation, "IntegrationId": integration, "ResultMetadata": json.dumps(data)})
     def source(*args):

@@ -446,7 +446,9 @@ export function AgentsPanel() {
         ...(simulationProvider && {
           provider_override: simulationProvider,
           model_override: simulationModel,
-          ...(simulationTokens > 0 && { output_tokens_override: simulationTokens }),
+          ...(simulationTokens > 0 && {
+            output_tokens_override: simulationTokens,
+          }),
         }),
       }),
     );
@@ -1223,10 +1225,52 @@ export function AgentsPanel() {
                           presupuesto del orientador cubre todos sus programas y
                           subagentes.
                         </p>
+                        {catalog.language_policy?.enabled &&
+                          catalog.language_policy.primary && (
+                            <Notice>
+                              Este agente hereda el motor institucional:{" "}
+                              {catalog.language_policy.opening
+                                ? `${catalog.language_policy.opening.model} para apertura en las etapas elegidas; `
+                                : ""}
+                              {catalog.language_policy.primary.model} para
+                              atención comercial, financiación y objeciones.{" "}
+                              Respaldo:{" "}
+                              {catalog.language_policy.routes
+                                .map((route) => route.model)
+                                .join(", ")}
+                              . Máximo de salida:{" "}
+                              {catalog.language_policy.reply_max_tokens ?? 2000}{" "}
+                              tokens por turno. La selección propia guardada
+                              abajo queda fuera de las conversaciones
+                              automáticas y del simulador sin modelo explícito.{" "}
+                              <a href="#/settings/ai">
+                                Editar motor por etapas
+                              </a>
+                            </Notice>
+                          )}
+                        {catalog.ai_budget_unlimited && (
+                          <Notice>
+                            IA sin topes internos de gasto o tokens acumulados.
+                            El presupuesto mensual guardado del perfil no
+                            detiene estas conversaciones. El máximo por
+                            respuesta permite completar cada turno.
+                          </Notice>
+                        )}
                         <SelectField
                           id="agent-provider"
                           label="Proveedor de IA"
-                          value={draft.configuration.provider}
+                          disabled={
+                            !!(
+                              catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary
+                            )
+                          }
+                          value={
+                            catalog.language_policy?.enabled &&
+                            catalog.language_policy.primary
+                              ? catalog.language_policy.primary.provider
+                              : draft.configuration.provider
+                          }
                           options={
                             providers?.providers.map((p) => ({
                               value: p.id,
@@ -1268,7 +1312,19 @@ export function AgentsPanel() {
                           <SelectField
                             id="agent-fallback-provider"
                             label="Proveedor de respaldo"
-                            value={draft.configuration.fallback_provider ?? ""}
+                            value={
+                              catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary
+                                ? (catalog.language_policy.routes[0]
+                                    ?.provider ?? "")
+                                : (draft.configuration.fallback_provider ?? "")
+                            }
+                            disabled={
+                              !!(
+                                catalog.language_policy?.enabled &&
+                                catalog.language_policy.primary
+                              )
+                            }
                             options={[
                               { value: "", label: "Mismo proveedor principal" },
                               ...(providers?.providers.map((provider) => ({
@@ -1289,14 +1345,41 @@ export function AgentsPanel() {
                           <SelectField
                             id="agent-model"
                             label="Modelo principal"
+                            disabled={
+                              !!(
+                                catalog.language_policy?.enabled &&
+                                catalog.language_policy.primary
+                              )
+                            }
                             options={[
                               {
                                 value: "",
                                 label: "Seleccione un modelo del proveedor",
                               },
                               ...modelOptions,
+                              ...(catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary &&
+                              !modelOptions.some(
+                                (option) =>
+                                  option.value ===
+                                  catalog.language_policy!.primary!.model,
+                              )
+                                ? [
+                                    {
+                                      value:
+                                        catalog.language_policy.primary.model,
+                                      label:
+                                        catalog.language_policy.primary.model,
+                                    },
+                                  ]
+                                : []),
                             ]}
-                            value={draft.configuration.primary_model}
+                            value={
+                              catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary
+                                ? catalog.language_policy.primary.model
+                                : draft.configuration.primary_model
+                            }
                             onChange={(e) =>
                               configure({ primary_model: e.target.value })
                             }
@@ -1304,8 +1387,31 @@ export function AgentsPanel() {
                           <SelectField
                             id="agent-fallback"
                             label="Modelo alternativo"
+                            disabled={
+                              !!(
+                                catalog.language_policy?.enabled &&
+                                catalog.language_policy.primary
+                              )
+                            }
                             options={[
                               { value: "", label: "Sin modelo alternativo" },
+                              ...(catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary &&
+                              catalog.language_policy.routes[0] &&
+                              !fallbackOptions.some(
+                                (option) =>
+                                  option.value ===
+                                  catalog.language_policy!.routes[0].model,
+                              )
+                                ? [
+                                    {
+                                      value:
+                                        catalog.language_policy.routes[0].model,
+                                      label:
+                                        catalog.language_policy.routes[0].model,
+                                    },
+                                  ]
+                                : []),
                               ...fallbackOptions.filter(
                                 (m) =>
                                   m.value !==
@@ -1315,7 +1421,13 @@ export function AgentsPanel() {
                                       draft.configuration.provider),
                               ),
                             ]}
-                            value={draft.configuration.fallback_model}
+                            value={
+                              catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary
+                                ? (catalog.language_policy.routes[0]?.model ??
+                                  "")
+                                : draft.configuration.fallback_model
+                            }
                             onChange={(e) =>
                               configure({ fallback_model: e.target.value })
                             }
@@ -1325,14 +1437,27 @@ export function AgentsPanel() {
                             label="Máximo de tokens de salida"
                             type="number"
                             min={128}
-                            max={2000}
-                            value={draft.configuration.max_tokens}
+                            max={8000}
+                            disabled={
+                              !!(
+                                catalog.language_policy?.enabled &&
+                                catalog.language_policy.primary
+                              )
+                            }
+                            value={
+                              catalog.language_policy?.enabled &&
+                              catalog.language_policy.primary
+                                ? (catalog.language_policy.reply_max_tokens ??
+                                  2000)
+                                : draft.configuration.max_tokens
+                            }
                             onChange={(e) =>
                               configure({ max_tokens: Number(e.target.value) })
                             }
                           />
                           <Field
                             id="agent-budget"
+                            disabled={catalog.ai_budget_unlimited === true}
                             label="Límite mensual de tokens"
                             type="number"
                             min={0}
@@ -1915,9 +2040,10 @@ export function AgentsPanel() {
                         <>
                           <p>
                             Esta selección sólo afecta al simulador. Conserva
-                            las skills, fuentes y límites institucionales; no cambia
-                            su modelo publicado ni envía mensajes al contacto.
-                            Las tarifas de reserva se consultan al proveedor.
+                            las skills, fuentes y límites institucionales; no
+                            cambia su modelo publicado ni envía mensajes al
+                            contacto. Las tarifas de reserva se consultan al
+                            proveedor.
                           </p>
                           <LiveModelSelect
                             provider={simulationProvider}
@@ -1934,14 +2060,26 @@ export function AgentsPanel() {
                             label="Límite de salida de esta prueba"
                             value={String(simulationTokens)}
                             options={[
-                              { value: "0", label: "Usar límite publicado del agente" },
+                              {
+                                value: "0",
+                                label: "Usar límite publicado del agente",
+                              },
                               { value: "700", label: "700 tokens" },
                               { value: "1500", label: "1500 tokens" },
                               { value: "2000", label: "2000 tokens" },
                             ]}
-                            onChange={(e) => { setSimulationTokens(Number(e.target.value)); setSimulation(null); }}
+                            onChange={(e) => {
+                              setSimulationTokens(Number(e.target.value));
+                              setSimulation(null);
+                            }}
                           />
-                          <p>Este límite sólo reserva salida para la prueba. Algunos modelos también consumen tokens al razonar. Se omite temperatura cuando el catálogo no la admite y se usa razonamiento bajo sólo si lo declara compatible. No se modifica el agente.</p>
+                          <p>
+                            Este límite sólo reserva salida para la prueba.
+                            Algunos modelos también consumen tokens al razonar.
+                            Se omite temperatura cuando el catálogo no la admite
+                            y se usa razonamiento bajo sólo si lo declara
+                            compatible. No se modifica el agente.
+                          </p>
                         </>
                       )}
                       <SelectField
@@ -1949,18 +2087,50 @@ export function AgentsPanel() {
                         label="Skills completas para esta prueba"
                         value={simulationSkillFocus}
                         options={[
-                          { value: "", label: "Selección automática del turno" },
-                          { value: "opening", label: "Apertura · prospección y redacción" },
-                          { value: "discovery", label: "Diagnóstico · calificación y decisores" },
-                          { value: "value", label: "Valor · financiación y presentación" },
-                          { value: "negotiation", label: "Negociación · objeciones y alertas" },
-                          { value: "closing", label: "Cierre · persuasión y próximo paso" },
-                          { value: "review", label: "Revisión · calidad comercial" },
-                          { value: "advertisement", label: "Anuncio · respuesta contextual" },
+                          {
+                            value: "",
+                            label: "Selección automática del turno",
+                          },
+                          {
+                            value: "opening",
+                            label: "Apertura · prospección y redacción",
+                          },
+                          {
+                            value: "discovery",
+                            label: "Diagnóstico · calificación y decisores",
+                          },
+                          {
+                            value: "value",
+                            label: "Valor · financiación y presentación",
+                          },
+                          {
+                            value: "negotiation",
+                            label: "Negociación · objeciones y alertas",
+                          },
+                          {
+                            value: "closing",
+                            label: "Cierre · persuasión y próximo paso",
+                          },
+                          {
+                            value: "review",
+                            label: "Revisión · calidad comercial",
+                          },
+                          {
+                            value: "advertisement",
+                            label: "Anuncio · respuesta contextual",
+                          },
                         ]}
-                        onChange={(e) => { setSimulationSkillFocus(e.target.value); setSimulation(null); }}
+                        onChange={(e) => {
+                          setSimulationSkillFocus(e.target.value);
+                          setSimulation(null);
+                        }}
                       />
-                      <p>La selección incluye completas las guías de esa situación, junto a las de memoria y contexto. Consulta sus nombres y firmas en el resultado. Sólo afecta esta prueba; no guarda cambios en el agente.</p>
+                      <p>
+                        La selección incluye completas las guías de esa
+                        situación, junto a las de memoria y contexto. Consulta
+                        sus nombres y firmas en el resultado. Sólo afecta esta
+                        prueba; no guarda cambios en el agente.
+                      </p>
                       <SelectField
                         id="simulation-channel"
                         label="Canal a simular"

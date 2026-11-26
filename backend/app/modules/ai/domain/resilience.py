@@ -1,5 +1,6 @@
 """Explicit, bounded language routes. Catalog presence is checked at execution."""
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -24,10 +25,20 @@ class LanguageResilience(BaseModel):
     enabled: bool = False
     fallback_on_timeout: bool = False
     primary: LanguageRoute | None = None
+    opening: LanguageRoute | None = None
+    opening_stage_keys: list[str] = Field(default_factory=list, max_length=100)
+    reply_max_tokens: int = Field(default=2000, ge=512, le=8000)
     routes: list[LanguageRoute] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
     def unique(self):
+        if self.opening and (not self.primary or not self.opening_stage_keys):
+            raise ValueError("language_opening_primary_and_stages_required")
+        if len(set(self.opening_stage_keys)) != len(self.opening_stage_keys) or any(
+            not re.fullmatch(r"[a-z][a-z0-9_]{0,39}", key)
+            for key in self.opening_stage_keys
+        ):
+            raise ValueError("language_opening_stage_invalid")
         if self.primary and any((r.provider, r.model) == (self.primary.provider, self.primary.model) for r in self.routes):
             raise ValueError("language_backup_duplicate")
         if len({(r.provider, r.model) for r in self.routes}) != len(self.routes):

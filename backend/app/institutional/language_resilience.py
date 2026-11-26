@@ -22,18 +22,24 @@ from app.modules.ai.domain.resilience import LanguageResilience, can_failover
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 
-def snapshot(c, settings):
+def snapshot(c, settings, *, turn=None, crm_stage=None):
     value = setting(c, settings, "ai")
     policy = LanguageResilience.model_validate(value["document"].get("language_resilience", {}))
     result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {},
               "fallback_on_timeout": policy.enabled and policy.fallback_on_timeout, "primary": None}
     if not policy.enabled:
         return result
-    for route in ([policy.primary] if policy.primary else []) + policy.routes:
+    from app.institutional.language_stages import choose
+    primary, routing = choose(policy, turn, crm_stage)
+    result["routing"] = routing
+    routes = list(policy.routes)
+    if primary and policy.primary and primary != policy.primary:
+        routes.insert(0, policy.primary)
+    for index, route in enumerate(([primary] if primary else []) + routes):
         secret = one(c, "SELECT * FROM crm_access.Secret WHERE InstitutionId=? AND Scope='provider' "
                      "AND OwnerRef=? AND Kind='api_key' AND State='staged'", institution(settings), route.provider)
         if not secret:
-            if route == policy.primary:
+            if primary and index == 0:
                 raise HTTPException(409, "language_primary_key_required")
             continue
         identity = uid(str(secret["SecretId"]))
@@ -42,7 +48,7 @@ def snapshot(c, settings):
             "kind": "api_key", "version": secret["VersionNo"], "secret_id": identity,
         }, secret["Nonce"], secret["Ciphertext"])
         result["credentials"][route.provider] = (identity, secret["VersionNo"])
-        if route == policy.primary:
+        if primary and index == 0:
             result["primary"] = route.model_dump()
         else:
             result["routes"].append(route.model_dump())
@@ -236,6 +242,8 @@ def timeout_recovery_allowed(error, provider, body, saved):
 async def execute(primary, provider, model, body, saved, guard, reserve, trace, *, gateway=None):
     """One complete answer; tracing excludes prompt, secrets and customer data."""
     gateway = gateway or ProviderGateway(saved["keys"])
+    if saved.get("routing"):
+        trace["routing"] = saved["routing"]
     repair_used = False
 
     def text_only():

@@ -248,7 +248,7 @@ class Worker:
                     "AND Kind='api_key' AND State='staged'",
                     inst,
                 )
-                if not credential:
+                if not credential and not backup.get("primary"):
                     raise HTTPException(409, "comment_ai_credential_required")
                 secret = unseal(
                     key(settings),
@@ -262,7 +262,7 @@ class Worker:
                     },
                     credential["Nonce"],
                     credential["Ciphertext"],
-                )
+                ) if credential else None
                 grounded = comment_context(c, settings, data, text)
                 tokens = len((grounded["system"] + grounded["query"]).encode()) + 8192
                 out = min(2000, max(512, document["max_tokens"]))
@@ -353,7 +353,7 @@ class Worker:
                                    budget["daily_usd_micros"] / 1_000_000)
                     tokens = actual_tokens
             private_enabled = comment_private.enabled(document, integration)
-            if private_enabled and not json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs") and spent + 2 <= pricing["daily_requests"]:
+            if private_enabled and secret and not json.loads(grounded["query"]).get("catalogo", {}).get("queried_programs") and spent + 2 <= pricing["daily_requests"]:
                 image = comment_private.image_part(preview)
                 if image:
                     with transaction(settings, True, anonymous=True) as c:

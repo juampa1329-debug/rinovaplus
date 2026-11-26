@@ -16,7 +16,7 @@ class AdmissionsPolicy(StrictModel):
     fallback_model: str = Field(default="", max_length=200, pattern=r"^[A-Za-z0-9._:/-]*$")
     temperature: float = Field(default=0.3, ge=0, le=2)
     system_prompt: str = Field(default="Orienta sobre admisiones técnicas usando exclusivamente las fuentes institucionales revisadas. Usa el nombre de atención configurado y deriva al equipo cuando falte información. Explica con transparencia que eres IA si preguntan, sin afirmar ser humano.", min_length=1, max_length=6000)
-    max_tokens: int = Field(default=700, ge=128, le=2000)
+    max_tokens: int = Field(default=700, ge=128, le=8000)
 
 
 class MemoryFact(StrictModel):
