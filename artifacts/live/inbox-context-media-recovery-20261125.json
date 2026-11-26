@@ -1,0 +1,45 @@
+{
+  "cut_local_date": "2026-11-25",
+  "timezone": "America/Bogota",
+  "source": "Native authenticated RinovaPlus and Coolify interfaces; local isolated tests",
+  "production_commit": "936fcd3",
+  "deployments": {
+    "backend": {"id": "oi4wjrayqborlb68fmgto8eh", "status": "Success", "duration": "4m22s"},
+    "frontend": {"id": "8rdxkulxgjkdxeywjnz1mfdb", "status": "Success", "duration": "25s"}
+  },
+  "cases": {
+    "payment_next_day": {"initial_attempt": "cancelled", "initial_provider_attempts": 0, "new_reply": "delivered", "control_restored": "ai"},
+    "registration_screenshot": {"administrative_recovery": "abandoned_storage_busy", "new_reply": "delivered", "reply_source": "manual_review", "control_restored": "ai", "live_multimodal_inference_verified": false},
+    "unsupported_message": {"new_clarification": "delivered", "control_restored": "ai"},
+    "schedule_question": {"prior_manual_send": "uncertain", "reason": "send_lease_expired", "provider_attempts": 1, "replayed": false, "control_restored": "ai"}
+  },
+  "validation": {
+    "backend_selected": 329,
+    "overlaps_previous_selections": true,
+    "ruff_python_errors": "passed_E9_F",
+    "full_style_suite": "not_claimed",
+    "postgres_snapshot_statement_parse": "passed_pglast",
+    "new_frontend_code_in_second_release": false,
+    "automatic_context_replan_live_verified": false,
+    "full_suite_green": false
+  },
+  "siie": {
+    "enabled_after_reload": true,
+    "secret_configured": true,
+    "verified_receipts": 0,
+    "issuer_reported_attempts": 4,
+    "issuer_reported_last_http": 503,
+    "actual_last_503_detail_confirmed": false,
+    "same_event_retry_requested": true,
+    "new_remote_registration_created": false,
+    "payment_contract_pending": true,
+    "phase_accepted": "0/9"
+  },
+  "limits": [
+    "No provider receipt for the uncertain schedule send; no blind replay.",
+    "No new live multimodal inference or automatic context replan acceptance.",
+    "Storage lock errors remain in rollout logs; no claim of maximum load or perpetual zero failures.",
+    "No receipt, invoice or PDF acceptance from SIIE yet.",
+    "No DDL, seeds, new services, model changes or additional SIIE writes."
+  ]
+}

@@ -1,6 +1,6 @@
 # Continuidad del contexto y mensajes con imágenes
 
-25 de noviembre de 2026. Primera corrección publicada en `0654df5`; ampliación de almacenamiento y destinatario manual en validación.
+25 de noviembre de 2026. Correcciones `0654df5` y `936fcd3` publicadas y saludables. Tres orientaciones nuevas entregadas; quedan pendientes expresos abajo.
 
 ## Evidencia que motivó la corrección
 
@@ -47,4 +47,16 @@ SIIE conserva el mismo evento sintético en reintento con HTTP 503. La interfaz 
 
 Selección adicional de 329 pruebas backend aprobada (solapada con anteriores): PostgreSQL, permisos de lecturas/escrituras, HMAC, cuerpos 503, no acuse ante almacenamiento ocupado, reintento idempotente, elección de identidad, contexto y medios. Ruff de errores Python (`E9,F`) pasa. La selección completa de estilo de estos archivos encuentra advertencias históricas de longitud/importaciones; no se declara Ruff completo verde.
 
-La ampliación aún no se acredita publicada en este corte. Una recuperación administrativa de imagen fue puesta en preparación mediante la interfaz; inferencia y entrega siguen pendientes de observación. No se modificaron recibos anteriores, no se repitió el intento incierto, no se generó volante ni se enviaron escrituras SIIE. El webhook conjunto sigue pendiente del reenvío corregido desde SIIE. P23 mantiene 0/9 aceptados y las demás aceptaciones se conservan.
+`936fcd3` pasó salud en Coolify: backend `oi4wjrayqborlb68fmgto8eh`, Success 4m22s; frontend `8rdxkulxgjkdxeywjnz1mfdb`, Success 25s. Se completaron tres orientaciones manuales nativas: aclaración de contenido no disponible, volante al día siguiente y acuse de captura con elección de pago. Las tres quedaron **Entregado**; los tres hilos se restauraron a IA y se verificó el control. El primer intento del caso de pago se canceló sin intento; sólo su nueva orientación tiene recibo de entrega. El número buscado corresponde al contacto esperado y la nueva selección de identidad permitió enviar dentro de la ventana sin modificar fechas.
+
+La recuperación administrativa de imagen se puso en preparación, pero quedó detenida con `storage_busy` antes de acreditar una inferencia. La respuesta entregada fue revisada manualmente a partir de la captura; **no acredita una inferencia multimodal productiva**. No se relanzó esa operación fallida. Una futura imagen nueva debe validar el recorrido automático completo. El replanificador está cubierto en pruebas, pero no se acredita aquí una reconstrucción automática real posterior a un cambio de instrucciones.
+
+El intento anterior de horarios sigue `uncertain/send_lease_expired`, un intento y sin recibo de aceptación. La bandeja WhatsApp de Meta Business Suite no está configurada en la superficie disponible; no fue posible corroborarlo allí. No se repitió ni se modificó su recibo. El hilo sigue IA. No se declaran todos los casos históricos atendidos.
+
+Los registros del nuevo contenedor conservan esperas `55P03` durante el solapamiento de despliegue, hasta 00:00:54 UTC; las observaciones nativas posteriores acreditan las tres entregas y consultas sin modal, no un SLA ni carga máxima ni cero fallos perpetuos. No se cambió el timeout de bloqueo ni la firma para ocultar errores.
+
+Rinova sigue mostrando recepción SIIE habilitada, secreto reconocido y **cero eventos verificados**. El titular aportó el mismo evento sintético con cuatro intentos/HTTP503; el cuerpo de ese rechazo aún no se recibió. Se solicitó reenviar ese evento con payload corregido estable y timestamp/firma nuevos, sin otra inscripción. El contrato único añade los códigos seguros 503 y la revisión del reloj del planificador de SIIE. No se acredita aún firma corregida en un intento nuevo ni recepción conjunta.
+
+No se generó volante/PDF, no se escribieron datos nuevos en SIIE y no hubo DDL, seeds, servicios ni cambios de modelos. P23 mantiene 0/9 aceptados y las demás aceptaciones se conservan.
+
+También permanecen como comprobaciones separadas las citas entrantes de mensajes antiguos (incluida imagen citada con respuesta mínima) y el caso de imagen de Instagram señalado anteriormente por el titular. Las pruebas del adaptador multimodal y la atención manual de la captura no acreditan esos dos recorridos históricos.

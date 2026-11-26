@@ -7,7 +7,7 @@ Fecha: 25 de noviembre de 2026. Documento único y autónomo para implementar la
 | Componente | Estado y responsable |
 |---|---|
 | Receptor del webhook v1 | Implementado y publicado en RinovaPlus; firma configurada en Runtime y recepción habilitada el 25Nov2026 con etapa Calificación. Primer evento real verificado aún pendiente en este corte. |
-| Emisor SIIE → RinovaPlus | El desarrollador de SIIE debe implementarlo después del guardado confirmado, con outbox y reintentos persistentes. No se presupone que los formularios ya emitan eventos. |
+| Emisor SIIE → RinovaPlus | Outbox con reintentos observada en el ensayo del formulario PRE-ICFES. Conserva el mismo evento; aún falta un acuse guardado en RinovaPlus. La cobertura de los demás formularios se valida por separado. |
 | Clave de llamadas RinovaPlus → SIIE | Se conserva la clave única existente, enviada como `X-API-Key` desde el backend. |
 | Firma del webhook SIIE → RinovaPlus | Secreto dedicado `SIIE_WEBHOOK_SECRET` guardado por el titular en Runtime de RinovaPlus. SIIE debe usar exactamente el mismo valor entregado por canal privado; falta corroborarlo con el primer evento firmado. |
 | Generación, consulta y descarga del volante | Contrato pendiente de SIIE. Las rutas de la sección de volantes son propuestas para acordar, no endpoints existentes o verificados. |
@@ -191,6 +191,21 @@ Una respuesta HTTP 200 confirma que el recibo y su clasificación quedaron guard
 - Ante 429/503, timeout o pérdida del acuse, conservar el evento en una outbox de SIIE y reintentar con espera creciente, respetando `Retry-After`. No perder el registro local porque RinovaPlus esté temporalmente ocupado.
 - 403: revisar firma, clave y reloj. 413: máximo 64 KiB. 415: JSON requerido. 422: corregir contrato. No reenviar indefinidamente los errores de contrato.
 - La autenticación usa el cuerpo original. La deduplicación compara el objeto validado, por lo que cambiar sólo el espaciado del JSON no duplica personas.
+
+### Distinguir un HTTP 503
+
+La respuesta de la aplicación es JSON con una propiedad `detail`. SIIE puede conservar **sólo ese código seguro**, el estado HTTP y `Retry-After`; no registrar cuerpo del evento, clave ni firma. Si el proxy devuelve HTML, conservar únicamente `HTTP_503_proxy` y la hora UTC, no la página completa.
+
+| `detail` seguro | Significado | Acción |
+|---|---|---|
+| `siie_webhook_not_configured` | Falta el secreto válido en el proceso de RinovaPlus | Revisar Runtime y despliegue de Rinova; no reemplazar la clave de la API SIIE. |
+| `siie_webhook_disabled` | Recepción deshabilitada en la configuración institucional | Revisar el ajuste guardado en Rinova; no eliminar el evento. |
+| `storage_busy` | No se pudo adquirir el bloqueo de escritura antes de empezar el trabajo | Conservar y reintentar el mismo evento, con firma/timestamp nuevos y espera indicada. |
+| `general_storage_unavailable` | Falló la transacción de almacenamiento | Conservar el evento y revisar los registros de Rinova; no interpretar el 503 como inscripción recibida. |
+
+En los fallos 503 posteriores a una firma válida, los registros privados de Rinova incluyen `signature_verified=true` y el código fijo de causa. El diagnóstico no expone los encabezados ni datos personales. Una respuesta 503 no acredita por sí sola que la firma haya pasado: la falta de secreto se comprueba antes.
+
+El programador de reintentos también debe usar UTC real para `CreadoUtc`, `UltimoIntentoUtc`, `ProximoIntentoUtc` y leases, además del encabezado de firma. Que `occurred_at` esté corregido no demuestra que esos otros relojes estén alineados. Comprobarlos sin cambiar el instante original del evento ni crear otra inscripción. Después de corregir la fecha original errónea del piloto, mantener estable su payload en los siguientes intentos.
 
 SIIE debe guardar el evento pendiente en una **outbox dentro de la misma transacción que guarda la preinscripción/inscripción**, y transmitirlo únicamente cuando esa transacción esté confirmada. Así no se pierde un cambio si el proceso se detiene entre guardar la persona y llamar al webhook. Un rollback no debe producir evento. Para la entrega usar espera creciente con variación aleatoria y conservar los eventos pendientes tras reiniciar el proceso. No seguir redirecciones con el cuerpo firmado.
 
