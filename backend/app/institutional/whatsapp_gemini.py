@@ -121,6 +121,17 @@ def schedule(c, settings, item, linked, message, *, operation_id=None, input_kin
         **({"input_kind": "unsupported"} if input_kind == "unsupported" else {}),
     }
     digest = bound_hash(settings, data, ACTION)
+    # A guarded context replan is a new generation of the same authenticated
+    # input. Keep the historical request digest, but bind its unique effect to
+    # the caller's stable recovery operation; revisiting that operation is
+    # still stopped by the lookup above. No dispatch/recovery gates change.
+    effect_key = digest
+    if uid(str(operation_id)) != uid(str(message)):
+        effect_key = bound_hash(
+            settings,
+            {"operation": uid(str(operation_id)), "request": digest.hex()},
+            ACTION + ".generation",
+        )
     c.execute(
         "INSERT crm_channels2.ProviderOperation(InstitutionId,OperationId,"
         "ApplicationId,IntegrationId,"
@@ -133,7 +144,7 @@ def schedule(c, settings, item, linked, message, *, operation_id=None, input_kin
         ACTOR,
         ACTION,
         digest,
-        digest,
+        effect_key,
         json.dumps(data),
     )
 
