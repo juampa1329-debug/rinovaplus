@@ -95,7 +95,11 @@ function SettingEditor({
         section === "ai" &&
         liveModels &&
         ((spec.path.startsWith("media.") &&
-          !["media.audio_provider", "media.audio_model"].includes(spec.path)) ||
+          ![
+            "media.audio_provider",
+            "media.audio_model",
+            "media.vision_model",
+          ].includes(spec.path)) ||
           spec.path === "voice_name")
       ),
   );

@@ -272,6 +272,9 @@ class Worker:
                 adapter, _ = provider_account(c, settings, item)
                 document = ai["document"]
                 backup = language_resilience.snapshot(c, settings)
+                from app.institutional.language_stages import capability_route
+                configured_vision = capability_route(document, "vision")
+                vision_backup = language_resilience.snapshot(c, settings, vision_route=configured_vision.model_dump()) if configured_vision else backup
                 pricing = policy(c, settings, integration, document, engine=True)
                 spent = c.execute(
                     "SELECT COALESCE(SUM(1+CASE WHEN JSON_VALUE(ResultMetadata,'$.vision_attempted')='true' THEN 1 ELSE 0 END),0) FROM crm_channels2.ProviderOperation "
@@ -347,6 +350,8 @@ class Worker:
             with transaction(settings, anonymous=True) as c:
                 if backup["routes"] or backup.get("primary"):
                     language_resilience.assert_snapshot(c, settings, backup)
+                if vision_backup is not backup and (vision_backup["routes"] or vision_backup.get("primary")):
+                    language_resilience.assert_snapshot(c, settings, vision_backup)
                 if not c.execute(
                     "SELECT 1 FROM crm_channels2.ProviderOperation "
                     "WHERE InstitutionId=? "
@@ -413,8 +418,8 @@ class Worker:
                              "input_usd_per_million": pricing["input_micros_per_million"] / 1_000_000,
                              "output_usd_per_million": pricing["output_micros_per_million"] / 1_000_000}, visual_request, assert_current)
                     visual = asyncio.run(language_resilience.execute(visual_primary, selected_provider, pricing["model"], visual_request,
-                        backup, assert_current, lambda route, incoming, outgoing: language_resilience.reservation(settings, backup, route, incoming, outgoing),
-                        data.setdefault("vision_execution", {}), gateway=self.gateway_factory(backup["keys"]))) if backup.get("primary") else asyncio.run(visual_primary())
+                        vision_backup, assert_current, lambda route, incoming, outgoing: language_resilience.reservation(settings, vision_backup, route, incoming, outgoing),
+                        data.setdefault("vision_execution", {}), gateway=self.gateway_factory(vision_backup["keys"]))) if vision_backup.get("primary") else asyncio.run(visual_primary())
                     data["visual_topic"] = comment_private.image_result(visual)
                     data["visual_usage"] = visual.get("usageMetadata", {})
                     with transaction(settings, True, anonymous=True) as c:

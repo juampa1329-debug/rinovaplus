@@ -158,3 +158,35 @@ def test_only_zero_attempt_price_veto_can_be_reconsidered_and_current_controls_w
         assert "Status='pending'" not in statements[0][0] and "not_eligible" in statements[0][1][0]
     else:
         assert "Status='pending'" in statements[0][0] and "reconsidered" in statements[0][1][0]
+
+
+def test_vision_route_uses_its_explicit_model_before_sales_opening_and_keeps_compatible_backups(monkeypatch):
+    from app.institutional import language_stages
+    document = {**DOCUMENT, "vision_analysis_provider": "openrouter", "media": {"vision_model": "fixture/vision"}}
+    vision = language_stages.capability_route(document, "vision")
+    assert vision.provider == "openrouter" and vision.model == "fixture/vision"
+    monkeypatch.setattr(language_resilience, "setting", lambda *_: {"revision": 10, "document": document})
+    monkeypatch.setattr(language_resilience, "institution", lambda _: "inst")
+    monkeypatch.setattr(language_resilience, "one", lambda *_: None)
+    saved = language_resilience.snapshot(None, None, vision_route=vision.model_dump())
+    assert saved["primary"]["model"] == "fixture/vision"
+    assert saved["routing"]["route"] == "vision"
+    assert [r["model"] for r in saved["routes"]] == [ROUTE["model"], "fixture/backup"]
+    assert language_stages.capability_route(DOCUMENT, "vision") is None
+
+
+def test_image_binding_does_not_require_a_gemini_profile_or_secret(monkeypatch):
+    from app.institutional import sales_context, whatsapp_gemini
+    from uuid import uuid4
+    document = {**DOCUMENT, "enabled": True, "vision_analysis_provider": "openrouter", "media": {"vision_model": "fixture/vision"}}
+    monkeypatch.setattr(sales_context, "configure", lambda *_: None)
+    monkeypatch.setattr(whatsapp_gemini, "setting", lambda *_: {"revision": 11, "document": document})
+    monkeypatch.setattr(whatsapp_gemini, "resolve_conversation", lambda *_: {"agent_id": "program", "binding": "context", "configuration": {
+        "provider": "gemini", "primary_model": "old-lite", "allow_reply": True, "capabilities": ["conversation.reply"]}})
+    monkeypatch.setattr(whatsapp_gemini, "institution", lambda _: "inst")
+    def secret(_c, _q, _inst, provider):
+        assert provider == "openrouter"
+        return {"SecretId": str(uuid4())}
+    monkeypatch.setattr(whatsapp_gemini, "one", secret)
+    config, _, binding = whatsapp_gemini.model_config(None, None, {"conversation": "thread", "interpreting_images": True})
+    assert binding["model"] == config["primary_model"] == "fixture/vision" and binding["provider"] == "openrouter"

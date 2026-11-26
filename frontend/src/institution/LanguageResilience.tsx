@@ -211,7 +211,7 @@ export function LanguageResilience({
             type="number"
             min={512}
             max={8000}
-            step={128}
+            step={1}
             value={String(policy.reply_max_tokens ?? 2000)}
             onChange={(e) =>
               onChange({ ...policy, reply_max_tokens: Number(e.target.value) })

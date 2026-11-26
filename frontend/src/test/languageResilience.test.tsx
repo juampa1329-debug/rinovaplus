@@ -34,6 +34,34 @@ vi.mock("../institution/LiveModelSelect", () => ({
   ),
 }));
 
+it("accepts the saved 4000 token cap without blocking native form submission", () => {
+  render(
+    <LanguageResilience
+      value={{
+        enabled: true,
+        primary: {
+          provider: "openrouter",
+          model: "fixture",
+          input_usd_per_million: 3,
+          output_usd_per_million: 15,
+        },
+        reply_max_tokens: 4000,
+        routes: [],
+      }}
+      onChange={vi.fn()}
+    />,
+  );
+  const limit = screen.getByRole("spinbutton", {
+    name: "Máximo de tokens por respuesta de los agentes",
+  }) as HTMLInputElement;
+  expect(limit.value).toBe("4000");
+  expect(limit.checkValidity()).toBe(true);
+  fireEvent.change(limit, { target: { value: "4001" } });
+  expect(limit.checkValidity()).toBe(true);
+  fireEvent.change(limit, { target: { value: "8001" } });
+  expect(limit.checkValidity()).toBe(false);
+});
+
 it("prepares an explicit free backup without enabling or saving the policy", () => {
   const change = vi.fn();
   const { rerender } = render(

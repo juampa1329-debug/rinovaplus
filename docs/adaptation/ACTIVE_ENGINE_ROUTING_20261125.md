@@ -2,6 +2,12 @@
 
 Estado: corrección preparada; publicación y recibos reales pendientes de comprobar.
 
+Primer corte productivo: bcc8f67 backend g4el6suefi74a3rdrtiohqnd Success4m17; 8bff156 qkksgvviogkmjpbkbn9tdupj Success5m27, incluye espera de cola. Frontend a99b494 Success45s. Diez felicitaciones verificadas individualmente con «Publicado en Meta» y sin privado asociado; tres solicitudes recientes de Facebook con privado «Aceptado por el proveedor», no entrega/lectura acreditada. No se repitieron intentos ni se alteraron controles IA/Humano. Un comentario ambiguo y otros históricos no se declaran atendidos por este corte.
+
+Ampliación por instrucción del titular: selección específica de visión, independiente de apertura/ventas, con motor compatible y respaldos aprobados. Preparados en catálogo OpenRouter Flash3.8 para audio y Sonnet4.6 para imágenes. El titular autorizó expresamente la interpretación de las notas entrantes mediante OpenRouter; la voz saliente sigue en ElevenLabs con sus controles y expresiones. La aplicación final de estas selecciones se verificará tras publicar esta ampliación.
+
+Se encontró en la interfaz real una validación HTML que impedía guardar ajustes con el límite4000 existente: step128 sólo aceptaba3968/4096 alrededor. Cambiado a step1 conservando el rango512–8000; prueba de validez para4000/4001 y rechazo8001. No se cambió4000 para eludir el error.
+
 La consulta nativa de Diagnósticos identifica `comment_ai_pricing_review_required` en un comentario de felicitación: se detuvo antes de invocar al modelo. El motor social todavía exigía una revisión semanal del proveedor/modelo antiguo, aunque el motor central seleccionado era OpenRouter. No era falta de saldo ni demostraba una caída de Sonnet.
 
 ## Cambios

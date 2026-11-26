@@ -22,7 +22,7 @@ from app.modules.ai.domain.resilience import LanguageResilience, can_failover
 from app.modules.ai.infrastructure.providers import AiError, ProviderGateway
 
 
-def snapshot(c, settings, *, turn=None, crm_stage=None, media_route=None):
+def snapshot(c, settings, *, turn=None, crm_stage=None, media_route=None, vision_route=None):
     value = setting(c, settings, "ai")
     policy = LanguageResilience.model_validate(value["document"].get("language_resilience", {}))
     result = {"revision": value["revision"], "routes": [], "keys": {}, "credentials": {},
@@ -31,10 +31,10 @@ def snapshot(c, settings, *, turn=None, crm_stage=None, media_route=None):
         return result
     from app.institutional.language_stages import choose
     primary, routing = choose(policy, turn, crm_stage)
-    if media_route:
+    if media_route or vision_route:
         from app.modules.ai.domain.resilience import LanguageRoute
-        primary = LanguageRoute.model_validate(media_route)
-        routing = {"source": "configured_media_engine", "route": "transcription"}
+        primary = LanguageRoute.model_validate(media_route or vision_route)
+        routing = {"source": "configured_media_engine", "route": "transcription" if media_route else "vision"}
     result["routing"] = routing
     routes = list(policy.routes)
     if primary and policy.primary and primary != policy.primary:

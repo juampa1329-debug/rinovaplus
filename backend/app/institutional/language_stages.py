@@ -11,6 +11,22 @@ def policy(document):
     return LanguageResilience.model_validate(document.get("language_resilience", {}))
 
 
+def capability_route(document, kind):
+    """An explicitly selected interpretation model, independent of sales stage."""
+    from app.modules.ai.domain.resilience import LanguageRoute
+    media = document.get("media", {})
+    provider = media.get("audio_provider", "gemini") if kind == "audio" else document.get("vision_analysis_provider", "gemini")
+    model = media.get("audio_model" if kind == "audio" else "vision_model")
+    value = policy(document)
+    if not model or not value.enabled or not value.primary:
+        return None
+    reviewed = next((r for r in [value.opening, value.primary, *value.routes]
+                     if r and (r.provider, r.model) == (provider, model)), value.primary)
+    return LanguageRoute(provider=provider, model=model,
+                         input_usd_per_million=reviewed.input_usd_per_million,
+                         output_usd_per_million=reviewed.output_usd_per_million)
+
+
 def stage(c, conversation):
     if not conversation:
         return None

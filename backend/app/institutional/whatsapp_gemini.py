@@ -221,7 +221,7 @@ def model_config(c, settings, data):
         "facebook" if channel == "messenger" else channel,
     )
     config = selected["configuration"]
-    from app.institutional.language_stages import policy, configuration, stage
+    from app.institutional.language_stages import policy, configuration, stage, capability_route
     language = policy(preferred)
     crm_stage = stage(c, data["conversation"]) if language.enabled and language.opening else None
     provider = config["provider"]
@@ -234,9 +234,12 @@ def model_config(c, settings, data):
         if not model:
             raise HTTPException(409, "audio_engine_not_configured")
         config = {**config, "provider": provider, "primary_model": model}
-        if language.enabled and language.primary:
-            approved = next((r for r in [language.opening, language.primary, *language.routes] if r and r.provider == provider and r.model == model), language.primary)
+        approved = capability_route(preferred, "audio")
+        if approved:
             config.update(input_usd_per_million=approved.input_usd_per_million, output_usd_per_million=approved.output_usd_per_million)
+    elif data.get("interpreting_images") and (vision := capability_route(preferred, "vision")):
+        config = configuration(config, vision, language.primary, language.reply_max_tokens)
+        provider = vision.provider
     elif language.enabled and language.primary:
         config = configuration(config, language.primary, next(iter(language.routes), None), language.reply_max_tokens)
         provider = language.primary.provider
@@ -547,10 +550,13 @@ class Worker:
                 )
                 grounded = reply_context(c, settings, data, context)
                 data["interpreting_audio"] = bool(grounded.get("input_audio") and not grounded.get("audio_transcribed"))
+                data["interpreting_images"] = bool(grounded.get("input_images"))
                 config, secret, binding = model_config(c, settings, data)
                 media_route = {"provider": binding["provider"], "model": binding["model"],
                                "input_usd_per_million": config["input_usd_per_million"], "output_usd_per_million": config["output_usd_per_million"]} if data["interpreting_audio"] and binding.get("provider") != "groq" else None
-                backup = language_resilience.snapshot(c, settings, turn=grounded.get("skill_policy"), crm_stage=binding.get("crm_stage"), media_route=media_route)
+                vision_route = {"provider": binding["provider"], "model": binding["model"],
+                                "input_usd_per_million": config["input_usd_per_million"], "output_usd_per_million": config["output_usd_per_million"]} if data["interpreting_images"] and not data["interpreting_audio"] else None
+                backup = language_resilience.snapshot(c, settings, turn=grounded.get("skill_policy"), crm_stage=binding.get("crm_stage"), media_route=media_route, vision_route=vision_route)
                 if grounded.get("reply_turn"):
                     data["reply_turn"] = grounded["reply_turn"]
                     data["quote_incoming"] = grounded["reply_turn"]["quote_incoming"]
