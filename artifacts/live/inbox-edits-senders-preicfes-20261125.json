@@ -1,0 +1,91 @@
+{
+  "local_date": "2026-11-25",
+  "functional_commit": "7ae5c52",
+  "postgres_correction_commit": "705d594",
+  "voice": {
+    "max_seconds": 120,
+    "new_synthesis": false,
+    "dry_run_eligible": true,
+    "configuration_revision": 38,
+    "new_audio_sent": false,
+    "editable": true,
+    "per_thread_quota_unchanged": 5,
+    "dry_run_estimate_seconds": 83
+  },
+  "manual_reply": {
+    "sent_once": true,
+    "returned_to_ai": true,
+    "receipt": "delivered",
+    "historical_replay": false
+  },
+  "specialist": {
+    "existed": true,
+    "fresh_paid_simulation": false,
+    "duplicate_created": false,
+    "program": "PRE-ICFES",
+    "skills_available": 37,
+    "saved_version": 2,
+    "memory_and_crm_observations_enabled": true
+  },
+  "edits": {
+    "post_release_new_edit_trial": false,
+    "unique_same_scope_original_required": true,
+    "historical_projection": "observed native corrected text and original",
+    "new_input_is_separate": true,
+    "original_mutated": false
+  },
+  "validation": {
+    "previous_frontend_failed": 2,
+    "frontend_file_passed": 52,
+    "focused_frontend_passed": 7,
+    "correction_subset_passed": 16,
+    "same_failures_reproduced": true,
+    "focused_backend_passed": 330,
+    "types_lint_build_passed": true,
+    "selections_overlap": true,
+    "frontend_file_failed": 2,
+    "previous_commit": "4df7272",
+    "previous_frontend_passed": 46,
+    "complete_suite_green": false
+  },
+  "rollout_incident": {
+    "ddl": false,
+    "cause": "unsupported scalar TRY_CONVERT in PostgreSQL sender query",
+    "correction": "compare AccessUser UUID as text to ActorRef",
+    "first_release_list_error": "42703",
+    "statement_id": "ddae2b073b14"
+  },
+  "phases": {
+    "new_acceptances": false,
+    "p22_commercial": "0/5",
+    "p24_implementation_percent": 0,
+    "p23_accepted": "0/9",
+    "p24_acceptance": "0/6",
+    "p22_technical": "3/5"
+  },
+  "production_verification": "native_ui_passed",
+  "deployment": {
+    "backend": {
+      "id": "2mwb4vzwzqw9mjjgkxso5o2u",
+      "duration_seconds": 260,
+      "commit": "705d594",
+      "state": "Success/Running"
+    },
+    "frontend": {
+      "id": "mb6xwpdc5fq62rjkazfkedz0",
+      "duration_seconds": 27,
+      "commit": "705d594",
+      "state": "Success/Running"
+    }
+  },
+  "native_ui": {
+    "verified_edit_labels": 1,
+    "verified_original_labels": 1,
+    "incoming_without_prefix": true,
+    "ai_prefix": "IA",
+    "fresh_bundle": "workspace-DDOR9QDD.js",
+    "human_prefix": "Juan P",
+    "query_alerts": 0,
+    "raw_edit_markers": 0
+  }
+}

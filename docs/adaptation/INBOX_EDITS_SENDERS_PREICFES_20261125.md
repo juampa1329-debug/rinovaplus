@@ -1,10 +1,11 @@
 # Inbox: ediciones, autor de la vista previa y PRE-ICFES
 
-Fecha Bogotá25Nov2026. Estado inicial: cambios funcionales comprobados localmente; publicación y lectura histórica real pendientes.
+Fecha Bogotá25Nov2026. Cambios funcionales 7ae5c52 y corrección PostgreSQL 705d594 publicados en la rama deploy/coolify-rinovaplus. Producción comprobada mediante la interfaz autenticada.
 
 ## Ajustes y atención nativos
 
 - Política de voz revisión38 guardada y recargada: máximo120s, campo editable0–300s. Se conservan perfiles, mezcla, modo de notas entrantes, cupo5 por hilo y controles existentes.0 en el campo de duración tiene la semántica ya documentada de ausencia de máximo configurado, sujeto al procesador de5min; no se confunde con0 en el cupo por conversación, que significa sólo texto. Sin nueva síntesis pagada.
+- La respuesta original de Verane fue estimada en 83 segundos por el comprobador nativo: con el máximo anterior de 60 segundos salía en texto; con 120 segundos resulta apta para audio. Este resultado no acredita una nueva síntesis ni envío de voz.
 - Una consulta de PRE-ICFES sobre pago inicial/recibo fue respondida manualmente por petición expresa: abono220.000, tres cuotas220.000, total880.000 y confirmación explícita de financiación antes de emitir volante. Una sola salida acreditada Entregada, después de comprobar que el primer clic no había creado una salida. Chat restauradoIA; no replay de operaciones anteriores ni generación de volante/SIIE.
 - PRE-ICFES ya existía activo, cubría el programa27 y tenía las37 skills, grafo/contexto, memoria comercial y observaciones CRM habilitados. Se guardó versión2 con nombre que incluyeG1/G2/G3 y sin horario G2 pendiente en el prompt. Pautas de estudiante/acudiente, venta gradual, ficha vigente, cuotas, formulario diligenciado, volante y menores específicas; políticas contextuales de pagos/menores añadidas. No se crearon duplicados ni se concedieron herramientas nuevas. Modelos institucionales y4000tokens conservados. Tener las37 disponibles no implica usar todas innecesariamente en un turno.
 
@@ -27,3 +28,18 @@ Una lectura agrupada para los25 resultados identifica el mismo último mensaje u
 Archivo frontend amplio:52 aprobadas/2 fallidas previamente documentadas (expectativa antigua de saldo insuficiente y aviso de acceso). Selección independiente de7 pruebas de nueva vista previa/duración pasa; se solapa con las52. Una selección negativa que omitió los dos casos antiguos expuso además dependencia del doble de HTMLDialogElement.close en otros casos; no es una verificación completa verde y no se modificó ese código de producto. Tipos, ESLint de archivos modificados y build institucional pasan. Bundle1203,55kB/348,46gzip, aviso histórico conservado.
 
 Sin optimizacionesP24, DDL, seeds, servicios nuevos ni escriturasSIIE. P24 implementación0%/aceptación0 de6; otras aceptaciones intactas. No se acredita una nueva edición real después de publicar, respuesta de voz nueva ni SLA/carga máxima.
+
+## Incidencia detectada durante la publicación
+
+La primera lectura nativa posterior a 7ae5c52 recuperó correctamente el texto histórico editado y el original, pero el listado falló con SQLSTATE 42703, sentencia ddae2b073b14. La consulta nueva de remitentes usaba TRY_CONVERT(uniqueidentifier,op.ActorRef), expresión no cubierta por el traductor PostgreSQL. La prueba de sintaxis no detectaba esta incompatibilidad semántica. Se sustituyó por comparación textual del UUID de AccessUser con ActorRef, sin convertir referencias system a UUID. Se añadió una regresión que exige la traducción de texto y rechaza TRY_CONVERT/uniqueidentifier sin traducir. Las 16 pruebas del archivo pasan de nuevo en 705d594. No hubo DDL ni supresión de controles para corregirlo.
+
+Los dos fallos frontend se reprodujeron además en una copia aislada del commit anterior 4df7272: 46 pruebas aprobadas y las mismas dos fallidas, frente a 52 aprobadas y dos fallidas en la versión nueva. No son una suite verde ni regresiones nuevas acreditadas.
+## Publicación y comprobación real
+
+705d594 quedó Success/Running: backend 2mwb4vzwzqw9mjjgkxso5o2u en 4m20s y frontend mb6xwpdc5fq62rjkazfkedz0 en 27s. Una pestaña nueva cargó workspace-DDOR9QDD.js; la anterior conservaba archivos viejos, por lo que se dejó abierta la nueva versión y se cerró la duplicada antigua.
+
+En el hilo atendido se observan una etiqueta «Mensaje editado», una cita «Mensaje original editado», el cuerpo nuevo y el original correcto, sin marcador [edit]. La respuesta financiera continúa Entregada y el control está en IA. La lista muestra «Juan P» desde el actor real de esa salida. La búsqueda del ensayo de voz muestra «IA» para la última salida generada y ningún prefijo para la última entrada de otro hilo de prueba Humano. Dos búsquedas y la apertura del historial terminaron sin alertas de consulta. Esto verifica la corrección observada; no prueba carga máxima ni ausencia perpetua de errores.
+
+La recuperación del marcador histórico fue de lectura. No se envió de nuevo ese evento ni se atribuye la respuesta manual a la automatización nueva. Sigue pendiente una edición nueva de un cliente para comprobar su respuesta automática de extremo a extremo. El comprobador de voz fue sin generación: no se acredita audio nuevo entregado ni ejecución pagada de la versión 2 del especialista.
+
+Evidencia agregada sin contenido privado: artifacts/live/inbox-edits-senders-preicfes-20261125.json.
