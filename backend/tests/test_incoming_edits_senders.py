@@ -141,7 +141,12 @@ def test_list_sender_uses_actual_operation_actor_not_current_assignee(monkeypatc
     ]
     def read(_c, sql, *args):
         assert sql.count("?") == len(args) and args == (inst, *conversations)
-        parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+        translated = postgres_sql(sql, layout()["tables"])
+        parse_sql(translated.replace("%s", "NULL"))
+        # ActorRef also contains system actors, so compare text without casting
+        # arbitrary actor strings or leaving a SQL Server type name in PostgreSQL.
+        assert "TRY_CONVERT" not in translated and "uniqueidentifier" not in translated
+        assert "LOWER((u.UserId)::text)=LOWER(op.ActorRef)" in translated
         assert "u.InstitutionId=op.InstitutionId" in sql and "ORDER BY CreatedAt DESC,Sequence DESC" in sql
         return rows
     monkeypatch.setattr(channel_workspace.db, "rows", read)

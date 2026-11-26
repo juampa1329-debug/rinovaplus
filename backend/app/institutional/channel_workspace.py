@@ -112,7 +112,7 @@ class Workspace(Parent):
             "LEFT JOIN crm_channels2.SendJob j ON j.InstitutionId=r.InstitutionId AND j.QueueId=r.QueueId "
             "AND j.MessageId=m.MessageId AND j.IntegrationId=r.IntegrationId AND j.IdentityId=r.IdentityId "
             "LEFT JOIN crm_channels2.ProviderOperation op ON op.InstitutionId=j.InstitutionId AND op.OperationId=j.OperationId "
-            "LEFT JOIN crm_access.AccessUser u ON u.InstitutionId=op.InstitutionId AND u.UserId=TRY_CONVERT(uniqueidentifier,op.ActorRef) "
+            "LEFT JOIN crm_access.AccessUser u ON u.InstitutionId=op.InstitutionId AND LOWER(CONVERT(nvarchar(36),u.UserId))=LOWER(op.ActorRef) "
             "WHERE v.ConversationId IN(" + ",".join("?" for _ in items) + ")",
             db.institution(self.profile), *[v["conversationId"] for v in items])
         by_id = {str(v["ConversationId"]).lower(): v for v in values}
