@@ -162,3 +162,72 @@ def test_action_requires_recent_authority_and_replay_returns_before_migration(se
     assert service.action(None, flow["RecordId"], "shorten_closure", body)["reschedule"]["preserved"] == 6
     assert calls == [(True, True)]
     shorten.assert_not_called()
+
+
+def close60(body):
+    return body.model_copy(update={"closure_days": None, "closure_hours": 60})
+
+
+def test_closing_at_sixty_removes_pause_and_seven_day_tail(setup):
+    _, flow, trigger, _, _, _, _, _ = setup
+    before = json.loads(flow["Document"])
+    before["steps"][4]["meta_template_id"] = str(uuid4())
+    flow["Document"] = json.dumps(before)
+    after, delta = f.target(flow, trigger, None, hours=60)
+    assert len(after["steps"]) == 5 and delta == 0
+    assert after["steps"][:4] == before["steps"][:4]
+    assert 480 + sum(v["wait_minutes"] for v in after["steps"] if v["kind"] == "wait") == 60 * 60
+    assert after["steps"][4]["meta_template_id"] == before["steps"][6]["meta_template_id"]
+    assert after["steps"][4]["meta_template_id"] != before["steps"][4]["meta_template_id"]
+    assert after["steps"][4]["variables"] == before["steps"][6]["variables"]
+
+
+def test_sixty_hour_change_keeps_wait_anchor_and_progress(setup):
+    c, flow, _, body, actor, run, _, _ = setup
+    result = f.shorten(c, None, flow, actor, close60(body))
+    assert result["reschedule"] == dict(closure_hours=60, preserved=1, stopped=0,
+                                         held_for_review=0, trigger_version=4)
+    update = next(v.args for v in c.execute.call_args_list if v.args[0].startswith("UPDATE crm_campaign8.Enrollment"))
+    assert update[1:5] == (4, 5, 4, run["DueAt"])
+    assert not any("SendJob" in v.args[0] or v.args[0].startswith("UPDATE crm_campaign8.Step") for v in c.execute.call_args_list)
+
+
+@pytest.mark.parametrize("index", [0, 2, 4])
+def test_unstarted_message_can_migrate_only_without_linked_work(setup, monkeypatch, index):
+    from app.institutional import campaign_chat
+    c, flow, _, body, actor, run, steps, _ = setup
+    run["StepIndex"] = index
+    old_steps = json.loads(flow["Document"])["steps"]
+    steps[:] = [dict(StepIndex=i, Kind=old_steps[i]["kind"],
+                     State="completed" if i < index else "waiting", StepId=str(i))
+                for i in range(index + 1)]
+    monkeypatch.setattr(campaign_chat, "links", lambda *a: [])
+    assert f.shorten(c, None, flow, actor, close60(body))["reschedule"]["preserved"] == 1
+    c.reset_mock()
+    monkeypatch.setattr(campaign_chat, "links", lambda *a: [{"State": "queued"}])
+    with pytest.raises(HTTPException, match="campaign_closure_busy"):
+        f.shorten(c, None, flow, actor, close60(body))
+    c.execute.assert_not_called()
+
+
+def test_already_completed_pause_is_held_without_reusing_completed_step(setup):
+    c, flow, _, body, actor, run, steps, _ = setup
+    run["StepIndex"] = 5
+    old_steps = json.loads(flow["Document"])["steps"]
+    steps[:] = [dict(StepIndex=i, Kind=old_steps[i]["kind"],
+                     State="completed" if i < 5 else "waiting", StepId=str(i)) for i in range(6)]
+    result = f.shorten(c, None, flow, actor, close60(body))
+    assert result["reschedule"]["preserved"] == 0
+    assert result["reschedule"]["held_for_review"] == 1
+    runtime.stop.assert_called_once_with(c, None, run, "campaign_closure_tail_review", paused=True)
+    assert not any(v.args[0].startswith("UPDATE crm_campaign8.Enrollment") or
+                   v.args[0].startswith("UPDATE crm_campaign8.Step") for v in c.execute.call_args_list)
+
+
+@pytest.mark.parametrize("state", ["queued", "uncertain", "paused"])
+def test_sixty_hour_change_rejects_inflight_or_held_work_before_mutating(setup, state):
+    c, flow, _, body, actor, run, _, _ = setup
+    run["State"] = state
+    with pytest.raises(HTTPException, match="campaign_closure_busy"):
+        f.shorten(c, None, flow, actor, close60(body))
+    c.execute.assert_not_called()

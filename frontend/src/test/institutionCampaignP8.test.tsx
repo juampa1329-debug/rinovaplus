@@ -90,7 +90,10 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
-it("keeps shortening behind review and preflight and sends the saved revision without editing the flow", async () => {
+it.each([
+  {action:"shorten_closure",label:"Cerrar a los 7 días y conservar seguimientos en espera",timing:{closure_days:7}},
+  {action:"close_at_60_hours",label:"Cerrar a las 60 horas y conservar seguimientos en espera",timing:{closure_hours:60}},
+])("keeps $action behind review and preflight without editing the flow", async ({action,label,timing}) => {
   const flow = {...campaign, kind: "flow", state: "active", name: "Silencio consultivo", revision: 6,
     document: {...doc, followup_only: true, steps: [
       {kind:"send"}, {kind:"wait",wait_minutes:1680}, {kind:"send"},
@@ -99,19 +102,19 @@ it("keeps shortening behind review and preflight and sends the saved revision wi
     ]}};
   const f = setup((p) => p.endsWith("/campaigns") ? ok({items:[flow]}) :
     p.endsWith("/preflight") ? ok({id:"checked",valid:true,issues:[]}) :
-    p.endsWith("/shorten_closure") ? ok({...flow,version:4}) : undefined);
+    p.endsWith(`/${action}`) ? ok({...flow,version:4}) : undefined);
   fireEvent.click(await screen.findByRole("button",{name:"Flujos"}));
   fireEvent.click(await screen.findByRole("button",{name:/Silencio consultivo/}));
-  const shorten = screen.getByRole("button",{name:"Cerrar a los 7 días y conservar seguimientos en espera"});
+  const shorten = screen.getByRole("button",{name:label});
   expect(shorten).toBeDisabled();
   fireEvent.click(screen.getByLabelText("Revisé el contenido, las versiones y el alcance de esta acción"));
   expect(shorten).toBeDisabled();
   fireEvent.click(screen.getByRole("button",{name:"Comprobar configuración"}));
   await waitFor(()=>expect(shorten).toBeEnabled());
   fireEvent.click(shorten);
-  await waitFor(()=>expect(f.mock.calls.some(([url])=>String(url).endsWith("/shorten_closure"))).toBe(true));
-  const request = f.mock.calls.find(([url])=>String(url).endsWith("/shorten_closure"))![1]!;
-  expect(JSON.parse(String(request.body))).toMatchObject({revision:6, confirmed:true, preflight_id:"checked", closure_days:7});
+  await waitFor(()=>expect(f.mock.calls.some(([url])=>String(url).endsWith(`/${action}`))).toBe(true));
+  const request = f.mock.calls.find(([url])=>String(url).endsWith(`/${action}`))![1]!;
+  expect(JSON.parse(String(request.body))).toMatchObject({revision:6, confirmed:true, preflight_id:"checked", ...timing});
   expect(f.mock.calls.some(([, init])=>init?.method === "PUT")).toBe(false);
 });
 it("loads one integrated list and keeps activation behind preflight and human review", async () => {
@@ -126,13 +129,16 @@ it("loads one integrated list and keeps activation behind preflight and human re
   ).toBeEnabled();
   expect(await screen.findByText(/No hay ejecuciones/)).toBeInTheDocument();
 });
-it("explains a rescheduled closure with human step numbers and both versions", async () => {
+it.each([
+  {timing:{closure_days:7},word:"días",amount:7},
+  {timing:{closure_hours:60},word:"horas",amount:60},
+])("explains a rescheduled closure in $word with human step numbers", async ({timing,word,amount}) => {
   setup(p => p.includes("/runs?") ? ok({items:[{id:"run",name:"Ejemplo",state:"waiting",variant:"A",step_index:1,version:4,due_at:"2026-11-28T15:00:00Z"}],total:1,has_more:false}) :
-    p.endsWith("/runs/run") ? ok({steps:[],events:[{kind:"closure_rescheduled",at:"2026-11-27T18:09:57Z",data:{step_index:1,closure_days:7,old_version:3,new_version:4}}]}) : undefined);
+    p.endsWith("/runs/run") ? ok({steps:[],events:[{kind:"closure_rescheduled",at:"2026-11-27T18:09:57Z",data:{step_index:1,...timing,old_version:3,new_version:4}}]}) : undefined);
   fireEvent.click(await screen.findByRole("button",{name:/Admisiones CBN/}));
   fireEvent.click(await screen.findByRole("button",{name:"Ver detalle de Ejemplo"}));
   expect(await screen.findByText(/Cierre reprogramado sin repetir mensajes/)).toBeInTheDocument();
-  expect(screen.getByText("Paso: 2 · Cierre (días): 7 · Versión anterior: 3 · Versión actual: 4")).toBeInTheDocument();
+  expect(screen.getByText(`Paso: 2 · Cierre (${word}): ${amount} · Versión anterior: 3 · Versión actual: 4`)).toBeInTheDocument();
 });
 it("retains an edited flow after CAS conflict and submits its actual revision with CSRF", async () => {
   const f = setup((_p, i) =>

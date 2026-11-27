@@ -136,6 +136,8 @@ def save_followup_query() -> dict:
         "artifacts/live/form-payment-closure-followup-20261127.json",
         "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md",
         "artifacts/live/program-value-messaging-20261127.json",
+        "docs/adaptation/FOLLOWUP_60H_META_BENEFITS_20261127.md",
+        "artifacts/live/followup-60h-meta-benefits-20261127.json",
     }
     selected_nodes = [node_id for node_id, node in graph.nodes(data=True)
                       if node.get("_origin") == "semantic"
@@ -165,7 +167,7 @@ def save_followup_query() -> dict:
     sources = sorted({node["source_file"] for _, node in focused.nodes(data=True)})
     payload = {
         "original_question": "tienes conocimiento sobre los seguimientos a las conversaciones?",
-        "focused_question": "Seguimientos por avance, formulario, pago, cierre, beca opcional y beneficios confirmados, conservando No contactar y los cortes históricos",
+        "focused_question": "Seguimientos de 8h y 36h con cierre 60h, avance, formulario, pago y beneficios aprobados por Meta en campañas borrador, conservando No contactar y los cortes históricos",
         "expanded_tokens": selected,
         "command": ["python", "backend/tools/conversation_continuity_graph.py", "query"],
         "run_from": ".", "exit_code": 0, "graph_sha256": sha(graph_path),

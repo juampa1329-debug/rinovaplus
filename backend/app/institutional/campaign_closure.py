@@ -12,12 +12,13 @@ from app.institutional.campaign_models import document, now, next_allowed
 from app.institutional.campaigns import event, get, issues, key, packed, public, authority
 
 
-def target(flow, trigger, days):
+def target(flow, trigger, days, *, hours=None):
     doc = json.loads(flow["Document"])
     bound = json.loads(trigger["Document"])
     steps = doc.get("steps", [])
     if (
-        days != 7 or flow["Kind"] != "flow" or flow["State"] != "active"
+        (days, hours) not in {(7, None), (None, 60)}
+        or flow["Kind"] != "flow" or flow["State"] != "active"
         or not doc.get("followup_only") or not doc.get("exit_on_response")
         or doc.get("entry_conditions", {}).get("followup_states")
         or [v["kind"] for v in steps] != ["send", "wait", "send", "wait", "send", "wait", "send"]
@@ -31,6 +32,15 @@ def target(flow, trigger, days):
         or [steps[i]["wait_minutes"] for i in (1, 3)] != [1680, 1440]
     ):
         raise HTTPException(409, "campaign_closure_scope_changed")
+    if hours == 60:
+        if steps[-2]["wait_minutes"] <= 0:
+            raise HTTPException(409, "campaign_closure_not_shorter")
+        changed = deepcopy(doc)
+        # 8h + 28h + 24h = 60h. Replace the unstarted pause with the
+        # already approved closing message; remove the later wait/send.
+        changed["steps"] = changed["steps"][:4] + [changed["steps"][-1]]
+        changed["steps"][-1]["name"] = "Cierre respetuoso · 60 horas"
+        return document("flow", changed), 0
     minutes = days * 1440 - bound["idle_minutes"] - sum(
         v["wait_minutes"] for v in steps[:-2] if v["kind"] == "wait"
     )
@@ -89,7 +99,10 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
     if len(triggers) > 500 or len(bound) != 1:
         raise HTTPException(409, "campaign_closure_scope_changed")
     trigger = bound[0]
-    doc, delta = target(flow, trigger, body.closure_days)
+    hours = body.closure_hours
+    closing60 = hours == 60
+    doc, delta = target(flow, trigger, body.closure_days, hours=hours)
+    prior_doc = json.loads(flow["Document"])
     authority(c, s, flow)
     authority(c, s, trigger)
     proposal = dict(flow, Document=packed(doc))
@@ -103,7 +116,8 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
         raise HTTPException(409, "campaign_closure_busy")
     prepared = []
     for run in runs:
-        if (run["State"] != "waiting" or run["StepIndex"] not in {1, 3, 5}
+        if (run["State"] != "waiting"
+                or run["StepIndex"] not in (set(range(7)) if closing60 else {1, 3, 5})
                 or str(run["TriggerId"]) != str(trigger["RecordId"])
                 or run["TriggerVersion"] != trigger["CurrentVersion"]
                 or run["VersionNo"] != flow["CurrentVersion"]
@@ -114,9 +128,16 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
         current = next((v for v in steps if v["StepIndex"] == run["StepIndex"]), None)
         if any(v["StepIndex"] > run["StepIndex"] or
                (v["StepIndex"] < run["StepIndex"] and v["State"] != "completed")
-               for v in steps) or (current and (current["Kind"] != "wait" or
+               for v in steps) or (current and (current["Kind"] != prior_doc["steps"][run["StepIndex"]]["kind"] or
                                                 current["State"] != "waiting")):
             raise HTTPException(409, "campaign_closure_busy")
+        if closing60 and current and current["Kind"] == "send":
+            from app.institutional.campaign_chat import links
+
+            # An unstarted send can keep its step identity. A linked job or
+            # prepared native campaign must finish/be reviewed before migration.
+            if current.get("NativeCampaignId") or links(c, s, current):
+                raise HTTPException(409, "campaign_closure_busy")
         denied = None
         try:
             guard(c, s, run)
@@ -129,16 +150,25 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
     next_trigger = json.loads(trigger["Document"])
     next_trigger["flow_version"] = flow["CurrentVersion"] + 1
     version(c, s, flow, doc,
+            "CRM · Seguimiento consultivo · 8h, 36h y cierre 60h · CBN" if closing60 else
             "CRM · Seguimiento consultivo · 8h, 36h, 60h y cierre 7d · CBN", actor, body)
     version(c, s, trigger, document("trigger", next_trigger), trigger["Name"], actor, body)
-    preserved = stopped = 0
+    preserved = stopped = held = 0
+    timing = {"closure_hours": 60} if closing60 else {"closure_days": 7}
     for run, step, denied in prepared:
         if denied:
             stop(c, s, run, denied)
             stopped += 1
             continue
-        due = waiting_due(run, step, delta, doc["quiet_hours"], now())
-        if step and run["StepIndex"] == 5:
+        if closing60 and run["StepIndex"] >= 5:
+            # The old pause is already completed. Do not reuse completed step4
+            # for a different message or replay the original entry. Keep history
+            # and hold the old tail for explicit review.
+            stop(c, s, run, "campaign_closure_tail_review", paused=True)
+            held += 1
+            continue
+        due = run["DueAt"] if closing60 else waiting_due(run, step, delta, doc["quiet_hours"], now())
+        if not closing60 and step and run["StepIndex"] == 5:
             c.execute("UPDATE crm_campaign8.Step SET DueAt=? WHERE InstitutionId=? "
                       "AND StepId=? AND State='waiting'", due, institution(s), step["StepId"])
             if c.rowcount != 1:
@@ -154,15 +184,17 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
         if c.rowcount != 1:
             raise HTTPException(409, "campaign_closure_busy")
         event(c, s, "closure_rescheduled", dict(old_version=run["VersionNo"],
-              new_version=flow["CurrentVersion"] + 1, closure_days=7,
+              new_version=flow["CurrentVersion"] + 1, **timing,
               step_index=run["StepIndex"], previous_due=run["DueAt"].isoformat(),
               due=due.isoformat()), record=str(flow["RecordId"]),
               enrollment=str(run["EnrollmentId"]), actor=actor["UserId"],
               source=key("closure", body.operation_id, run["EnrollmentId"]))
         preserved += 1
     result = public(get(c, s, str(flow["RecordId"])))
-    result["reschedule"] = dict(closure_days=7, preserved=preserved, stopped=stopped,
+    result["reschedule"] = dict(**timing, preserved=preserved, stopped=stopped,
                                 trigger_version=trigger["CurrentVersion"] + 1)
+    if closing60:
+        result["reschedule"]["held_for_review"] = held
     event(c, s, "closure_rescheduled_summary", result["reschedule"],
           record=str(flow["RecordId"]), actor=actor["UserId"],
           source=key("closure-summary", body.operation_id))

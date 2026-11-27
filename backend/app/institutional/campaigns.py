@@ -783,7 +783,7 @@ class Campaigns:
         with self.tx(
             auth,
             True,
-            recent=action in {"activate", "enroll", "resume", "retry", "restore", "shorten_closure"},
+            recent=action in {"activate", "enroll", "resume", "retry", "restore", "shorten_closure", "close_at_60_hours"},
         ) as (c, actor):
             h, prior = replay(
                 c,
@@ -792,7 +792,7 @@ class Campaigns:
                 str(body.operation_id),
                 "campaign8." + action,
                 id,
-                body.model_dump(mode="json", exclude={"closure_days"} if body.closure_days is None else set()),
+                body.model_dump(mode="json", exclude={k for k in ("closure_days", "closure_hours") if getattr(body, k) is None}),
             )
             if prior:
                 return prior
@@ -801,7 +801,7 @@ class Campaigns:
                 raise HTTPException(409, "revision_conflict")
             if not body.confirmed:
                 raise HTTPException(409, "campaign_review_required")
-            if action in {"activate", "enroll", "resume", "retry", "shorten_closure"} and record[
+            if action in {"activate", "enroll", "resume", "retry", "shorten_closure", "close_at_60_hours"} and record[
                 "Kind"
             ] not in {"template", "segment"}:
                 authorize(c, self.settings, auth, "inbox.write")
@@ -850,9 +850,12 @@ class Campaigns:
                     id,
                 )
                 result = public(get(c, self.settings, id))
-            elif action == "shorten_closure":
+            elif action in {"shorten_closure", "close_at_60_hours"}:
                 from app.institutional.campaign_closure import shorten
 
+                expected = (7, None) if action == "shorten_closure" else (None, 60)
+                if (body.closure_days, body.closure_hours) != expected:
+                    raise HTTPException(422, "campaign_closure_target_invalid")
                 result = shorten(c, self.settings, record, actor, body, controlled=self.controlled)
             elif action in {"pause", "archive"}:
                 retire(c, self.settings, record, "campaign_" + action)
@@ -938,7 +941,7 @@ class Campaigns:
                 str(body.operation_id),
                 "campaign8." + action,
                 id,
-                body.model_dump(mode="json", exclude={"closure_days"} if body.closure_days is None else set()),
+                body.model_dump(mode="json", exclude={k for k in ("closure_days", "closure_hours") if getattr(body, k) is None}),
             )
             if prior:
                 return prior

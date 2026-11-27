@@ -270,6 +270,7 @@ class Save(Command):
 
 class Review(Command):
     closure_days: Literal[7] | None = None
+    closure_hours: Literal[60] | None = None
     confirmed: bool = False
     preflight_id: JsonUUID | None = None
     identity_ids: list[JsonUUID] = Field(default_factory=list, max_length=500)
