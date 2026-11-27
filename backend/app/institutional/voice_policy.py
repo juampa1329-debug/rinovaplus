@@ -2,6 +2,8 @@
 
 import math
 import re
+import hashlib
+import secrets
 from typing import Literal
 from uuid import UUID
 
@@ -65,6 +67,7 @@ class VoicePolicy(BaseModel):
     max_audio_seconds: int = Field(default=60, ge=0, le=300)
     daily_character_limit: int = Field(default=20000, ge=0, le=10000000)
     default_profile_id: str = Field(default="", max_length=64)
+    selection_mode: Literal["assigned", "random"] = "assigned"
     profiles: list[VoiceProfile] = Field(default_factory=list, max_length=20)
 
     @model_validator(mode="after")
@@ -123,7 +126,7 @@ def estimate_seconds(text: str):
     return math.ceil(max(words / 2, len(text) / 12) + pauses * 0.4 + 2)
 
 
-def choose_profile(policy: VoicePolicy, agent: str | None, schools=(), pinned=None, selected_profile=""):
+def choose_profile(policy: VoicePolicy, agent: str | None, schools=(), pinned=None, selected_profile="", *, selection_key=""):
     active = [p for p in policy.profiles if p.active]
     if pinned:
         # Pin the actual voice/model too, not just an editable display name.
@@ -137,4 +140,11 @@ def choose_profile(policy: VoicePolicy, agent: str | None, schools=(), pinned=No
     matches = [p for p in active if {v.casefold() for v in schools}.intersection(v.casefold() for v in p.schools)]
     if len(matches) == 1:
         return matches[0]
+    if policy.selection_mode == "random" and active:
+        pool = sorted(active, key=lambda p: p.id)
+        # Spread new conversations across enabled voices; keep the same result
+        # in a preview and its reservation. Existing reservations take precedence.
+        index = (int.from_bytes(hashlib.sha256(str(selection_key).encode()).digest()[:8], "big") % len(pool)
+                 if selection_key else secrets.randbelow(len(pool)))
+        return pool[index]
     return next((p for p in active if p.id == policy.default_profile_id), None)

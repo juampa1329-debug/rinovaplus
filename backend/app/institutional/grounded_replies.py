@@ -123,6 +123,7 @@ def context(
     turn_text = "\n".join(reply_turn["pending"]) if reply_turn and not public else ""
     related = (selection or {}).get("masterclass_orientation") if not public else None
     skill_policy = for_turn(turn_text or question, history=prior_history, public=public)
+    campaign_context = (selection or {}).get("campaign_reply") if not public else None
     if hasattr(c, "__dict__"):
         c.agent_turn_policy = skill_policy
     retrieval = (
@@ -132,6 +133,7 @@ def context(
         + post[:1600]
         + " "
         + " ".join(v["text"] for v in history if v["direction"] == "incoming")
+        + (" " + campaign_context.get("program_hint", "") if campaign_context else "")
         + (" " + " ".join(dict.fromkeys(p["name"] for p in related["programs"]))
            if related and not program and not commercial_interest else "")
     )

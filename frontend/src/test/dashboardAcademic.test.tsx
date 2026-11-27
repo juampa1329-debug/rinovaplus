@@ -25,6 +25,37 @@ const sample: DashboardData = {
   comments: { received: 8 },
 };
 
+it("rounds the scale to hundreds and exposes each bar on pointer and keyboard focus", async () => {
+  const value = structuredClone(sample);
+  value.inbox!.daily[0].incoming = 287;
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(new Response(JSON.stringify(value)));
+  try {
+    render(<Dashboard name="Prueba" />);
+    const bar = await screen.findByRole("img", {
+      name: "2026-11-19: 287 mensajes recibidos",
+    });
+    const chart = screen.getByRole("group", {
+      name: /Mensajes recibidos y enviados por día/,
+    });
+    expect(chart).toHaveTextContent("100");
+    expect(chart).toHaveTextContent("200");
+    expect(chart).toHaveTextContent("300");
+    fireEvent.pointerEnter(bar);
+    expect(screen.getByRole("tooltip")).toHaveTextContent(
+      "2026-11-19 · Recibidos: 287",
+    );
+    fireEvent.pointerLeave(bar);
+    fireEvent.focus(bar);
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Recibidos: 287");
+    fireEvent.keyDown(bar, { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  } finally {
+    fetcher.mockRestore();
+  }
+});
+
 it("filters the local program library by school without changing any records", async () => {
   const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(
     new Response(
@@ -112,8 +143,21 @@ it("does not flag unqueried finance as missing from a basic program snapshot", (
 });
 
 it("identifies reviewed local academic content absent from the source snapshot", () => {
-  expect(sourceGaps({commercial:{presentation:"Revisada",certification:"",accreditation:"",internships:"Por confirmar",career_outcomes:"Desarrollo de software"}}, {commercial:{}}, "program"))
-    .toEqual(["Presentación", "Prácticas y condiciones", "Campo ocupacional"]);
+  expect(
+    sourceGaps(
+      {
+        commercial: {
+          presentation: "Revisada",
+          certification: "",
+          accreditation: "",
+          internships: "Por confirmar",
+          career_outcomes: "Desarrollo de software",
+        },
+      },
+      { commercial: {} },
+      "program",
+    ),
+  ).toEqual(["Presentación", "Prácticas y condiciones", "Campo ocupacional"]);
 });
 
 it("reports locally completed installment dates and keeps zero amounts valid", () => {

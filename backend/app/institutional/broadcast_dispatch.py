@@ -53,7 +53,8 @@ def check(c, s, recipient, *, controlled=False, queue=None):
         or campaign["Revision"] != recipient["CampaignRevision"]
     ):
         raise HTTPException(409, "broadcast_revision_changed")
-    found, item = audience(c, s, campaign, controlled=controlled)
+    found, item = audience(c, s, campaign, controlled=controlled,
+                           target_identity=recipient["IdentityId"])
     candidate = next(
         (v for v in found if same(v["identity_id"], recipient["IdentityId"])), None
     )

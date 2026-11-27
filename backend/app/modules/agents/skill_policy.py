@@ -55,7 +55,7 @@ def turn_plan(question, *, has_history=False, public=False):
     cost_scope_ambiguity = academic_plan and bool(re.search(r"gratis|gratuit|costo|pagar|cobran", current)) and not bool(
         re.search(r"\bsemestre|matricul|inscrip|mensualidad|(?:programa|curso|carrera)\s+(?:es\s+)?(?:gratis|gratuit)", current)
     )
-    financial = bool(re.search(r"precio|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|forma.*pago|\bpagar\b", current)
+    financial = bool(re.search(r"precio|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|(?:forma|opcion|medio|metodo).*pago|\bpagar\b", current)
                      or re.search(r"\bplan\b", current) and not academic_plan
                      or re.search(r"\bcuanto\s+(?:puedo\s+)?(?:empez|inici|pag|abon|invert|necesit)", current)
                      or re.search(r"\bcuanto\b", current) and not re.search(r"cuanto\s+(?:dura|tiempo|tarda)", current))

@@ -98,7 +98,7 @@ def test_exact_button_title_does_not_swallow_explicit_human_requests(text, expec
     assert entry.advisor_entry(text) is expected
 
 
-@pytest.mark.parametrize("title", ["Conocer el programa", "Ver jornadas", "Ver próxima oferta"])
+@pytest.mark.parametrize("title", ["Conocer el programa", "Ver plan de pagos", "Ver jornadas", "Ver próxima oferta"])
 def test_verified_information_buttons_keep_program_context_without_human_exception(campaign_db, monkeypatch, title):
     connection, cursor, payload = campaign_db
     monkeypatch.setattr(entry.db, "institution", lambda _: "i")
@@ -188,6 +188,26 @@ def test_confirmed_agent_receives_verified_campaign_context_without_rerouting(mo
     value = entry.enrich(None, None, "thread", selected, 4)
     assert value["agent_id"] == selected["agent_id"] and value["context"] == selected["context"]
     assert value["campaign_reply"] == {"sequence": 4} and "campaign_reply" not in selected
+
+
+def test_two_information_buttons_preserve_price_facts_and_verified_program_retrieval(monkeypatch):
+    retrieved = []
+    def read(c, query, program):
+        retrieved.append(query)
+        return {"material": {"financial_plans": [{"initial_payment_cop": 440000}]}}
+    monkeypatch.setattr(grounding, "setting", lambda *_: {"revision": 1, "document": {}})
+    monkeypatch.setattr(grounding, "Catalog", lambda *_: SimpleNamespace(read_context=read))
+    monkeypatch.setattr(grounding, "search", lambda *_: [])
+    monkeypatch.setattr(grounding, "effective", lambda *_: {"shared": []})
+    value = grounding.context(None, SimpleNamespace(), "Conocer el programa", selection={
+        "configuration": {}, "campaign_reply": {"sequence": 2, "button": "Ver plan de pagos",
+            "program_hint": "Proeficiencia en Inglés"}}, sequence=2,
+        reply_turn={"pending": ["Ver plan de pagos", "Conocer el programa"], "can_wait": False})
+    data = json.loads(value["query"])
+    assert "Proeficiencia en Inglés" in retrieved[0]
+    assert data["catalogo"]["financial_plans"][0]["initial_payment_cop"] == 440000
+    assert value["skill_policy"]["turn_plan"]["phase"] == "financial"
+    assert value["campaign_entry_turn"] is False
 
 
 @pytest.mark.parametrize("question,pending,expected", [(entry.LABEL,[entry.LABEL],True), (entry.LABEL,["Quiero una persona real",entry.LABEL],False), ("Quiero un humano",[],False)])

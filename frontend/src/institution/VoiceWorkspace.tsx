@@ -56,6 +56,7 @@ export type VoicePolicy = {
   max_audio_seconds: number;
   daily_character_limit: number;
   default_profile_id: string;
+  selection_mode?: "assigned" | "random";
   profiles: VoiceProfile[];
 };
 const defaults: VoicePolicy = {
@@ -69,6 +70,7 @@ const defaults: VoicePolicy = {
   max_audio_seconds: 60,
   daily_character_limit: 20000,
   default_profile_id: "",
+  selection_mode: "assigned",
   profiles: [],
 };
 type CatalogItem = {
@@ -543,6 +545,26 @@ function VoiceEditor({
                 <article className="voice-profile" key={p.id}>
                   <div className="voice-section-heading">
                     <h4>Voz {index + 1}</h4>
+                    <Button
+                      variant="secondary"
+                      disabled={draft.profiles.length >= 20}
+                      onClick={() =>
+                        update("profiles", [
+                          ...draft.profiles,
+                          {
+                            ...structuredClone(p),
+                            id: crypto.randomUUID(),
+                            name: `${p.name} · copia`.slice(0, 100),
+                            voice_id: "",
+                            active: false,
+                            agent_ids: [],
+                            schools: [],
+                          },
+                        ])
+                      }
+                    >
+                      Copiar ajustes de {p.name}
+                    </Button>
                     <label className="voice-check">
                       <input
                         type="checkbox"
@@ -871,6 +893,30 @@ function VoiceEditor({
                 Añadir perfil de voz
               </Button>
             </div>
+            <SelectField
+              id="voice-selection-mode"
+              label="Selección de voz para conversaciones nuevas"
+              value={draft.selection_mode ?? "assigned"}
+              onChange={(event) =>
+                update(
+                  "selection_mode",
+                  event.target.value as "assigned" | "random",
+                )
+              }
+              options={[
+                {
+                  value: "assigned",
+                  label: "Asignaciones y voz predeterminada",
+                },
+                { value: "random", label: "Aleatoria entre voces disponibles" },
+              ]}
+            />
+            <p className="voice-note">
+              La voz ya reservada para un chat se conserva. Las asignaciones por
+              agente y escuela tienen prioridad. Una copia conserva los ajustes
+              y comienza desactivada; elige su nueva voz de ElevenLabs antes de
+              activarla.
+            </p>
             <SelectField
               id="voice-default"
               label="Voz predeterminada"

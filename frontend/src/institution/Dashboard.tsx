@@ -56,6 +56,7 @@ export function Dashboard({ name }: { name: string }) {
   const [result, setResult] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [barDetail, setBarDetail] = useState("");
   useEffect(() => {
     let active = true;
     void send<DashboardData>(`dashboard?days=${days}`).then(
@@ -82,9 +83,14 @@ export function Dashboard({ name }: { name: string }) {
   const data = result?.days === Number(days) ? result : null;
   const points = data ? dailySeries(data) : [];
   const peak = Math.max(
-    1,
-    ...points.flatMap((row) => [row.incoming, row.sent]),
+    100,
+    Math.ceil(
+      Math.max(0, ...points.flatMap((row) => [row.incoming, row.sent])) / 100,
+    ) * 100,
   );
+  const chartHeight = Math.max(230, (peak / 100) * 24 + 70);
+  const chartBottom = chartHeight - 40;
+  const chartPlot = chartBottom - 22;
   const maxChannel = Math.max(
     1,
     ...(data?.inbox?.channels.map((row) => row.count) ?? []),
@@ -205,60 +211,120 @@ export function Dashboard({ name }: { name: string }) {
             </p>
           ) : (
             <>
-              <svg
-                className="operations-volume-chart"
-                viewBox="0 0 720 230"
-                role="img"
-                aria-label="Mensajes recibidos y enviados por día. Valores disponibles en Ver datos de la gráfica."
-              >
-                {[0, 1, 2, 3, 4].map((tick) => (
-                  <g key={tick}>
-                    <line
-                      x1="38"
-                      x2="705"
-                      y1={190 - tick * 42}
-                      y2={190 - tick * 42}
-                      className="operations-gridline"
-                    />
-                    <text x="30" y={194 - tick * 42} textAnchor="end">
-                      {Math.round((peak * tick) / 4)}
-                    </text>
-                  </g>
-                ))}
-                {points.map((point, index) => {
-                  const x = 44 + (index * 655) / points.length;
-                  const width = Math.min(25, 260 / points.length);
-                  return (
-                    <g key={point.day}>
-                      <title>
-                        {point.day}: {point.incoming} recibidos, {point.sent}{" "}
-                        enviados
-                      </title>
-                      <rect
-                        className="operations-bar received"
-                        x={x}
-                        y={190 - (point.incoming / peak) * 168}
-                        width={width}
-                        height={(point.incoming / peak) * 168}
-                        rx="3"
+              <div className="operations-chart-detail" aria-live="polite">
+                {barDetail ? (
+                  <span role="tooltip">{barDetail}</span>
+                ) : (
+                  "Pasa el cursor o selecciona una barra para ver su detalle."
+                )}
+              </div>
+              <div className="operations-chart-scroll">
+                <svg
+                  className="operations-volume-chart"
+                  viewBox={`0 0 720 ${chartHeight}`}
+                  style={{ height: chartHeight }}
+                  role="group"
+                  aria-label="Mensajes recibidos y enviados por día. Valores disponibles en Ver datos de la gráfica."
+                >
+                  {Array.from(
+                    { length: peak / 100 + 1 },
+                    (_, i) => i * 100,
+                  ).map((tick) => (
+                    <g key={tick}>
+                      <line
+                        x1="38"
+                        x2="705"
+                        y1={chartBottom - (tick / peak) * chartPlot}
+                        y2={chartBottom - (tick / peak) * chartPlot}
+                        className="operations-gridline"
                       />
-                      <rect
-                        className="operations-bar sent"
-                        x={x + width + 2}
-                        y={190 - (point.sent / peak) * 168}
-                        width={width}
-                        height={(point.sent / peak) * 168}
-                        rx="3"
-                      />
-                      {(points.length < 10 || index % 5 === 0) && (
-                        <text x={x + width} y="214" textAnchor="middle">
-                          {point.day.slice(8)}/{point.day.slice(5, 7)}
-                        </text>
-                      )}
+                      <text
+                        x="36"
+                        y={chartBottom + 4 - (tick / peak) * chartPlot}
+                        textAnchor="end"
+                      >
+                        {number(tick)}
+                      </text>
                     </g>
-                  );
-                })}
-              </svg>
+                  ))}
+                  {points.map((point, index) => {
+                    const x = 44 + (index * 655) / points.length;
+                    const width = Math.min(25, 260 / points.length);
+                    return (
+                      <g key={point.day}>
+                        <title>
+                          {point.day}: {point.incoming} recibidos, {point.sent}{" "}
+                          enviados
+                        </title>
+                        <rect
+                          className="operations-bar received"
+                          role="img"
+                          tabIndex={0}
+                          aria-label={`${point.day}: ${number(point.incoming)} mensajes recibidos`}
+                          onPointerEnter={() =>
+                            setBarDetail(
+                              `${point.day} · Recibidos: ${number(point.incoming)}`,
+                            )
+                          }
+                          onFocus={() =>
+                            setBarDetail(
+                              `${point.day} · Recibidos: ${number(point.incoming)}`,
+                            )
+                          }
+                          onPointerLeave={() => setBarDetail("")}
+                          onBlur={() => setBarDetail("")}
+                          onKeyDown={(event) => {
+                            if (event.key === "Escape") setBarDetail("");
+                          }}
+                          x={x}
+                          y={chartBottom - (point.incoming / peak) * chartPlot}
+                          width={width}
+                          height={Math.max(
+                            1,
+                            (point.incoming / peak) * chartPlot,
+                          )}
+                          rx="3"
+                        />
+                        <rect
+                          className="operations-bar sent"
+                          role="img"
+                          tabIndex={0}
+                          aria-label={`${point.day}: ${number(point.sent)} mensajes enviados confirmados`}
+                          onPointerEnter={() =>
+                            setBarDetail(
+                              `${point.day} · Enviados confirmados: ${number(point.sent)}`,
+                            )
+                          }
+                          onFocus={() =>
+                            setBarDetail(
+                              `${point.day} · Enviados confirmados: ${number(point.sent)}`,
+                            )
+                          }
+                          onPointerLeave={() => setBarDetail("")}
+                          onBlur={() => setBarDetail("")}
+                          onKeyDown={(event) => {
+                            if (event.key === "Escape") setBarDetail("");
+                          }}
+                          x={x + width + 2}
+                          y={chartBottom - (point.sent / peak) * chartPlot}
+                          width={width}
+                          height={Math.max(1, (point.sent / peak) * chartPlot)}
+                          rx="3"
+                        />
+                        {(points.length < 10 || index % 5 === 0) && (
+                          <text
+                            x={x + width}
+                            y={chartBottom + 24}
+                            textAnchor="middle"
+                          >
+                            {point.day.slice(8)}/{point.day.slice(5, 7)}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
               {!data.inbox.incoming && !data.inbox.sent && (
                 <p>Sin mensajes registrados en este período.</p>
               )}

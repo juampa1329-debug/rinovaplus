@@ -13,6 +13,22 @@ from pydantic import ValidationError
 
 from app.institutional import voice_audio as voice
 from app.institutional.voice_policy import VoicePolicy, choose_profile, estimate_seconds, reason
+
+
+def test_random_voice_is_stable_for_conversation_and_never_uses_disabled_profile():
+    options = VoicePolicy(enabled=True, scope="all", selection_mode="random", default_profile_id="one", profiles=[
+        dict(id="one", name="One", voice_id="v1", model_id="m"),
+        dict(id="two", name="Two", voice_id="v2", model_id="m"),
+        dict(id="off", name="Off", voice_id="v3", model_id="m", active=False),
+    ])
+    selected = [choose_profile(options, None, selection_key=f"conversation-{i}").id for i in range(100)]
+    assert set(selected) == {"one", "two"}
+    assert selected == [choose_profile(options, None, selection_key=f"conversation-{i}").id for i in range(100)]
+    pinned = options.profiles[0].model_dump()
+    assert choose_profile(options, None, pinned=pinned, selection_key="different").id == "one"
+    options.profiles[0].active = False
+    assert choose_profile(options, None, pinned=pinned) is None
+    assert choose_profile(options, None, selection_key="new").id == "two"
 from app.modules.ai.infrastructure.media import MediaGateway
 from app.modules.ai.infrastructure.providers import AiError
 from app.institutional.voice_delivery import speech_text, voice_settings, SPEECH_GUIDANCE
