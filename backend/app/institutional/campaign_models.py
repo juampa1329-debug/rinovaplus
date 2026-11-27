@@ -31,7 +31,7 @@ def bounded(value):
 
 
 class Conditions(Filters):
-    followup_states: list[Literal["interest_confirmed", "form_sent", "form_reported_complete"]] = Field(default_factory=list, max_length=3)
+    followup_states: list[Literal["interest_confirmed", "form_sent", "form_reported_complete", "payment_requested"]] = Field(default_factory=list, max_length=4)
     keywords: list[str] = Field(default_factory=list, max_length=20)
 
     @model_validator(mode="after")
@@ -269,6 +269,7 @@ class Save(Command):
 
 
 class Review(Command):
+    closure_days: Literal[7] | None = None
     confirmed: bool = False
     preflight_id: JsonUUID | None = None
     identity_ids: list[JsonUUID] = Field(default_factory=list, max_length=500)

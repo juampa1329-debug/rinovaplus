@@ -66,6 +66,9 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
+  campaign_closure_busy: "Hay un seguimiento en curso o pendiente de revisión. El plazo se conserva; vuelve a consultar antes de ajustarlo.",
+  campaign_closure_scope_changed: "Este ajuste sólo corresponde al seguimiento general de silencio con sus pasos originales. Revisa la configuración.",
+  campaign_closure_not_shorter: "El cierre ya está a los 7 días o tiene un plazo menor. No se modificó.",
   commercial_followup_preview_changed:
     "El caso cambió desde la revisión. Conserva los registros confirmados y vuelve a consultar el avance antes de continuar.",
   commercial_followup_scope_limit:
