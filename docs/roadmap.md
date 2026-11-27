@@ -1,3 +1,11 @@
+## CRM: guardado por campos y baja expresa publicados — 2026-11-27
+
+8f875d8 corrige el rechazo por revisión global con baseClient/mezcla por campo bajo escritor; otros cambios se conservan y el mismo campo exige revisión explícita. Clientes antiguos/altas/otras mutaciones/autoridad/identidad académica intactos. 7f21c6b integra avances remotos sin perder seguimientos. 8475666 incorpora baja manual con crm.write/motivo/confirmación/actor/idempotencia, opt_out de fuente operator_confirmed_request; revoca consentimientos y cancela sólo pendientes, no envíos inciertos. 3c73831 publica interfaz y revisión de conflictos sin guardado automático.
+
+Una ficha solicitada quedó Cerrado sin matrícula, conversación Cerrada y No contactar, confirmado tras recarga completa. Cero mensajes nuevos; homónimo intacto. Backend knqm8q2c9n2xjst7cejzxev8 healthy17:52:11UTC/rollout17:52:21; frontend41sgo6ufiknrcbfvtkt7vqys Success47s. Listado tuvo un timeout antes de reconsulta correcta: no latencia universal resuelta. 75backend pasan;63frontend/2fallos heredados, tipos/ESLintmodificado/RuffE9,F/build pasan, bundle744,87/219,64gzip y Node22local conservados. Sin PostgreSQL aislado/suite completa verde.
+
+Informe CRM_CONTACT_SAVE_OPTOUT_20261127.md/evidencia agregada homónima, sin datos nominales. SkillsCRM/recall leídas; memoria externa no disponible, continuidad local/grafo con fuentes. Sin mensajes, modelos/consumoIA, DDL/seeds/servicios/SIIEwrites; P13/P19/P21 iniciales/P22técnico3/5comercial0/5/P23=0/9/P24=0/6 conservados. No repetir correo/apagado histórico.
+
 ## Fichas: alias, financiación y guardado corregidos — 2026-11-26
 
 Auditoría nativa de 27 fichas (24 activas y 3 pausadas). Se guardaron alias en 19 ofertas y se releyeron las 24 activas. Nueve ofertas de contado $1.860.000 corregidas según foto: abono mayor $930.000 + tres cuotas de $340.000 = $1.950.000; plan menor $490.000 + tres cuotas de $490.000 = $1.960.000 intacto. Turismo/Aduanas/Logística/Preescolar conservan todas las materias como referencia, duración vigente 3 semestres y distribución curricular actualizada pendiente. Tres ofertas y especialistas pausados permanecen así. Ocho presentaciones opcionales vacías, horas exactas diurnas/sábados y determinados títulos/acreditaciones/prácticas requieren fuente; no afirmar que todo dato académico está completo.

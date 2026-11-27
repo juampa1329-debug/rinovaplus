@@ -1,3 +1,11 @@
+## CRM: guardado por campos y baja expresa publicados — 2026-11-27
+
+8f875d8 corrige el rechazo por revisión global con baseClient/mezcla por campo bajo escritor; otros cambios se conservan y el mismo campo exige revisión explícita. Clientes antiguos/altas/otras mutaciones/autoridad/identidad académica intactos. 7f21c6b integra avances remotos sin perder seguimientos. 8475666 incorpora baja manual con crm.write/motivo/confirmación/actor/idempotencia, opt_out de fuente operator_confirmed_request; revoca consentimientos y cancela sólo pendientes, no envíos inciertos. 3c73831 publica interfaz y revisión de conflictos sin guardado automático.
+
+Una ficha solicitada quedó Cerrado sin matrícula, conversación Cerrada y No contactar, confirmado tras recarga completa. Cero mensajes nuevos; homónimo intacto. Backend knqm8q2c9n2xjst7cejzxev8 healthy17:52:11UTC/rollout17:52:21; frontend41sgo6ufiknrcbfvtkt7vqys Success47s. Listado tuvo un timeout antes de reconsulta correcta: no latencia universal resuelta. 75backend pasan;63frontend/2fallos heredados, tipos/ESLintmodificado/RuffE9,F/build pasan, bundle744,87/219,64gzip y Node22local conservados. Sin PostgreSQL aislado/suite completa verde.
+
+Informe CRM_CONTACT_SAVE_OPTOUT_20261127.md/evidencia agregada homónima, sin datos nominales. SkillsCRM/recall leídas; memoria externa no disponible, continuidad local/grafo con fuentes. Sin mensajes, modelos/consumoIA, DDL/seeds/servicios/SIIEwrites; P13/P19/P21 iniciales/P22técnico3/5comercial0/5/P23=0/9/P24=0/6 conservados. No repetir correo/apagado histórico.
+
 ## Tres seguimientos por avance activados con aprobación expresa — 2026-11-27
 
 Titular autoriza ahora los tres casos y mantiene exclusión No contactar; aprobación posterior resuelve rechazo anterior, no pedirla de nuevo. Tres plantillasCRM Activasv1 (dos activadas ahora/interés ya activa), tres flujos Activosv3 y tres activadores Activosv2 enlazados a flujo3. Nombres/objetivos operativos sin «Revisar antes de activar» ni «Borrador sin activadores»; mensaje único/filtro por caso intactos. Activadores inactivity480min/cooldown1440/prioridades interés30/formulario20/verificar10, sin espera interna extra;24h solicitud real/silencio21–08Bogotá/respuesta/Humano/bajas conservados. Generalflow3/trigger3 activos intactos; no duplicados/inscripciones manuales/retries/consentimientos nuevos.
