@@ -68,14 +68,15 @@ export function SiieWebhookReadiness({ status }: { status: Preparation }) {
         </div>
         <div>
           <dt>Volante y PDF de PRE-ICFES</dt>
-          <dd>Contrato de pagos pendiente de SIIE</dd>
+          <dd>Contrato integrado · prueba conjunta pendiente</dd>
         </div>
       </dl>
       <p>
         El recorrido previsto es confirmar inscripción y vínculo con el chat,
         obtener la elección de contado o financiado y solicitar el volante a
-        SIIE. La generación y el envío del PDF estarán disponibles después de
-        integrar y probar ese contrato.
+        SIIE. El panel de plan y volante permite probar la generación y
+        descargar el PDF validado; su envío al aspirante se comprobará en el
+        piloto conjunto.
       </p>
     </section>
   );

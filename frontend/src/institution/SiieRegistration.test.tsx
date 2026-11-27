@@ -49,6 +49,28 @@ const draft = {
     selection: { program_id: "3", offer_ref: "21-n1" },
   },
 };
+
+it("shows an old environment draft without consulting new catalogs or enabling edits", async () => {
+  mock.mode = "draft";
+  const original = mock.call.getMockImplementation()!;
+  mock.call.mockImplementation(async (path: string, ...args: unknown[]) =>
+    path.includes("/records/sd/")
+      ? { ...draft, environment_current: false }
+      : original(path, ...args),
+  );
+  render(<SiieRegistration />);
+  fireEvent.click(
+    await screen.findByRole("button", { name: /PRE-ICFES/ }),
+  );
+  await screen.findByText(/Solicitud de otro entorno/);
+  expect(screen.getByRole("button",{name:"Revisar envío a SIIE"})).toBeDisabled();
+  expect(
+    mock.call.mock.calls.some(([path]) => String(path).includes("/catalogs?")),
+  ).toBe(false);
+  expect(
+    screen.queryByText(/El período consultado permite revisión histórica/),
+  ).not.toBeInTheDocument();
+});
 const status = {
   revision: 0,
   api_configured: true,
@@ -256,7 +278,7 @@ it("shows current private identity only after opening a receipt and never enable
   mock.mode = "event";
   render(<SiieRegistration />);
   expect(
-    await screen.findByText("Contrato de pagos pendiente de SIIE"),
+    await screen.findByText("Contrato integrado · prueba conjunta pendiente"),
   ).toBeInTheDocument();
   expect(screen.queryByText("TEST123")).not.toBeInTheDocument();
   fireEvent.click(

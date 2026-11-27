@@ -20,6 +20,7 @@ artifacts/live/** -text
 
 # Keep delivered provider contracts byte-identical to their recorded hashes.
 docs/contracts/siie/20261119*/** -text
+docs/contracts/siie/20261127/** -text
 
 # Preserve the existing mixed line endings in the institutional message catalog.
 frontend/src/institution/api.tsx -text

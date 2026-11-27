@@ -154,6 +154,14 @@ def test_pending_test_work_never_uses_production_base(pilot,monkeypatch):
     assert len(p.calls)==before and p.service.read(p.id)['environment']==p.env
 
 
+def test_same_event_and_chat_do_not_create_a_second_flow_due_to_uuid_case(pilot):
+    p=pilot;private=p.store[('sf',p.id)]['private']
+    reopened=p.service.prepare(journey.Prepare(event_id=private['event_id'].upper(),
+        conversation_id=private['sender']['conversationId'].upper(),environment=p.env,reviewed=True))
+    assert reopened['id']==p.id
+    assert len([k for k in p.store if k[0]=='sf'])==1
+
+
 def test_bad_pdf_never_downloads_and_does_not_confirm_payment(pilot):
     p=pilot;assigned(p);p.command('order',installment_id=401);p.fail['pdf']=True
     with pytest.raises(HTTPException,match='siie_finance_invalid_response'):p.service.pdf(p.id)
@@ -205,3 +213,21 @@ def test_sender_sql_is_bound_to_real_incoming_route_and_unique_identity(env,monk
     monkeypatch.setattr(journey.db,'rows',rows)
     settings=SimpleNamespace(ticket={'context':[[1,str(uuid4())]]})
     with pytest.raises(HTTPException,match='siie_finance_verified_sender_required'):journey.sender(None,settings,str(uuid4()))
+
+
+def test_local_catalog_mapping_checks_full_environment_and_parses_pg(env,monkeypatch):
+    from app.institutional import siie_local
+    class Cursor:
+        def execute(self,sql,*args):
+            assert sql.count('?')==len(args)
+            parse_sql(postgres_sql(sql,layout()['tables']).replace('%s','NULL'))
+            assert args[3:]==(env['fingerprint'],env['base_url'],'123')
+            return self
+        def fetchall(self):return []
+    settings=SimpleNamespace(ticket={'context':[[1,str(uuid4())]]})
+    assert siie_local.mapped_programs(Cursor(),settings,{'environment':env,'program_id':'123'})==[]
+    key=siie_local.source_section(1,'offer',env)
+    monkeypatch.setenv('SIIE_BASE_URL','https://siie.example.test/SIIEWEBPLUS/')
+    assert key!=siie_local.source_section(1,'offer')
+    monkeypatch.setattr(siie_local,'one',lambda *a:{'Document':json.dumps({'environment':env})})
+    assert siie_local.local_source(None,settings,1) is None

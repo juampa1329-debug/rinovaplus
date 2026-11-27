@@ -117,6 +117,7 @@ class Finance:
             return records.recent(c,self.settings,"sf",offset=offset)
 
     def prepare(self, body):
+        body = body.model_copy(update={"event_id":db.uid(body.event_id),"conversation_id":db.uid(body.conversation_id)})
         environment = environments.require(body.environment).document()
         with self.tx() as c:
             actor(c,self.settings)

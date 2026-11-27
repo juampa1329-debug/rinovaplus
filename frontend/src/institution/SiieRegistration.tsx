@@ -777,12 +777,13 @@ export function SiieRegistration() {
                       ))}
                     </details>
                   )}
-                  {!allowsCreation && (
-                    <Notice error>
-                      El período consultado permite revisión histórica, pero
-                      SIIE no permite crear una inscripción en él.
-                    </Notice>
-                  )}
+                  {!allowsCreation &&
+                    selected.environment_current !== false && (
+                      <Notice error>
+                        El período consultado permite revisión histórica, pero
+                        SIIE no permite crear una inscripción en él.
+                      </Notice>
+                    )}
                   {selected.kind === "applicant"
                     ? renderFields(
                         status.applicant_fields,
