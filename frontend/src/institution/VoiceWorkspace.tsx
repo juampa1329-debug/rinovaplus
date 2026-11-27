@@ -315,7 +315,13 @@ function VoiceEditor({
           <strong>
             {draft.profiles.filter((p) => p.active).length} perfiles activos
           </strong>
-          <span>Agente → escuela → voz predeterminada.</span>
+          <span>
+            Agente → escuela →{" "}
+            {draft.selection_mode === "random"
+              ? "distribución entre voces disponibles"
+              : "voz predeterminada"}
+            .
+          </span>
         </article>
       </div>
       <form

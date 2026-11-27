@@ -714,11 +714,11 @@
 .operations-chart-detail {
   min-height: 2.5rem;
   padding-block: 0.5rem;
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: 0.85rem;
 }
 .operations-chart-detail [role="tooltip"] {
-  color: var(--text);
+  color: var(--ink);
   font-weight: 600;
 }
 .operations-bar:focus {
