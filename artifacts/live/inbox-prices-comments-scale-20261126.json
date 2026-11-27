@@ -7,8 +7,10 @@
     "review_cutoff_bogota": "2026-11-26T18:00:00-05:00",
     "new_manual_outgoing": 27,
     "conversations": 27,
-    "last_observed_delivered_or_read": 20,
-    "last_observed_sent_only": 7,
+    "first_reconciled_delivered_or_read": 20,
+    "first_reconciled_sent_only": 7,
+    "last_observed_delivered_or_read": 23,
+    "last_observed_sent_only": 4,
     "restored_ai_control": 25,
     "preserved_existing_human_control": 2,
     "uncertain_old_messages_replayed": 0,
@@ -59,7 +61,10 @@
     "backend_be9": {"id": "s1f45x0wurzbrjubihorvegh", "rollout_utc": "2026-11-27T04:32:03Z"},
     "frontend_be9": {"id": "p8sddt3a1luq4bx9eldrip8x", "healthy_utc": "2026-11-27T04:28:02Z", "rollout_utc": "2026-11-27T04:28:08Z"},
     "backend_c562": {"id": "ugnwsstovxyqtfzujzxe6sng", "healthy_utc": "2026-11-27T04:53:58Z", "rollout_utc": "2026-11-27T04:54:06Z"},
-    "frontend_c562": {"id": "r0gncqy0udfdgyjsafv1dlao", "status": "Success", "duration_seconds": 26}
+    "frontend_c562": {"id": "r0gncqy0udfdgyjsafv1dlao", "status": "Success", "duration_seconds": 26},
+    "backend_final_application": {"commit": "772118e", "id": "gjjqi5g36eopbamd81ob1ial", "healthy_utc": "2026-11-27T05:04:34Z", "rollout_utc": "2026-11-27T05:04:40Z"},
+    "frontend_772": {"id": "qdrya9tluygekspmgagkrur5", "status": "Success", "duration_seconds": 28},
+    "post_rollout_native_search": "found without alert; no message replay"
   },
   "validation": {
     "final_backend_selection_passed": 435,
@@ -71,5 +76,18 @@
     "full_suite_green": false
   },
   "acceptance_unchanged": {"P13_initial": "4/4", "P22_technical": "3/5", "P22_commercial": "0/5", "P23": "0/9", "P24": "0/6"},
+  "graphify": {
+    "snapshot_commit": "772118eefef7a191f1cb9f1489a13720e5c2a51b",
+    "nodes": 6605,
+    "edges": 21906,
+    "communities": 1135,
+    "runtime_ast_files": 506,
+    "source_hashes_verified": 1465,
+    "every_edge_endpoint_verified": true,
+    "external_or_model_calls": 0,
+    "contains_crm_data": false,
+    "historical_graphs_changed": false,
+    "scope": "runtime AST plus file-level docs/tests/tools/tasks; independent of private conversation memory"
+  },
   "no_ddl_seeds_new_services_siie_writes_or_model_changes": true
 }
