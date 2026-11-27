@@ -90,6 +90,8 @@ def save(c, settings, data, audio, text, model, usage, *, provider="gemini"):
         document = json.loads(existing["Document"])
         if any(document.get(k) != v for k, v in proof.items()):
             raise HTTPException(409, "voice_transcription_source_changed")
+        from app.institutional.automatic_optout import receive
+        receive(c, settings, data["identity"], data["incoming"], document["text"], transcribed=True)
         return document
     document = {**proof, "text": text, "authority": "automatic_audio_transcription_not_human_verified",
                 "provider": provider, "model": model,
@@ -97,4 +99,6 @@ def save(c, settings, data, audio, text, model, usage, *, provider="gemini"):
     payload = json.dumps(document, ensure_ascii=False)
     c.execute("INSERT crm_access.Setting(InstitutionId,Section,Document,Revision,UpdatedAt) VALUES(?,?,?,1,SYSUTCDATETIME())", db.institution(settings), ref, payload)
     c.execute("INSERT crm_access.SettingHistory(InstitutionId,Section,Revision,Document,RecordedAt,ActorId) VALUES(?,?,1,?,SYSUTCDATETIME(),NULL)", db.institution(settings), ref, payload)
+    from app.institutional.automatic_optout import receive
+    receive(c, settings, data["identity"], data["incoming"], text, transcribed=True)
     return document

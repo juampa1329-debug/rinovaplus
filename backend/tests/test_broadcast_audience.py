@@ -78,7 +78,7 @@ def test_two_consent_guards_exclude_one_person_once(monkeypatch, registered):
     from app.modules.crm_configuration.application import service
 
     person=dict(PERSON,IdentityId=str(uuid4()),ContactId=str(uuid4()),ConversationId=str(uuid4()),ExternalId="573000000000",ConversationState="open",ControlMode="ai",LastIncomingAt=None)
-    settings=SimpleNamespace(ticket={"version":"cbn-institutional-operations-p11-v1"})
+    settings=SimpleNamespace(ticket={"version":"cbn-institutional-operations-p11-v1", "context":[[1,str(uuid4())]]})
     account=dict(IntegrationId=str(uuid4()),Channel="whatsapp",RequestedStatus="connected",VerifiedStatus="verified",ApplicationState="active")
     monkeypatch.setattr(service,"read_configuration",lambda *a,**k:(SimpleNamespace(fields=[]),None))
     monkeypatch.setattr(broadcasts,"account",lambda *a:account)

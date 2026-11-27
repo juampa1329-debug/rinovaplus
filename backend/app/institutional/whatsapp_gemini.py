@@ -182,7 +182,7 @@ def source(c, settings, integration, data):
     reply_ids += [identity for attempt in data.get("cancelled_generations", []) for identity in attempt.get("reply_ids", [])]
     context = one(
         c,
-        "SELECT m.Body,m.Sequence,ctrl.Epoch FROM crm.Message m "
+        "SELECT m.Body,m.Sequence,ctrl.Epoch,i.ContactId FROM crm.Message m "
         "JOIN crm.Conversation v ON v.ConversationId=m.ConversationId "
         "JOIN crm_channels.ConversationControl ctrl "
         "ON ctrl.ConversationId=v.ConversationId "
@@ -217,6 +217,12 @@ def source(c, settings, integration, data):
     from app.institutional.contact_intent import opted_out
     if opted_out(context["Body"]):
         raise HTTPException(409, "contact_opted_out")
+    from app.institutional.automatic_optout import supported
+    if supported(settings):
+        from app.institutional.contact_preference import blocked
+        from app.institutional.workspace import primary
+        if blocked(c, settings, primary(c, str(context["ContactId"]))):
+            raise HTTPException(409, "contact_opted_out")
     return item, context, budget
 
 

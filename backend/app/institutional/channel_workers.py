@@ -159,6 +159,8 @@ class Workers:
         dispatcher = Dispatcher(self.settings, self.transport)
         media = MediaWorker(self.settings, self.media_downloader)
         catalog_refresh = Refresher(self.settings)
+        from app.institutional.automatic_optout import Reconciler
+        contact_preferences = Reconciler(self.settings)
         failures = 0
         while not self.stop_event.is_set():
             try:
@@ -166,6 +168,7 @@ class Workers:
                     self.pulse.observe("events", events.once)
                     self.pulse.observe("projection", events.project_once)
                 self.pulse.observe("media", media.once)
+                contact_preferences.once()
                 if (
                     self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
                 ):

@@ -229,11 +229,23 @@ def instructions(trace):
         "abono mínimo real, cuotas, fechas, exclusiones, vigencia y alcance; pesos, sin etiquetas A1/A2. "
         "Si entry_payment_offer incluye calendar_benefit, explica explícitamente ese margen para organizar la siguiente cuota "
         "junto al abono, sin prometer ausencia de otros gastos. "
+        "Durante la temporada de fiestas, si el calendario real deja la siguiente cuota para el año entrante, "
+        "utiliza ese plazo como argumento de tranquilidad y organización financiera: abonar ahora permite planificar "
+        "el siguiente vencimiento con tiempo. Conserva su fecha exacta y el concepto de cuota de financiación; "
+        "no cambies precios, fechas ni jornadas de la ficha para sostener ese argumento. "
         "Si no existe ese dato no inventes una pausa de pagos ni digas año entrante. "
         "Si desea un abono inicial mayor, compara el plan vigente con mayor abono del mismo programa y jornada, si existe, con sus cuotas y total reales. "
         "Para un importe diferente del plan aprobado, explica que puede permitir cuotas más bajas, pero Tesorería debe revisar y aprobar el reajuste del plan financiero y confirmar valores y fechas; no recalcules ni prometas nuevas cuotas o descuentos. "
         "Pregunta cuánto desea abonar. Mientras Tesorería revisa, puede adelantar la inscripción; usa sólo un enlace oficial suministrado para ese programa, sin dar por confirmados pago, reserva, matrícula ni una remisión no ejecutada. "
         "Responde todo lo pedido sin repetir lo ya resuelto; el límite de palabras es orientativo. "
+        "Si la ficha incluye una beca, introdúcela como beneficio de valor al presentar o negociar el programa, "
+        "conectándola con su meta: nombre, cobertura, duración, modalidad, carácter opcional y diploma al completar "
+        "esa formación. No llames beca a una doble titulación obligatoria ni confundas el abono con gratuidad. "
+        "Cuando la fuente institucional confirme prácticas remuneradas, presenta la posibilidad de recuperar la "
+        "inversión de la formación completa mediante esos ingresos, sin garantizar recuperación total, importe o plazo "
+        "ni calcular el precio de toda la carrera con una tarifa semestral. Explica la ruta técnica hacia estudios "
+        "profesionales y la posibilidad de homologación cuando esté confirmada, aclarando que cada universidad "
+        "define sus requisitos, materias reconocidas y alcance. No asegures créditos, semestres ni admisión. "
         "Seguimientos y gestiones requieren sus permisos y resultado real del backend."
     )
 
@@ -294,8 +306,12 @@ def project_facts(value, trace):
         if isinstance(item, list):
             return [project(v) for v in item]
         if isinstance(item, dict):
-            removed = [k for k in item if k in omitted]
-            return {**{k: project(v) for k, v in item.items() if k not in omitted},
+            # Benefits often live in the reviewed presentation. A financial
+            # turn must retain that source for scholarship/diploma negotiation.
+            keep_benefits = bool(re.search(r"beca|doble titula|gran diploma", str(item.get("presentation", "")), re.I))
+            excluded = omitted - ({"presentation"} if keep_benefits else set())
+            removed = [k for k in item if k in excluded]
+            return {**{k: project(v) for k, v in item.items() if k not in excluded},
                     **({"additional_details_available_on_request": removed} if removed else {}),
                     **({"financial_details_available_on_request": True} if "financial_plans" in removed or "price_cop" in removed else {})}
         return item

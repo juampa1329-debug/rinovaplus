@@ -265,22 +265,9 @@ def audience(c, s, campaign, *, controlled=False, target_identity=None):
         global_reasons.append("broadcast_verified_whatsapp_account_required")
     if not enabled(c, s):
         global_reasons.append("module_disabled")
-    # One no-contact decision on any member of the current identity group wins.
-    no_contact = {
-        uid(str(v[0]))
-        for v in c.execute(
-            (
-                "SELECT DISTINCT COALESCE(g.TargetConta"
-                "ctId,v.ContactId) FROM crm_strategy.Ev"
-                "aluationPlan e JOIN crm.Conversation v"
-                " ON v.ConversationId=e.ConversationId "
-                "LEFT JOIN crm_workspace.Merge g ON g.S"
-                "ourceContactId=v.ContactId AND g.Activ"
-                "e=1 WHERE JSON_VALUE(e.DocumentJson,'$"
-                ".noContact')='true'"
-            )
-        ).fetchall()
-    }
+    # One request on any verified canonical channel blocks the whole person.
+    from app.institutional.contact_preference import blocked_contacts
+    no_contact = blocked_contacts(c, s)
     prior_effects = rows(
         c,
         (

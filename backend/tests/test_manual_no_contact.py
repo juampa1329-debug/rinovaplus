@@ -34,6 +34,8 @@ def setup(monkeypatch, *, replay=None, identities=True):
     monkeypatch.setattr(workspace, "read_contact", lambda *a: {"id": contact})
     def rows(c, sql, *args):
         c.execute(sql, *args)
+        if "FROM crm_campaign8.Enrollment" in sql:
+            return []
         assert "InstitutionId=? AND ContactId IN" in sql and args[-2:] == tuple(ids)
         return identity_rows
     monkeypatch.setattr(target.db, "rows", rows)
