@@ -602,6 +602,33 @@ async function request<T>(
     console.warn(
       `RinovaPlus: Agentes HTTP ${response.status}; motivo ${safeReason}`,
     );
+    if (
+      response.status === 422 &&
+      /^\/programs(?:\/[1-9][0-9]*)?$/.test(path)
+    ) {
+      const knownTypes = new Set([
+        "extra_forbidden",
+        "missing",
+        "string_too_long",
+        "string_type",
+        "int_type",
+        "bool_type",
+        "model_attributes_type",
+        "model_type",
+        "json_invalid",
+        "value_error",
+        "uuid_parsing",
+        "literal_error",
+      ]);
+      const types = Array.isArray(result?.validation_types)
+        ? result.validation_types
+            .filter((v: unknown) => typeof v === "string" && knownTypes.has(v))
+            .slice(0, 8)
+        : [];
+      console.warn(
+        `RinovaPlus: Validación académica; tipos ${types.join(",") || "sin_detalle"}`,
+      );
+    }
     const failure = new Error(
       response.status === 422 && result?.code === "invalid_request"
         ? validationMessage(result.fields)

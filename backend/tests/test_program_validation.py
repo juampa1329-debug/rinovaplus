@@ -23,6 +23,16 @@ def test_unknown_dynamic_keys_are_not_echoed_and_output_is_bounded():
     assert fields([{"loc": ("body", "private@example.invalid")}]) == []
 
 
+def test_root_rejections_report_only_allowlisted_categories():
+    payload = response("/api/v1/agents/programs/13", "PUT", [
+        {"loc": ("body", "private@example.invalid"), "type": "extra_forbidden", "input": "private"},
+        {"loc": ("body",), "type": "private@example.invalid", "msg": "private"},
+    ])
+    assert payload["fields"] == []
+    assert payload["validation_types"] == ["extra_forbidden"]
+    assert "private" not in str(payload)
+
+
 @pytest.mark.parametrize("path,method", [
     ("/api/institution/auth/login", "POST"),
     ("/api/v1/agents/profiles/id", "PUT"),

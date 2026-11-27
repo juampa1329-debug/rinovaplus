@@ -26,4 +26,14 @@ def response(path, method, errors):
     import re
     if method not in {"POST", "PUT"} or not re.fullmatch(r"/api/v1/agents/programs(?:/[1-9][0-9]*)?", path):
         return {"detail": "invalid_request"}
-    return {"code": "invalid_request", "detail": "invalid_request", "fields": fields(errors)}
+    # Unknown input keys may themselves contain private data. Report only the
+    # static Pydantic error category when no recognized field can be named.
+    known_types = {
+        "extra_forbidden", "missing", "string_too_long", "string_type",
+        "int_type", "bool_type", "model_attributes_type", "model_type",
+        "json_invalid", "value_error", "uuid_parsing", "literal_error",
+    }
+    kinds = list(dict.fromkeys(e.get("type") for e in errors[:8]
+                              if e.get("type") in known_types))
+    return {"code": "invalid_request", "detail": "invalid_request",
+            "fields": fields(errors), "validation_types": kinds}
