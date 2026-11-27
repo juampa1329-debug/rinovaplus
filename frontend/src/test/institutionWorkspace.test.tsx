@@ -14,6 +14,7 @@ import {
 } from "../institution/InboxPresentation";
 import { explainInboxError } from "../institution/InboxDelivery";
 import type { Risk } from "../institution/Workspace";
+import type { Client } from "../shared/demo";
 import { SessionBoundary } from "../institution/api";
 import type { Session } from "../institution/api";
 import { RuntimeContext, featureNames } from "../shared/runtimeCapabilities";
@@ -252,6 +253,8 @@ const caps: UiCapabilities = {
 let failWrite = 0;
 let agentOperations = false;
 let serverRevision = "1";
+let serverClientOverrides: Partial<Client> = {};
+let writeConflict = "revision_conflict";
 let failedDelivery = false;
 let discardedReply = false;
 let quotedReply = false;
@@ -293,6 +296,7 @@ function client(index: number) {
     type: "",
     interests: "",
     customValues: {},
+    ...(index === 0 ? serverClientOverrides : {}),
   };
 }
 function response(body: unknown, status = 200) {
@@ -305,6 +309,8 @@ beforeEach(() => {
   failWrite = 0;
   agentOperations = false;
   serverRevision = "1";
+  serverClientOverrides = {};
+  writeConflict = "revision_conflict";
   failedDelivery = false;
   discardedReply = false;
   quotedReply = false;
@@ -363,7 +369,7 @@ beforeEach(() => {
               {
                 detail:
                   failWrite === 409
-                    ? "revision_conflict"
+                    ? writeConflict
                     : "general_storage_unavailable",
               },
               failWrite,
@@ -951,6 +957,100 @@ it("preserves the contact draft on a conflict and when selecting another contact
   expect(screen.getByLabelText("Nombre visible")).toHaveValue(
     "Borrador conservado",
   );
+});
+it("retains the original contact base through unrelated activity and remounting", async () => {
+  vi.mocked(crmConfigurationApi.read).mockResolvedValue({
+    config: {
+      ...config,
+      stages: [
+        ...config.stages,
+        {
+          key: "closed",
+          label: "Cerrado sin matrícula",
+          probability: null,
+          active: true,
+        },
+      ],
+    },
+    revision: "1",
+  });
+  const view = open();
+  await select();
+  const form = screen.getByLabelText("Nombre visible").closest("form")!;
+  fireEvent.change(within(form).getByLabelText("Etapa", { exact: true }), {
+    target: { value: "Cerrado sin matrícula" },
+  });
+  serverRevision = "25";
+  serverClientOverrides = { city: "Santa Marta" };
+  view.showWorkspace(null);
+  view.showWorkspace("clients");
+  await select();
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await waitFor(() =>
+    expect(
+      calls.some(
+        (call) => call.method === "PUT" && call.path.includes("/clients/"),
+      ),
+    ).toBe(true),
+  );
+  const body = calls.find(
+    (call) => call.method === "PUT" && call.path.includes("/clients/"),
+  )!.body!;
+  expect(body.baseClient).toMatchObject({ stage: "Nueva", city: "" });
+  expect(body.client).toMatchObject({ stage: "Cerrado sin matrícula" });
+  expect(body.revision).toBe("25");
+});
+it("reviews conflicting values before an explicit new contact save", async () => {
+  open();
+  await select();
+  fireEvent.change(screen.getByLabelText("Nombre visible"), {
+    target: { value: "Mi edición" },
+  });
+  serverClientOverrides = { name: "Otra edición", city: "Ciudad reciente" };
+  serverRevision = "2";
+  failWrite = 409;
+  writeConflict = "contact_fields_changed";
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await screen.findByText(/Guardado: Otra edición/);
+  expect(screen.getByLabelText("Nombre visible")).toHaveValue("Mi edición");
+  expect(screen.getByRole("button", { name: "Guardar ficha" })).toBeDisabled();
+  const first = calls.find(
+    (call) => call.method === "PUT" && call.path.includes("/clients/"),
+  )!.body!;
+  fireEvent.click(
+    screen.getByRole("button", { name: "Conservar mi edición tras revisar" }),
+  );
+  expect(
+    calls.filter(
+      (call) => call.method === "PUT" && call.path.includes("/clients/"),
+    ),
+  ).toHaveLength(1);
+  expect(
+    within(
+      screen.getByLabelText("Nombre visible").closest("form")!,
+    ).getByLabelText("Ciudad", { exact: true }),
+  ).toHaveValue("Ciudad reciente");
+  failWrite = 0;
+  fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+  await waitFor(() =>
+    expect(
+      calls.filter(
+        (call) => call.method === "PUT" && call.path.includes("/clients/"),
+      ),
+    ).toHaveLength(2),
+  );
+  const last = calls
+    .filter((call) => call.method === "PUT" && call.path.includes("/clients/"))
+    .at(-1)!.body!;
+  expect(last.operationId).not.toBe(first.operationId);
+  expect(last.baseClient).toMatchObject({
+    name: "Otra edición",
+    city: "Ciudad reciente",
+  });
+  expect(last.client).toMatchObject({
+    name: "Mi edición",
+    city: "Ciudad reciente",
+  });
 });
 it("retains message and control drafts and the same command after an uncertain response", async () => {
   const view = open("inbox");

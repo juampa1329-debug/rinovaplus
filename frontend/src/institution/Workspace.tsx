@@ -1,5 +1,6 @@
 import { ContactPreference } from "./ContactPreference";
 import { NoContactList } from "./NoContactList";
+import { contactConflicts, rebaseReviewedContact } from "./contactEditing";
 import {
   CommercialFollowupReview,
   CommercialFollowupCard,
@@ -404,7 +405,7 @@ export function useRead<T>(
     error: error?.path === path ? error.message : "",
   };
 }
-function useCommand(onSaved: () => void) {
+function useCommand(onSaved: () => void, onContactConflict?: () => void) {
   const { call } = useInstitution(),
     cache = useCache();
   const report = useContext(ErrorFeedbackContext);
@@ -441,12 +442,15 @@ function useCommand(onSaved: () => void) {
       if (
         failure instanceof ApiError &&
         failure.status === 409 &&
-        ["revision_conflict", "conversation_control_changed"].includes(
-          failure.detail,
-        )
+        [
+          "revision_conflict",
+          "conversation_control_changed",
+          "contact_fields_changed",
+        ].includes(failure.detail)
       ) {
         cache.delete(key);
         if (failure.detail === "conversation_control_changed") onSaved();
+        if (failure.detail === "contact_fields_changed") onContactConflict?.();
       }
       const info = operationFailure(
         failure,
@@ -801,11 +805,18 @@ function WorkspaceView({
           >
             Tareas
           </Button>
-          <Button variant="quiet" onClick={() => setTab("no-contact")}
-            aria-pressed={tab === "no-contact"}>No contactar</Button>
+          <Button
+            variant="quiet"
+            onClick={() => setTab("no-contact")}
+            aria-pressed={tab === "no-contact"}
+          >
+            No contactar
+          </Button>
         </nav>
       )}
-      {tab === "no-contact" && page === "clients" ? <NoContactList /> : tab === "tasks" && page === "clients" ? (
+      {tab === "no-contact" && page === "clients" ? (
+        <NoContactList />
+      ) : tab === "tasks" && page === "clients" ? (
         <TaskList
           refresh={refresh}
           changed={changed}
@@ -1167,11 +1178,19 @@ function ContactEditor({
   create?: boolean;
 }) {
   const { session } = useInstitution(),
+    cache = useCache(),
+    [conflictSource, setConflictSource] = useState<Client | null>(null),
     [editing, setEditing] = useState({
       source: client,
       draft: drafts.get(client.id) ?? client,
     }),
-    command = useCommand(() => {});
+    command = useCommand(
+      () => {},
+      () => {
+        setConflictSource(client);
+        saved({});
+      },
+    );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   if (editing.source !== client) {
     setEditing({
@@ -1183,21 +1202,28 @@ function ContactEditor({
     });
   }
   const draft = editing.draft;
+  const baseKey = `contact-base:${client.id}`;
+  const base = (cache.get(baseKey) as Client | undefined) ?? client;
   const setDraft = (value: Client) =>
     setEditing({ source: client, draft: value });
   const dirty = JSON.stringify(client) !== JSON.stringify(draft);
   function edit(value: Client) {
     setFieldErrors({});
     setDraft(value);
-    if (JSON.stringify(value) === JSON.stringify(client))
+    if (JSON.stringify(value) === JSON.stringify(base)) {
       drafts.delete(client.id);
-    else drafts.set(client.id, value);
+      cache.delete(baseKey);
+    } else {
+      if (!cache.has(baseKey)) cache.set(baseKey, client);
+      drafts.set(client.id, value);
+    }
   }
   return (
     <form
       className="panel"
       onSubmit={(e) => {
         e.preventDefault();
+        if (conflictSource) return;
         const errors = validateCrmClient(
           draft,
           config,
@@ -1209,10 +1235,13 @@ function ContactEditor({
           .save(`clients/${client.id}`, create ? "POST" : "PUT", {
             revision,
             client: draft,
+            ...(!create ? { baseClient: base } : {}),
           })
           .then((result) => {
             if (result) {
               drafts.delete(client.id);
+              cache.delete(baseKey);
+              setConflictSource(null);
               saved(result);
             }
           });
@@ -1227,6 +1256,45 @@ function ContactEditor({
         Datos declarados en CRM. El expediente académico conserva su autoridad
         en SIIE.
       </p>
+      {conflictSource && (
+        <section aria-label="Revisar cambios de la ficha">
+          <p>
+            Otro cambio afecta un dato que editaste. Tu borrador sigue aquí.
+          </p>
+          {conflictSource === client ? (
+            <p>Consultando la ficha guardada…</p>
+          ) : (
+            <>
+              {contactConflicts(base, draft, client).map((field) => (
+                <div key={field.key}>
+                  <strong>
+                    {config.fields.find(
+                      (value) => `custom:${value.key}` === field.key,
+                    )?.label ?? field.label}
+                  </strong>
+                  <p>Guardado: {field.saved || "Vacío"}</p>
+                  <p>Tu edición: {field.edited || "Vacío"}</p>
+                </div>
+              ))}
+              <Button
+                variant="quiet"
+                onClick={() => {
+                  const next = rebaseReviewedContact(base, draft, client);
+                  cache.set(baseKey, client);
+                  drafts.set(client.id, next);
+                  setDraft(next);
+                  setConflictSource(null);
+                }}
+              >
+                Conservar mi edición tras revisar
+              </Button>
+            </>
+          )}
+          <Button variant="quiet" onClick={() => saved({})}>
+            Actualizar ficha guardada
+          </Button>
+        </section>
+      )}
       <fieldset
         disabled={!session.actions.includes("crm.write") || command.busy}
       >
@@ -1244,7 +1312,10 @@ function ContactEditor({
           setFeedback={() => {}}
         />
         <div className="p3-actions">
-          <Button type="submit" disabled={!revision || !draft.stage}>
+          <Button
+            type="submit"
+            disabled={!revision || !draft.stage || !!conflictSource}
+          >
             {command.busy ? "Guardando…" : "Guardar ficha"}
           </Button>
           <Button
@@ -1255,6 +1326,8 @@ function ContactEditor({
                 window.confirm("¿Descartar los cambios de esta ficha?")
               ) {
                 drafts.delete(client.id);
+                cache.delete(baseKey);
+                setConflictSource(null);
                 setDraft(client);
               }
             }}

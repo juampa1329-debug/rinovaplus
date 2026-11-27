@@ -553,6 +553,8 @@ const messages: Record<string, string> = {
   invalid_request: "Revisa los campos y sus límites antes de guardar.",
   revision_conflict:
     "Hay una versión más reciente. Tu borrador se conserva; consulta la versión guardada antes de volver a editar.",
+  contact_fields_changed:
+    "Otra edición cambió un dato que estás modificando en esta ficha. Tu borrador se conserva; revisa ambos valores antes de guardar.",
   conversation_control_changed:
     "Otra operación cambió el modo de atención de este chat. Revisa la posición actual del interruptor antes de volver a cambiarla.",
   conversation_closed:
