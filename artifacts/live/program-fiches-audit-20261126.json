@@ -1,0 +1,71 @@
+{
+  "audit_date_bogota": "2026-11-26",
+  "source": "native_academic_editor_and_owner_tariff_photo",
+  "fiches_read": 27,
+  "active": 24,
+  "paused": 3,
+  "with_cash_price": 27,
+  "with_financing": 27,
+  "with_duration_modality_schedule_requirements_syllabus": 27,
+  "stored_financial_sum_mismatches": 0,
+  "source_transcription_error": {
+    "affected_active_offers": 9,
+    "cash_price": 1860000,
+    "stored_larger_initial_payment": 936000,
+    "source_larger_initial_payment": 930000,
+    "stored_total": 1956000,
+    "correct_total": 1950000,
+    "installments": [340000, 340000, 340000],
+    "smaller_initial_payment_unchanged": 490000,
+    "correction_persisted": false
+  },
+  "retrieval_reproduction": {
+    "official_name": "SERVICIOS HOTELEROS Y AGENCIAS TURISTICAS",
+    "saved_aliases": "SHAT",
+    "query": "valores de turismo",
+    "catalog_matches": 0,
+    "specialist_matches": 0,
+    "labels_saved": false
+  },
+  "curriculum_conflicts": ["Turismo", "Aduanas", "Logística", "Preescolar"],
+  "curriculum_conflict": "duration_three_semesters_but_old_syllabus_distributed_across_four",
+  "curriculum_corrections_persisted": false,
+  "active_offers_missing_optional_presentation": 8,
+  "remaining_source_gaps": [
+    "exact_technical_daytime_start_and_days",
+    "exact_saturday_reposteria_hours",
+    "some_diploma_titles_accreditations_and_internship_conditions",
+    "updated_three_semester_curriculum_distribution"
+  ],
+  "editor_diagnostic": {
+    "commit": "ed55e9e6711dda765ea17af886b54e46594494d3",
+    "backend_deployment": "xxaribiwfl1fub0w2ssmi1oz",
+    "backend_healthy_at_utc": "2026-11-27T01:59:23Z",
+    "backend_rollout_completed_at_utc": "2026-11-27T01:59:31Z",
+    "frontend_deployment": "kfpofvzesf4ovavevcdtqjy4",
+    "frontend_status": "Success",
+    "frontend_duration_seconds": 48,
+    "response_fields": "whitelisted_academic_field_names_only_no_input_values",
+    "specific_rejected_live_field_identified": false
+  },
+  "browser_block": {
+    "source": "automatic_approval_review",
+    "reason": "origin_access_might_discard_unsaved_alias_draft",
+    "edit_observation_and_takeover_rejected": true,
+    "authorization_to_discard_own_alias_draft_requested": true,
+    "authorization_received": false,
+    "alternate_authenticated_access_or_db_used": false
+  },
+  "verification": {
+    "backend_diagnostic_focused_passed": 98,
+    "backend_labels_focused_overlapping_passed": 92,
+    "frontend_passed": 10,
+    "types_eslint_ruff_institution_build": "passed",
+    "full_suite_green_claimed": false,
+    "new_live_model_test_verified": false
+  },
+  "new_customer_messages": 0,
+  "private_contact_identifiers_included": false,
+  "new_ddl_seeds_services_siie_writes_model_changes": false,
+  "phase_acceptance_changed": false
+}
