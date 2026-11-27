@@ -197,6 +197,7 @@ const labels: Record<string, string> = {
   step_completed: "Paso completado",
   closure_rescheduled: "Cierre reprogramado sin repetir mensajes",
   closure_rescheduled_summary: "Calendario de cierre actualizado",
+  campaign_closure_tail_review: "Cierre adelantado pendiente de revisión; no se repiten pasos completados",
   execution_completed: "Seguimiento completado",
   native_chat: "Mensaje en cola",
   execution_stopped: "Seguimiento detenido",
@@ -1539,6 +1540,14 @@ function Editor({
                 Cerrar a los 7 días y conservar seguimientos en espera
               </Button>
             )}
+            {kind === "flow" && initial.state === "active" && doc.followup_only &&
+              !doc.entry_conditions?.followup_states?.length && doc.steps?.length === 7 && (
+              <Button variant="secondary"
+                disabled={dirty || !review || !preflight?.valid || !canSend || task.busy || assetBusy}
+                onClick={() => action("close_at_60_hours", { closure_hours: 60 })}>
+                Cerrar a las 60 horas y conservar seguimientos en espera
+              </Button>
+            )}
             <Button
               variant="secondary"
               disabled={dirty || !review || task.busy || assetBusy}
@@ -2033,13 +2042,14 @@ function Executions({
                         "part_index",
                         "attempt",
                         "closure_days",
+                        "closure_hours",
                         "old_version",
                         "new_version",
                       ].includes(k),
                     )
                     .map(
                       ([k, value]) =>
-                        `${({ state: "Estado", reason: "Motivo", variant: "Variante", step_index: "Paso", version: "Versión", retry: "Reintento", part_index: "Bloque", attempt: "Intento", closure_days: "Cierre (días)", old_version: "Versión anterior", new_version: "Versión actual" } as Record<string, string>)[k]}: ${k === "step_index" && typeof value === "number" ? value + 1 : typeof value === "string" ? label(value) : String(value)}`,
+                        `${({ state: "Estado", reason: "Motivo", variant: "Variante", step_index: "Paso", version: "Versión", retry: "Reintento", part_index: "Bloque", attempt: "Intento", closure_days: "Cierre (días)", closure_hours: "Cierre (horas)", old_version: "Versión anterior", new_version: "Versión actual" } as Record<string, string>)[k]}: ${k === "step_index" && typeof value === "number" ? value + 1 : typeof value === "string" ? label(value) : String(value)}`,
                     )
                     .join(" · ")}
                 </p>
