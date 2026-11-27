@@ -139,8 +139,8 @@ def save_followup_query() -> dict:
             parts = (re.findall(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+", word)
                      if word.isascii() else [word]) or [word]
             vocabulary.update(part.lower() for part in parts if 3 <= len(part) <= 30)
-    selected = [word for word in ("contactar", "cierre", "general", "borrador", "avance", "activador",
-                                 "avanzados", "recorridos", "aprobado", "activos", "activados", "autorización")
+    selected = [word for word in ("contactar", "cierre", "formulario", "pago", "general", "avance", "activador",
+                                 "avanzados", "aprobado", "activos", "autorización")
                 if word in vocabulary]
     if not selected:
         raise ValueError("No follow-up vocabulary is present; query was not fabricated")
@@ -154,7 +154,7 @@ def save_followup_query() -> dict:
     sources = sorted({node["source_file"] for _, node in focused.nodes(data=True)})
     payload = {
         "original_question": "tienes conocimiento sobre los seguimientos a las conversaciones?",
-        "focused_question": "No contactar, cierre y estado autorizado de los seguimientos por avance, conservando los cortes históricos",
+        "focused_question": "Seguimientos por avance, formulario, datos de pago y cierre autorizado, conservando No contactar y los cortes históricos",
         "expanded_tokens": selected,
         "command": ["python", "backend/tools/conversation_continuity_graph.py", "query"],
         "run_from": ".", "exit_code": 0, "graph_sha256": sha(graph_path),

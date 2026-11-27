@@ -10,32 +10,32 @@
     "query_changed": false,
     "new_fragments": [],
     "uncovered_dated_documents": [],
-    "semantic_sources": 42,
-    "input_fingerprint": "c65bc7fafc02ad322191b1e15cf3cb9ccaaaadb54bf7ef35db58647031eef3a7",
+    "semantic_sources": 46,
+    "input_fingerprint": "89ca8b545d0b961b6f7a12caac05dd6b5052e80e61f84a5168ea976bff52d22d",
     "note": "Checks local provenance only; does not attest current production state"
   },
   "counts": {
-    "semantic_sources": 42,
-    "code_sources": 24,
-    "semantic_nodes": 308,
-    "semantic_edges": 338,
-    "ast_nodes": 306,
-    "ast_edges": 953,
-    "literal_code_references": 11,
-    "raw_edges": 1302,
-    "nodes": 614,
-    "edges": 972,
-    "communities": 37
+    "semantic_sources": 46,
+    "code_sources": 29,
+    "semantic_nodes": 354,
+    "semantic_edges": 403,
+    "ast_nodes": 384,
+    "ast_edges": 1220,
+    "literal_code_references": 18,
+    "raw_edges": 1641,
+    "nodes": 738,
+    "edges": 1268,
+    "communities": 44
   },
-  "graph_sha256": "092631537d8ef9741c4418e794da690f5dcf66c2bb4518d3bc85eba1e417abc2",
+  "graph_sha256": "145b5e9dcd7cee1bfbd46c061702969dd36af22927248b5d6d8e08e361c0494b",
   "new_semantic_sources_read_to_eof": {
-    "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md": 29,
-    "artifacts/live/advanced-followup-activation-20261127.json": 32
+    "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md": 35,
+    "artifacts/live/form-payment-closure-followup-20261127.json": 20
   },
   "query_complete": true,
-  "query_nodes_found": 14,
-  "query_nodes_rendered": 14,
-  "new_application_code_changes": false,
+  "query_nodes_found": 21,
+  "query_nodes_rendered": 21,
+  "new_application_code_changes": true,
   "prior_guard_regressions": {
     "note": "Hash/EOF rejection, repeated-build and shrink-guard checks ran on the previous graph; not rerun for this two-source extension.",
     "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
@@ -43,5 +43,14 @@
     "source_hash_mismatch_rejected": null,
     "partial_eof_coverage_rejected": null,
     "shrink_guard_rejected_and_preserved_existing_json": null
+  },
+  "source_hash_regressions_passed": 4,
+  "validation": {
+    "backend_application_focused_passed": 142,
+    "frontend_focused_passed": 21,
+    "types": "pass",
+    "changed_eslint": "pass",
+    "ruff_E9_F": "pass",
+    "institutional_build": "pass; historical size warning"
   }
 }

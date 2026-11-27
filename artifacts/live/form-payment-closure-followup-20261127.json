@@ -1,0 +1,20 @@
+{
+  "schema": "rinova-form-payment-closure-followup-v1",
+  "date_bogota": "2026-11-27",
+  "authorization": "Owner selected seven-day silence closure and requested case-specific follow-up after form delivery, reported completion and concrete requests for payment details",
+  "classification": {
+    "form_sent": "official form URL with real outbound receipt; ask about completion",
+    "form_reported_complete": "authenticated explicit statement or completion statement bound to real prior form question; verification required",
+    "payment_requested": "concrete account, payment link or payment-detail request; official payment guidance task, not proof of payment",
+    "general_pricing_or_payment_method_question_is_not_payment_intent": true,
+    "native_initial_candidates_refined_before_registration": 3,
+    "monotonic_progress_cancels_earlier_pending_tasks": true,
+    "advanced_cases_excluded_from_fill_form_reminder_and_general_reactivation": true
+  },
+  "closure": {"days": 7, "first_trigger_minutes": 480, "earlier_waits_minutes": [1680, 1440], "final_wait_minutes": 6480, "prior_final_wait_minutes": 26640, "same_approved_meta_template_and_parameters": true, "version_and_operation_audited": true, "no_completed_step_replay": true, "historical_runs_untouched": true},
+  "native": {"state": "verified active", "early_waiting_current_runs": 6, "before_waiting_current_runs": 10, "after_waiting_current_runs": 11, "before_flow_version": 3, "before_trigger_version": 3, "after_flow_version": 4, "after_flow_revision": 7, "after_trigger_version": 4, "advanced_triggers_preserved_version": 2, "wait_step_index": 1, "all_ten_captured_dates_and_next_steps_preserved": true, "additional_run_has_reschedule_event_and_completed_first_step": true, "global_stopped_count_not_claimed": true, "approved_meta_template_unchanged": true, "commercial_review_clear_registered": 2, "commercial_review_protected_excluded": 1, "after_commercial_review_clear": 0, "after_commercial_review_held": 1, "general_payment_method_queries_not_registered_as_payment_requests": true, "two_active_form_templates_read": true},
+  "final_trace": {"frontend_commit": "8e72e34", "frontend_success_seconds": 47, "native_spanish_event_and_human_step_verified": true, "closure_days": 7, "old_version": 3, "new_version": 4, "human_step": 2, "later_list_count": 12, "additional_new_version_four_run_at_first_step_not_a_migration_count": true},
+  "deployment": {"target_commit": "bc2dade", "backend_final": "ddbmzzsxfndm677zt1ovc17x", "backend_healthy_utc": "2026-11-27T18:09:09Z", "backend_rollout_complete_utc": "2026-11-27T18:09:40Z", "backend_started_utc": "2026-11-27T18:04:52Z", "frontend_target_success_seconds": 31, "concurrent_documentary_frontend_updates_preserved": true, "intermediate_cancelled": ["2f936d7", "3cef8f4"], "calendar_action_not_used_on_intermediate_versions": true},
+  "validation": {"backend_focused_passed": 142, "frontend_focused_passed": 21, "types": "pass", "changed_eslint": "pass", "ruff_E9_F": "pass", "institutional_build": "pass with historical bundle warning", "full_suite_green_claimed": false},
+  "boundaries": ["No new Meta submission", "No manual test message", "No new payment campaign activation", "No new or extended consent", "No messages to opted-out recipients", "No replay of uncertain sends", "No DDL or seeds", "No new services", "No SIIE writes", "No model changes", "No new phase acceptances", "No nominal prospect data in evidence"]
+}
