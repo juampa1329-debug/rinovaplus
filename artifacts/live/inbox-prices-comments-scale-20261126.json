@@ -1,0 +1,75 @@
+{
+  "schema": "rinova-inbox-prices-comments-scale-v1",
+  "date_bogota": "2026-11-26",
+  "final_checks_date_bogota": "2026-11-27",
+  "commits": ["b9292d6", "b5abe62", "e45f412", "02af0ee", "be9c433", "e97fbe6", "c562e37"],
+  "customer_recovery": {
+    "review_cutoff_bogota": "2026-11-26T18:00:00-05:00",
+    "new_manual_outgoing": 27,
+    "conversations": 27,
+    "last_observed_delivered_or_read": 20,
+    "last_observed_sent_only": 7,
+    "restored_ai_control": 25,
+    "preserved_existing_human_control": 2,
+    "uncertain_old_messages_replayed": 0,
+    "optouts_contacted": 0,
+    "historical_exhaustiveness_claimed": false,
+    "nominal_details": "private local ledger only"
+  },
+  "comments": {
+    "existing_private_acceptances_checked": 6,
+    "new_public_acknowledgements_published_on_Meta": 6,
+    "private_replays": 0,
+    "new_automatic_after_acceptance_pair_observed": false,
+    "seven_day_private_window_preserved": true
+  },
+  "live_trials": {
+    "english_current_candidates_retrieved": 2,
+    "english_manual_draft": "correct current prices and dates",
+    "new_automatic_english_payment_request": "read: abono440000/two430000/total1300000/cash1250000/book260000extra",
+    "new_automatic_cooking_payment_request": "read: both financed plans and dates correct",
+    "wide_cooking_manual_trial": "passed after c562e37; practices, window and history preserved; not sent",
+    "earlier_cooking_trial": {"code": "admissions_invalid_structured_response", "input_tokens": 20648, "output_tokens": 554, "raw_content_stored": false},
+    "manual_institutional_context_characters": 80000,
+    "model_output_tokens_configuration_unchanged": 4000,
+    "paid_trial_cost_billed_claimed": false
+  },
+  "search503": {
+    "screenshot_utc": "2026-11-27T04:07:07Z",
+    "rollout_completed_utc": "2026-11-27T04:07:08Z",
+    "exact_cause_proven": false,
+    "native_search_after_fix": "contact found without alert",
+    "scoped_read_recovery": "workspace/inbox GET only, at most two extra attempts",
+    "write_or_auth_retries_added": false,
+    "slow_SQL_still_observed": true
+  },
+  "dashboard": {
+    "example_daily_max": 2033,
+    "axis_step": 500,
+    "axis_maximum": 2500,
+    "maximum_tick_count": 6,
+    "native_client_height": 260,
+    "native_scroll_height": 260,
+    "mobile_chart_height": 260,
+    "mobile_horizontal_page_overflow": false,
+    "viewport_restored": true,
+    "native_tooltip_verified": true
+  },
+  "deployments": {
+    "backend_be9": {"id": "s1f45x0wurzbrjubihorvegh", "rollout_utc": "2026-11-27T04:32:03Z"},
+    "frontend_be9": {"id": "p8sddt3a1luq4bx9eldrip8x", "healthy_utc": "2026-11-27T04:28:02Z", "rollout_utc": "2026-11-27T04:28:08Z"},
+    "backend_c562": {"id": "ugnwsstovxyqtfzujzxe6sng", "healthy_utc": "2026-11-27T04:53:58Z", "rollout_utc": "2026-11-27T04:54:06Z"},
+    "frontend_c562": {"id": "r0gncqy0udfdgyjsafv1dlao", "status": "Success", "duration_seconds": 26}
+  },
+  "validation": {
+    "final_backend_selection_passed": 435,
+    "backend_selection_excluded": 1,
+    "frontend_focal_passed": 30,
+    "known_broader_frontend_failures": 2,
+    "known_broader_SQL_map_failures": 3,
+    "types_modified_lint_ruff_build": "passed",
+    "full_suite_green": false
+  },
+  "acceptance_unchanged": {"P13_initial": "4/4", "P22_technical": "3/5", "P22_commercial": "0/5", "P23": "0/9", "P24": "0/6"},
+  "no_ddl_seeds_new_services_siie_writes_or_model_changes": true
+}

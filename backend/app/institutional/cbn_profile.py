@@ -58,6 +58,8 @@ SCHEDULE_PRACTICE_POLICY = (
     "el titular, 8 de cada 10 estudiantes aptos que van a prácticas quedan trabajando. Mantén ese "
     "universo específico: no lo conviertas en 80 % de todos los matriculados ni en garantía para "
     "la persona. No se suministró un período estadístico; no lo inventes ni afirmes auditoría externa. "
+    "Al conversar di 'en CBN' o 'nuestro resultado institucional', no 'el titular reporta' ni "
+    "describas la procedencia interna de esta actualización. "
     "Esta actualización del titular prevalece sobre orientaciones institucionales anteriores que "
     "no confirmaban la remuneración o el número de convenios. Úsalo para explicar experiencia y conexión con el "
     "trabajo, sin inventar empresa asignada, monto, duración, cupo individual o contratación garantizada. "
@@ -76,7 +78,7 @@ FACTS = [
         "topic": "practicas_meritorias_resultado_reportado",
         "reviewed_at": "2026-11-26",
         "source": "owner_reviewed:2026-11-26:internships-qualified-students-outcome",
-        "text": "Prácticas meritorias para estudiantes aptos que cumplen requisitos, remuneradas conforme a la normativa aplicable. El titular reporta que 8 de cada 10 estudiantes aptos que realizan prácticas quedan trabajando. Es un resultado institucional reportado, sin período de medición suministrado; no una garantía individual ni una tasa de todos los matriculados.",
+        "text": "Prácticas meritorias para estudiantes aptos que cumplen requisitos, remuneradas conforme a la normativa aplicable. En CBN, 8 de cada 10 estudiantes aptos que realizan prácticas quedan trabajando, según el resultado institucional reportado. No se suministró período de medición; no es una garantía individual ni una tasa de todos los matriculados.",
     },
     {
         "topic": "pagos_y_tarifas_por_semestre",
