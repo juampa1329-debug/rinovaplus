@@ -388,7 +388,8 @@ def test_simulation_pins_draft_and_version_without_network_or_mutation(
 
 
 @pytest.mark.parametrize("skill_focus", [None, "negotiation"])
-def test_simulation_history_uses_identical_source_query_before_and_after_generation(monkeypatch, hierarchy, skill_focus):
+@pytest.mark.parametrize("retrieval_names", [[], ["COCINA NACIONAL E INTERNACIONAL"]])
+def test_simulation_history_uses_identical_source_query_before_and_after_generation(monkeypatch, hierarchy, skill_focus, retrieval_names):
     from app.modules.agents import runtime
     agents, stages = hierarchy
     guide = agents["guide"]
@@ -396,6 +397,7 @@ def test_simulation_history_uses_identical_source_query_before_and_after_generat
     guide.update(id=key)
     cursor = Cursor()
     cursor.agent_catalog = object()
+    cursor.agent_retrieval_names = retrieval_names
     queries = []
     focus_traces = []
     monkeypatch.setattr(service, "load", lambda _: ({key: guide}, stages))
@@ -425,7 +427,10 @@ def test_simulation_history_uses_identical_source_query_before_and_after_generat
     result = asyncio.run(service.AgentsService.simulate(target, request))
     assert result["network_called"] and not result["crm_written"] and not result["delivered"]
     assert len(queries) >= 2 and len(set(queries)) == 1
-    assert "Ahora Software" in queries[0] and "Soy Alex y me interesa Barismo" in queries[0]
+    assert "Ahora Software" in queries[0]
+    assert ("Soy Alex y me interesa Barismo" in queries[0]) is (not retrieval_names)
+    if retrieval_names:
+        assert retrieval_names[0] in queries[0]
     assert all(v == focus_traces[0] for v in focus_traces)
     assert (focus_traces[0] or {}).get("id") == skill_focus
 

@@ -1,0 +1,75 @@
+{
+  "observed_at_utc": "2026-11-27T01:17:00Z",
+  "authority": "native_ui_observations_and_local_focused_tests",
+  "production_branch": "deploy/coolify-rinovaplus",
+  "main_changed": false,
+  "code_commit": "57710f132871b77fd8ff3e20d0aece5b6922defa",
+  "backend": {
+    "deployment": "8u76cxxn4acj3zv4ina7exoo",
+    "healthy_at_utc": "2026-11-27T01:16:41Z",
+    "rollout_completed_at_utc": "2026-11-27T01:16:56Z"
+  },
+  "frontend": {
+    "deployment": "xlmmcn3arbp7ytbfrdd5dggn",
+    "state": "Success",
+    "duration_seconds": 27
+  },
+  "academic": {
+    "brochure_distinct_fiches_updated": 20,
+    "brochure_save_operations": 22,
+    "active_offers": 24,
+    "paused_offers": 3,
+    "paused_specialists": 3,
+    "historical_records_deleted": 0,
+    "financial_amount_changes_in_brochure_updates": 0,
+    "preicfes_fiche_revision": 9,
+    "preicfes_specialist_version": 3,
+    "preicfes_grades": [10, 11],
+    "reposteria_practice": "Saturdays",
+    "reposteria_theory": "Saturdays or weekdays",
+    "contabilidad_semesters": 3,
+    "multimedia_optional_presentation_save": "rejected_generic_validation_not_saved"
+  },
+  "voice": {
+    "saved_revision": 40,
+    "enabled_profile_names": ["Juampa"],
+    "other_existing_profiles_enabled": false,
+    "selection_mode": "random",
+    "selection_scope": "new_conversations_with_explicit_assignments_and_pinned_identity_preserved",
+    "max_seconds": 120,
+    "max_per_conversation": 5,
+    "new_synthesis_or_voice_send_verified": false
+  },
+  "dashboard_native_check": {
+    "tick_step": 100,
+    "observed_max_bar": 2033,
+    "observed_axis_ceiling": 2100,
+    "bar_detail_observed": true
+  },
+  "inbox": {
+    "live_second_page_observed": true,
+    "cross_page_snapshot_guaranteed": false,
+    "all_historical_requests_resolved_claimed": false,
+    "seven_final_control_checks": "ai",
+    "pending_delivery_in_final_reconciliation": 1,
+    "uncertain_historical_sends_replayed": false,
+    "new_automatic_response_after_final_commit_verified": false,
+    "financial_continuity": "short_private_followup_consults_pricing_without_disabling_privacy_redaction",
+    "periodic_30_minute_supervisor_activated": false
+  },
+  "verification": {
+    "final_backend_focused": {"passed": 138},
+    "previous_backend_focused": {"passed": 93, "skipped": 2},
+    "previous_wider_backend": {"passed": 104, "skipped": 2, "failed": 1},
+    "previous_frontend": {"passed": 74, "failed": 2},
+    "ruff_modified": "passed",
+    "types_eslint_build_previous_cut": "passed",
+    "full_suite_green_claimed": false,
+    "local_node_major": 22,
+    "declared_node_major": 24
+  },
+  "phase_acceptance": {"p22_technical": "3/5", "p22_commercial": "0/5", "p23": "0/9", "p24": "0/6"},
+  "new_ddl_seeds_services_siie_writes": false,
+  "new_email_or_shutdown": false,
+  "private_contact_data_included": false
+}

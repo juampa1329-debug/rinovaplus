@@ -39,7 +39,11 @@ def can_wait(pending, history):
 
 
 def require_settled(c, settings, data, source):
-    """Wait for earlier work; never regenerate over an uncertain provider send."""
+    """Wait for earlier work unless a later accepted human reply closed that turn.
+
+    Keep the uncertain receipt intact. The human checkpoint already advances
+    snapshot's pending cursor; it must also advance this earlier-work guard.
+    """
     state = db.one(c,
         "SELECT TOP(1) j.State FROM crm_channels2.SendJob j "
         "JOIN crm_channels2.MessageRoute r ON r.InstitutionId=j.InstitutionId AND r.QueueId=j.QueueId "
@@ -47,8 +51,16 @@ def require_settled(c, settings, data, source):
         "WHERE j.InstitutionId=? AND j.IntegrationId=? AND r.IdentityId=? "
         "AND m.ConversationId=? AND m.Sequence<? AND r.ActorKind='bot' "
         "AND j.State IN('queued','sending','uncertain') "
+        "AND NOT EXISTS(SELECT 1 FROM crm.Message answered "
+        "JOIN crm_channels2.MessageRoute hr ON hr.MessageId=answered.MessageId "
+        "AND hr.InstitutionId=j.InstitutionId AND hr.IntegrationId=j.IntegrationId "
+        "AND hr.IdentityId=r.IdentityId AND hr.ActorKind='human' "
+        "JOIN crm_channels2.SendJob hj ON hj.InstitutionId=hr.InstitutionId AND hj.QueueId=hr.QueueId "
+        "WHERE answered.ConversationId=m.ConversationId AND answered.Direction='outgoing' "
+        "AND answered.Sequence>m.Sequence AND answered.Sequence<? "
+        "AND hj.State IN('accepted','sent','delivered','read')) "
         "ORDER BY CASE WHEN j.State='uncertain' THEN 0 ELSE 1 END,m.Sequence",
-        db.institution(settings), data["integration"], data["identity"], data["conversation"], source["Sequence"])
+        db.institution(settings), data["integration"], data["identity"], data["conversation"], source["Sequence"], source["Sequence"])
     if state:
         raise HTTPException(409, "reply_turn_delivery_uncertain" if state["State"] == "uncertain" else "reply_turn_waiting_previous")
     running = db.one(c,

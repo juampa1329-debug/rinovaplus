@@ -23,3 +23,16 @@ it("translates a fetch transport failure while retaining HTTP conflict and valid
   );
   await expect(api()).rejects.toThrow("Revise estos campos: Nombre.");
 });
+
+it("identifies rejected academic fields without displaying submitted values", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+    new Response(JSON.stringify({
+      code: "invalid_request",
+      fields: ["commercial.aliases", "commercial.source_note", "commercial.financial_plans"],
+      input: "private-do-not-display",
+    }), { status: 422 }),
+  );
+  await expect(api("/programs/13", "PUT", {})).rejects.toThrow(
+    "Revise estos campos: Otros nombres o alias, Nota de procedencia, Planes de financiación.",
+  );
+});

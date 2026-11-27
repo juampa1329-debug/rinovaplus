@@ -116,6 +116,7 @@ type Page = {
   revision: string;
   unreadByChannel?: Record<string, number>;
   socialProfiles?: boolean;
+  pageChanged?: boolean;
 };
 type Detail = {
   controlEpoch?: string;
@@ -676,6 +677,7 @@ function WorkspaceView({
   const params = new URLSearchParams({
     offset: String(offset),
     anchor: offset ? anchor : "",
+    ...(inbox ? { livePages: "true" } : {}),
     ...(inbox
       ? inboxFilters
       : {
@@ -984,6 +986,12 @@ function WorkspaceView({
                 (!inbox || !list.error) && <Notice>Cargando listado…</Notice>
               ) : (
                 <>
+                  {inbox && list.value.pageChanged && (
+                    <Notice>
+                      Hubo actividad nueva mientras navegabas. Esta página
+                      muestra el orden actual de las conversaciones.
+                    </Notice>
+                  )}
                   <p
                     className={inbox ? "inbox-results-count" : undefined}
                     role={inbox ? "status" : undefined}

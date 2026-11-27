@@ -104,6 +104,33 @@ function mount(actions = session.actions) {
     </ErrorFeedback>,
   );
 }
+
+it("copies tuning into an inactive unassigned profile and offers random selection", async () => {
+  const fetcher = mock();
+  mount();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Copiar ajustes de Juampa" }),
+  );
+  const names = screen.getAllByLabelText("Nombre del perfil");
+  expect(names).toHaveLength(2);
+  expect(names[1]).toHaveValue("Juampa · copia");
+  const available = screen.getAllByRole("checkbox", { name: "Disponible" });
+  expect(available[0]).toBeChecked();
+  expect(available[1]).not.toBeChecked();
+  expect(screen.getAllByLabelText("Voz de ElevenLabs")[1]).toHaveValue("");
+  fireEvent.change(
+    screen.getByLabelText("Selección de voz para conversaciones nuevas"),
+    { target: { value: "random" } },
+  );
+  expect(
+    screen.getByLabelText("Selección de voz para conversaciones nuevas"),
+  ).toHaveValue("random");
+  expect(
+    fetcher.mock.calls.every(
+      ([, init]) => !init?.method || init.method === "GET",
+    ),
+  ).toBe(true);
+});
 const dialogDescriptors = Object.fromEntries(
   ["showModal", "close"].map((name) => [
     name,

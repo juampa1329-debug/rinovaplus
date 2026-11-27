@@ -76,6 +76,39 @@ def command():
     return {'operation_id':str(uuid4()),'revision':0,'source_revision':'fixture-revision'}
 
 
+@pytest.mark.parametrize('stored_active', [0, 1, False, True])
+def test_local_editor_round_trip_projects_legacy_bit_as_boolean(fixture, monkeypatch, stored_active):
+    from app.institutional import db
+    client, c, _ = fixture
+    assert client.post('/api/v1/agents/programs', json={
+        'operation_id': str(uuid4()), 'revision': 0, 'name': 'Turismo ficticio',
+        'commercial': {'aliases': 'SHAT'},
+    }).status_code == 200
+    monkeypatch.setattr(db, 'one', lambda *_: {
+        'ProgramId': 1, 'Name': 'Turismo ficticio', 'School': '', 'Schedule': '',
+        'Active': stored_active, 'Revision': 1, 'Authority': 'declared_CRM',
+    })
+    read = client.get('/api/v1/agents/programs/1').json()
+    assert read['program']['Active'] is bool(stored_active)
+    body = {'operation_id': str(uuid4()), 'revision': read['revision'],
+            'name': read['program']['Name'], 'active': read['program']['Active'],
+            'commercial': {**read['commercial'], 'aliases': 'SHAT; Turismo'}}
+    result = client.put('/api/v1/agents/programs/1', json=body)
+    assert result.status_code == 200 and result.json()['revision'] == 2
+    assert c.programs[1]['active'] is bool(stored_active)
+    assert c.profiles[1]['aliases'] == 'SHAT; Turismo'
+
+
+def test_program_write_keeps_strict_boolean_validation(fixture):
+    client, c, _ = fixture
+    result = client.post('/api/v1/agents/programs', json={
+        'operation_id': str(uuid4()), 'revision': 0,
+        'name': 'Programa ficticio', 'active': 1,
+    })
+    assert result.status_code == 422
+    assert c.programs == {} and c.operations == {}
+
+
 def test_copy_page_replay_and_repeated_sync_do_not_duplicate_and_preserve_manual_fields(fixture):
     client,c,state=fixture; body=command()
     assert client.post('/api/v1/agents/programs/sync-siie-page',json=body).json()['count']==1

@@ -116,8 +116,8 @@ def configure(c, settings):
             if topic:
                 overlap = [p for p in found if p in topic]
                 found = overlap or topic
-            if len(found) == 1 and (not detected or campaign["sequence"] > detected.get("sequence", 0)):
-                detected = {"program_id": found[0]["program_id"], "candidates": found,
+            if found and (not detected or campaign["sequence"] > detected.get("sequence", 0)):
+                detected = {"program_id": found[0]["program_id"] if len(found) == 1 else None, "candidates": found,
                             "status": "campaign_reply_context", "academic_confirmation": False,
                             "source_message_id": campaign["source_message_id"], "sequence": campaign["sequence"]}
         from app.institutional.sales_referrals import origin

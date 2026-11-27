@@ -100,9 +100,9 @@ def install(app, settings, gateway_factory=None):
             }
 
     @app.get("/api/v1/agents/programs")
-    def programs(offset: int = Query(0, ge=0), limit: int = Query(300, ge=1, le=300)):
+    def programs(offset: int = Query(0, ge=0), limit: int = Query(300, ge=1, le=300), include_inactive: bool = False):
         with service.transaction() as c:
-            return service.catalog_adapter.programs(c, offset, limit)
+            return service.catalog_adapter.programs(c, offset, limit, include_inactive=True) if include_inactive else service.catalog_adapter.programs(c, offset, limit)
 
     @app.post("/api/v1/agents/programs/import")
     def extract_program(body: ImportUrl):
@@ -294,6 +294,10 @@ def install(app, settings, gateway_factory=None):
                 institution(settings),
                 program_id,
             )
+            if item is not None:
+                # PostgreSQL projects the legacy SQL bit as 0/1. Keep the HTTP
+                # contract boolean so a read/edit round trip passes Strict.
+                item = {**item, "Active": bool(item["Active"])}
             return {
                 "exists": item is not None,
                 "revision": item["Revision"] if item else 0,

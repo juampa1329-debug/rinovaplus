@@ -266,15 +266,34 @@
   color: var(--muted);
 }
 /* Academic master/detail: source tools above, a compact scrollable library. */
-.siie-program-scroll { max-block-size: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-inline-end: .5rem; scrollbar-gutter: stable; }
-.program-source-content { grid-column: 1 / -1; }
-.program-source-content summary { padding: 1rem 0; cursor: pointer; font-weight: 700; }
+.siie-program-scroll {
+  max-block-size: 32rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline-end: 0.5rem;
+  scrollbar-gutter: stable;
+}
+.program-source-content {
+  grid-column: 1 / -1;
+}
+.program-source-content summary {
+  padding: 1rem 0;
+  cursor: pointer;
+  font-weight: 700;
+}
 .version-notice {
-  position: fixed; z-index: 10000; inset: auto 1rem 1rem auto;
-  max-inline-size: 30rem; display: grid; gap: .65rem;
-  padding: 1rem; border: 1px solid #c4f04d;
-  background: #12343b; color: #f5f7f2;
-  border-radius: 1rem; box-shadow: 0 8px 32px #0004;
+  position: fixed;
+  z-index: 10000;
+  inset: auto 1rem 1rem auto;
+  max-inline-size: 30rem;
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid #c4f04d;
+  background: #12343b;
+  color: #f5f7f2;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px #0004;
 }
 .program-workspace {
   grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 2.5fr);
@@ -333,7 +352,11 @@
   block-size: auto;
   min-block-size: 44px;
 }
-.program-school .button small { color: var(--muted); font-weight: 400; font-size: .72rem; }
+.program-school .button small {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.72rem;
+}
 .program-school .button[aria-pressed="true"] {
   background: var(--active);
   border-inline-start: 3px solid var(--focus);
@@ -383,9 +406,18 @@
   display: grid;
   gap: 1.5rem;
 }
-.program-editor p { overflow-wrap: anywhere; }
-.program-fields > p, .program-fields > fieldset { grid-column: 1 / -1; }
-.program-editor .program-fields > fieldset { border-block-start: 1px solid var(--border); padding-block-start: 1.25rem; margin-block-start: .5rem; }
+.program-editor p {
+  overflow-wrap: anywhere;
+}
+.program-fields > p,
+.program-fields > fieldset {
+  grid-column: 1 / -1;
+}
+.program-editor .program-fields > fieldset {
+  border-block-start: 1px solid var(--border);
+  padding-block-start: 1.25rem;
+  margin-block-start: 0.5rem;
+}
 .program-editor fieldset {
   border: 0;
   padding: 0;
@@ -674,4 +706,22 @@
   .operations-kpi:hover {
     transform: none;
   }
+}
+.operations-chart-scroll {
+  overflow: auto;
+  max-height: 420px;
+}
+.operations-chart-detail {
+  min-height: 2.5rem;
+  padding-block: 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.operations-chart-detail [role="tooltip"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+.operations-bar:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }

@@ -162,9 +162,19 @@ def authority(c, s, campaign):
     return value
 
 
-def candidate_rows(c, s, document):
+def candidate_rows(c, s, document, *, target_identity=None):
     where = ["i.InstitutionId=?", "i.IntegrationId=?"]
     args = [institution(s), document["integration_id"]]
+    if target_identity:
+        # Keep every eligible identity of this canonical contact in the result:
+        # filtering only i.IdentityId would change the deduplication winner.
+        where.append(
+            "p.ContactId=(SELECT COALESCE(tg.TargetContactId,t.ContactId) "
+            "FROM crm_channels2.ExternalIdentity t LEFT JOIN crm_workspace.Merge tg "
+            "ON tg.SourceContactId=t.ContactId AND tg.Active=1 "
+            "WHERE t.InstitutionId=? AND t.IntegrationId=? AND t.IdentityId=?)"
+        )
+        args.extend([institution(s), document["integration_id"], uid(str(target_identity))])
     for field, column in [
         ("contact_ids", "p.ContactId"),
         ("identity_ids", "i.IdentityId"),
@@ -225,7 +235,7 @@ def candidate_rows(c, s, document):
     ]
 
 
-def audience(c, s, campaign, *, controlled=False):
+def audience(c, s, campaign, *, controlled=False, target_identity=None):
     document = json.loads(campaign["Document"])
     if document["filters"].get("identity_ids"):
         from app.institutional.broadcast_routes import validate_selection
@@ -296,7 +306,11 @@ def audience(c, s, campaign, *, controlled=False):
     from app.institutional.commercial_followup import progress_map, exclusion
     progress = progress_map(c, s)
     candidates = []
-    for person in candidate_rows(c, s, document):
+    scoped_candidates = (
+        candidate_rows(c, s, document, target_identity=target_identity)
+        if target_identity else candidate_rows(c, s, document)
+    )
+    for person in scoped_candidates:
         if not segments.matches(person, document, as_of):
             continue
         reasons = list(global_reasons)

@@ -818,11 +818,14 @@ class Worker:
         if row:
             observe_identity(c, self.settings, uid(str(row["IdentityId"])))
 
-    def inactivity(self, c):
+    def inactivity(self, c, *, discover=False, queue_id=None, trigger_id=None):
+        discovered = []
         triggers = rows(
             c,
-            "SELECT TOP(101) * FROM crm_campaign8.Record WHERE InstitutionId=? AND Kind='trigger' AND State='active' AND JSON_VALUE(Document,'$.event_type')='inactivity'",
+            "SELECT TOP(101) * FROM crm_campaign8.Record WHERE InstitutionId=? AND Kind='trigger' AND State='active' AND JSON_VALUE(Document,'$.event_type')='inactivity'"
+            + (" AND RecordId=?" if trigger_id else ""),
             institution(self.settings),
+            *((trigger_id,) if trigger_id else ()),
         )
         if len(triggers) > 100:
             raise HTTPException(413, "campaign_trigger_scope_limit")
@@ -844,10 +847,11 @@ class Worker:
                 "AND receipt.IntegrationId=q.IntegrationId AND receipt.ProviderEventId COLLATE Latin1_General_100_BIN2=q.ExternalId "
                 "AND receipt.Kind='status' AND receipt.Status='processed' AND JSON_VALUE(receipt.Payload,'$.text') IN('sent','delivered','read') "
                 "WHERE q.InstitutionId=? AND q.IntegrationId=? AND q.State IN('sent','delivered','read') "
+                + ("AND q.QueueId=? " if queue_id else "")
                 # Necessary condition of the HAVING clause, applied before
                 # joining/grouping receipt history. New incoming messages
                 # cannot be inactivity candidates yet.
-                "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=DATEADD(minute,?,SYSUTCDATETIME())) "
+                + "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=DATEADD(minute,?,SYSUTCDATETIME())) "
                 + ("AND i.LastIncomingAt IS NOT NULL AND EXISTS(SELECT 1 FROM crm_channels2.MessageRoute inbound JOIN crm.Message received ON received.MessageId=inbound.MessageId WHERE inbound.InstitutionId=q.InstitutionId AND inbound.IntegrationId=q.IntegrationId AND inbound.IdentityId=q.IdentityId AND inbound.ActorKind='external' AND received.Direction='incoming' AND received.CreatedAt<=q.CreatedAt) " if flowdoc.get("followup_only") else "")
                 + "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob newer JOIN crm.Message later ON later.MessageId=newer.MessageId JOIN crm.Message anchor ON anchor.MessageId=q.MessageId WHERE newer.InstitutionId=q.InstitutionId AND newer.IntegrationId=q.IntegrationId AND newer.IdentityId=q.IdentityId AND later.ConversationId=anchor.ConversationId AND later.Sequence>anchor.Sequence AND newer.State IN('queued','sending','uncertain','accepted','sent','delivered','read')) "
                 "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event link WHERE link.InstitutionId=q.InstitutionId AND link.Kind='native_chat' AND JSON_VALUE(link.Document,'$.queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) "
@@ -857,12 +861,16 @@ class Worker:
                 "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=MIN(receipt.CreatedAt)) ORDER BY MIN(receipt.CreatedAt),q.QueueId",
                 institution(self.settings),
                 flowdoc["integration_id"],
+                *((queue_id,) if queue_id else ()),
                 -doc["idle_minutes"],
                 trigger["RecordId"],
                 str(trigger["CurrentVersion"]),
                 -doc["idle_minutes"],
             )
             if job:
+                if discover:
+                    discovered.append((str(trigger["RecordId"]), str(job["QueueId"])))
+                    continue
                 p = person(c, self.settings, uid(str(job["IdentityId"])))
                 event(
                     c,
@@ -885,6 +893,7 @@ class Worker:
                         job["QueueId"],
                     ),
                 )
+        return discovered
 
     def review_pending(self):
         # Do not monopolize the institutional write lock while checking every
@@ -939,6 +948,19 @@ class Worker:
             (bool(kinds), self.triggers),
         ):
             if required:
+                if work == self.inactivity:
+                    # Discover across receipt history without an institutional
+                    # writer lock. Revalidate the exact job, live trigger/flow,
+                    # authority, incoming context and duplicate signal under
+                    # the write guard before persisting anything.
+                    with transaction(self.settings, anonymous=True) as c:
+                        selected = work(c, discover=True) if enabled(c, self.settings) else []
+                    for trigger_id, queue_id in selected:
+                        with transaction(self.settings, True, anonymous=True) as c:
+                            if not enabled(c, self.settings):
+                                return
+                            work(c, trigger_id=trigger_id, queue_id=queue_id)
+                    continue
                 with transaction(self.settings, True, anonymous=True) as c:
                     if not enabled(c, self.settings):
                         return

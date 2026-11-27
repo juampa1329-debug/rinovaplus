@@ -1542,7 +1542,9 @@ class AgentsService:
             from app.modules.agents.skill_policy import for_turn
             if hasattr(cursor, "__dict__"):
                 cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history], simulation_focus=request.skill_focus)
-            source_question = request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
+            retrieval_names = getattr(cursor, "agent_retrieval_names", [])
+            source_question = request.question + (" " + " ".join(retrieval_names)
+                if retrieval_names else " " + " ".join(v.content for v in request.history if v.role == "user")
                 if getattr(cursor, "agent_catalog", None) else "")
             institutional, sources = public_sources(
                 cursor,
@@ -1570,7 +1572,10 @@ class AgentsService:
                 {"operational_context": scoped_memory(cursor, selection)},
                 sources,
                 history,
-                max_chars=60000 if getattr(cursor, "agent_catalog", None) else 40000,
+                # Institutional guides + two complete reviewed fiches and their
+                # histories can exceed 60k characters. Keep facts whole within
+                # a finite envelope; model token-capacity checks still apply.
+                max_chars=80000 if getattr(cursor, "agent_catalog", None) else 40000,
                 **({"simulation_skill_focus": request.skill_focus} if request.skill_focus else {}),
             )
             messages[0]["content"] += (

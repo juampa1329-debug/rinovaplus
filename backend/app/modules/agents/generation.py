@@ -10,9 +10,22 @@ from app.modules.ai.application.admissions_prompt import ADMISSIONS_RESPONSE_SCH
 from app.modules.ai.domain.resilience import can_failover
 
 SIMULATION_SCHEMA = {"type": "object", "additionalProperties": False,
-    "properties": {"answer": {"type": "string"}, "handoff": {"type": "boolean"},
+    "properties": {"answer": {"type": "string", "maxLength": 4000}, "handoff": {"type": "boolean"},
                    "references": {"type": "array", "items": {"type": "string"}, "maxItems": 5}},
     "required": ["answer", "handoff", "references"]}
+
+
+def simulation_schema(model):
+    # Claude's constrained grammar omits length/item limits. Keep the same
+    # contract in descriptions and the shared strict backend validator.
+    if not model.startswith("anthropic/"):
+        return SIMULATION_SCHEMA
+    return {**SIMULATION_SCHEMA, "properties": {
+        "answer": {"type": "string", "description": "Un único texto de como máximo 4000 caracteres."},
+        "handoff": {"type": "boolean"},
+        "references": {"type": "array", "items": {"type": "string"},
+                       "description": "Como máximo 5 identificadores de las fuentes suministradas."},
+    }}
 
 
 def provider_options(ai):
@@ -122,6 +135,9 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
             "\nSALIDA DE SIMULACIÓN SIN PERSISTENCIA: devuelve únicamente answer, handoff y references. "
             "No devuelvas memory ni source_message_id: no existe un mensaje entrante real con UUID válido. "
             "Esta restricción prevalece sobre los procedimientos de registro de memoria."
+            " answer debe ser un único texto de hasta 4000 caracteres; handoff debe ser booleano; "
+            "references debe contener como máximo 5 identificadores de las fuentes suministradas. "
+            "No añadas claves ni objetos dentro de answer o references."
         )
     if ai.busy:
         raise AiError("operation_busy", 429)
@@ -166,7 +182,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         guard,
                         price_limits=dict(zip(("prompt", "completion"), rates, strict=True)) if all(v is not None for v in rates) else None,
                         max_attempts=1 if preview else 3,
-                        response_schema=SIMULATION_SCHEMA if preview else None,
+                        response_schema=simulation_schema(model) if preview else None,
                         **({"include_temperature": False} if selection.get("trial_temperature_supported") is False else {}),
                         **({"reasoning_effort": selection["trial_reasoning_effort"]} if selection.get("trial_reasoning_effort") else {}),
                     )

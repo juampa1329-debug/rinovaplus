@@ -55,7 +55,7 @@ def turn_plan(question, *, has_history=False, public=False):
     cost_scope_ambiguity = academic_plan and bool(re.search(r"gratis|gratuit|costo|pagar|cobran", current)) and not bool(
         re.search(r"\bsemestre|matricul|inscrip|mensualidad|(?:programa|curso|carrera)\s+(?:es\s+)?(?:gratis|gratuit)", current)
     )
-    financial = bool(re.search(r"precio|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|forma.*pago|\bpagar\b", current)
+    financial = bool(re.search(r"precio|cuesta|costo|cobr|gratis|gratuit|valor|\babon|cuota|financi|contado|(?:forma|opcion|medio|metodo).*pago|\bpagar\b", current)
                      or re.search(r"\bplan\b", current) and not academic_plan
                      or re.search(r"\bcuanto\s+(?:puedo\s+)?(?:empez|inici|pag|abon|invert|necesit)", current)
                      or re.search(r"\bcuanto\b", current) and not re.search(r"cuanto\s+(?:dura|tiempo|tarda)", current))
@@ -98,6 +98,25 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
     text = "".join(c for c in unicodedata.normalize("NFKD", raw.casefold()) if not unicodedata.combining(c))
     active, reasons = set(CORE), ["continuity_presentation_and_quality"]
     plan = turn_plan(question, has_history=bool(history), public=public)
+    # A short acknowledgement does not erase the immediately preceding price
+    # question. Keep its guides available without treating it as a new quote,
+    # changing the program, or consulting private history for a public comment.
+    if not public and plan["phase"] == "continue" and len(raw.split()) <= 6:
+        previous = next((v for v in reversed(history) if isinstance(v, dict)
+                         and (v.get("direction") == "incoming" or v.get("role") == "user")), None)
+        prior = turn_plan(previous.get("text", previous.get("content", "")), has_history=True) if previous else None
+        last = history[-1] if history and isinstance(history[-1], dict) else {}
+        offered = str(last.get("text", last.get("content", "")))
+        accepted_offer = bool(
+            re.fullmatch(r"\W*(?:si|claro|dale|listo|por favor|si por favor|si claro)\W*", text)
+            and (last.get("direction") == "outgoing" or last.get("role") == "assistant")
+            and turn_plan(offered, has_history=True)["money_relevant"]
+            and "?" in offered
+        )
+        if prior and prior["money_relevant"] or accepted_offer:
+            plan = {**plan, "money_relevant": True, "financial_continuity": True}
+            active.update({"pricing", "deal-value-calc"})
+            reasons.append("financial_continuity")
     manual = consultative_manual.select(question, plan["phase"])
     for reason, pattern, skills in GROUPS:
         if reason == "pricing" and not plan["money_relevant"]:
@@ -127,6 +146,8 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
         "specific_information": ["sales-enablement", "copywriting"],
         "continue": ["sales-discovery-questions", "draft-outreach"],
     }[plan["phase"]]
+    if plan.get("financial_continuity"):
+        primary = list(dict.fromkeys(["pricing", *primary]))
     if plan["possible_cost_scope_ambiguity"]:
         primary = ["sales-discovery-questions", "pricing"]
         active.update(primary)

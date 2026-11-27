@@ -13,6 +13,64 @@ afterEach(() => {
 const response = (body: unknown, status = 200, headers?: HeadersInit) =>
   new Response(JSON.stringify(body), { status, headers });
 
+it("recovers a transient Inbox search 503, sharing the retry and preserving the exact query", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(4_000_000);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValueOnce(
+      response({ detail: "general_storage_unavailable" }, 503),
+    )
+    .mockResolvedValue(response({ items: [{ name: "Patry" }] }));
+  const path = "workspace/inbox?offset=0&livePages=true&q=patry";
+  const reads = Promise.all([send(path), send(path)]);
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(await reads).toEqual([
+    { items: [{ name: "Patry" }] },
+    { items: [{ name: "Patry" }] },
+  ]);
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(
+    fetcher.mock.calls.every(
+      (v) => v[0] === `/api/institution/${path}` && v[1]?.method === "GET",
+    ),
+  ).toBe(true);
+});
+
+it("bounds Inbox 503 recovery and never retries the same path as a POST", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(4_100_000);
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async () =>
+      response({ detail: "general_storage_unavailable" }, 503),
+    );
+  const path = "workspace/inbox?q=bounded-patry";
+  const read = send(path).catch((error: unknown) => error);
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(await read).toMatchObject({ status: 503 });
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  await expect(send(path, "POST", {})).rejects.toMatchObject({ status: 503 });
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(fetcher).toHaveBeenCalledTimes(4);
+});
+
+it.each([401, 403])(
+  "does not retry authorization status %s for Inbox searches",
+  async (status) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(4_200_000);
+    const fetcher = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(response({ detail: "session_required" }, status));
+    await expect(send("workspace/inbox?q=patry")).rejects.toMatchObject({
+      status,
+    });
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  },
+);
+
 it.each(["institution", "agents"])(
   "recovers one pre-work busy GET for %s without duplicating concurrent reads",
   async (client) => {
@@ -54,7 +112,8 @@ it("bounds busy recovery to two extra GETs and never repeats a mutation", async 
 it("coalesces readers through a burst of two known lock waits", async () => {
   vi.useFakeTimers();
   vi.setSystemTime(16_000);
-  const fetcher = vi.spyOn(globalThis, "fetch")
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
     .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
     .mockResolvedValueOnce(response({ detail: "storage_busy" }, 503))
     .mockResolvedValue(response({ messages: ["current"] }));
@@ -62,7 +121,10 @@ it("coalesces readers through a burst of two known lock waits", async () => {
   await vi.advanceTimersByTimeAsync(3999);
   expect(fetcher).toHaveBeenCalledTimes(2);
   await vi.advanceTimersByTimeAsync(1);
-  expect(await reads).toEqual([{ messages: ["current"] }, { messages: ["current"] }]);
+  expect(await reads).toEqual([
+    { messages: ["current"] },
+    { messages: ["current"] },
+  ]);
   expect(fetcher).toHaveBeenCalledTimes(3);
 });
 

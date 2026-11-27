@@ -36,16 +36,20 @@ export function observeReadLimit(header: string | null) {
 export function coordinatedRead<T>(
   key: string,
   load: () => Promise<T>,
+  recoverInboxStorage = false,
 ): Promise<T> {
   const existing = pending.get(key);
   if (existing) return existing as Promise<T>;
-  const promise = recoverBusyRead(load).finally(() => {
+  const promise = recoverBusyRead(load, recoverInboxStorage).finally(() => {
     if (pending.get(key) === promise) pending.delete(key);
   });
   pending.set(key, promise);
   return promise;
 }
-async function recoverBusyRead<T>(load: () => Promise<T>): Promise<T> {
+async function recoverBusyRead<T>(
+  load: () => Promise<T>,
+  recoverInboxStorage: boolean,
+): Promise<T> {
   for (let attempt = 0; ; attempt++) {
     try {
       return await load();
@@ -56,12 +60,19 @@ async function recoverBusyRead<T>(load: () => Promise<T>): Promise<T> {
         !("status" in error) ||
         error.status !== 503 ||
         !("detail" in error) ||
-        error.detail !== "storage_busy"
+        !(
+          error.detail === "storage_busy" ||
+          (recoverInboxStorage &&
+            error.detail === "general_storage_unavailable")
+        )
       )
         throw error;
       // One coalesced GET, at most two additional reads across a short burst.
-      // No mutation, generic storage failure or uncertain provider effect enters.
-      await new Promise((resolve) => setTimeout(resolve, attempt === 0 ? 1000 : 3000));
+      // Generic storage recovery is explicitly limited to the Inbox list GET.
+      // Mutations, authorization failures and provider effects never enter.
+      await new Promise((resolve) =>
+        setTimeout(resolve, attempt === 0 ? 1000 : 3000),
+      );
       if (readRetrySeconds()) throw error;
     }
   }

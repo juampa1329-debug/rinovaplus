@@ -264,6 +264,8 @@ class Cursor:
             frame = sys._getframe(1)
             if frame.f_code.co_name == "execute" and frame.f_code.co_filename == __file__:
                 frame = frame.f_back
+            while frame.f_code.co_name in {"one", "rows"} and frame.f_code.co_filename.replace("\\", "/").endswith("institutional/db.py"):
+                frame = frame.f_back
             self.failed_statement = (
                 hashlib.sha256(sql.encode()).hexdigest()[:12],
                 frame.f_code.co_name + ":" + str(frame.f_lineno),
@@ -275,6 +277,8 @@ class Cursor:
             if elapsed > self.slowest[0]:
                 frame = sys._getframe(1)
                 if frame.f_code.co_name == "execute" and frame.f_code.co_filename == __file__:
+                    frame = frame.f_back
+                while frame.f_code.co_name in {"one", "rows"} and frame.f_code.co_filename.replace("\\", "/").endswith("institutional/db.py"):
                     frame = frame.f_back
                 # Static source location and digest only: no SQL, parameters,
                 # exception bodies, identities or credentials enter telemetry.

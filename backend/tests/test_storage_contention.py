@@ -51,7 +51,7 @@ def test_only_pre_work_lock_timeout_is_classified_as_retryable(monkeypatch, capl
     assert "SET LOCAL lock_timeout='3s'" in calls
     assert "PRIVATE" not in caplog.text
     assert "state=55P03" in caplog.text
-    conn.close.assert_called_once()
+    assert conn.close.call_count == (3 if write and where == "lock" else 1)
 
 
 @pytest.mark.parametrize("write", [False, True])

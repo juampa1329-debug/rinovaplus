@@ -499,6 +499,35 @@ function validationMessage(fields: unknown) {
     document_id: "Documento",
     conversation_id: "Conversación",
     offset: "Página",
+    commercial: "Ficha comercial",
+    school: "Escuela",
+    schedule: "Jornada",
+    active: "Programa disponible en la oferta actual",
+    aliases: "Otros nombres o alias",
+    duration: "Duración",
+    modality: "Modalidad",
+    presentation: "Presentación y objetivos",
+    syllabus: "Semestres y materias",
+    certification: "Título o certificación",
+    accreditation: "Acreditaciones",
+    internships: "Prácticas",
+    career_outcomes: "Campo ocupacional",
+    requirements: "Requisitos",
+    price_cop: "Precio de contado",
+    price_concept: "Concepto de la tarifa",
+    price_valid_from: "Inicio de vigencia de la tarifa",
+    price_valid_until: "Fin de vigencia de la tarifa",
+    financial_plans: "Planes de financiación",
+    initial_payment_cop: "Abono inicial",
+    initial_payment_due_date: "Fecha del abono",
+    total_cost_cop: "Total financiado",
+    installments: "Cuotas",
+    amount_cop: "Valor de la cuota",
+    due_date: "Fecha de la cuota",
+    conditions: "Condiciones del plan",
+    source_note: "Nota de procedencia",
+    source_url: "Enlace de la fuente",
+    source_checked_at: "Fecha de revisión de la fuente",
   };
   const labels = Array.isArray(fields)
     ? [
@@ -574,6 +603,33 @@ async function request<T>(
     console.warn(
       `RinovaPlus: Agentes HTTP ${response.status}; motivo ${safeReason}`,
     );
+    if (
+      response.status === 422 &&
+      /^\/programs(?:\/[1-9][0-9]*)?$/.test(path)
+    ) {
+      const knownTypes = new Set([
+        "extra_forbidden",
+        "missing",
+        "string_too_long",
+        "string_type",
+        "int_type",
+        "bool_type",
+        "model_attributes_type",
+        "model_type",
+        "json_invalid",
+        "value_error",
+        "uuid_parsing",
+        "literal_error",
+      ]);
+      const types = Array.isArray(result?.validation_types)
+        ? result.validation_types
+            .filter((v: unknown) => typeof v === "string" && knownTypes.has(v))
+            .slice(0, 8)
+        : [];
+      console.warn(
+        `RinovaPlus: Validación académica; tipos ${types.join(",") || "sin_detalle"}`,
+      );
+    }
     const failure = new Error(
       response.status === 422 && result?.code === "invalid_request"
         ? validationMessage(result.fields)

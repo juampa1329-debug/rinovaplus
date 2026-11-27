@@ -188,7 +188,8 @@ def generate(settings, item, data, text, agent, schools, guard, *, incoming_voic
             why = reason(options, text, incoming_voice, state["used"])
             if why:
                 return None, why
-            profile = choose_profile(options, agent, schools, state["pinned"], selected_profile)
+            profile = choose_profile(options, agent, schools, state["pinned"], selected_profile,
+                                     selection_key=data["conversation"])
             if not profile:
                 return None, "voice_profile_unavailable"
             value, secret_id = stored_key(c, settings)
@@ -399,7 +400,8 @@ def check_decision(c, settings, body):
         if not program:
             raise HTTPException(404, 'invalid_program_id')
         schools = [program['School']] if program['School'] else []
-    profile = choose_profile(options, agent_id, schools, state['pinned'], selected_profile)
+    profile = choose_profile(options, agent_id, schools, state['pinned'], selected_profile,
+                             selection_key=str(body.conversation_id or ""))
     code = 'voice_human_control' if human else reason(options, body.text, body.incoming_voice, state['used'])
     if not code and body.conversation_id and not options.allows(str(body.conversation_id)):
         code = 'voice_scope_text_only'

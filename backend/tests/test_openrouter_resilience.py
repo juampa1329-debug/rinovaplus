@@ -77,7 +77,21 @@ def test_trial_output_schema_has_no_memory_or_tool_access():
     fmt = calls[0]["response_format"]
     assert fmt["type"] == "json_schema" and fmt["json_schema"]["strict"]
     assert set(fmt["json_schema"]["schema"]["properties"]) == {"answer", "handoff", "references"}
+    assert fmt["json_schema"]["schema"]["properties"]["answer"]["maxLength"] == 4000
+    assert fmt["json_schema"]["schema"]["properties"]["references"]["maxItems"] == 5
     assert "tools" not in calls[0]
+
+
+def test_claude_trial_keeps_bounded_contract_without_unsupported_grammar_keywords():
+    from app.modules.agents.generation import simulation_schema
+    schema = simulation_schema("anthropic/claude-sonnet-4.6")
+    assert schema["additionalProperties"] is False
+    assert schema["required"] == ["answer", "handoff", "references"]
+    assert schema["properties"]["answer"]["type"] == "string"
+    assert "4000" in schema["properties"]["answer"]["description"]
+    assert "5" in schema["properties"]["references"]["description"]
+    assert "maxLength" not in json.dumps(schema) and "maxItems" not in json.dumps(schema)
+    assert simulation_schema("openai/gpt-4.1")["properties"]["answer"]["maxLength"] == 4000
 
 
 def test_adaptive_model_trial_omits_temperature_but_preserves_json_privacy_price_and_single_post():

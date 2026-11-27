@@ -196,7 +196,7 @@ def load(env):
 
 
 @contextmanager
-def transaction(settings, write=False, *, permission=None, anonymous=False, recent=False):
+def _transaction(settings, write=False, *, permission=None, anonymous=False, recent=False):
     from psycopg2 import Error
 
     stage = "connect"
@@ -257,6 +257,27 @@ def transaction(settings, write=False, *, permission=None, anonymous=False, rece
             timing = getattr(cursor, "slowest", None)
             statement_ms, statement_id, source = timing if isinstance(timing, tuple) else (0, "none", "none")
             LOG.warning("postgres_transaction_slow write=%s held_ms=%s stage=%s statement_ms=%s statement_id=%s source=%s", write, round(held * 1000), stage, statement_ms, statement_id, source)
+
+
+@contextmanager
+def transaction(settings, write=False, *, permission=None, anonymous=False, recent=False):
+    """Wait only at the pre-work lock frontier; never rerun yielded mutations."""
+    from contextlib import ExitStack
+
+    with ExitStack() as stack:
+        for attempt in range(3):
+            try:
+                cursor = stack.enter_context(_transaction(
+                    settings, write, permission=permission, anonymous=anonymous, recent=recent,
+                ))
+                break
+            except HTTPException as error:
+                if not write or error.status_code != 503 or error.detail != "storage_busy" or attempt == 2:
+                    raise
+                # The rejected transaction never acquired the institutional
+                # lock, authorized business work, or yielded to its caller.
+                LOG.info("postgres_writer_wait attempt=%s", attempt + 1)
+        yield cursor
 
 
 def network_disabled(*_args, **_options):

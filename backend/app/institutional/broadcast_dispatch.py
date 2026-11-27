@@ -53,7 +53,8 @@ def check(c, s, recipient, *, controlled=False, queue=None):
         or campaign["Revision"] != recipient["CampaignRevision"]
     ):
         raise HTTPException(409, "broadcast_revision_changed")
-    found, item = audience(c, s, campaign, controlled=controlled)
+    found, item = audience(c, s, campaign, controlled=controlled,
+                           target_identity=recipient["IdentityId"])
     candidate = next(
         (v for v in found if same(v["identity_id"], recipient["IdentityId"])), None
     )
@@ -392,8 +393,7 @@ def reconcile_receipts(c, s):
             "T 1 FROM crm_channels2.SendJob q WHERE"
             " q.InstitutionId=e.InstitutionId AND q"
             ".IntegrationId=e.IntegrationId AND q.E"
-            "xternalId=JSON_VALUE(e.Payload,'$.exte"
-            "rnal') COLLATE Latin1_General_100_BIN2"
+            "xternalId=e.ProviderEventId COLLATE Latin1_General_100_BIN2"
             ")"
         ),
         institution(s),

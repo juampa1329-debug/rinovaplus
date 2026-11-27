@@ -32,7 +32,60 @@ LOCATION_POLICY = (
     "No prometas que encontrarán físicamente al nombre de atención de la IA, ni que ya concertaste una cita. "
     "Si preguntan expresamente si eres IA, responde con transparencia."
 )
+PAYMENT_POLICY = (
+    "\nPAGOS Y ALCANCE DE TARIFAS REVISADOS POR EL TITULAR (2026-11-26): "
+    "CBN no recibe pagos por Addi ni Sistecrédito. Se acepta pago en banco o con tarjeta "
+    "en la oficina de Admisiones de " + ADMISSIONS_LOCATION + ". "
+    "No inventes banco, cuenta, convenio, enlace de pago ni cuotas de una tarjeta. "
+    "Las tarifas de carreras se cotizan por semestre; Admisiones las actualiza cada año. "
+    "Si preguntan cuánto vale toda la carrera, explica ese alcance y ofrece el semestre vigente: "
+    "no multipliques su importe por el número de semestres. Conserva los conceptos expresos "
+    "de cursos: PRE-ICFES tiene su tarifa de curso y A1+A2 de Inglés se cursan en un semestre. "
+    "Estos medios de pago no confirman que una persona ya pagó ni sustituyen las condiciones "
+    "financieras de la ficha o el volante de PRE-ICFES."
+)
+SCHEDULE_PRACTICE_POLICY = (
+    "\nJORNADAS Y PRÁCTICAS CONFIRMADAS POR EL TITULAR (2026-11-26): para las carreras técnicas, "
+    "la jornada diurna es la franja de 7:00 a. m. a 6:00 p. m.; las clases se distribuyen dentro "
+    "de ese horario. No significa clase continua durante once horas ni permite al estudiante elegir "
+    "libremente cualquier horario. Los días y horas concretos dependen del grupo y deben confirmarse. "
+    "La jornada nocturna es de 6:30 a 9:00 p. m. Generalmente el último semestre pasa a jornada "
+    "nocturna por las prácticas; no afirmes que todo el programa diurno es nocturno ni que aplica "
+    "obligatoriamente a cada grupo. CBN cuenta con más de 600 convenios de prácticas en el sector "
+    "productivo y ofrece prácticas remuneradas conforme a la normativa aplicable a su modalidad. "
+    "Las prácticas son meritorias: se accede al estar apto y cumplir los requisitos; no son una "
+    "asignación automática por pagar la matrícula. Según el resultado institucional reportado por "
+    "el titular, 8 de cada 10 estudiantes aptos que van a prácticas quedan trabajando. Mantén ese "
+    "universo específico: no lo conviertas en 80 % de todos los matriculados ni en garantía para "
+    "la persona. No se suministró un período estadístico; no lo inventes ni afirmes auditoría externa. "
+    "Al conversar di 'en CBN' o 'nuestro resultado institucional', no 'el titular reporta' ni "
+    "describas la procedencia interna de esta actualización. "
+    "Esta actualización del titular prevalece sobre orientaciones institucionales anteriores que "
+    "no confirmaban la remuneración o el número de convenios. Úsalo para explicar experiencia y conexión con el "
+    "trabajo, sin inventar empresa asignada, monto, duración, cupo individual o contratación garantizada. "
+    "Los requisitos y la asignación de cada práctica se confirman según el programa. No extrapoles "
+    "estas prácticas ni la franja técnica a Inglés o PRE-ICFES, que conservan sus horarios específicos. "
+    "Repostería conserva prácticas los sábados y teoría los sábados o entre semana, con horas de grupo por confirmar."
+)
 FACTS = [
+    {
+        "topic": "jornadas_tecnicas_y_practicas",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:daytime-window-paid-internships",
+        "text": SCHEDULE_PRACTICE_POLICY.strip(),
+    },
+    {
+        "topic": "practicas_meritorias_resultado_reportado",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:internships-qualified-students-outcome",
+        "text": "Prácticas meritorias para estudiantes aptos que cumplen requisitos, remuneradas conforme a la normativa aplicable. En CBN, 8 de cada 10 estudiantes aptos que realizan prácticas quedan trabajando, según el resultado institucional reportado. No se suministró período de medición; no es una garantía individual ni una tasa de todos los matriculados.",
+    },
+    {
+        "topic": "pagos_y_tarifas_por_semestre",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:payment-methods-and-semester-scope",
+        "text": PAYMENT_POLICY.strip(),
+    },
     {
         "topic": "preicfes_volante_provisional",
         "reviewed_at": "2026-11-25",
@@ -81,13 +134,15 @@ FACTS = [
     },
     {
         "topic": "practicas",
-        "text": "CBN describe prácticas en empresas y entidades del sector productivo y acompañamiento institucional. La postulación tiene requisitos y selección de la entidad receptora. Confirmar la modalidad, los requisitos y la disponibilidad de cada programa; no prometer empresa, remuneración, plaza ni contratación automática.",
-        "source": "https://cbn.edu.co/empresas/",
+        "text": "El titular confirma más de 600 convenios en el sector productivo y prácticas remuneradas para la formación técnica. Las condiciones particulares, duración, requisitos y empresa receptora dependen del programa y la asignación. No inventar montos ni prometer una plaza individual o contratación automática.",
+        "source": "owner_reviewed:2026-11-26:paid-internships",
+        "reviewed_at": "2026-11-26",
     },
     {
         "topic": "convenios",
-        "text": "La institución informa alianzas en salud, hotelería, comercio, educación y otros sectores. Las páginas publican cifras diferentes de convenios: no dar un total ni un convenio específico vigente sin comprobación adicional.",
-        "source": "https://cbn.edu.co/cbn-renueva-certificacion-icontec-16-anos-de-calidad/",
+        "text": "El titular confirma más de 600 convenios de prácticas con el sector productivo. Las fuentes públicas anteriores con otras cifras no sustituyen esta actualización. No inventar una empresa específica, vacante ni resultado individual.",
+        "source": "owner_reviewed:2026-11-26:productive-sector-agreements",
+        "reviewed_at": "2026-11-26",
     },
 ]
 

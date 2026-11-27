@@ -41,7 +41,8 @@ def contextual_entry(text):
     value = "".join(c for c in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(c))
     title = " ".join(re.findall(r"\w+", value))
     return title if title in {
-        "hablar con juan pablo", "conocer el programa", "ver jornadas", "ver proxima oferta",
+        "hablar con juan pablo", "conocer el programa", "ver plan de pagos",
+        "ver jornadas", "ver proxima oferta",
     } else ""
 
 

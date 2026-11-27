@@ -245,6 +245,7 @@ class Agents(AgentsService):
             from app.institutional.email_notifications import emit as emit_email
             c.agent_email_event = lambda event, resource: emit_email(c, self.profile, event, resource, module="agents")
             c.agent_invalidate = invalidate
+            c.agent_retrieval_names = (self.conversation_binding or {}).get("retrieval_names", [])
             if self.profile.ticket.get("version") in {
                 "cbn-institutional-knowledge-p6-v1",
                 "cbn-institutional-broadcast-p7-v1",
@@ -328,6 +329,12 @@ class Agents(AgentsService):
                 "id": conversation,
                 "epoch": state["Epoch"],
                 "digest": digest(state),
+                # Server-resolved names supply academic context without choosing
+                # an ambiguous jornada or fabricating a customer history entry.
+                "retrieval_names": list(dict.fromkeys(
+                    str(p["name"])[:180] for p in context.get("candidates", [])[:6]
+                    if isinstance(p, dict) and p.get("name")
+                )),
             }
         result = await self.simulate(request, conversation_binding=binding)
         return {

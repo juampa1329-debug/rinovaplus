@@ -1,0 +1,74 @@
+# Continuidad del Inbox, voces y gráfica — 26 de noviembre de 2026
+
+## Diagnóstico observado y alcance
+
+El titular pidió atender primero las preguntas pendientes desde las 16:00 Bogotá, corregir la continuidad tras varios botones de campaña, dejar sólo Juampa, preparar selección aleatoria/copia de ajustes y mejorar la gráfica. La revisión completa del intervalo sigue abierta: no equivale a haber atendido todo el histórico.
+
+Se observaron nativamente `55P03` bajo bloqueo institucional, generaciones `operation_lease_expired` y partes salientes `send_lease_expired` con resultado incierto. Un saludo entregado no acredita la entrega de las demás partes. La telemetría publicada en `c0429a8` identifica dos consultas que ocupaban el escritor: `candidate_rows:188` (audiencia de campaña) e `inactivity:838` (historial de recibos de seguimientos).
+
+`edafe9a`, integrado en `c0429a8`, espera como máximo tres adquisiciones de transacción antes de entrar al trabajo, sin repetir el cuerpo ni un commit; renueva sólo la generación propia todavía vigente dentro de un plazo total acotado. Conserva incertidumbres de proveedor. Backend publicado y observado saludable en Coolify tras 4m19s. La contención persistió después: ese corte no resuelve por sí solo toda la incidencia.
+
+## Corrección preparada sobre ese corte
+
+- La validación de un destinatario de campaña consulta todas las identidades de su persona canónica, conservando filtros originales, deduplicación, consentimientos, bajas, autoridad, inscripción SIIE, control Humano, cuenta, plantilla y cadencia. No reconstruye toda la audiencia para cada destinatario. Las vistas previas completas conservan su alcance.
+- La búsqueda general de inactividad se realiza en lectura. Antes de escribir una señal se repite la consulta para el trabajo exacto con activador, flujo, autoridad, última entrada, recibos y deduplicación vigentes. Un cambio entre ambos momentos descarta el candidato. No se relajan horarios ni consentimiento.
+- `Ver plan de pagos` recupera contexto únicamente si se acredita como botón nativo de una campaña aceptada de la misma cuenta, identidad y conversación. No concede la excepción de atención humana del botón específico del asesor.
+- La recuperación académica incluye el nombre del programa de esa campaña verificada. Dos botones seguidos de pagos y programa conservan los hechos financieros completos. Se reconoce también «opciones de pago» como consulta financiera.
+- Voces: opción `assigned` por defecto, o distribución entre voces activas para conversaciones nuevas; las asignaciones explícitas por agente/escuela y la voz ya reservada tienen prioridad. La selección usa una distribución estable por conversación. Una voz desactivada nunca se sintetiza; una reserva antigua incompatible conserva el retorno a texto. La copia de perfil preserva parámetros de síntesis/ambiente, limpia asignaciones, exige elegir voz nueva y empieza desactivada.
+- Gráfica diaria: techo redondeado a múltiplos de 100, marcas de 100 en 100 y detalle por barra con puntero o teclado; el área se desplaza si hay muchas marcas. No se modifica la consulta ni la semántica de recibos.
+
+No se creó ni activó un supervisor GPT-4.1 cada 30 minutos. Se explicó como propuesta complementaria: deberá distinguir preguntas pendientes, trabajo en curso, borrador sin intentos y envío incierto, volver a consultar el contexto y pasar por la cola existente. No debe reenviar a ciegas ni levantar Humano.
+
+## Atención operativa comprobada hasta el corte
+
+Ocho nuevas orientaciones manuales revisadas: cinco con recibo Entregado observado y tres Aceptado por el canal. El envío de Evelin quedó Entregado a las 19:01 Bogotá; su chat se observó en IA. Un límite de tiempo de la herramienta al comprobarlo no fue un fallo del envío. No se repitió. El noveno envío seguía En cola al último corte; requiere conciliación antes de restaurar control o repetir.
+
+No se acreditan todavía entrega de las tres aceptaciones, auditoría completa desde las 16:00, prueba automática nueva del arreglo, ficha/especialista PRE con grado 10 guardados, ni desactivación nativa de las otras voces. Permanecen tareas de esta petición, no aceptaciones concedidas.
+
+## Verificación local
+
+- 318 pruebas backend focalizadas aprobadas; después 43 solapadas, que incluyen una regresión nueva de dos botones y recuperación del programa. Regresiones de selección canónica ejecutan la consulta en SQLite y validan traducción PostgreSQL; no son prueba de plan/carga PostgreSQL productiva.
+- Frontend: 22 aprobadas y dos fallos en reproducción/descarga de muestras, coincidentes con los dos fallos heredados documentados en el corte previo. No declarar suite completa verde. Los casos nuevos de escala/detalle y copia de voz pasan.
+- TypeScript, ESLint de archivos modificados, Ruff E9/F63/F7/F82 y compilación pasan. Bundle 743,19 kB / 219,01 gzip; conserva advertencia de tamaño. Node local 22.16, distinto del rango 24.19 declarado; no equivale a validación en el runtime de producción.
+
+P13/P19/P21 conservan aceptaciones iniciales; P22 técnico3/5 y comercial0/5, P23 aceptados0/9 intactos. P24 inicia implementación acotada de contención por nueva autorización urgente; no se aceptan sus seis criterios ni se acredita SLA/carga máxima. Sin DDL, seeds, servicios nuevos ni escrituras SIIE. Sin correo ni apagado nuevos.
+
+## Ampliación: checkpoint humano y comprobaciones reales
+
+El diagnóstico de una nueva pregunta de horario mostró `reply_turn_delivery_uncertain`: una parte antigua incierta bloqueaba cualquier entrada posterior, incluso tras una orientación humana nueva Leída. El cursor de `snapshot` ya cerraba ese turno al encontrar una respuesta humana aceptada; `require_settled` no aplicaba ese mismo límite. Ahora una respuesta humana posterior aceptada, enviada, entregada o leída de la misma institución, cuenta, identidad y conversación permite continuar las entradas posteriores. Un borrador humano, resultado incierto, otra cuenta/identidad/hilo o respuesta posterior a la entrada no permite saltar el bloqueo. El recibo antiguo incierto no se cambia ni se reenvía. 71 pruebas focalizadas pasan, incluidas diez variantes de esta regresión con SQL ejecutada en SQLite y traducción PostgreSQL validada. No es autorización para regenerar una salida incierta que carezca de ese checkpoint.
+
+`c370c3a` publicado nativamente: backend `xe8ylpa3gavlyjb0ply5c1du`, comienzo 00:14:46 UTC del 27Nov, contenedor saludable 00:20:24 y actualización terminada 00:20:35; frontend pendiente de comprobar en este corte. Aún no se ha medido una cohorte representativa ni un SLA.
+
+Voz revisión39 guardada y recargada: Juampa activo; Sarah y George inactivos; default Juampa; 120s/5audios por hilo conservados. PRE ficha revisión9 guardada: grados10/11 en presentación y requisitos. Primer intento de guardado excedió el límite de presentación2000 y fue rechazado; se redujo la redacción conservando el resto y el guardado posterior pasó. Aduanas revisión4 guardada con nocturna18:30–21:00, según confirmación explícita del titular.
+
+Novena orientación observada Entregada y controlIArestaurado. Una consulta nueva de nocturna fue atendida manualmente, Entregada19:22; el titular confirmó después que Aduanas sí tiene nocturna y pidió formulario: confirmación y enlace oficial nuevos Leídos19:24, controlIArestaurado. No se usaron esos mensajes como prueba de respuesta automática del arreglo. Continúa pendiente la auditoría completa desde16h y el piloto automático posterior.
+
+## Preparación posterior a la recepción de folletos
+
+El titular aportó cinco fotos y resolvió la discrepancia: conservar jornadas del folleto; Repostería prácticas sábados y teoría sábados o entre semana. Transcripción en `ACADEMIC_BROCHURE_20261126.md`. Contabilidad pasa de4 a3semestres; no se altera la tarifa. La edición ya soportaba `active` en backend pero el frontend imponía `true`: se preserva y se expone para retirar ofertas antiguas sin borrar fichas. Listado administrativo explícito incluye pausados; catálogo de agentes predeterminado conserva sólo activos.
+
+Se observó nativamente que el segundo listado del Inbox fallaba `page_changed` por la actividad global entre peticiones. Nuevo modo de páginas vigentes sólo de lectura, elegido expresamente por el frontend Inbox, devuelve orden vigente con aviso de actividad; los lectores estrictos y todas las mutaciones conservan sus guardas. No ofrece snapshot histórico entre páginas ni prueba auditoría exhaustiva.
+
+93backend focalizadas pasan/2omitidas; una selección más amplia dio104aprobadas/2omitidas y un fallo en `test_typed_filters_are_sql_predicates_before_paging` del repositorio no modificado de Inbox (`ReadCursor.fetchone()` devuelveNone). Frontend74aprobadas/2fallos en el archivo de Workspace que coinciden con fallos heredados documentados,16previas solapadas; no suite completa verde. Tipos, ESLint modificado, Ruff y build pasan. Publicación de estos últimos controles pendiente en este corte.
+
+Nuevas respuestas adicionales: AloyEntregado, AnaRiveraEnviado, LuisaHernándezAceptado, AdeEntregado, JhoanEntregado, AdrianaEntregado, JorgeAndrésEntregado, LuisaInfanteEntregado; controlesIArestaurados. No contabilizar Enviado/Aceptado como entrega. Autorespuestas de negocios y bajas no se convierten en nuevas campañas. Tres controles de programas/folios nativos y auditoría completa siguen pendientes hasta verificar su aplicación; no declarar todo el histórico atendido.
+
+## Corte posterior: producción, folletos y continuidad financiera
+
+`7912759` backend `dmqeeh8tci5txs8laksn92vv` Success/Running4m18s, saludable00:57:02UTC27Nov y rollout completo00:57:08. Frontend `pjxrtir3py7nhxmualxr5ttg` Success26s, inicio00:52:36UTC. `df82c10` frontend `qb0dxgfmaoopqg0xanodmpr1` Success47s; backend `h5hpqixqs8fegtvx3ndthyvz` Success4m21s. Paginación nativa de Inbox llegó a página2, incluidos hilos hasta antes de16:00, sin el409anterior. La actividad puede reordenar páginas: no se acredita un snapshot exhaustivo del intervalo ni todo el histórico atendido.
+
+La gráfica productiva mostró eje100a100, techo2100para2033y detalle «2026-11-24 · Enviados confirmados:2.033» al seleccionar barra. No es una medición de carga. Voz revisión40 guardada: sólo Juampa disponible, Sarah/George inactivos, distribución entre voces disponibles para conversaciones nuevas, asignaciones explícitas e identidad ya fijada conservadas. Límite120s y5audios por hilo sin cambios; no hubo nueva síntesis/envío de voz en esta comprobación. Copiar ajustes y añadir perfil disponibles; las copias nacen inactivas y requieren seleccionar su voz.
+
+Folletos aplicados:20fichas distintas/22guardados,24ofertas activas/3pausadas con3especialistas pausados. PRE ficha9/especialista3, grado10incluido. Detalle y datos aún pendientes en `ACADEMIC_BROCHURE_20261126.md`. Modelos y máximo4000no modificados; ruta de configuración Ajustes→Inteligencia artificial→Motor de conversaciones y respaldos. Son dos rutas con etapas de apertura configurables, no un modelo independiente por cada etapa.
+
+Revisión nativa adicional del intervalo encontró precios omitidos aun habiendo respuestas entregadas. Nuevas orientaciones de pagos para dos consultas de Contabilidad y tres de Repostería quedaron Entregadas; una aclaración de jornada y una respuesta completa de Inglés quedaron Enviadas al corte, sin atribuir entrega. Todos esos controles se comprobaron restaurados en IA. Majo conserva la confirmación nocturna y formulario Leídos; no hay nueva entrada posterior para acreditar el arreglo automático en ese hilo. Otras conversaciones sí continuaron automáticamente, pero no prueban por sí solas todos los escenarios.
+
+Una conversación de Repostería respondió automáticamente con precios correctos y luego, ante «Hmm», afirmó que faltaban cifras porque veía «[dato omitido]». La expresión existe en la redacción de privacidad del historial; no demuestra ausencia en la ficha. No se acredita todavía que ésa sea la única causa de pérdida contextual. Se envió una aclaración nueva Entregada20:09Bogotá, sin repetir las salidas antiguas inciertas. `57710f1` conserva pricing en una continuación privada breve de la última pregunta financiera y distingue explícitamente redacción de historial de hechos del catálogo. No desactiva la redacción de teléfonos/correos ni usa historia privada en público; un cambio de tema no hereda esa guía financiera.138pruebas focalizadas y Ruff pasan. Publicación en comprobación al preparar este corte; no nueva respuesta real posterior acreditada todavía.
+
+La auditoría registrada en el segundo bloque contiene25hilos únicos, con reconsultas; además se conservaron las primeras comprobaciones del incidente. No se equipara ese contador con personas enviadas ni cobertura total. Bajas, autorespuestas de negocios y eventos de sistema no recibieron promociones nuevas. Persisten recibos históricos inciertos, que no se repiten sin conciliación, y quedan pruebas automáticas nuevas, carga representativa/optimización de listados y validación genérica de una presentación opcional de Multimedia. Sin nuevo supervisor30min, DDL, seeds, servicios, escriturasSIIE, correo o apagado.
+
+## Publicación final comprobada
+
+`57710f1` backend `8u76cxxn4acj3zv4ina7exoo`: contenedor saludable01:16:41UTC27Nov, actualización terminada01:16:56, aproximadamente4m28desde01:12:28. Frontend `xlmmcn3arbp7ytbfrdd5dggn` Success27s, inicio01:12:16UTC. No es prueba de ausencia universal de contención ni de respuesta automática nueva posterior a este commit.
+
+Reconciliación posterior de recibos: BaironLeído, Sharon/JorgeMéndez/LuisaHernández/Cristian/KarenEntregado; AnaRivera continúaEnviado, no confirmación de entrega. Los siete controles observados enIA. La configuración nativa de modelos quedó abierta para el titular; valores conservados. Pregunta opcional sobre horario de oficina y entrada diurna pendiente de respuesta, sin inventar esos datos.
