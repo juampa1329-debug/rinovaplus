@@ -10,34 +10,34 @@
     "query_changed": false,
     "new_fragments": [],
     "uncovered_dated_documents": [],
-    "semantic_sources": 48,
-    "input_fingerprint": "f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350",
+    "semantic_sources": 52,
+    "input_fingerprint": "b9c1915bcad74de6f09e3910a5b79cb5cbf80dfc22ff674b911bfcdc1805a41e",
     "note": "Checks local provenance only; does not attest current production state"
   },
   "counts": {
-    "semantic_sources": 48,
-    "code_sources": 33,
-    "semantic_nodes": 378,
-    "semantic_edges": 438,
-    "ast_nodes": 424,
-    "ast_edges": 1293,
-    "literal_code_references": 19,
-    "raw_edges": 1750,
-    "nodes": 802,
-    "edges": 1360,
-    "communities": 44
+    "semantic_sources": 52,
+    "code_sources": 38,
+    "semantic_nodes": 438,
+    "semantic_edges": 506,
+    "ast_nodes": 473,
+    "ast_edges": 1442,
+    "literal_code_references": 27,
+    "raw_edges": 1975,
+    "nodes": 911,
+    "edges": 1478,
+    "communities": 53
   },
-  "graph_sha256": "076602d6eea0c0cd109731d8c33bf1dd0e8283cb7ed7d49637c24d51b9324b5c",
+  "graph_sha256": "fb32103ca2b00650ae318ba2df34c66a81916cef73746b2ae302324891d68262",
   "new_semantic_sources_read_to_eof": {
-    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md": 65,
-    "artifacts/live/program-value-messaging-20261127.json": 12
+    "docs/adaptation/FOLLOWUP_60H_META_BENEFITS_20261127.md": 55,
+    "artifacts/live/followup-60h-meta-benefits-20261127.json": 11
   },
   "query_complete": true,
-  "query_nodes_found": 23,
-  "query_nodes_rendered": 23,
+  "query_nodes_found": 25,
+  "query_nodes_rendered": 25,
   "new_application_code_changes": true,
   "prior_guard_regressions": {
-    "note": "Hash/EOF rejection, repeated-build and shrink-guard checks ran on the previous graph; not rerun for this two-source extension.",
+    "note": "Historical guard checks refer to the previous graph; hash transport regressions rerun (4 passed), but shrink and EOF negative checks were not rerun for this extension.",
     "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
     "repeated_build_graph_sha256_equal": null,
     "source_hash_mismatch_rejected": null,
@@ -46,10 +46,14 @@
   },
   "source_hash_regressions_passed": 4,
   "validation": {
-    "backend_application_focused_passed": 108,
+    "backend_application_focused_passed": 187,
+    "frontend_focused_passed": 20,
     "graph_source_hash_regressions_passed": 4,
+    "typescript": "pass",
+    "changed_eslint": "pass",
     "ruff_E9_F": "pass",
-    "frontend": "not rerun; no frontend source changes; three native draft persistence checks",
-    "new_live_generative_reply_claimed": false
+    "institutional_build": "pass",
+    "new_manual_sends": 0,
+    "new_campaign_activations": 0
   }
 }
