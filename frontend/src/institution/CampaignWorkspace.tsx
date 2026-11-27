@@ -195,6 +195,8 @@ const labels: Record<string, string> = {
   enrolled: "Persona inscrita",
   step_prepared: "Mensaje preparado",
   step_completed: "Paso completado",
+  closure_rescheduled: "Cierre reprogramado sin repetir mensajes",
+  closure_rescheduled_summary: "Calendario de cierre actualizado",
   execution_completed: "Seguimiento completado",
   native_chat: "Mensaje en cola",
   execution_stopped: "Seguimiento detenido",
@@ -2030,11 +2032,14 @@ function Executions({
                         "retry",
                         "part_index",
                         "attempt",
+                        "closure_days",
+                        "old_version",
+                        "new_version",
                       ].includes(k),
                     )
                     .map(
                       ([k, value]) =>
-                        `${({ state: "Estado", reason: "Motivo", variant: "Variante", step_index: "Paso", version: "Versión", retry: "Reintento", part_index: "Bloque", attempt: "Intento" } as Record<string, string>)[k]}: ${typeof value === "string" ? label(value) : String(value)}`,
+                        `${({ state: "Estado", reason: "Motivo", variant: "Variante", step_index: "Paso", version: "Versión", retry: "Reintento", part_index: "Bloque", attempt: "Intento", closure_days: "Cierre (días)", old_version: "Versión anterior", new_version: "Versión actual" } as Record<string, string>)[k]}: ${k === "step_index" && typeof value === "number" ? value + 1 : typeof value === "string" ? label(value) : String(value)}`,
                     )
                     .join(" · ")}
                 </p>

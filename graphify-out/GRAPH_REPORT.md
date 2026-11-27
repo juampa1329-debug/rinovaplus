@@ -6,13 +6,13 @@ Esta vista específica complementa el grafo general histórico en `graphify-out/
 
 ## Alcance y procedencia
 
-44 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 28 archivos de código por AST. La vista dirigida contiene 707 nodos y 1199 aristas en 38 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
+48 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 33 archivos de código por AST. La vista dirigida contiene 802 nodos y 1360 aristas en 44 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
 
 Candidatos fechados presentes pero fuera de la selección semántica: []. Su aparición se informa; no se finge haberlos extraído.
 
 ## Integridad y límites
 
-La extracción AST aporta 378 nodos y 1182 aristas. Se excluyen de la vista 364 aristas con extremo ausente. Sus afirmaciones originales se conservan en raw-extraction.json y sus detalles en integrity.json. Son referencias/importaciones fuera del ámbito o destinos no resueltos; no se han inventado nodos para completarlas.
+La extracción AST aporta 424 nodos y 1293 aristas. Se excluyen de la vista 388 aristas con extremo ausente. Sus afirmaciones originales se conservan en raw-extraction.json y sus detalles en integrity.json. Son referencias/importaciones fuera del ámbito o destinos no resueltos; no se han inventado nodos para completarlas.
 
 También se excluyen explícitamente 1 autobucle(s) emitido(s) por el AST. Los originales permanecen en integrity.json y raw-extraction.json: un autobucle del extractor no acredita por sí mismo recursión funcional. Esta separación hace visible lo que Graphify descartaría internamente al construir la vista.
 
@@ -20,7 +20,7 @@ Hay 1 par(es) dirigido(s) con varias afirmaciones (1 arista(s) compactada(s)). U
 
 Pares compactados y ubicaciones: [{"source": "backend_app_institutional_commercial_followup", "target": "backend_app_institutional_commercial_followup_apply", "locations": [{"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L525"}, {"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L552"}]}].
 
-Enlaces documento→código: 18, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
+Enlaces documento→código: 19, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
 
 ## Seguimientos: lectura correcta
 
@@ -34,19 +34,24 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
 
 | Comunidad | Nodos | Cohesión |
 |---|---:|---:|
-| Gestión de campañas | 70 | 0.0989648033126294 |
 | workspace.py | 70 | 0.058385093167701865 |
-| Diagnóstico de listas | 55 | 0.059932659932659935 |
-| Seguimiento por tiempo y lista | 46 | 0.06376811594202898 |
-| Eventos y recibos entrantes | 42 | 0.08246225319396051 |
-| Precios recuperados, comentarios y escala | 40 | 0.05512820512820513 |
+| Gestión de campañas | 69 | 0.10912190963341858 |
+| Seguimiento por tiempo y lista | 47 | 0.06382978723404255 |
+| Espacio institucional | 46 | 0.07729468599033816 |
+| Auditoría integral de fichas y | 38 | 0.05689900426742532 |
 | Seguimiento comercial | 37 | 0.1066066066066066 |
 | Avance comercial y exclusiones | 32 | 0.08064516129032258 |
-| Continuidad del Inbox, voces y | 28 | 0.07142857142857142 |
+| Precios recuperados, comentarios y escala | 32 | 0.06451612903225806 |
+| Eventos y recibos entrantes | 30 | 0.12873563218390804 |
+| Formularios, orientación de pago y | 25 | 0.11333333333333333 |
 | Panel de campañas y seguimiento | 25 | 0.10333333333333333 |
 | Panel de mensajería masiva | 22 | 0.09090909090909091 |
+| Becas opcionales y valor de | 21 | 0.1380952380952381 |
+| program commercial.py | 21 | 0.14285714285714285 |
 | Guardado concurrente y baja expresa | 21 | 0.12857142857142856 |
 | Importación de prospectos | 20 | 0.1368421052631579 |
+| broadcast dispatch.py | 19 | 0.14035087719298245 |
+| admissions prompt.py | 19 | 0.14619883040935672 |
 | Tres seguimientos por avance activados | 18 | 0.1568627450980392 |
 | Seguimiento y preferencias | 16 | 0.16666666666666666 |
 | Memoria comercial | 16 | 0.26666666666666666 |
@@ -56,6 +61,7 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
 | Motores por etapa | 10 | 0.2222222222222222 |
 | Campaña PRE-ICFES y destinos | 9 | 0.2222222222222222 |
 | Piloto y recepción SIIE | 9 | 0.2222222222222222 |
+| Diagnóstico de listas | 9 | 0.2222222222222222 |
 | Informe y consultas agregadas | 8 | 0.25 |
 | Horarios y costes | 8 | 0.25 |
 | Panel de mensajería masiva | 7 | 0.2857142857142857 |
@@ -85,7 +91,7 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
   {
     "id": "backend_app_institutional_workspace_rows",
     "label": "rows()",
-    "degree": 27
+    "degree": 28
   },
   {
     "id": "backend_app_institutional_workspace_workspace",
@@ -132,37 +138,37 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
     "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
   },
   {
-    "source": "CAMPAIGN LAUNCH 2026 20261126",
-    "target": "campaign-launch-2026-20261126",
+    "source": "Formularios, orientación de pago y cierre a siete días —27Nov2026",
+    "target": "Evidencia agregada de formularios, pago y cierre de siete días",
     "source_files": [
-      "docs/adaptation/CAMPAIGN_LAUNCH_2026_20261126.md",
-      "artifacts/live/campaign-launch-2026-20261126.json"
+      "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md",
+      "artifacts/live/form-payment-closure-followup-20261127.json"
     ],
-    "confidence": "EXTRACTED",
-    "relation": "cites",
-    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+    "confidence": "INFERRED",
+    "relation": "conceptually_related_to",
+    "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
   },
   {
-    "source": "COMMERCIAL PROGRESS FOLLOWUP 20261125",
-    "target": "commercial-progress-followup-20261125",
+    "source": "Cierre vigente de siete días sustituye duración final anterior",
+    "target": "Cierre a siete días conserva los pasos de ocho, treinta y seis y sesenta horas",
     "source_files": [
-      "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md",
-      "artifacts/live/commercial-progress-followup-20261125.json"
+      "artifacts/live/form-payment-closure-followup-20261127.json",
+      "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md"
     ],
     "confidence": "EXTRACTED",
-    "relation": "cites",
-    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+    "relation": "references",
+    "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
   },
   {
-    "source": "CRM IMPORT 2026 20261126",
-    "target": "crm-import-2026-20261126",
+    "source": "Becas opcionales y valor de la formación en mensajería —27Nov2026",
+    "target": "Evidencia agregada de valor de programas y borradores —27Nov2026",
     "source_files": [
-      "docs/adaptation/CRM_IMPORT_2026_20261126.md",
-      "artifacts/live/crm-import-2026-20261126.json"
+      "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md",
+      "artifacts/live/program-value-messaging-20261127.json"
     ],
-    "confidence": "EXTRACTED",
-    "relation": "cites",
-    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+    "confidence": "INFERRED",
+    "relation": "conceptually_related_to",
+    "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
   }
 ]
 ```
@@ -195,4 +201,4 @@ La generación del HTML es local. El visualizador estándar de Graphify carga vi
 
 ## Coste y reproducibilidad
 
-Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `9f83cebedbe0e3f4100c5085b64655dad33a5df4b6cc95b7519cdd1938766274`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.
+Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.

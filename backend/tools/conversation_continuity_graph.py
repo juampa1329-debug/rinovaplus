@@ -26,6 +26,10 @@ OUT = ROOT / "graphify-out"
 FRAGMENTS = ROOT / "docs/adaptation/fragments"
 FRAGMENT_GLOB = "continuity-20261127*.json"
 CODE_SOURCES = (
+    "backend/app/institutional/cbn_profile.py",
+    "backend/app/institutional/program_commercial.py",
+    "backend/app/modules/agents/conversation_style.py",
+    "backend/app/modules/ai/application/admissions_prompt.py",
     "backend/app/institutional/broadcast_audience.py",
     "backend/app/institutional/broadcast_followup.py",
     "backend/app/institutional/broadcast_conversation.py",
@@ -38,6 +42,7 @@ CODE_SOURCES = (
     "backend/app/institutional/prospect_source_status.py",
     "backend/app/institutional/sales_memory.py",
     "backend/app/institutional/campaign_runtime.py",
+    "backend/app/institutional/campaign_closure.py",
     "backend/app/institutional/campaign_delivery.py",
     "backend/app/institutional/campaigns.py",
     "backend/app/institutional/campaign_metrics.py",
@@ -122,6 +127,10 @@ def save_followup_query() -> dict:
         "artifacts/live/followup-automation-20261127.json",
         "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md",
         "artifacts/live/advanced-followup-activation-20261127.json",
+        "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md",
+        "artifacts/live/form-payment-closure-followup-20261127.json",
+        "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md",
+        "artifacts/live/program-value-messaging-20261127.json",
     }
     selected_nodes = [node_id for node_id, node in graph.nodes(data=True)
                       if node.get("_origin") == "semantic"
@@ -136,8 +145,8 @@ def save_followup_query() -> dict:
             parts = (re.findall(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+", word)
                      if word.isascii() else [word]) or [word]
             vocabulary.update(part.lower() for part in parts if 3 <= len(part) <= 30)
-    selected = [word for word in ("contactar", "cierre", "general", "borrador", "avance", "activador",
-                                 "avanzados", "recorridos", "aprobado", "activos", "activados", "autorización")
+    selected = [word for word in ("contactar", "cierre", "formulario", "pago", "avance", "avanzados",
+                                 "activos", "autorización", "beca", "prácticas", "universitaria", "estimación")
                 if word in vocabulary]
     if not selected:
         raise ValueError("No follow-up vocabulary is present; query was not fabricated")
@@ -151,7 +160,7 @@ def save_followup_query() -> dict:
     sources = sorted({node["source_file"] for _, node in focused.nodes(data=True)})
     payload = {
         "original_question": "tienes conocimiento sobre los seguimientos a las conversaciones?",
-        "focused_question": "No contactar, cierre y estado autorizado de los seguimientos por avance, conservando los cortes históricos",
+        "focused_question": "Seguimientos por avance, formulario, pago, cierre, beca opcional y beneficios confirmados, conservando No contactar y los cortes históricos",
         "expanded_tokens": selected,
         "command": ["python", "backend/tools/conversation_continuity_graph.py", "query"],
         "run_from": ".", "exit_code": 0, "graph_sha256": sha(graph_path),

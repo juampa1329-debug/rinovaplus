@@ -126,6 +126,14 @@ it("loads one integrated list and keeps activation behind preflight and human re
   ).toBeEnabled();
   expect(await screen.findByText(/No hay ejecuciones/)).toBeInTheDocument();
 });
+it("explains a rescheduled closure with human step numbers and both versions", async () => {
+  setup(p => p.includes("/runs?") ? ok({items:[{id:"run",name:"Ejemplo",state:"waiting",variant:"A",step_index:1,version:4,due_at:"2026-11-28T15:00:00Z"}],total:1,has_more:false}) :
+    p.endsWith("/runs/run") ? ok({steps:[],events:[{kind:"closure_rescheduled",at:"2026-11-27T18:09:57Z",data:{step_index:1,closure_days:7,old_version:3,new_version:4}}]}) : undefined);
+  fireEvent.click(await screen.findByRole("button",{name:/Admisiones CBN/}));
+  fireEvent.click(await screen.findByRole("button",{name:"Ver detalle de Ejemplo"}));
+  expect(await screen.findByText(/Cierre reprogramado sin repetir mensajes/)).toBeInTheDocument();
+  expect(screen.getByText("Paso: 2 · Cierre (días): 7 · Versión anterior: 3 · Versión actual: 4")).toBeInTheDocument();
+});
 it("retains an edited flow after CAS conflict and submits its actual revision with CSRF", async () => {
   const f = setup((_p, i) =>
     i?.method === "PUT" ? ok({ detail: "revision_conflict" }, 409) : undefined,

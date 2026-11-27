@@ -222,6 +222,7 @@ def agent_facts(profile):
         facts["pending_confirmation"] = missing
         facts["financial_guidance"] = "Informa sólo los importes y conceptos disponibles, con su alcance documentado; la enseñanza del nivel no equivale al costo de todo el programa. Las fechas, vigencia o condiciones ausentes están por confirmar con un asesor; no inventes plazos ni afirmes que ya fueron confirmados. No anuncies acciones o confirmaciones realizadas sin evidencia."
     facts["program_presentation_guidance"] = "Presenta el programa usando sólo los datos guardados de su ficha. Distingue el certificado o título de una acreditación de alta calidad. No afirmes acreditaciones, convenios, prácticas garantizadas, empleos ni salarios si no están documentados. Las prácticas y sus condiciones se explican sólo con la información disponible. Una vigencia financiera abierta sólo está confirmada si el plan tiene valid_until_confirmed_open=true; un null sin esa confirmación sigue por confirmar."
+    facts["program_presentation_guidance"] += " Relaciona beneficios guardados con la meta del aspirante. La beca complementaria es opcional donde corresponda; diferencia las dobles titulaciones obligatorias. Recuperación de inversión y articulación se explican con sus condiciones confirmadas, sin inventar ingresos, plazos ni homologaciones."
     return facts
 
 

@@ -37,23 +37,33 @@
       "lines": 74,
       "kind": "semantic"
     },
+    "artifacts/live/form-payment-closure-followup-20261127.json": {
+      "sha256": "8d89881297d987caa45ca46e23a2725780946738b5878463efc5a40e458cd760",
+      "lines": 20,
+      "kind": "semantic"
+    },
     "artifacts/live/preicfes-campaign-launch-20261125.json": {
       "sha256": "7d67e4b272b3b383b8403d3771aaed56c3f9b8c1fd56a0c25a7a7bb922abdf66",
       "lines": 23,
       "kind": "semantic"
     },
+    "artifacts/live/program-value-messaging-20261127.json": {
+      "sha256": "84643839d60549e1bc14b817470d506062238207c3d4a443adb47961dffd7653",
+      "lines": 12,
+      "kind": "semantic"
+    },
     "backend/app/institutional/broadcast_audience.py": {
-      "sha256": "872f230a827f2c90d92ba15aaba206f75007013151baaf6a8b9a169c6f9fd672",
+      "sha256": "30d1d7d89853d0a08d7feb4463cb011cc1ed7cb401a6fbbfe1ca70ad21b92e15",
       "lines": 175,
       "kind": "code"
     },
     "backend/app/institutional/broadcast_consent_correction.py": {
-      "sha256": "22db83880eef4d786d30666a5a8f6ae72128e898d6b6e6753cecca72dbe65f53",
+      "sha256": "aef46495660908d09dcca13f7f09c2da3e427c6b567c8aa310d981640d16a817",
       "lines": 116,
       "kind": "code"
     },
     "backend/app/institutional/broadcast_conversation.py": {
-      "sha256": "633eb39451d591cd8a0bffa8f45a5b1af3e9d01a5277aefb569c73c77466c4bc",
+      "sha256": "5bfd28f963a572084f681084f4c1687f24cd31eea14e20509aa547f9aeac5737",
       "lines": 106,
       "kind": "code"
     },
@@ -63,17 +73,17 @@
       "kind": "code"
     },
     "backend/app/institutional/broadcast_followup.py": {
-      "sha256": "e022214c3d3d77eb9411ad0548718a857b44189d0f222cd68fac25336f326d78",
+      "sha256": "b5baf40ad96a2fc2e16a1d1153a3cbcdadb3ecfe6ef4bae91555513ef1d620b0",
       "lines": 68,
       "kind": "code"
     },
     "backend/app/institutional/broadcast_inbox.py": {
-      "sha256": "a185a0d39c9d521fc1c8c9625e65e90dbbfc63b6271b6a32474a3715886652be",
+      "sha256": "a66989e24c2bed5f75d4103703c0e4b550571690a739ec9a1be8eecb4bad9231",
       "lines": 11,
       "kind": "code"
     },
     "backend/app/institutional/broadcast_prospects.py": {
-      "sha256": "0756c05863a6dd9333be35365b0c7b6186f7ffc784512293051d121653e731ac",
+      "sha256": "8230f06655a57d2ef6ebebc82af2fdbb33b95a8ccf75d10b07a519f0fa973002",
       "lines": 291,
       "kind": "code"
     },
@@ -83,8 +93,13 @@
       "kind": "code"
     },
     "backend/app/institutional/campaign_api.py": {
-      "sha256": "e6a9f0cc22af0e447e3ef6ad282e415e9d5123de9a4c19765a4ce984aaecc04f",
+      "sha256": "acde6343904cdf5e889cb3b5988b70d671924f04922436faec00d5484725ec6a",
       "lines": 79,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_closure.py": {
+      "sha256": "eea82243c599d67afb6edb9fd61d2254dcca36edd2af4d4a7b47bb1e9f1e9112",
+      "lines": 169,
       "kind": "code"
     },
     "backend/app/institutional/campaign_delivery.py": {
@@ -93,7 +108,7 @@
       "kind": "code"
     },
     "backend/app/institutional/campaign_metrics.py": {
-      "sha256": "0624b5f586b1fbee38ed46237be891eca3d0cb46103d01ac75dc16af9a3d70d0",
+      "sha256": "6017513a2ca8e5b0f126ff35bbaf70fda5408cfb920a0a4637bee541fe3e122d",
       "lines": 59,
       "kind": "code"
     },
@@ -108,8 +123,13 @@
       "kind": "code"
     },
     "backend/app/institutional/campaigns.py": {
-      "sha256": "2bf3fc7e314cb1756bb74e7876f39495ddf5d763899a2a8311a1d6c647b56eee",
+      "sha256": "075944d36b110ef787be1096bc73293bd34da0b1ee08ccb9e53704bd4fcd29db",
       "lines": 1226,
+      "kind": "code"
+    },
+    "backend/app/institutional/cbn_profile.py": {
+      "sha256": "fa013a76ea317d6aeda1a44556df442497cc2306d9e43ae05c4b5a6fdb9610d3",
+      "lines": 238,
       "kind": "code"
     },
     "backend/app/institutional/channel_events.py": {
@@ -123,7 +143,7 @@
       "kind": "code"
     },
     "backend/app/institutional/contact_changes.py": {
-      "sha256": "002d9d8fcc81a39f9c9d7ff2c978895235c3480bd36cf078874e5cdd4859f6cf",
+      "sha256": "d2f63f5ae7a746677c30d0a098ed011eb4795acb72e54c271be1073ba865abff",
       "lines": 42,
       "kind": "code"
     },
@@ -132,13 +152,18 @@
       "lines": 154,
       "kind": "code"
     },
+    "backend/app/institutional/program_commercial.py": {
+      "sha256": "45a9b380e905836062dd3791ca220423fdf2fc2973ec298513d1f4e478785e0e",
+      "lines": 309,
+      "kind": "code"
+    },
     "backend/app/institutional/prospect_source_status.py": {
-      "sha256": "61a92dc7acd8ace16bc6fbd4066c3f22fad74ab1a632bce66d034bd84fe65e9d",
+      "sha256": "fa85206e54b67d5f79cf0f7225cc5edae1c5c5a48d7c900e2db3183092ecf079",
       "lines": 20,
       "kind": "code"
     },
     "backend/app/institutional/sales_memory.py": {
-      "sha256": "5114c8614372f0720f9ee402dbdd9110c307f276afff016d7cecfbe6b839bdbd",
+      "sha256": "b54ba94c24849227c4f792253dd803006eabb76b4f99f68e76e732880624e692",
       "lines": 232,
       "kind": "code"
     },
@@ -147,63 +172,73 @@
       "lines": 1887,
       "kind": "code"
     },
+    "backend/app/modules/agents/conversation_style.py": {
+      "sha256": "dcf98410ca7fd5dddf7a0b2c2d950881d5a8fba3965f04b60f68be0be45b9b03",
+      "lines": 43,
+      "kind": "code"
+    },
+    "backend/app/modules/ai/application/admissions_prompt.py": {
+      "sha256": "1cf13369da0743955fcf87c8685bc963a2f680fe4b153ea2a354ed04799d2aa6",
+      "lines": 151,
+      "kind": "code"
+    },
     "backend/tools/conversation_continuity_graph.py": {
-      "sha256": "af7db603a6d644cd4e3fe5f32a37d0f726c71d2a120b3ef2f8ff395a95ef0640",
-      "lines": 633,
+      "sha256": "79ff9c562f7b3eb3bf7c084ff5d4d414dffefccd9a917a67c416a6d418e64d67",
+      "lines": 642,
       "kind": "build_input"
     },
     "docs/adaptation/ACADEMIC_BROCHURE_20261126.md": {
-      "sha256": "f5d42f1b757e231afe7c19df5f1d173be03c5a8709c899360aff237646298285",
+      "sha256": "66831629220f04fdb7dd744a990b5d45c4e7057ada0226c05c981d5549370449",
       "lines": 53,
       "kind": "semantic"
     },
     "docs/adaptation/ACTIVE_ENGINE_ROUTING_20261125.md": {
-      "sha256": "a8c7d1ec3571959556f2e5b735c9b22321f4be678c9235266fbcaa3937c607d2",
+      "sha256": "38ab1dee19a6e6cdc6ad460c94b8ba99f4fa04bd3dbd1e03d03e372ad82227b3",
       "lines": 46,
       "kind": "semantic"
     },
     "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md": {
-      "sha256": "39fdc10f46f96beb750ad379dac476026273c91cd96682253040d865fc4f988a",
+      "sha256": "1fb7299a75e3d6fdfea638ad3139be0d73af006475f2ad6c53508f771fe01308",
       "lines": 29,
       "kind": "semantic"
     },
     "docs/adaptation/AGENT_LANGUAGE_STAGES_20261125.md": {
-      "sha256": "a9ed9e930383ec229a0f5a12bd34dc32373f892286731fd3fe8444bee9485dfc",
+      "sha256": "d2d6cba70943e1d6e5161123246885a2e6963e9d6754c4d9064d34a55ae453d7",
       "lines": 43,
       "kind": "semantic"
     },
     "docs/adaptation/BRANDING_REVIEW_20261125.md": {
-      "sha256": "a808d0b6ea1aa73dfdc091251eb741f55ac04f2a592562198cca57f095efd18b",
+      "sha256": "af6aad733a128ac50251f61f5a15d8b4d0c6bd65463dfcfc633fa995044ba95f",
       "lines": 24,
       "kind": "semantic"
     },
     "docs/adaptation/BROADCAST_REPORT_TIMEOUT_20261125.md": {
-      "sha256": "e24e1b679d7ecf111327414a8ba484407204e51dbbbbb8a10a22aeb5c67f3bd0",
+      "sha256": "c7a1fa9a81cffad8798467f07770b3e979d575f0b7bc019e057d917f7d99d4ad",
       "lines": 32,
       "kind": "semantic"
     },
     "docs/adaptation/CAMPAIGN_ADVISOR_ENTRY_20261124.md": {
-      "sha256": "35c6e3c8f2246841fb817e84b6895fd61cb570ef04b7ebd03e8a9e744e13cc01",
+      "sha256": "8bfb8c409abfad5de9c7133cfe21c0753468ed59026aee4ec3a757d0deb63b0c",
       "lines": 23,
       "kind": "semantic"
     },
     "docs/adaptation/CAMPAIGN_LAUNCH_2026_20261126.md": {
-      "sha256": "e931cf2e985ab56e3959d50dd44d6b0f60c59b19b8826c2c085abb712e0f8e65",
+      "sha256": "2bf655013733c0b7b75a1f9dcbc708ffdd91d3eb3a7bd8d025568928d9231401",
       "lines": 37,
       "kind": "semantic"
     },
     "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md": {
-      "sha256": "ce4766c4b5d6df10457cdad672bb91c9b781f0f54fa329a403c6190417520f67",
+      "sha256": "62399cf0c7c891ff696d20716e71d5261f88f41393f7c3714d975b6915c373b2",
       "lines": 33,
       "kind": "semantic"
     },
     "docs/adaptation/CRM_CONTACT_SAVE_OPTOUT_20261127.md": {
-      "sha256": "aa5bfcbfe2a426dc851e363a6541e40108bb69a21348b757f7e822ccb00592ff",
+      "sha256": "1b6ca497fc4981b0819e1cb0f2381e4522e5ecdaa7ed73bc89158fd3788b3c67",
       "lines": 35,
       "kind": "semantic"
     },
     "docs/adaptation/CRM_FOLLOWUPS_20261124.md": {
-      "sha256": "9c24b078c8508acb197ba42af3e9b69f3a3203e8bc396e73afa2a1b7657dc73d",
+      "sha256": "5aadd4d3a8916654ebf5c7a4028d3dc3bab6eb3d192ff4fb6e9ed83af4159171",
       "lines": 59,
       "kind": "semantic"
     },
@@ -213,32 +248,37 @@
       "kind": "semantic"
     },
     "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md": {
-      "sha256": "8ac93c82b43eb341587cf4ec860cfc1145fc9f49ca23adf3ebfa8067e7b16ad4",
+      "sha256": "d4348e629e9750c43753469fb18ee7b14f1abe4e3fefec94cca537ab74dab943",
       "lines": 59,
       "kind": "semantic"
     },
+    "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md": {
+      "sha256": "2634a836b99b347fb185abd7cc2f24b14883d59ccabe3239d347cd01088149a0",
+      "lines": 35,
+      "kind": "semantic"
+    },
     "docs/adaptation/HIGHER_INITIAL_PAYMENT_POLICY_20261124.md": {
-      "sha256": "f04337e5562b5cdf1eef546f9c8b1af335ab84009b783b735004975864a65da5",
+      "sha256": "62e8b886a50ed64d8ab2c489dbf3b400c091be2226ff663c10c229ea86d849ed",
       "lines": 18,
       "kind": "semantic"
     },
     "docs/adaptation/INBOX_CONTEXT_MEDIA_RECOVERY_20261125.md": {
-      "sha256": "ae5426d4254488f13da84f378c54200aa31f37e5c7ee1adba1a2957e98e8ac34",
+      "sha256": "eb937a1f7dbdc40226bc87a3fcad67ff21817e81cc7e63c61a391b872502cdd8",
       "lines": 62,
       "kind": "semantic"
     },
     "docs/adaptation/INBOX_EDITS_SENDERS_PREICFES_20261125.md": {
-      "sha256": "2fd503d5b0f9376b13caef767eb571d6e69acd88ef00b3cd5699e4c1466f85a7",
+      "sha256": "2fb3a666eeff1b29d311953ef80dc1fabdaf777ca04278e65bdaf3fd72ae4bcb",
       "lines": 45,
       "kind": "semantic"
     },
     "docs/adaptation/INBOX_OWN_PROJECTION_BINDING_20261125.md": {
-      "sha256": "c86cbb59f79d5525c7d79dc318633253c2693351edafad55002c354305b1ac83",
+      "sha256": "96d1633bc276dbfa5cd46c6cc211c7f0083f2c33f06570aeaae66d479dc83247",
       "lines": 37,
       "kind": "semantic"
     },
     "docs/adaptation/INBOX_PRICES_COMMENTS_SCALE_20261126.md": {
-      "sha256": "01b89a71712920b8be45c3222ca0bf87247cb34299a907dc7cdf42657d7b0ba5",
+      "sha256": "b261b4f6fdacd7e07dcfbf871681c72a0e18bd1b15825220406e1acd41d1d29d",
       "lines": 67,
       "kind": "semantic"
     },
@@ -248,7 +288,7 @@
       "kind": "semantic"
     },
     "docs/adaptation/INBOX_QUEUE_VOICES_DASHBOARD_20261126.md": {
-      "sha256": "dc6a8cb68d6ced8ad6cd770e11680471bed7a6aeb5e074376c135689cc69d3c6",
+      "sha256": "a5ab5eb4b191558c4945eab25dbd7314685ee438180bc4f0b1d3602f921e141b",
       "lines": 74,
       "kind": "semantic"
     },
@@ -263,12 +303,12 @@
       "kind": "semantic"
     },
     "docs/adaptation/MASTERCLASS_INTERESTS_20261124.md": {
-      "sha256": "898242a23c2e5085523f22c7c7042b3b4dae0715a18150dea8d2e2fe4e127d0a",
+      "sha256": "28da10a3070be9c58d59e20ac3064045ae863ed20c9c49e47ad314988b749ba3",
       "lines": 11,
       "kind": "semantic"
     },
     "docs/adaptation/P23_RINOVA_WEBHOOK_PREPARATION_20261125.md": {
-      "sha256": "219353abe3e1505dca4860e5af6c6c5bfcfae5896c17aab517aca7f536af3056",
+      "sha256": "f3061cfd7bf99016b5ce8fdf4b0112d08182f8a8764431a0b23ae2eeaad86c81",
       "lines": 21,
       "kind": "semantic"
     },
@@ -278,32 +318,32 @@
       "kind": "semantic"
     },
     "docs/adaptation/P23_SIIE_R7_CATALOGS_20261125.md": {
-      "sha256": "a46a01007e510017500d9b0c30f56854d44dd879bf4eab1ae86fcb4f7e8a1e22",
+      "sha256": "003f7d91d1d49a59234043e8f9a1c63820e98a6a18b7afe213d6042862ea8758",
       "lines": 31,
       "kind": "semantic"
     },
     "docs/adaptation/P24_INBOX_LIST_DIAGNOSIS_20261125.md": {
-      "sha256": "235dba3913ee0d32d561854729b1575f7166fe31b9b1ed90e9a5a9ae24dc4cb8",
+      "sha256": "be17afab6d78db6ede99c770169596df9b0a508d9cd2a8f55140c99bf4aec4a5",
       "lines": 88,
       "kind": "semantic"
     },
     "docs/adaptation/P24_LOAD_PERFORMANCE_ANALYSIS_20261125.md": {
-      "sha256": "d0a327a52cb89ef9663ce91a270d283645045a6738fb448a645df5a109632f93",
+      "sha256": "cff3fd758a23e95f8e9e8c616f09ee9ff6993c7b17ee6d812445d96f5b343a45",
       "lines": 42,
       "kind": "semantic"
     },
     "docs/adaptation/PREICFES_CAMPAIGN_LAUNCH_20261125.md": {
-      "sha256": "8318793d79434e4d8f267e9c2679adf026b4cfec0c55ea5375dedf3794b0d787",
+      "sha256": "b682319189b4824fc0e2508ae13eee6767aa6e8dc2b9174cd269338b61fa1337",
       "lines": 33,
       "kind": "semantic"
     },
     "docs/adaptation/PREICFES_PROSPECTS_20261125.md": {
-      "sha256": "4d47547966499dd250df115c2a491ad319f73a55c62128ac44b78c8f0ef3a9c8",
+      "sha256": "11804e41fb928842b27f378b9814956dfa7d02b2bb974e884657a251afa2173b",
       "lines": 41,
       "kind": "semantic"
     },
     "docs/adaptation/PROGRAM_CAMPAIGNS_20261124.md": {
-      "sha256": "611eb5fe5734264d97d17be629fc1c14f9318b508dbeb582742705a435d97943",
+      "sha256": "dcf3f510927d1d569911ca7b15cbc4d28a08370e99445dd7c0fa5f9067de0f79",
       "lines": 37,
       "kind": "semantic"
     },
@@ -318,17 +358,22 @@
       "kind": "semantic"
     },
     "docs/adaptation/PROGRAM_MISSING_INFORMATION_20261126.md": {
-      "sha256": "b24cfc068520f7b2b11acbf28c7bbfbfff4ecc60b3369be015a00604a0287e4a",
+      "sha256": "956b7beda47cedaf2dad66c425101d93ee61147d5215e0cd1ffeb1e6884c50c6",
       "lines": 36,
       "kind": "semantic"
     },
+    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md": {
+      "sha256": "a86fabe7a6a2fe91cdb4d5e743df3e7fa754b541a456de23c753a4bfd5e3a4a7",
+      "lines": 65,
+      "kind": "semantic"
+    },
     "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md": {
-      "sha256": "f5437b869f2e28ab410a3bce6118c251e2c6c0b4efafabcef511d39ab940d89e",
+      "sha256": "120471c6488f57638bbf658197fa8faa25889266ecea6ca995c4cfe2642d4736",
       "lines": 54,
       "kind": "semantic"
     },
     "docs/adaptation/SIIE_WEBHOOK_PILOT_20261125.md": {
-      "sha256": "ecf355fa11de569eb99b2526775aee2412431c3c816b43bdc97e2e36f4b5c7df",
+      "sha256": "042fe261f8532bc0c3b73a0156ec2fc9837deb86ffd3f5f5ff0fba0fc5b45e71",
       "lines": 43,
       "kind": "semantic"
     },
@@ -358,7 +403,7 @@
       "kind": "build_input"
     },
     "docs/adaptation/fragments/continuity-20261127-06.json": {
-      "sha256": "d6ca791befe2ebb615190d2fb0ff40ca3d5099d4101ac6d4b2784bc4ff86b05d",
+      "sha256": "b4f5feafcb696cde238037e6e779f03357a67738314bd67483f96e9cd7020529",
       "lines": 578,
       "kind": "build_input"
     },
@@ -367,38 +412,48 @@
       "lines": 616,
       "kind": "build_input"
     },
+    "docs/adaptation/fragments/continuity-20261127-08.json": {
+      "sha256": "86e185b3f564e596be92bfef97d7c9e7d92c91bf163aeb04a5b78baf1e34ddb7",
+      "lines": 766,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-09.json": {
+      "sha256": "ec51ba2d80ba2b26c861fb5e914863038299dee92daab2f818f386ac922bb9da",
+      "lines": 720,
+      "kind": "build_input"
+    },
     "frontend/src/institution/BroadcastProspectSetup.tsx": {
-      "sha256": "f1e5b223bf4657de90785118adb02ef37aaf42d51e42a244103c6bf6e348b3b9",
+      "sha256": "8a310aead288c643ef6ff333e2e576c7ac7adb376e276a837c6b71a43bcf80cf",
       "lines": 360,
       "kind": "code"
     },
     "frontend/src/institution/BroadcastWorkspace.tsx": {
-      "sha256": "09a5e03b46fba5aedc94aad1c8039ea63846b09c10ddde72a5b6d0155e313ade",
+      "sha256": "f5999636f84ebf4fb46b3871014d5bb33bb514f4c9a82074933dc429b4d136d4",
       "lines": 2427,
       "kind": "code"
     },
     "frontend/src/institution/CampaignWorkspace.tsx": {
-      "sha256": "1920f70748688bb7713505389af8a1a1c00b96086e2762091e282de21eecb50f",
-      "lines": 2048,
+      "sha256": "c0c1f14c78b7a2902499c74b17220bc2ef1926dcc2c670f6564a397899623155",
+      "lines": 2053,
       "kind": "code"
     },
     "frontend/src/institution/ContactPreference.tsx": {
-      "sha256": "3687340ddb5a3744bce67979a7148a23e2c4aaffa07a253d40a214f1beaeb23f",
+      "sha256": "13d95d70feffd9b3f746c9745621b1ee1b4c8355151c13835b959f7a7b403361",
       "lines": 80,
       "kind": "code"
     },
     "frontend/src/institution/NoContactList.tsx": {
-      "sha256": "57b86ab7d0469ba4aac89ff370b64b105a27a8486ab383c521ce4daf26669e9d",
+      "sha256": "51c6a9c1f4eefb7709110c0a5fbe238090ec9015348da42c8c801f605fdffab8",
       "lines": 33,
       "kind": "code"
     },
     "frontend/src/institution/Workspace.tsx": {
-      "sha256": "279c5287e7708eb0d8af34cea23564039587eef53a14094354212ffc09f9996f",
+      "sha256": "45f606a0613a536edba85852241f8a02a07b032de884f975b79bdac6e1116562",
       "lines": 2776,
       "kind": "code"
     },
     "frontend/src/institution/contactEditing.ts": {
-      "sha256": "a531e4128f3c7d4df78dc76ff9ad1a07b9d84250550f9849a6fef71bbf33302e",
+      "sha256": "d5277b3fe1e1216f9fb74c5393742fc00733b7b2a59d73bc558ddcf76093cf41",
       "lines": 72,
       "kind": "code"
     }
@@ -418,6 +473,7 @@
     "docs/adaptation/CRM_FOLLOWUPS_20261124.md",
     "docs/adaptation/CRM_IMPORT_2026_20261126.md",
     "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md",
+    "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md",
     "docs/adaptation/HIGHER_INITIAL_PAYMENT_POLICY_20261124.md",
     "docs/adaptation/INBOX_CONTEXT_MEDIA_RECOVERY_20261125.md",
     "docs/adaptation/INBOX_EDITS_SENDERS_PREICFES_20261125.md",
@@ -439,6 +495,7 @@
     "docs/adaptation/PROGRAM_FICHES_AUDIT_20261126.md",
     "docs/adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md",
     "docs/adaptation/PROGRAM_MISSING_INFORMATION_20261126.md",
+    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md",
     "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md",
     "docs/adaptation/SIIE_WEBHOOK_PILOT_20261125.md"
   ],
@@ -450,34 +507,36 @@
     "docs/adaptation/fragments/continuity-20261127-04.json",
     "docs/adaptation/fragments/continuity-20261127-05.json",
     "docs/adaptation/fragments/continuity-20261127-06.json",
-    "docs/adaptation/fragments/continuity-20261127-07.json"
+    "docs/adaptation/fragments/continuity-20261127-07.json",
+    "docs/adaptation/fragments/continuity-20261127-08.json",
+    "docs/adaptation/fragments/continuity-20261127-09.json"
   ],
   "counts": {
-    "semantic_sources": 44,
-    "code_sources": 28,
-    "semantic_nodes": 329,
-    "semantic_edges": 365,
-    "ast_nodes": 378,
-    "ast_edges": 1182,
-    "literal_code_references": 18,
-    "raw_edges": 1565,
-    "nodes": 707,
-    "edges": 1199,
-    "communities": 38
+    "semantic_sources": 48,
+    "code_sources": 33,
+    "semantic_nodes": 378,
+    "semantic_edges": 438,
+    "ast_nodes": 424,
+    "ast_edges": 1293,
+    "literal_code_references": 19,
+    "raw_edges": 1750,
+    "nodes": 802,
+    "edges": 1360,
+    "communities": 44
   },
   "integrity_counts": {
-    "excluded_dangling_edges": 364,
+    "excluded_dangling_edges": 388,
     "excluded_self_loop_edges": 1,
     "dangling_by_relation": {
-      "imports": 149,
-      "imports_from": 215
+      "imports_from": 232,
+      "imports": 156
     },
     "duplicate_pair_groups": 1,
     "compacted_parallel_edges": 1,
     "raw_missing_endpoints": 0,
     "raw_self_loops": 1
   },
-  "input_fingerprint": "9f83cebedbe0e3f4100c5085b64655dad33a5df4b6cc95b7519cdd1938766274",
+  "input_fingerprint": "f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350",
   "parallel_pair_summary": [
     {
       "source": "backend_app_institutional_commercial_followup",
@@ -494,12 +553,12 @@
       ]
     }
   ],
-  "graph_sha256": "a8f0290ee4701e8c1da8bed71474439bdb585876cae62eeb87568c57cb2e9f69",
+  "graph_sha256": "076602d6eea0c0cd109731d8c33bf1dd0e8283cb7ed7d49637c24d51b9324b5c",
   "graphify_version": "0.9.36",
   "cost": {
     "external_model_calls": 0,
     "host_tokens": null,
     "note": "Session/subagent token consumption was not measured"
   },
-  "query_sha256": "68b8c39bd2417b1517c5ac708c2fa947f1a986a3c4918d47d0278ab5cd6a1895"
+  "query_sha256": "bacfae3d079668fedf3ca3974b5e509a6331ede8694ce406085d8f304ea1f1ba"
 }
