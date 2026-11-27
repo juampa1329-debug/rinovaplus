@@ -37,3 +37,17 @@ Se expone la disponibilidad ya soportada por `ProgramWrite.active`, preservándo
 Paginación de Inbox: modo explícito de páginas vigentes permite continuar ante actividad nueva y devuelve aviso `pageChanged`; cada página mantiene su transacción de lectura y autorización. No es un snapshot histórico entre peticiones: actividad nueva puede reordenar resultados. Otros consumidores conservan el contrato de ancla estricto. Mutaciones y controles de mensajes no cambian. No atribuir a esta navegación la aceptación completa de P24 ni una auditoría exhaustiva.
 
 Las aplicaciones nativas de los datos y verificaciones finales se registrarán en el informe de continuidad; este archivo por sí solo no acredita guardado productivo.
+
+## Aplicación nativa comprobada
+
+Veinte fichas distintas actualizadas, con22guardados por la revisión adicional de las dos fichas de Contabilidad. Importes financieros contrastados antes/después en esas operaciones, sin cambios. Contabilidad diurna/nocturna revisión7: duración3semestres; se conserva el contenido de la malla anterior, pero sin atribuirlo a cuatro semestres. Su distribución oficial actualizada entre tres semestres queda por confirmar.
+
+Oferta activa24fichas. Variantes pausadas y visibles con «Mostrar programas pausados»: Asistente Administrativo nocturno revisión6, Repostería fines de semana revisión5 y Bartender separado revisión8. Se conservan sus fichas, importes e historial; sus tres especialistas también están pausados. El catálogo predeterminado de agentes sólo devuelve activos; una ficha CRM que conserva un interés pausado recibe explicación de disponibilidad sin publicar tarifas históricas.
+
+Repostería diurna revisión6 conserva prácticas los sábados y teoría sábados o entre semana; Barismo/Bartender conjunto revisión7,2semestres y ambas jornadas. Inglés diurno/nocturno revisión10, A1+A2 en un semestre. Aduanas revisión5,3semestres/nocturna. PRE ficha9 y especialista3, grados10/11 explícitos y excepción al mínimo16 de otras carreras.
+
+El especialista de Contabilidad inspeccionado tiene instrucciones,37skills, memoria y CRM habilitados; estilo, objetivos y reglas adicionales vacíos no equivalen a ausencia del prompt efectivo. La herencia de modelos se muestra expresamente. El especialista PRE tiene objetivos e instrucciones propias y ahora también estilo/reglas/derivación explícitos. No se rellenaron indiscriminadamente todos los perfiles ni se declaró que37guías se consultan en cada turno.
+
+Pendientes reales: hora de entrada diurna y horario de oficina; denominaciones exactas de varios diplomas, acreditaciones y condiciones particulares de prácticas; distribución nueva de Contabilidad; tarifas/grupos de Francés y Portugués; temario detallado y calendario completo de PRE. No confundir esos datos faltantes con desconocer los importes vigentes o las fechas completas ya confirmadas. No se dedujeron datos de la parte TIC recortada: se conserva la ficha previa.
+
+Se intentó añadir una presentación descriptiva a Multimedia, pero la API devolvió validación genérica. La ficha permanece en revisión5; se retiró el borrador adicional sin afirmar guardado. Requisitos, malla y tarifas previas siguen disponibles. Este rechazo de validación queda como incidencia pendiente de diagnóstico, no se oculta como éxito. Las otras dos presentaciones opcionales propuestas en ese lote no se ejecutaron.
