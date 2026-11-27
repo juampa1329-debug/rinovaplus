@@ -1,17 +1,17 @@
 {
   "raw_graphify_diagnostic": {
-    "node_count": 614,
+    "node_count": 707,
     "unverified_node_count": 0,
-    "raw_edge_count": 1302,
+    "raw_edge_count": 1565,
     "non_object_edges": 0,
     "missing_endpoint_edges": 0,
-    "dangling_endpoint_edges": 328,
+    "dangling_endpoint_edges": 364,
     "self_loop_edges": 1,
-    "valid_candidate_edges": 974,
+    "valid_candidate_edges": 1201,
     "exact_duplicate_edges": 0,
-    "directed_unique_endpoint_pairs": 973,
+    "directed_unique_endpoint_pairs": 1200,
     "directed_same_endpoint_collapsed_edges": 1,
-    "undirected_unique_endpoint_pairs": 972,
+    "undirected_unique_endpoint_pairs": 1199,
     "undirected_same_endpoint_collapsed_edges": 2,
     "same_endpoint_group_count": 1,
     "relation_variant_groups": 0,
@@ -19,8 +19,8 @@
     "source_location_variant_groups": 1,
     "context_variant_groups": 0,
     "post_build_graph_type": "DiGraph",
-    "post_build_node_count": 614,
-    "post_build_edge_count": 972,
+    "post_build_node_count": 707,
+    "post_build_edge_count": 1199,
     "post_build_error": "",
     "producer_suppression": {
       "path": "graphify/extract.py",
@@ -107,8 +107,8 @@
           "backend/app/institutional/commercial_followup.py"
         ],
         "source_locations": [
-          "L493",
-          "L520"
+          "L525",
+          "L552"
         ],
         "contexts": [
           ""
@@ -117,11 +117,11 @@
     ]
   },
   "counts": {
-    "excluded_dangling_edges": 328,
+    "excluded_dangling_edges": 364,
     "excluded_self_loop_edges": 1,
     "dangling_by_relation": {
-      "imports": 140,
-      "imports_from": 188
+      "imports": 149,
+      "imports_from": 215
     },
     "duplicate_pair_groups": 1,
     "compacted_parallel_edges": 1,
@@ -1341,7 +1341,18 @@
     },
     {
       "source": "backend_app_institutional_contact_preference",
-      "target": "app_institutional",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_preference.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_preference",
+      "target": "uuid",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -1352,7 +1363,7 @@
     },
     {
       "source": "backend_app_institutional_contact_preference",
-      "target": "app_institutional_auth",
+      "target": "pydantic",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -1363,12 +1374,254 @@
     },
     {
       "source": "backend_app_institutional_contact_preference",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_preference.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_preference",
+      "target": "app_institutional_models",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_preference.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_preference",
+      "target": "app_institutional_auth",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_preference.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_institutional_store",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L7",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_preference",
+      "target": "app_sql_workspace",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_preference.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_changes",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_changes.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_contact_changes",
+      "target": "app_sql_workspace",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/contact_changes.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "uuid",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "pydantic",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_institutional_auth",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_institutional_models",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_institutional_policy",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_institutional_store",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_modules_crm_configuration_application_service",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_modules_inbox_application_service",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_modules_inbox_application_service",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_modules_inbox_application_state",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "app_sql_workspace",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2606,34 +2859,12 @@
     },
     {
       "source": "frontend_src_institution_workspace",
-      "target": "frontend_src_institution_contactpreference",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "frontend_src_institution_workspace",
-      "target": "frontend_src_institution_contactpreference_contactpreference",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "frontend_src_institution_workspace",
       "target": "frontend_src_institution_commercialfollowup",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2644,7 +2875,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2655,7 +2886,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2666,7 +2897,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2677,7 +2908,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2688,7 +2919,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2699,7 +2930,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2710,7 +2941,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2721,7 +2952,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2732,7 +2963,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2743,7 +2974,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2754,7 +2985,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2765,7 +2996,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2776,7 +3007,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2787,7 +3018,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2798,7 +3029,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2809,7 +3040,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2820,7 +3051,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2831,7 +3062,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2842,7 +3073,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2853,7 +3084,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2864,7 +3095,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2875,7 +3106,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2886,7 +3117,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2897,7 +3128,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2908,7 +3139,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2919,7 +3150,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2930,7 +3161,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2941,7 +3172,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2952,7 +3183,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2963,7 +3194,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2974,7 +3205,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2985,7 +3216,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2996,7 +3227,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3007,7 +3238,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3018,7 +3249,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3029,7 +3260,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3040,7 +3271,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3051,7 +3282,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3062,7 +3293,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3073,7 +3304,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3084,7 +3315,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3095,7 +3326,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3106,7 +3337,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3117,7 +3348,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3128,7 +3359,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3139,7 +3370,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3150,7 +3381,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3161,7 +3392,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3172,7 +3403,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3183,7 +3414,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3194,7 +3425,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3205,7 +3436,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3216,7 +3447,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3227,7 +3458,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3238,7 +3469,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3249,7 +3480,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3260,7 +3491,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3271,7 +3502,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3282,7 +3513,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3293,7 +3524,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3304,7 +3535,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3315,7 +3546,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3326,7 +3557,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3337,7 +3568,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3348,7 +3579,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3359,7 +3590,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3370,7 +3601,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3381,7 +3612,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3392,7 +3623,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3403,7 +3634,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3414,7 +3645,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3425,7 +3656,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3436,7 +3667,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3447,7 +3678,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3458,7 +3689,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3469,7 +3700,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3480,7 +3711,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L55",
+      "source_location": "L56",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3491,7 +3722,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L55",
+      "source_location": "L56",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3580,6 +3811,160 @@
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/NoContactList.tsx",
       "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "ref_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_shared_ui",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_shared_ui_badge",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_shared_ui_button",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_shared_ui_field",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_shared_ui_notice",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_settings",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_settings_useresource",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_api",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_api_useinstitution",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_api_useintent",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactpreference",
+      "target": "frontend_src_institution_api_usetask",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/ContactPreference.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactediting",
+      "target": "frontend_src_shared_demo",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/contactEditing.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_contactediting",
+      "target": "frontend_src_shared_demo_client",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/contactEditing.ts",
+      "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3711,7 +4096,18 @@
       "context": "submodule_import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L5",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_workspace",
+      "target": "backend_app_institutional_db",
+      "relation": "imports_from",
+      "context": "submodule_import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/workspace.py",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -3746,7 +4142,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/Workspace.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast"
     }
@@ -3760,7 +4156,7 @@
           "relation": "contains",
           "confidence": "EXTRACTED",
           "source_file": "backend/app/institutional/commercial_followup.py",
-          "source_location": "L493",
+          "source_location": "L525",
           "weight": 1.0,
           "_origin": "ast"
         },
@@ -3768,7 +4164,7 @@
           "relation": "contains",
           "confidence": "EXTRACTED",
           "source_file": "backend/app/institutional/commercial_followup.py",
-          "source_location": "L520",
+          "source_location": "L552",
           "weight": 1.0,
           "_origin": "ast"
         }
@@ -3776,18 +4172,18 @@
     }
   ],
   "view_graphify_diagnostic": {
-    "node_count": 614,
+    "node_count": 707,
     "unverified_node_count": 0,
-    "raw_edge_count": 972,
+    "raw_edge_count": 1199,
     "non_object_edges": 0,
     "missing_endpoint_edges": 0,
     "dangling_endpoint_edges": 0,
     "self_loop_edges": 0,
-    "valid_candidate_edges": 972,
+    "valid_candidate_edges": 1199,
     "exact_duplicate_edges": 0,
-    "directed_unique_endpoint_pairs": 972,
+    "directed_unique_endpoint_pairs": 1199,
     "directed_same_endpoint_collapsed_edges": 0,
-    "undirected_unique_endpoint_pairs": 971,
+    "undirected_unique_endpoint_pairs": 1198,
     "undirected_same_endpoint_collapsed_edges": 1,
     "same_endpoint_group_count": 0,
     "relation_variant_groups": 0,
@@ -3795,8 +4191,8 @@
     "source_location_variant_groups": 0,
     "context_variant_groups": 0,
     "post_build_graph_type": "DiGraph",
-    "post_build_node_count": 614,
-    "post_build_edge_count": 972,
+    "post_build_node_count": 707,
+    "post_build_edge_count": 1199,
     "post_build_error": "",
     "producer_suppression": {
       "path": "graphify/extract.py",

@@ -43,6 +43,8 @@ CODE_SOURCES = (
     "backend/app/institutional/campaigns.py",
     "backend/app/institutional/campaign_metrics.py",
     "backend/app/institutional/contact_preference.py",
+    "backend/app/institutional/contact_changes.py",
+    "backend/app/institutional/workspace.py",
     "backend/app/institutional/campaign_api.py",
     "backend/app/institutional/campaign_policy.py",
     "backend/app/institutional/channel_events.py",
@@ -51,6 +53,8 @@ CODE_SOURCES = (
     "frontend/src/institution/CampaignWorkspace.tsx",
     "frontend/src/institution/Workspace.tsx",
     "frontend/src/institution/NoContactList.tsx",
+    "frontend/src/institution/ContactPreference.tsx",
+    "frontend/src/institution/contactEditing.ts",
 )
 SNAPSHOT_NOTE = (
     "Vista específica de continuidad compilada el 27 de noviembre de 2026. "
@@ -70,6 +74,18 @@ def write(path: Path, value: object) -> None:
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def source_hash_matches(path: Path, expected: str) -> bool:
+    """Git may convert CRLF/LF; accept only byte-identical content otherwise.
+
+    Never refresh a stale extraction hash just to make the build pass. The stored
+    digest must match the actual bytes or an exact LF/CRLF transport variant.
+    """
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    return any(hashlib.sha256(value).hexdigest() == expected
+               for value in (raw, lf, lf.replace(b"\n", b"\r\n")))
 
 
 def relative(value: str) -> str:
@@ -182,7 +198,7 @@ def read_fragments() -> tuple[dict, dict, list[str]]:
                 raise ValueError(f"Overlapping fragment coverage: {path}")
             source = ROOT / path
             actual_lines = len(source.read_text(encoding="utf-8-sig").splitlines())
-            if lines != actual_lines or sha(source) != hashes[raw_path]:
+            if lines != actual_lines or not source_hash_matches(source, hashes[raw_path]):
                 raise ValueError(f"Stale or partial semantic extraction: {path}")
             if path not in represented:
                 raise ValueError(f"Covered file has no semantic node: {path}")
