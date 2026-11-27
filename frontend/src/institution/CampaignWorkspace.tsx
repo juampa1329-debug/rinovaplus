@@ -1903,6 +1903,7 @@ function Executions({
           una regla para futuros eventos.
         </p>
       )}
+      <div className="campaign-run-list" role="region" aria-label="Personas en seguimiento" tabIndex={0}>
       {resource.value.items.map((v) => (
         <div className="campaign-run" key={v.id}>
           <label>
@@ -1941,6 +1942,7 @@ function Executions({
           </Button>
         </div>
       ))}
+      </div>
       <div className="institution-actions">
         <Button
           variant="secondary"

@@ -1183,19 +1183,11 @@ class Campaigns:
             )
             # All immutable attempts participate, not only CurrentQueueId. A failed
             # attempt remains visible after a reviewed successful retry.
+            from app.institutional.campaign_metrics import attempts_query
             jobs = rows(
-                c,
-                "SELECT TOP(100001) e.EnrollmentId,e.Variant,step.StepId,q.QueueId,q.State,q.ExternalId,CASE WHEN EXISTS(SELECT 1 FROM crm_channels2.WebhookEvent reply JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=reply.InstitutionId AND i.IdentityId=e.IdentityId WHERE reply.InstitutionId=e.InstitutionId AND reply.IntegrationId=q.IntegrationId AND reply.Kind='message' AND reply.Status='processed' AND JSON_VALUE(reply.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2=q.ExternalId AND JSON_VALUE(reply.Payload,'$.author') COLLATE Latin1_General_100_BIN2=i.ExternalId) THEN 1 ELSE 0 END AS Replied FROM crm_campaign8.Enrollment e JOIN crm_campaign8.Step step ON step.InstitutionId=e.InstitutionId AND step.EnrollmentId=e.EnrollmentId JOIN crm_broadcast7.Recipient r ON r.InstitutionId=step.InstitutionId AND r.CampaignId=step.NativeCampaignId JOIN crm_broadcast7.Attempt a ON a.InstitutionId=r.InstitutionId AND a.RecipientId=r.RecipientId JOIN crm_channels2.SendJob q ON q.InstitutionId=a.InstitutionId AND q.QueueId=a.QueueId WHERE e.InstitutionId=? AND e.FlowId=?",
-                institution(self.settings),
-                id,
+                c, attempts_query(materialized=getattr(self.settings, "postgres_deployment", False)),
+                institution(self.settings), id,
             )
-            chats = rows(
-                c,
-                "SELECT TOP(100001) e.EnrollmentId,e.Variant,step.StepId,q.QueueId,q.State,q.ExternalId,CASE WHEN EXISTS(SELECT 1 FROM crm_channels2.WebhookEvent reply JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=reply.InstitutionId AND i.IdentityId=e.IdentityId WHERE reply.InstitutionId=e.InstitutionId AND reply.IntegrationId=q.IntegrationId AND reply.Kind='message' AND reply.Status='processed' AND JSON_VALUE(reply.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2=q.ExternalId AND JSON_VALUE(reply.Payload,'$.author') COLLATE Latin1_General_100_BIN2=i.ExternalId) THEN 1 ELSE 0 END AS Replied FROM crm_campaign8.Enrollment e JOIN crm_campaign8.Step step ON step.InstitutionId=e.InstitutionId AND step.EnrollmentId=e.EnrollmentId JOIN crm_campaign8.Event link ON link.InstitutionId=step.InstitutionId AND link.StepId=step.StepId AND link.Kind='native_chat' JOIN crm_channels2.SendJob q ON q.InstitutionId=link.InstitutionId AND q.QueueId=TRY_CONVERT(uniqueidentifier,JSON_VALUE(link.Document,'$.queue_id')) WHERE e.InstitutionId=? AND e.FlowId=?",
-                institution(self.settings),
-                id,
-            )
-            jobs += chats
             if len(jobs) > 100000:
                 raise HTTPException(413, "campaign_metrics_scope_limit")
             variants = []
