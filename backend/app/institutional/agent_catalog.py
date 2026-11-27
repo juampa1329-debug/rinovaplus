@@ -148,7 +148,7 @@ class Catalog:
         if program_id is not None:
             row = one(
                 c,
-                "SELECT * FROM crm_agents5.Program WHERE InstitutionId=? AND ProgramId=? AND Active=1",
+                "SELECT * FROM crm_agents5.Program WHERE InstitutionId=? AND ProgramId=?",
                 institution(self.settings),
                 program_id,
             )
@@ -157,7 +157,8 @@ class Catalog:
                     "program_id": row["ProgramId"],
                     "name": row["Name"],
                     "school": row["School"],
-                    "schedule": row["Schedule"],
+                    "schedule": row["Schedule"] if row.get("Active", True) else "",
+                    "available": bool(row.get("Active", True)),
                     "revision": row["Revision"],
                     "authority": row["Authority"],
                 }
@@ -166,9 +167,19 @@ class Catalog:
             )
             if selected is None:
                 raise AiError("institutional_program_not_in_active_offer", 409)
-            commercial = agent_facts(read_profile(c, self.settings, program_id))
+            # Existing CRM interests may still reference a paused offering.
+            # Explain its availability rather than fail the entire reply or
+            # publish its historical payment conditions as a current offer.
+            commercial = agent_facts(read_profile(c, self.settings, program_id)) if selected["available"] else None
             if commercial:
                 selected["commercial"] = commercial
+            if not selected["available"]:
+                selected["availability_guidance"] = (
+                    "Este registro está pausado y no pertenece a la oferta actual. "
+                    "Explica esa disponibilidad y usa el catálogo vigente para orientar. "
+                    "Sus horarios y precios históricos no son una oferta vigente. "
+                    "La ficha CRM no confirma ni modifica un expediente de matrícula en SIIE."
+                )
         fingerprint = digest([catalog, selected, informational, skill_policy])
         selected = project_facts(selected, skill_policy)
         informational = project_facts(informational, skill_policy)
