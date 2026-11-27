@@ -38,6 +38,7 @@ CODE_SOURCES = (
     "backend/app/institutional/prospect_source_status.py",
     "backend/app/institutional/sales_memory.py",
     "backend/app/institutional/campaign_runtime.py",
+    "backend/app/institutional/campaign_closure.py",
     "backend/app/institutional/campaign_delivery.py",
     "backend/app/institutional/campaigns.py",
     "backend/app/institutional/campaign_metrics.py",
@@ -106,6 +107,8 @@ def save_followup_query() -> dict:
         "artifacts/live/followup-automation-20261127.json",
         "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md",
         "artifacts/live/advanced-followup-activation-20261127.json",
+        "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md",
+        "artifacts/live/form-payment-closure-followup-20261127.json",
     }
     selected_nodes = [node_id for node_id, node in graph.nodes(data=True)
                       if node.get("_origin") == "semantic"
