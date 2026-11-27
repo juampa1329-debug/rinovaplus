@@ -19,8 +19,10 @@ def opted_out(text):
         r"(?:^|[.!;,]\s*)(?:por favor[, ]+)?(?:"
         r"no (?:quiero|deseo) (?:(?:seguir|mas) )?(?:recibir )?(?:mas )?(?:mensajes|publicidad|promociones)\b|"
         r"no (?:quiero|deseo) (?:seguir )?recibir (?:mas )?informacion\b|"
-        r"no (?:quiero|deseo) que me (?:escriban|contacten|llamen|envien|manden)\b|"
-        r"no me (?:contacten|escriban|llamen|envien|manden)\b|"
+        r"no (?:quiero|deseo) que me (?:escriban|contacten|llamen)\b|"
+        r"no (?:quiero|deseo) que me (?:envien|manden) (?:mas )?(?:mensajes|publicidad|promociones)\b|"
+        r"no me (?:contacten|escriban|llamen)\b|"
+        r"no me (?:envien|manden) (?:mas )?(?:mensajes|publicidad|promociones)\b|"
         r"(?:dejen|deja) de (?:escribirme|contactarme|llamarme|mandarme mensajes|enviarme mensajes)\b|"
         r"(?:elimin(?:en|a)me|borrenme|retirenme) de (?:su |la |esta )?(?:lista|base de datos)\b|"
         r"no contactar\b)", value)) or bool(re.fullmatch(

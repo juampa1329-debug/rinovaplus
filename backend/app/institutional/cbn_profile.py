@@ -83,8 +83,8 @@ PROGRAM_VALUE_POLICY = (
     "distingue esa referencia del cálculo individual: requiere costo completo e ingreso aplicable. "
     "No presentes ese cálculo como verificado sin esos datos, ni multipliques tarifas semestrales "
     "para inventar el costo total. Duración de seis meses de prácticas: confirmar según programa. "
-    "Ofrece revisar la continuidad en educación superior; nombres de universidades, convenios "
-    "vigentes, destinos y créditos reconocidos requieren confirmación específica. No prometas "
+    "Sí es posible homologar para continuar en educación superior; cada universidad fija sus "
+    "requisitos. Universidades, convenios, destinos y créditos requieren confirmación. No prometas "
     "homologación automática ni articulación con todas las universidades."
 )
 FACTS = [
@@ -98,8 +98,8 @@ FACTS = [
             "conserva doble titulación obligatoria. Prácticas técnicas meritorias y remuneradas, "
             "más de600convenios, con requisitos. Referencia del titular: recuperación estimada "
             "en tres meses de prácticas para carreras excepto Cocina; faltan costo completo e "
-            "ingreso para verificar cada cálculo. Universidades y alcance de articulación pendientes "
-            "de corroborar; no todas las universidades ni homologación automática."
+            "ingreso para verificar cada cálculo. Sí es posible homologar; cada universidad fija "
+            "requisitos y alcance. No implica todas las universidades ni homologación automática."
         ),
     },
     {

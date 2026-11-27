@@ -17,6 +17,7 @@ from app.institutional.postgres_dialect import postgres_sql
  'Por favor, no me escriban más', 'No me contacten más, por favor',
  'Dejen de enviarme mensajes', 'Elimínenme de su lista', 'STOP',
  'No recibir mensajes', 'No quiero que me llamen', '¿Pueden dejar de escribirme por favor?',
+ 'No me envíen más mensajes', 'No quiero que me manden publicidad',
 ])
 def test_clear_customer_stop_requests(text):
  assert opted_out(text)
@@ -26,6 +27,7 @@ def test_clear_customer_stop_requests(text):
  '¿Qué significa no quiero mensajes?', 'No sé cuánto cuesta',
  'Mi mamá no quiere mensajes', '¿No me enviarían las cuotas?',
  'No tengo el abono, pero me interesa', 'Conocer el programa', None,
+ 'No me envíen el formulario todavía', 'No quiero que me manden un audio, prefiero texto',
 ])
 def test_sales_objection_question_or_third_party_is_not_an_optout(text):
  assert not opted_out(text)
