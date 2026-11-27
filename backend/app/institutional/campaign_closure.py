@@ -95,8 +95,9 @@ def shorten(c, s, flow, actor, body, *, controlled=False):
     if issues(c, s, proposal, controlled=controlled):
         raise HTTPException(409, "campaign_preflight_invalid")
     runs = rows(c, "SELECT TOP(501) * FROM crm_campaign8.Enrollment WHERE "
-                "InstitutionId=? AND FlowId=? AND State IN('waiting','queued','paused','uncertain')",
-                institution(s), flow["RecordId"])
+                "InstitutionId=? AND FlowId=? AND VersionNo=? AND FlowEpoch=? "
+                "AND State IN('waiting','queued','paused','uncertain')",
+                institution(s), flow["RecordId"], flow["CurrentVersion"], flow["Epoch"])
     if len(runs) > 500:
         raise HTTPException(409, "campaign_closure_busy")
     prepared = []
