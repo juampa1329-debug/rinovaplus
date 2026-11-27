@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
-import { Dashboard, dailySeries } from "../institution/Dashboard";
+import { Dashboard, dailySeries, messageScale } from "../institution/Dashboard";
 import type { DashboardData } from "../institution/Dashboard";
 import { sourceGaps } from "../institution/siieGaps";
 import { AcademicPrograms } from "../institution/AcademicPrograms";
@@ -25,7 +25,7 @@ const sample: DashboardData = {
   comments: { received: 8 },
 };
 
-it("rounds the scale to hundreds and exposes each bar on pointer and keyboard focus", async () => {
+it("adapts the scale and exposes each bar on pointer and keyboard focus", async () => {
   const value = structuredClone(sample);
   value.inbox!.daily[0].incoming = 287;
   const fetcher = vi
@@ -39,9 +39,9 @@ it("rounds the scale to hundreds and exposes each bar on pointer and keyboard fo
     const chart = screen.getByRole("group", {
       name: /Mensajes recibidos y enviados por día/,
     });
-    expect(chart).toHaveTextContent("100");
     expect(chart).toHaveTextContent("200");
-    expect(chart).toHaveTextContent("300");
+    expect(chart).toHaveTextContent("400");
+    expect(chart).toHaveAttribute("viewBox", "0 0 720 260");
     fireEvent.pointerEnter(bar);
     expect(screen.getByRole("tooltip")).toHaveTextContent(
       "2026-11-19 · Recibidos: 287",
@@ -54,6 +54,21 @@ it("rounds the scale to hundreds and exposes each bar on pointer and keyboard fo
   } finally {
     fetcher.mockRestore();
   }
+});
+
+it.each([
+  [0, 200],
+  [287, 200],
+  [2033, 500],
+  [7800, 2000],
+  [91000, 20000],
+])("keeps a bounded readable axis for %s messages", (maximum, step) => {
+  const scale = messageScale([maximum, 0]);
+  expect(scale.step).toBe(step);
+  expect(scale.peak).toBeGreaterThanOrEqual(maximum);
+  expect(scale.ticks.length).toBeLessThanOrEqual(6);
+  expect(scale.ticks[0]).toBe(0);
+  expect(scale.ticks.at(-1)).toBe(scale.peak);
 });
 
 it("filters the local program library by school without changing any records", async () => {
@@ -102,29 +117,71 @@ it("filters the local program library by school without changing any records", a
 
 it("keeps paused programs editable without silently activating them on save", async () => {
   let body: Record<string, unknown> | undefined;
-  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
-    const url = String(input);
-    if (url.includes("/programs?")) return new Response(JSON.stringify({items: [{program_id: 2, name: "Oferta pausada", school: "Prueba", active: false}],has_more:false}));
-    if (url.endsWith("/programs/2") && init?.method === "PUT") {
-      body = JSON.parse(String(init.body));
-      return new Response(JSON.stringify({program_id:2,revision:3}));
-    }
-    if (url.endsWith("/programs/2")) return new Response(JSON.stringify({exists:true,revision:2,program:{Name:"Oferta pausada",School:"Prueba",Schedule:"Diurna",Active:false},commercial:{}}));
-    throw Error(url);
-  });
+  const fetcher = vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(async (input, init) => {
+      const url = String(input);
+      if (url.includes("/programs?"))
+        return new Response(
+          JSON.stringify({
+            items: [
+              {
+                program_id: 2,
+                name: "Oferta pausada",
+                school: "Prueba",
+                active: false,
+              },
+            ],
+            has_more: false,
+          }),
+        );
+      if (url.endsWith("/programs/2") && init?.method === "PUT") {
+        body = JSON.parse(String(init.body));
+        return new Response(JSON.stringify({ program_id: 2, revision: 3 }));
+      }
+      if (url.endsWith("/programs/2"))
+        return new Response(
+          JSON.stringify({
+            exists: true,
+            revision: 2,
+            program: {
+              Name: "Oferta pausada",
+              School: "Prueba",
+              Schedule: "Diurna",
+              Active: false,
+            },
+            commercial: {},
+          }),
+        );
+      throw Error(url);
+    });
   try {
-    render(<AcademicPrograms/>);
+    render(<AcademicPrograms />);
     await screen.findByLabelText("Mostrar programas pausados");
     await waitFor(() => expect(fetcher).toHaveBeenCalled());
-    expect(screen.queryByRole("button",{name:/Oferta pausada/})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Oferta pausada/ }),
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("Mostrar programas pausados"));
-    fireEvent.click(await screen.findByRole("button",{name:/Oferta pausada/}));
-    await waitFor(() => expect(screen.getByLabelText("Nombre oficial")).toHaveValue("Oferta pausada"));
-    expect(screen.getByLabelText("Programa disponible en la oferta actual")).not.toBeChecked();
-    fireEvent.change(screen.getByLabelText("Duración"),{target:{value:"3 semestres"}});
-    fireEvent.click(screen.getByRole("button",{name:"Guardar programa"}));
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Oferta pausada/ }),
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Nombre oficial")).toHaveValue(
+        "Oferta pausada",
+      ),
+    );
+    expect(
+      screen.getByLabelText("Programa disponible en la oferta actual"),
+    ).not.toBeChecked();
+    fireEvent.change(screen.getByLabelText("Duración"), {
+      target: { value: "3 semestres" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar programa" }));
     await waitFor(() => expect(body?.active).toBe(false));
-  } finally {fetcher.mockRestore();}
+  } finally {
+    fetcher.mockRestore();
+  }
 });
 
 it("fills quiet Bogotá calendar days without inventing activity and exposes chart data", async () => {

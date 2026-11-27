@@ -1572,7 +1572,10 @@ class AgentsService:
                 {"operational_context": scoped_memory(cursor, selection)},
                 sources,
                 history,
-                max_chars=60000 if getattr(cursor, "agent_catalog", None) else 40000,
+                # Institutional guides + two complete reviewed fiches and their
+                # histories can exceed 60k characters. Keep facts whole within
+                # a finite envelope; model token-capacity checks still apply.
+                max_chars=80000 if getattr(cursor, "agent_catalog", None) else 40000,
                 **({"simulation_skill_focus": request.skill_focus} if request.skill_focus else {}),
             )
             messages[0]["content"] += (

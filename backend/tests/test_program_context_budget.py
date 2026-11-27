@@ -26,7 +26,7 @@ def test_native_trial_keeps_full_evidence_with_explicit_bound_and_model_capacity
     source = {"id": "fixture", "title": "Condiciones completas", "text": "Dato verificado. " * 2000}
     with pytest.raises(AiError, match="admissions_context_limit"):
         assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [])
-    messages = assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [], max_chars=60000)
+    messages = assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [source], [], max_chars=80000)
     assert source["text"] in messages[1]["content"]
     check_context({"context_limit": 100000}, messages, 700)
     for route in ({"context_limit": 1000}, {"context_limit": None}):
@@ -34,6 +34,8 @@ def test_native_trial_keeps_full_evidence_with_explicit_bound_and_model_capacity
             check_context(route, messages, 700)
     with pytest.raises(AiError, match="admissions_context_limit"):
         assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [{**source, "text": "x" * 60000}], [], max_chars=60000)
+    with pytest.raises(AiError, match="admissions_context_limit"):
+        assemble_prompt(AdmissionsPolicy(), "Pregunta", {}, [{**source, "text": "x" * 80000}], [], max_chars=80000)
 
 
 def test_large_comparisons_keep_selected_financing_whole_and_mark_omissions(monkeypatch):

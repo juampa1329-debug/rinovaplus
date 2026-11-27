@@ -50,6 +50,24 @@ export function dailySeries(data: DashboardData) {
   });
 }
 
+export function messageScale(values: number[]) {
+  const maximum = Math.max(0, ...values.filter(Number.isFinite));
+  const target = Math.max(200, maximum / 5);
+  const magnitude = 10 ** Math.floor(Math.log10(target));
+  const step = [1, 2, 5, 10]
+    .map((value) => value * magnitude)
+    .find((value) => value >= target)!;
+  const peak = Math.max(step, Math.ceil(maximum / step) * step);
+  return {
+    peak,
+    step,
+    ticks: Array.from(
+      { length: Math.round(peak / step) + 1 },
+      (_, i) => i * step,
+    ),
+  };
+}
+
 export function Dashboard({ name }: { name: string }) {
   const [days, setDays] = useState("7");
   const [refresh, setRefresh] = useState(0);
@@ -82,13 +100,10 @@ export function Dashboard({ name }: { name: string }) {
   }, [days, refresh]);
   const data = result?.days === Number(days) ? result : null;
   const points = data ? dailySeries(data) : [];
-  const peak = Math.max(
-    100,
-    Math.ceil(
-      Math.max(0, ...points.flatMap((row) => [row.incoming, row.sent])) / 100,
-    ) * 100,
+  const { peak, ticks } = messageScale(
+    points.flatMap((row) => [row.incoming, row.sent]),
   );
-  const chartHeight = Math.max(230, (peak / 100) * 24 + 70);
+  const chartHeight = 260;
   const chartBottom = chartHeight - 40;
   const chartPlot = chartBottom - 22;
   const maxChannel = Math.max(
@@ -226,10 +241,7 @@ export function Dashboard({ name }: { name: string }) {
                   role="group"
                   aria-label="Mensajes recibidos y enviados por día. Valores disponibles en Ver datos de la gráfica."
                 >
-                  {Array.from(
-                    { length: peak / 100 + 1 },
-                    (_, i) => i * 100,
-                  ).map((tick) => (
+                  {ticks.map((tick) => (
                     <g key={tick}>
                       <line
                         x1="38"
