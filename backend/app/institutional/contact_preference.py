@@ -1,10 +1,83 @@
-"""Read-only, canonical no-contact status from authenticated requests and reviews."""
+"""Canonical no-contact status and explicit operator-confirmed opt-out."""
 
 from fastapi import HTTPException, Query, Request
+from typing import Literal
+from uuid import uuid4
+from pydantic import Field, field_validator
 
 from app.institutional import db
+from app.institutional.models import Strict
 from app.institutional.auth import authorize
 from app.institutional.store import transaction
+from app.sql_workspace import Identifier
+
+
+class NoContactWrite(Strict):
+    operationId: Identifier
+    reason: str = Field(min_length=3, max_length=400)
+    confirmed: Literal[True]
+
+    @field_validator("reason")
+    @classmethod
+    def reason_text(cls, value):
+        value = value.strip()
+        if len(value) < 3 or any(ord(ch) < 32 for ch in value):
+            raise ValueError("no_contact_reason_required")
+        return value
+
+    @field_validator("confirmed", mode="before")
+    @classmethod
+    def explicit_confirmation(cls, value):
+        if value is not True:
+            raise ValueError("no_contact_confirmation_required")
+        return value
+
+
+def record_no_contact(c, s, contact, body, actor):
+    from app.institutional.workspace import members, primary, read_contact
+    from app.institutional.campaigns import event, key
+    from app.institutional.broadcasts import consent
+
+    contact = db.uid(contact)
+    if primary(c, contact) != contact:
+        raise HTTPException(409, "canonical_contact_required")
+    read_contact(c, contact)
+    digest, prior = db.replay(c, s, actor, body.operationId, "workspace.no_contact", contact, body.model_dump())
+    if prior is not None:
+        return prior
+    ids = members(c, contact)
+    slots = ",".join("?" for _ in ids)
+    identities = db.rows(c, "SELECT IdentityId,IntegrationId FROM crm_channels2.ExternalIdentity WHERE InstitutionId=? AND ContactId IN (" + slots + ")",
+                         db.institution(s), *ids)
+    if not identities:
+        raise HTTPException(409, "contact_identity_not_found")
+    for identity in identities:
+        identity_id = db.uid(str(identity["IdentityId"]))
+        event(c, s, "opt_out", {"identity_id": identity_id, "source": "operator_confirmed_request", "reason": body.reason},
+              actor=actor, source=key("manual-no-contact", body.operationId, identity_id))
+        previous = consent(c, s, identity_id)
+        if not previous or previous["State"] != "revoked":
+            c.execute("INSERT crm_broadcast7.Consent(InstitutionId,ConsentId,IntegrationId,IdentityId,VersionNo,State,Evidence,Origin,ExpiresAt,ActorId,OperationId) VALUES(?,?,?,?,?,'revoked',?,'operator_confirmed_opt_out',NULL,?,?)",
+                      db.institution(s), str(uuid4()), identity["IntegrationId"], identity_id,
+                      (previous["VersionNo"] if previous else 0) + 1, body.reason, actor, body.operationId)
+        # No uncertain/sending job is repeated or rewritten. Stop only work
+        # that has not started, through the existing channel outbox.
+        c.execute("UPDATE crm_channels2.ProviderOperation SET Status='failed',ResultCode='contact_no_contact' WHERE InstitutionId=? AND Status='pending' AND OperationId IN (SELECT q.OperationId FROM crm_channels2.SendJob q JOIN crm_channels2.MessageRoute r ON r.InstitutionId=q.InstitutionId AND r.MessageId=q.MessageId WHERE q.InstitutionId=? AND r.IdentityId=? AND q.State='queued')",
+                  db.institution(s), db.institution(s), identity_id)
+        c.execute("UPDATE crm_channels2.SendJob SET State='cancelled',LastErrorCode='contact_no_contact',CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND State='queued' AND MessageId IN (SELECT MessageId FROM crm_channels2.MessageRoute WHERE InstitutionId=? AND IdentityId=?)",
+                  db.institution(s), db.institution(s), identity_id)
+        c.execute("UPDATE crm_channels2.ProviderOperation SET Status='failed',ResultCode='contact_no_contact' WHERE InstitutionId=? AND Status='pending' AND OperationId IN (SELECT q.OperationId FROM crm_channels2.SendJob q JOIN crm_broadcast7.Recipient r ON r.InstitutionId=q.InstitutionId AND r.CurrentQueueId=q.QueueId WHERE q.InstitutionId=? AND r.IdentityId=? AND q.State='queued')",
+                  db.institution(s), db.institution(s), identity_id)
+        c.execute("UPDATE crm_channels2.SendJob SET State='cancelled',LastErrorCode='contact_no_contact',CompletedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND State='queued' AND QueueId IN (SELECT CurrentQueueId FROM crm_broadcast7.Recipient WHERE InstitutionId=? AND IdentityId=?)",
+                  db.institution(s), db.institution(s), identity_id)
+        c.execute("UPDATE crm_broadcast7.Recipient SET State='cancelled',LastError='contact_no_contact' WHERE InstitutionId=? AND IdentityId=? AND State='prepared'",
+                  db.institution(s), identity_id)
+    c.execute("UPDATE crm.Conversation SET State='closed',UpdatedAt=SYSUTCDATETIME() WHERE ContactId IN (" + slots + ")", *ids)
+    c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
+    result = {"no_contact": True, "closed": True, "identity_count": len(identities)}
+    db.record_operation(c, s, actor, body.operationId, "workspace.no_contact", contact, digest, result)
+    db.audit(c, s, actor, "workspace.no_contact", contact, count=len(identities), reason="operator_confirmed_request")
+    return result
 
 
 def blocked(c, s, contact):
@@ -24,6 +97,12 @@ def blocked(c, s, contact):
 
 
 def install(app, s):
+    @app.post("/api/institution/workspace/contact-preference/{contact_id}")
+    def write(request: Request, contact_id: str, body: NoContactWrite):
+        with transaction(s, True, permission="crm.write") as c:
+            actor = authorize(c, s, request.state.authority, "crm.write")
+            return record_no_contact(c, s, contact_id, body, db.uid(str(actor["UserId"])))
+
     @app.get("/api/institution/workspace/contact-preferences")
     def listing(request: Request, q: str = Query("", max_length=120),
                 offset: int = Query(0, ge=0, le=1000000)):
