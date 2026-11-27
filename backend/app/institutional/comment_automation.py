@@ -17,6 +17,7 @@ from app.institutional.store import transaction
 from app.institutional.whatsapp_gemini import finish
 from app.institutional import grounded_replies
 from app.modules.ai.infrastructure.providers import AiError
+from app.modules.agents.domain import digest
 from app.institutional import language_resilience
 from app.institutional import comment_private
 
@@ -163,6 +164,9 @@ def current(c, settings, integration, data, queue=None):
 
 
 def authorize_send(c, settings, job, payload):
+    if payload.get("privateAcknowledgementOf"):
+        from app.institutional.comment_acknowledgement import authorize
+        return authorize(c, settings, job, payload)
     row = one(
         c,
         "SELECT ResultMetadata FROM crm_channels2.ProviderOperation "
@@ -482,6 +486,7 @@ class Worker:
                     outgoing = str(uuid4())
                     data.update(operation=outgoing, revision=ai["revision"], generation="grounded-v1",
                                 generated_text=reply, contextBinding=grounded["fingerprint"],
+                                source_text_digest=digest(text),
                                 skill_policy=grounded.get("skill_policy"))
                 except HTTPException as error:
                     state, code = "abandoned", error.detail

@@ -932,6 +932,12 @@ class Dispatcher:
                 except Exception:
                     import logging
                     logging.getLogger(__name__).warning("private_reply_inbox_projection_pending")
+                try:
+                    from app.institutional.comment_acknowledgement import after_acceptance
+                    after_acceptance(self.settings, job, payload)
+                except Exception:
+                    import logging
+                    logging.getLogger(__name__).warning("private_reply_public_ack_pending")
             from app.institutional.reply_delivery import next_typing
             next_typing(self.settings, job, payload)
         return True

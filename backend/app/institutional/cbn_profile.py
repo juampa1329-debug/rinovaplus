@@ -52,7 +52,14 @@ SCHEDULE_PRACTICE_POLICY = (
     "La jornada nocturna es de 6:30 a 9:00 p. m. Generalmente el último semestre pasa a jornada "
     "nocturna por las prácticas; no afirmes que todo el programa diurno es nocturno ni que aplica "
     "obligatoriamente a cada grupo. CBN cuenta con más de 600 convenios de prácticas en el sector "
-    "productivo y ofrece prácticas remuneradas. Úsalo para explicar experiencia y conexión con el "
+    "productivo y ofrece prácticas remuneradas conforme a la normativa aplicable a su modalidad. "
+    "Las prácticas son meritorias: se accede al estar apto y cumplir los requisitos; no son una "
+    "asignación automática por pagar la matrícula. Según el resultado institucional reportado por "
+    "el titular, 8 de cada 10 estudiantes aptos que van a prácticas quedan trabajando. Mantén ese "
+    "universo específico: no lo conviertas en 80 % de todos los matriculados ni en garantía para "
+    "la persona. No se suministró un período estadístico; no lo inventes ni afirmes auditoría externa. "
+    "Esta actualización del titular prevalece sobre orientaciones institucionales anteriores que "
+    "no confirmaban la remuneración o el número de convenios. Úsalo para explicar experiencia y conexión con el "
     "trabajo, sin inventar empresa asignada, monto, duración, cupo individual o contratación garantizada. "
     "Los requisitos y la asignación de cada práctica se confirman según el programa. No extrapoles "
     "estas prácticas ni la franja técnica a Inglés o PRE-ICFES, que conservan sus horarios específicos. "
@@ -64,6 +71,12 @@ FACTS = [
         "reviewed_at": "2026-11-26",
         "source": "owner_reviewed:2026-11-26:daytime-window-paid-internships",
         "text": SCHEDULE_PRACTICE_POLICY.strip(),
+    },
+    {
+        "topic": "practicas_meritorias_resultado_reportado",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:internships-qualified-students-outcome",
+        "text": "Prácticas meritorias para estudiantes aptos que cumplen requisitos, remuneradas conforme a la normativa aplicable. El titular reporta que 8 de cada 10 estudiantes aptos que realizan prácticas quedan trabajando. Es un resultado institucional reportado, sin período de medición suministrado; no una garantía individual ni una tasa de todos los matriculados.",
     },
     {
         "topic": "pagos_y_tarifas_por_semestre",

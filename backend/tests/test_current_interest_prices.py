@@ -100,3 +100,42 @@ def test_owner_schedule_and_internships_supersede_old_counts_without_changing_en
     assert "remuneradas" in facts["practicas"]["text"]
     assert "7:00 a. m. a 6:00 p. m." in SCHEDULE_PRACTICE_POLICY
     assert "No extrapoles" in SCHEDULE_PRACTICE_POLICY and "PRE-ICFES" in SCHEDULE_PRACTICE_POLICY
+    assert "8 de cada 10 estudiantes aptos" in SCHEDULE_PRACTICE_POLICY
+    assert "meritorias" in SCHEDULE_PRACTICE_POLICY and "no lo conviertas en 80 %" in SCHEDULE_PRACTICE_POLICY
+
+
+def test_agent_preview_deduplicates_only_exact_shared_policies():
+    from app.institutional.cbn_profile import PAYMENT_POLICY, SCHEDULE_PRACTICE_POLICY
+    from app.modules.ai.application.admissions_prompt import AdmissionsPolicy, assemble_prompt
+    messages = assemble_prompt(AdmissionsPolicy(system_prompt="Regla específica del especialista." + PAYMENT_POLICY + SCHEDULE_PRACTICE_POLICY),
+                               "Ver plan de pagos", {}, [], [], max_chars=60000)
+    assert messages[0]["content"].count(PAYMENT_POLICY) == 1
+    assert messages[0]["content"].count(SCHEDULE_PRACTICE_POLICY) == 1
+    assert "Regla específica del especialista." in messages[0]["content"]
+
+
+def test_conversation_preview_carries_server_candidates_without_fabricating_customer_history(monkeypatch):
+    import asyncio
+    from contextlib import nullcontext
+    from uuid import uuid4
+    from app.institutional import agents
+    names = [{"name": "PROEFICIENCIA EN INGLES", "program_id": 1},
+             {"name": "PROEFICIENCIA EN INGLES", "program_id": 2}]
+    monkeypatch.setattr(agents, "resolve_conversation", lambda *_a, **_kw: {
+        "assignment": {"revision": 1}, "context": None,
+        "commercial_interest": {"program_id": None, "candidates": names},
+        "agent_id": uuid4(), "version": 1})
+    monkeypatch.setattr(agents, "rows", lambda *_: [{"Direction": "incoming", "Body": "Ver plan de pagos"}])
+    captured = []
+    async def simulate(request, **kw):
+        captured.append((request, kw))
+        return {}
+    target = SimpleNamespace(transaction=lambda: nullcontext(None),
+                             conversation_state=lambda *_: {"Epoch": 1}, simulate=simulate)
+    body = SimpleNamespace(channel="whatsapp", revision=1, question="Ver plan de pagos", request_id=uuid4(),
+                           call_provider=False, acknowledge_consumption=False)
+    result = asyncio.run(agents.Agents.draft_conversation(target, str(uuid4()), body))
+    request, kw = captured[0]
+    assert request.program_id is None and request.history[0].content == "Ver plan de pagos"
+    assert kw["conversation_binding"]["retrieval_names"] == [names[0]["name"]]
+    assert result["automatic_send"] is False
