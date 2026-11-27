@@ -506,7 +506,7 @@
       "label": "section()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L57",
+      "source_location": "L62",
       "_callable": true,
       "_origin": "ast"
     },
@@ -515,7 +515,7 @@
       "label": "read()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L61",
+      "source_location": "L66",
       "_callable": true,
       "_origin": "ast"
     },
@@ -524,7 +524,7 @@
       "label": "classification()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L72",
+      "source_location": "L77",
       "_callable": true,
       "_origin": "ast"
     },
@@ -533,7 +533,7 @@
       "label": "person()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L141",
+      "source_location": "L162",
       "_callable": true,
       "_origin": "ast"
     },
@@ -542,7 +542,7 @@
       "label": "signals()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L157",
+      "source_location": "L178",
       "_callable": true,
       "_origin": "ast"
     },
@@ -551,7 +551,7 @@
       "label": "evidence()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L203",
+      "source_location": "L231",
       "_callable": true,
       "_origin": "ast"
     },
@@ -560,7 +560,7 @@
       "label": "plan()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L258",
+      "source_location": "L290",
       "_callable": true,
       "_origin": "ast"
     },
@@ -569,7 +569,7 @@
       "label": "save()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L293",
+      "source_location": "L325",
       "_callable": true,
       "_origin": "ast"
     },
@@ -578,7 +578,7 @@
       "label": "commit()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L327",
+      "source_location": "L359",
       "_callable": true,
       "_origin": "ast"
     },
@@ -587,7 +587,7 @@
       "label": "observe()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L417",
+      "source_location": "L449",
       "_callable": true,
       "_origin": "ast"
     },
@@ -596,7 +596,7 @@
       "label": "progress_map()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L440",
+      "source_location": "L472",
       "_callable": true,
       "_origin": "ast"
     },
@@ -605,7 +605,7 @@
       "label": "exclusion()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L467",
+      "source_location": "L499",
       "_callable": true,
       "_origin": "ast"
     },
@@ -614,7 +614,7 @@
       "label": "signature()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L479",
+      "source_location": "L511",
       "_callable": true,
       "_origin": "ast"
     },
@@ -623,7 +623,7 @@
       "label": "Item",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L483",
+      "source_location": "L515",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast"
@@ -649,7 +649,7 @@
       "label": ".valid()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L488",
+      "source_location": "L520",
       "_callable": true,
       "_origin": "ast"
     },
@@ -658,7 +658,7 @@
       "label": "Apply",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L493",
+      "source_location": "L525",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast"
@@ -668,7 +668,7 @@
       "label": ".valid()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L498",
+      "source_location": "L530",
       "_callable": true,
       "_origin": "ast"
     },
@@ -677,7 +677,7 @@
       "label": "preview()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L505",
+      "source_location": "L537",
       "_callable": true,
       "_origin": "ast"
     },
@@ -686,7 +686,7 @@
       "label": "install()",
       "file_type": "code",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L548",
+      "source_location": "L580",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1012,7 +1012,7 @@
       "label": ".review_pending()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L898",
+      "source_location": "L899",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1021,7 +1021,7 @@
       "label": ".maintenance()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L931",
+      "source_location": "L932",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1030,7 +1030,7 @@
       "label": ".once()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L969",
+      "source_location": "L970",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1396,7 +1396,7 @@
       "label": ".copy_restore()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L926",
+      "source_location": "L930",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1405,7 +1405,7 @@
       "label": ".simulate()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L984",
+      "source_location": "L988",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1414,7 +1414,7 @@
       "label": ".runs()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1069",
+      "source_location": "L1073",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1423,7 +1423,7 @@
       "label": ".trace()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1128",
+      "source_location": "L1132",
       "_callable": true,
       "_origin": "ast"
     },
@@ -1432,7 +1432,7 @@
       "label": ".metrics()",
       "file_type": "code",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1175",
+      "source_location": "L1179",
       "_callable": true,
       "_origin": "ast"
     },
@@ -2946,7 +2946,7 @@
       "label": "StepEditor()",
       "file_type": "code",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1625",
+      "source_location": "L1634",
       "_callable": true,
       "_origin": "ast"
     },
@@ -2955,7 +2955,7 @@
       "label": "Executions()",
       "file_type": "code",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1797",
+      "source_location": "L1806",
       "_callable": true,
       "_origin": "ast"
     },
@@ -8369,7 +8369,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8379,7 +8379,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L61",
+      "source_location": "L66",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8389,7 +8389,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L72",
+      "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8399,7 +8399,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L141",
+      "source_location": "L162",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8409,7 +8409,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L157",
+      "source_location": "L178",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8419,7 +8419,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L203",
+      "source_location": "L231",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8429,7 +8429,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L258",
+      "source_location": "L290",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8439,7 +8439,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L293",
+      "source_location": "L325",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8449,7 +8449,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L327",
+      "source_location": "L359",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8459,7 +8459,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L417",
+      "source_location": "L449",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8469,7 +8469,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L440",
+      "source_location": "L472",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8479,7 +8479,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L467",
+      "source_location": "L499",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8489,7 +8489,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L479",
+      "source_location": "L511",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8499,7 +8499,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L483",
+      "source_location": "L515",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8509,7 +8509,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L483",
+      "source_location": "L515",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8519,7 +8519,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L487",
+      "source_location": "L519",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast"
@@ -8530,7 +8530,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L488",
+      "source_location": "L520",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8540,7 +8540,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L493",
+      "source_location": "L525",
       "weight": 1.0,
       "_origin": "ast",
       "parallel_assertions": [
@@ -8548,7 +8548,7 @@
           "relation": "contains",
           "confidence": "EXTRACTED",
           "source_file": "backend/app/institutional/commercial_followup.py",
-          "source_location": "L493",
+          "source_location": "L525",
           "weight": 1.0,
           "_origin": "ast"
         },
@@ -8556,7 +8556,7 @@
           "relation": "contains",
           "confidence": "EXTRACTED",
           "source_file": "backend/app/institutional/commercial_followup.py",
-          "source_location": "L520",
+          "source_location": "L552",
           "weight": 1.0,
           "_origin": "ast"
         }
@@ -8569,7 +8569,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L493",
+      "source_location": "L525",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8579,7 +8579,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L497",
+      "source_location": "L529",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast"
@@ -8590,7 +8590,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L498",
+      "source_location": "L530",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8600,7 +8600,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L505",
+      "source_location": "L537",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8610,7 +8610,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L548",
+      "source_location": "L580",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8621,7 +8621,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L67",
+      "source_location": "L72",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8632,7 +8632,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L209",
+      "source_location": "L237",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8643,7 +8643,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L259",
+      "source_location": "L291",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8654,7 +8654,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L260",
+      "source_location": "L292",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8665,7 +8665,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L303",
+      "source_location": "L335",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8676,7 +8676,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L345",
+      "source_location": "L377",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8687,7 +8687,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L433",
+      "source_location": "L465",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8698,7 +8698,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L433",
+      "source_location": "L465",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8709,7 +8709,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L435",
+      "source_location": "L467",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8720,7 +8720,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L437",
+      "source_location": "L469",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8731,7 +8731,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L509",
+      "source_location": "L541",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8742,7 +8742,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L510",
+      "source_location": "L542",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8753,7 +8753,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L510",
+      "source_location": "L542",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8764,7 +8764,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L512",
+      "source_location": "L544",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8775,7 +8775,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L530",
+      "source_location": "L562",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8786,7 +8786,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L530",
+      "source_location": "L562",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8797,7 +8797,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L533",
+      "source_location": "L565",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8808,7 +8808,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L537",
+      "source_location": "L569",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -8819,7 +8819,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L540",
+      "source_location": "L572",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9357,7 +9357,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L898",
+      "source_location": "L899",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9367,7 +9367,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L931",
+      "source_location": "L932",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9377,7 +9377,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L969",
+      "source_location": "L970",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9476,7 +9476,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L925",
+      "source_location": "L926",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9487,7 +9487,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L927",
+      "source_location": "L928",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9498,7 +9498,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L970",
+      "source_location": "L971",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9509,7 +9509,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L972",
+      "source_location": "L973",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9520,7 +9520,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L983",
+      "source_location": "L984",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9531,7 +9531,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L1126",
+      "source_location": "L1127",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9542,7 +9542,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L1142",
+      "source_location": "L1143",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9954,7 +9954,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L926",
+      "source_location": "L930",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9964,7 +9964,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L984",
+      "source_location": "L988",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9974,7 +9974,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1069",
+      "source_location": "L1073",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9984,7 +9984,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1128",
+      "source_location": "L1132",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9994,7 +9994,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1175",
+      "source_location": "L1179",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10577,7 +10577,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L929",
+      "source_location": "L933",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10588,7 +10588,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L941",
+      "source_location": "L945",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10599,35 +10599,13 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L971",
+      "source_location": "L975",
       "weight": 1.0,
       "_origin": "ast"
     },
     {
       "source": "backend_app_institutional_campaigns_campaigns_simulate",
       "target": "backend_app_institutional_campaigns_campaigns_tx",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L985",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns_campaigns_simulate",
-      "target": "backend_app_institutional_campaigns_campaigns_get",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L986",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns_campaigns_simulate",
-      "target": "backend_app_institutional_campaigns_person",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -10638,12 +10616,34 @@
     },
     {
       "source": "backend_app_institutional_campaigns_campaigns_simulate",
+      "target": "backend_app_institutional_campaigns_campaigns_get",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/campaigns.py",
+      "source_location": "L990",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_campaigns_campaigns_simulate",
+      "target": "backend_app_institutional_campaigns_person",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/campaigns.py",
+      "source_location": "L993",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_campaigns_campaigns_simulate",
       "target": "backend_app_institutional_campaigns_packed",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L998",
+      "source_location": "L1002",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10654,7 +10654,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1007",
+      "source_location": "L1011",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10665,7 +10665,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1013",
+      "source_location": "L1017",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10676,7 +10676,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1035",
+      "source_location": "L1039",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10687,7 +10687,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1070",
+      "source_location": "L1074",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10698,7 +10698,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1071",
+      "source_location": "L1075",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10709,7 +10709,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1116",
+      "source_location": "L1120",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10720,7 +10720,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1123",
+      "source_location": "L1127",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10731,7 +10731,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1129",
+      "source_location": "L1133",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10742,7 +10742,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1176",
+      "source_location": "L1180",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -10753,7 +10753,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1177",
+      "source_location": "L1181",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -13536,7 +13536,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1625",
+      "source_location": "L1634",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -13546,7 +13546,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1797",
+      "source_location": "L1806",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -13601,7 +13601,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1664",
+      "source_location": "L1673",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -13612,7 +13612,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1840",
+      "source_location": "L1849",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14494,7 +14494,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L266",
+      "source_location": "L298",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14725,7 +14725,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L897",
+      "source_location": "L901",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14736,7 +14736,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1186",
+      "source_location": "L1190",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14879,7 +14879,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/institution/CampaignWorkspace.tsx",
-      "source_location": "L1699",
+      "source_location": "L1708",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14967,7 +14967,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L269",
+      "source_location": "L301",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -14978,7 +14978,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L423",
+      "source_location": "L455",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15515,7 +15515,19 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L73",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_commercial_followup_evidence",
+      "target": "backend_app_institutional_broadcast_audience_normalized",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "backend/app/institutional/commercial_followup.py",
+      "source_location": "L246",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15527,7 +15539,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L271",
+      "source_location": "L303",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15539,7 +15551,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L367",
+      "source_location": "L399",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15551,7 +15563,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L474",
+      "source_location": "L506",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15563,7 +15575,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L506",
+      "source_location": "L538",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15575,7 +15587,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L521",
+      "source_location": "L553",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15863,7 +15875,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L874",
+      "source_location": "L875",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15875,7 +15887,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L875",
+      "source_location": "L876",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15887,7 +15899,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L882",
+      "source_location": "L883",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15899,7 +15911,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L889",
+      "source_location": "L890",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15910,18 +15922,6 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L902",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_runtime_worker_review_pending",
-      "target": "backend_app_institutional_campaigns_enabled",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
       "source_location": "L903",
       "weight": 1.0,
@@ -15929,13 +15929,25 @@
     },
     {
       "source": "backend_app_institutional_campaign_runtime_worker_review_pending",
+      "target": "backend_app_institutional_campaigns_enabled",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/campaign_runtime.py",
+      "source_location": "L904",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_campaign_runtime_worker_review_pending",
       "target": "backend_app_institutional_workspace_rows",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L905",
+      "source_location": "L906",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15946,18 +15958,6 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L932",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_runtime_worker_maintenance",
-      "target": "backend_app_institutional_campaigns_enabled",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
       "source_location": "L933",
       "weight": 1.0,
@@ -15965,13 +15965,25 @@
     },
     {
       "source": "backend_app_institutional_campaign_runtime_worker_maintenance",
+      "target": "backend_app_institutional_campaigns_enabled",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/institutional/campaign_runtime.py",
+      "source_location": "L934",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_campaign_runtime_worker_maintenance",
       "target": "backend_app_institutional_workspace_rows",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L935",
+      "source_location": "L936",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15983,7 +15995,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L973",
+      "source_location": "L974",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -15995,7 +16007,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L974",
+      "source_location": "L975",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16007,7 +16019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L990",
+      "source_location": "L991",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16019,7 +16031,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L1124",
+      "source_location": "L1125",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16031,7 +16043,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L1190",
+      "source_location": "L1191",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16139,7 +16151,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L854",
+      "source_location": "L858",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16151,7 +16163,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L871",
+      "source_location": "L875",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16163,7 +16175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L886",
+      "source_location": "L890",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16175,7 +16187,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L909",
+      "source_location": "L913",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16187,7 +16199,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1097",
+      "source_location": "L1101",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16199,7 +16211,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1137",
+      "source_location": "L1141",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16211,7 +16223,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1178",
+      "source_location": "L1182",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -16223,7 +16235,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1188",
+      "source_location": "L1192",
       "weight": 1.0,
       "_origin": "ast"
     },

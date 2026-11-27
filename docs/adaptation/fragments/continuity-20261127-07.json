@@ -605,11 +605,11 @@
   "output_tokens": 0,
   "coverage": {
     "docs/adaptation/CRM_CONTACT_SAVE_OPTOUT_20261127.md": 35,
-    "artifacts/live/crm-contact-save-optout-20261127.json": 93
+    "artifacts/live/crm-contact-save-optout-20261127.json": 106
   },
   "source_sha256": {
-    "docs/adaptation/CRM_CONTACT_SAVE_OPTOUT_20261127.md": "00eb2f3c2957fa67f886280e6a537ca3e0edd33ec086dd2267ad57726f6b3d69",
-    "artifacts/live/crm-contact-save-optout-20261127.json": "23970ccd3b0cc163f70a5446f885ffe610977674af5df0e82c53e17ba6ce033e"
+    "docs/adaptation/CRM_CONTACT_SAVE_OPTOUT_20261127.md": "aa5bfcbfe2a426dc851e363a6541e40108bb69a21348b757f7e822ccb00592ff",
+    "artifacts/live/crm-contact-save-optout-20261127.json": "de6c6ca1a11b20b0e68e62a83415275396d9c6e67bc2e8dc2036ea49e6a7206b"
   },
   "_origin": "semantic",
   "extraction_note": "Revisión del agente principal de ambas fuentes completas hasta EOF. Sin delegación, llamadas a modelos ni extracción de CRM privado; hashes locales reales. Nuevas afirmaciones acotadas, conserva cortes anteriores."

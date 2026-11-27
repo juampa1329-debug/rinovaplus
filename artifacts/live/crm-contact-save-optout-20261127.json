@@ -84,10 +84,23 @@
     "semantic_sources": 44,
     "ast_sources": 28,
     "nodes": 707,
-    "edges": 1198,
+    "edges": 1199,
     "source_hash_transport": "exact LF/CRLF only; changed content rejected",
     "hash_regressions_passed": 4,
     "historical_general_snapshot_unchanged": true,
     "private_crm_data": false
+  },
+  "integration": {
+    "merge": "b7d690e",
+    "incoming_tip": "bc2dade",
+    "application_diff_vs_incoming_tip": "empty",
+    "backend_tests_after_merge": 150,
+    "frontend_campaign_preference_helper_tests_after_merge": 16,
+    "frontend_overlap_with_first_selection": 9,
+    "typecheck": "pass",
+    "build": "pass",
+    "bundle_kb": 745.27,
+    "gzip_kb": 219.77,
+    "campaign_controls_executed_by_this_task": false
   }
 }
