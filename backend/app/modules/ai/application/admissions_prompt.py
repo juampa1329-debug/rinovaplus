@@ -115,6 +115,15 @@ def validate_reply(raw, sources, history, *, response_metadata=None, allow_memor
         response = AdmissionsReply.model_validate_json(raw)
     except ValidationError as error:
         details = error.errors(include_input=False, include_context=False, include_url=False)
+        # Record only the bounded schema fields and validator types. Never log
+        # the completion, supplied values, arbitrary extra keys or source text.
+        import logging
+        fields = {"answer", "handoff", "references", "memory"}
+        logging.getLogger(__name__).warning(
+            "admissions_response_validation fields=%s types=%s",
+            sorted({str(item["loc"][0]) if item["loc"] and item["loc"][0] in fields else "other" for item in details}),
+            sorted({item["type"] for item in details}),
+        )
         if any(item["type"] == "json_invalid" for item in details):
             raise AiError("admissions_invalid_json_response", 502) from None
         if any("source_message_id" in item["loc"] for item in details):

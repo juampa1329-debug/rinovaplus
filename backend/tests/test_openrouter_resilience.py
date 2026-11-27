@@ -77,6 +77,8 @@ def test_trial_output_schema_has_no_memory_or_tool_access():
     fmt = calls[0]["response_format"]
     assert fmt["type"] == "json_schema" and fmt["json_schema"]["strict"]
     assert set(fmt["json_schema"]["schema"]["properties"]) == {"answer", "handoff", "references"}
+    assert fmt["json_schema"]["schema"]["properties"]["answer"]["maxLength"] == 4000
+    assert fmt["json_schema"]["schema"]["properties"]["references"]["maxItems"] == 5
     assert "tools" not in calls[0]
 
 
