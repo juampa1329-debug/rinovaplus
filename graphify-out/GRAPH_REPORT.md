@@ -6,13 +6,13 @@ Esta vista específica complementa el grafo general histórico en `graphify-out/
 
 ## Alcance y procedencia
 
-48 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 33 archivos de código por AST. La vista dirigida contiene 802 nodos y 1360 aristas en 44 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
+50 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 38 archivos de código por AST. La vista dirigida contiene 887 nodos y 1512 aristas en 51 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
 
 Candidatos fechados presentes pero fuera de la selección semántica: []. Su aparición se informa; no se finge haberlos extraído.
 
 ## Integridad y límites
 
-La extracción AST aporta 424 nodos y 1293 aristas. Se excluyen de la vista 388 aristas con extremo ausente. Sus afirmaciones originales se conservan en raw-extraction.json y sus detalles en integrity.json. Son referencias/importaciones fuera del ámbito o destinos no resueltos; no se han inventado nodos para completarlas.
+La extracción AST aporta 473 nodos y 1424 aristas. Se excluyen de la vista 410 aristas con extremo ausente. Sus afirmaciones originales se conservan en raw-extraction.json y sus detalles en integrity.json. Son referencias/importaciones fuera del ámbito o destinos no resueltos; no se han inventado nodos para completarlas.
 
 También se excluyen explícitamente 1 autobucle(s) emitido(s) por el AST. Los originales permanecen en integrity.json y raw-extraction.json: un autobucle del extractor no acredita por sí mismo recursión funcional. Esta separación hace visible lo que Graphify descartaría internamente al construir la vista.
 
@@ -20,7 +20,7 @@ Hay 1 par(es) dirigido(s) con varias afirmaciones (1 arista(s) compactada(s)). U
 
 Pares compactados y ubicaciones: [{"source": "backend_app_institutional_commercial_followup", "target": "backend_app_institutional_commercial_followup_apply", "locations": [{"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L525"}, {"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L552"}]}].
 
-Enlaces documento→código: 19, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
+Enlaces documento→código: 26, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
 
 ## Seguimientos: lectura correcta
 
@@ -34,41 +34,48 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
 
 | Comunidad | Nodos | Cohesión |
 |---|---:|---:|
-| workspace.py | 70 | 0.058385093167701865 |
-| Gestión de campañas | 69 | 0.10912190963341858 |
+| Gestión de campañas | 104 | 0.06329350261389097 |
+| workspace.py | 58 | 0.07199032062915911 |
+| Diagnóstico de listas | 55 | 0.059932659932659935 |
+| Eventos y recibos entrantes | 52 | 0.06259426847662142 |
 | Seguimiento por tiempo y lista | 47 | 0.06382978723404255 |
-| Espacio institucional | 46 | 0.07729468599033816 |
-| Auditoría integral de fichas y | 38 | 0.05689900426742532 |
-| Seguimiento comercial | 37 | 0.1066066066066066 |
+| Seguimiento comercial | 36 | 0.10952380952380952 |
 | Avance comercial y exclusiones | 32 | 0.08064516129032258 |
-| Precios recuperados, comentarios y escala | 32 | 0.06451612903225806 |
-| Eventos y recibos entrantes | 30 | 0.12873563218390804 |
 | Formularios, orientación de pago y | 25 | 0.11333333333333333 |
 | Panel de campañas y seguimiento | 25 | 0.10333333333333333 |
+| Becas opcionales y valor de | 22 | 0.12987012987012986 |
+| Guardado concurrente y baja expresa | 22 | 0.12121212121212122 |
 | Panel de mensajería masiva | 22 | 0.09090909090909091 |
-| Becas opcionales y valor de | 21 | 0.1380952380952381 |
 | program commercial.py | 21 | 0.14285714285714285 |
-| Guardado concurrente y baja expresa | 21 | 0.12857142857142856 |
 | Importación de prospectos | 20 | 0.1368421052631579 |
-| broadcast dispatch.py | 19 | 0.14035087719298245 |
-| admissions prompt.py | 19 | 0.14619883040935672 |
+| Baja global y negociación con | 20 | 0.1 |
 | Tres seguimientos por avance activados | 18 | 0.1568627450980392 |
+| Precios recuperados, comentarios y escala | 17 | 0.125 |
 | Seguimiento y preferencias | 16 | 0.16666666666666666 |
 | Memoria comercial | 16 | 0.26666666666666666 |
 | Contrato y límites SIIE | 16 | 0.14166666666666666 |
+| Continuidad del Inbox, voces y | 15 | 0.13333333333333333 |
+| Evidencia agregada de baja global | 14 | 0.14285714285714285 |
+| skill policy.py | 13 | 0.23076923076923078 |
+| Información pendiente por programa — | 13 | 0.15384615384615385 |
+| Auditoría integral de fichas y | 13 | 0.1794871794871795 |
 | Importación del lote 2026 | 12 | 0.16666666666666666 |
+| Duraciones, jornadas y herencia de | 12 | 0.16666666666666666 |
 | Políticas de campañas | 11 | 0.2727272727272727 |
+| admissions prompt.py | 10 | 0.28888888888888886 |
 | Motores por etapa | 10 | 0.2222222222222222 |
 | Campaña PRE-ICFES y destinos | 9 | 0.2222222222222222 |
 | Piloto y recepción SIIE | 9 | 0.2222222222222222 |
-| Diagnóstico de listas | 9 | 0.2222222222222222 |
+| cbn profile.py | 8 | 0.25 |
 | Informe y consultas agregadas | 8 | 0.25 |
 | Horarios y costes | 8 | 0.25 |
+| voice transcripts.py | 7 | 0.2857142857142857 |
 | Panel de mensajería masiva | 7 | 0.2857142857142857 |
 | Respuesta y entrada al Inbox | 6 | 0.3333333333333333 |
 | Ediciones y remitentes | 6 | 0.3333333333333333 |
 | Prospectos y promoción PRE-ICFES | 6 | 0.3333333333333333 |
 | Campañas por programa | 6 | 0.3333333333333333 |
+| Preferencias y exclusiones | 5 | 0.5 |
 | Espera interna y continuidad | 5 | 0.5 |
 | Recuperación de respuestas | 5 | 0.4 |
 | Política de abono inicial | 4 | 0.5 |
@@ -94,19 +101,19 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
     "degree": 28
   },
   {
+    "id": "global_optout_20261127_report_document",
+    "label": "Baja global y negociación con beneficios verificados — 27Nov2026",
+    "degree": 28
+  },
+  {
     "id": "backend_app_institutional_workspace_workspace",
     "label": "Workspace",
     "degree": 23
   },
   {
-    "id": "backend_app_institutional_campaigns_campaigns",
-    "label": "Campaigns",
-    "degree": 19
-  },
-  {
-    "id": "crm_contact_save_20261127_report_document",
-    "label": "Guardado concurrente y baja expresa —27Nov2026",
-    "degree": 19
+    "id": "backend_app_institutional_campaigns_event",
+    "label": "event()",
+    "degree": 21
   }
 ]
 ```
@@ -201,4 +208,4 @@ La generación del HTML es local. El visualizador estándar de Graphify carga vi
 
 ## Coste y reproducibilidad
 
-Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.
+Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `4cfa5d7f4606f7b0054e98679aa8d7f516d8472de00d1b3d3c45c4ad6949554a`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.
