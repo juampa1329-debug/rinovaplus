@@ -615,8 +615,10 @@ export async function send<T>(
   if (method === "GET") {
     const seconds = readRetrySeconds();
     if (seconds) throw new ApiError(429, "rate_limited", seconds);
-    return coordinatedRead(`${csrf}:${path}`, () =>
-      request<T>(path, method, body, csrf),
+    return coordinatedRead(
+      `${csrf}:${path}`,
+      () => request<T>(path, method, body, csrf),
+      path.split("?")[0] === "workspace/inbox",
     );
   }
   return request<T>(path, method, body, csrf);
