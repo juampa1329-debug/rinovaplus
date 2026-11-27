@@ -1,0 +1,7 @@
+# Machine-local interpreter paths, agent prompts, extraction working files.
+/.*
+!/.gitignore
+/cache/
+/memory/
+/reflections/
+/benchmark.json

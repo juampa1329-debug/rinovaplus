@@ -1,0 +1,35 @@
+{
+  "snapshot_check": {
+    "ok": true,
+    "snapshot_current": true,
+    "scope_complete": true,
+    "changed": [],
+    "missing": [],
+    "graph_changed": false,
+    "query_changed": false,
+    "new_fragments": [],
+    "uncovered_dated_documents": [],
+    "semantic_sources": 40,
+    "input_fingerprint": "e09ab8222139ca3dbda925ceb95d97dfb95f3953423dcb3d5b2c37bd8eb41ba0",
+    "note": "Checks local provenance only; does not attest current production state"
+  },
+  "semantic_source_count": 40,
+  "code_source_count": 24,
+  "semantic_full_eof_lines": 1891,
+  "all_source_sha256_valid": true,
+  "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
+  "query_complete": true,
+  "query_nodes_found": 14,
+  "query_nodes_rendered": 14,
+  "query_graph_hash_matches": true,
+  "view_integrity_no_dangling_missing_selfloops_or_directed_collapse": true,
+  "historical_control_checks": {
+    "graph_sha256": "af3452ead8275c3ac16240c4ec2115922b2fe0872463e1ed2d5a7b254b914fc5",
+    "repeated_build_graph_sha256_equal": true,
+    "build_from_non_root_cwd_succeeded": true,
+    "source_hash_mismatch_rejected": true,
+    "partial_eof_coverage_rejected": true,
+    "shrink_guard_rejected_and_preserved_existing_json": true,
+    "note": "Earlier38-source build control results; not repeated or represented as final40-source test executions."
+  }
+}

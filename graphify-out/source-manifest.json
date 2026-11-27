@@ -1,0 +1,451 @@
+{
+  "schema": 1,
+  "snapshot_note": "Vista específica de continuidad compilada el 27 de noviembre de 2026. Conserva los cortes históricos 24–26 y las fechas propias de nuevas fuentes; el AST refleja el checkout al construir. No equivale por sí sola a una lectura productiva en vivo ni a un inventario completo del repositorio o sus conversaciones.",
+  "sources": {
+    "artifacts/live/campaign-launch-2026-20261126.json": {
+      "sha256": "f0bdf061a52330f23520ffc2581b775880d0ab526f277a031b0dd9c5c9ebd84c",
+      "lines": 54,
+      "kind": "semantic"
+    },
+    "artifacts/live/commercial-progress-followup-20261125.json": {
+      "sha256": "46f0a0ef0bd84dd5b75830dd9334357ecf487199db76fd95a28fbe5d22c27385",
+      "lines": 14,
+      "kind": "semantic"
+    },
+    "artifacts/live/crm-followups-20261124.json": {
+      "sha256": "99dcf1b9cfe473eb53aa2ce2e6c79c25e7e5b847ed466caf6b29997f09e50b5e",
+      "lines": 117,
+      "kind": "semantic"
+    },
+    "artifacts/live/crm-import-2026-20261126.json": {
+      "sha256": "7d957f075c8c5128d3331ebf4d1848441732a40a3394693a04d5dcd8d5297da8",
+      "lines": 65,
+      "kind": "semantic"
+    },
+    "artifacts/live/followup-automation-20261127.json": {
+      "sha256": "88fe07bcd909e7dd46f6148af7ad1d31d1a7a75010e45396cb08b25063b294db",
+      "lines": 74,
+      "kind": "semantic"
+    },
+    "artifacts/live/preicfes-campaign-launch-20261125.json": {
+      "sha256": "7d67e4b272b3b383b8403d3771aaed56c3f9b8c1fd56a0c25a7a7bb922abdf66",
+      "lines": 23,
+      "kind": "semantic"
+    },
+    "backend/app/institutional/broadcast_audience.py": {
+      "sha256": "30d1d7d89853d0a08d7feb4463cb011cc1ed7cb401a6fbbfe1ca70ad21b92e15",
+      "lines": 175,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_consent_correction.py": {
+      "sha256": "aef46495660908d09dcca13f7f09c2da3e427c6b567c8aa310d981640d16a817",
+      "lines": 116,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_conversation.py": {
+      "sha256": "5bfd28f963a572084f681084f4c1687f24cd31eea14e20509aa547f9aeac5737",
+      "lines": 106,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_dispatch.py": {
+      "sha256": "468403d025611d8dbcb37999a9522fd3ff967ebdcc2abab8ce08257d6f0afc7a",
+      "lines": 400,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_followup.py": {
+      "sha256": "b5baf40ad96a2fc2e16a1d1153a3cbcdadb3ecfe6ef4bae91555513ef1d620b0",
+      "lines": 68,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_inbox.py": {
+      "sha256": "a66989e24c2bed5f75d4103703c0e4b550571690a739ec9a1be8eecb4bad9231",
+      "lines": 11,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_prospects.py": {
+      "sha256": "8230f06655a57d2ef6ebebc82af2fdbb33b95a8ccf75d10b07a519f0fa973002",
+      "lines": 291,
+      "kind": "code"
+    },
+    "backend/app/institutional/broadcast_report.py": {
+      "sha256": "cb45a3231c675c7159cd21787c3f301f8d87216b3fccafd0760bfc0585693411",
+      "lines": 70,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_api.py": {
+      "sha256": "acde6343904cdf5e889cb3b5988b70d671924f04922436faec00d5484725ec6a",
+      "lines": 79,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_delivery.py": {
+      "sha256": "6d912a10e1061f5cdc3e21df7af6e28eea4a92c28afed678b9e90873bf9257a4",
+      "lines": 115,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_metrics.py": {
+      "sha256": "6017513a2ca8e5b0f126ff35bbaf70fda5408cfb920a0a4637bee541fe3e122d",
+      "lines": 59,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_policy.py": {
+      "sha256": "4f628eb59eaafa0bab5838824f51e95b3c6c6f573a97dad76bc6072304875064",
+      "lines": 159,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaign_runtime.py": {
+      "sha256": "b2dc99ddf1d3e108d8aa12e7cb85370e927b9977b35f88305db34b22b056729f",
+      "lines": 1192,
+      "kind": "code"
+    },
+    "backend/app/institutional/campaigns.py": {
+      "sha256": "8acee0e6c685a81594a1ee2f3ef43ab06fee17945eda53a5c735e20dfe53d2f4",
+      "lines": 1222,
+      "kind": "code"
+    },
+    "backend/app/institutional/channel_events.py": {
+      "sha256": "d286b2b82e739935af34f774fbf89b44fa239ffb2660a32a2dc85bc718f9a83d",
+      "lines": 994,
+      "kind": "code"
+    },
+    "backend/app/institutional/commercial_followup.py": {
+      "sha256": "02a266c6c368428d702b442fa60908c09fc3f0915015ae1d5fea771a876c757e",
+      "lines": 567,
+      "kind": "code"
+    },
+    "backend/app/institutional/contact_preference.py": {
+      "sha256": "b187b41567d90756e0f5c3e1f02db6a4b741497add97e74b47058fa3479bdbfb",
+      "lines": 75,
+      "kind": "code"
+    },
+    "backend/app/institutional/prospect_source_status.py": {
+      "sha256": "fa85206e54b67d5f79cf0f7225cc5edae1c5c5a48d7c900e2db3183092ecf079",
+      "lines": 20,
+      "kind": "code"
+    },
+    "backend/app/institutional/sales_memory.py": {
+      "sha256": "b54ba94c24849227c4f792253dd803006eabb76b4f99f68e76e732880624e692",
+      "lines": 232,
+      "kind": "code"
+    },
+    "backend/tools/conversation_continuity_graph.py": {
+      "sha256": "bdacd0d748933e385f800eea76fd357d2d7a2074337b6454aa0c3d0b06f68cb1",
+      "lines": 614,
+      "kind": "build_input"
+    },
+    "docs/adaptation/ACADEMIC_BROCHURE_20261126.md": {
+      "sha256": "66831629220f04fdb7dd744a990b5d45c4e7057ada0226c05c981d5549370449",
+      "lines": 53,
+      "kind": "semantic"
+    },
+    "docs/adaptation/ACTIVE_ENGINE_ROUTING_20261125.md": {
+      "sha256": "38ab1dee19a6e6cdc6ad460c94b8ba99f4fa04bd3dbd1e03d03e372ad82227b3",
+      "lines": 46,
+      "kind": "semantic"
+    },
+    "docs/adaptation/AGENT_LANGUAGE_STAGES_20261125.md": {
+      "sha256": "d2d6cba70943e1d6e5161123246885a2e6963e9d6754c4d9064d34a55ae453d7",
+      "lines": 43,
+      "kind": "semantic"
+    },
+    "docs/adaptation/BRANDING_REVIEW_20261125.md": {
+      "sha256": "af6aad733a128ac50251f61f5a15d8b4d0c6bd65463dfcfc633fa995044ba95f",
+      "lines": 24,
+      "kind": "semantic"
+    },
+    "docs/adaptation/BROADCAST_REPORT_TIMEOUT_20261125.md": {
+      "sha256": "c7a1fa9a81cffad8798467f07770b3e979d575f0b7bc019e057d917f7d99d4ad",
+      "lines": 32,
+      "kind": "semantic"
+    },
+    "docs/adaptation/CAMPAIGN_ADVISOR_ENTRY_20261124.md": {
+      "sha256": "8bfb8c409abfad5de9c7133cfe21c0753468ed59026aee4ec3a757d0deb63b0c",
+      "lines": 23,
+      "kind": "semantic"
+    },
+    "docs/adaptation/CAMPAIGN_LAUNCH_2026_20261126.md": {
+      "sha256": "2bf655013733c0b7b75a1f9dcbc708ffdd91d3eb3a7bd8d025568928d9231401",
+      "lines": 37,
+      "kind": "semantic"
+    },
+    "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md": {
+      "sha256": "62399cf0c7c891ff696d20716e71d5261f88f41393f7c3714d975b6915c373b2",
+      "lines": 33,
+      "kind": "semantic"
+    },
+    "docs/adaptation/CRM_FOLLOWUPS_20261124.md": {
+      "sha256": "5aadd4d3a8916654ebf5c7a4028d3dc3bab6eb3d192ff4fb6e9ed83af4159171",
+      "lines": 59,
+      "kind": "semantic"
+    },
+    "docs/adaptation/CRM_IMPORT_2026_20261126.md": {
+      "sha256": "6d267bced812eb1cf5ba9f8a3ab34c72231b231070b5d67f01c711548e5b4140",
+      "lines": 74,
+      "kind": "semantic"
+    },
+    "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md": {
+      "sha256": "d4348e629e9750c43753469fb18ee7b14f1abe4e3fefec94cca537ab74dab943",
+      "lines": 59,
+      "kind": "semantic"
+    },
+    "docs/adaptation/HIGHER_INITIAL_PAYMENT_POLICY_20261124.md": {
+      "sha256": "62e8b886a50ed64d8ab2c489dbf3b400c091be2226ff663c10c229ea86d849ed",
+      "lines": 18,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_CONTEXT_MEDIA_RECOVERY_20261125.md": {
+      "sha256": "eb937a1f7dbdc40226bc87a3fcad67ff21817e81cc7e63c61a391b872502cdd8",
+      "lines": 62,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_EDITS_SENDERS_PREICFES_20261125.md": {
+      "sha256": "2fb3a666eeff1b29d311953ef80dc1fabdaf777ca04278e65bdaf3fd72ae4bcb",
+      "lines": 45,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_OWN_PROJECTION_BINDING_20261125.md": {
+      "sha256": "96d1633bc276dbfa5cd46c6cc211c7f0083f2c33f06570aeaae66d479dc83247",
+      "lines": 37,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_PRICES_COMMENTS_SCALE_20261126.md": {
+      "sha256": "b261b4f6fdacd7e07dcfbf871681c72a0e18bd1b15825220406e1acd41d1d29d",
+      "lines": 67,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md": {
+      "sha256": "ea77a41a6cdf91f97b080888fe3334dbce532fdffbde9827b8b42353385c5148",
+      "lines": 49,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_QUEUE_VOICES_DASHBOARD_20261126.md": {
+      "sha256": "a5ab5eb4b191558c4945eab25dbd7314685ee438180bc4f0b1d3602f921e141b",
+      "lines": 74,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_RESPONSE_RECOVERY_20261125.md": {
+      "sha256": "8b61f4361c02e38d26d0b13817a5aa9a8afa09c5e8dda87c22eac533f4f3094d",
+      "lines": 44,
+      "kind": "semantic"
+    },
+    "docs/adaptation/INBOX_STORAGE_CONTENTION_20261124.md": {
+      "sha256": "fa5401c6f440e927d7505a5828175d6797ab7edfa7be3bfb88291ac0012b952b",
+      "lines": 31,
+      "kind": "semantic"
+    },
+    "docs/adaptation/MASTERCLASS_INTERESTS_20261124.md": {
+      "sha256": "28da10a3070be9c58d59e20ac3064045ae863ed20c9c49e47ad314988b749ba3",
+      "lines": 11,
+      "kind": "semantic"
+    },
+    "docs/adaptation/P23_RINOVA_WEBHOOK_PREPARATION_20261125.md": {
+      "sha256": "f3061cfd7bf99016b5ce8fdf4b0112d08182f8a8764431a0b23ae2eeaad86c81",
+      "lines": 21,
+      "kind": "semantic"
+    },
+    "docs/adaptation/P23_SIIE_IMPLEMENTATION_20261125.md": {
+      "sha256": "e2f68be7655741441aa7cd9f1d2ae35a349f019ec97511602cc968a33b7abbfe",
+      "lines": 49,
+      "kind": "semantic"
+    },
+    "docs/adaptation/P23_SIIE_R7_CATALOGS_20261125.md": {
+      "sha256": "003f7d91d1d49a59234043e8f9a1c63820e98a6a18b7afe213d6042862ea8758",
+      "lines": 31,
+      "kind": "semantic"
+    },
+    "docs/adaptation/P24_INBOX_LIST_DIAGNOSIS_20261125.md": {
+      "sha256": "be17afab6d78db6ede99c770169596df9b0a508d9cd2a8f55140c99bf4aec4a5",
+      "lines": 88,
+      "kind": "semantic"
+    },
+    "docs/adaptation/P24_LOAD_PERFORMANCE_ANALYSIS_20261125.md": {
+      "sha256": "cff3fd758a23e95f8e9e8c616f09ee9ff6993c7b17ee6d812445d96f5b343a45",
+      "lines": 42,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PREICFES_CAMPAIGN_LAUNCH_20261125.md": {
+      "sha256": "b682319189b4824fc0e2508ae13eee6767aa6e8dc2b9174cd269338b61fa1337",
+      "lines": 33,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PREICFES_PROSPECTS_20261125.md": {
+      "sha256": "11804e41fb928842b27f378b9814956dfa7d02b2bb974e884657a251afa2173b",
+      "lines": 41,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PROGRAM_CAMPAIGNS_20261124.md": {
+      "sha256": "dcf3f510927d1d569911ca7b15cbc4d28a08370e99445dd7c0fa5f9067de0f79",
+      "lines": 37,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PROGRAM_FICHES_AUDIT_20261126.md": {
+      "sha256": "b5c34497b64460f774d2344f8ab564ba5708cb8cdaed9ae00591dd148ae97ca1",
+      "lines": 78,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md": {
+      "sha256": "ea4ebbcba8db1d97a06be58aba956e30eaa617253d79acfe9aee7a0848af8b59",
+      "lines": 70,
+      "kind": "semantic"
+    },
+    "docs/adaptation/PROGRAM_MISSING_INFORMATION_20261126.md": {
+      "sha256": "956b7beda47cedaf2dad66c425101d93ee61147d5215e0cd1ffeb1e6884c50c6",
+      "lines": 36,
+      "kind": "semantic"
+    },
+    "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md": {
+      "sha256": "120471c6488f57638bbf658197fa8faa25889266ecea6ca995c4cfe2642d4736",
+      "lines": 54,
+      "kind": "semantic"
+    },
+    "docs/adaptation/SIIE_WEBHOOK_PILOT_20261125.md": {
+      "sha256": "042fe261f8532bc0c3b73a0156ec2fc9837deb86ffd3f5f5ff0fba0fc5b45e71",
+      "lines": 43,
+      "kind": "semantic"
+    },
+    "docs/adaptation/fragments/continuity-20261127-01.json": {
+      "sha256": "a522152a3194ef0accedfadd4a94b310f55631527807630a8e6a6456487a61d5",
+      "lines": 2715,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-02.json": {
+      "sha256": "7ba69b1e808cfb2a161e03355c2a93c0676604cdde75fa551faf901448d0806a",
+      "lines": 1680,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-03.json": {
+      "sha256": "5de3024ecdc17bac56d77665440da775a419ba89cccb1eb7c1070469ce15da76",
+      "lines": 1701,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-04.json": {
+      "sha256": "5ce0628abe33a0f53d3748030b64e51381ae3e1e1c0e1119bbcb64a19529aa9f",
+      "lines": 646,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-05.json": {
+      "sha256": "1c27bb721ba0928cd6b0bff53dbdb9e18e556fdde4e5fe8e04fd33693fe1de60",
+      "lines": 596,
+      "kind": "build_input"
+    },
+    "frontend/src/institution/BroadcastProspectSetup.tsx": {
+      "sha256": "8a310aead288c643ef6ff333e2e576c7ac7adb376e276a837c6b71a43bcf80cf",
+      "lines": 360,
+      "kind": "code"
+    },
+    "frontend/src/institution/BroadcastWorkspace.tsx": {
+      "sha256": "f5999636f84ebf4fb46b3871014d5bb33bb514f4c9a82074933dc429b4d136d4",
+      "lines": 2427,
+      "kind": "code"
+    },
+    "frontend/src/institution/CampaignWorkspace.tsx": {
+      "sha256": "bee873bc769306fc94b2b52a62923585c71f4eb79d854ca251857ecda91ae2cb",
+      "lines": 2039,
+      "kind": "code"
+    },
+    "frontend/src/institution/NoContactList.tsx": {
+      "sha256": "51c6a9c1f4eefb7709110c0a5fbe238090ec9015348da42c8c801f605fdffab8",
+      "lines": 33,
+      "kind": "code"
+    },
+    "frontend/src/institution/Workspace.tsx": {
+      "sha256": "929dba82a0f67f52557c3f4b8dfac84b3ba684891328eafb8a8b68fe75d6eb56",
+      "lines": 2703,
+      "kind": "code"
+    }
+  },
+  "document_scope_pattern": "docs/adaptation/*2026112[4567].md",
+  "discovered_document_scope": [
+    "docs/adaptation/ACADEMIC_BROCHURE_20261126.md",
+    "docs/adaptation/ACTIVE_ENGINE_ROUTING_20261125.md",
+    "docs/adaptation/AGENT_LANGUAGE_STAGES_20261125.md",
+    "docs/adaptation/BRANDING_REVIEW_20261125.md",
+    "docs/adaptation/BROADCAST_REPORT_TIMEOUT_20261125.md",
+    "docs/adaptation/CAMPAIGN_ADVISOR_ENTRY_20261124.md",
+    "docs/adaptation/CAMPAIGN_LAUNCH_2026_20261126.md",
+    "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md",
+    "docs/adaptation/CRM_FOLLOWUPS_20261124.md",
+    "docs/adaptation/CRM_IMPORT_2026_20261126.md",
+    "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md",
+    "docs/adaptation/HIGHER_INITIAL_PAYMENT_POLICY_20261124.md",
+    "docs/adaptation/INBOX_CONTEXT_MEDIA_RECOVERY_20261125.md",
+    "docs/adaptation/INBOX_EDITS_SENDERS_PREICFES_20261125.md",
+    "docs/adaptation/INBOX_OWN_PROJECTION_BINDING_20261125.md",
+    "docs/adaptation/INBOX_PRICES_COMMENTS_SCALE_20261126.md",
+    "docs/adaptation/INBOX_QUEUE_STORAGE_WAIT_20261125.md",
+    "docs/adaptation/INBOX_QUEUE_VOICES_DASHBOARD_20261126.md",
+    "docs/adaptation/INBOX_RESPONSE_RECOVERY_20261125.md",
+    "docs/adaptation/INBOX_STORAGE_CONTENTION_20261124.md",
+    "docs/adaptation/MASTERCLASS_INTERESTS_20261124.md",
+    "docs/adaptation/P23_RINOVA_WEBHOOK_PREPARATION_20261125.md",
+    "docs/adaptation/P23_SIIE_IMPLEMENTATION_20261125.md",
+    "docs/adaptation/P23_SIIE_R7_CATALOGS_20261125.md",
+    "docs/adaptation/P24_INBOX_LIST_DIAGNOSIS_20261125.md",
+    "docs/adaptation/P24_LOAD_PERFORMANCE_ANALYSIS_20261125.md",
+    "docs/adaptation/PREICFES_CAMPAIGN_LAUNCH_20261125.md",
+    "docs/adaptation/PREICFES_PROSPECTS_20261125.md",
+    "docs/adaptation/PROGRAM_CAMPAIGNS_20261124.md",
+    "docs/adaptation/PROGRAM_FICHES_AUDIT_20261126.md",
+    "docs/adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md",
+    "docs/adaptation/PROGRAM_MISSING_INFORMATION_20261126.md",
+    "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md",
+    "docs/adaptation/SIIE_WEBHOOK_PILOT_20261125.md"
+  ],
+  "uncovered_dated_documents": [],
+  "semantic_fragments": [
+    "docs/adaptation/fragments/continuity-20261127-01.json",
+    "docs/adaptation/fragments/continuity-20261127-02.json",
+    "docs/adaptation/fragments/continuity-20261127-03.json",
+    "docs/adaptation/fragments/continuity-20261127-04.json",
+    "docs/adaptation/fragments/continuity-20261127-05.json"
+  ],
+  "counts": {
+    "semantic_sources": 40,
+    "code_sources": 24,
+    "semantic_nodes": 289,
+    "semantic_edges": 310,
+    "ast_nodes": 306,
+    "ast_edges": 953,
+    "literal_code_references": 8,
+    "raw_edges": 1271,
+    "nodes": 595,
+    "edges": 941,
+    "communities": 38
+  },
+  "integrity_counts": {
+    "excluded_dangling_edges": 328,
+    "excluded_self_loop_edges": 1,
+    "dangling_by_relation": {
+      "imports": 140,
+      "imports_from": 188
+    },
+    "duplicate_pair_groups": 1,
+    "compacted_parallel_edges": 1,
+    "raw_missing_endpoints": 0,
+    "raw_self_loops": 1
+  },
+  "input_fingerprint": "e09ab8222139ca3dbda925ceb95d97dfb95f3953423dcb3d5b2c37bd8eb41ba0",
+  "parallel_pair_summary": [
+    {
+      "source": "backend_app_institutional_commercial_followup",
+      "target": "backend_app_institutional_commercial_followup_apply",
+      "locations": [
+        {
+          "source_file": "backend/app/institutional/commercial_followup.py",
+          "source_location": "L493"
+        },
+        {
+          "source_file": "backend/app/institutional/commercial_followup.py",
+          "source_location": "L520"
+        }
+      ]
+    }
+  ],
+  "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
+  "graphify_version": "0.9.36",
+  "cost": {
+    "external_model_calls": 0,
+    "host_tokens": null,
+    "note": "Session/subagent token consumption was not measured"
+  },
+  "query_sha256": "be9a37d05358a697583434e4e4331ab996cfda80bf68f4515d59ea20ec43e37e"
+}

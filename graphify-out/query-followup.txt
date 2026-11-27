@@ -1,0 +1,30 @@
+Consulta Graphify local acotada a conceptos de seguimiento; no ejecuta acciones.
+Completitud: 14/14 nodos, sin truncamiento; profundidad1.
+Las fuentes conservan sus cortes históricos; no fusionar versiones de fechas distintas.
+Tokens de etiquetas: contactar, cierre, general, borrador, avance, activador, avanzados, recorridos, aprobado
+
+Traversal: BFS depth=1 | Start: ['Cierre de veintiún días aprobado por Meta', 'Tres recorridos avanzados en borrador versión dos', 'Flujo general y activador continúan activos en versión tres', 'Activador de inactividad activo en versión tres', 'Tres flujos por avance permanecen en borrador tras rechazo automático', 'Borradores evitan duplicar espera de ocho horas', 'Cierre respetuoso con Juan Pablo y opción de baja', 'Lista canónica de No contactar sin mutar preferencias', 'Flujo general existente activo en versión tres'] | 14 nodes found
+
+NODE Cierre de veintiún días aprobado por Meta [src=artifacts/live/followup-automation-20261127.json loc=Línea 13: "last_template" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Tres recorridos avanzados en borrador versión dos [src=artifacts/live/followup-automation-20261127.json loc=Línea 34: "advanced_followup_review" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Flujo general y activador continúan activos en versión tres [src=artifacts/live/followup-automation-20261127.json loc=Línea 7: "flow_state" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Activador de inactividad activo en versión tres [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 20: Activo v3/revisión7 community=Seguimiento por tiempo y lista]
+NODE Tres flujos por avance permanecen en borrador tras rechazo automático [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 5: la revisión automática rechazó community=Seguimiento por tiempo y lista]
+NODE Borradores evitan duplicar espera de ocho horas [src=artifacts/live/followup-automation-20261127.json loc=Línea 40: "internal_wait_removed" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Cierre respetuoso con Juan Pablo y opción de baja [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 30: ## Mensaje de cierre aprobado community=Seguimiento por tiempo y lista]
+NODE Lista canónica de No contactar sin mutar preferencias [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 45: contact_preference.py añade community=Seguimiento por tiempo y lista]
+NODE Flujo general existente activo en versión tres [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 19: Activo v3/revisión6 community=Seguimiento por tiempo y lista]
+NODE Orientación CRM y tres plantillas Meta por paso [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 21: Primera salida: community=Seguimiento por tiempo y lista]
+NODE Rechazo automático de activación adicional conservado [src=artifacts/live/followup-automation-20261127.json loc=Línea 43: "activation_blocked" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Una ejecución versión tres observada en paso de treinta y seis horas [src=artifacts/live/followup-automation-20261127.json loc=Línea 17: "open_v3_runs_in_36h_list" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE Objetivos temporales y esperas incrementales preservados [src=artifacts/live/followup-automation-20261127.json loc=Línea 10: "targets_from_original_receipt_hours" community=Evidencia posterior de seguimiento —27Nov2026]
+NODE CRM No contactar con búsqueda y páginas de veinticinco [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 47: NoContactList.tsx community=Seguimiento por tiempo y lista]
+EDGE Lista canónica de No contactar sin mutar preferencias --implements [EXTRACTED]--> CRM No contactar con búsqueda y páginas de veinticinco at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 47: NoContactList.tsx
+EDGE Tres recorridos avanzados en borrador versión dos --references [EXTRACTED]--> Rechazo automático de activación adicional conservado at=artifacts/live/followup-automation-20261127.json:Línea 43: "activation_blocked"
+EDGE Flujo general existente activo en versión tres --references [EXTRACTED]--> Orientación CRM y tres plantillas Meta por paso at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 21: Primera salida:
+EDGE Flujo general y activador continúan activos en versión tres --references [EXTRACTED]--> Una ejecución versión tres observada en paso de treinta y seis horas at=artifacts/live/followup-automation-20261127.json:Línea 16: "native_progression"
+EDGE Flujo general y activador continúan activos en versión tres --references [EXTRACTED]--> Objetivos temporales y esperas incrementales preservados at=artifacts/live/followup-automation-20261127.json:Línea 10: "targets_from_original_receipt_hours"
+EDGE Tres recorridos avanzados en borrador versión dos --references [EXTRACTED]--> Borradores evitan duplicar espera de ocho horas at=artifacts/live/followup-automation-20261127.json:Línea 40: "internal_wait_removed"
+EDGE Flujo general existente activo en versión tres --references [EXTRACTED]--> Tres flujos por avance permanecen en borrador tras rechazo automático at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 5: Los tres flujos por avance siguen
+EDGE Activador de inactividad activo en versión tres --references [EXTRACTED]--> Flujo general existente activo en versión tres at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 20: vinculado a flujo v3
+EDGE Orientación CRM y tres plantillas Meta por paso --references [EXTRACTED]--> Cierre respetuoso con Juan Pablo y opción de baja at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 22: Cierre nuevo cbn_crm_cierre

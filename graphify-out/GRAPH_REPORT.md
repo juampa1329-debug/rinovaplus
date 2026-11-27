@@ -1,0 +1,198 @@
+# Grafo de continuidad de RinovaPlus
+
+Vista específica de continuidad compilada el 27 de noviembre de 2026. Conserva los cortes históricos 24–26 y las fechas propias de nuevas fuentes; el AST refleja el checkout al construir. No equivale por sí sola a una lectura productiva en vivo ni a un inventario completo del repositorio o sus conversaciones.
+
+Esta vista específica complementa el grafo general histórico en `graphify-out/live-project-20261126/`; no lo sustituye ni lo modifica.
+
+## Alcance y procedencia
+
+40 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 24 archivos de código por AST. La vista dirigida contiene 595 nodos y 941 aristas en 38 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
+
+Candidatos fechados presentes pero fuera de la selección semántica: []. Su aparición se informa; no se finge haberlos extraído.
+
+## Integridad y límites
+
+La extracción AST aporta 306 nodos y 953 aristas. Se excluyen de la vista 328 aristas con extremo ausente. Sus afirmaciones originales se conservan en raw-extraction.json y sus detalles en integrity.json. Son referencias/importaciones fuera del ámbito o destinos no resueltos; no se han inventado nodos para completarlas.
+
+También se excluyen explícitamente 1 autobucle(s) emitido(s) por el AST. Los originales permanecen en integrity.json y raw-extraction.json: un autobucle del extractor no acredita por sí mismo recursión funcional. Esta separación hace visible lo que Graphify descartaría internamente al construir la vista.
+
+Hay 1 par(es) dirigido(s) con varias afirmaciones (1 arista(s) compactada(s)). Una identidad AST puede agrupar referencias de distintas líneas: no equivale a dos implementaciones distintas en este grafo. parallel_assertions preserva las procedencias en graph.json; el original completo permanece en raw-extraction.json.
+
+Pares compactados y ubicaciones: [{"source": "backend_app_institutional_commercial_followup", "target": "backend_app_institutional_commercial_followup_apply", "locations": [{"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L493"}, {"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L520"}]}].
+
+Enlaces documento→código: 8, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
+
+## Seguimientos: lectura correcta
+
+El avance comercial, la etapa CRM, el consentimiento y los recibos de entrega son conceptos distintos. Los cortes documentan formulario enviado, interés confirmado y casos por aclarar; una respuesta no equivale a matrícula. Los avances excluyen la reactivación general y orientan el próximo seguimiento. Los borradores de flujos no prueban activación ni aprobación de Meta. Consultar las fuentes y fechas de cada nodo antes de usarlo para actuar.
+
+P23 conserva 0/9 aceptaciones: la recepción real SIIE no equivale al evento sintético, a vínculo de identidad aceptado ni a PDF/pagos finalizados. P24 sigue como diagnóstico: 0% de implementación y 0/6 aceptaciones. Las propuestas de rendimiento no se presentan como cambios publicados. Los errores y cortes históricos permanecen diferenciados del estado actual.
+
+## Comunidades y cohesión
+
+La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
+
+| Comunidad | Nodos | Cohesión |
+|---|---:|---:|
+| Gestión de campañas | 61 | 0.11366120218579236 |
+| Eventos y recibos entrantes | 42 | 0.08246225319396051 |
+| Precios recuperados, comentarios y escala | 40 | 0.05512820512820513 |
+| Espacio institucional | 40 | 0.08717948717948718 |
+| Avance comercial y exclusiones | 32 | 0.08064516129032258 |
+| Seguimiento por tiempo y lista | 31 | 0.08172043010752689 |
+| Memoria comercial | 29 | 0.1330049261083744 |
+| Continuidad del Inbox, voces y | 28 | 0.07142857142857142 |
+| Panel de campañas y seguimiento | 25 | 0.10333333333333333 |
+| Seguimiento comercial | 23 | 0.17786561264822134 |
+| Panel de mensajería masiva | 22 | 0.09090909090909091 |
+| Importación de prospectos | 20 | 0.1368421052631579 |
+| Evidencia posterior de seguimiento —27Nov2026 | 19 | 0.16374269005847952 |
+| Seguimiento y preferencias | 16 | 0.16666666666666666 |
+| Contrato y límites SIIE | 16 | 0.14166666666666666 |
+| Importación del lote 2026 | 12 | 0.16666666666666666 |
+| Políticas de campañas | 11 | 0.2727272727272727 |
+| Motores por etapa | 10 | 0.2222222222222222 |
+| Campaña PRE-ICFES y destinos | 9 | 0.2222222222222222 |
+| Entrega y recibos | 9 | 0.3055555555555556 |
+| Piloto y recepción SIIE | 9 | 0.2222222222222222 |
+| Diagnóstico de listas | 9 | 0.2222222222222222 |
+| Informe y consultas agregadas | 8 | 0.25 |
+| Horarios y costes | 8 | 0.25 |
+| Panel de mensajería masiva | 7 | 0.2857142857142857 |
+| Respuesta y entrada al Inbox | 6 | 0.3333333333333333 |
+| Ediciones y remitentes | 6 | 0.3333333333333333 |
+| Prospectos y promoción PRE-ICFES | 6 | 0.3333333333333333 |
+| Campañas por programa | 6 | 0.3333333333333333 |
+| Espera interna y continuidad | 5 | 0.5 |
+| Recuperación de respuestas | 5 | 0.4 |
+| Política de abono inicial | 4 | 0.5 |
+| Contención de almacenamiento | 4 | 0.5 |
+| Intereses en clases abiertas | 4 | 0.5 |
+| Preparación del receptor SIIE | 4 | 0.6666666666666666 |
+| BroadcastProspectSetup.tsx | 4 | 0.5 |
+| Métricas de campañas | 3 | 0.6666666666666666 |
+| Promoción y bandeja entrante | 2 | 1.0 |
+
+## Nodos centrales
+
+```json
+[
+  {
+    "id": "docs_adaptation_followup_sequence_policy_20261127_document",
+    "label": "Seguimiento por tiempo y lista No contactar —27Nov2026",
+    "degree": 29
+  },
+  {
+    "id": "backend_app_institutional_campaigns_campaigns",
+    "label": "Campaigns",
+    "degree": 19
+  },
+  {
+    "id": "artifacts_live_followup_automation_20261127_document",
+    "label": "Evidencia posterior de seguimiento —27Nov2026",
+    "degree": 18
+  },
+  {
+    "id": "docs_adaptation_inbox_prices_comments_scale_20261126_document",
+    "label": "Precios recuperados, comentarios y escala del Dashboard — 26Nov2026",
+    "degree": 17
+  },
+  {
+    "id": "backend_app_institutional_campaigns_event",
+    "label": "event()",
+    "degree": 14
+  }
+]
+```
+
+## Conexiones entre comunidades
+
+```json
+[
+  {
+    "source": "CRM FOLLOWUPS 20261124",
+    "target": "crm-followups-20261124",
+    "source_files": [
+      "docs/adaptation/CRM_FOLLOWUPS_20261124.md",
+      "artifacts/live/crm-followups-20261124.json"
+    ],
+    "confidence": "INFERRED",
+    "relation": "conceptually_related_to",
+    "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
+  },
+  {
+    "source": "Corte posterior sustituye borradores iniciales y métricas pendientes",
+    "target": "Tres flujos por avance permanecen en borrador tras rechazo automático",
+    "source_files": [
+      "artifacts/live/followup-automation-20261127.json",
+      "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md"
+    ],
+    "confidence": "EXTRACTED",
+    "relation": "supersedes",
+    "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
+  },
+  {
+    "source": "Corte posterior sustituye borradores iniciales y métricas pendientes",
+    "target": "Despliegue y resultado final de métricas requieren evidencia aparte",
+    "source_files": [
+      "artifacts/live/followup-automation-20261127.json",
+      "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md"
+    ],
+    "confidence": "EXTRACTED",
+    "relation": "supersedes",
+    "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
+  },
+  {
+    "source": "CAMPAIGN LAUNCH 2026 20261126",
+    "target": "campaign-launch-2026-20261126",
+    "source_files": [
+      "docs/adaptation/CAMPAIGN_LAUNCH_2026_20261126.md",
+      "artifacts/live/campaign-launch-2026-20261126.json"
+    ],
+    "confidence": "EXTRACTED",
+    "relation": "cites",
+    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+  },
+  {
+    "source": "COMMERCIAL PROGRESS FOLLOWUP 20261125",
+    "target": "commercial-progress-followup-20261125",
+    "source_files": [
+      "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md",
+      "artifacts/live/commercial-progress-followup-20261125.json"
+    ],
+    "confidence": "EXTRACTED",
+    "relation": "cites",
+    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+  }
+]
+```
+
+## Consultas sugeridas
+
+Usar etiquetas presentes en graph.json; la búsqueda por términos no presentes puede omitir conceptos. El recorrido demuestra acceso al grafo, no ejecución de seguimiento ni estado productivo.
+
+- `python backend/tools/conversation_continuity_graph.py query`
+- `graphify query "P23 aceptación webhook recepción" --budget 1200`
+
+## Reproducir y comprobar vigencia
+
+Ejecutar con el intérprete local que tenga instalado graphifyy:
+
+```text
+python backend/tools/conversation_continuity_graph.py build
+python backend/tools/conversation_continuity_graph.py check
+```
+
+`build` usa únicamente AST local y fragmentos revisados; no llama modelos, SQL, HTTP, RinovaPlus ni Meta. Exporta JSON antes del HTML y del informe; respeta el bloqueo de reducción de Graphify y no usa force. `check` compara SHA-256 de fuentes, fragmentos, constructor y grafo; también detecta documentos nuevos del ámbito fechado 24–27 de noviembre. Devuelve código 2 ante cambios, faltantes o nuevas fuentes aún no incluidas.
+
+Cada construcción también regenera `query-followup.json` y `query-followup.txt` mediante una consulta real de Graphify, limitada a conceptos semánticos del informe de seguimiento y su evidencia final, profundidad1 y hasta8.000 tokens estimados. Usa sólo términos de etiquetas, conserva la dirección y excluye anclas documentales y módulos AST para acotar el vecindario. Exige que todos los nodos encontrados se impriman, sin truncamiento. El JSON guarda contadores, ámbito, comando reproducible y SHA-256 del grafo. No ejecuta acciones en RinovaPlus.
+
+Para ampliar el ámbito, leer íntegramente el documento nuevo y añadir un fragmento `docs/adaptation/fragments/continuity-20261127-03.json` con `nodes`, `edges`, `hyperedges`, `coverage` (líneas hasta EOF) y `source_sha256` (bytes del archivo). Usar rutas relativas con `/`, `_origin: semantic`, evidencia y confianza; no basta actualizar el hash sin renovar la extracción. El constructor descubre todos los fragmentos de ese prefijo y exige cobertura sin solapamientos. Para nuevas áreas de código, ampliar CODE_SOURCES deliberadamente y reconstruir.
+
+No se instalaron hooks de Git, observadores, servicios ni automatización de actualización. Esto es un snapshot; no se mantiene solo. El manifiesto enumera exactamente lo incluido. Los archivos graphify-out/ se escriben en el árbol de trabajo; su publicación depende de las reglas del repositorio.
+
+La generación del HTML es local. El visualizador estándar de Graphify carga vis-network desde un CDN cuando se abre; no se descargó esa biblioteca durante la construcción. JSON, informe y comprobación de vigencia no la necesitan.
+
+## Coste y reproducibilidad
+
+Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `e09ab8222139ca3dbda925ceb95d97dfb95f3953423dcb3d5b2c37bd8eb41ba0`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.

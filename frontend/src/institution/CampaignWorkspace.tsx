@@ -1862,7 +1862,7 @@ function Executions({
             <tr>
               {[
                 "Variante",
-                "Personas",
+                "Ejecuciones",
                 "Intentos",
                 "Aceptados",
                 "Entregados",
@@ -1894,6 +1894,7 @@ function Executions({
       </div>
       {!metrics.value && <ResourceState error={metrics.error} />}
       <p className="campaign-hint">
+        El acumulado incluye todas las versiones del flujo; una persona puede tener más de una ejecución histórica.
         Las respuestas sólo se atribuyen si el proveedor referencia el mensaje
         de la misma cuenta y persona. No se infieren matrículas ni conversiones.
       </p>
