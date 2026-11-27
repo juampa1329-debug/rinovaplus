@@ -143,3 +143,35 @@ def test_financial_focus_keeps_all_payment_conditions_and_explicit_academic_ques
     assert "syllabus" not in focused and "presentation" not in focused
     expanded = project_facts(profile, for_turn("¿Cuánto cuesta, qué materias tiene y qué requisitos piden?"))
     assert expanded["syllabus"] == profile["syllabus"] and expanded["requirements"] == profile["requirements"]
+
+
+def test_two_requested_programs_keep_prices_by_removing_derived_prompt_repetition():
+    from copy import deepcopy
+    from app.institutional.program_commercial import agent_facts
+    programs = []
+    for number, cash, initial in [(1, 800000, 220000), (2, 1860000, 490000)]:
+        profile = agent_facts({
+            'presentation': 'Presentación verificada. ' * 50,
+            'price_cop': cash, 'price_concept': 'Concepto y alcance revisados',
+            'price_valid_until': '2099-12-16', 'cost_exclusions': 'Material aparte',
+            'source_note': 'Procedencia revisada sin recortar',
+            'financial_plans': [{
+                'external_id': str(number), 'initial_payment_cop': initial,
+                'initial_payment_due_date': '2099-12-15', 'total_cost_cop': 4 * initial,
+                'valid_until': '2099-12-15', 'conditions': 'Condiciones completas del plan. ' * 25,
+                'installments': [{'number': i, 'amount_cop': initial, 'due_date': f'2100-0{i+1}-10'} for i in range(1, 4)],
+            }],
+        })
+        programs.append({'program_id': number, 'commercial': profile})
+    original = deepcopy(programs)
+    assert sum(len(json.dumps(p, ensure_ascii=False)) for p in programs) > 12000
+    _, retained = agent_catalog.bounded_commercial_context(None, programs)
+    assert all('commercial' in p and not p.get('commercial_details_omitted') for p in retained)
+    assert sum(len(json.dumps(p, ensure_ascii=False)) for p in retained) <= 12000
+    for item, before in zip(retained, original, strict=True):
+        profile, prior = item['commercial'], before['commercial']
+        for key in ('financial_plans', 'price_cop', 'price_concept', 'price_valid_until', 'cost_exclusions', 'source_note', 'presentation'):
+            assert profile[key] == prior[key]
+        assert profile['entry_payment_offer']['initial_payment_cop'] == prior['entry_payment_offer']['initial_payment_cop']
+        assert profile['entry_payment_offer']['full_details_in_financial_plan'] == profile['financial_plans'][0]['external_id']
+    assert programs == original
