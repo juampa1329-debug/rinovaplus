@@ -148,7 +148,7 @@ def test_idle_history_reconciliation_is_bounded_and_throttled(monkeypatch):
  tx=Mock(side_effect=lambda *a,**kw:nullcontext(None));monkeypatch.setattr(store,'transaction',tx)
  worker=target.Reconciler(settings)
  assert worker.once() is False and worker.once() is False
- assert reads.call_count==1 and tx.call_args.kwargs=={'anonymous':True}
+ assert reads.call_count==2 and tx.call_args.kwargs=={'anonymous':True}
 
 
 def test_unavailable_history_is_throttled_without_disabling_immediate_optouts(monkeypatch):
@@ -176,3 +176,25 @@ def test_history_recovery_failure_does_not_skip_other_channel_workers(monkeypatc
  assert stages==['media','campaigns','broadcasts','maintenance','agents']
  assert 'contact_preference_recovery_retry_required' in caplog.text
  assert 'private details' not in caplog.text
+
+
+@pytest.mark.parametrize('still_blocked',[True,False])
+def test_existing_recorded_optout_finishes_closure_only_after_live_authority_check(monkeypatch,still_blocked):
+ settings,_,_,contact,_,_,apply,_=fixture(monkeypatch)
+ queries=[]
+ def one(c,sql,*args):
+  parse_sql(postgres_sql(sql,layout()['tables']).replace('%s','NULL'))
+  assert sql.count('?')==len(args)
+  queries.append(sql)
+  return {'ContactId':contact} if 'b.ContactId' in sql else None
+ monkeypatch.setattr(target.db,'one',one)
+ monkeypatch.setattr(contact_preference,'blocked',lambda *a:still_blocked)
+ from app.institutional import store
+ tx=Mock(side_effect=lambda *a,**kw:nullcontext(None));monkeypatch.setattr(store,'transaction',tx)
+ assert target.Reconciler(settings).once() is still_blocked
+ assert tx.call_args.args[1] is True
+ assert apply.called is still_blocked
+ if still_blocked:
+  assert apply.call_args.kwargs['source']=='recorded_no_contact_recovery'
+  assert apply.call_args.kwargs['proof']=={'authority':'existing_persisted_no_contact'}
+ assert len(queries)==2 and "v.State<>'closed'" in queries[1]

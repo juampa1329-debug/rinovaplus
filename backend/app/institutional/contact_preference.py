@@ -116,8 +116,14 @@ def blocked(c, s, contact):
 
 def blocked_contacts(c, s):
     """One canonical suppression set for broadcast preview and dispatch."""
+    query, params = suppression_query(s)
+    return {db.uid(str(row[0])) for row in c.execute(query, *params).fetchall()}
+
+
+def suppression_query(s):
+    """Shared authority for audience exclusion and already-recorded closure."""
     from app.institutional.automatic_optout import supported
-    query = ("SELECT DISTINCT COALESCE(g.TargetContactId,v.ContactId) FROM crm_strategy.EvaluationPlan e "
+    query = ("SELECT DISTINCT COALESCE(g.TargetContactId,v.ContactId) AS ContactId FROM crm_strategy.EvaluationPlan e "
              "JOIN crm.Conversation v ON v.ConversationId=e.ConversationId "
              "LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=v.ContactId AND g.Active=1 "
              "WHERE JSON_VALUE(e.DocumentJson,'$.noContact')='true'")
@@ -131,7 +137,7 @@ def blocked_contacts(c, s):
                   "AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Consent grantor WHERE grantor.InstitutionId=i.InstitutionId "
                   "AND grantor.IdentityId=i.IdentityId AND grantor.State='granted' AND grantor.CreatedAt>e.CreatedAt)")
         params = (db.institution(s),)
-    return {db.uid(str(row[0])) for row in c.execute(query, *params).fetchall()}
+    return query, params
 
 
 def install(app, s):

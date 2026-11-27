@@ -87,9 +87,30 @@ class Reconciler:
                 "AND done.Kind='no_contact_applied' AND JSON_VALUE(done.Document,'$.origin_identity_id')=JSON_VALUE(e.Document,'$.identity_id') "
                 "AND JSON_VALUE(done.Document,'$.message_id')=JSON_VALUE(e.Document,'$.message_id')) "
                 "ORDER BY e.CreatedAt,e.EventId", db.institution(self.settings))
+            if not request:
+                from app.institutional.contact_preference import suppression_query
+                query, params = suppression_query(self.settings)
+                recorded = db.one(c, "SELECT TOP(1) b.ContactId FROM (" + query + ") b "
+                    "JOIN crm.Conversation v ON 1=1 LEFT JOIN crm_workspace.Merge g "
+                    "ON g.SourceContactId=v.ContactId AND g.Active=1 "
+                    "WHERE COALESCE(g.TargetContactId,v.ContactId)=b.ContactId AND v.State<>'closed' "
+                    "ORDER BY v.UpdatedAt,v.ConversationId", *params)
         if not request:
-            self.next_check = time.monotonic() + 60
-            return False
+            if not recorded:
+                return False
+            # Existing suppression is already authoritative across channels.
+            # Finish its missing closure without inventing a customer message.
+            from app.institutional.contact_preference import apply_no_contact, blocked
+            from app.institutional.workspace import primary
+            with transaction(self.settings, True, anonymous=True) as c:
+                contact = primary(c, db.uid(str(recorded["ContactId"])))
+                if not blocked(c, self.settings, contact):
+                    return False
+                apply_no_contact(c, self.settings, contact, contact,
+                    "Completar cierre de una solicitud de No contactar ya registrada.",
+                    source="recorded_no_contact_recovery", proof={"authority": "existing_persisted_no_contact"})
+            self.next_check = 0
+            return True
         with transaction(self.settings, True, anonymous=True) as c:
             # A later reviewed consent is respected; historical input is never
             # a new instruction to revoke that later authorization.
