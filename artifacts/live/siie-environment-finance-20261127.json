@@ -1,0 +1,72 @@
+{
+  "cut": "2026-11-27 America/Bogota",
+  "scope": "SIIE environment-bound PRE-ICFES finance pilot",
+  "implementation": [
+    "2845605",
+    "21d91bb",
+    "5a9eec1"
+  ],
+  "deployment": {
+    "initial_backend": {
+      "id": "mhdffdtdmohxiutdc99vsldc",
+      "state": "Finished",
+      "duration": "4m37"
+    },
+    "final_backend": {
+      "id": "2rakd1nvc73ineoqwo3y6oai",
+      "state": "Finished",
+      "duration": "4m35"
+    },
+    "final_frontend": {
+      "id": "wmh8acmacwdqjvo2xmrtqkus",
+      "state": "Finished"
+    }
+  },
+  "native": {
+    "base_url": "https://siieplus.online/SIIEWebPlustest/",
+    "api_key_retained": true,
+    "webhook_secret_retained": true,
+    "reception_enabled": true,
+    "writes_enabled": false,
+    "gateway_calls": 0,
+    "period": "2027-A",
+    "period_correlation": "72ea8fc87b934d589f80e27d900c307b",
+    "filters_correlation": "2e46cf7b88c14e9bb9016c6adba93613",
+    "registration_program_count": 22,
+    "preicfes_in_consulted_offered_list": false,
+    "historical_draft_read_only": true,
+    "public_form_load_attempts": 2,
+    "new_siie_writes": 0,
+    "new_customer_messages": 0
+  },
+  "validation": {
+    "backend_focused_passed": 224,
+    "frontend_focused_passed": 27,
+    "post_merge_overlap_passed": 39,
+    "typecheck": true,
+    "modified_eslint": true,
+    "ruff_E9_F": true,
+    "institutional_build": true,
+    "full_suite_green_claimed": false,
+    "live_financial_end_to_end": false
+  },
+  "package": {
+    "operations_reviewed": 39,
+    "scripts_reviewed": 40,
+    "secrets_included": false,
+    "postman_installed_or_executed": false
+  },
+  "pending": [
+    "Public Test form loading",
+    "Confirm Test PRE-ICFES period/offers/groups and finance configuration",
+    "New authorized fictitious registration and real signed event",
+    "Verified chat binding and actual customer plan choice",
+    "Real assignment, voucher, validated PDF and authorized channel send"
+  ],
+  "acceptance_unchanged": {
+    "P22_technical": "3/5",
+    "P22_commercial": "0/5",
+    "P23": "0/9",
+    "P24": "0/6"
+  }
+}

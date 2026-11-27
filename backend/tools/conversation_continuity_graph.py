@@ -26,6 +26,14 @@ OUT = ROOT / "graphify-out"
 FRAGMENTS = ROOT / "docs/adaptation/fragments"
 FRAGMENT_GLOB = "continuity-20261127*.json"
 CODE_SOURCES = (
+    "backend/app/institutional/siie_environment.py",
+    "backend/app/institutional/siie_preicfes.py",
+    "backend/app/institutional/siie_preicfes_client.py",
+    "backend/app/institutional/siie_registration.py",
+    "backend/app/institutional/siie_api.py",
+    "backend/app/institutional/siie_local.py",
+    "frontend/src/institution/SiiePreicfes.tsx",
+    "frontend/src/shared/siieEnvironment.ts",
     "backend/app/institutional/cbn_profile.py",
     "backend/app/institutional/program_commercial.py",
     "backend/app/modules/agents/conversation_style.py",

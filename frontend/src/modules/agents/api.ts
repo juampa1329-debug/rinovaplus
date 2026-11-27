@@ -236,6 +236,12 @@ const errors: Record<string, string> = {
     "La clave de SIIE tiene un formato no válido. Guarda el token original en Coolify sin saltos de línea; no uses su hash.",
   siie_not_configured:
     "Falta configurar la conexión de SIIE. Guarda la URL HTTPS y la clave original única en SIIE_API_TOKEN de Coolify; después redespliega el backend.",
+  siie_base_url_invalid:
+    "Configura SIIE_BASE_URL con HTTPS y barra final. Conserva la clave original de SIIE.",
+  siie_environment_changed:
+    "Este trabajo pertenece a otro entorno de SIIE. Se conserva sin reenviar; consulta las referencias del entorno actual antes de preparar otro.",
+  siie_environment_refresh_required:
+    "Recarga RinovaPlus y comprueba la conexión de SIIE antes de consultar los catálogos del entorno actual.",
   siie_source_credential_configuration:
     "SIIE informa un problema con su configuración de claves. Su administrador debe revisar API_Key y el alias API_CRM: pueden faltar, ser inválidos o no coincidir. Cambiar datos del CRM no resuelve ese fallo.",
   siie_catalog_not_configured:

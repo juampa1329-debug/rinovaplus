@@ -1,0 +1,170 @@
+{
+  "nodes": [
+    {
+      "id": "siie_environment_finance_20261127_0_0",
+      "label": "Corte SIIE entorno y piloto financiero",
+      "file_type": "document",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 1: # SIIE: entorno único y piloto financiero PRE-ICFES — 27 de noviembre de 2026",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Distingue implementación, prueba sintética, consultas reales y aceptación financiera todavía pendiente.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_0_4",
+      "label": "Entorno y credenciales",
+      "file_type": "concept",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 5: ## Entorno y credenciales",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sección completa revisada hasta el siguiente encabezado; hechos y límites conservados sin extrapolar entregas ni pagos.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_0_12",
+      "label": "Panel de pruebas",
+      "file_type": "concept",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 13: ## Panel de pruebas",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sección completa revisada hasta el siguiente encabezado; hechos y límites conservados sin extrapolar entregas ni pagos.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_0_22",
+      "label": "Contrato implementado y límites",
+      "file_type": "concept",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 23: ## Contrato implementado y límites",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sección completa revisada hasta el siguiente encabezado; hechos y límites conservados sin extrapolar entregas ni pagos.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_0_30",
+      "label": "Aceptación real pendiente",
+      "file_type": "concept",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 31: ## Aceptación real pendiente",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sección completa revisada hasta el siguiente encabezado; hechos y límites conservados sin extrapolar entregas ni pagos.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_0_36",
+      "label": "Comprobación nativa final",
+      "file_type": "concept",
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 37: ## Comprobación nativa final",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sección completa revisada hasta el siguiente encabezado; hechos y límites conservados sin extrapolar entregas ni pagos.",
+      "_origin": "semantic"
+    },
+    {
+      "id": "siie_environment_finance_20261127_1_0",
+      "label": "Evidencia agregada SIIE Test",
+      "file_type": "document",
+      "source_file": "artifacts/live/siie-environment-finance-20261127.json",
+      "source_location": "Línea 1: {",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Distingue implementación, prueba sintética, consultas reales y aceptación financiera todavía pendiente.",
+      "_origin": "semantic"
+    }
+  ],
+  "edges": [
+    {
+      "source": "siie_environment_finance_20261127_0_0",
+      "target": "siie_environment_finance_20261127_0_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 5: ## Entorno y credenciales",
+      "weight": 1,
+      "_origin": "semantic",
+      "context": "Sección documental explícita; no constituye aceptación productiva por sí sola."
+    },
+    {
+      "source": "siie_environment_finance_20261127_0_0",
+      "target": "siie_environment_finance_20261127_0_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 13: ## Panel de pruebas",
+      "weight": 1,
+      "_origin": "semantic",
+      "context": "Sección documental explícita; no constituye aceptación productiva por sí sola."
+    },
+    {
+      "source": "siie_environment_finance_20261127_0_0",
+      "target": "siie_environment_finance_20261127_0_22",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 23: ## Contrato implementado y límites",
+      "weight": 1,
+      "_origin": "semantic",
+      "context": "Sección documental explícita; no constituye aceptación productiva por sí sola."
+    },
+    {
+      "source": "siie_environment_finance_20261127_0_0",
+      "target": "siie_environment_finance_20261127_0_30",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 31: ## Aceptación real pendiente",
+      "weight": 1,
+      "_origin": "semantic",
+      "context": "Sección documental explícita; no constituye aceptación productiva por sí sola."
+    },
+    {
+      "source": "siie_environment_finance_20261127_0_0",
+      "target": "siie_environment_finance_20261127_0_36",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md",
+      "source_location": "Línea 37: ## Comprobación nativa final",
+      "weight": 1,
+      "_origin": "semantic",
+      "context": "Sección documental explícita; no constituye aceptación productiva por sí sola."
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "coverage": {
+    "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md": 49,
+    "artifacts/live/siie-environment-finance-20261127.json": 72
+  },
+  "source_sha256": {
+    "docs/adaptation/SIIE_ENVIRONMENT_FINANCE_20261127.md": "eb30e9d4e250fa778129e72d75ac36f73e7b5379138638b66ca9d416f128421e",
+    "artifacts/live/siie-environment-finance-20261127.json": "fd8bb8b97606fbe4e48d002e5ed37c81b12eed8530b26255a12c63fecc9f1da0"
+  },
+  "_origin": "semantic",
+  "extraction_note": "Extracción revisada por la sesión principal hasta EOF; cero llamadas externas del constructor. Los ceros no miden el coste de la sesión. Sin datos nominales, claves, teléfonos ni documentos privados."
+}

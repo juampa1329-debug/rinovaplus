@@ -1,26 +1,26 @@
 {
   "raw_graphify_diagnostic": {
-    "node_count": 911,
+    "node_count": 1021,
     "unverified_node_count": 0,
-    "raw_edge_count": 1975,
+    "raw_edge_count": 2284,
     "non_object_edges": 0,
     "missing_endpoint_edges": 0,
-    "dangling_endpoint_edges": 495,
+    "dangling_endpoint_edges": 486,
     "self_loop_edges": 1,
-    "valid_candidate_edges": 1480,
+    "valid_candidate_edges": 1798,
     "exact_duplicate_edges": 0,
-    "directed_unique_endpoint_pairs": 1479,
-    "directed_same_endpoint_collapsed_edges": 1,
-    "undirected_unique_endpoint_pairs": 1478,
-    "undirected_same_endpoint_collapsed_edges": 2,
-    "same_endpoint_group_count": 1,
+    "directed_unique_endpoint_pairs": 1796,
+    "directed_same_endpoint_collapsed_edges": 2,
+    "undirected_unique_endpoint_pairs": 1795,
+    "undirected_same_endpoint_collapsed_edges": 3,
+    "same_endpoint_group_count": 2,
     "relation_variant_groups": 0,
     "source_file_variant_groups": 0,
-    "source_location_variant_groups": 1,
+    "source_location_variant_groups": 2,
     "context_variant_groups": 0,
     "post_build_graph_type": "DiGraph",
-    "post_build_node_count": 911,
-    "post_build_edge_count": 1478,
+    "post_build_node_count": 1021,
+    "post_build_edge_count": 1795,
     "post_build_error": "",
     "producer_suppression": {
       "path": "graphify/extract.py",
@@ -97,6 +97,24 @@
     },
     "examples": [
       {
+        "source": "frontend_src_shared_siieenvironment",
+        "target": "frontend_src_shared_siieenvironment_siieenvironment",
+        "edge_count": 2,
+        "relations": [
+          "contains"
+        ],
+        "source_files": [
+          "frontend/src/shared/siieEnvironment.ts"
+        ],
+        "source_locations": [
+          "L3",
+          "L35"
+        ],
+        "contexts": [
+          ""
+        ]
+      },
+      {
         "source": "backend_app_institutional_commercial_followup",
         "target": "backend_app_institutional_commercial_followup_apply",
         "edge_count": 2,
@@ -117,21 +135,790 @@
     ]
   },
   "counts": {
-    "excluded_dangling_edges": 495,
+    "excluded_dangling_edges": 486,
     "excluded_self_loop_edges": 1,
     "dangling_by_relation": {
-      "imports_from": 252,
-      "imports": 212,
-      "calls": 31
+      "imports": 187,
+      "imports_from": 299
     },
-    "duplicate_pair_groups": 1,
-    "compacted_parallel_edges": 1,
+    "duplicate_pair_groups": 2,
+    "compacted_parallel_edges": 2,
     "raw_missing_endpoints": 0,
     "raw_self_loops": 1
   },
   "excluded_edges": [
     {
-      "source": "backend_app_institutional_cbn_profile_py",
+      "source": "backend_app_institutional_siie_environment",
+      "target": "hashlib",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_environment",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_environment",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_environment",
+      "target": "dataclasses",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_environment",
+      "target": "urllib_parse",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_environment",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_environment.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "uuid",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "pydantic",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional_auth",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional_models",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional_policy",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional_siie_webhook",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "app_institutional_store",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "hashlib",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "uuid",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "httpx2",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes_client",
+      "target": "app_institutional_channel_ingress",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes_client.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "hashlib",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "pydantic",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "starlette_concurrency",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_auth",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_channel_ingress",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_crypto",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_db",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_models",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_policy",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_siie_webhook",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "app_institutional_store",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "httpx2",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_api",
+      "target": "app_institutional",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_api.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "copy",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "fastapi",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "pydantic",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "app_institutional_db",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_local",
+      "target": "app_institutional_models",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_local.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "ref_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_ui",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_ui_button",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_ui_field",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_ui_notice",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_institutionsession",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_shared_institutionsession_institutionheaders",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_institution_api",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_institution_api_useinstitution",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_institution_siiepreicfes",
+      "target": "frontend_src_institution_api_usetask",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/institution/SiiePreicfes.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_cbn_profile",
       "target": "uuid",
       "relation": "imports_from",
       "context": "import",
@@ -263,17 +1050,6 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_conversation_style",
-      "target": "backend_app_institutional_cbn_profile",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/modules/agents/conversation_style.py",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
       "source": "backend_app_modules_ai_application_admissions_prompt",
       "target": "json",
       "relation": "imports",
@@ -336,17 +1112,6 @@
       "confidence": "EXTRACTED",
       "source_file": "backend/app/modules/ai/application/admissions_prompt.py",
       "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_modules_ai_application_admissions_prompt",
-      "target": "backend_app_institutional_cbn_profile",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/modules/ai/application/admissions_prompt.py",
-      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -946,17 +1711,6 @@
     },
     {
       "source": "backend_app_institutional_commercial_followup",
-      "target": "backend_app_institutional_cbn_profile",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/commercial_followup.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_commercial_followup",
       "target": "app_institutional_models",
       "relation": "imports_from",
       "context": "import",
@@ -1133,17 +1887,6 @@
     },
     {
       "source": "backend_app_institutional_campaign_runtime",
-      "target": "backend_app_institutional_contact_intent",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_runtime",
       "target": "datetime",
       "relation": "imports_from",
       "context": "import",
@@ -1254,17 +1997,6 @@
     },
     {
       "source": "backend_app_institutional_campaign_runtime",
-      "target": "backend_app_institutional_campaigns",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_runtime.py",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_runtime",
       "target": "app_modules_channels",
       "relation": "imports_from",
       "context": "import",
@@ -1275,7 +2007,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -1286,7 +2018,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "copy",
       "relation": "imports_from",
       "context": "import",
@@ -1297,7 +2029,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "datetime",
       "relation": "imports_from",
       "context": "import",
@@ -1308,7 +2040,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "uuid",
       "relation": "imports_from",
       "context": "import",
@@ -1319,7 +2051,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "fastapi",
       "relation": "imports_from",
       "context": "import",
@@ -1330,7 +2062,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "app_institutional_db",
       "relation": "imports_from",
       "context": "import",
@@ -1341,24 +2073,13 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure_py",
+      "source": "backend_app_institutional_campaign_closure",
       "target": "app_institutional_campaign_models",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "backend/app/institutional/campaign_closure.py",
       "source_location": "L11",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure_py",
-      "target": "backend_app_institutional_campaigns",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -1484,7 +2205,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "hashlib",
       "relation": "imports",
       "context": "import",
@@ -1495,7 +2216,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -1506,7 +2227,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "re",
       "relation": "imports",
       "context": "import",
@@ -1517,7 +2238,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "contextlib",
       "relation": "imports_from",
       "context": "import",
@@ -1528,7 +2249,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "datetime",
       "relation": "imports_from",
       "context": "import",
@@ -1539,7 +2260,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "uuid",
       "relation": "imports_from",
       "context": "import",
@@ -1550,7 +2271,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "fastapi",
       "relation": "imports_from",
       "context": "import",
@@ -1561,7 +2282,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional",
       "relation": "imports_from",
       "context": "import",
@@ -1572,7 +2293,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_auth",
       "relation": "imports_from",
       "context": "import",
@@ -1583,7 +2304,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_broadcasts",
       "relation": "imports_from",
       "context": "import",
@@ -1594,7 +2315,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_campaign_models",
       "relation": "imports_from",
       "context": "import",
@@ -1605,7 +2326,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_channel_operations",
       "relation": "imports_from",
       "context": "import",
@@ -1616,7 +2337,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_db",
       "relation": "imports_from",
       "context": "import",
@@ -1627,7 +2348,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_settings",
       "relation": "imports_from",
       "context": "import",
@@ -1638,7 +2359,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaigns_py",
+      "source": "backend_app_institutional_campaigns",
       "target": "app_institutional_store",
       "relation": "imports_from",
       "context": "import",
@@ -1649,7 +2370,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "fastapi",
       "relation": "imports_from",
       "context": "import",
@@ -1660,7 +2381,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "typing",
       "relation": "imports_from",
       "context": "import",
@@ -1671,7 +2392,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "uuid",
       "relation": "imports_from",
       "context": "import",
@@ -1682,7 +2403,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "pydantic",
       "relation": "imports_from",
       "context": "import",
@@ -1693,7 +2414,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_institutional",
       "relation": "imports_from",
       "context": "import",
@@ -1704,7 +2425,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_institutional_models",
       "relation": "imports_from",
       "context": "import",
@@ -1715,7 +2436,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_institutional_auth",
       "relation": "imports_from",
       "context": "import",
@@ -1726,7 +2447,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_institutional_store",
       "relation": "imports_from",
       "context": "import",
@@ -1737,7 +2458,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_preference_py",
+      "source": "backend_app_institutional_contact_preference",
       "target": "app_sql_workspace",
       "relation": "imports_from",
       "context": "import",
@@ -1748,7 +2469,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_automatic_optout_py",
+      "source": "backend_app_institutional_automatic_optout",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -1759,7 +2480,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_automatic_optout_py",
+      "source": "backend_app_institutional_automatic_optout",
       "target": "time",
       "relation": "imports",
       "context": "import",
@@ -1770,7 +2491,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_automatic_optout_py",
+      "source": "backend_app_institutional_automatic_optout",
       "target": "app_institutional",
       "relation": "imports_from",
       "context": "import",
@@ -1781,18 +2502,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_automatic_optout_py",
-      "target": "backend_app_institutional_contact_intent",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_intent_py",
+      "source": "backend_app_institutional_contact_intent",
       "target": "unicodedata",
       "relation": "imports",
       "context": "import",
@@ -1803,7 +2513,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_contact_intent_py",
+      "source": "backend_app_institutional_contact_intent",
       "target": "re",
       "relation": "imports",
       "context": "import",
@@ -1814,7 +2524,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_workers_py",
+      "source": "backend_app_institutional_channel_workers",
       "target": "logging",
       "relation": "imports",
       "context": "import",
@@ -1825,7 +2535,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_workers_py",
+      "source": "backend_app_institutional_channel_workers",
       "target": "re",
       "relation": "imports",
       "context": "import",
@@ -1836,7 +2546,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_workers_py",
+      "source": "backend_app_institutional_channel_workers",
       "target": "threading",
       "relation": "imports",
       "context": "import",
@@ -1847,7 +2557,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_workers_py",
+      "source": "backend_app_institutional_channel_workers",
       "target": "contextlib",
       "relation": "imports_from",
       "context": "import",
@@ -1858,18 +2568,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_workers_py",
-      "target": "backend_app_institutional_channel_events",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers_py",
+      "source": "backend_app_institutional_channel_workers",
       "target": "app_institutional_channel_outbox",
       "relation": "imports_from",
       "context": "import",
@@ -1880,7 +2579,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_voice_transcripts_py",
+      "source": "backend_app_institutional_voice_transcripts",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -1891,7 +2590,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_voice_transcripts_py",
+      "source": "backend_app_institutional_voice_transcripts",
       "target": "fastapi",
       "relation": "imports_from",
       "context": "import",
@@ -1902,7 +2601,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_voice_transcripts_py",
+      "source": "backend_app_institutional_voice_transcripts",
       "target": "app_institutional",
       "relation": "imports_from",
       "context": "import",
@@ -1913,7 +2612,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_voice_transcripts_py",
+      "source": "backend_app_institutional_voice_transcripts",
       "target": "app_institutional_conversation_scope",
       "relation": "imports_from",
       "context": "import",
@@ -1924,7 +2623,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_skill_policy_py",
+      "source": "backend_app_modules_agents_skill_policy",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -1935,7 +2634,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_skill_policy_py",
+      "source": "backend_app_modules_agents_skill_policy",
       "target": "re",
       "relation": "imports",
       "context": "import",
@@ -1946,7 +2645,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_skill_policy_py",
+      "source": "backend_app_modules_agents_skill_policy",
       "target": "unicodedata",
       "relation": "imports",
       "context": "import",
@@ -1957,7 +2656,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_skill_policy_py",
+      "source": "backend_app_modules_agents_skill_policy",
       "target": "app_modules_agents_sales_skills",
       "relation": "imports_from",
       "context": "import",
@@ -1968,7 +2667,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_modules_agents_skill_policy_py",
+      "source": "backend_app_modules_agents_skill_policy",
       "target": "app_modules_agents",
       "relation": "imports_from",
       "context": "import",
@@ -2200,17 +2899,6 @@
     },
     {
       "source": "backend_app_institutional_campaign_api",
-      "target": "backend_app_institutional_campaigns",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_api.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_api",
       "target": "app_institutional_db",
       "relation": "imports_from",
       "context": "import",
@@ -2276,7 +2964,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "hashlib",
       "relation": "imports",
       "context": "import",
@@ -2287,7 +2975,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "json",
       "relation": "imports",
       "context": "import",
@@ -2298,7 +2986,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "math",
       "relation": "imports",
       "context": "import",
@@ -2309,7 +2997,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "datetime",
       "relation": "imports_from",
       "context": "import",
@@ -2320,7 +3008,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "uuid",
       "relation": "imports_from",
       "context": "import",
@@ -2331,7 +3019,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "fastapi",
       "relation": "imports_from",
       "context": "import",
@@ -2342,7 +3030,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional",
       "relation": "imports_from",
       "context": "import",
@@ -2353,7 +3041,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_channel_ingress",
       "relation": "imports_from",
       "context": "import",
@@ -2364,7 +3052,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_channel_operations",
       "relation": "imports_from",
       "context": "import",
@@ -2375,7 +3063,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_channel_text",
       "relation": "imports_from",
       "context": "import",
@@ -2386,7 +3074,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_crypto",
       "relation": "imports_from",
       "context": "import",
@@ -2397,7 +3085,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_db",
       "relation": "imports_from",
       "context": "import",
@@ -2408,7 +3096,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_store",
       "relation": "imports_from",
       "context": "import",
@@ -2419,7 +3107,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_modules_channels_providers",
       "relation": "imports_from",
       "context": "import",
@@ -2430,7 +3118,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_modules_crm_configuration_application_service",
       "relation": "imports_from",
       "context": "import",
@@ -2441,7 +3129,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_modules_inbox_application_state",
       "relation": "imports_from",
       "context": "import",
@@ -2452,7 +3140,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_sql_workspace",
       "relation": "imports_from",
       "context": "import",
@@ -2463,7 +3151,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_sales_referrals",
       "relation": "imports_from",
       "context": "import",
@@ -2474,7 +3162,7 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_channel_events_py",
+      "source": "backend_app_institutional_channel_events",
       "target": "app_institutional_social_messages",
       "relation": "imports_from",
       "context": "import",
@@ -4531,497 +5219,68 @@
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "imports",
-      "context": "import",
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "backend_app_institutional_db",
+      "relation": "imports_from",
+      "context": "submodule_import",
       "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_preicfes",
+      "target": "backend_app_institutional_siie_records",
+      "relation": "imports_from",
+      "context": "submodule_import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_preicfes.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "backend_app_institutional_siie_forms",
+      "relation": "imports_from",
+      "context": "submodule_import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "backend_app_institutional_siie_registration",
+      "target": "backend_app_institutional_siie_records",
+      "relation": "imports_from",
+      "context": "submodule_import",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/institutional/siie_registration.py",
       "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_campaigns_get",
-      "relation": "imports",
-      "context": "import",
+      "source": "backend_app_institutional_siie_registration",
+      "target": "backend_app_institutional_siie_registration_client",
+      "relation": "imports_from",
+      "context": "submodule_import",
       "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast"
     },
     {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_issues",
-      "relation": "imports",
-      "context": "import",
+      "source": "backend_app_institutional_siie_registration",
+      "target": "backend_app_institutional_siie_catalogs",
+      "relation": "imports_from",
+      "context": "submodule_import",
       "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_packed",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_public",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_authority",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaign_runtime_guard",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L84",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaign_runtime_stop",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L84",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_commercial_followup_read",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L151",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_prospect_source_status_promotion_exclusion",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L246",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_commercial_followup_exclusion",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L254",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_contact_preference_blocked",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L277",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_delivery_origin",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L377",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_runtime_retire",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L615",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_runtime_enroll",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L781",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_runtime_resume_run",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L781",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_closure_shorten",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L854",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_runtime_stop",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L904",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_metrics_attempts_query",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L1193",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_primary",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_read_contact",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_members",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L60",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaign_runtime_stop",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L90",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_automatic_optout_supported",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L125",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_intent_opted_out",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_preference_apply_no_contact",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_workspace_primary",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_preference_suppression_query",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L91",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_preference_blocked",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L103",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers",
-      "target": "backend_app_institutional_channel_events_eventworker",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers",
-      "target": "backend_app_institutional_automatic_optout_reconciler",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L162",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers",
-      "target": "backend_app_institutional_campaign_runtime_worker",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L178",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers",
-      "target": "backend_app_institutional_broadcast_dispatch_worker",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L192",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_workers",
-      "target": "backend_app_institutional_broadcast_dispatch_reconcile_receipts",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_workers.py",
-      "source_location": "L192",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_voice_transcripts",
-      "target": "backend_app_institutional_automatic_optout_receive",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/voice_transcripts.py",
-      "source_location": "L93",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_contact_intent_opted_out",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L43",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_automatic_optout_receive",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L602",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_campaign_runtime_observe_identity",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L614",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_commercial_followup_observe",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L626",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_broadcast_followup_observe",
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L767",
+      "source_file": "backend/app/institutional/siie_registration.py",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -5233,347 +5492,6 @@
       "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_packed",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L69",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L91",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_authority",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L106",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_issues",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L109",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaign_runtime_guard",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L143",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaign_runtime_stop",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L160",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L186",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_public",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L193",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaign_closure",
-      "target": "backend_app_institutional_campaigns_campaigns_get",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaign_closure.py",
-      "source_location": "L193",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_commercial_followup_read",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L152",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_prospect_source_status_promotion_exclusion",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L247",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_commercial_followup_exclusion",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L256",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_contact_preference_blocked",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L278",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_campaigns",
-      "target": "backend_app_institutional_campaign_delivery_origin",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/campaigns.py",
-      "source_location": "L385",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_primary",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L40",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_read_contact",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L42",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_workspace_members",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L63",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L71",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L72",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_campaign_runtime_stop",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L93",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_contact_preference",
-      "target": "backend_app_institutional_automatic_optout_supported",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/contact_preference.py",
-      "source_location": "L131",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_intent_opted_out",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_campaigns_key",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_workspace_primary",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L51",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_campaigns_event",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L54",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_automatic_optout",
-      "target": "backend_app_institutional_contact_preference_apply_no_contact",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/automatic_optout.py",
-      "source_location": "L56",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_voice_transcripts",
-      "target": "backend_app_institutional_automatic_optout_receive",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/voice_transcripts.py",
-      "source_location": "L94",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_contact_intent_opted_out",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L48",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_automatic_optout_receive",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L603",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_campaign_runtime_observe_identity",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L616",
-      "weight": 1.0,
-      "_origin": "ast"
-    },
-    {
-      "source": "backend_app_institutional_channel_events",
-      "target": "backend_app_institutional_broadcast_followup_observe",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/institutional/channel_events.py",
-      "source_location": "L628",
-      "weight": 1.0,
-      "_origin": "ast"
     }
   ],
   "excluded_self_loops": [
@@ -5590,6 +5508,28 @@
     }
   ],
   "duplicate_pairs": [
+    {
+      "source": "frontend_src_shared_siieenvironment",
+      "target": "frontend_src_shared_siieenvironment_siieenvironment",
+      "assertions": [
+        {
+          "relation": "contains",
+          "confidence": "EXTRACTED",
+          "source_file": "frontend/src/shared/siieEnvironment.ts",
+          "source_location": "L3",
+          "weight": 1.0,
+          "_origin": "ast"
+        },
+        {
+          "relation": "contains",
+          "confidence": "EXTRACTED",
+          "source_file": "frontend/src/shared/siieEnvironment.ts",
+          "source_location": "L35",
+          "weight": 1.0,
+          "_origin": "ast"
+        }
+      ]
+    },
     {
       "source": "backend_app_institutional_commercial_followup",
       "target": "backend_app_institutional_commercial_followup_apply",
@@ -5614,18 +5554,18 @@
     }
   ],
   "view_graphify_diagnostic": {
-    "node_count": 911,
+    "node_count": 1021,
     "unverified_node_count": 0,
-    "raw_edge_count": 1478,
+    "raw_edge_count": 1795,
     "non_object_edges": 0,
     "missing_endpoint_edges": 0,
     "dangling_endpoint_edges": 0,
     "self_loop_edges": 0,
-    "valid_candidate_edges": 1478,
+    "valid_candidate_edges": 1795,
     "exact_duplicate_edges": 0,
-    "directed_unique_endpoint_pairs": 1478,
+    "directed_unique_endpoint_pairs": 1795,
     "directed_same_endpoint_collapsed_edges": 0,
-    "undirected_unique_endpoint_pairs": 1477,
+    "undirected_unique_endpoint_pairs": 1794,
     "undirected_same_endpoint_collapsed_edges": 1,
     "same_endpoint_group_count": 0,
     "relation_variant_groups": 0,
@@ -5633,8 +5573,8 @@
     "source_location_variant_groups": 0,
     "context_variant_groups": 0,
     "post_build_graph_type": "DiGraph",
-    "post_build_node_count": 911,
-    "post_build_edge_count": 1478,
+    "post_build_node_count": 1021,
+    "post_build_edge_count": 1795,
     "post_build_error": "",
     "producer_suppression": {
       "path": "graphify/extract.py",
