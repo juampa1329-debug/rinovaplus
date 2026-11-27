@@ -318,5 +318,15 @@
     "mtime": 1795795546.1865633,
     "ast_hash": "58f797dc854ca1f6eb1a2518a1331036",
     "semantic_hash": "58f797dc854ca1f6eb1a2518a1331036"
+  },
+  "artifacts/live/advanced-followup-activation-20261127.json": {
+    "mtime": 1795796462.5120976,
+    "ast_hash": "cd3ad406677c7351346cbf3d4072215e",
+    "semantic_hash": "cd3ad406677c7351346cbf3d4072215e"
+  },
+  "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md": {
+    "mtime": 1795796462.0790975,
+    "ast_hash": "dfbc4947ae9d20ef09f9fc92419c53ba",
+    "semantic_hash": "dfbc4947ae9d20ef09f9fc92419c53ba"
   }
 }

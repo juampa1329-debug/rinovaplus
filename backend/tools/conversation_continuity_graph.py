@@ -104,6 +104,8 @@ def save_followup_query() -> dict:
     scope_sources = {
         "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md",
         "artifacts/live/followup-automation-20261127.json",
+        "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md",
+        "artifacts/live/advanced-followup-activation-20261127.json",
     }
     selected_nodes = [node_id for node_id, node in graph.nodes(data=True)
                       if node.get("_origin") == "semantic"
@@ -115,10 +117,11 @@ def save_followup_query() -> dict:
     vocabulary = set()
     for _, node in focused.nodes(data=True):
         for word in re.findall(r"[^\W\d_]+", node.get("label", ""), re.UNICODE):
-            parts = re.findall(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+", word) or [word]
+            parts = (re.findall(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+", word)
+                     if word.isascii() else [word]) or [word]
             vocabulary.update(part.lower() for part in parts if 3 <= len(part) <= 30)
     selected = [word for word in ("contactar", "cierre", "general", "borrador", "avance", "activador",
-                                 "avanzados", "recorridos", "aprobado")
+                                 "avanzados", "recorridos", "aprobado", "activos", "activados", "autorización")
                 if word in vocabulary]
     if not selected:
         raise ValueError("No follow-up vocabulary is present; query was not fabricated")
@@ -132,7 +135,7 @@ def save_followup_query() -> dict:
     sources = sorted({node["source_file"] for _, node in focused.nodes(data=True)})
     payload = {
         "original_question": "tienes conocimiento sobre los seguimientos a las conversaciones?",
-        "focused_question": "No contactar, cierre, flujo general y borradores por avance",
+        "focused_question": "No contactar, cierre y estado autorizado de los seguimientos por avance, conservando los cortes históricos",
         "expanded_tokens": selected,
         "command": ["python", "backend/tools/conversation_continuity_graph.py", "query"],
         "run_from": ".", "exit_code": 0, "graph_sha256": sha(graph_path),

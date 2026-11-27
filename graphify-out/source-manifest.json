@@ -2,6 +2,11 @@
   "schema": 1,
   "snapshot_note": "Vista específica de continuidad compilada el 27 de noviembre de 2026. Conserva los cortes históricos 24–26 y las fechas propias de nuevas fuentes; el AST refleja el checkout al construir. No equivale por sí sola a una lectura productiva en vivo ni a un inventario completo del repositorio o sus conversaciones.",
   "sources": {
+    "artifacts/live/advanced-followup-activation-20261127.json": {
+      "sha256": "0918f19e82d4657ab56e21a44cdb3c9357106d478574c7c2c03477f4a719658c",
+      "lines": 32,
+      "kind": "semantic"
+    },
     "artifacts/live/campaign-launch-2026-20261126.json": {
       "sha256": "f0bdf061a52330f23520ffc2581b775880d0ab526f277a031b0dd9c5c9ebd84c",
       "lines": 54,
@@ -128,8 +133,8 @@
       "kind": "code"
     },
     "backend/tools/conversation_continuity_graph.py": {
-      "sha256": "bdacd0d748933e385f800eea76fd357d2d7a2074337b6454aa0c3d0b06f68cb1",
-      "lines": 614,
+      "sha256": "fd98a07ddbc184a789b33977f84b290515e033ca3ce500a0b869fe8f3564aaaf",
+      "lines": 617,
       "kind": "build_input"
     },
     "docs/adaptation/ACADEMIC_BROCHURE_20261126.md": {
@@ -140,6 +145,11 @@
     "docs/adaptation/ACTIVE_ENGINE_ROUTING_20261125.md": {
       "sha256": "38ab1dee19a6e6cdc6ad460c94b8ba99f4fa04bd3dbd1e03d03e372ad82227b3",
       "lines": 46,
+      "kind": "semantic"
+    },
+    "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md": {
+      "sha256": "1fb7299a75e3d6fdfea638ad3139be0d73af006475f2ad6c53508f771fe01308",
+      "lines": 29,
       "kind": "semantic"
     },
     "docs/adaptation/AGENT_LANGUAGE_STAGES_20261125.md": {
@@ -327,6 +337,11 @@
       "lines": 596,
       "kind": "build_input"
     },
+    "docs/adaptation/fragments/continuity-20261127-06.json": {
+      "sha256": "b4f5feafcb696cde238037e6e779f03357a67738314bd67483f96e9cd7020529",
+      "lines": 578,
+      "kind": "build_input"
+    },
     "frontend/src/institution/BroadcastProspectSetup.tsx": {
       "sha256": "8a310aead288c643ef6ff333e2e576c7ac7adb376e276a837c6b71a43bcf80cf",
       "lines": 360,
@@ -357,6 +372,7 @@
   "discovered_document_scope": [
     "docs/adaptation/ACADEMIC_BROCHURE_20261126.md",
     "docs/adaptation/ACTIVE_ENGINE_ROUTING_20261125.md",
+    "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md",
     "docs/adaptation/AGENT_LANGUAGE_STAGES_20261125.md",
     "docs/adaptation/BRANDING_REVIEW_20261125.md",
     "docs/adaptation/BROADCAST_REPORT_TIMEOUT_20261125.md",
@@ -396,20 +412,21 @@
     "docs/adaptation/fragments/continuity-20261127-02.json",
     "docs/adaptation/fragments/continuity-20261127-03.json",
     "docs/adaptation/fragments/continuity-20261127-04.json",
-    "docs/adaptation/fragments/continuity-20261127-05.json"
+    "docs/adaptation/fragments/continuity-20261127-05.json",
+    "docs/adaptation/fragments/continuity-20261127-06.json"
   ],
   "counts": {
-    "semantic_sources": 40,
+    "semantic_sources": 42,
     "code_sources": 24,
-    "semantic_nodes": 289,
-    "semantic_edges": 310,
+    "semantic_nodes": 308,
+    "semantic_edges": 338,
     "ast_nodes": 306,
     "ast_edges": 953,
-    "literal_code_references": 8,
-    "raw_edges": 1271,
-    "nodes": 595,
-    "edges": 941,
-    "communities": 38
+    "literal_code_references": 11,
+    "raw_edges": 1302,
+    "nodes": 614,
+    "edges": 972,
+    "communities": 37
   },
   "integrity_counts": {
     "excluded_dangling_edges": 328,
@@ -423,7 +440,7 @@
     "raw_missing_endpoints": 0,
     "raw_self_loops": 1
   },
-  "input_fingerprint": "e09ab8222139ca3dbda925ceb95d97dfb95f3953423dcb3d5b2c37bd8eb41ba0",
+  "input_fingerprint": "c65bc7fafc02ad322191b1e15cf3cb9ccaaaadb54bf7ef35db58647031eef3a7",
   "parallel_pair_summary": [
     {
       "source": "backend_app_institutional_commercial_followup",
@@ -440,12 +457,12 @@
       ]
     }
   ],
-  "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
+  "graph_sha256": "092631537d8ef9741c4418e794da690f5dcf66c2bb4518d3bc85eba1e417abc2",
   "graphify_version": "0.9.36",
   "cost": {
     "external_model_calls": 0,
     "host_tokens": null,
     "note": "Session/subagent token consumption was not measured"
   },
-  "query_sha256": "be9a37d05358a697583434e4e4331ab996cfda80bf68f4515d59ea20ec43e37e"
+  "query_sha256": "9faf5ec0e6fb02f395c6c7dc95b3dd546d6ccc0f2d6533c291aa46e77411be47"
 }

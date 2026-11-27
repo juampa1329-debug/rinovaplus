@@ -6,7 +6,7 @@ Esta vista específica complementa el grafo general histórico en `graphify-out/
 
 ## Alcance y procedencia
 
-40 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 24 archivos de código por AST. La vista dirigida contiene 595 nodos y 941 aristas en 38 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
+42 fuentes documentales/JSON agregados con lectura completa hasta EOF y SHA-256, más 24 archivos de código por AST. La vista dirigida contiene 614 nodos y 972 aristas en 37 comunidades. No incluye fichas nominales, teléfonos ni conversaciones privadas. El número de nodos no mide implementación ni aceptación.
 
 Candidatos fechados presentes pero fuera de la selección semántica: []. Su aparición se informa; no se finge haberlos extraído.
 
@@ -20,7 +20,7 @@ Hay 1 par(es) dirigido(s) con varias afirmaciones (1 arista(s) compactada(s)). U
 
 Pares compactados y ubicaciones: [{"source": "backend_app_institutional_commercial_followup", "target": "backend_app_institutional_commercial_followup_apply", "locations": [{"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L493"}, {"source_file": "backend/app/institutional/commercial_followup.py", "source_location": "L520"}]}].
 
-Enlaces documento→código: 8, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
+Enlaces documento→código: 11, exclusivamente por rutas literales presentes en las fuentes. Dirección conservada mediante DiGraph. Graphify agrupa comunidades sobre una proyección no dirigida internamente; esto no cambia la dirección de las aristas exportadas.
 
 ## Seguimientos: lectura correcta
 
@@ -34,26 +34,25 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
 
 | Comunidad | Nodos | Cohesión |
 |---|---:|---:|
-| Gestión de campañas | 61 | 0.11366120218579236 |
-| Eventos y recibos entrantes | 42 | 0.08246225319396051 |
+| Gestión de campañas | 74 | 0.08737504627915586 |
+| Seguimiento por tiempo y lista | 46 | 0.06376811594202898 |
+| Eventos y recibos entrantes | 40 | 0.08717948717948718 |
 | Precios recuperados, comentarios y escala | 40 | 0.05512820512820513 |
 | Espacio institucional | 40 | 0.08717948717948718 |
 | Avance comercial y exclusiones | 32 | 0.08064516129032258 |
-| Seguimiento por tiempo y lista | 31 | 0.08172043010752689 |
 | Memoria comercial | 29 | 0.1330049261083744 |
 | Continuidad del Inbox, voces y | 28 | 0.07142857142857142 |
 | Panel de campañas y seguimiento | 25 | 0.10333333333333333 |
-| Seguimiento comercial | 23 | 0.17786561264822134 |
+| Tres seguimientos por avance activados | 23 | 0.11462450592885376 |
 | Panel de mensajería masiva | 22 | 0.09090909090909091 |
+| Seguimiento comercial | 21 | 0.18571428571428572 |
 | Importación de prospectos | 20 | 0.1368421052631579 |
-| Evidencia posterior de seguimiento —27Nov2026 | 19 | 0.16374269005847952 |
 | Seguimiento y preferencias | 16 | 0.16666666666666666 |
 | Contrato y límites SIIE | 16 | 0.14166666666666666 |
 | Importación del lote 2026 | 12 | 0.16666666666666666 |
 | Políticas de campañas | 11 | 0.2727272727272727 |
 | Motores por etapa | 10 | 0.2222222222222222 |
 | Campaña PRE-ICFES y destinos | 9 | 0.2222222222222222 |
-| Entrega y recibos | 9 | 0.3055555555555556 |
 | Piloto y recepción SIIE | 9 | 0.2222222222222222 |
 | Diagnóstico de listas | 9 | 0.2222222222222222 |
 | Informe y consultas agregadas | 8 | 0.25 |
@@ -121,26 +120,15 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
     "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
   },
   {
-    "source": "Corte posterior sustituye borradores iniciales y métricas pendientes",
-    "target": "Tres flujos por avance permanecen en borrador tras rechazo automático",
+    "source": "Tres seguimientos por avance activados —27Nov2026",
+    "target": "Evidencia agregada de activación de tres seguimientos —27Nov2026",
     "source_files": [
-      "artifacts/live/followup-automation-20261127.json",
-      "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md"
+      "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md",
+      "artifacts/live/advanced-followup-activation-20261127.json"
     ],
-    "confidence": "EXTRACTED",
-    "relation": "supersedes",
-    "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
-  },
-  {
-    "source": "Corte posterior sustituye borradores iniciales y métricas pendientes",
-    "target": "Despliegue y resultado final de métricas requieren evidencia aparte",
-    "source_files": [
-      "artifacts/live/followup-automation-20261127.json",
-      "docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md"
-    ],
-    "confidence": "EXTRACTED",
-    "relation": "supersedes",
-    "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
+    "confidence": "INFERRED",
+    "relation": "conceptually_related_to",
+    "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories"
   },
   {
     "source": "CAMPAIGN LAUNCH 2026 20261126",
@@ -159,6 +147,17 @@ La cohesión es el resultado numérico de Graphify, sin umbral de aprobación.
     "source_files": [
       "docs/adaptation/COMMERCIAL_PROGRESS_FOLLOWUP_20261125.md",
       "artifacts/live/commercial-progress-followup-20261125.json"
+    ],
+    "confidence": "EXTRACTED",
+    "relation": "cites",
+    "why": "crosses file types (doc ↔ code); connects across different repos/directories"
+  },
+  {
+    "source": "CRM IMPORT 2026 20261126",
+    "target": "crm-import-2026-20261126",
+    "source_files": [
+      "docs/adaptation/CRM_IMPORT_2026_20261126.md",
+      "artifacts/live/crm-import-2026-20261126.json"
     ],
     "confidence": "EXTRACTED",
     "relation": "cites",
@@ -195,4 +194,4 @@ La generación del HTML es local. El visualizador estándar de Graphify carga vi
 
 ## Coste y reproducibilidad
 
-Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `e09ab8222139ca3dbda925ceb95d97dfb95f3953423dcb3d5b2c37bd8eb41ba0`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.
+Cero invocaciones externas de modelos desde este constructor. La extracción semántica fue realizada por la sesión y sus subagentes; sus tokens y coste no se midieron. Los ceros heredados del protocolo no representan consumo total nulo. AST y exportación son locales. Versión Graphify: `0.9.36`. Huella de entradas: `c65bc7fafc02ad322191b1e15cf3cb9ccaaaadb54bf7ef35db58647031eef3a7`. El informe nativo de la API Graphify se conserva como graphify-analysis-native.md; este es el informe en español.
