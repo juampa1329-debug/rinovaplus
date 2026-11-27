@@ -970,6 +970,7 @@ function AcademicProgramsContent() {
             <Field
               id="program-aliases"
               label="Otros nombres o alias"
+              hint="Etiquetas de búsqueda para la IA: nombres comunes, abreviaturas y variantes, separados por punto y coma. Identifican el programa; no cambian sus precios ni su jornada."
               maxLength={400}
               value={commercial.aliases}
               onChange={(event) => setCommercial("aliases", event.target.value)}

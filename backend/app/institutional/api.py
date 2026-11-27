@@ -343,7 +343,8 @@ def create_app(
     @app.exception_handler(RequestValidationError)
     @app.exception_handler(ValidationError)
     async def invalid(request, error):
-        return JSONResponse({"detail": "invalid_request"}, 422)
+        from app.institutional.program_validation import response
+        return JSONResponse(response(request.url.path, request.method, error.errors()), 422)
 
     def signed(result):
         result = dict(result)
