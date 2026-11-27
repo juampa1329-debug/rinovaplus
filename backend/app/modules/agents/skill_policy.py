@@ -98,6 +98,17 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
     text = "".join(c for c in unicodedata.normalize("NFKD", raw.casefold()) if not unicodedata.combining(c))
     active, reasons = set(CORE), ["continuity_presentation_and_quality"]
     plan = turn_plan(question, has_history=bool(history), public=public)
+    # A short acknowledgement does not erase the immediately preceding price
+    # question. Keep its guides available without treating it as a new quote,
+    # changing the program, or consulting private history for a public comment.
+    if not public and plan["phase"] == "continue" and len(raw.split()) <= 6:
+        previous = next((v for v in reversed(history) if isinstance(v, dict)
+                         and (v.get("direction") == "incoming" or v.get("role") == "user")), None)
+        prior = turn_plan(previous.get("text", previous.get("content", "")), has_history=True) if previous else None
+        if prior and prior["money_relevant"]:
+            plan = {**plan, "money_relevant": True, "financial_continuity": True}
+            active.update({"pricing", "deal-value-calc"})
+            reasons.append("financial_continuity")
     manual = consultative_manual.select(question, plan["phase"])
     for reason, pattern, skills in GROUPS:
         if reason == "pricing" and not plan["money_relevant"]:
@@ -127,6 +138,8 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
         "specific_information": ["sales-enablement", "copywriting"],
         "continue": ["sales-discovery-questions", "draft-outreach"],
     }[plan["phase"]]
+    if plan.get("financial_continuity"):
+        primary = list(dict.fromkeys(["pricing", *primary]))
     if plan["possible_cost_scope_ambiguity"]:
         primary = ["sales-discovery-questions", "pricing"]
         active.update(primary)
