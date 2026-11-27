@@ -10,31 +10,31 @@
     "query_changed": false,
     "new_fragments": [],
     "uncovered_dated_documents": [],
-    "semantic_sources": 46,
-    "input_fingerprint": "89ca8b545d0b961b6f7a12caac05dd6b5052e80e61f84a5168ea976bff52d22d",
+    "semantic_sources": 48,
+    "input_fingerprint": "f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350",
     "note": "Checks local provenance only; does not attest current production state"
   },
   "counts": {
-    "semantic_sources": 46,
-    "code_sources": 29,
-    "semantic_nodes": 354,
-    "semantic_edges": 403,
-    "ast_nodes": 384,
-    "ast_edges": 1220,
-    "literal_code_references": 18,
-    "raw_edges": 1641,
-    "nodes": 738,
-    "edges": 1268,
+    "semantic_sources": 48,
+    "code_sources": 33,
+    "semantic_nodes": 378,
+    "semantic_edges": 438,
+    "ast_nodes": 424,
+    "ast_edges": 1293,
+    "literal_code_references": 19,
+    "raw_edges": 1750,
+    "nodes": 802,
+    "edges": 1360,
     "communities": 44
   },
-  "graph_sha256": "145b5e9dcd7cee1bfbd46c061702969dd36af22927248b5d6d8e08e361c0494b",
+  "graph_sha256": "076602d6eea0c0cd109731d8c33bf1dd0e8283cb7ed7d49637c24d51b9324b5c",
   "new_semantic_sources_read_to_eof": {
-    "docs/adaptation/FORM_PAYMENT_CLOSURE_FOLLOWUP_20261127.md": 35,
-    "artifacts/live/form-payment-closure-followup-20261127.json": 20
+    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md": 65,
+    "artifacts/live/program-value-messaging-20261127.json": 12
   },
   "query_complete": true,
-  "query_nodes_found": 21,
-  "query_nodes_rendered": 21,
+  "query_nodes_found": 23,
+  "query_nodes_rendered": 23,
   "new_application_code_changes": true,
   "prior_guard_regressions": {
     "note": "Hash/EOF rejection, repeated-build and shrink-guard checks ran on the previous graph; not rerun for this two-source extension.",
@@ -46,11 +46,10 @@
   },
   "source_hash_regressions_passed": 4,
   "validation": {
-    "backend_application_focused_passed": 142,
-    "frontend_focused_passed": 21,
-    "types": "pass",
-    "changed_eslint": "pass",
+    "backend_application_focused_passed": 108,
+    "graph_source_hash_regressions_passed": 4,
     "ruff_E9_F": "pass",
-    "institutional_build": "pass; historical size warning"
+    "frontend": "not rerun; no frontend source changes; three native draft persistence checks",
+    "new_live_generative_reply_claimed": false
   }
 }

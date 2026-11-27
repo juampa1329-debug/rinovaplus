@@ -24,6 +24,9 @@ def test_live_style_and_admissions_share_single_authoritative_value_policy():
     assert "doble titulación obligatoria" in source["text"]
     assert "No extiendas prácticas laborales" in messages[0]["content"]
     assert "no todas las universidades" in source["text"]
+    assert "tres meses de prácticas para carreras excepto Cocina" in source["text"]
+    assert "faltan costo completo e ingreso" in source["text"]
+    assert "no un resultado garantizado" in messages[0]["content"]
 
 
 def test_value_source_is_citable_and_unknown_evidence_is_rejected():

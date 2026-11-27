@@ -47,6 +47,11 @@
       "lines": 23,
       "kind": "semantic"
     },
+    "artifacts/live/program-value-messaging-20261127.json": {
+      "sha256": "84643839d60549e1bc14b817470d506062238207c3d4a443adb47961dffd7653",
+      "lines": 12,
+      "kind": "semantic"
+    },
     "backend/app/institutional/broadcast_audience.py": {
       "sha256": "30d1d7d89853d0a08d7feb4463cb011cc1ed7cb401a6fbbfe1ca70ad21b92e15",
       "lines": 175,
@@ -122,6 +127,11 @@
       "lines": 1226,
       "kind": "code"
     },
+    "backend/app/institutional/cbn_profile.py": {
+      "sha256": "fa013a76ea317d6aeda1a44556df442497cc2306d9e43ae05c4b5a6fdb9610d3",
+      "lines": 238,
+      "kind": "code"
+    },
     "backend/app/institutional/channel_events.py": {
       "sha256": "d286b2b82e739935af34f774fbf89b44fa239ffb2660a32a2dc85bc718f9a83d",
       "lines": 994,
@@ -142,6 +152,11 @@
       "lines": 154,
       "kind": "code"
     },
+    "backend/app/institutional/program_commercial.py": {
+      "sha256": "45a9b380e905836062dd3791ca220423fdf2fc2973ec298513d1f4e478785e0e",
+      "lines": 309,
+      "kind": "code"
+    },
     "backend/app/institutional/prospect_source_status.py": {
       "sha256": "fa85206e54b67d5f79cf0f7225cc5edae1c5c5a48d7c900e2db3183092ecf079",
       "lines": 20,
@@ -157,9 +172,19 @@
       "lines": 1887,
       "kind": "code"
     },
+    "backend/app/modules/agents/conversation_style.py": {
+      "sha256": "dcf98410ca7fd5dddf7a0b2c2d950881d5a8fba3965f04b60f68be0be45b9b03",
+      "lines": 43,
+      "kind": "code"
+    },
+    "backend/app/modules/ai/application/admissions_prompt.py": {
+      "sha256": "1cf13369da0743955fcf87c8685bc963a2f680fe4b153ea2a354ed04799d2aa6",
+      "lines": 151,
+      "kind": "code"
+    },
     "backend/tools/conversation_continuity_graph.py": {
-      "sha256": "0ed772f63256727c30b0e08e5c8829b53d7111a4679b100b74f6a09d08ddd5d9",
-      "lines": 636,
+      "sha256": "79ff9c562f7b3eb3bf7c084ff5d4d414dffefccd9a917a67c416a6d418e64d67",
+      "lines": 642,
       "kind": "build_input"
     },
     "docs/adaptation/ACADEMIC_BROCHURE_20261126.md": {
@@ -337,6 +362,11 @@
       "lines": 36,
       "kind": "semantic"
     },
+    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md": {
+      "sha256": "a86fabe7a6a2fe91cdb4d5e743df3e7fa754b541a456de23c753a4bfd5e3a4a7",
+      "lines": 65,
+      "kind": "semantic"
+    },
     "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md": {
       "sha256": "120471c6488f57638bbf658197fa8faa25889266ecea6ca995c4cfe2642d4736",
       "lines": 54,
@@ -385,6 +415,11 @@
     "docs/adaptation/fragments/continuity-20261127-08.json": {
       "sha256": "86e185b3f564e596be92bfef97d7c9e7d92c91bf163aeb04a5b78baf1e34ddb7",
       "lines": 766,
+      "kind": "build_input"
+    },
+    "docs/adaptation/fragments/continuity-20261127-09.json": {
+      "sha256": "ec51ba2d80ba2b26c861fb5e914863038299dee92daab2f818f386ac922bb9da",
+      "lines": 720,
       "kind": "build_input"
     },
     "frontend/src/institution/BroadcastProspectSetup.tsx": {
@@ -460,6 +495,7 @@
     "docs/adaptation/PROGRAM_FICHES_AUDIT_20261126.md",
     "docs/adaptation/PROGRAM_HOURS_AND_COST_SCOPE_20261124.md",
     "docs/adaptation/PROGRAM_MISSING_INFORMATION_20261126.md",
+    "docs/adaptation/PROGRAM_VALUE_MESSAGING_20261127.md",
     "docs/adaptation/REGISTRATION_GUIDANCE_20261124.md",
     "docs/adaptation/SIIE_WEBHOOK_PILOT_20261125.md"
   ],
@@ -472,34 +508,35 @@
     "docs/adaptation/fragments/continuity-20261127-05.json",
     "docs/adaptation/fragments/continuity-20261127-06.json",
     "docs/adaptation/fragments/continuity-20261127-07.json",
-    "docs/adaptation/fragments/continuity-20261127-08.json"
+    "docs/adaptation/fragments/continuity-20261127-08.json",
+    "docs/adaptation/fragments/continuity-20261127-09.json"
   ],
   "counts": {
-    "semantic_sources": 46,
-    "code_sources": 29,
-    "semantic_nodes": 354,
-    "semantic_edges": 403,
-    "ast_nodes": 384,
-    "ast_edges": 1220,
-    "literal_code_references": 18,
-    "raw_edges": 1641,
-    "nodes": 738,
-    "edges": 1268,
+    "semantic_sources": 48,
+    "code_sources": 33,
+    "semantic_nodes": 378,
+    "semantic_edges": 438,
+    "ast_nodes": 424,
+    "ast_edges": 1293,
+    "literal_code_references": 19,
+    "raw_edges": 1750,
+    "nodes": 802,
+    "edges": 1360,
     "communities": 44
   },
   "integrity_counts": {
-    "excluded_dangling_edges": 371,
+    "excluded_dangling_edges": 388,
     "excluded_self_loop_edges": 1,
     "dangling_by_relation": {
-      "imports": 150,
-      "imports_from": 221
+      "imports_from": 232,
+      "imports": 156
     },
     "duplicate_pair_groups": 1,
     "compacted_parallel_edges": 1,
     "raw_missing_endpoints": 0,
     "raw_self_loops": 1
   },
-  "input_fingerprint": "89ca8b545d0b961b6f7a12caac05dd6b5052e80e61f84a5168ea976bff52d22d",
+  "input_fingerprint": "f6d06a4e8aacc08f01459a0633e11b3f4202c50fc98912ac75e871d894bb0350",
   "parallel_pair_summary": [
     {
       "source": "backend_app_institutional_commercial_followup",
@@ -516,12 +553,12 @@
       ]
     }
   ],
-  "graph_sha256": "145b5e9dcd7cee1bfbd46c061702969dd36af22927248b5d6d8e08e361c0494b",
+  "graph_sha256": "076602d6eea0c0cd109731d8c33bf1dd0e8283cb7ed7d49637c24d51b9324b5c",
   "graphify_version": "0.9.36",
   "cost": {
     "external_model_calls": 0,
     "host_tokens": null,
     "note": "Session/subagent token consumption was not measured"
   },
-  "query_sha256": "361e9df14761ae4e7600842f7fa1e1d7b21524b46e0a3978551023d42a04d517"
+  "query_sha256": "bacfae3d079668fedf3ca3974b5e509a6331ede8694ce406085d8f304ea1f1ba"
 }
