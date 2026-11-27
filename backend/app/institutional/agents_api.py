@@ -294,6 +294,10 @@ def install(app, settings, gateway_factory=None):
                 institution(settings),
                 program_id,
             )
+            if item is not None:
+                # PostgreSQL projects the legacy SQL bit as 0/1. Keep the HTTP
+                # contract boolean so a read/edit round trip passes Strict.
+                item = {**item, "Active": bool(item["Active"])}
             return {
                 "exists": item is not None,
                 "revision": item["Revision"] if item else 0,

@@ -502,6 +502,7 @@ function validationMessage(fields: unknown) {
     commercial: "Ficha comercial",
     school: "Escuela",
     schedule: "Jornada",
+    active: "Programa disponible en la oferta actual",
     aliases: "Otros nombres o alias",
     duration: "Duración",
     modality: "Modalidad",
