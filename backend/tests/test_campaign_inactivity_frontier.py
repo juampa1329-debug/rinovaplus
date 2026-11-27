@@ -43,6 +43,11 @@ def test_inactivity_discovers_readonly_and_rechecks_exact_job_under_write_lock(m
     def one(c, sql, *args):
         assert sql.count("?") == len(args)
         parse_sql(postgres_sql(sql, layout()["tables"]).replace("%s", "NULL"))
+        # A new trigger version cannot replay a receipt already used by the
+        # same trigger. The signal retains its original version in history.
+        receipt_fence = sql.split("e.Kind='signal'", 1)[1]
+        assert "inactivity_queue_id" in receipt_fence
+        assert "trigger_version" not in receipt_fence
         queries.append((c.write, sql))
         if c.write:
             assert "AND q.QueueId=? " in sql and args[2] == selected_queue

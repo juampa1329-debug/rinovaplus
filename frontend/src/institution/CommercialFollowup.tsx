@@ -108,7 +108,9 @@ export function CommercialFollowupReview({ changed }: { changed: () => void }) {
       <summary>Seguimiento de interés y formularios</summary>
       <p>
         Separa interés confirmado, formulario enviado y formulario que la
-        persona dice haber completado. Quedan fuera de la reactivación general.
+        persona dice haber completado, y solicitudes de datos de pago.
+        Al avanzar a formulario completado o pago, deja de corresponder el
+        recordatorio para diligenciar el formulario. Quedan fuera de la reactivación general.
         Registra una tarea por caso y conserva etapas avanzadas o cambios
         posteriores del asesor.
       </p>

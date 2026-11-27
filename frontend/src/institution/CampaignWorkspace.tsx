@@ -477,7 +477,7 @@ function FilterEditor({
       <legend>Condiciones de entrada</legend>
       <div className="field"><label htmlFor={`${prefix}-followup-states`}>Avance del seguimiento</label>
       <select id={`${prefix}-followup-states`} multiple value={value.followup_states || []} onChange={e=>onChange({...value,followup_states:Array.from(e.currentTarget.selectedOptions,o=>o.value)})}>
-        <option value="interest_confirmed">Interés confirmado</option><option value="form_sent">Formulario enviado</option><option value="form_reported_complete">Formulario completado por verificar</option>
+        <option value="interest_confirmed">Interés confirmado</option><option value="form_sent">Formulario enviado</option><option value="form_reported_complete">Formulario completado por verificar</option><option value="payment_requested">Datos de pago solicitados</option>
       </select><small>Para estos avances usa un flujo de sólo seguimiento y selecciona el caso concreto. Sin selección no se reactiva a quienes ya avanzaron.</small></div>
       <div className="campaign-row">
         <Field
@@ -1528,6 +1528,15 @@ function Editor({
             >
               Activar
             </Button>
+            {kind === "flow" && initial.state === "active" && doc.followup_only &&
+              !doc.entry_conditions?.followup_states?.length && doc.steps?.length === 7 &&
+              (doc.steps[5].wait_minutes || 0) > 6480 && (
+              <Button variant="secondary"
+                disabled={dirty || !review || !preflight?.valid || !canSend || task.busy || assetBusy}
+                onClick={() => action("shorten_closure", { closure_days: 7 })}>
+                Cerrar a los 7 días y conservar seguimientos en espera
+              </Button>
+            )}
             <Button
               variant="secondary"
               disabled={dirty || !review || task.busy || assetBusy}

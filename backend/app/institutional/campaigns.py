@@ -783,7 +783,7 @@ class Campaigns:
         with self.tx(
             auth,
             True,
-            recent=action in {"activate", "enroll", "resume", "retry", "restore"},
+            recent=action in {"activate", "enroll", "resume", "retry", "restore", "shorten_closure"},
         ) as (c, actor):
             h, prior = replay(
                 c,
@@ -792,7 +792,7 @@ class Campaigns:
                 str(body.operation_id),
                 "campaign8." + action,
                 id,
-                body.model_dump(mode="json"),
+                body.model_dump(mode="json", exclude={"closure_days"} if body.closure_days is None else set()),
             )
             if prior:
                 return prior
@@ -801,7 +801,7 @@ class Campaigns:
                 raise HTTPException(409, "revision_conflict")
             if not body.confirmed:
                 raise HTTPException(409, "campaign_review_required")
-            if action in {"activate", "enroll", "resume", "retry"} and record[
+            if action in {"activate", "enroll", "resume", "retry", "shorten_closure"} and record[
                 "Kind"
             ] not in {"template", "segment"}:
                 authorize(c, self.settings, auth, "inbox.write")
@@ -850,6 +850,10 @@ class Campaigns:
                     id,
                 )
                 result = public(get(c, self.settings, id))
+            elif action == "shorten_closure":
+                from app.institutional.campaign_closure import shorten
+
+                result = shorten(c, self.settings, record, actor, body, controlled=self.controlled)
             elif action in {"pause", "archive"}:
                 retire(c, self.settings, record, "campaign_" + action)
                 c.execute(
@@ -934,7 +938,7 @@ class Campaigns:
                 str(body.operation_id),
                 "campaign8." + action,
                 id,
-                body.model_dump(mode="json"),
+                body.model_dump(mode="json", exclude={"closure_days"} if body.closure_days is None else set()),
             )
             if prior:
                 return prior

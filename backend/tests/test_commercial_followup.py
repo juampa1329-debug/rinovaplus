@@ -17,6 +17,14 @@ from app.institutional.cbn_profile import PREICFES_REGISTRATION_URL, REGISTRATIO
         ("Me interesa el programa de cocina", "interest_confirmed"),
         ("Compárteme el formulario", "interest_confirmed"),
         ("Ya diligencié el formulario", "form_reported_complete"),
+        ("¿Cómo puedo pagar?", "payment_requested"),
+        ("Compárteme los datos de pago", "payment_requested"),
+        ("¿A qué cuenta consignar?", "payment_requested"),
+        ("Ya pagué", None),
+        ("No quiero datos de pago", None),
+        ("Que duración y formas de pago tiene cada programa?", None),
+        ("Costos y métodos de pago?", None),
+        ("¿Qué medios de pago aceptan?", None),
         ("He completado la inscripción", "form_reported_complete"),
         ("No quiero inscribirme", None),
         ("No he llenado el formulario", None),
@@ -100,6 +108,20 @@ def test_conditions_are_revalidated_when_case_advances():
     assert campaigns.matches(p, {"followup_states": ["form_sent"]})
     assert not campaigns.matches(p, {"followup_states": ["interest_confirmed"]})
     assert not campaigns.matches({}, {"followup_states": ["form_sent"]})
+    assert not campaigns.matches({"CommercialProgress": {"state": "payment_requested"}}, {"followup_states": ["form_sent"]})
+    assert not campaigns.matches({"CommercialProgress": {"state": "form_reported_complete"}}, {"followup_states": ["form_sent"]})
+
+
+def test_contextual_completion_requires_the_real_form_question():
+    assert f.classification("Ya lo llené", "incoming", previous="¿Pudiste diligenciar el formulario?") == "form_reported_complete"
+    assert f.classification("Ya lo llené", "incoming", previous="¿Cómo estás?") is None
+    assert f.classification("¿Ya lo llené?", "incoming", previous="El formulario") is None
+
+
+def test_payment_progress_cannot_regress_to_form_reminder(monkeypatch):
+    monkeypatch.setattr(f, "person", lambda *a: {"Name": "Prueba", "Stage": "Seguimiento"})
+    monkeypatch.setattr(f, "read", lambda *a: ({"state": "payment_requested", "message_id": "old"}, 1))
+    assert f.plan(None, None, "contact", {"state": "form_sent", "message_id": "new"}) is None
 
 
 def test_case_flows_keep_their_scope_in_the_native_meta_dispatch_document():
@@ -248,12 +270,12 @@ def test_incoming_opt_out_cancels_only_own_pending_tasks_without_new_messages(
     monkeypatch.setattr(contact_preference, "blocked", lambda *a: True)
     monkeypatch.setattr(f.db, "institution", lambda s: "institution")
     f.observe(C(), SimpleNamespace(postgres_deployment=True), contact)
-    assert len(queries) == 4
+    assert len(queries) == len(f.CASES) + 1
     assert all(
         "Status='pending'" in sql and sql.startswith("UPDATE crm_workspace.Task")
         for sql, args in queries
     )
-    assert len({args[1] for sql, args in queries}) == 4
+    assert len({args[1] for sql, args in queries}) == len(f.CASES) + 1
 
 
 def test_history_search_uses_portable_case_insensitive_collation(monkeypatch):

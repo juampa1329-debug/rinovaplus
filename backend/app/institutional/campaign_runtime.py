@@ -856,7 +856,9 @@ class Worker:
                 + "AND NOT EXISTS(SELECT 1 FROM crm_channels2.SendJob newer JOIN crm.Message later ON later.MessageId=newer.MessageId JOIN crm.Message anchor ON anchor.MessageId=q.MessageId WHERE newer.InstitutionId=q.InstitutionId AND newer.IntegrationId=q.IntegrationId AND newer.IdentityId=q.IdentityId AND later.ConversationId=anchor.ConversationId AND later.Sequence>anchor.Sequence AND newer.State IN('queued','sending','uncertain','accepted','sent','delivered','read')) "
                 "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event link WHERE link.InstitutionId=q.InstitutionId AND link.Kind='native_chat' AND JSON_VALUE(link.Document,'$.queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) "
                 "AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Attempt a JOIN crm_broadcast7.Recipient r ON r.InstitutionId=a.InstitutionId AND r.RecipientId=a.RecipientId JOIN crm_campaign8.Step step ON step.InstitutionId=r.InstitutionId AND step.NativeCampaignId=r.CampaignId WHERE a.InstitutionId=q.InstitutionId AND a.QueueId=q.QueueId) "
-                "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event e WHERE e.InstitutionId=q.InstitutionId AND e.Kind='signal' AND e.RecordId=? AND JSON_VALUE(e.Document,'$.inactivity_queue_id')=LOWER(CONVERT(varchar(36),q.QueueId)) AND JSON_VALUE(e.Document,'$.trigger_version')=?) "
+                # The same real receipt is never a new inactivity event merely
+                # because its trigger was versioned (e.g. a shorter closure).
+                "AND NOT EXISTS(SELECT 1 FROM crm_campaign8.Event e WHERE e.InstitutionId=q.InstitutionId AND e.Kind='signal' AND e.RecordId=? AND JSON_VALUE(e.Document,'$.inactivity_queue_id')=LOWER(CONVERT(varchar(36),q.QueueId))) "
                 "GROUP BY q.QueueId,q.IdentityId,i.LastIncomingAt HAVING MIN(receipt.CreatedAt)<=DATEADD(minute,?,SYSUTCDATETIME()) "
                 "AND (i.LastIncomingAt IS NULL OR i.LastIncomingAt<=MIN(receipt.CreatedAt)) ORDER BY MIN(receipt.CreatedAt),q.QueueId",
                 institution(self.settings),
@@ -864,7 +866,6 @@ class Worker:
                 *((queue_id,) if queue_id else ()),
                 -doc["idle_minutes"],
                 trigger["RecordId"],
-                str(trigger["CurrentVersion"]),
                 -doc["idle_minutes"],
             )
             if job:

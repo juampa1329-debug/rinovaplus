@@ -34,6 +34,10 @@ CASES = {
         "Formulario diligenciado · por verificar",
         "Verificar inscripción en SIIE antes de pedir nuevamente el formulario",
     ),
+    "payment_requested": (
+        "Datos de pago solicitados · pendiente de orientación",
+        "Compartir los medios oficiales de pago y verificar el siguiente paso con Admisiones",
+    ),
 }
 RANK = {key: i for i, key in enumerate(CASES, 1)}
 ADVANCED = {
@@ -47,7 +51,8 @@ POLICY = (
     "concreta el siguiente paso; si ya recibió "
     "el formulario, pregunta por ese trámite y ofrece ayuda; "
     "si declara haberlo completado, pide "
-    "verificación a Admisiones. No reinicies una presentación "
+    "verificación a Admisiones; si solicita datos de pago, acompaña ese trámite "
+    "sin recordarle llenar el formulario. No reinicies una presentación "
     "o promoción general ni vuelvas a pedir "
     "datos ya aportados. Estos estados comerciales no "
     "acreditan inscripción, pago ni matrícula."
@@ -89,6 +94,15 @@ def classification(text, direction, *, accepted=False, previous=""):
         r"\b(no|nunca|todavia no|aun no|no he)\b", value
     ):
         return None
+    if re.search(
+        r"\b(?:datos|cuenta|numero de cuenta|link|enlace)\b"
+        r".{0,40}\b(?:pago|pagar|abonar|transferir|consignar)\b|"
+        r"\b(?:como|donde|a que cuenta)\s+(?:puedo\s+)?"
+        r"(?:pagar|abonar|transferir|consignar|pago)\b|"
+        r"\b(?:enviame|comparteme|pasame)\s+(?:la\s+)?cuenta\b",
+        value,
+    ):
+        return "payment_requested"
     if (
         "?" not in str(text)
         and "¿" not in str(text)
@@ -98,6 +112,13 @@ def classification(text, direction, *, accepted=False, previous=""):
             "formulario|inscripcion)\\b",
             value,
         )
+    ):
+        return "form_reported_complete"
+    if (
+        "?" not in str(text) and "¿" not in str(text)
+        and re.fullmatch(r"ya (?:lo )?(?:llene|diligencie|complete|envie|termine)", value)
+        and re.search(r"\bformulario\b", normalized(previous))
+        and not re.search(r"\b(?:pago|pagaste)\b", normalized(previous))
     ):
         return "form_reported_complete"
     if (
@@ -184,7 +205,14 @@ def signals(c, s, contact=None):
         "aprovecharlo') "
         "OR m.Body LIKE '%inscri%' OR m.Body LIKE '%formulario%' "
         "OR m.Body LIKE '%me interesa%' OR m.Body "
-        "LIKE '%quiero estudiar%')) "
+        "LIKE '%quiero estudiar%' OR m.Body LIKE '%pago%' "
+        "OR m.Body LIKE '%pagar%' OR m.Body LIKE '%cuenta%' "
+        "OR m.Body LIKE '%abonar%' OR m.Body LIKE '%transferir%' "
+        "OR m.Body LIKE '%consignar%' OR m.Body LIKE '%llene%' "
+        "OR m.Body LIKE '%llené%' OR m.Body LIKE '%diligenci%' "
+        "OR m.Body LIKE '%complet%' OR m.Body LIKE '%termine%' "
+        "OR m.Body LIKE '%terminé%' OR m.Body LIKE '%envie%' "
+        "OR m.Body LIKE '%envié%')) "
         "OR (m.Direction='outgoing' AND ((q.ExternalId IS NOT NULL "
         "AND q.State IN('accepted','sent','delivered','read')) OR "
         "(JSON_VALUE(xm.Payload,'$.meta_outgoing')='true' "
@@ -212,7 +240,11 @@ def evidence(c, s, messages):
             accepted=msg.get("ReceiptState")
             in {"accepted", "sent", "delivered", "read"},
         )
-        if state == "review_positive":
+        if state == "review_positive" or (
+            state is None and msg["Direction"] == "incoming"
+            and re.fullmatch(r"ya (?:lo )?(?:llene|diligencie|complete|envie|termine)",
+                             normalized(msg["Body"]).strip(" .!¡?¿,;:👋😊👍"))
+        ):
             prior = db.one(
                 c,
                 "SELECT TOP(1) m.Body FROM crm.Message m JOIN "

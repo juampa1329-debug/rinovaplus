@@ -90,6 +90,30 @@ function setup(
   return fetcher;
 }
 afterEach(() => vi.restoreAllMocks());
+it("keeps shortening behind review and preflight and sends the saved revision without editing the flow", async () => {
+  const flow = {...campaign, kind: "flow", state: "active", name: "Silencio consultivo", revision: 6,
+    document: {...doc, followup_only: true, steps: [
+      {kind:"send"}, {kind:"wait",wait_minutes:1680}, {kind:"send"},
+      {kind:"wait",wait_minutes:1440}, {kind:"send"},
+      {kind:"wait",wait_minutes:26640}, {kind:"send"},
+    ]}};
+  const f = setup((p) => p.endsWith("/campaigns") ? ok({items:[flow]}) :
+    p.endsWith("/preflight") ? ok({id:"checked",valid:true,issues:[]}) :
+    p.endsWith("/shorten_closure") ? ok({...flow,version:4}) : undefined);
+  fireEvent.click(await screen.findByRole("button",{name:"Flujos"}));
+  fireEvent.click(await screen.findByRole("button",{name:/Silencio consultivo/}));
+  const shorten = screen.getByRole("button",{name:"Cerrar a los 7 días y conservar seguimientos en espera"});
+  expect(shorten).toBeDisabled();
+  fireEvent.click(screen.getByLabelText("Revisé el contenido, las versiones y el alcance de esta acción"));
+  expect(shorten).toBeDisabled();
+  fireEvent.click(screen.getByRole("button",{name:"Comprobar configuración"}));
+  await waitFor(()=>expect(shorten).toBeEnabled());
+  fireEvent.click(shorten);
+  await waitFor(()=>expect(f.mock.calls.some(([url])=>String(url).endsWith("/shorten_closure"))).toBe(true));
+  const request = f.mock.calls.find(([url])=>String(url).endsWith("/shorten_closure"))![1]!;
+  expect(JSON.parse(String(request.body))).toMatchObject({revision:6, confirmed:true, preflight_id:"checked", closure_days:7});
+  expect(f.mock.calls.some(([, init])=>init?.method === "PUT")).toBe(false);
+});
 it("loads one integrated list and keeps activation behind preflight and human review", async () => {
   setup();
   fireEvent.click(
