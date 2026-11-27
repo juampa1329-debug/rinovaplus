@@ -85,15 +85,15 @@ class Catalog:
     def __init__(self, settings):
         self.settings = settings
 
-    def programs(self, c, offset=0, limit=150):
+    def programs(self, c, offset=0, limit=150, *, include_inactive=False):
         total = c.execute(
-            "SELECT COUNT(*) FROM crm_agents5.Program WHERE InstitutionId=? AND Active=1",
+            "SELECT COUNT(*) FROM crm_agents5.Program WHERE InstitutionId=?" + ("" if include_inactive else " AND Active=1"),
             institution(self.settings),
         ).fetchval()
         values = rows(
             c,
-            "SELECT * FROM crm_agents5.Program WHERE InstitutionId=? AND Active=1 "
-            "ORDER BY ProgramId OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+            "SELECT * FROM crm_agents5.Program WHERE InstitutionId=?" + ("" if include_inactive else " AND Active=1")
+            + " ORDER BY ProgramId OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
             institution(self.settings),
             offset,
             limit,
@@ -117,6 +117,7 @@ class Catalog:
                     "school": v["School"],
                     "authority": v["Authority"],
                     "revision": v["Revision"],
+                    "active": bool(v.get("Active", True)),
                 }
                 for v in values
             ],

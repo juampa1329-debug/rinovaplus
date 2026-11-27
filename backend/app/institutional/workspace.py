@@ -216,6 +216,15 @@ def read_contact(c, contact):
     return result
 
 
+def page_changed(area, offset, anchor, current, *, live_pages=False):
+    if offset and not anchor:
+        raise HTTPException(422, "page_anchor_required")
+    changed = bool(anchor and anchor != current)
+    if changed and not (area == "inbox" and live_pages):
+        raise HTTPException(409, "page_changed")
+    return changed
+
+
 def revision(c):
     state = c.execute(
         ("SELECT Revision FROM crm_workspace.State WHERE StateId=1")
@@ -639,6 +648,7 @@ class Workspace:
         temperature="",
         riskLevel="",
         after_revision="",
+        live_pages=False,
     ):
         with self.transaction() as c:
             if offset and not anchor:
@@ -650,8 +660,7 @@ class Workspace:
                 "inbox.read" if area == "inbox" else "crm.read",
             )
             current_revision = revision(c)
-            if anchor and anchor != current_revision:
-                raise HTTPException(409, "page_changed")
+            changed_page = page_changed(area, offset, anchor, current_revision, live_pages=live_pages)
             if area == "inbox" and not offset and after_revision == current_revision:
                 return {"revision": current_revision, "unchanged": True}
             where = ["1=1"]
@@ -980,6 +989,7 @@ class Workspace:
                 "limit": PAGE,
                 "hasMore": offset + len(items) < total,
                 "revision": current_revision,
+                "pageChanged": changed_page,
             }
             if area == "inbox":
                 response["socialProfiles"] = bool(getattr(self, "operational_channels", False))
@@ -1742,6 +1752,7 @@ def install(app, settings, workspace=None):
         offset: int = Query(0, ge=0, le=1000000),
         anchor: str = Query("", pattern=r"^([0-9]{1,19})?$"),
         afterRevision: str = Query("", pattern=r"^([0-9]{1,20})?$"),
+        livePages: bool = False,
     ):
         if user:
             db.uid(user)
@@ -1756,6 +1767,7 @@ def install(app, settings, workspace=None):
             temperature=temperature,
             riskLevel=riskLevel,
             after_revision=afterRevision,
+            live_pages=livePages,
             offset=offset,
             anchor=anchor,
         )

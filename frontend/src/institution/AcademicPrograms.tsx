@@ -56,12 +56,14 @@ type Commercial = {
   siie_offer_active?: boolean | null;
 };
 type Draft = {
+  active?: boolean;
   name: string;
   school: string;
   schedule: string;
   commercial: Commercial;
 };
 type Item = {
+  active?: boolean;
   program_id: number;
   name: string;
   school: string;
@@ -81,6 +83,7 @@ type Program = {
 };
 
 const empty: Draft = {
+  active: true,
   name: "",
   school: "",
   schedule: "",
@@ -108,7 +111,7 @@ async function listPrograms() {
   const results: Item[] = [];
   while (true) {
     const page = await api<{ items: Item[]; has_more: boolean }>(
-      `/programs?offset=${results.length}`,
+      `/programs?offset=${results.length}&include_inactive=true`,
     );
     results.push(...page.items);
     if (!page.has_more || !page.items.length) break;
@@ -157,6 +160,7 @@ function mergeImport(draft: Draft, result: Draft): Draft {
     });
   }
   return {
+    active: draft.active ?? true,
     name: result.name || draft.name,
     school: result.school || draft.school,
     schedule: result.schedule || draft.schedule,
@@ -246,6 +250,7 @@ function AcademicProgramsContent() {
   const [listError, setListError] = useState("");
   const [school, setSchool] = useState("");
   const [search, setSearch] = useState("");
+  const [showPaused, setShowPaused] = useState(false);
   const [reportCopied, setReportCopied] = useState(false);
   const [openSiie, setOpenSiie] = useState(0);
   const [id, setId] = useState<number | null>(null);
@@ -311,6 +316,7 @@ function AcademicProgramsContent() {
         nextRevision = entry.revision;
         setSource(entry.siie_source ?? null);
         selected = {
+          active: entry.program.Active ?? true,
           name: entry.program.Name,
           school: entry.program.School,
           schedule: entry.program.Schedule,
@@ -351,6 +357,7 @@ function AcademicProgramsContent() {
       );
     const previous = entry?.program
       ? {
+          active: entry.program.Active ?? true,
           name: entry.program.Name,
           school: entry.program.School,
           schedule: entry.program.Schedule,
@@ -362,6 +369,7 @@ function AcademicProgramsContent() {
     setSaved(previous);
     setDraft({
       ...result.draft,
+      active: previous.active ?? true,
       commercial: {
         ...empty.commercial,
         ...result.draft.commercial,
@@ -416,6 +424,14 @@ function AcademicProgramsContent() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={showPaused}
+            onChange={(event) => setShowPaused(event.target.checked)}
+          />
+          Mostrar programas pausados
+        </label>
         {schools.length > 1 && (
           <SelectField
             id="program-school-filter"
@@ -437,6 +453,7 @@ function AcademicProgramsContent() {
                 .filter(
                   (item) =>
                     (item.school || "Sin escuela asignada") === label &&
+                    (showPaused || item.active !== false) &&
                     item.name
                       .toLocaleLowerCase("es")
                       .includes(search.trim().toLocaleLowerCase("es")),
@@ -451,6 +468,9 @@ function AcademicProgramsContent() {
                     onClick={() => open(item.program_id)}
                   >
                     <span>{item.name}</span>
+                    {item.active === false && (
+                      <small>Pausado · fuera de la oferta actual</small>
+                    )}
                     {item.schedule && <small>{item.schedule}</small>}
                   </Button>
                 ))}
@@ -865,7 +885,7 @@ function AcademicProgramsContent() {
               name: draft.name.trim(),
               school: draft.school.trim(),
               revision,
-              active: true,
+              active: draft.active ?? true,
               ...(sync ? { siie_sync: sync } : {}),
             };
             if (!body.name) return;
@@ -880,6 +900,7 @@ function AcademicProgramsContent() {
               setId(result.program_id);
               setRevision(result.revision);
               const savedDraft = {
+                active: body.active,
                 name: body.name,
                 school: body.school,
                 schedule: body.schedule,
@@ -904,6 +925,21 @@ function AcademicProgramsContent() {
             <legend>
               <Icon name="academic" /> Datos del programa
             </legend>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={draft.active !== false}
+                onChange={(event) =>
+                  setDraft({ ...draft, active: event.target.checked })
+                }
+              />
+              Programa disponible en la oferta actual
+            </label>
+            <p>
+              Pausarlo conserva la ficha y sus datos históricos. La IA deja de
+              ofrecerlo; puedes volver a activarlo desde Mostrar programas
+              pausados.
+            </p>
             <Field
               id="program-name"
               label="Nombre oficial"

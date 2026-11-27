@@ -104,6 +104,19 @@ function SettingEditor({
       ),
   );
   const groups = [...new Set(specs.map((spec) => spec.group))];
+  const centralEngine =
+    section === "ai" &&
+    liveModels &&
+    !!(draft.language_resilience as { primary?: unknown } | undefined)?.primary;
+  const otherModelFields = new Set([
+    "provider",
+    "model",
+    "fallback_enabled",
+    "fallback_model",
+    "backup_provider",
+    "backup_model",
+    "backup_fallback_model",
+  ]);
   return (
     <>
       <div className="institution-section-head">
@@ -122,11 +135,13 @@ function SettingEditor({
       {!writable && <Notice>Tu rol permite consultar estos ajustes.</Notice>}
       {section === "ai" && (
         <Notice>
-          Los modelos guardados se seleccionan en APIs y modelos. Las claves de
-          acceso se conservan cifradas. La espera cuenta desde el último mensaje
-          recibido: 60 segundos permite reunir las preguntas antes de responder.
-          Si el cliente vuelve a escribir, se revisa el turno con lo que ya
-          recibió para completar o aclarar sin repetir.{" "}
+          {centralEngine
+            ? "Los agentes y las respuestas automáticas usan el Motor de conversaciones y respaldos de esta página, con apertura y atención comercial. "
+            : "Los modelos guardados se seleccionan en APIs y modelos. "}
+          Las claves de acceso se conservan cifradas. La espera cuenta desde el
+          último mensaje recibido: 60 segundos permite reunir las preguntas
+          antes de responder. Si el cliente vuelve a escribir, se revisa el
+          turno con lo que ya recibió para completar o aclarar sin repetir.{" "}
           {contract.channel_operations
             ? liveModels
               ? "La atención automática sigue las instrucciones del agente, el modo IA/Humano y los permisos de cada canal. Requiere un modelo, credencial y presupuesto válidos."
@@ -258,10 +273,41 @@ function SettingEditor({
               </h3>
               <TypedFields
                 prefix={section}
-                specs={specs.filter((spec) => spec.group === group)}
+                specs={specs.filter(
+                  (spec) =>
+                    spec.group === group &&
+                    !(centralEngine && otherModelFields.has(spec.path)),
+                )}
                 value={draft}
                 onChange={setDraft}
               />
+              {centralEngine &&
+                specs.some(
+                  (spec) =>
+                    spec.group === group && otherModelFields.has(spec.path),
+                ) && (
+                  <details>
+                    <summary>Configuración anterior de modelos</summary>
+                    <p>
+                      Los agentes heredan el motor de conversaciones elegido
+                      arriba. Estos valores anteriores se conservan y no
+                      seleccionan el modelo de sus respuestas automáticas
+                      mientras ese motor esté activo.
+                    </p>
+                    <fieldset disabled>
+                      <TypedFields
+                        prefix={section}
+                        specs={specs.filter(
+                          (spec) =>
+                            spec.group === group &&
+                            otherModelFields.has(spec.path),
+                        )}
+                        value={draft}
+                        onChange={setDraft}
+                      />
+                    </fieldset>
+                  </details>
+                )}
             </section>
           ))}
           {section === "models" && (

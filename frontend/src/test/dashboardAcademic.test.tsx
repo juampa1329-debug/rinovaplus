@@ -100,6 +100,33 @@ it("filters the local program library by school without changing any records", a
   }
 });
 
+it("keeps paused programs editable without silently activating them on save", async () => {
+  let body: Record<string, unknown> | undefined;
+  const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+    const url = String(input);
+    if (url.includes("/programs?")) return new Response(JSON.stringify({items: [{program_id: 2, name: "Oferta pausada", school: "Prueba", active: false}],has_more:false}));
+    if (url.endsWith("/programs/2") && init?.method === "PUT") {
+      body = JSON.parse(String(init.body));
+      return new Response(JSON.stringify({program_id:2,revision:3}));
+    }
+    if (url.endsWith("/programs/2")) return new Response(JSON.stringify({exists:true,revision:2,program:{Name:"Oferta pausada",School:"Prueba",Schedule:"Diurna",Active:false},commercial:{}}));
+    throw Error(url);
+  });
+  try {
+    render(<AcademicPrograms/>);
+    await screen.findByLabelText("Mostrar programas pausados");
+    await waitFor(() => expect(fetcher).toHaveBeenCalled());
+    expect(screen.queryByRole("button",{name:/Oferta pausada/})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("Mostrar programas pausados"));
+    fireEvent.click(await screen.findByRole("button",{name:/Oferta pausada/}));
+    await waitFor(() => expect(screen.getByLabelText("Nombre oficial")).toHaveValue("Oferta pausada"));
+    expect(screen.getByLabelText("Programa disponible en la oferta actual")).not.toBeChecked();
+    fireEvent.change(screen.getByLabelText("Duración"),{target:{value:"3 semestres"}});
+    fireEvent.click(screen.getByRole("button",{name:"Guardar programa"}));
+    await waitFor(() => expect(body?.active).toBe(false));
+  } finally {fetcher.mockRestore();}
+});
+
 it("fills quiet Bogotá calendar days without inventing activity and exposes chart data", async () => {
   expect(dailySeries(sample)).toHaveLength(7);
   expect(dailySeries(sample)[0]).toEqual({

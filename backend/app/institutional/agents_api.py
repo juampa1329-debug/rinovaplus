@@ -100,9 +100,9 @@ def install(app, settings, gateway_factory=None):
             }
 
     @app.get("/api/v1/agents/programs")
-    def programs(offset: int = Query(0, ge=0), limit: int = Query(300, ge=1, le=300)):
+    def programs(offset: int = Query(0, ge=0), limit: int = Query(300, ge=1, le=300), include_inactive: bool = False):
         with service.transaction() as c:
-            return service.catalog_adapter.programs(c, offset, limit)
+            return service.catalog_adapter.programs(c, offset, limit, include_inactive=True) if include_inactive else service.catalog_adapter.programs(c, offset, limit)
 
     @app.post("/api/v1/agents/programs/import")
     def extract_program(body: ImportUrl):
