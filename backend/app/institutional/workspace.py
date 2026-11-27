@@ -50,6 +50,7 @@ class Command(Strict):
 
 class ContactWrite(Command):
     client: Contact
+    baseClient: Contact | None = None
 
     @model_validator(mode="after")
     def sql_lengths(self):
@@ -1332,7 +1333,8 @@ class Workspace:
             if prior is not None:
                 return prior
             # Scoped commands validate the current thread in apply.
-            if action not in {"message", "control", "read"} and body.revision != revision(c):
+            scoped_contact = action == "contact" and body.baseClient is not None
+            if action not in {"message", "control", "read"} and not scoped_contact and body.revision != revision(c):
                 raise HTTPException(409, "revision_conflict")
             if self.profile.ticket.get('version') in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'} and action in {'create','contact'}:
                 from app.institutional.campaign_runtime import observe_contact
@@ -1402,6 +1404,11 @@ class Workspace:
             current = None if action == "create" else read_contact(c, resource)
             if contact.id != resource or primary(c, resource) != resource:
                 raise HTTPException(409, "canonical_contact_required")
+            if action == "create" and body.baseClient is not None:
+                raise HTTPException(422, "invalid_request")
+            if current is not None and body.baseClient is not None:
+                from app.institutional.contact_changes import merge_contact_edit
+                contact = merge_contact_edit(current, contact, body.baseClient)
             previous_program = (
                 (current.get("programId"), current.get("program"))
                 if current
