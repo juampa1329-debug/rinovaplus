@@ -9,6 +9,12 @@ def attempts_query(*, materialized=False):
       JOIN crm_campaign8.Step step ON step.InstitutionId=e.InstitutionId
         AND step.EnrollmentId=e.EnrollmentId
       WHERE e.InstitutionId=? AND e.FlowId=?
+    ), chat_links AS (
+      SELECT b.InstitutionId,b.EnrollmentId,b.IdentityId,b.Variant,b.StepId,
+        TRY_CONVERT(uniqueidentifier,JSON_VALUE(link.Document,'$.queue_id')) AS QueueRef
+      FROM base b
+      JOIN crm_campaign8.Event link ON link.InstitutionId=b.InstitutionId
+        AND link.StepId=b.StepId AND link.Kind='native_chat'
     ), attempts AS (
       SELECT b.InstitutionId,b.EnrollmentId,b.IdentityId,b.Variant,b.StepId,
         q.QueueId,q.State,q.ExternalId,q.IntegrationId
@@ -21,11 +27,8 @@ def attempts_query(*, materialized=False):
       UNION ALL
       SELECT b.InstitutionId,b.EnrollmentId,b.IdentityId,b.Variant,b.StepId,
         q.QueueId,q.State,q.ExternalId,q.IntegrationId
-      FROM base b
-      JOIN crm_campaign8.Event link ON link.InstitutionId=b.InstitutionId
-        AND link.StepId=b.StepId AND link.Kind='native_chat'
-      JOIN crm_channels2.SendJob q ON q.InstitutionId=link.InstitutionId
-        AND LOWER(CONVERT(varchar(36),q.QueueId))=JSON_VALUE(link.Document,'$.queue_id')
+      FROM chat_links b
+      JOIN crm_channels2.SendJob q ON q.InstitutionId=b.InstitutionId AND q.QueueId=b.QueueRef
     ), event_accounts AS (
       SELECT DISTINCT InstitutionId,IntegrationId FROM attempts WHERE ExternalId IS NOT NULL
     ), scoped_replies AS (
@@ -51,6 +54,6 @@ def attempts_query(*, materialized=False):
     ORDER BY a.EnrollmentId,a.StepId,a.QueueId OFFSET 0 ROWS FETCH NEXT 100001 ROWS ONLY
     """
     if materialized:
-        for name in ("base", "attempts", "scoped_replies"):
+        for name in ("base", "chat_links", "attempts", "scoped_replies"):
             sql = sql.replace(name + " AS (", name + " AS MATERIALIZED (", 1)
     return sql

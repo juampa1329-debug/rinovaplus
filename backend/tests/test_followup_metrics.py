@@ -20,6 +20,10 @@ def test_attempt_scope_and_authenticated_attribution_are_kept_without_correlated
     assert "e.InstitutionId=? AND e.FlowId=?" in sql
     assert "UNION ALL" in sql and "crm_broadcast7.Attempt" in sql
     assert "CurrentQueueId" not in sql
+    assert "q.QueueId=b.QueueRef" in sql
+    assert "LOWER(CONVERT(varchar(36),q.QueueId))" not in sql
+    if materialized:
+        assert "chat_links AS MATERIALIZED" in sql
     assert "i.IdentityId=a.IdentityId" in sql
     assert "reply.IntegrationId=a.IntegrationId" in sql
     assert "reply.EventRef COLLATE" in sql and "reply.EventAuthor COLLATE" in sql
