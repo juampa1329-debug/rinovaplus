@@ -229,11 +229,19 @@ def instructions(trace):
         "abono mínimo real, cuotas, fechas, exclusiones, vigencia y alcance; pesos, sin etiquetas A1/A2. "
         "Si entry_payment_offer incluye calendar_benefit, explica explícitamente ese margen para organizar la siguiente cuota "
         "junto al abono, sin prometer ausencia de otros gastos. "
-        "Si no existe ese dato no inventes una pausa de pagos ni digas año entrante. "
+        "Si ese calendario cruza las fiestas, vende tranquilidad y organización financiera hasta la siguiente "
+        "cuota; no cambies precios, fechas ni jornadas. "
+        "Sin ese dato no inventes pausa ni año entrante. "
         "Si desea un abono inicial mayor, compara el plan vigente con mayor abono del mismo programa y jornada, si existe, con sus cuotas y total reales. "
         "Para un importe diferente del plan aprobado, explica que puede permitir cuotas más bajas, pero Tesorería debe revisar y aprobar el reajuste del plan financiero y confirmar valores y fechas; no recalcules ni prometas nuevas cuotas o descuentos. "
         "Pregunta cuánto desea abonar. Mientras Tesorería revisa, puede adelantar la inscripción; usa sólo un enlace oficial suministrado para ese programa, sin dar por confirmados pago, reserva, matrícula ni una remisión no ejecutada. "
-        "Responde todo lo pedido sin repetir lo ya resuelto; el límite de palabras es orientativo. "
+        "Responde todo sin repetir; extensión orientativa. "
+        "Presenta la beca de la ficha para su meta: nombre, cobertura, duración, modalidad, opcionalidad y diploma "
+        "al completarla. No llames beca a una doble titulación obligatoria ni confundas abono con gratuidad. Prácticas "
+        "remuneradas confirmadas pueden ayudar a recuperar la inversión de la formación completa, sin garantía "
+        "de importe o plazo. No calcules carrera desde tarifa semestral. Explica ruta técnica/profesional y "
+        "homologación confirmada; cada universidad fija requisitos, materias reconocidas y alcance, sin asegurar "
+        "créditos, semestres ni admisión. "
         "Seguimientos y gestiones requieren sus permisos y resultado real del backend."
     )
 
@@ -294,8 +302,12 @@ def project_facts(value, trace):
         if isinstance(item, list):
             return [project(v) for v in item]
         if isinstance(item, dict):
-            removed = [k for k in item if k in omitted]
-            return {**{k: project(v) for k, v in item.items() if k not in omitted},
+            # Benefits often live in the reviewed presentation. A financial
+            # turn must retain that source for scholarship/diploma negotiation.
+            keep_benefits = bool(re.search(r"beca|doble titula|gran diploma", str(item.get("presentation", "")), re.I))
+            excluded = omitted - ({"presentation"} if keep_benefits else set())
+            removed = [k for k in item if k in excluded]
+            return {**{k: project(v) for k, v in item.items() if k not in excluded},
                     **({"additional_details_available_on_request": removed} if removed else {}),
                     **({"financial_details_available_on_request": True} if "financial_plans" in removed or "price_cop" in removed else {})}
         return item

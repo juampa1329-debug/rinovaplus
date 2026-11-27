@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "date": "2026-11-27",
+  "scope": "Canonical opt-out and verified benefits in admission negotiation",
+  "commits": [
+    "1b328d9",
+    "0aa21d2",
+    "b226700",
+    "8d32eef",
+    "ce90a43"
+  ],
+  "deployments": {
+    "backend": {
+      "commit": "ce90a43",
+      "id": "ublgwmbyvviy6qu4zhvsfpds",
+      "status": "Success",
+      "healthy_utc": "2026-11-27T19:28:28Z",
+      "rollout_complete_utc": "2026-11-27T19:28:38Z",
+      "duration_seconds": 263
+    },
+    "frontend": {
+      "commit": "ce90a43",
+      "id": "lqdrcbmmbtkwga3q6nr5kpp2",
+      "status": "Success",
+      "duration_seconds": 28
+    }
+  },
+  "automatic_optout": {
+    "channels": [
+      "whatsapp",
+      "instagram",
+      "messenger"
+    ],
+    "source": "authenticated external message or stored attributable audio transcript",
+    "scope": "canonical contact and verified aliases, never name-based inferred identity",
+    "effect": [
+      "durable opt_out",
+      "close linked conversations",
+      "cancel only unstarted outbound work",
+      "stop CRM follow-ups",
+      "exclude broadcast audiences and generation"
+    ],
+    "fictional_operator_consent": false,
+    "uncertain_or_started_sends_replayed": false,
+    "crm_stage_changed_automatically": false,
+    "legacy_recovery": {
+      "candidate_limit": 1,
+      "idle_or_failure_scan_interval_seconds": 60,
+      "later_authorization_preserved": true,
+      "read_and_writer_transactions_separate": true,
+      "failure_does_not_skip_other_workers": true,
+      "previously_recorded_preferences_completed": true
+    },
+    "new_incoming_live_end_to_end_verified": false,
+    "all_historical_optouts_closed_claimed": false
+  },
+  "academic_audit": {
+    "offers_read_natively": 7,
+    "academic_writes": 0,
+    "prices_dates_schedules_unchanged": true,
+    "scholarships_preserved_in_financial_projection": true
+  },
+  "sales_policy": {
+    "scholarship": "actual coverage, duration, optionality and diploma on completion",
+    "calendar_benefit": "only actual next financing due date, including March 8 2027 where stated",
+    "internship_roi": "possible recovery of complete training investment, no guaranteed amount or period",
+    "university_homologation": "possible; requirements and recognized studies determined by each university"
+  },
+  "institution_dna": {
+    "title": "CBN · Valor formativo, becas, prácticas y continuidad profesional",
+    "state": "published",
+    "version": 2,
+    "visibility": "agent_context",
+    "editorial_valid_until": "2027-02-25",
+    "payment_date_extension": false
+  },
+  "native_verification": {
+    "status": "observed",
+    "previously_recorded_optout_closed_automatically": 1,
+    "no_contact_visible": true,
+    "fresh_inbox_search_confirmed_closed": true,
+    "crm_stage_preserved": "Seguimiento",
+    "manual_closure_attempt_rejected": "workspace revision conflict; not counted as saved",
+    "new_messages_sent": 0,
+    "all_historical_optouts_closed_claimed": false
+  },
+  "validation": {
+    "backend_passed": 312,
+    "frontend_passed": 21,
+    "typecheck": "pass",
+    "ruff_E9_F": "pass",
+    "build": "pass",
+    "bundle_kb": 745.27,
+    "gzip_kb": 219.77,
+    "combined_context_regressions_fixed": 7,
+    "context_limit_increased": false,
+    "known_followup_fixture_failures": 10,
+    "baseline_commit": "faf7b6e",
+    "same_failures_reproduced": true,
+    "full_suite_green_claimed": false,
+    "isolated_postgresql_engine": false,
+    "continuity_hash_tests_passed": 4
+  },
+  "unchanged": [
+    "main",
+    "academic prices dates and schedules",
+    "model configuration",
+    "AI spend",
+    "DDL",
+    "seeds",
+    "services",
+    "SIIE writes",
+    "phase acceptance counts"
+  ],
+  "report": "docs/adaptation/GLOBAL_OPTOUT_SALES_VALUE_20261127.md"
+}

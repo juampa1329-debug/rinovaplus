@@ -34,9 +34,7 @@ class NoContactWrite(Strict):
 
 
 def record_no_contact(c, s, contact, body, actor):
-    from app.institutional.workspace import members, primary, read_contact
-    from app.institutional.campaigns import event, key
-    from app.institutional.broadcasts import consent
+    from app.institutional.workspace import primary, read_contact
 
     contact = db.uid(contact)
     if primary(c, contact) != contact:
@@ -45,6 +43,23 @@ def record_no_contact(c, s, contact, body, actor):
     digest, prior = db.replay(c, s, actor, body.operationId, "workspace.no_contact", contact, body.model_dump())
     if prior is not None:
         return prior
+    result = apply_no_contact(c, s, contact, body.operationId, body.reason, actor=actor)
+    db.record_operation(c, s, actor, body.operationId, "workspace.no_contact", contact, digest, result)
+    db.audit(c, s, actor, "workspace.no_contact", contact, count=result["identity_count"], reason="operator_confirmed_request")
+    return result
+
+
+def apply_no_contact(c, s, contact, operation, reason, *, actor=None,
+                     source="operator_confirmed_request", proof=None):
+    """Apply one request to all verified canonical identities, never guessed matches.
+
+    Automatic requests use source evidence, not a fictional operator consent
+    revocation. The durable opt-out blocks every campaign even if its old consent
+    remains granted. Manual revocation retains its real authenticated actor.
+    """
+    from app.institutional.workspace import members
+    from app.institutional.campaigns import event, key
+    from app.institutional.broadcasts import consent
     ids = members(c, contact)
     slots = ",".join("?" for _ in ids)
     identities = db.rows(c, "SELECT IdentityId,IntegrationId FROM crm_channels2.ExternalIdentity WHERE InstitutionId=? AND ContactId IN (" + slots + ")",
@@ -53,13 +68,13 @@ def record_no_contact(c, s, contact, body, actor):
         raise HTTPException(409, "contact_identity_not_found")
     for identity in identities:
         identity_id = db.uid(str(identity["IdentityId"]))
-        event(c, s, "opt_out", {"identity_id": identity_id, "source": "operator_confirmed_request", "reason": body.reason},
-              actor=actor, source=key("manual-no-contact", body.operationId, identity_id))
-        previous = consent(c, s, identity_id)
-        if not previous or previous["State"] != "revoked":
+        event(c, s, "opt_out", {"identity_id": identity_id, "source": source, "reason": reason, **(proof or {})},
+              actor=actor, source=key(source, operation, identity_id))
+        previous = consent(c, s, identity_id) if actor else None
+        if actor and (not previous or previous["State"] != "revoked"):
             c.execute("INSERT crm_broadcast7.Consent(InstitutionId,ConsentId,IntegrationId,IdentityId,VersionNo,State,Evidence,Origin,ExpiresAt,ActorId,OperationId) VALUES(?,?,?,?,?,'revoked',?,'operator_confirmed_opt_out',NULL,?,?)",
                       db.institution(s), str(uuid4()), identity["IntegrationId"], identity_id,
-                      (previous["VersionNo"] if previous else 0) + 1, body.reason, actor, body.operationId)
+                      (previous["VersionNo"] if previous else 0) + 1, reason, actor, operation)
         # No uncertain/sending job is repeated or rewritten. Stop only work
         # that has not started, through the existing channel outbox.
         c.execute("UPDATE crm_channels2.ProviderOperation SET Status='failed',ResultCode='contact_no_contact' WHERE InstitutionId=? AND Status='pending' AND OperationId IN (SELECT q.OperationId FROM crm_channels2.SendJob q JOIN crm_channels2.MessageRoute r ON r.InstitutionId=q.InstitutionId AND r.MessageId=q.MessageId WHERE q.InstitutionId=? AND r.IdentityId=? AND q.State='queued')",
@@ -72,12 +87,15 @@ def record_no_contact(c, s, contact, body, actor):
                   db.institution(s), db.institution(s), identity_id)
         c.execute("UPDATE crm_broadcast7.Recipient SET State='cancelled',LastError='contact_no_contact' WHERE InstitutionId=? AND IdentityId=? AND State='prepared'",
                   db.institution(s), identity_id)
+        from app.institutional.campaign_runtime import stop
+        for run in db.rows(c, "SELECT * FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND IdentityId=? AND State IN('waiting','queued','paused','uncertain')",
+                           db.institution(s), identity_id):
+            stop(c, s, run, "no_contact")
     c.execute("UPDATE crm.Conversation SET State='closed',UpdatedAt=SYSUTCDATETIME() WHERE ContactId IN (" + slots + ")", *ids)
     c.execute("UPDATE crm_workspace.State SET Revision=Revision+1 WHERE StateId=1")
     result = {"no_contact": True, "closed": True, "identity_count": len(identities)}
-    db.record_operation(c, s, actor, body.operationId, "workspace.no_contact", contact, digest, result)
-    db.audit(c, s, actor, "workspace.no_contact", contact, count=len(identities), reason="operator_confirmed_request")
     return result
+
 
 
 def blocked(c, s, contact):
@@ -94,6 +112,32 @@ def blocked(c, s, contact):
         "AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Consent grantor WHERE grantor.InstitutionId=i.InstitutionId "
         "AND grantor.IdentityId=i.IdentityId AND grantor.State='granted' AND grantor.CreatedAt>e.CreatedAt))",
         contact, db.institution(s), contact).fetchone())
+
+
+def blocked_contacts(c, s):
+    """One canonical suppression set for broadcast preview and dispatch."""
+    query, params = suppression_query(s)
+    return {db.uid(str(row[0])) for row in c.execute(query, *params).fetchall()}
+
+
+def suppression_query(s):
+    """Shared authority for audience exclusion and already-recorded closure."""
+    from app.institutional.automatic_optout import supported
+    query = ("SELECT DISTINCT COALESCE(g.TargetContactId,v.ContactId) AS ContactId FROM crm_strategy.EvaluationPlan e "
+             "JOIN crm.Conversation v ON v.ConversationId=e.ConversationId "
+             "LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=v.ContactId AND g.Active=1 "
+             "WHERE JSON_VALUE(e.DocumentJson,'$.noContact')='true'")
+    params = ()
+    if supported(s):
+        query += (" UNION SELECT COALESCE(g.TargetContactId,i.ContactId) FROM crm_campaign8.Event e "
+                  "JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=e.InstitutionId "
+                  "AND LOWER(CONVERT(varchar(36),i.IdentityId))=JSON_VALUE(e.Document,'$.identity_id') "
+                  "LEFT JOIN crm_workspace.Merge g ON g.SourceContactId=i.ContactId AND g.Active=1 "
+                  "WHERE e.InstitutionId=? AND e.Kind='opt_out' "
+                  "AND NOT EXISTS(SELECT 1 FROM crm_broadcast7.Consent grantor WHERE grantor.InstitutionId=i.InstitutionId "
+                  "AND grantor.IdentityId=i.IdentityId AND grantor.State='granted' AND grantor.CreatedAt>e.CreatedAt)")
+        params = (db.institution(s),)
+    return query, params
 
 
 def install(app, s):

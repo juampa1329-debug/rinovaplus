@@ -599,10 +599,12 @@ def incoming(c, settings, item, effect):
     from app.institutional.channel_media import register_incoming
 
     register_incoming(c, settings, item, effect, linked, message)
+    from app.institutional.automatic_optout import receive
+    declined = receive(c, settings, linked["IdentityId"], message, message_body)
     replyable = replyable_message(item["Channel"], effect["provider"])
     if item["Channel"] == "whatsapp" and effect["provider"].get("type") == "edit":
         replyable = replyable and edit_verified
-    if replyable:
+    if replyable and not declined:
         from app.institutional.whatsapp_gemini import schedule
 
         schedule(c, settings, item, linked, message,

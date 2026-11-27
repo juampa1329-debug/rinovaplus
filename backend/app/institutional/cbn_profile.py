@@ -68,24 +68,18 @@ SCHEDULE_PRACTICE_POLICY = (
     "Repostería conserva prácticas los sábados y teoría los sábados o entre semana, con horas de grupo por confirmar."
 )
 PROGRAM_VALUE_POLICY = (
-    "\nBENEFICIOS REVISADOS (2026-11-27): Juan Pablo conecta una o dos ventajas documentadas "
-    "con la meta del aspirante; responde primero su consulta y conserva el avance del formulario. "
-    "La beca complementaria es OPCIONAL donde la ficha la ofrece: rechazarla no impide estudiar "
-    "el programa principal. Explica cobertura, modalidad y diploma de esa ficha;100% de la beca "
-    "no significa100% del programa principal. Negocios del Sector Gastronómico y Gestión Ambiental "
-    "son opcionales; Ventas/Mercadeo/Call Center conserva su doble titulación obligatoria. Barismo "
-    "y Bartender conjuntos conservan dos diplomas en dos semestres, separados de la beca de Negocios. "
-    "Respeta el rechazo de la beca y la vigencia; no inventes escasez ni reservas. "
-    "Para carreras técnicas, destaca experiencia, más de600convenios y prácticas remuneradas "
-    "meritorias con sus requisitos. No extiendas prácticas laborales a Inglés, PRE-ICFES o cursos. "
-    "El titular plantea recuperar la inversión en tres meses de prácticas en carreras excepto "
-    "Cocina: es una estimación institucional, no un resultado garantizado. Si preguntan por retorno, "
-    "distingue esa referencia del cálculo individual: requiere costo completo e ingreso aplicable. "
-    "No presentes ese cálculo como verificado sin esos datos, ni multipliques tarifas semestrales "
-    "para inventar el costo total. Duración de seis meses de prácticas: confirmar según programa. "
-    "Ofrece revisar la continuidad en educación superior; nombres de universidades, convenios "
-    "vigentes, destinos y créditos reconocidos requieren confirmación específica. No prometas "
-    "homologación automática ni articulación con todas las universidades."
+    "\nBENEFICIOS REVISADOS (2026-11-27): responde la consulta y conecta 1–2 ventajas documentadas "
+    "con su meta, conservando el avance del formulario. Beca OPCIONAL según ficha: rechazarla no "
+    "impide estudiar el principal; explica cobertura, modalidad y diploma. Beca100% no hace gratis "
+    "el principal. Negocios y Gestión Ambiental opcionales; Ventas/Marketing doble titulación "
+    "obligatoria; Barismo/Bartender dos diplomas/dos semestres, aparte de Negocios. Respeta rechazo "
+    "y vigencia, sin escasez ni reservas inventadas. Prácticas técnicas: experiencia, más de600convenios, "
+    "meritorias/remuneradas y requisitos. No extiendas prácticas laborales a Inglés, PRE-ICFES o cursos. "
+    "Tres meses de retorno excepto Cocina: estimación institucional, no un resultado garantizado; "
+    "cálculo individual exige costo completo e ingreso. No multipliques tarifas semestrales para "
+    "inventar costo total. Confirma seis meses de prácticas según programa. Sí es posible homologar; "
+    "cada universidad fija requisitos. Confirma universidad, convenio, destino y créditos; sin "
+    "homologación automática ni todas las universidades."
 )
 FACTS = [
     {
@@ -98,8 +92,8 @@ FACTS = [
             "conserva doble titulación obligatoria. Prácticas técnicas meritorias y remuneradas, "
             "más de600convenios, con requisitos. Referencia del titular: recuperación estimada "
             "en tres meses de prácticas para carreras excepto Cocina; faltan costo completo e "
-            "ingreso para verificar cada cálculo. Universidades y alcance de articulación pendientes "
-            "de corroborar; no todas las universidades ni homologación automática."
+            "ingreso para verificar cada cálculo. Sí es posible homologar; cada universidad fija "
+            "requisitos y alcance. No implica todas las universidades ni homologación automática."
         ),
     },
     {

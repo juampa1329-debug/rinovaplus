@@ -77,8 +77,8 @@
     "sales-enablement": {
       "name": "Presentación del programa",
       "source": "https://github.com/coreyhaines31/marketingskills",
-      "sha256": "e92d2ef71c3c285a2cb33d1e41c36e7eb51e3e31368443addc1de12ad0b9c719",
-      "bytes": 2328
+      "sha256": "b9c7a19274ede3db1acbcbca569050d6ed5f8f897729c3e025287cebfaceeac6",
+      "bytes": 2412
     },
     "copywriting": {
       "name": "Claridad y propuesta de valor",
@@ -161,8 +161,8 @@
     "deal-value-calc": {
       "name": "Valor y coste verificables",
       "source": "https://github.com/mbfinotti/sales-skills",
-      "sha256": "1bfbcbe491f1ea13d09e0e8bc675b8b89a07e47dd798242364d258659678ef47",
-      "bytes": 700
+      "sha256": "2125d2845568a8dd867aca3819f1ad72ce5df708e32af2bf6ed699dc8400c96c",
+      "bytes": 716
     },
     "pricing": {
       "name": "Presentación transparente de financiación",

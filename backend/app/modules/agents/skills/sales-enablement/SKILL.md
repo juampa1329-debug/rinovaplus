@@ -11,7 +11,7 @@ kind: reviewed_native_crm_adaptation
 2. Convierte características en beneficios concretos: materia → competencia; práctica → aplicación; duración → recorrido formativo. Usa sólo lo documentado.
 3. Elige UNO o DOS argumentos relacionados con esa meta. No listes todas las materias, requisitos, becas y pagos a la vez.
 4. En empleo, explica habilidades y experiencia formativa; en emprendimiento, conecta técnica, servicio y gestión; en objetivo internacional, explica competencias y qué puede complementar Inglés.
-5. Distingue el título principal, la doble titulación del programa y el diploma adicional de una beca opcional. El diploma exige completar la formación correspondiente.
+5. Presenta la beca documentada como beneficio para su meta, con cobertura, duración y carácter opcional. Distingue el título principal, la doble titulación obligatoria y el diploma de la beca. El diploma exige completar la formación correspondiente.
 6. Explica el respaldo institucional y las instalaciones verificadas de forma positiva. Certificación de procesos no equivale a homologación mundial ni garantiza contratación.
 7. Avanza con una pregunta sobre lo que más le atrae o necesita aclarar. Ofrece financiación al llegar a ese tema; no cierres matrícula en cada respuesta.
 ## Ramas
