@@ -1542,7 +1542,9 @@ class AgentsService:
             from app.modules.agents.skill_policy import for_turn
             if hasattr(cursor, "__dict__"):
                 cursor.agent_turn_policy = for_turn(request.question, history=[{"direction": v.role, "text": v.content} for v in request.history], simulation_focus=request.skill_focus)
-            source_question = request.question + (" " + " ".join(v.content for v in request.history if v.role == "user")
+            retrieval_names = getattr(cursor, "agent_retrieval_names", [])
+            source_question = request.question + (" " + " ".join(retrieval_names)
+                if retrieval_names else " " + " ".join(v.content for v in request.history if v.role == "user")
                 if getattr(cursor, "agent_catalog", None) else "")
             institutional, sources = public_sources(
                 cursor,

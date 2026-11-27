@@ -190,6 +190,30 @@ def test_confirmed_agent_receives_verified_campaign_context_without_rerouting(mo
     assert value["campaign_reply"] == {"sequence": 4} and "campaign_reply" not in selected
 
 
+def test_campaign_with_two_schedules_retains_candidates_without_academic_assignment(monkeypatch):
+    from app.institutional import masterclass_interests
+    monkeypatch.setattr(masterclass_interests, "orientation", lambda *_: None)
+    programs = [{"program_id": 1, "name": "PROEFICIENCIA EN INGLES", "schedule": "DIURNA"},
+                {"program_id": 2, "name": "PROEFICIENCIA EN INGLES", "schedule": "NOCTURNA"}]
+    history = [{"Direction": "incoming", "Body": "Ver plan de pagos", "MessageId": "entry", "Sequence": 2}]
+    monkeypatch.setattr(conversation_scope, "configure", lambda c, _: setattr(c, "context_cutoff", lambda _: 0))
+    monkeypatch.setattr(sales_context, "catalog_data", lambda *_: (programs, {}))
+    monkeypatch.setattr(sales_context, "history", lambda *_: history)
+    monkeypatch.setattr(sales_referrals, "origin", lambda *_: None)
+    monkeypatch.setattr(entry, "origin", lambda *_: {"sequence": 2, "source_message_id": "entry",
+        "program_hint": "", "schedule_hint": "", "routing_text": "Puedes cursar Inglés A1 y A2"})
+    scopes = []
+    monkeypatch.setattr(sales_context, "resolve", lambda a, s, assignment, context, channel: scopes.append(context) or {"binding": "bound"})
+    c = SimpleNamespace(execute=lambda *_: SimpleNamespace(fetchval=lambda: 2))
+    sales_context.configure(c, SimpleNamespace())
+    guide = {"level": "guide", "state": "active", "enabled": True, "configuration": {"sales_routing_enabled": True}}
+    result = c.agent_commercial_resolution({"guide": guide}, [], {}, "whatsapp", str(uuid4()))
+    assert scopes == [None]
+    assert result["commercial_interest"]["program_id"] is None
+    assert result["commercial_interest"]["candidates"] == programs
+    assert "routing_text" not in result["campaign_reply"]
+
+
 def test_two_information_buttons_preserve_price_facts_and_verified_program_retrieval(monkeypatch):
     retrieved = []
     def read(c, query, program):

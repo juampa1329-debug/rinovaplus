@@ -88,3 +88,15 @@ def test_payment_rules_reach_general_and_specialists_without_inventing_bank_deta
     assert PAYMENT_POLICY in instructions() and PAYMENT_POLICY in INSTITUTIONAL_SAFETY
     assert any(v["topic"] == "pagos_y_tarifas_por_semestre" for v in facts_for("Addi"))
     assert "no multipliques" in PAYMENT_POLICY and "PRE-ICFES" in PAYMENT_POLICY
+
+
+def test_owner_schedule_and_internships_supersede_old_counts_without_changing_english_or_pre():
+    from app.institutional.cbn_profile import SCHEDULE_PRACTICE_POLICY, facts_for
+    from app.modules.agents.conversation_style import instructions
+    from app.modules.ai.application.admissions_prompt import INSTITUTIONAL_SAFETY
+    assert SCHEDULE_PRACTICE_POLICY in instructions() and SCHEDULE_PRACTICE_POLICY in INSTITUTIONAL_SAFETY
+    facts = {v["topic"]: v for v in facts_for("prácticas")}
+    assert "más de 600" in facts["convenios"]["text"]
+    assert "remuneradas" in facts["practicas"]["text"]
+    assert "7:00 a. m. a 6:00 p. m." in SCHEDULE_PRACTICE_POLICY
+    assert "No extrapoles" in SCHEDULE_PRACTICE_POLICY and "PRE-ICFES" in SCHEDULE_PRACTICE_POLICY

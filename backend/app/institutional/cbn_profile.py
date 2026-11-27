@@ -44,7 +44,27 @@ PAYMENT_POLICY = (
     "Estos medios de pago no confirman que una persona ya pagó ni sustituyen las condiciones "
     "financieras de la ficha o el volante de PRE-ICFES."
 )
+SCHEDULE_PRACTICE_POLICY = (
+    "\nJORNADAS Y PRÁCTICAS CONFIRMADAS POR EL TITULAR (2026-11-26): para las carreras técnicas, "
+    "la jornada diurna es la franja de 7:00 a. m. a 6:00 p. m.; las clases se distribuyen dentro "
+    "de ese horario. No significa clase continua durante once horas ni permite al estudiante elegir "
+    "libremente cualquier horario. Los días y horas concretos dependen del grupo y deben confirmarse. "
+    "La jornada nocturna es de 6:30 a 9:00 p. m. Generalmente el último semestre pasa a jornada "
+    "nocturna por las prácticas; no afirmes que todo el programa diurno es nocturno ni que aplica "
+    "obligatoriamente a cada grupo. CBN cuenta con más de 600 convenios de prácticas en el sector "
+    "productivo y ofrece prácticas remuneradas. Úsalo para explicar experiencia y conexión con el "
+    "trabajo, sin inventar empresa asignada, monto, duración, cupo individual o contratación garantizada. "
+    "Los requisitos y la asignación de cada práctica se confirman según el programa. No extrapoles "
+    "estas prácticas ni la franja técnica a Inglés o PRE-ICFES, que conservan sus horarios específicos. "
+    "Repostería conserva prácticas los sábados y teoría los sábados o entre semana, con horas de grupo por confirmar."
+)
 FACTS = [
+    {
+        "topic": "jornadas_tecnicas_y_practicas",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:daytime-window-paid-internships",
+        "text": SCHEDULE_PRACTICE_POLICY.strip(),
+    },
     {
         "topic": "pagos_y_tarifas_por_semestre",
         "reviewed_at": "2026-11-26",
@@ -99,13 +119,15 @@ FACTS = [
     },
     {
         "topic": "practicas",
-        "text": "CBN describe prácticas en empresas y entidades del sector productivo y acompañamiento institucional. La postulación tiene requisitos y selección de la entidad receptora. Confirmar la modalidad, los requisitos y la disponibilidad de cada programa; no prometer empresa, remuneración, plaza ni contratación automática.",
-        "source": "https://cbn.edu.co/empresas/",
+        "text": "El titular confirma más de 600 convenios en el sector productivo y prácticas remuneradas para la formación técnica. Las condiciones particulares, duración, requisitos y empresa receptora dependen del programa y la asignación. No inventar montos ni prometer una plaza individual o contratación automática.",
+        "source": "owner_reviewed:2026-11-26:paid-internships",
+        "reviewed_at": "2026-11-26",
     },
     {
         "topic": "convenios",
-        "text": "La institución informa alianzas en salud, hotelería, comercio, educación y otros sectores. Las páginas publican cifras diferentes de convenios: no dar un total ni un convenio específico vigente sin comprobación adicional.",
-        "source": "https://cbn.edu.co/cbn-renueva-certificacion-icontec-16-anos-de-calidad/",
+        "text": "El titular confirma más de 600 convenios de prácticas con el sector productivo. Las fuentes públicas anteriores con otras cifras no sustituyen esta actualización. No inventar una empresa específica, vacante ni resultado individual.",
+        "source": "owner_reviewed:2026-11-26:productive-sector-agreements",
+        "reviewed_at": "2026-11-26",
     },
 ]
 

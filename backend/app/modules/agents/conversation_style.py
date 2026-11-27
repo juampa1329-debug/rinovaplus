@@ -1,6 +1,6 @@
 """A presentation name and concise Colombian Spanish, without a false human identity."""
 
-from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY, PAYMENT_POLICY
+from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY, PAYMENT_POLICY, SCHEDULE_PRACTICE_POLICY
 
 VERSION = "cbn-conversation-style-v7"
 
@@ -38,4 +38,5 @@ def instructions(configuration=None):
         + LOCATION_POLICY
         + REGISTRATION_POLICY
         + PAYMENT_POLICY
+        + SCHEDULE_PRACTICE_POLICY
     )
