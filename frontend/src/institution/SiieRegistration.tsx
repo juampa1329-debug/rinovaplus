@@ -1,3 +1,5 @@
+import { SiiePreicfes } from "./SiiePreicfes";
+import { siieHeaders, type SiieEnvironment } from "../shared/siieEnvironment";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Button, Field, Notice, SelectField, TextArea } from "../shared/ui";
 import {
@@ -29,6 +31,7 @@ type Section = {
   fields: FieldSpec[];
 };
 type Status = {
+  environment?: SiieEnvironment | null;
   revision: number;
   api_configured: boolean;
   webhook_secret_configured: boolean;
@@ -48,6 +51,7 @@ type Context = {
   selection: Values;
 };
 type Draft = {
+  environment_current?: boolean;
   id: string;
   revision: number;
   kind: "applicant" | "registration";
@@ -151,7 +155,9 @@ export function SiieRegistration() {
   const editable = session.actions.includes("crm.write");
   const configurable = session.actions.includes("settings.webhooks.write");
   const activeDraft =
-    !!selected && ["draft", "rejected"].includes(selected.state);
+    !!selected &&
+    selected.environment_current !== false &&
+    ["draft", "rejected"].includes(selected.state);
   const configurationDirty =
     !!status &&
     !!configuration &&
@@ -182,12 +188,15 @@ export function SiieRegistration() {
   const open = async (id: string) => {
     const ticket = ++epoch.current;
     const draft = await call<Draft>(`${base}/records/sd/${id}`);
-    const choices = await call<{
-      items: Record<string, Choice[]>;
-      missing: string[];
-      countries?: Choice[];
-      allows_creation?: boolean;
-    }>(`${base}/catalogs?draft_id=${id}`);
+    const choices =
+      draft.environment_current === false
+        ? { items: {}, missing: [], countries: [], allows_creation: false }
+        : await call<{
+            items: Record<string, Choice[]>;
+            missing: string[];
+            countries?: Choice[];
+            allows_creation?: boolean;
+          }>(`${base}/catalogs?draft_id=${id}`);
     if (ticket !== epoch.current) return;
     setSelected(draft);
     setForm(draft.form);
@@ -297,7 +306,11 @@ export function SiieRegistration() {
       {
         method: "POST",
         credentials: "same-origin",
-        headers: { "X-CRM-Local": "1", ...institutionHeaders() },
+        headers: {
+          "X-CRM-Local": "1",
+          ...institutionHeaders(),
+          ...siieHeaders(base),
+        },
         body: data,
         signal: AbortSignal.timeout(45000),
       },
@@ -448,6 +461,9 @@ export function SiieRegistration() {
         </Button>
       </header>
       {task.notices}
+      {status && editable && (
+        <SiiePreicfes environment={status.environment} editable={editable} />
+      )}
       {!status ? (
         <Notice>Cargando preparación de SIIE…</Notice>
       ) : (
@@ -706,6 +722,13 @@ export function SiieRegistration() {
               ) : (
                 <>
                   <h4>{selected.context.program_name}</h4>
+                  {selected.environment_current === false && (
+                    <Notice>
+                      Solicitud de otro entorno o anterior a esta verificación.
+                      Se conserva en consulta; prepara una nueva solicitud con
+                      los catálogos actuales para realizar otra operación.
+                    </Notice>
+                  )}
                   <p>
                     {selected.context.schedule} ·{" "}
                     {states[selected.state] ?? selected.state}
@@ -948,7 +971,12 @@ export function SiieRegistration() {
                     )}
                     <Button
                       variant="secondary"
-                      disabled={task.busy || dirty || !editable}
+                      disabled={
+                        task.busy ||
+                        dirty ||
+                        !editable ||
+                        selected.environment_current === false
+                      }
                       onClick={() =>
                         void task.run(
                           loadRequirements,
@@ -1032,6 +1060,7 @@ export function SiieRegistration() {
                         task.busy ||
                         dirty ||
                         !status.writes_enabled ||
+                        selected.environment_current === false ||
                         (!allowsCreation && activeDraft) ||
                         !(
                           activeDraft ||

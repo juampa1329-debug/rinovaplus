@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import httpx2 as httpx
 from fastapi import HTTPException, Request
 
-from app.institutional.program_commercial import approved_url
+from app.institutional import siie_environment
 
 ROUTES = {
     "programs": ("catalog", "Commercial/Programs.aspx"),
@@ -39,7 +39,7 @@ def configured(scope):
     if scope not in {"catalog", "admissions"}:
         raise ValueError("unknown SIIE scope")
     return bool(
-        os.getenv("SIIE_API_BASE_URL", "").strip()
+        siie_environment.configured()
         and credential()[0]
     )
 
@@ -54,7 +54,9 @@ def status():
         "students_supported": True,
         "student_balances_supported": False,
         "followup_writes_enabled": False,
-        "contract": "siie-crm-commercial-v1 / CRM ASPX / single-key 2026-11-19",
+        "contract": "SIIE integration 2026-11-27 / single runtime base",
+        "environment": siie_environment.current().document() if siie_environment.configured() else None,
+        "gateway_enabled": False,
     }
 
 
@@ -120,7 +122,7 @@ def parameters(route, values):
                 raise HTTPException(422, "siie_invalid_parameter")
             out[key] = value.strip()
         elif key == "incluirHistoricos":
-            if isinstance(value, bool) or str(value) != "1":
+            if isinstance(value, bool) or str(value) not in {"0", "1"}:
                 raise HTTPException(422, "siie_invalid_parameter")
         elif key in {"offset", "idEstadoMatricula"}:
             if (
@@ -348,29 +350,21 @@ def read(route, values=None, *, transport=None):
     scope, path = ROUTES[route]
     if not configured(scope):
         raise HTTPException(409, "siie_not_configured")
-    hosts = {
-        v.strip().lower()
-        for v in os.getenv("SIIE_API_HOSTS", "siieplus.online").split(",")
-        if v.strip()
-    }
-    try:
-        base = approved_url(os.environ["SIIE_API_BASE_URL"], hosts).rstrip("/")
-    except HTTPException:
-        raise HTTPException(409, "siie_catalog_endpoint_invalid") from None
+    environment = siie_environment.current()
     key, _ = credential()
     if len(key) < 32 or any(ord(c) < 33 or ord(c) > 126 for c in key):
         raise HTTPException(409, "siie_credential_invalid")
     correlation = None
     try:
         with httpx.Client(
-            timeout=httpx.Timeout(15, connect=5),
+            timeout=httpx.Timeout(30, connect=5),
             trust_env=False,
             follow_redirects=False,
             transport=transport,
         ) as client:
             with client.stream(
                 "GET",
-                base + "/Api/CRM/v1/" + path,
+                environment.endpoint("Api/CRM/v1/" + path),
                 params=query,
                 headers={"X-API-Key": key, "Accept": "application/json"},
             ) as response:
@@ -421,6 +415,7 @@ def read(route, values=None, *, transport=None):
                     "correlation_id": correlation,
                     "read_only": True,
                     "source": "SIIE",
+                    "environment": environment.document(),
                     "saved": False,
                 }
     except HTTPException as error:
@@ -451,6 +446,7 @@ def install(app, service):
             raise HTTPException(422, "siie_invalid_parameter")
         with service.transaction():
             pass
+        siie_environment.request_context(request)
         result = read(route, dict(pairs))
         # Recheck authority after IO, before exposing remote personal information.
         with service.transaction():

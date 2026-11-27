@@ -9,7 +9,7 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
-from app.institutional import agents_api, siie_api
+from app.institutional import agents_api, siie_api, siie_environment
 
 
 class Cursor:
@@ -20,7 +20,9 @@ class Cursor:
         self.result = []
     def execute(self, sql, *p):
         self.rowcount = 0
-        if sql.startswith('SELECT p.ProgramId'):
+        if sql.startswith('SELECT DISTINCT p.ProgramId'):
+            self.result = [(id, v['name'], v['school'], v['schedule'], v['active'], v['revision']) for id,v in self.programs.items() if any(pid == id and source.get('environment') == {'fingerprint':p[3],'base_url':p[4]} and source['program_id'] == p[5] for (pid,_),source in self.sources.items())]
+        elif sql.startswith('SELECT p.ProgramId'):
             self.result = [(id, v['name'], v['school'], v['schedule'], v['active'], v['revision']) for id,v in self.programs.items() if self.profiles.get(id,{}).get('siie_program_id') == p[1]]
         elif sql.startswith('SELECT COALESCE(MAX'):
             self.result = [(max(self.programs, default=0),)]
@@ -41,6 +43,7 @@ class Cursor:
 
 @pytest.fixture
 def fixture(monkeypatch):
+    monkeypatch.setenv('SIIE_BASE_URL','https://siieplus.online/SIIEWebPlustest/')
     c=Cursor(); state=SimpleNamespace(allowed=True, source_reads=0)
     @contextmanager
     def transaction(write=False):
@@ -54,6 +57,8 @@ def fixture(monkeypatch):
     monkeypatch.setattr(agents_api,'Agents',lambda *_:service)
     monkeypatch.setattr(agents_api,'install_agents',lambda *_:None)
     monkeypatch.setattr(agents_api,'institution',lambda _: 'fixture-institution')
+    from app.institutional import siie_local
+    monkeypatch.setattr(siie_local,'institution',lambda _: 'fixture-institution')
     monkeypatch.setattr(agents_api,'read_profile',lambda c,_,id:c.profiles.get(id))
     monkeypatch.setattr(agents_api,'save_profile',lambda c,_,id,rev,actor,p:c.profiles.__setitem__(id,p.model_dump()))
     monkeypatch.setattr(agents_api,'local_source',lambda c,_,id,kind='offer': c.sources.get((id,kind)))
@@ -66,14 +71,14 @@ def fixture(monkeypatch):
     monkeypatch.setattr(agents_api,'record_operation',lambda c,settings,actor,id,action,resource,digest,result:c.operations.__setitem__((id,action,resource),(digest,deepcopy(result))))
     def read(*_):
         state.source_reads+=1
-        return {'data':{'source_revision':'fixture-revision','items':[{'program_id':'143','name':'Software ficticio','school':None,'duration_levels':4}]}}
+        return {'environment':siie_environment.current().document(),'data':{'source_revision':'fixture-revision','items':[{'program_id':'143','name':'Software ficticio','school':None,'duration_levels':4}]}}
     monkeypatch.setattr(siie_api,'read',read)
     app=FastAPI();agents_api.install(app,SimpleNamespace())
     return TestClient(app),c,state
 
 
 def command():
-    return {'operation_id':str(uuid4()),'revision':0,'source_revision':'fixture-revision'}
+    return {'environment':siie_environment.current().document(),'operation_id':str(uuid4()),'revision':0,'source_revision':'fixture-revision'}
 
 
 @pytest.mark.parametrize('stored_active', [0, 1, False, True])

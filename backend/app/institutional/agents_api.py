@@ -19,7 +19,8 @@ from app.modules.agents.router import install_agents
 from app.modules.agents.service import load
 from app.modules.ai.infrastructure.providers import AiError
 from app.institutional.siie_catalog import SiieImport, preview as siie_preview
-from app.institutional.siie_local import SiieSync, draft_from_source, local_source, reviewed_draft, save_source
+from app.institutional.siie_local import SiieSync, draft_from_source, local_source, mapped_programs, reviewed_draft, save_source
+from app.institutional import siie_environment
 
 
 class ProgramWrite(Mutation):
@@ -38,6 +39,7 @@ class ProgramWrite(Mutation):
 
 
 class SiiePageWrite(Mutation):
+    environment: dict
     source_revision: str = Field(min_length=1, max_length=120)
     cursor: str = Field(default="", max_length=128)
     period_id: str = Field(default="", pattern=r"^(?:[1-9][0-9]{0,9})?$")
@@ -111,7 +113,9 @@ def install(app, settings, gateway_factory=None):
         return import_program(body.url)
 
     @app.post("/api/v1/agents/programs/import-siie")
-    def extract_siie(body: SiieImport):
+    def extract_siie(body: SiieImport, request: Request):
+        from app.institutional.siie_environment import request_context
+        request_context(request)
         # Existing agents.manage authority and SQL checks precede outbound IO.
         with service.transaction():
             pass
@@ -120,7 +124,7 @@ def install(app, settings, gateway_factory=None):
             source = result['source']
             if source.get('kind'):
                 program_id = body.local_program_id
-                matches = c.execute("SELECT p.ProgramId FROM crm_agents5.Program p JOIN crm_access.Setting s ON s.InstitutionId=p.InstitutionId AND s.Section=CONCAT('program-commercial-',p.ProgramId) WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.siie_program_id')=?", institution(settings), source['program_id']).fetchall()
+                matches = mapped_programs(c, settings, source)
                 if len(matches) > 1:
                     raise HTTPException(409, 'siie_local_mapping_ambiguous')
                 if matches and program_id is not None and matches[0][0] != program_id:
@@ -132,6 +136,8 @@ def install(app, settings, gateway_factory=None):
                     if not item:
                         raise HTTPException(404, 'invalid_program_id')
                     profile = read_profile(c, settings, program_id) or CommercialProfile().model_dump()
+                    if profile.get('siie_program_id') and not (local_source(c, settings, program_id, 'program') or local_source(c, settings, program_id, 'offer')):
+                        raise HTTPException(409, 'siie_environment_changed')
                     if profile.get('siie_program_id') and profile['siie_program_id'] != source['program_id']:
                         raise HTTPException(409, 'siie_program_binding_mismatch')
                     result['draft'], result['manual_fields_preserved'] = reviewed_draft({'name': item[0], 'school': item[1], 'schedule': item[2], 'commercial': profile}, local_source(c, settings, program_id, source['kind']), source)
@@ -145,23 +151,27 @@ def install(app, settings, gateway_factory=None):
     @app.post("/api/v1/agents/programs/sync-siie-page")
     def sync_siie_page(body: SiiePageWrite):
         from app.institutional.siie_api import read
+        siie_environment.require(body.environment)
         with service.transaction() as c:
             digest, prior = replay(c, settings, c.agent_user, str(body.operation_id), 'agents.siie-page', 'catalog', body.model_dump(mode='json'))
             if prior:
                 return prior
-        page = read('programs', {'cursor': body.cursor, 'period_id': body.period_id})['data']
+        response = read('programs', {'cursor': body.cursor, 'period_id': body.period_id})
+        siie_environment.require(response['environment'])
+        page = response['data']
         if page['source_revision'] != body.source_revision:
             raise HTTPException(409, 'siie_source_changed_review_again')
-        sources = [draft_from_source({**v, 'source_revision': page['source_revision']}, kind='program', request={'program_id': str(v.get('program_id')), 'cursor': body.cursor, 'period_id': body.period_id}) for v in page['items']]
+        sources = [draft_from_source({**v, 'source_revision': page['source_revision']}, kind='program', environment=response['environment'], request={'program_id': str(v.get('program_id')), 'cursor': body.cursor, 'period_id': body.period_id}) for v in page['items']]
         if len({v['program_id'] for v in sources}) != len(sources):
             raise HTTPException(502, 'siie_catalog_invalid_response')
         with service.transaction(True) as c:
+            siie_environment.require(body.environment)
             digest, prior = replay(c, settings, c.agent_user, str(body.operation_id), 'agents.siie-page', 'catalog', body.model_dump(mode='json'))
             if prior:
                 return prior
             results = []
             for source in sources:
-                matches = c.execute("SELECT p.ProgramId,p.Name,p.School,p.Schedule,p.Active,p.Revision FROM crm_agents5.Program p JOIN crm_access.Setting s ON s.InstitutionId=p.InstitutionId AND s.Section=CONCAT('program-commercial-',p.ProgramId) WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.siie_program_id')=?", institution(settings), source['program_id']).fetchall()
+                matches = mapped_programs(c, settings, source, detail=True)
                 if len(matches) > 1:
                     raise HTTPException(409, 'siie_local_mapping_ambiguous')
                 old = matches[0] if matches else None
@@ -189,6 +199,7 @@ def install(app, settings, gateway_factory=None):
         ):
             raise HTTPException(422, "field_too_long")
         if body.siie_sync is not None and source is None:
+            siie_environment.require(body.siie_sync.environment)
             with service.transaction() as c:
                 _, prior = replay(c, settings, c.agent_user, str(body.operation_id), 'agents.program', str(program_id) if program_id is not None else 'new', body.model_dump(mode='json', exclude_none=True))
                 if prior:
@@ -198,6 +209,10 @@ def install(app, settings, gateway_factory=None):
             if source['source_revision'] != sync.source_revision or source['kind'] != sync.kind:
                 raise HTTPException(409, 'siie_source_changed_review_again')
         with (nullcontext(connection) if connection is not None else service.transaction(True)) as c:
+            if source is not None:
+                siie_environment.require(source.get('environment'))
+                if program_id is not None and (read_profile(c, settings, program_id) or {}).get('siie_program_id') and not (local_source(c, settings, program_id, 'program') or local_source(c, settings, program_id, 'offer')):
+                    raise HTTPException(409, 'siie_environment_changed')
             resource = str(program_id) if program_id is not None else "new"
             digest, prior = replay(
                 c,
@@ -210,8 +225,11 @@ def install(app, settings, gateway_factory=None):
             )
             if prior:
                 return prior
-            if body.commercial is not None and body.commercial.siie_program_id:
-                matches = c.execute("SELECT p.ProgramId FROM crm_agents5.Program p JOIN crm_access.Setting s ON s.InstitutionId=p.InstitutionId AND s.Section=CONCAT('program-commercial-',p.ProgramId) WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.siie_program_id')=?", institution(settings), body.commercial.siie_program_id).fetchall()
+            mapping = source
+            if mapping is None and body.commercial is not None and body.commercial.siie_program_id and siie_environment.configured():
+                mapping = {'environment': siie_environment.current().document(), 'program_id': body.commercial.siie_program_id}
+            if mapping is not None:
+                matches = mapped_programs(c, settings, mapping)
                 if any(v[0] != program_id for v in matches):
                     raise HTTPException(409, 'siie_local_mapping_ambiguous')
             if program_id is None:

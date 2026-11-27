@@ -1,0 +1,2763 @@
+{
+  "info": {
+    "name": "Rinova · SIIE · 39 operaciones",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Sólo una SIIE_BASE_URL por entorno. No contiene credenciales. Escrituras omitidas por defecto; no ejecutar Runner indiscriminadamente. Consulte GUIA-INTEGRACION.md."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const base=pm.environment.get('SIIE_BASE_URL');",
+          "if(!base || !base.startsWith('https://') || !base.endsWith('/') || /[?#]/.test(base) || new URL(base).username || new URL(base).password){pm.execution.skipRequest();throw new Error('SIIE_BASE_URL debe ser HTTPS, sin query y terminar en /.');}",
+          "const stateKeys=[\"idPeriodo\",\"idPrograma\",\"idOferta\",\"idEstudiante\",\"idInscripcion\",\"idAspirante\",\"idSeguimiento\",\"idSeguimientoCrm\",\"expectedRevision\",\"bindingId\",\"eventId\",\"conversationId\",\"channelAccountId\",\"waId\",\"planId\",\"mode\",\"quoteRevisionId\",\"assignmentId\",\"installmentId\",\"orderId\",\"pdfVersion\",\"requestId\",\"bindingRequestId\",\"planRequestId\",\"orderRequestId\",\"publicRequestId\",\"createOperationId\",\"updateOperationId\",\"csrf\",\"publicOffer\",\"publicGroup\",\"programsCursor\",\"offersCursor\",\"commercialOfferId\",\"commercialPeriodId\",\"programId\",\"prePlanOptions\",\"schema_version\",\"crmIdPeriodo\",\"q\",\"crmIdPrograma\",\"idJornada\",\"offset\",\"crmIdAspirante\",\"idEstadoSeguimiento\",\"ocurridoUtc\",\"autorCrmId\",\"autorCrmNombre\",\"idEstadoMatricula\",\"crmIdEstudiante\",\"idEscuela\",\"documentoEnsayo\",\"nombrePrograma\",\"idProgramaPreinscripcion\",\"celularEnsayo\",\"tipoDocumentoTexto\",\"idProgramaMoodle\",\"nivelMoodle\",\"idAsignaturaMoodle\",\"crmIdOferta\",\"tipoId\",\"idMunicipio\",\"idGenero\",\"documentoAcudienteEnsayo\",\"modalidad\",\"idTipoEstudio\",\"nombreDepartamento\",\"idDocumentoRequisito\",\"idPais\",\"idDepartamento\"];",
+          "if(pm.environment.get('_CONTEXT_BASE_URL')!==base){for(const k of stateKeys)pm.environment.unset(k);pm.environment.set('ALLOW_WRITES','false');pm.environment.set('_CONTEXT_BASE_URL',base);pm.execution.skipRequest();throw new Error('Entorno cambiado: se limpiaron IDs, UUID, cotizaciones y vínculos. Cierre cookies del sitio anterior; ejecute catálogos.');}",
+          "const write=!['GET','HEAD','OPTIONS'].includes(pm.request.method);",
+          "if(write && pm.environment.get('ALLOW_WRITES')!=='true'){pm.execution.skipRequest();console.info('ESCRITURA OMITIDA: ALLOW_WRITES=false');}",
+          "else {",
+          " const raw=pm.variables.replaceIn(pm.request.url.toString());",
+          " if(!raw.startsWith(base)){pm.execution.skipRequest();throw new Error('Ruta fuera de la base activa.');}",
+          " const publicRoute=raw.includes('/PreIcfes/Api/');",
+          " const callback=raw.includes('/PagoNotificacion.aspx');",
+          " if(!publicRoute&&!callback){let key;try{key=await pm.vault.get('SIIE_API_TOKEN');}catch(e){} if(!key){pm.execution.skipRequest();throw new Error('Configure SIIE_API_TOKEN en Postman Vault; no se exporta.');} pm.request.headers.upsert({key:'X-API-Key',value:key});}",
+          " let activeText=pm.request.url.toString();",
+          " if(pm.request.body?.mode==='raw')activeText+=' '+pm.request.body.raw;",
+          " if(pm.request.body?.mode==='formdata')pm.request.body.formdata.each(f=>{if(!f.disabled)activeText+=' '+f.key+' '+(f.value||'');});",
+          " pm.request.headers.each(h=>{if(!h.disabled&&h.key.toLowerCase()==='x-csrf-token')activeText+=' '+h.value;});",
+          " const required=[...activeText.matchAll(/{{([^}]+)}}/g)].map(m=>m[1]);",
+          " if(required.some(k=>{const v=pm.variables.get(k);return v===undefined||v===null||String(v).trim()==='';})){pm.execution.skipRequest();throw new Error('Faltan variables del entorno activo; no se inventan identificadores.');}",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 · Integración autenticada · 36 operaciones",
+      "item": [
+        {
+          "name": "01 · Consultar períodos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Periodos.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Periodos.aspx"
+              ],
+              "query": [
+                {
+                  "key": "incluirHistoricos",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Opcional. Habilitar para incluir todos los períodos históricos."
+                }
+              ]
+            },
+            "description": "incluirHistoricos es 0 o 1. Ofrecido y activo son conceptos diferentes; no sustituir uno por otro.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " if(b.status==='ok'&&Number.isInteger(d.idPeriodoOfrecido)){pm.environment.set('crmIdPeriodo',String(d.idPeriodoOfrecido));pm.environment.set('commercialPeriodId',String(d.idPeriodoOfrecido));}",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "02 · Consultar estados de seguimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/EstadosSeguimiento.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "EstadosSeguimiento.aspx"
+              ]
+            },
+            "description": "Usar los IDs de este catálogo al escribir seguimiento.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "03 · Consultar filtros del período",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/FiltrosAdmisiones.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "FiltrosAdmisiones.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Filtros derivados de aspirantes existentes en el período; una lista vacía no autoriza inventar IDs.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "04 · Listar aspirantes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Aspirantes.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Aspirantes.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "{{q}}",
+                  "description": "Opcional. Búsqueda contenida por nombre/apellidos o documento, hasta 100 caracteres.",
+                  "disabled": true
+                },
+                {
+                  "key": "idPrograma",
+                  "value": "{{crmIdPrograma}}",
+                  "description": "Opcional. Entero positivo del catálogo de filtros.",
+                  "disabled": true
+                },
+                {
+                  "key": "idJornada",
+                  "value": "{{idJornada}}",
+                  "description": "Opcional. Entero positivo de jornada del programa.",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "description": "Opcional. 0 a 1000000; predeterminado 0. Avanzar 25 cuando hasMore sea true.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Páginas de 25, offset 0–1000000, q máximo 100; idPrograma/idJornada positivos opcionales. Mantener todos los filtros al paginar. No interpreta confirmadoOrigen como matrícula.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "05 · Consultar ficha de aspirante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Aspirante.aspx?idAspirante={{crmIdAspirante}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Aspirante.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idAspirante",
+                  "value": "{{crmIdAspirante}}",
+                  "description": "Obligatorio. ID obtenido del listado."
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "idAspirante obligatorio; 404 si no pertenece al contexto. No expone el documento en esta ficha; la corroboración Pre-ICFES utiliza su endpoint propio.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "06 · Consultar historial de seguimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/HistorialSeguimiento.aspx?idAspirante={{crmIdAspirante}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "HistorialSeguimiento.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idAspirante",
+                  "value": "{{crmIdAspirante}}",
+                  "description": "Obligatorio. ID del aspirante."
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "description": "Opcional. 0 a 1000000; predeterminado 0; páginas de 25.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "idAspirante obligatorio. Historia ordenada y paginada; las filas nativas ajenas a la integración no se pueden corregir con PUT.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "07 · CREAR seguimiento en SIIE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Seguimientos.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Seguimientos.aspx"
+              ]
+            },
+            "description": "POST: expectedRevision=0, status201. PUT: idSeguimiento en query y expectedRevision vigente, status200. operationId e idSeguimientoCrm UUID obligatorios; observacion1–2000, autorCrmId1–128, autorCrmNombre1–200, ocurridoUtc ISO UTC Z/+00:00, proximoContacto yyyy-MM-dd o null. Misma operación/cuerpo reproduce resultado; UUID reutilizado con otros datos o revisión obsoleta:409. No genera matrícula/pago.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operationId\": \"{{createOperationId}}\",\n  \"idSeguimientoCrm\": \"{{idSeguimientoCrm}}\",\n  \"idAspirante\": {{crmIdAspirante}},\n  \"idPeriodo\": {{crmIdPeriodo}},\n  \"idEstadoSeguimiento\": {{idEstadoSeguimiento}},\n  \"expectedRevision\": 0,\n  \"observacion\": \"REEMPLAZAR por la observación revisada antes de enviar.\",\n  \"proximoContacto\": null,\n  \"ocurridoUtc\": \"{{ocurridoUtc}}\",\n  \"autorCrmId\": \"{{autorCrmId}}\",\n  \"autorCrmNombre\": \"{{autorCrmNombre}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 201',()=>pm.response.to.have.status(201));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===201){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'){pm.environment.set('idSeguimiento',String(d.idSeguimiento));pm.environment.set('expectedRevision',String(d.revision));}",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "08 · CORREGIR seguimiento de la integración",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Seguimientos.aspx?idSeguimiento={{idSeguimiento}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Seguimientos.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idSeguimiento",
+                  "value": "{{idSeguimiento}}",
+                  "description": "Obligatorio. ID nativo del comprobante POST o historial de integración."
+                }
+              ]
+            },
+            "description": "POST: expectedRevision=0, status201. PUT: idSeguimiento en query y expectedRevision vigente, status200. operationId e idSeguimientoCrm UUID obligatorios; observacion1–2000, autorCrmId1–128, autorCrmNombre1–200, ocurridoUtc ISO UTC Z/+00:00, proximoContacto yyyy-MM-dd o null. Misma operación/cuerpo reproduce resultado; UUID reutilizado con otros datos o revisión obsoleta:409. No genera matrícula/pago.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operationId\": \"{{updateOperationId}}\",\n  \"idSeguimientoCrm\": \"{{idSeguimientoCrm}}\",\n  \"idAspirante\": {{crmIdAspirante}},\n  \"idPeriodo\": {{crmIdPeriodo}},\n  \"idEstadoSeguimiento\": {{idEstadoSeguimiento}},\n  \"expectedRevision\": {{expectedRevision}},\n  \"observacion\": \"REEMPLAZAR por la corrección revisada antes de enviar.\",\n  \"proximoContacto\": null,\n  \"ocurridoUtc\": \"{{ocurridoUtc}}\",\n  \"autorCrmId\": \"{{autorCrmId}}\",\n  \"autorCrmNombre\": \"{{autorCrmNombre}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'){pm.environment.set('idSeguimiento',String(d.idSeguimiento));pm.environment.set('expectedRevision',String(d.revision));}",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "09 · Listar programas del catálogo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Commercial/Programs.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "Programs.aspx"
+              ],
+              "query": [
+                {
+                  "key": "period_id",
+                  "value": "{{commercialPeriodId}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{programsCursor}}",
+                  "description": "Opcional. Copiar next_cursor de esta misma consulta. Omitir en primera página.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Respuesta comercial en raíz, sin status/data. Cada programa expone program_id,code,name,school_id,school,modality_id,modality,shift_id,schedule,duration_levels. Página25; cursor opaco de next_cursor.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Contrato comercial',()=>pm.expect(b.schema_version).to.eql('siie-crm-commercial-v1'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "10 · Listar ofertas y niveles del programa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Commercial/ProgramOffers.aspx?program_id={{programId}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "ProgramOffers.aspx"
+              ],
+              "query": [
+                {
+                  "key": "program_id",
+                  "value": "{{programId}}",
+                  "description": "Obligatorio. Entero positivo obtenido de Programs."
+                },
+                {
+                  "key": "period_id",
+                  "value": "{{commercialPeriodId}}",
+                  "description": "Opcional. Omitido usa el período ofrecido del servidor; habilitar con ID explícito para consultar otro período, incluido histórico. Mantener el período efectivo al paginar.",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{offersCursor}}",
+                  "description": "Opcional. Copiar next_cursor manteniendo programa y período.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "program_id obligatorio (programa académico). Cada offer_id es compuesto oferta-nivel (por ejemplo <idOferta>-n<nivel>), y no se envía como idOferta entero. Conservar período/programa al reutilizar cursor.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Contrato comercial',()=>pm.expect(b.schema_version).to.eql('siie-crm-commercial-v1'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "11 · Consultar oferta académica y comercial parcial",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Commercial/Offer.aspx?offer_id={{commercialOfferId}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Commercial",
+                "Offer.aspx"
+              ],
+              "query": [
+                {
+                  "key": "offer_id",
+                  "value": "{{commercialOfferId}}",
+                  "description": "Obligatorio. ID completo obtenido de ProgramOffers, con sufijo -nNivel."
+                }
+              ]
+            },
+            "description": "Actualmente devuelve422 con partial_offer cuando la fuente no permite cotizar. Los flags conditions_missing y admission_requirements_missing son añadidos por código: no los resuelve Rinova ni editar importes. No usar el parcial para cobrar. Para asignación Pre-ICFES la autoridad es GET PreIcfes/Plan con binding.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Contrato comercial',()=>pm.expect(b.schema_version).to.eql('siie-crm-commercial-v1'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Estudiantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Estudiantes.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Estudiantes.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "disabled": true,
+                  "description": "Opcional: ofrecido si se omite; habilitar para un período explícito/histórico."
+                },
+                {
+                  "key": "idPrograma",
+                  "value": "{{crmIdPrograma}}",
+                  "disabled": true
+                },
+                {
+                  "key": "idJornada",
+                  "value": "{{idJornada}}",
+                  "disabled": true
+                },
+                {
+                  "key": "idEstadoMatricula",
+                  "value": "{{idEstadoMatricula}}",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "{{q}}",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listado basado en GEMatricula, no sustituto de la corroboración de inscripciones todavía sin matrícula. idEstadoMatricula admite 0 o positivo; estados nativos 0 Inscrito,1 Plan Asignado,2 Matriculado,3 Retirado. q máximo100; página25.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Estudiante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Estudiante.aspx?idEstudiante={{crmIdEstudiante}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Estudiante.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idEstudiante",
+                  "value": "{{crmIdEstudiante}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "disabled": true,
+                  "description": "Opcional: ofrecido si se omite; habilitar para un período explícito/histórico."
+                }
+              ]
+            },
+            "description": "idEstudiante obligatorio. matriculas contiene idMatricula/idPeriodo/idOferta/idPeriodoOferta/idPrograma/idEscuela/idModalidad/idJornada/nivel/fechaMatricula; idPeriodoIngreso/idSede pueden ser null.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "FiltrosEstudiantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/FiltrosEstudiantes.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "FiltrosEstudiantes.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "disabled": true,
+                  "description": "Opcional: ofrecido si se omite; habilitar para un período explícito/histórico."
+                }
+              ]
+            },
+            "description": "Selecciones válidas del período para el listado.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Escuelas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Preinscripciones/v1/Escuelas",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Preinscripciones",
+                "v1",
+                "Escuelas"
+              ],
+              "query": []
+            },
+            "description": "Consultar la forma real data y conservar nombres nativos. URL canónica sin .aspx.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Catálogo',()=>pm.expect(b.data).to.be.an('array'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tipos de documento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Preinscripciones/v1/TiposDocumento",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Preinscripciones",
+                "v1",
+                "TiposDocumento"
+              ],
+              "query": []
+            },
+            "description": "Obtener TipoDocumento de este catálogo, no inferir el ID del catálogo CRM.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Catálogo',()=>pm.expect(b.data).to.be.an('array'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Programas académicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Preinscripciones/v1/ProgramasAcademicos?idEscuela={{idEscuela}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Preinscripciones",
+                "v1",
+                "ProgramasAcademicos"
+              ],
+              "query": [
+                {
+                  "key": "idEscuela",
+                  "value": "{{idEscuela}}"
+                }
+              ]
+            },
+            "description": "idEscuela entero positivo obligatorio; id_programa y ProgramaInteres del POST deben corresponder al programa devuelto.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Catálogo',()=>pm.expect(b.data).to.be.an('array'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Recibir preinscripción — ESCRITURA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Preinscripciones/v1/RecibirPreinscripcion",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Preinscripciones",
+                "v1",
+                "RecibirPreinscripcion"
+              ],
+              "query": []
+            },
+            "description": "Éxito real200/status ok. También usa200/status error para JSON o datos inválidos: 200 solo NO confirma alta. Documento1–30, NombreCompleto3–150, ProgramaInteres1–250, id_programa texto1–20, NumeroContacto7–20 dígitos, Correo hasta254, TipoDocumento1–10. Sin operationId; no reintentar automáticamente una escritura incierta. No retorna idPreinscripcion nativo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Documento\": \"{{documentoEnsayo}}\",\n  \"NombreCompleto\": \"PERSONA DE ENSAYO\",\n  \"ProgramaInteres\": \"{{nombrePrograma}}\",\n  \"id_programa\": \"{{idProgramaPreinscripcion}}\",\n  \"NumeroContacto\": \"{{celularEnsayo}}\",\n  \"Correo\": \"ensayo@example.invalid\",\n  \"TipoDocumento\": \"{{tipoDocumentoTexto}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Programas Moodle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Moodle/v1/Programas?idEscuela={{idEscuela}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Moodle",
+                "v1",
+                "Programas"
+              ],
+              "query": [
+                {
+                  "key": "idEscuela",
+                  "value": "{{idEscuela}}"
+                }
+              ]
+            },
+            "description": "Moodle: idEscuela requerido. El ID que alimenta idPrograma de los siguientes endpoints es Id_PrgOfrecido, no ACProgramas.Id_Programa.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Resultado Moodle',()=>{pm.expect(b.status).to.eql('ok');pm.expect(b.data).to.be.an('array');});",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Asignaturas Moodle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Moodle/v1/Asignaturas?idPrograma={{idProgramaMoodle}}&nivel={{nivelMoodle}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Moodle",
+                "v1",
+                "Asignaturas"
+              ],
+              "query": [
+                {
+                  "key": "idPrograma",
+                  "value": "{{idProgramaMoodle}}"
+                },
+                {
+                  "key": "nivel",
+                  "value": "{{nivelMoodle}}"
+                }
+              ]
+            },
+            "description": "idPrograma (oferta) y nivel positivos obligatorios.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Resultado Moodle',()=>{pm.expect(b.status).to.eql('ok');pm.expect(b.data).to.be.an('array');});",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Estudiantes matriculados Moodle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/Moodle/v1/EstudiantesMatriculados?idPrograma={{idProgramaMoodle}}&idAsignatura={{idAsignaturaMoodle}}&nivel={{nivelMoodle}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "Moodle",
+                "v1",
+                "EstudiantesMatriculados"
+              ],
+              "query": [
+                {
+                  "key": "idPrograma",
+                  "value": "{{idProgramaMoodle}}"
+                },
+                {
+                  "key": "idAsignatura",
+                  "value": "{{idAsignaturaMoodle}}"
+                },
+                {
+                  "key": "nivel",
+                  "value": "{{nivelMoodle}}"
+                }
+              ]
+            },
+            "description": "idPrograma (oferta), idAsignatura (Id_AsignaturaPlan), nivel obligatorios. Devuelve IdPrograma,Programa,AbreviaturaNombrePrograma,NivelesPrograma,Jornada,Documento,Nombres,Apellidos,CorreoElectronico,NivelEstudiante,IdAsignatura,Asignatura,DocumentoDocente,NombreDocente,ApellidosDocente,CorreoDocente. Defecto confirmado de filtros en BAU; no importar masivamente esta respuesta hasta aplicar y verificar corrección.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Resultado Moodle',()=>{pm.expect(b.status).to.eql('ok');pm.expect(b.data).to.be.an('array');});",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "22 · Crear aspirante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/AspiranteRegistro.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "AspiranteRegistro.aspx"
+              ],
+              "query": []
+            },
+            "description": "201. idOferta/idPeriodo/tipoId enteros positivos; documento alfanumérico1–16, nombres1–100, primerApellido1–30, celular/correo hasta50. Opcionales segundoApellido≤30 y telefono≤50. Oferta debe pertenecer al período ofrecido. Documento ya existente en oferta:409 applicant_exists. No operationId ni creación de matrícula.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idOferta\": {{crmIdOferta}},\n  \"idPeriodo\": {{crmIdPeriodo}},\n  \"documento\": \"{{documentoEnsayo}}\",\n  \"tipoId\": {{tipoId}},\n  \"nombres\": \"ANA MARIA\",\n  \"primerApellido\": \"PEREZ\",\n  \"segundoApellido\": \"LOPEZ\",\n  \"telefono\": \"6050000000\",\n  \"celular\": \"3000000000\",\n  \"correo\": \"ensayo@example.invalid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 201',()=>pm.response.to.have.status(201));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===201){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'&&d.idAspirante)pm.environment.set('crmIdAspirante',String(d.idAspirante));",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "23 · Consultar requisitos de documentos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/DocumentosRequeridos.aspx?idOferta={{crmIdOferta}}&idPeriodo={{crmIdPeriodo}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "DocumentosRequeridos.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idOferta",
+                  "value": "{{crmIdOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}"
+                }
+              ]
+            },
+            "description": "idOferta requerido; idPeriodo opcional ofrecido; idEstudiante opcional para entregas existentes. items: idDocumento,nombre,descripcion,obligatorioAlInscribir,soloMenores,aplica,soportado,prefijo,nombreArchivo,rutaRelativa,recibido,archivoExistente. El límite y formatos reales vienen en respuesta; no usar rutaRelativa como autorización de descarga.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "24 · Guardar inscripción completa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Inscripcion.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Inscripcion.aspx"
+              ],
+              "query": []
+            },
+            "description": "CRM completo:201, once secciones del apéndice, multipart datos+documentos[ID]; application/json sólo si requisitos iniciales permiten no adjuntar. Sin requestId idempotente: tras timeout conciliar antes de repetir. Esta ruta NO emite el webhook Pre-ICFES actual.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "datos",
+                  "value": "{\n  \"idOferta\": {{crmIdOferta}},\n  \"idPeriodo\": {{crmIdPeriodo}},\n  \"aceptaTratamientoDatos\": true,\n  \"estudiante\": {\n    \"Id_DocEstudiante\": \"{{documentoEnsayo}}\",\n    \"TipoId\": {{tipoId}},\n    \"Expedida\": {{idMunicipio}},\n    \"Nombres\": \"ANA MARIA\",\n    \"PrimerApellido\": \"PEREZ\",\n    \"SegundoApellido\": \"LOPEZ\",\n    \"Id_Genero\": {{idGenero}},\n    \"EstadoCivil\": \"SOLTERO(A)\",\n    \"Direccion\": \"CALLE 1 NUMERO 2\",\n    \"Id_Poblacion\": {{idMunicipio}},\n    \"Telefono\": \"6050000000\",\n    \"Celular\": \"3000000000\",\n    \"Mail\": \"ensayo@example.invalid\",\n    \"FechaNacimento\": \"2005-01-15\",\n    \"CiudadNacimiento\": \"{{idMunicipio}}\",\n    \"GrupoSanguineo\": \"O\",\n    \"FactorRh\": \"+\",\n    \"Estrato\": 2,\n    \"Articulacion\": \"\"\n  },\n  \"acudiente\": {\n    \"NombreAcudiente\": \"MARIA\",\n    \"ApellidosAcudiente\": \"LOPEZ\",\n    \"Telefono\": \"6050000001\",\n    \"Celular\": \"3000000001\",\n    \"Mail\": \"acudiente@example.invalid\",\n    \"Ocupacion\": \"EMPLEADA\",\n    \"DocumentoA\": \"{{documentoAcudienteEnsayo}}\"\n  },\n  \"inscripcion\": { \"Id_Jornada\": {{idJornada}} },\n  \"estudiosSecundarios\": {\n    \"Institucion\": \"COLEGIO EJEMPLO\",\n    \"Titulo\": \"BACHILLER ACADEMICO\",\n    \"ultimoGrado\": \"11°\",\n    \"Modalidad\": \"{{modalidad}}\",\n    \"Municipio\": \"{{idMunicipio}}\",\n    \"Año\": \"2022-12-01\"\n  },\n  \"referencia\": {\n    \"Nombres\": \"LUIS PEREZ\",\n    \"Direccion\": \"CALLE 9 NUMERO 10\",\n    \"Telefono\": \"6050000002\",\n    \"Celular\": \"3000000002\",\n    \"ciudad\": \"CIUDAD EJEMPLO\"\n  },\n  \"otrosEstudios\": [{\n    \"TituloCarrera\": \"TECNICO\",\n    \"ModEstdio\": \"{{modalidad}}\",\n    \"Semestre\": \"2\",\n    \"NombreInstitucion\": \"INSTITUCION EJEMPLO\",\n    \"Municipio\": \"{{idMunicipio}}\",\n    \"AñoTerminaion1\": \"2024-12-01\",\n    \"Id_TipoEstudio\": {{idTipoEstudio}}\n  }],\n  \"informacionLaboral\": {\n    \"NombreEmpresa\": \"EMPRESA EJEMPLO\",\n    \"TipoContrato\": \"INDEFINIDO\",\n    \"Tiempo\": \"COMPLETO\",\n    \"Cargo\": \"AUXILIAR\",\n    \"DireccionEmpresa\": \"CALLE 3 NUMERO 4\",\n    \"Telefono\": \"6050000003\",\n    \"Municipio\": \"{{idMunicipio}}\",\n    \"Departamento\": \"{{nombreDepartamento}}\"\n  },\n  \"familiaCbn\": [{\n    \"NombreCompletoEst\": \"PEDRO PEREZ\",\n    \"Carrera\": \"PROGRAMA EJEMPLO\",\n    \"ParentescoEst\": \"HERMANO\",\n    \"NombreFamiliar\": \"LUISA LOPEZ\",\n    \"Cargo\": \"DOCENTE\",\n    \"Parentesco\": \"TIA\"\n  }],\n  \"grupoEspecial\": { \"MinoriaEtnicas\": \"OTRO\", \"Otro\": \"DESCRIPCION\" },\n  \"socioeconomica\": {\n    \"CostodiaEstudios\": \"PADRES\",\n    \"Becade\": \"NINGUNA\",\n    \"Prestamode\": \"NINGUNA\",\n    \"AfiliadoSisben\": \"NO\",\n    \"NivelSIS\": 1,\n    \"NombreEps\": \"SIN INFORMACIÓN\",\n    \"Discapacidad\": \"NO\"\n  },\n  \"padres\": [{\n    \"Nombres\": \"MARIA\",\n    \"PrimerApellido\": \"LOPEZ\",\n    \"SegundoApellido\": \"DIAZ\",\n    \"Direccion\": \"CALLE 1 NUMERO 2\",\n    \"Email\": \"acudiente@example.invalid\",\n    \"Celular\": \"3000000001\",\n    \"Parentesco\": \"MADRE\"\n  }],\n  \"condicion\": \"\"\n}",
+                  "type": "text"
+                },
+                {
+                  "key": "documentos[1]",
+                  "type": "file",
+                  "src": "",
+                  "description": "Seleccionar identidad PDF/JPG/JPEG/PNG si es obligatoria o asignada.",
+                  "disabled": true
+                },
+                {
+                  "key": "documentos[5]",
+                  "type": "file",
+                  "src": "",
+                  "description": "Seleccionar fotografía JPG/JPEG/PNG si es obligatoria; quitar esta parte para ofertas donde no aplica.",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 201',()=>pm.response.to.have.status(201));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===201){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "25 · Entregar documentos posteriores",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/Documentos.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "Documentos.aspx"
+              ],
+              "query": []
+            },
+            "description": "201. multipart con IDs de estudiante/oferta/período y documentos[ID]. No Content-Type JSON:415. Usar requisitos asignados, verificar contenido real y límites. No idempotencia UUID; conflicto de archivo distinto no autoriza sobrescritura ni reintento ciego.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "idEstudiante",
+                  "value": "{{crmIdEstudiante}}",
+                  "type": "text"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{crmIdOferta}}",
+                  "type": "text"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "documentos[{{idDocumentoRequisito}}]",
+                  "type": "file",
+                  "src": "",
+                  "description": "Ejemplo: seleccionar certificado solo si tipo 12 está asignado; cambiar el ID por el requisito real.",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 201',()=>pm.response.to.have.status(201));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===201){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "26 · Consultar catálogos de inscripción",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/CatalogosInscripcion.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "CatalogosInscripcion.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idPeriodo",
+                  "value": "{{crmIdPeriodo}}",
+                  "disabled": true,
+                  "description": "Opcional; omitido usa el período ofrecido. Si se habilita, completar un ID real."
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{crmIdOferta}}",
+                  "disabled": true,
+                  "description": "Opcional; oferta del período efectivo, para consultar jornadas."
+                },
+                {
+                  "key": "idPais",
+                  "value": "{{idPais}}",
+                  "disabled": true,
+                  "description": "Habilitar para departamentos; completar con paises[].valor."
+                },
+                {
+                  "key": "idDepartamento",
+                  "value": "{{idDepartamento}}",
+                  "disabled": true,
+                  "description": "Habilitar junto con idPais para municipios."
+                },
+                {
+                  "key": "q",
+                  "value": "{{q}}",
+                  "disabled": true,
+                  "description": "Opcional; solo con idPais e idDepartamento, hasta 80 caracteres."
+                },
+                {
+                  "key": "offset",
+                  "value": "{{offset}}",
+                  "disabled": true,
+                  "description": "Opcional; solo con idPais e idDepartamento, usar siguienteOffset si hayMas."
+                }
+              ]
+            },
+            "description": "idPais habilita departamentos; idPais+idDepartamento habilitan municipios. q≤80 y offset sólo con esos filtros; página100 usando siguienteOffset. idOferta habilita jornadas. Catálogos pequeños máximo1000; exceso503 catalog_limit. Campos nativos/valor/valorTexto descritos en el apéndice.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GET PreIcfes/Inscripcion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "4IDs obligatorios y relacionados, incluso estudiante EstadoMtla0. La API key autoriza la corroboración al backend CRM; no autoriza PDF sin binding. No buscar por nombre/documento arbitrario.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/Inscripcion.aspx?idInscripcion={{idInscripcion}}&idEstudiante={{idEstudiante}}&idOferta={{idOferta}}&idPeriodo={{idPeriodo}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "Inscripcion.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idInscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "idEstudiante",
+                  "value": "{{idEstudiante}}"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{idOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST PreIcfes/Conversacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "4IDs + requestId/eventId UUID + conversationId/channelAccountId1–128 + waId≤16. Rinova atesta el remitente WhatsApp auténtico; SIIE coteja teléfono y evento. Teléfono compartido/ambiguo409; revocado403. Vigencia24h; renovar con nuevo requestId y misma cuenta/conversación. No booleano verified del navegador.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/Conversacion.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "Conversacion.aspx"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idInscripcion\": {{idInscripcion}},\r\n  \"idEstudiante\": {{idEstudiante}},\r\n  \"idOferta\": {{idOferta}},\r\n  \"idPeriodo\": {{idPeriodo}},\r\n  \"waId\": \"{{waId}}\",\r\n  \"channelAccountId\": \"{{channelAccountId}}\",\r\n  \"eventId\": \"{{eventId}}\",\r\n  \"conversationId\": \"{{conversationId}}\",\r\n  \"requestId\": \"{{bindingRequestId}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " if(b.status==='ok'&&d.bindingId)pm.environment.set('bindingId',d.bindingId);",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GET PreIcfes/Plan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "GET devuelve options[] con una cotización por plan/nivel/modalidad. Nunca usar data.quoteRevisionId (null); usar options[i].quoteRevisionId. GET200 con requiresConfiguration=true/canAssign=false NO permite asignar. POST acepta sólo identidad/contexto/requestId/planId/mode/quoteRevisionId, no nivel/importe/calendario. 409 quote_changed/assignment_exists/assignment_changed/idempotency_conflict; documento financiero máximo15 sin truncar.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/Plan.aspx?idInscripcion={{idInscripcion}}&idEstudiante={{idEstudiante}}&idOferta={{idOferta}}&idPeriodo={{idPeriodo}}&bindingId={{bindingId}}&conversationId={{conversationId}}&channelAccountId={{channelAccountId}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "Plan.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idInscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "idEstudiante",
+                  "value": "{{idEstudiante}}"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{idOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}"
+                },
+                {
+                  "key": "bindingId",
+                  "value": "{{bindingId}}"
+                },
+                {
+                  "key": "conversationId",
+                  "value": "{{conversationId}}"
+                },
+                {
+                  "key": "channelAccountId",
+                  "value": "{{channelAccountId}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'){pm.test('Cotización utilizable',()=>{pm.expect(d.requiresConfiguration).to.eql(false);pm.expect(d.canAssign).to.eql(true);pm.expect(d.options).to.be.an('array').that.is.not.empty;});pm.environment.set('prePlanOptions',JSON.stringify(d.options||[]));} // Selección explícita: nunca tomar options[0] automáticamente.",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST PreIcfes/Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "GET devuelve options[] con una cotización por plan/nivel/modalidad. Nunca usar data.quoteRevisionId (null); usar options[i].quoteRevisionId. GET200 con requiresConfiguration=true/canAssign=false NO permite asignar. POST acepta sólo identidad/contexto/requestId/planId/mode/quoteRevisionId, no nivel/importe/calendario. 409 quote_changed/assignment_exists/assignment_changed/idempotency_conflict; documento financiero máximo15 sin truncar.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/Plan.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "Plan.aspx"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idInscripcion\": {{idInscripcion}},\r\n  \"idEstudiante\": {{idEstudiante}},\r\n  \"idOferta\": {{idOferta}},\r\n  \"idPeriodo\": {{idPeriodo}},\r\n  \"bindingId\": \"{{bindingId}}\",\r\n  \"conversationId\": \"{{conversationId}}\",\r\n  \"channelAccountId\": \"{{channelAccountId}}\",\r\n  \"planId\": {{planId}},\r\n  \"mode\": \"{{mode}}\",\r\n  \"quoteRevisionId\": \"{{quoteRevisionId}}\",\r\n  \"requestId\": \"{{planRequestId}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'&&d.assignmentId)pm.environment.set('assignmentId',String(d.assignmentId)); // installmentId se elige explícitamente del plan confirmado.",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST PreIcfes/Volante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "POST para UNA cuota previamente asignada; importa saldo desde SIIE. Sin montos cliente. Financial.Enabled y convenio institucional requeridos; pasarela permanece off. Una orden existente compatible se reutiliza, cambios/reemplazo vencido no automáticos. No crea pago.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/Volante.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "Volante.aspx"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idInscripcion\": {{idInscripcion}},\r\n  \"idEstudiante\": {{idEstudiante}},\r\n  \"idOferta\": {{idOferta}},\r\n  \"idPeriodo\": {{idPeriodo}},\r\n  \"bindingId\": \"{{bindingId}}\",\r\n  \"conversationId\": \"{{conversationId}}\",\r\n  \"channelAccountId\": \"{{channelAccountId}}\",\r\n  \"installmentId\": {{installmentId}},\r\n  \"assignmentId\": {{assignmentId}},\r\n  \"requestId\": \"{{orderRequestId}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " if(b.status==='ok'&&d.orderId){pm.environment.set('orderId',d.orderId);if(d.pdf)pm.environment.set('pdfVersion',d.pdf.version);}",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GET PreIcfes/ConsultaOperacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Dos variantes exclusivas: requestId+operation (Conversacion|Plan|Volante) devuelve data.result; orderId devuelve descriptor directamente en data y exige binding. El ejemplo consulta el requestId original de Volante. Para recuperar Plan, usar operation=Plan y su requestId original: result contiene la asignación confirmada. Ambas requieren4IDs+conversationId/channelAccountId; binding también para Plan/Volante. 404 operation_not_found no equivale a éxito ni a un timeout de consulta. Sin202/estado asíncrono implementado.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/ConsultaOperacion.aspx?idInscripcion={{idInscripcion}}&idEstudiante={{idEstudiante}}&idOferta={{idOferta}}&idPeriodo={{idPeriodo}}&bindingId={{bindingId}}&conversationId={{conversationId}}&channelAccountId={{channelAccountId}}&requestId={{requestId}}&operation=Volante",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "ConsultaOperacion.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idInscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "idEstudiante",
+                  "value": "{{idEstudiante}}"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{idOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}"
+                },
+                {
+                  "key": "bindingId",
+                  "value": "{{bindingId}}"
+                },
+                {
+                  "key": "conversationId",
+                  "value": "{{conversationId}}"
+                },
+                {
+                  "key": "channelAccountId",
+                  "value": "{{channelAccountId}}"
+                },
+                {
+                  "key": "requestId",
+                  "value": "{{requestId}}"
+                },
+                {
+                  "key": "operation",
+                  "value": "Volante"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GET PreIcfes/VolantePdf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Binario PDF, no JSON/base64; Content-Type application/pdf, Content-Length, Content-Disposition attachment sin cédula, X-Content-SHA256 y X-PDF-Version. pdfVersion opcional hex64 minúsculas; discordancia409. Máximo1MiB. Verificar bytes, tamaño, SHA256 y pertenencia antes de enviar al contacto; una orden anulada no descarga.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/VolantePdf.aspx?idInscripcion={{idInscripcion}}&idEstudiante={{idEstudiante}}&idOferta={{idOferta}}&idPeriodo={{idPeriodo}}&bindingId={{bindingId}}&conversationId={{conversationId}}&channelAccountId={{channelAccountId}}&orderId={{orderId}}&pdfVersion={{pdfVersion}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "VolantePdf.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idInscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "idEstudiante",
+                  "value": "{{idEstudiante}}"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{idOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}"
+                },
+                {
+                  "key": "bindingId",
+                  "value": "{{bindingId}}"
+                },
+                {
+                  "key": "conversationId",
+                  "value": "{{conversationId}}"
+                },
+                {
+                  "key": "channelAccountId",
+                  "value": "{{channelAccountId}}"
+                },
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                },
+                {
+                  "key": "pdfVersion",
+                  "value": "{{pdfVersion}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "if(pm.response.code===200){pm.test('Archivo binario',()=>pm.expect(pm.response.headers.get('Content-Type')).to.match(/application\\/pdf/i));pm.test('Versión/hash disponibles',()=>pm.expect(pm.response.headers.get('X-Content-SHA256')).to.match(/^[a-f0-9]{64}$/));}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GET PreIcfes/PagoEstado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "pending/partial/paid/requires_review; recibos verificados no anulados y referencia inequívoca. Importe de plan no atribuible al volante no marca pago. No usar PDF/orden emitida como pago.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/PagoEstado.aspx?idInscripcion={{idInscripcion}}&idEstudiante={{idEstudiante}}&idOferta={{idOferta}}&idPeriodo={{idPeriodo}}&bindingId={{bindingId}}&conversationId={{conversationId}}&channelAccountId={{channelAccountId}}&orderId={{orderId}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "PagoEstado.aspx"
+              ],
+              "query": [
+                {
+                  "key": "idInscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "idEstudiante",
+                  "value": "{{idEstudiante}}"
+                },
+                {
+                  "key": "idOferta",
+                  "value": "{{idOferta}}"
+                },
+                {
+                  "key": "idPeriodo",
+                  "value": "{{idPeriodo}}"
+                },
+                {
+                  "key": "bindingId",
+                  "value": "{{bindingId}}"
+                },
+                {
+                  "key": "conversationId",
+                  "value": "{{conversationId}}"
+                },
+                {
+                  "key": "channelAccountId",
+                  "value": "{{channelAccountId}}"
+                },
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Éxito de negocio',()=>pm.expect(b.status).to.eql('ok'));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST PreIcfes/PagoIniciar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "503 cerrado: payment_gateway_disabled, payment_gateway_not_configured o payment_provider_not_configured. No hay proveedor/callback operativo. PagoNotificacion rechaza antes de API key; no autentica un proveedor por poseer la clave SIIE.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/PagoIniciar.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "PagoIniciar.aspx"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 503',()=>pm.response.to.have.status(503));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===503){pm.test('Circuito pasarela cerrado',()=>pm.expect(['payment_gateway_not_configured','payment_gateway_disabled','payment_provider_not_configured']).to.include(b.code));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST PreIcfes/PagoNotificacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "503 cerrado: payment_gateway_disabled, payment_gateway_not_configured o payment_provider_not_configured. No hay proveedor/callback operativo. PagoNotificacion rechaza antes de API key; no autentica un proveedor por poseer la clave SIIE.",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}Api/CRM/v1/PreIcfes/PagoNotificacion.aspx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "Api",
+                "CRM",
+                "v1",
+                "PreIcfes",
+                "PagoNotificacion.aspx"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 503',()=>pm.response.to.have.status(503));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===503){pm.test('Circuito pasarela cerrado',()=>pm.expect(['payment_gateway_not_configured','payment_gateway_disabled','payment_provider_not_configured']).to.include(b.code));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 · Formulario público y sesión administrativa · 3 operaciones",
+      "item": [
+        {
+          "name": "37 · Catálogo del formulario público",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}PreIcfes/Api/Inscripcion.ashx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "PreIcfes",
+                "Api",
+                "Inscripcion.ashx"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "description": "Sin API key. Guarda cookie de sesión y csrf para el POST. El GET sincroniza los grupos configurados por oferta; no reutilizar IDs de otro entorno. Ofertas/grupos/requisitos se seleccionan conjuntamente. groups.ready indica que existe un requisito activo no exclusivo de menores; NO representa cupos ni reserva capacidad. schedule y description pueden ser null. En este catálogo guardianOnly replica minorOnly."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Catálogo y CSRF',()=>pm.expect(b.csrf).to.be.a('string'));pm.environment.set('csrf',b.csrf);",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "38 · Registrar formulario público",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}PreIcfes/Api/Inscripcion.ashx",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "PreIcfes",
+                "Api",
+                "Inscripcion.ashx"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrf}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "requestId",
+                  "value": "{{publicRequestId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "offer",
+                  "value": "{{publicOffer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "group",
+                  "value": "{{publicGroup}}",
+                  "type": "text"
+                },
+                {
+                  "key": "documentType",
+                  "value": "{{tipoId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "value": "{{documentoEnsayo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "names",
+                  "value": "PERSONA DE ENSAYO",
+                  "type": "text"
+                },
+                {
+                  "key": "firstSurname",
+                  "value": "PRUEBA",
+                  "type": "text"
+                },
+                {
+                  "key": "secondSurname",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "gender",
+                  "value": "{{idGenero}}",
+                  "type": "text"
+                },
+                {
+                  "key": "birth",
+                  "value": "2000-01-15",
+                  "type": "text"
+                },
+                {
+                  "key": "blood",
+                  "value": "O",
+                  "type": "text"
+                },
+                {
+                  "key": "rh",
+                  "value": "+",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "{{celularEnsayo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "ensayo@example.invalid",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "DIRECCION DE ENSAYO",
+                  "type": "text"
+                },
+                {
+                  "key": "department",
+                  "value": "{{idDepartamento}}",
+                  "type": "text"
+                },
+                {
+                  "key": "town",
+                  "value": "{{idMunicipio}}",
+                  "type": "text"
+                },
+                {
+                  "key": "school",
+                  "value": "COLEGIO DE ENSAYO",
+                  "type": "text"
+                },
+                {
+                  "key": "grade",
+                  "value": "Egresado",
+                  "type": "text"
+                },
+                {
+                  "key": "policy",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "guardianNames",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "guardianSurnames",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "guardianPhone",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "documentFile_{{idDocumentoRequisito}}",
+                  "type": "file",
+                  "src": "",
+                  "disabled": true,
+                  "description": "Habilitar y seleccionar el archivo del requisito real. Una parte por requisito aplicable."
+                }
+              ]
+            },
+            "description": "Multipart real con campos de la solicitud. 1archivo por documentFile_<idRequisito>, PDF/JPG/JPEG/PNG,10MiB cada uno/50MiB total. Datos y documento acudiente si tipo TI o menor por fecha. policy=true literal. Repetir requestId y cuerpo/archivos iguales no duplica. 403 SESSION_EXPIRED: renovar catálogo/cookie/token y reintentar una vez MISMO cuerpo; si oferta/requisitos cambiaron detener para revisión. No sustituir la API CRM de inscripción completa por esta ruta."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "let b;try{b=pm.response.json();}catch(e){pm.test('JSON válido',()=>{throw new Error('Respuesta no JSON');});}",
+                  "if(b&&pm.response.code===200){pm.test('Inscripción confirmada',()=>pm.expect(b.success).to.eql(true));if(b.success)pm.environment.set('idInscripcion',String(b.registration));",
+                  " const d=b.data||{};",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  " ",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "39 · Descargar adjunto administrativo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{SIIE_BASE_URL}}PreIcfes/Api/Documento.ashx?inscripcion={{idInscripcion}}&documento={{idDocumentoRequisito}}",
+              "host": [
+                "{{SIIE_BASE_URL}}"
+              ],
+              "path": [
+                "PreIcfes",
+                "Api",
+                "Documento.ashx"
+              ],
+              "query": [
+                {
+                  "key": "inscripcion",
+                  "value": "{{idInscripcion}}"
+                },
+                {
+                  "key": "documento",
+                  "value": "{{idDocumentoRequisito}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "description": "Binario del adjunto; sesión administrativa vigente y permiso de seguimiento. Query inscripcion (idInscripcion) y documento (idDocumentoReq), ambos positivos. API key insuficiente;403 sin sesión/permiso,404 no encontrado,503 indisponibilidad. No iniciar sesión administrativa mediante una clave CRM."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP contractual 200',()=>pm.response.to.have.status(200));",
+                  "if(pm.response.code===200){pm.test('Archivo binario',()=>pm.expect(pm.response.headers.get('Content-Type')).to.match(/application\\/pdf|image\\//i));}"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    }
+  ]
+}

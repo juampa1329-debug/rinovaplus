@@ -1,0 +1,11 @@
+{
+  "source": "Owner supplied SIIE integration package, 2026-11-27",
+  "files": {
+    "GUIA-INTEGRACION.md": "3c16e2f54f0a82948488dc1edfa7a40b1a198aa0304d0e154505fb858c7558cb",
+    "SIIE-Rinova.postman_collection.json": "c62b147501dc9b9ec9e3c2a5f8b91d335e78c8999fe45c93a1f9dc465de9a21f",
+    "SIIE-Test.postman_environment.json": "90645784b16eec6828a0509fc996b679797b146f548ef7b25fd8750ac9c3ea3b"
+  },
+  "operations": 39,
+  "secrets_included": false,
+  "original_files_modified": false
+}

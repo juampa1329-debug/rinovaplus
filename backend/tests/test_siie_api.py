@@ -13,7 +13,7 @@ from app.institutional import siie_api as siie
 
 @pytest.fixture(autouse=True)
 def configuration(monkeypatch):
-    monkeypatch.setenv("SIIE_API_BASE_URL", "https://siie.example.test/SIIEWebPlus")
+    monkeypatch.setenv("SIIE_BASE_URL", "https://siie.example.test/SIIEWebPlus/")
     monkeypatch.setenv("SIIE_API_HOSTS", "siie.example.test")
     monkeypatch.setenv("SIIE_API_TOKEN", "single-fixture-not-a-real-key-12345678")
     monkeypatch.delenv("SIIE_CATALOG_API_TOKEN", raising=False)
@@ -307,8 +307,8 @@ def test_malformed_and_oversize_responses_are_rejected(payload):
 
 
 def test_unapproved_host_is_not_contacted(monkeypatch):
-    monkeypatch.setenv("SIIE_API_BASE_URL", "https://evil.invalid")
-    with pytest.raises(HTTPException, match="siie_catalog_endpoint_invalid"):
+    monkeypatch.setenv("SIIE_BASE_URL", "https://evil.invalid/")
+    with pytest.raises(HTTPException, match="siie_base_url_invalid"):
         siie.read(
             "periods", transport=httpx.MockTransport(lambda r: pytest.fail("network"))
         )
@@ -331,7 +331,7 @@ def test_personal_data_not_returned_if_authority_revoked_during_io(monkeypatch):
     monkeypatch.setattr(
         siie, "read", lambda *a: {"data": {"private_fixture": "never return"}}
     )
-    result = TestClient(app).get("/api/v1/agents/siie/applicants?idPeriodo=1")
+    result = TestClient(app).get("/api/v1/agents/siie/applicants?idPeriodo=1", headers={"X-SIIE-Environment": __import__("app.institutional.siie_environment",fromlist=["current"]).current().fingerprint})
     assert result.status_code == 403 and "private_fixture" not in result.text
 
 

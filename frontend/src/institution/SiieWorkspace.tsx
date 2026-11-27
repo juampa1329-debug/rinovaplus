@@ -8,10 +8,15 @@ import { SiieContacts, SiieStudents } from "./SiieStudents";
 import { SiieRegistration } from "./SiieRegistration";
 import "./siie.css";
 import { Icon } from "../shared/Icon";
+import {
+  siieEnvironment,
+  type SiieEnvironment,
+} from "../shared/siieEnvironment";
 
 type Row = Record<string, unknown>;
 type SourceData = { data: Row; correlation_id?: string };
 type Connection = {
+  environment?: SiieEnvironment;
   api_configured?: boolean;
   credential_mode?: "unified" | "legacy_catalog";
   catalog_configured: boolean;
@@ -41,7 +46,7 @@ function explainSiie(failure: OperationFailure) {
     title: "No se pudo consultar SIIE",
     detail: failure.message,
     nextStep: /configurad|clave|credencial/i.test(failure.message)
-      ? "En Coolify, configura la URL HTTPS y la clave original única en SIIE_API_TOKEN. Guarda las variables sólo en Runtime y redespliega el backend. Si el aviso menciona la configuración de SIIE, su administrador debe revisar API_Key y API_CRM en ese servidor. No compartas la clave por el chat."
+      ? "En Coolify, configura SIIE_BASE_URL con barra final y la clave original única en SIIE_API_TOKEN. Guarda las variables sólo en Runtime y redespliega el backend. Si el aviso menciona la configuración de SIIE, su administrador debe revisar API_Key y API_CRM en ese servidor. No compartas la clave por el chat."
       : "Revisa el período y la referencia seleccionada. Si SIIE indica un límite, espera antes de consultar; si el aviso persiste, entrega la referencia de consulta al equipo de SIIE. Los datos locales se conservan.",
   };
 }
@@ -54,6 +59,7 @@ export type SiieLocalDraft = {
     commercial: Record<string, unknown>;
   };
   source: {
+    environment?: SiieEnvironment;
     kind: "program" | "offer";
     source_revision: string;
     program_id: string;
@@ -366,6 +372,7 @@ function SiieWorkspaceContent({
                       disabled={task.busy || !list(programs.items).length}
                       onClick={() => {
                         const body = {
+                          environment: siieEnvironment(),
                           revision: 0,
                           source_revision: String(programs.source_revision),
                           cursor: programCursor[programCursor.length - 1],

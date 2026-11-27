@@ -13,7 +13,7 @@ from app.institutional.db import institution, key, one
 
 
 def section(kind, identity):
-    if kind not in {"sd", "sw", "se", "sl", "sg"}:
+    if kind not in {"sd", "sw", "se", "sl", "sg", "sf", "sx"}:
         raise ValueError("invalid_siie_record_kind")
     return kind + ":" + UUID(str(identity)).hex
 
@@ -80,7 +80,7 @@ def put(c, settings, kind, identity, metadata, private, previous=None):
 
 def recent(c, settings, kind, *, offset=0):
     # Section is <=40 bytes in the installed schema; prefix is not user input.
-    if kind not in {"sd", "sw", "se"}:
+    if kind not in {"sd", "sw", "se", "sf"}:
         raise ValueError("invalid_siie_record_kind")
     from app.institutional.db import rows, utc
 

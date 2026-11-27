@@ -2,17 +2,14 @@
 
 import json
 import logging
-import os
 import re
 from contextlib import contextmanager
-from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import httpx2 as httpx
 from fastapi import HTTPException
 
 from app.institutional import siie_api
 from app.institutional.channel_ingress import strict_json
-from app.institutional.program_commercial import approved_url
 
 PATHS = {
     "catalogs": "CatalogosInscripcion.aspx",
@@ -65,16 +62,12 @@ KNOWN_ERRORS = UNCERTAIN | {
 def endpoint(kind):
     if not siie_api.configured("admissions"):
         raise HTTPException(409, "siie_not_configured")
-    hosts = {
-        v.strip().lower()
-        for v in os.getenv("SIIE_API_HOSTS", "siieplus.online").split(",")
-        if v.strip()
-    }
-    base = approved_url(os.environ["SIIE_API_BASE_URL"], hosts).rstrip("/")
+    from app.institutional.siie_environment import current
+    environment = current()
     token, _ = siie_api.credential()
     if not 32 <= len(token) <= 8192 or any(ord(c) < 33 or ord(c) > 126 for c in token):
         raise HTTPException(409, "siie_credential_invalid")
-    return base + "/Api/CRM/v1/" + PATHS[kind], {
+    return environment.endpoint("Api/CRM/v1/" + PATHS[kind]), {
         "X-API-Key": token,
         "Accept": "application/json",
     }
@@ -158,30 +151,6 @@ def reconciliation_references(value):
 @contextmanager
 def response_for(client, method, url, headers, kwargs):
     with client.stream(method, url, headers=headers, **kwargs) as response:
-        if method == "GET" and response.status_code == 301:
-            actual = urlsplit(str(response.url))
-            target = urlsplit(
-                urljoin(str(response.url), response.headers.get("Location", ""))
-            )
-            # ASP.NET Friendly URLs: same origin, exact extensionless path,
-            # same query (or omitted query which we restore). No POST replay.
-            if (
-                actual.path.endswith(".aspx")
-                and target.scheme == actual.scheme
-                and target.netloc == actual.netloc
-                and target.path == actual.path[:-5]
-                and target.query in {"", actual.query}
-                and not target.fragment
-            ):
-                response.close()
-                destination = urlunsplit(
-                    (actual.scheme, actual.netloc, target.path, "", "")
-                )
-                with client.stream(
-                    method, destination, headers=headers, **kwargs
-                ) as redirected:
-                    yield redirected
-                return
         yield response
 
 
@@ -392,6 +361,10 @@ def request(kind, payload, files=(), *, transport=None):
 
 
 def offer_context(selection):
+    from app.institutional.siie_environment import current, require
+    environment = current().document()
+    if selection.get("environment") is not None:
+        require(selection["environment"])
     programs = siie_api.read(
         "programs", {"cursor": selection.get("program_cursor", "")}
     )["data"]
@@ -424,7 +397,9 @@ def offer_context(selection):
         or str(offer.get("period_id")) != str(offers.get("offered_period_id"))
     ):
         raise HTTPException(409, "siie_offer_selection_changed")
+    require(environment)
     return {
+        "environment": environment,
         "idOferta": int(siie_api.positive(offer.get("source_offer_id"))),
         "idPeriodo": int(siie_api.positive(offer.get("period_id"))),
         "program_name": str(program.get("name", "")),
@@ -439,7 +414,7 @@ def document_types(*, transport=None):
     url, headers = endpoint("requirements")
     url = (
         url.rsplit("/Api/CRM/v1/", 1)[0]
-        + "/Api/Preinscripciones/v1/TiposDocumento.aspx"
+        + "/Api/Preinscripciones/v1/TiposDocumento"
     )
     try:
         with httpx.Client(
@@ -448,18 +423,8 @@ def document_types(*, transport=None):
             follow_redirects=False,
             transport=transport,
         ) as client:
-            for attempt in range(2):
+            for _ in range(1):
                 with client.stream("GET", url, headers=headers) as response:
-                    # The inventory documents ASP.NET Friendly URL's same-path
-                    # 301. Never follow a different host/path with the API key.
-                    if attempt == 0 and response.status_code == 301:
-                        from urllib.parse import urljoin
-
-                        target = urljoin(url, response.headers.get("Location", ""))
-                        if target != url.removesuffix(".aspx"):
-                            raise ValueError("catalog_redirect_rejected")
-                        url = target
-                        continue
                     if response.status_code != 200:
                         raise ValueError("catalog_unavailable")
                     raw = bytearray()

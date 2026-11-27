@@ -21,6 +21,7 @@ class SiieSync(Strict):
     program_id: str = Field(default="", pattern=r"^(?:[1-9][0-9]{0,9})?$")
     period_id: str = Field(default="", pattern=r"^(?:[1-9][0-9]{0,9})?$")
     cursor: str = Field(default="", max_length=128)
+    environment: dict | None = None
 
     @model_validator(mode="after")
     def target(self):
@@ -29,20 +30,45 @@ class SiieSync(Strict):
         return self
 
 
-def source_section(program_id, kind):
-    return f"program-siie-{kind}-{program_id}"
+def source_section(program_id, kind, environment=None):
+    from app.institutional.siie_environment import current
+    environment = environment or current().document()
+    if kind not in {'program','offer'} or not re.fullmatch(r'[0-9a-f]{64}',environment['fingerprint']):
+        raise ValueError('invalid_siie_source_environment')
+    return f"siie-{environment['fingerprint'][:16]}-{kind[0]}-{program_id}"
 
 
 def local_source(c, settings, program_id, kind="offer"):
+    from app.institutional.siie_environment import configured, current
+    if not configured():
+        return None
     row = one(c, "SELECT Document FROM crm_access.Setting WHERE InstitutionId=? AND Section=?", institution(settings), source_section(program_id, kind))
-    return json.loads(row["Document"]) if row else None
+    value = json.loads(row["Document"]) if row else None
+    return value if value and value.get("environment") == current().document() else None
+
+
+def mapped_programs(c, settings, source, *, detail=False):
+    """A numeric SIIE ID alone never identifies a local program across environments."""
+    from app.institutional.siie_environment import require
+    environment = require(source.get("environment")).document()
+    fields = "p.ProgramId,p.Name,p.School,p.Schedule,p.Active,p.Revision" if detail else "p.ProgramId"
+    return c.execute(
+        f"SELECT DISTINCT {fields} FROM crm_agents5.Program p JOIN crm_access.Setting s "
+        "ON s.InstitutionId=p.InstitutionId AND (s.Section=CONCAT(?,p.ProgramId) OR s.Section=CONCAT(?,p.ProgramId)) "
+        "WHERE p.InstitutionId=? AND JSON_VALUE(s.Document,'$.environment.fingerprint')=? "
+        "AND JSON_VALUE(s.Document,'$.environment.base_url')=? AND JSON_VALUE(s.Document,'$.program_id')=?",
+        source_section("", "program", environment), source_section("", "offer", environment),
+        institution(settings), environment["fingerprint"], environment["base_url"], source["program_id"],
+    ).fetchall()
 
 
 def save_source(c, settings, program_id, revision, actor, source):
     # Separate from the operator-editable facts: this remains the actual last
     # received source. Same transaction and revision as the CRM program write.
     # Reuse the versioned Setting/SettingHistory storage without new DDL.
-    ref = source_section(program_id, source["kind"])
+    from app.institutional.siie_environment import require
+    require(source.get("environment"))
+    ref = source_section(program_id, source["kind"],source["environment"])
     document = json.dumps(source, ensure_ascii=False)
     c.execute("UPDATE crm_access.Setting SET Document=?,Revision=?,UpdatedBy=?,UpdatedAt=SYSUTCDATETIME() WHERE InstitutionId=? AND Section=?", document, revision, actor, institution(settings), ref)
     if c.rowcount == 0:
@@ -50,9 +76,10 @@ def save_source(c, settings, program_id, revision, actor, source):
     c.execute("INSERT crm_access.SettingHistory(InstitutionId,Section,Revision,Document,RecordedAt,ActorId) VALUES(?,?,?,?,SYSUTCDATETIME(),?)", institution(settings), ref, revision, document, actor)
 
 
-def draft_from_source(value, *, kind="offer", request=None):
+def draft_from_source(value, *, kind="offer", request=None, environment=None):
     """Whitelist source facts; never promote an incomplete offer to a firm quote."""
     request = request or {}
+
     program_id = str(value.get('program_id') or '')
     if not re.fullmatch(r'[1-9][0-9]{0,9}', program_id) or int(program_id) > 2147483647:
         raise HTTPException(502, 'siie_catalog_invalid_response')
@@ -106,6 +133,7 @@ def draft_from_source(value, *, kind="offer", request=None):
     if not draft.name.strip() or not profile.siie_program_id:
         raise HTTPException(502, "siie_catalog_invalid_response")
     return {
+        "environment": environment,
         "kind": kind, "program_id": profile.siie_program_id, "offer_id": profile.siie_offer_id,
         "source_revision": value["source_revision"], "period_id": profile.siie_period_id,
         "checked_at": values["source_checked_at"], "values": draft.model_dump(),

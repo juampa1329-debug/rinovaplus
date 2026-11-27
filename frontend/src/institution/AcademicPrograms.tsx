@@ -260,7 +260,7 @@ function AcademicProgramsContent() {
   const [url, setUrl] = useState("");
   const [siieOffer, setSiieOffer] = useState("");
   const [extracted, setExtracted] = useState<Draft | null>(null);
-  const [sync, setSync] = useState<Record<string, string> | null>(null);
+  const [sync, setSync] = useState<Record<string, unknown> | null>(null);
   const [source, setSource] = useState<SiieLocalDraft["source"] | null>(null);
   const [manualFields, setManualFields] = useState<string[]>([]);
   const [copyFrom, setCopyFrom] = useState("");
@@ -380,6 +380,7 @@ function AcademicProgramsContent() {
     setExtracted(null);
     intent.clear();
     setSync({
+      environment: result.source.environment,
       kind: result.source.kind,
       source_revision: result.source.source_revision,
       offer_id: result.source.kind === "offer" ? result.source.offer_id : "",

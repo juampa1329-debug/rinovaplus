@@ -1,3 +1,4 @@
+import { siieHeaders, observeSiie } from "../../shared/siieEnvironment";
 import type { AiProvider } from "../../shared/aiSettings";
 import {
   coordinatedRead,
@@ -579,6 +580,7 @@ async function request<T>(
     method,
     headers: {
       "X-CRM-Local": "1",
+      ...siieHeaders(path),
       ...institutionHeaders(),
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
@@ -589,6 +591,7 @@ async function request<T>(
     throw failure;
   });
   const result = await response.json().catch(() => null);
+  if (response.ok) observeSiie(path, result);
   if (response.status === 429)
     observeReadLimit(response.headers?.get("Retry-After") ?? null);
   institutionUnauthorized(response.status);

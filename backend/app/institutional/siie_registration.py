@@ -12,6 +12,7 @@ from app.institutional import siie_forms as forms
 from app.institutional import siie_records as records
 from app.institutional import siie_registration_client as source
 from app.institutional import siie_catalogs as native_catalogs
+from app.institutional import siie_environment
 from app.institutional.auth import authorize, rate
 from app.institutional.channel_ingress import strict_json
 from app.institutional.crypto import canonical
@@ -99,6 +100,8 @@ class Registration:
                     }
                 },
             }
+            if kind == "sd":
+                result["environment_current"] = bool(siie_environment.configured() and private.get("context", {}).get("environment") == siie_environment.current().document())
             if kind == "se" and private.get("event"):
                 from app.institutional.db import rows
 
@@ -210,18 +213,23 @@ class Registration:
             raise HTTPException(413, "siie_form_too_large")
         forms.validate(body.kind, body.form)
         geography = native_catalogs.locations(body.geography)
-        allowed = {"program_id", "program_cursor", "offer_cursor", "offer_ref"}
+        allowed = {"program_id", "program_cursor", "offer_cursor", "offer_ref", "environment"}
         if (
             set(body.selection) - allowed
             or not {"program_id", "offer_ref"} <= body.selection.keys()
         ):
             raise HTTPException(422, "siie_offer_selection_invalid")
         # Authorization before IO; no remote IO while holding the SQL lock.
-        with self.tx():
-            pass
+        with self.tx() as c:
+            old = records.get(c, self.settings, "sd", identity)
+            if old:
+                siie_environment.require(old["private"]["context"].get("environment"))
         context = source.offer_context(body.selection)
         with self.tx(True) as c:
             old = records.get(c, self.settings, "sd", identity)
+            siie_environment.require(context.get("environment"))
+            if old:
+                siie_environment.require(old["private"]["context"].get("environment"))
             if (old["revision"] if old else 0) != body.revision:
                 raise HTTPException(409, "revision_conflict")
             if old and old["metadata"]["state"] not in {"draft", "rejected"}:
@@ -252,6 +260,7 @@ class Registration:
         with self.tx() as c:
             row = own(c, self.settings, uid(identity))
             ctx = row["private"]["context"]
+            siie_environment.require(ctx.get("environment"))
             payload = {k: ctx[k] for k in ("idOferta", "idPeriodo")}
             confirmed = row["private"].get("result", {})
             if confirmed.get("state") == "confirmed" and confirmed.get("data", {}).get(
@@ -283,6 +292,7 @@ class Registration:
         ).hex()
         with self.tx() as c:
             old = own(c, self.settings, identity)
+            siie_environment.require(old["private"].get("context",{}).get("environment"))
             prior = records.get(c, self.settings, "sw", operation)
             if prior:
                 if prior["private"].get("request_hash") != request_hash:
@@ -298,6 +308,7 @@ class Registration:
             if not cfg["writes_enabled"]:
                 raise HTTPException(409, "siie_registration_writes_disabled")
             private = old["private"]
+            siie_environment.require(private["context"].get("environment"))
         context = source.offer_context(private["context"]["selection"])
         if context != private["context"]:
             raise HTTPException(409, "siie_offer_selection_changed")
@@ -399,6 +410,7 @@ class Registration:
                     "digest": digest,
                     "request_hash": request_hash,
                     "result": pending,
+                    "environment": private["context"]["environment"],
                 },
             )
             private = {**current["private"], "pending_operation": operation}
@@ -423,6 +435,7 @@ class Registration:
         # Never retry after a timeout, invalid 201, server restart or lost receipt.
         with self.tx():
             pass
+        siie_environment.require(private["context"]["environment"])
         result = source.request(kind, payload, files)
         # Persist the provider receipt even if the initiating session expires
         # during IO. The pending intent is the exact authority for this update.
@@ -480,6 +493,8 @@ class Registration:
 
 def install(app, settings):
     service = Registration(settings)
+    from app.institutional.siie_preicfes import install as install_finance
+    install_finance(app, settings)
 
     @app.get(PREFIX + "/status")
     def status():
@@ -493,6 +508,8 @@ def install(app, settings):
                 "webhook_path": HOOK_PATH,
                 "webhook_secret_configured": bool(secret()),
                 "api_configured": source.siie_api.configured("admissions"),
+                "environment": siie_environment.current().document() if siie_environment.configured() else None,
+                "gateway_enabled": False,
                 "stages": [
                     {"key": s.key, "label": s.label} for s in crm.stages if s.active
                 ],
@@ -570,6 +587,9 @@ def install(app, settings):
                 if draft_id
                 else None
             )
+        siie_environment.request_context(request)
+        if context:
+            siie_environment.require(context.get("environment"))
         result = catalogs(context, parameters)
         with service.tx():
             pass
@@ -582,6 +602,7 @@ def install(app, settings):
             raise HTTPException(422, "siie_invalid_parameter")
         with service.tx():
             pass
+        siie_environment.request_context(request)
         result = source.siie_api.read(kind, dict(pairs))
         with service.tx():
             pass
@@ -603,7 +624,8 @@ def install(app, settings):
         return service.link(identity, body)
 
     @app.put(PREFIX + "/drafts/{identity}")
-    def save(identity: str, body: Draft):
+    def save(identity: str, body: Draft, request: Request):
+        siie_environment.request_context(request)
         return service.save(identity, body)
 
     @app.get(PREFIX + "/drafts/{identity}/requirements")

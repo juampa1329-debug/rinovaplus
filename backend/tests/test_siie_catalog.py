@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 import httpx2 as httpx
 import pytest
 from fastapi import HTTPException
@@ -79,89 +77,29 @@ def test_siie_is_disabled_without_configuration_and_never_calls_network(monkeypa
         )
 
 
-def configure(monkeypatch):
-    monkeypatch.setenv("SIIE_CATALOG_API_URL", "https://siie.example.test/api")
-    monkeypatch.setenv("SIIE_CATALOG_API_HOSTS", "siie.example.test")
-    monkeypatch.setenv("SIIE_CATALOG_API_TOKEN", "fixture-not-a-real-key")
+def test_retired_catalog_url_never_selects_an_alternative_environment(monkeypatch):
+    monkeypatch.delenv('SIIE_BASE_URL',raising=False)
+    monkeypatch.setenv('SIIE_CATALOG_API_URL','https://siie.example.test/legacy/')
+    monkeypatch.setenv('SIIE_CATALOG_API_HOSTS','siie.example.test')
+    monkeypatch.setenv('SIIE_CATALOG_API_TOKEN','fixture-key-never-send-1234567890')
+    with pytest.raises(HTTPException,match='siie_catalog_not_configured'):
+        preview('900-n1',transport=httpx.MockTransport(lambda _:pytest.fail('legacy transport used')))
 
 
-def offer():
-    return {
-        "schema_version": "siie-crm-commercial-v1",
-        "source_system": "DBSIIE",
-        "source_revision": "fixture-v1",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "active": True,
-        "offer_id": "offer",
-        "program_id": "software",
-        "period_id": "period",
-        "campus_id": "campus",
-        "shift_id": "evening",
-        "currency": "COP",
-        "name": "Programa fixture",
-        "school": "Escuela fixture",
-        "schedule": "Noche",
-        "commercial": {"duration": "3 semestres", "financial_plans": [plan()]},
-    }
-
-
-def test_siie_preview_only_gets_one_offer_and_preserves_source_without_saving(
-    monkeypatch,
-):
-    configure(monkeypatch)
-    calls = []
-
-    def respond(request):
-        calls.append(request)
-        assert (
-            request.method == "GET"
-            and str(request.url) == "https://siie.example.test/api/v1/crm/offers/offer"
-        )
-        assert request.headers["Authorization"] == "Bearer fixture-not-a-real-key"
-        return httpx.Response(200, json=offer())
-
-    result = preview("offer", transport=httpx.MockTransport(respond))
-    assert (
-        len(calls) == 1 and result["saved"] is False and result["siie_written"] is False
-    )
-    assert result["draft"].commercial.siie_offer_id == "offer"
-    assert result["draft"].commercial.siie_period_id == "period"
-    assert result["draft"].commercial.financial_plans[0].total_cost_cop == 600000
-
-
-@pytest.mark.parametrize(
-    "change",
-    [
-        {"offer_id": "different"},
-        {"active": False},
-        {"generated_at": "2000-01-01T00:00:00Z"},
-    ],
-)
-def test_siie_rejects_stale_or_wrong_offer(monkeypatch, change):
-    configure(monkeypatch)
-    with pytest.raises(HTTPException, match="siie_catalog_stale_or_mismatched"):
-        preview(
-            "offer",
-            transport=httpx.MockTransport(
-                lambda *_: httpx.Response(200, json={**offer(), **change})
-            ),
-        )
-
-
-def test_siie_does_not_follow_redirects_or_accept_arbitrary_hosts(monkeypatch):
-    configure(monkeypatch)
-    calls = []
-
-    def respond(request):
-        calls.append(request)
-        return httpx.Response(302, headers={"Location": "https://other.example/steal"})
-
-    with pytest.raises(HTTPException, match="siie_catalog_unavailable"):
-        preview("offer", transport=httpx.MockTransport(respond))
-    assert len(calls) == 1
-    monkeypatch.setenv("SIIE_CATALOG_API_URL", "https://other.example")
-    with pytest.raises(HTTPException, match="siie_catalog_endpoint_invalid"):
-        preview(
-            "offer",
-            transport=httpx.MockTransport(lambda *_: pytest.fail("not allowed")),
-        )
+def test_preview_uses_shared_aspx_reader_and_preserves_environment(monkeypatch):
+    from app.institutional import siie_api
+    monkeypatch.setenv('SIIE_BASE_URL','https://siie.example.test/SIIEWebPlustest/')
+    monkeypatch.setenv('SIIE_API_TOKEN','fixture-key-never-send-1234567890')
+    source={'program_id':'143','offer_id':'900-n1','source_revision':'sha256:'+'a'*64,
+            'name':'Programa fixture','currency':'COP','commercial':{'financial_plans':[plan()]}}
+    env={'base_url':'https://siie.example.test/SIIEWebPlustest/','fingerprint':'b'*64}
+    calls=[]
+    def read(route,values,**kw):
+        calls.append((route,values))
+        return {'data':{'offer':source},'environment':env}
+    monkeypatch.setattr(siie_api,'read',read)
+    result=preview('900-n1')
+    assert calls==[('offer',{'offer_id':'900-n1'})]
+    assert result['source']['environment']==env
+    assert result['saved'] is False and result['siie_written'] is False
+    assert result['draft'].commercial.financial_plans[0].total_cost_cop==600000

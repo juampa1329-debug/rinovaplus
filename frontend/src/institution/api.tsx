@@ -1,3 +1,4 @@
+import { siieHeaders, observeSiie } from "../shared/siieEnvironment";
 import {
   createContext,
   useCallback,
@@ -66,9 +67,12 @@ export type Setting = {
   updated_at: string;
 };
 const messages: Record<string, string> = {
-  campaign_closure_busy: "Hay un seguimiento en curso o pendiente de revisión. El plazo se conserva; vuelve a consultar antes de ajustarlo.",
-  campaign_closure_scope_changed: "Este ajuste sólo corresponde al seguimiento general de silencio con sus pasos originales. Revisa la configuración.",
-  campaign_closure_not_shorter: "El cierre ya está a los 7 días o tiene un plazo menor. No se modificó.",
+  campaign_closure_busy:
+    "Hay un seguimiento en curso o pendiente de revisión. El plazo se conserva; vuelve a consultar antes de ajustarlo.",
+  campaign_closure_scope_changed:
+    "Este ajuste sólo corresponde al seguimiento general de silencio con sus pasos originales. Revisa la configuración.",
+  campaign_closure_not_shorter:
+    "El cierre ya está a los 7 días o tiene un plazo menor. No se modificó.",
   commercial_followup_preview_changed:
     "El caso cambió desde la revisión. Conserva los registros confirmados y vuelve a consultar el avance antes de continuar.",
   commercial_followup_scope_limit:
@@ -79,6 +83,32 @@ const messages: Record<string, string> = {
     "Faltan catálogos oficiales de SIIE para validar los campos de inscripción. El borrador se conserva.",
   siie_registration_invalid_catalog:
     "El catálogo de inscripción de SIIE no cumple el formato esperado. Conserva el borrador y pide revisar el contrato; no cambies las claves por este aviso.",
+  siie_base_url_invalid:
+    "Configura SIIE_BASE_URL en el backend: HTTPS y barra final. Las claves se conservan.",
+  siie_environment_changed:
+    "Este trabajo pertenece a otro entorno de SIIE. Se conserva sin reenviar. Consulta y corrobora los IDs del entorno actual para iniciar un trabajo nuevo.",
+  siie_environment_refresh_required:
+    "SIIE cambió de entorno o faltan los catálogos actuales. Recarga RinovaPlus y consulta Períodos y catálogos antes de continuar.",
+  siie_finance_expired:
+    "El vínculo o la cotización venció. Vuelve a consultar y confirmar la opción antes de continuar.",
+  siie_finance_configuration_required:
+    "SIIE todavía no ofrece un plan asignable para esa inscripción. Su equipo debe revisar la configuración; no se inventarán importes ni fechas.",
+  siie_finance_reconciliation_required:
+    "Hay una operación pendiente. Consulta su resultado original antes de intentar otra escritura.",
+  siie_finance_verified_sender_required:
+    "Se requiere una conversación WhatsApp con un remitente entrante auténtico, vinculada a la persona.",
+  siie_finance_contact_link_required:
+    "Revisa primero el vínculo del evento SIIE con la ficha correcta del CRM.",
+  siie_finance_explicit_choice_required:
+    "Selecciona una opción vigente y el mensaje donde el aspirante la eligió expresamente.",
+  siie_finance_assignment_required:
+    "La cuota debe pertenecer a la asignación confirmada por SIIE.",
+  siie_finance_invalid_response:
+    "La respuesta o el PDF de SIIE no pasó la validación. Conserva el trabajo y revisa su contrato.",
+  siie_finance_rejected:
+    "SIIE rechazó esta operación. Conserva su referencia y revisa identidad, revisión y configuración antes de continuar.",
+  siie_finance_unavailable:
+    "SIIE no está disponible. Conserva la operación y consulta su resultado; no repitas una escritura de resultado incierto.",
   siie_registration_catalog_contract_changed:
     "SIIE cambió el valor o tipo que espera para un selector. Se detuvo la validación para no enviar etiquetas en lugar de identificadores.",
   siie_catalog_filters_invalid:
@@ -640,6 +670,7 @@ async function request<T>(
     cache: "no-store",
     headers: {
       "X-CRM-Local": "1",
+      ...siieHeaders(path),
       ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
       ...(csrf ? { "X-CSRF-Token": csrf } : {}),
     },
@@ -649,6 +680,7 @@ async function request<T>(
   const result = (await response.json().catch(() => null)) as {
     detail?: string;
   } | null;
+  if (response.ok) observeSiie(path, result);
   if (response.ok && result === null)
     throw new ApiError(502, "invalid_server_response");
   if (!response.ok) {

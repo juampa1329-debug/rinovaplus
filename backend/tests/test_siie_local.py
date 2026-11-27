@@ -90,7 +90,7 @@ def test_known_inactive_source_offer_never_becomes_available_just_because_dates_
 
 
 def test_partial_offer_can_be_prepared_for_local_review_without_writing_source(monkeypatch):
-    monkeypatch.setenv('SIIE_API_BASE_URL','https://siie.example.test/SIIEWebPlus');monkeypatch.setenv('SIIE_API_HOSTS','siie.example.test');monkeypatch.setenv('SIIE_API_TOKEN','fixture-key-not-real-1234567890123456789')
+    monkeypatch.setenv('SIIE_BASE_URL','https://siie.example.test/SIIEWebPlus/');monkeypatch.setenv('SIIE_API_HOSTS','siie.example.test');monkeypatch.setenv('SIIE_API_TOKEN','fixture-key-not-real-1234567890123456789')
     calls=[]
     def remote(request):
         calls.append(request.method)

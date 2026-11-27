@@ -28,7 +28,7 @@ INSTITUTION = "1cddfb14-d7e0-44e0-a731-f3345452835c"
 
 @pytest.fixture
 def settings(monkeypatch):
-    monkeypatch.setenv("SIIE_API_BASE_URL", "https://siie.test/SIIEWebPlus")
+    monkeypatch.setenv("SIIE_BASE_URL", "https://siie.test/SIIEWebPlus/")
     monkeypatch.setenv("SIIE_API_HOSTS", "siie.test")
     monkeypatch.setenv("SIIE_API_TOKEN", "fixture-original-siie-token-1234567890")
     monkeypatch.setenv(
@@ -409,7 +409,7 @@ def test_unknown_success_or_redirect_is_uncertain_and_not_followed(settings):
     )
 
 
-def test_native_document_catalog_supports_only_same_origin_friendly_url_redirect(
+def test_native_document_catalog_uses_canonical_route_without_redirect(
     settings,
 ):
     seen = []
@@ -437,7 +437,7 @@ def test_native_document_catalog_supports_only_same_origin_friendly_url_redirect
     assert client.document_types(transport=httpx.MockTransport(remote)) == [
         {"value": 1, "label": "CC"}
     ]
-    assert len(seen) == 2 and all(
+    assert len(seen) == 1 and all(
         r.headers["X-API-Key"].startswith("fixture-original") for r in seen
     )
     calls = []
@@ -451,48 +451,16 @@ def test_native_document_catalog_supports_only_same_origin_friendly_url_redirect
     assert len(calls) == 1
 
 
-def test_requirement_friendly_url_preserves_scope_and_never_sends_key_to_foreign_target(
-    settings,
-):
-    seen = []
-
+@pytest.mark.parametrize("destination",["/SIIEWebPlus/Api/CRM/v1/DocumentosRequeridos","https://untrusted.test/DocumentosRequeridos"])
+def test_requirements_never_forward_credentials_on_redirect(settings,destination):
+    seen=[]
     def remote(request):
         seen.append(request)
-        assert (
-            request.url.params["idOferta"] == "21"
-            and request.url.params["idPeriodo"] == "9"
-        )
-        if request.url.path.endswith(".aspx"):
-            return httpx.Response(
-                301,
-                headers={"Location": "/SIIEWebPlus/Api/CRM/v1/DocumentosRequeridos"},
-            )
-        return httpx.Response(
-            200, json={"status": "ok", "data": {"oferta": {}, "items": []}}
-        )
-
-    assert (
-        client.request(
-            "requirements",
-            {"idOferta": 21, "idPeriodo": 9},
-            transport=httpx.MockTransport(remote),
-        )["state"]
-        == "confirmed"
-    )
-    assert len(seen) == 2
-    calls = []
-
-    def foreign(request):
-        calls.append(request)
-        return httpx.Response(
-            301, headers={"Location": "https://untrusted.test/DocumentosRequeridos"}
-        )
-
-    with pytest.raises(HTTPException, match="siie_registration_read_redirect"):
-        client.request(
-            "requirements", {"idOferta": 21}, transport=httpx.MockTransport(foreign)
-        )
-    assert len(calls) == 1
+        assert request.url.params['idOferta']=='21' and request.url.params['idPeriodo']=='9'
+        return httpx.Response(301,headers={'Location':destination})
+    with pytest.raises(HTTPException,match='siie_registration_read_redirect'):
+        client.request('requirements',{'idOferta':21,'idPeriodo':9},transport=httpx.MockTransport(remote))
+    assert len(seen)==1
 
 
 @pytest.mark.parametrize(
@@ -550,6 +518,7 @@ def test_intent_is_durable_before_io_unknown_result_is_never_resent(
         "program_name": "PRE-ICFES",
         "selection": {"program_id": "3", "offer_ref": "21-n1"},
     }
+    context["environment"] = __import__("app.institutional.siie_environment",fromlist=["current"]).current().document()
     data[("sd", identity)] = {
         "revision": 1,
         "metadata": {"kind": "applicant", "state": "draft"},
@@ -579,12 +548,13 @@ def test_intent_is_durable_before_io_unknown_result_is_never_resent(
 
 
 def test_disabled_writes_do_not_contact_provider(settings, memory, monkeypatch):
+    from app.institutional.siie_environment import current
     data, _, cfg = memory
     identity = str(uuid4())
     data[("sd", identity)] = {
         "revision": 1,
         "metadata": {"kind": "applicant", "state": "draft"},
-        "private": {},
+        "private": {"context":{"environment":current().document()}},
     }
     cfg["writes_enabled"] = False
     monkeypatch.setattr(client, "offer_context", lambda *a: pytest.fail("network"))
@@ -593,6 +563,24 @@ def test_disabled_writes_do_not_contact_provider(settings, memory, monkeypatch):
             identity,
             registration.Command(operation_id=str(uuid4()), revision=1, reviewed=True),
         )
+
+
+def test_old_draft_cannot_be_retargeted_or_replayed_in_another_environment(settings,memory,monkeypatch):
+    from app.institutional.siie_environment import current
+    data,_,_=memory;identity=str(uuid4())
+    data[('sd',identity)]={'revision':1,'metadata':{'kind':'applicant','state':'draft'},
+        'private':{'context':{'environment':current().document()},'form':{}}}
+    monkeypatch.setenv('SIIE_BASE_URL','https://siie.test/SIIEWebPlustest/')
+    monkeypatch.setattr(client,'offer_context',lambda *a:pytest.fail('old draft must not consult new source'))
+    monkeypatch.setattr(forms,'validate',lambda *a:None)
+    monkeypatch.setattr(registration.native_catalogs,'locations',lambda *a:{})
+    service=registration.Registration(settings)
+    assert service.read('sd',identity)['environment_current'] is False
+    with pytest.raises(HTTPException,match='siie_environment_changed'):
+        service.save(identity,registration.Draft(operation_id=str(uuid4()),revision=1,kind='applicant',form={},selection={'program_id':'3','offer_ref':'21-n1'}))
+    with pytest.raises(HTTPException,match='siie_environment_changed'):
+        service.submit(identity,registration.Command(operation_id=str(uuid4()),revision=1,reviewed=True))
+    assert data[('sd',identity)]['revision']==1
 
 
 def test_private_record_encryption_and_section_fit_installed_schema(settings):
