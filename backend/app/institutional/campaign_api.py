@@ -55,8 +55,11 @@ def install(app, settings, gateway=None):
         return service.simulate(request.state.authority, uid(record), body)
 
     @app.get("/api/institution/campaigns/{record}/runs")
-    def runs(request: Request, record: str, offset: int = Query(default=0, ge=0)):
-        return service.runs(request.state.authority, uid(record), offset)
+    def runs(request: Request, record: str, offset: int = Query(default=0, ge=0),
+             q: str = Query(default="", max_length=120),
+             state: str = Query(default="", max_length=20),
+             step: int = Query(default=-1, ge=-1, le=19)):
+        return service.runs(request.state.authority, uid(record), offset, q, state, step)
 
     @app.get("/api/institution/campaigns/{record}/metrics")
     def metrics(request: Request, record: str):

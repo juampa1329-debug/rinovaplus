@@ -1,3 +1,9 @@
+## Continuidad de seguimientos — 27 de noviembre de 2026
+
+La vista específica actual está en `graphify-out/graph.html` y `graphify-out/graph.json`; informe y límites en `graphify-out/GRAPH_REPORT.md`. Incluye semántica revisada de informes/evidencias24–27Nov y AST seleccionado, con SHA256. Complementa el grafo general fechado `graphify-out/live-project-20261126/`, conservado intacto. No es memoria privada CRM, no incluye fichas/telefonía/conversaciones y no equivale a lectura productiva en vivo.
+
+Reproducir offline con el Python que tenga Graphify instalado: `python backend/tools/conversation_continuity_graph.py build`; validar con `python backend/tools/conversation_continuity_graph.py check`. Para nuevas fuentes, releer completo y añadir fragmento de cobertura/hash según el constructor; no refrescar hashes para disimular contenido cambiado. No hay hooks, MCP Graphify ni observador automático instalado. Mantener las fuentes y sus cortes históricos separados. El estado comprobado de seguimiento está en `FOLLOWUP_SEQUENCE_POLICY_20261127.md` y su evidencia final `artifacts/live/followup-automation-20261127.json`.
+
 ## Estado vigente P11-ES local; puesta institucional pendiente — 2026-10-28
 
 **Roadmap general:93,62%. P11 original:72,50% (2/4criterios); sprint local de operación:100% dentro de su alcance.** Son261/279hitos y45/56criterios aceptados. El general incluye trabajo parcial mediante los56criterios de peso1; no es promedio de fases ni ratio de tests/hitos. Cada respuesta final debe incluir porcentaje general y avance de todas las fases. P12 es la fase adicional solicitada por el usuario para servidor/URLs/puesta online:ejecución0%,sin añadir peso ni duplicar los18hitos originales pendientes. No declarar el roadmap ni P11 institucional al100%.

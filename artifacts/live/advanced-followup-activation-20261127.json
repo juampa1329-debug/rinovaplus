@@ -1,0 +1,32 @@
+{
+  "schema": "rinova-advanced-followup-activation-v1",
+  "date_bogota": "2026-11-27",
+  "source": "native RinovaPlus campaign controls and shared guard source review",
+  "supersedes": "artifacts/live/followup-automation-20261127.json:advanced_followup_review only; other historical measurements remain their own cut",
+  "authorization": "Titular explicitly authorized activation of interest_confirmed, form_sent and form_reported_complete, excluding those who requested no messages",
+  "prior_automatic_review_rejection_resolved_by_new_user_authorization": true,
+  "templates": {"state_each": "active", "version_each": 1, "new_activations": 2, "interest_confirmed_was_already_active": true, "kind": "CRM inside real response window, not new Meta approvals"},
+  "flows": {"state_each": "active", "version_each": 3, "count": 3, "message_steps_each": 1, "internal_wait_minutes": 0, "names_and_objectives_updated_for_active_operation": true},
+  "triggers": {
+    "state_each": "active", "version_each": 2, "count": 3, "referenced_flow_version_each": 3,
+    "event_type": "inactivity", "idle_minutes": 480, "cooldown_minutes": 1440,
+    "priorities": {"interest_confirmed": 30, "form_sent": 20, "form_reported_complete": 10},
+    "specific_progress_filter_each": true, "no_duplicate_general_trigger_created": true
+  },
+  "guards": {"no_contact_excluded": true, "canonical_alias_scope": true, "real_incoming_required": true, "human_control_stops": true, "response_stops": true, "quiet_hours_bogota": ["21:00", "08:00"], "contact_basis": "customer_request", "real_response_window_hours": 24, "no_new_or_extended_consent": true, "general_reactivation_exclusion_preserved": true},
+  "native_checks": {
+    "configuration_preflights_passed": 8,
+    "three_active_flows_and_three_active_triggers_observed": true,
+    "all_three_template_library_records_active_observed": true,
+    "no_contact_list_refreshed_rows_first_page": 25,
+    "no_contact_list_alerts": 0,
+    "not_total_opt_out_count": true,
+    "broad_interest_audience_preview": "signal timed out; no eligible count or whole-audience exclusion proof claimed",
+    "general_flow_and_trigger_preserved_active_version": 3
+  },
+  "no_manual_enrollments_or_uncertain_retries_initiated": true,
+  "new_delivery_claimed": false,
+  "application_code_changes": false,
+  "tests": "native configuration checks and persisted UI states; no new test suite run for configuration-only activation",
+  "boundaries": ["No DDL", "No seeds", "No new services", "No SIIE writes", "No model changes", "No new phase acceptances", "No opt-out test message", "No contact details in public evidence"]
+}

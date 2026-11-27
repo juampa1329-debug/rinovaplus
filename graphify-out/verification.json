@@ -1,0 +1,47 @@
+{
+  "schema": 2,
+  "snapshot_check": {
+    "ok": true,
+    "snapshot_current": true,
+    "scope_complete": true,
+    "changed": [],
+    "missing": [],
+    "graph_changed": false,
+    "query_changed": false,
+    "new_fragments": [],
+    "uncovered_dated_documents": [],
+    "semantic_sources": 42,
+    "input_fingerprint": "c65bc7fafc02ad322191b1e15cf3cb9ccaaaadb54bf7ef35db58647031eef3a7",
+    "note": "Checks local provenance only; does not attest current production state"
+  },
+  "counts": {
+    "semantic_sources": 42,
+    "code_sources": 24,
+    "semantic_nodes": 308,
+    "semantic_edges": 338,
+    "ast_nodes": 306,
+    "ast_edges": 953,
+    "literal_code_references": 11,
+    "raw_edges": 1302,
+    "nodes": 614,
+    "edges": 972,
+    "communities": 37
+  },
+  "graph_sha256": "092631537d8ef9741c4418e794da690f5dcf66c2bb4518d3bc85eba1e417abc2",
+  "new_semantic_sources_read_to_eof": {
+    "docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md": 29,
+    "artifacts/live/advanced-followup-activation-20261127.json": 32
+  },
+  "query_complete": true,
+  "query_nodes_found": 14,
+  "query_nodes_rendered": 14,
+  "new_application_code_changes": false,
+  "prior_guard_regressions": {
+    "note": "Hash/EOF rejection, repeated-build and shrink-guard checks ran on the previous graph; not rerun for this two-source extension.",
+    "graph_sha256": "45f16742ce5569059b107b3c376664d476be57bf27d013115808c9c36208240b",
+    "repeated_build_graph_sha256_equal": null,
+    "source_hash_mismatch_rejected": null,
+    "partial_eof_coverage_rejected": null,
+    "shrink_guard_rejected_and_preserved_existing_json": null
+  }
+}

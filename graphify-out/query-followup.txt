@@ -1,0 +1,30 @@
+Consulta Graphify local acotada a conceptos de seguimiento; no ejecuta acciones.
+Completitud: 14/14 nodos, sin truncamiento; profundidad1.
+Las fuentes conservan sus cortes históricos; no fusionar versiones de fechas distintas.
+Tokens de etiquetas: contactar, cierre, general, borrador, avance, activador, avanzados, recorridos, aprobado, activos, autorización
+
+Traversal: BFS depth=1 | Start: ['Activadores nativos: tres activos con prioridad por avance', 'Cierre de veintiún días aprobado por Meta', 'Tres recorridos avanzados en borrador versión dos', 'Activador de inactividad activo en versión tres', 'Tres flujos existentes activos versión tres', 'Autorización posterior resuelve alcance antes rechazado', 'Tres flujos por avance permanecen en borrador tras rechazo automático', 'Borradores evitan duplicar espera de ocho horas', 'Cierre respetuoso con Juan Pablo y opción de baja', 'Preferencia canónica y No contactar preservadas', 'Flujo general existente activo en versión tres'] | 14 nodes found
+
+NODE Activadores nativos: tres activos con prioridad por avance [src=artifacts/live/advanced-followup-activation-20261127.json loc=Línea 10: "triggers" community=Tres seguimientos por avance activados]
+NODE Cierre de veintiún días aprobado por Meta [src=artifacts/live/followup-automation-20261127.json loc=Línea 13: "last_template" community=Seguimiento por tiempo y lista]
+NODE Tres recorridos avanzados en borrador versión dos [src=artifacts/live/followup-automation-20261127.json loc=Línea 34: "advanced_followup_review" community=Seguimiento por tiempo y lista]
+NODE Activador de inactividad activo en versión tres [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 20: Activo v3/revisión7 community=Seguimiento por tiempo y lista]
+NODE Tres flujos existentes activos versión tres [src=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md loc=Línea 9: Los tres flujos existentes community=Tres seguimientos por avance activados]
+NODE Autorización posterior resuelve alcance antes rechazado [src=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md loc=Línea 3: El titular autorizó expresamente community=Tres seguimientos por avance activados]
+NODE Tres flujos por avance permanecen en borrador tras rechazo automático [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 5: la revisión automática rechazó community=Seguimiento por tiempo y lista]
+NODE Borradores evitan duplicar espera de ocho horas [src=artifacts/live/followup-automation-20261127.json loc=Línea 40: "internal_wait_removed" community=Seguimiento por tiempo y lista]
+NODE Cierre respetuoso con Juan Pablo y opción de baja [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 30: ## Mensaje de cierre aprobado community=Seguimiento por tiempo y lista]
+NODE Preferencia canónica y No contactar preservadas [src=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md loc=Línea 25: contact_preference.py conserva community=Tres seguimientos por avance activados]
+NODE Flujo general existente activo en versión tres [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 19: Activo v3/revisión6 community=Seguimiento por tiempo y lista]
+NODE Rechazo automático de activación adicional conservado [src=artifacts/live/followup-automation-20261127.json loc=Línea 43: "activation_blocked" community=Seguimiento por tiempo y lista]
+NODE Tres activadores activos versión dos enlazados a flujo tres [src=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md loc=Línea 11: Los tres activadores existentes community=Tres seguimientos por avance activados]
+NODE Orientación CRM y tres plantillas Meta por paso [src=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md loc=Línea 21: Primera salida: community=Seguimiento por tiempo y lista]
+EDGE Tres recorridos avanzados en borrador versión dos --references [EXTRACTED]--> Rechazo automático de activación adicional conservado at=artifacts/live/followup-automation-20261127.json:Línea 43: "activation_blocked"
+EDGE Activadores nativos: tres activos con prioridad por avance --references [EXTRACTED]--> Tres activadores activos versión dos enlazados a flujo tres at=artifacts/live/advanced-followup-activation-20261127.json:Línea 10: "triggers"
+EDGE Autorización posterior resuelve alcance antes rechazado --rationale_for [EXTRACTED]--> Tres activadores activos versión dos enlazados a flujo tres at=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md:Línea 3: El titular autorizó expresamente
+EDGE Flujo general existente activo en versión tres --references [EXTRACTED]--> Orientación CRM y tres plantillas Meta por paso at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 21: Primera salida:
+EDGE Tres recorridos avanzados en borrador versión dos --references [EXTRACTED]--> Borradores evitan duplicar espera de ocho horas at=artifacts/live/followup-automation-20261127.json:Línea 40: "internal_wait_removed"
+EDGE Autorización posterior resuelve alcance antes rechazado --rationale_for [EXTRACTED]--> Tres flujos existentes activos versión tres at=docs/adaptation/ADVANCED_FOLLOWUP_ACTIVATION_20261127.md:Línea 3: El titular autorizó expresamente
+EDGE Flujo general existente activo en versión tres --references [EXTRACTED]--> Tres flujos por avance permanecen en borrador tras rechazo automático at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 5: Los tres flujos por avance siguen
+EDGE Activador de inactividad activo en versión tres --references [EXTRACTED]--> Flujo general existente activo en versión tres at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 20: vinculado a flujo v3
+EDGE Orientación CRM y tres plantillas Meta por paso --references [EXTRACTED]--> Cierre respetuoso con Juan Pablo y opción de baja at=docs/adaptation/FOLLOWUP_SEQUENCE_POLICY_20261127.md:Línea 22: Cierre nuevo cbn_crm_cierre

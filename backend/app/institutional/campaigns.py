@@ -31,6 +31,15 @@ VERSION = "cbn-institutional-campaign-p8-v1"
 OPEN = {"waiting", "queued", "paused", "uncertain"}
 
 
+def next_message_name(run):
+    """Read the frozen version, including the send following an active wait."""
+    if run["State"] not in OPEN:
+        return None
+    steps = json.loads(run["VersionDocument"]).get("steps", [])
+    return next((v.get("name") or f"Mensaje {i + 1}"
+                 for i, v in enumerate(steps) if i >= run["StepIndex"] and v["kind"] == "send"), None)
+
+
 def packed(v):
     return json.dumps(v, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
@@ -1057,20 +1066,40 @@ class Campaigns:
                 "uses_existing_identity": body.identity_id is not None,
             }
 
-    def runs(self, auth, id, offset=0):
+    def runs(self, auth, id, offset=0, q="", state="", step=-1):
         with self.tx(auth) as (c, _):
             record = get(c, self.settings, id)
+            clauses = ["r.InstitutionId=?", "r.FlowId=?"]
+            params = [institution(self.settings), id]
+            if q.strip():
+                clauses.append("p.Name LIKE ?")
+                params.append("%" + q.strip().replace("%", "[%]").replace("_", "[_]") + "%")
+            if state:
+                if state not in OPEN | {"completed", "cancelled", "failed"}:
+                    raise HTTPException(422, "campaign_execution_state_invalid")
+                clauses.append("r.State=?")
+                params.append(state)
+            steps = json.loads(record["Document"]).get("steps", [])
+            if step >= 0:
+                if step >= len(steps) or steps[step]["kind"] != "send":
+                    raise HTTPException(422, "campaign_execution_step_invalid")
+                start = step
+                while start and steps[start - 1]["kind"] != "send":
+                    start -= 1
+                clauses.extend(["r.VersionNo=?", "r.StepIndex>=?", "r.StepIndex<=?",
+                                "r.State IN('waiting','queued','paused','uncertain')"])
+                params.extend([record["CurrentVersion"], start, step])
+            source = " FROM crm_campaign8.Enrollment r JOIN crm.Contact p ON p.ContactId=r.CanonicalContactId "
+            where = " WHERE " + " AND ".join(clauses)
             total = c.execute(
-                "SELECT COUNT(*) FROM crm_campaign8.Enrollment WHERE InstitutionId=? AND FlowId=?",
-                institution(self.settings),
-                id,
+                "SELECT COUNT(*)" + source + where, *params,
             ).fetchval()
             values = rows(
                 c,
-                "SELECT r.*,p.Name FROM crm_campaign8.Enrollment r JOIN crm.Contact p ON p.ContactId=r.CanonicalContactId WHERE r.InstitutionId=? AND r.FlowId=? ORDER BY r.CreatedAt DESC,r.EnrollmentId OFFSET ? ROWS FETCH NEXT 100 ROWS ONLY",
-                institution(self.settings),
-                id,
-                offset,
+                "SELECT r.*,p.Name,v.Document AS VersionDocument" + source +
+                " JOIN crm_campaign8.Version v ON v.InstitutionId=r.InstitutionId AND v.RecordId=r.FlowId AND v.VersionNo=r.VersionNo" +
+                where + " ORDER BY r.CreatedAt DESC,r.EnrollmentId OFFSET ? ROWS FETCH NEXT 100 ROWS ONLY",
+                *params, offset,
             )
             return {
                 "items": [
@@ -1084,6 +1113,7 @@ class Campaigns:
                         variant=v["Variant"],
                         due_at=utc(v["DueAt"]),
                         reason=v["LastReason"],
+                        next_step=next_message_name(v),
                     )
                     for v in values
                 ],
@@ -1091,6 +1121,8 @@ class Campaigns:
                 "offset": offset,
                 "has_more": total > offset + 100,
                 "record": public(record),
+                "lists": [{"value": i, "name": v.get("name") or f"Mensaje {i + 1}"}
+                          for i, v in enumerate(steps) if v["kind"] == "send"],
             }
 
     def trace(self, auth, id, run_id):
@@ -1151,19 +1183,11 @@ class Campaigns:
             )
             # All immutable attempts participate, not only CurrentQueueId. A failed
             # attempt remains visible after a reviewed successful retry.
+            from app.institutional.campaign_metrics import attempts_query
             jobs = rows(
-                c,
-                "SELECT TOP(100001) e.EnrollmentId,e.Variant,step.StepId,q.QueueId,q.State,q.ExternalId,CASE WHEN EXISTS(SELECT 1 FROM crm_channels2.WebhookEvent reply JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=reply.InstitutionId AND i.IdentityId=e.IdentityId WHERE reply.InstitutionId=e.InstitutionId AND reply.IntegrationId=q.IntegrationId AND reply.Kind='message' AND reply.Status='processed' AND JSON_VALUE(reply.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2=q.ExternalId AND JSON_VALUE(reply.Payload,'$.author') COLLATE Latin1_General_100_BIN2=i.ExternalId) THEN 1 ELSE 0 END AS Replied FROM crm_campaign8.Enrollment e JOIN crm_campaign8.Step step ON step.InstitutionId=e.InstitutionId AND step.EnrollmentId=e.EnrollmentId JOIN crm_broadcast7.Recipient r ON r.InstitutionId=step.InstitutionId AND r.CampaignId=step.NativeCampaignId JOIN crm_broadcast7.Attempt a ON a.InstitutionId=r.InstitutionId AND a.RecipientId=r.RecipientId JOIN crm_channels2.SendJob q ON q.InstitutionId=a.InstitutionId AND q.QueueId=a.QueueId WHERE e.InstitutionId=? AND e.FlowId=?",
-                institution(self.settings),
-                id,
+                c, attempts_query(materialized=getattr(self.settings, "postgres_deployment", False)),
+                institution(self.settings), id,
             )
-            chats = rows(
-                c,
-                "SELECT TOP(100001) e.EnrollmentId,e.Variant,step.StepId,q.QueueId,q.State,q.ExternalId,CASE WHEN EXISTS(SELECT 1 FROM crm_channels2.WebhookEvent reply JOIN crm_channels2.ExternalIdentity i ON i.InstitutionId=reply.InstitutionId AND i.IdentityId=e.IdentityId WHERE reply.InstitutionId=e.InstitutionId AND reply.IntegrationId=q.IntegrationId AND reply.Kind='message' AND reply.Status='processed' AND JSON_VALUE(reply.Payload,'$.provider.context.id') COLLATE Latin1_General_100_BIN2=q.ExternalId AND JSON_VALUE(reply.Payload,'$.author') COLLATE Latin1_General_100_BIN2=i.ExternalId) THEN 1 ELSE 0 END AS Replied FROM crm_campaign8.Enrollment e JOIN crm_campaign8.Step step ON step.InstitutionId=e.InstitutionId AND step.EnrollmentId=e.EnrollmentId JOIN crm_campaign8.Event link ON link.InstitutionId=step.InstitutionId AND link.StepId=step.StepId AND link.Kind='native_chat' JOIN crm_channels2.SendJob q ON q.InstitutionId=link.InstitutionId AND q.QueueId=TRY_CONVERT(uniqueidentifier,JSON_VALUE(link.Document,'$.queue_id')) WHERE e.InstitutionId=? AND e.FlowId=?",
-                institution(self.settings),
-                id,
-            )
-            jobs += chats
             if len(jobs) > 100000:
                 raise HTTPException(413, "campaign_metrics_scope_limit")
             variants = []

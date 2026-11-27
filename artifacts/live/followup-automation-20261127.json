@@ -1,0 +1,74 @@
+{
+  "schema": "rinova-followup-automation-v1",
+  "date": "2026-11-27",
+  "evidence": "native RinovaPlus and Coolify controls; aggregate data only",
+  "supersedes_earlier_cut": "FOLLOWUP_SEQUENCE_POLICY_20261127.md preserves earlier v1 drafts/no new triggers and pending final metrics; this evidence records the later v2 drafts and final result",
+  "general_followup": {
+    "flow_state": "active", "flow_version": 3, "flow_revision": 6,
+    "trigger_state": "active", "trigger_version": 3, "trigger_revision": 7,
+    "trigger_idle_minutes": 480, "cooldown_minutes": 1440,
+    "targets_from_original_receipt_hours": [8, 36, 60, 504],
+    "subsequent_wait_minutes": [1680, 1440, 26640],
+    "quiet_hours_bogota": ["21:00", "08:00"],
+    "last_template": "cbn_crm_cierre_21d_juan_pablo_v1",
+    "meta_status": "APPROVED", "language": "es", "category": "MARKETING",
+    "native_simulation": "four texts rendered; quiet hours delayed last send; no simulation sends",
+    "native_progression": {
+      "open_v3_runs_in_36h_list": 1,
+      "next_step": "Resolver la duda · 36 horas",
+      "step_number": 2,
+      "next_due_bogota": "2026-11-28 14:59:21",
+      "limitations": "one observed progression; no live 21-day completion claimed; no manual enrollment or retry initiated"
+    }
+  },
+  "no_contact": {
+    "source": "persisted canonical EvaluationPlan.noContact or authenticated opt_out event, with existing subsequent-authorization rule",
+    "read_only_list": true, "location": "CRM > No contactar",
+    "page_size": 25, "native_first_page_rows": 25,
+    "native_nonmatching_search_rows": 0, "search_restored": true,
+    "not_a_total_count": true,
+    "administrative_revocation_or_unregistered_consent_is_not_opt_out": true,
+    "silence_closure_is_not_opt_out": true,
+    "new_or_extended_consent_created": false
+  },
+  "advanced_followup_review": {
+    "cases": ["interest_confirmed", "form_sent", "form_reported_complete"],
+    "flows_state": "draft", "flow_version_each": 2,
+    "new_triggers_state": "draft", "trigger_version_each": 1,
+    "trigger_idle_minutes_each": 480, "trigger_cooldown_minutes_each": 1440,
+    "priorities": {"interest_confirmed": 30, "form_sent": 20, "form_reported_complete": 10},
+    "internal_wait_removed": "the draft inactivity trigger supplies 8h; retaining 8h inside the flow would wrongly total16h",
+    "send_steps_each": 1, "contact_basis": "customer_request", "real_chat_window_hours": 24,
+    "templates": {"interest_confirmed": "active v1 library record only", "form_sent": "draft v1", "form_reported_complete": "draft v1"},
+    "activation_blocked": "automatic approval review rejected activating form_sent as additional scope beyond authorized general automation; not bypassed",
+    "no_new_advanced_enrollment_or_send_activation": true,
+    "approval_needed": "activate the three prepared case-specific templates, flows and triggers"
+  },
+  "metrics_incident": {
+    "old_statement": "14f4c7625262", "old_sqlstate": "57014", "statement_timeout_ms": 8000,
+    "first_fix_commit": "2a2a80f", "first_fix_failed_natively": true,
+    "first_fix_statement": "1c04f41d3edc", "first_fix_source": "metrics:1187",
+    "first_fix_failed_at_utc": "2026-11-27 15:54:02",
+    "final_code_commit": "74319ea",
+    "final_change": "materialize typed native-chat queue references before joining SendJob by UUID; preserve all immutable attempts and authenticated account/identity/context attribution",
+    "final_native_read_succeeded": true,
+    "historical_all_versions_variant_A": {
+      "enrollments": 251, "attempts": 248, "accepted": 246,
+      "delivered_including_read": 242, "read": 113,
+      "replied_enrollments": 2, "failed_attempts": 0, "uncertain_attempts": 2
+    },
+    "variant_B_all_zero": true,
+    "scope": "general followup history across versions; not 251 unique people or the 2026 broadcast cohort",
+    "uncertain_not_retried": true,
+    "not_a_latency_SLA_or_universal_contention_fix": true
+  },
+  "list_ui": {"native_height_px": 512, "native_scroll_height_px": 9263, "overflow_y": "auto", "filters": ["name", "next message/current version", "execution state"], "historical_versions_retained": true},
+  "deployments": {
+    "lists_backend": {"commit": "d1172e2", "id": "zbrdjwdyxncdc4vwkcxn1vy8", "success": true, "duration": "04m23s", "healthy_utc": "15:41:16", "rollout_utc": "15:41:26"},
+    "metrics_first_backend": {"commit": "2a2a80f", "id": "djgdepoqbyedgxsob5nse210", "success": true, "healthy_utc": "15:53:23", "rollout_utc": "15:53:31", "metrics_timeout_remained": true},
+    "final_backend": {"commit": "74319ea", "id": "aac2g3uhipu6tjjq8t2gmic2", "success": true, "duration": "04m24s", "healthy_utc": "16:00:24", "rollout_utc": "16:00:36"},
+    "final_code_frontend": {"commit": "74319ea", "id": "f3uxqw89wjxgczc0tv9thny9", "success": true, "duration": "00m25s"}
+  },
+  "checks": {"backend_focused_passed": 80, "frontend_focused_passed": 10, "types": "passed", "modified_eslint": "passed", "ruff_E9_F": "passed", "institutional_vite_workspace_build": "passed", "historical_bundle_warning": true, "full_suite_green": false, "eight_legacy_mock_failures_reproduced_with_prior_campaigns_module": true},
+  "boundaries": ["No DDL", "No seeds", "No new services", "No SIIE writes", "No model changes", "No new phase acceptances", "No artificial consent extensions", "No uncertain replay", "No private contact details in this evidence"]
+}

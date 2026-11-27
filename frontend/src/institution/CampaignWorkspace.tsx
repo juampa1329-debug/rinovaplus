@@ -156,6 +156,7 @@ type Run = {
   variant: string;
   due_at: string;
   reason?: string;
+  next_step?: string | null;
 };
 type Metrics = {
   variants: {
@@ -1806,6 +1807,9 @@ function Executions({
   action: (v: string, extra?: object) => void;
 }) {
   const [offset, setOffset] = useState(0),
+    [query, setQuery] = useState(""),
+    [state, setState] = useState(""),
+    [step, setStep] = useState("-1"),
     [selected, setSelected] = useState<string[]>([]),
     [trace, setTrace] = useState<{
       events: { kind: string; at: string; data: unknown }[];
@@ -1815,15 +1819,28 @@ function Executions({
       items: Run[];
       total: number;
       has_more: boolean;
-    }>(`campaigns/${id}/runs?offset=${offset}`),
+      lists?: { value: number; name: string }[];
+    }>(`campaigns/${id}/runs?offset=${offset}&q=${encodeURIComponent(query)}&state=${state}&step=${step}`),
     metrics = useResource<Metrics>(`campaigns/${id}/metrics`),
     { call } = useInstitution(),
     task = useTask();
-  if (!resource.value || !metrics.value)
-    return <ResourceState error={resource.error || metrics.error} />;
+  if (!resource.value)
+    return <ResourceState error={resource.error} />;
   return (
     <section>
       <h3>Ejecuciones y resultados</h3>
+      <p>Las personas pasan automáticamente a la lista del próximo mensaje cuando termina cada paso. Respuestas, bajas, cambios de atención y autorizaciones se vuelven a comprobar antes de enviar.</p>
+      <div className="institution-fields">
+        <Field id="execution-search" label="Buscar persona en seguimiento" value={query}
+          onChange={e => { setQuery(e.target.value); setOffset(0); setSelected([]); }} />
+        <SelectField id="execution-list" label="Lista de seguimiento" value={step}
+          options={[{ value: "-1", label: "Todas las listas y versiones" }, ...(resource.value.lists ?? []).map(v => ({ value: String(v.value), label: v.name }))]}
+          onChange={e => { setStep(e.target.value); setOffset(0); setSelected([]); }} />
+        <SelectField id="execution-state" label="Estado del seguimiento" value={state}
+          options={[{ value: "", label: "Todos los estados" }, ...["waiting", "queued", "paused", "uncertain", "completed", "cancelled", "failed"].map(v => ({ value: v, label: label(v) }))]}
+          onChange={e => { setState(e.target.value); setOffset(0); setSelected([]); }} />
+      </div>
+      <p className="campaign-hint">Cada lista por mensaje muestra ejecuciones abiertas de la versión actual. «Todas» conserva el historial, incluidos los seguimientos completados y detenidos. El cierre del seguimiento no registra una baja.</p>
       {task.notices}
       <Button
         variant="quiet"
@@ -1845,7 +1862,7 @@ function Executions({
             <tr>
               {[
                 "Variante",
-                "Personas",
+                "Ejecuciones",
                 "Intentos",
                 "Aceptados",
                 "Entregados",
@@ -1859,7 +1876,7 @@ function Executions({
             </tr>
           </thead>
           <tbody>
-            {metrics.value.variants.map((v) => (
+            {(metrics.value?.variants ?? []).map((v) => (
               <tr key={v.variant}>
                 <th>{v.variant}</th>
                 <td>{v.enrollments}</td>
@@ -1875,7 +1892,9 @@ function Executions({
           </tbody>
         </table>
       </div>
+      {!metrics.value && <ResourceState error={metrics.error} />}
       <p className="campaign-hint">
+        El acumulado incluye todas las versiones del flujo; una persona puede tener más de una ejecución histórica.
         Las respuestas sólo se atribuyen si el proveedor referencia el mensaje
         de la misma cuenta y persona. No se infieren matrículas ni conversiones.
       </p>
@@ -1885,6 +1904,7 @@ function Executions({
           una regla para futuros eventos.
         </p>
       )}
+      <div className="campaign-run-list" role="region" aria-label="Personas en seguimiento" tabIndex={0}>
       {resource.value.items.map((v) => (
         <div className="campaign-run" key={v.id}>
           <label>
@@ -1902,6 +1922,7 @@ function Executions({
             <span>
               {v.name} · {label(v.state)} · {v.variant}
               <small>
+                {v.next_step ? `Próximo: ${v.next_step} · ` : ""}
                 Paso {v.step_index + 1} · v{v.version} ·{" "}
                 {new Date(v.due_at).toLocaleString()} ·{" "}
                 {v.reason ? label(v.reason) : ""}
@@ -1922,6 +1943,7 @@ function Executions({
           </Button>
         </div>
       ))}
+      </div>
       <div className="institution-actions">
         <Button
           variant="secondary"

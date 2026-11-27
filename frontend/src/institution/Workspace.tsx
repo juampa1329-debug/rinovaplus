@@ -1,4 +1,5 @@
 import { ContactPreference } from "./ContactPreference";
+import { NoContactList } from "./NoContactList";
 import {
   CommercialFollowupReview,
   CommercialFollowupCard,
@@ -800,9 +801,11 @@ function WorkspaceView({
           >
             Tareas
           </Button>
+          <Button variant="quiet" onClick={() => setTab("no-contact")}
+            aria-pressed={tab === "no-contact"}>No contactar</Button>
         </nav>
       )}
-      {tab === "tasks" && page === "clients" ? (
+      {tab === "no-contact" && page === "clients" ? <NoContactList /> : tab === "tasks" && page === "clients" ? (
         <TaskList
           refresh={refresh}
           changed={changed}
