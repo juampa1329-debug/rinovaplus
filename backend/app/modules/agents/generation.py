@@ -15,6 +15,19 @@ SIMULATION_SCHEMA = {"type": "object", "additionalProperties": False,
     "required": ["answer", "handoff", "references"]}
 
 
+def simulation_schema(model):
+    # Claude's constrained grammar omits length/item limits. Keep the same
+    # contract in descriptions and the shared strict backend validator.
+    if not model.startswith("anthropic/"):
+        return SIMULATION_SCHEMA
+    return {**SIMULATION_SCHEMA, "properties": {
+        "answer": {"type": "string", "description": "Un único texto de como máximo 4000 caracteres."},
+        "handoff": {"type": "boolean"},
+        "references": {"type": "array", "items": {"type": "string"},
+                       "description": "Como máximo 5 identificadores de las fuentes suministradas."},
+    }}
+
+
 def provider_options(ai):
     """Read metadata only; never call load_models or a provider endpoint."""
     connection = ai.connection_snapshot()
@@ -169,7 +182,7 @@ async def complete(ai, selection, policy, messages, guard, *, preview=False):
                         guard,
                         price_limits=dict(zip(("prompt", "completion"), rates, strict=True)) if all(v is not None for v in rates) else None,
                         max_attempts=1 if preview else 3,
-                        response_schema=SIMULATION_SCHEMA if preview else None,
+                        response_schema=simulation_schema(model) if preview else None,
                         **({"include_temperature": False} if selection.get("trial_temperature_supported") is False else {}),
                         **({"reasoning_effort": selection["trial_reasoning_effort"]} if selection.get("trial_reasoning_effort") else {}),
                     )
