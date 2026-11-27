@@ -105,7 +105,15 @@ def for_turn(question, *, history=(), public=False, simulation_focus=None):
         previous = next((v for v in reversed(history) if isinstance(v, dict)
                          and (v.get("direction") == "incoming" or v.get("role") == "user")), None)
         prior = turn_plan(previous.get("text", previous.get("content", "")), has_history=True) if previous else None
-        if prior and prior["money_relevant"]:
+        last = history[-1] if history and isinstance(history[-1], dict) else {}
+        offered = str(last.get("text", last.get("content", "")))
+        accepted_offer = bool(
+            re.fullmatch(r"\W*(?:si|claro|dale|listo|por favor|si por favor|si claro)\W*", text)
+            and (last.get("direction") == "outgoing" or last.get("role") == "assistant")
+            and turn_plan(offered, has_history=True)["money_relevant"]
+            and "?" in offered
+        )
+        if prior and prior["money_relevant"] or accepted_offer:
             plan = {**plan, "money_relevant": True, "financial_continuity": True}
             active.update({"pricing", "deal-value-calc"})
             reasons.append("financial_continuity")

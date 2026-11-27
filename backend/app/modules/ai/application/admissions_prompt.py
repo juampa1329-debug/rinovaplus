@@ -8,7 +8,7 @@ from pydantic import Field, ValidationError
 
 from app.modules.ai.domain.models import StrictModel
 from app.modules.ai.infrastructure.providers import AiError
-from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY, reviewed_sources
+from app.institutional.cbn_profile import LOCATION_POLICY, REGISTRATION_POLICY, PAYMENT_POLICY, reviewed_sources
 
 
 class AdmissionsPolicy(StrictModel):
@@ -70,7 +70,7 @@ No vuelvas a preguntar datos ya declarados en memoria, salvo contradicción que 
 Si solicita una persona, hay conflicto o no conoces la respuesta, deriva a un asesor. No inventes costos, fechas ni requisitos.
 """
 
-INSTITUTIONAL_SAFETY += LOCATION_POLICY + REGISTRATION_POLICY
+INSTITUTIONAL_SAFETY += LOCATION_POLICY + REGISTRATION_POLICY + PAYMENT_POLICY
 
 SAFETY = INSTITUTIONAL_SAFETY + """En una derivación usa handoff=true.
 Responde exclusivamente JSON: {"answer":"...","handoff":false,"references":["chunk uuid"],"memory":[{"field":"program_interest|schedule_availability|registration_reported","value":"declaración literal","source_message_id":"uuid del mensaje entrante","quote":"cita exacta"}]}.

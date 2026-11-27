@@ -130,14 +130,26 @@ def context(
     campaign_context = (selection or {}).get("campaign_reply") if not public else None
     if hasattr(c, "__dict__"):
         c.agent_turn_policy = skill_policy
+    # A commercial interest can resolve the program family without choosing a
+    # jornada or writing an academic assignment. Retrieve those reviewed names
+    # even for button replies such as 'Ver plan de pagos' or 'Diurna'. Once the
+    # current interest is known, an older campaign/history must not crowd it out.
+    candidate_names = list(dict.fromkeys(
+        str(p.get("name", ""))[:180].strip()
+        for p in commercial_interest.get("candidates", [])[:6]
+        if isinstance(p, dict) and p.get("name")
+    )) if not public else []
+    current_interest = bool(program or candidate_names)
     retrieval = (
         question
         + " " + turn_text
         + " "
         + post[:1600]
         + " "
-        + " ".join(v["text"] for v in history if v["direction"] == "incoming")
-        + (" " + campaign_context.get("program_hint", "") if campaign_context else "")
+        + " ".join(candidate_names)
+        + (" " + " ".join(v["text"] for v in history if v["direction"] == "incoming")
+           if not current_interest else "")
+        + (" " + campaign_context.get("program_hint", "") if campaign_context and not current_interest else "")
         + (" " + " ".join(dict.fromkeys(p["name"] for p in related["programs"]))
            if related and not program and not commercial_interest else "")
     )

@@ -32,7 +32,25 @@ LOCATION_POLICY = (
     "No prometas que encontrarán físicamente al nombre de atención de la IA, ni que ya concertaste una cita. "
     "Si preguntan expresamente si eres IA, responde con transparencia."
 )
+PAYMENT_POLICY = (
+    "\nPAGOS Y ALCANCE DE TARIFAS REVISADOS POR EL TITULAR (2026-11-26): "
+    "CBN no recibe pagos por Addi ni Sistecrédito. Se acepta pago en banco o con tarjeta "
+    "en la oficina de Admisiones de " + ADMISSIONS_LOCATION + ". "
+    "No inventes banco, cuenta, convenio, enlace de pago ni cuotas de una tarjeta. "
+    "Las tarifas de carreras se cotizan por semestre; Admisiones las actualiza cada año. "
+    "Si preguntan cuánto vale toda la carrera, explica ese alcance y ofrece el semestre vigente: "
+    "no multipliques su importe por el número de semestres. Conserva los conceptos expresos "
+    "de cursos: PRE-ICFES tiene su tarifa de curso y A1+A2 de Inglés se cursan en un semestre. "
+    "Estos medios de pago no confirman que una persona ya pagó ni sustituyen las condiciones "
+    "financieras de la ficha o el volante de PRE-ICFES."
+)
 FACTS = [
+    {
+        "topic": "pagos_y_tarifas_por_semestre",
+        "reviewed_at": "2026-11-26",
+        "source": "owner_reviewed:2026-11-26:payment-methods-and-semester-scope",
+        "text": PAYMENT_POLICY.strip(),
+    },
     {
         "topic": "preicfes_volante_provisional",
         "reviewed_at": "2026-11-25",
