@@ -95,7 +95,7 @@ def classification(text, direction, *, accepted=False, previous=""):
     ):
         return None
     if re.search(
-        r"\b(?:datos|medios|metodos|formas|cuenta|numero de cuenta|link|enlace)\b"
+        r"\b(?:datos|cuenta|numero de cuenta|link|enlace)\b"
         r".{0,40}\b(?:pago|pagar|abonar|transferir|consignar)\b|"
         r"\b(?:como|donde|a que cuenta)\s+(?:puedo\s+)?"
         r"(?:pagar|abonar|transferir|consignar|pago)\b|"
