@@ -100,7 +100,7 @@ it("keeps shortening behind review and preflight and sends the saved revision wi
   const f = setup((p) => p.endsWith("/campaigns") ? ok({items:[flow]}) :
     p.endsWith("/preflight") ? ok({id:"checked",valid:true,issues:[]}) :
     p.endsWith("/shorten_closure") ? ok({...flow,version:4}) : undefined);
-  fireEvent.click(await screen.findByRole("button",{name:"Flujos",exact:true}));
+  fireEvent.click(await screen.findByRole("button",{name:"Flujos"}));
   fireEvent.click(await screen.findByRole("button",{name:/Silencio consultivo/}));
   const shorten = screen.getByRole("button",{name:"Cerrar a los 7 días y conservar seguimientos en espera"});
   expect(shorten).toBeDisabled();

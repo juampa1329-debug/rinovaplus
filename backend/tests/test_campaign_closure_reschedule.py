@@ -71,6 +71,8 @@ def test_migration_preserves_current_wait_and_never_writes_receipts_or_jobs(setu
     assert result["reschedule"] == dict(closure_days=7, preserved=1, stopped=0, trigger_version=4)
     statements = [v.args for v in c.execute.call_args_list]
     assert len([v for v in statements if v[0].startswith("INSERT crm_campaign8.Version")]) == 2
+    operations = [v[-1] for v in statements if v[0].startswith("INSERT crm_campaign8.Version")]
+    assert len(set(operations)) == 2  # Version has UNIQUE(InstitutionId, OperationId).
     update = next(v for v in statements if v[0].startswith("UPDATE crm_campaign8.Enrollment"))
     assert update[1:5] == (4, 5, 4, run["DueAt"])
     assert "StepIndex=?" in update[0] and "StepIndex=" not in update[0].split("WHERE")[0]

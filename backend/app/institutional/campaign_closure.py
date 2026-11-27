@@ -3,6 +3,7 @@
 import json
 from copy import deepcopy
 from datetime import timedelta
+from uuid import UUID, uuid5
 
 from fastapi import HTTPException
 
@@ -65,7 +66,7 @@ def version(c, s, record, doc, name, actor, body):
         "Document,Reason,ActorId,OperationId) VALUES(?,?,?,?,?,?,?,?,?)",
         institution(s), record["RecordId"], record["CurrentVersion"] + 1,
         record["Kind"], name, packed(doc), body.reason, actor["UserId"],
-        str(body.operation_id),
+        str(uuid5(UUID(str(body.operation_id)), "closure-version:" + str(record["RecordId"]))),
     )
 
 
