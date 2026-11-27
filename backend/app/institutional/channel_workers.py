@@ -168,7 +168,10 @@ class Workers:
                     self.pulse.observe("events", events.once)
                     self.pulse.observe("projection", events.project_once)
                 self.pulse.observe("media", media.once)
-                contact_preferences.once()
+                try:
+                    contact_preferences.once()
+                except Exception:
+                    logger.warning("contact_preference_recovery_retry_required")
                 if (
                     self.settings.ticket.get("version") in {'cbn-institutional-ads-p9-v1', 'cbn-institutional-campaign-p8-v1', 'cbn-institutional-learning-p10-v1', 'cbn-institutional-operations-p11-v1'}
                 ):

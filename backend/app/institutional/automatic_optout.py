@@ -68,6 +68,9 @@ class Reconciler:
     def once(self):
         if not supported(self.settings) or time.monotonic() < self.next_check:
             return False
+        # An unavailable history query must not cause a retry storm. Successful
+        # recovery can drain the next request on the following worker iteration.
+        self.next_check = time.monotonic() + 60
         from app.institutional.store import transaction
         from app.institutional.campaigns import event, key
         with transaction(self.settings, anonymous=True) as c:
@@ -102,4 +105,5 @@ class Reconciler:
                          "outcome": "later_consent_preserved" if granted else "source_review_required"}
                 event(c, self.settings, "no_contact_applied", proof,
                       source=key("global-no-contact", proof["origin_identity_id"], proof["message_id"]))
+        self.next_check = 0
         return True

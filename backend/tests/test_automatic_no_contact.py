@@ -149,3 +149,30 @@ def test_idle_history_reconciliation_is_bounded_and_throttled(monkeypatch):
  worker=target.Reconciler(settings)
  assert worker.once() is False and worker.once() is False
  assert reads.call_count==1 and tx.call_args.kwargs=={'anonymous':True}
+
+
+def test_unavailable_history_is_throttled_without_disabling_immediate_optouts(monkeypatch):
+ settings,_,_,_,_,_,_,_=fixture(monkeypatch)
+ reads=Mock(side_effect=RuntimeError('unavailable'));monkeypatch.setattr(target.db,'one',reads)
+ from app.institutional import store
+ monkeypatch.setattr(store,'transaction',lambda *a,**kw:nullcontext(None))
+ worker=target.Reconciler(settings)
+ with pytest.raises(RuntimeError):worker.once()
+ assert worker.once() is False and reads.call_count==1
+
+
+def test_history_recovery_failure_does_not_skip_other_channel_workers(monkeypatch,caplog):
+ from app.institutional import channel_workers,channel_media,broadcast_catalog_refresh
+ settings,_,_,_,_,_,_,_=fixture(monkeypatch)
+ for module,name in [(channel_workers,'EventWorker'),(channel_workers,'Dispatcher'),
+                     (channel_media,'MediaWorker'),(broadcast_catalog_refresh,'Refresher')]:
+  monkeypatch.setattr(module,name,Mock())
+ monkeypatch.setattr(target.Reconciler,'once',Mock(side_effect=RuntimeError('private details')))
+ worker=channel_workers.Workers.__new__(channel_workers.Workers)
+ worker.settings=settings;worker.fast_queues=True;worker.transport=None;worker.media_downloader=None
+ worker.stop_event=SimpleNamespace(is_set=Mock(side_effect=[False,True]),wait=Mock())
+ stages=[];worker.pulse=SimpleNamespace(observe=lambda stage,work:stages.append(stage))
+ worker.run()
+ assert stages==['media','campaigns','broadcasts','maintenance','agents']
+ assert 'contact_preference_recovery_retry_required' in caplog.text
+ assert 'private details' not in caplog.text
